@@ -5,11 +5,11 @@
  * Clean Architecture : Infrastructure ne dépend PAS du domain
  */
 
-import { Business, BusinessSector } from '../../../../domain/entities/business.entity';
+import { Business, BusinessContactInfo, BusinessSector } from '../../../../domain/entities/business.entity';
 import { BusinessId } from '../../../../domain/value-objects/business-id.value-object';
 import { BusinessName } from '../../../../domain/value-objects/business-name.value-object';
 import { Address } from '../../../../domain/value-objects/address.value-object';
-import { Email } from '../../../../domain/value-objects/email.vo';
+import { Email } from '../../../../domain/value-objects/email.value-object';
 import { Phone } from '../../../../domain/value-objects/phone.value-object';
 import { BusinessOrmEntity } from '../../entities/typeorm/business.entity';
 
@@ -26,16 +26,16 @@ export class TypeOrmBusinessMapper {
     ormEntity.sector = domainEntity.sector;
     
     // Address mapping
-    ormEntity.street = domainEntity.address.street;
-    ormEntity.city = domainEntity.address.city;
-    ormEntity.postalCode = domainEntity.address.postalCode;
-    ormEntity.country = domainEntity.address.country;
-    ormEntity.latitude = domainEntity.address.latitude;
-    ormEntity.longitude = domainEntity.address.longitude;
+    ormEntity.street = domainEntity.address.getStreet();
+    ormEntity.city = domainEntity.address.getCity();
+    ormEntity.postalCode = domainEntity.address.getPostalCode();
+    ormEntity.country = domainEntity.address.getCountry();
+    ormEntity.latitude = domainEntity.address.getLatitude();
+    ormEntity.longitude = domainEntity.address.getLongitude();
     
     // Contact info mapping
-    ormEntity.email = domainEntity.contactInfo?.email?.value;
-    ormEntity.phone = domainEntity.contactInfo?.phone?.getValue();
+    ormEntity.email = domainEntity.contactInfo?.primaryEmail?.getValue();
+    ormEntity.phone = domainEntity.contactInfo?.primaryPhone?.getValue();
     ormEntity.website = domainEntity.contactInfo?.website;
     
     ormEntity.isActive = true; // Default active
@@ -57,21 +57,25 @@ export class TypeOrmBusinessMapper {
       longitude: ormEntity.longitude || 0,
     });
 
-    const contactInfo = {
-      email: ormEntity.email ? Email.create(ormEntity.email) : undefined,
-      phone: ormEntity.phone ? Phone.create(ormEntity.phone) : undefined,
+    const primaryEmail = ormEntity.email ? Email.create(ormEntity.email) : null;
+    const primaryPhone = ormEntity.phone ? Phone.create(ormEntity.phone) : null;
+    
+    if (!primaryEmail || !primaryPhone) {
+      throw new Error('Business must have primary email and phone');
+    }
+
+    const contactInfo: BusinessContactInfo = {
+      primaryEmail,
+      primaryPhone,
       website: ormEntity.website,
     };
 
-    return Business.createFromData({
-      id: ormEntity.id,
+    return Business.create({
       name: ormEntity.name,
-      description: ormEntity.description,
+      description: ormEntity.description || '',
       sector: ormEntity.sector as BusinessSector,
       address,
       contactInfo,
-      createdAt: ormEntity.createdAt,
-      updatedAt: ormEntity.updatedAt,
     });
   }
 

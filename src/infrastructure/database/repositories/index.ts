@@ -5,9 +5,11 @@
  * Simplifie les imports et l'organisation du code
  */
 
+import type { DatabaseType, RepositoryType } from './types';
+
 // 🏭 Factory Pattern
 export { RepositoryFactory, RepositoryConfigHelper } from './repository.factory';
-export type { DatabaseType, RepositoryType } from './repository.factory';
+export type { DatabaseType, RepositoryType } from './types';
 
 // Note: In-Memory repositories removed - production architecture uses only SQL and NoSQL
 
@@ -16,26 +18,22 @@ export { TypeOrmUserRepository } from './sql/typeorm-user.repository';
 export { TypeOrmBusinessRepository } from './sql/typeorm-business.repository';
 export { TypeOrmCalendarRepository } from './sql/typeorm-calendar.repository';
 
-// 🍃 NoSQL Repositories (MongoDB)
-export { MongoUserRepository } from './nosql/mongo-user.repository';
-export { MongoBusinessRepository } from './nosql/mongo-business.repository';
-export { MongoCalendarRepository } from './nosql/mongo-calendar.repository';
-
-// 📋 Repository Interfaces (re-export pour convenience)
-export type { UserRepository } from '../../../domain/repositories/user.repository.interface';
-export type { BusinessRepository } from '../../../domain/repositories/business.repository.interface';
-export type { CalendarRepository } from '../../../domain/repositories/calendar.repository.interface';
-export type { AppointmentRepository } from '../../../domain/repositories/appointment.repository.interface';
+// Note: Repository interfaces imported above to avoid circular dependencies
 
 /**
  * 🎯 Repository Types Union
  * Utile pour les types génériques et factory patterns
  */
+// Import repository interface types properly
+import type { UserRepository } from '../../../domain/repositories/user.repository.interface';
+import type { BusinessRepository } from '../../../domain/repositories/business.repository.interface';
+import type { CalendarRepository } from '../../../domain/repositories/calendar.repository.interface';
+
 export type AnyRepository = 
   | UserRepository
   | BusinessRepository
-  | CalendarRepository
-  | AppointmentRepository;
+  | CalendarRepository;
+  // | AppointmentRepository; // TODO: Ajouter quand AppointmentRepository sera implémenté
 
 /**
  * 📊 Repository Metadata
@@ -58,7 +56,7 @@ export interface RepositoryMetadata {
  * Définit quelle implémentation utiliser par défaut
  */
 export const DEFAULT_REPOSITORY_IMPLEMENTATIONS = {
-  // Développement - SQL pour données cohérentes
+  // Développement - SQL uniquement
   development: {
     user: 'sql' as DatabaseType,
     business: 'sql' as DatabaseType,
@@ -66,7 +64,7 @@ export const DEFAULT_REPOSITORY_IMPLEMENTATIONS = {
     appointment: 'sql' as DatabaseType,
   },
   
-  // Test - SQL pour reproductibilité
+  // Test - SQL uniquement
   test: {
     user: 'sql' as DatabaseType,
     business: 'sql' as DatabaseType,
@@ -74,20 +72,20 @@ export const DEFAULT_REPOSITORY_IMPLEMENTATIONS = {
     appointment: 'sql' as DatabaseType,
   },
   
-  // Staging - Réplique de production
+  // Staging - SQL uniquement
   staging: {
-    user: 'sql' as DatabaseType,        // Données critiques en SQL
-    business: 'sql' as DatabaseType,    // Relations complexes en SQL
-    calendar: 'nosql' as DatabaseType,  // Flexibilité horaires en NoSQL
-    appointment: 'nosql' as DatabaseType, // Volume élevé en NoSQL
+    user: 'sql' as DatabaseType,
+    business: 'sql' as DatabaseType,
+    calendar: 'sql' as DatabaseType,
+    appointment: 'sql' as DatabaseType,
   },
   
-  // Production - Architecture hybride optimisée
+  // Production - SQL uniquement
   production: {
-    user: 'sql' as DatabaseType,        // Données critiques en SQL
-    business: 'sql' as DatabaseType,    // Relations complexes en SQL
-    calendar: 'nosql' as DatabaseType,  // Flexibilité horaires en NoSQL
-    appointment: 'nosql' as DatabaseType, // Volume élevé en NoSQL
+    user: 'sql' as DatabaseType,
+    business: 'sql' as DatabaseType,
+    calendar: 'sql' as DatabaseType,
+    appointment: 'sql' as DatabaseType,
   },
 } as const;
 

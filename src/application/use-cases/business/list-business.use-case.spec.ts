@@ -7,6 +7,7 @@
 import { ListBusinessUseCase, ListBusinessRequest, ListBusinessResponse } from './list-business.use-case';
 import { BusinessRepository } from '../../../domain/repositories/business.repository.interface';
 import { UserRepository } from '../../../domain/repositories/user.repository.interface';
+import { User } from '../../../domain/entities/user.entity';
 import { Logger } from '../../../application/ports/logger.port';
 import { I18nService } from '../../../application/ports/i18n.port';
 import { UserRole } from '../../../shared/enums/user-role.enum';
@@ -37,11 +38,15 @@ describe('ListBusinessUseCase', () => {
       save: jest.fn(),
       findById: jest.fn(),
       findByEmail: jest.fn(),
+      findByUsername: jest.fn(),
       delete: jest.fn(),
       findAll: jest.fn(),
       search: jest.fn(),
       findByRole: jest.fn(),
       emailExists: jest.fn(),
+      existsByUsername: jest.fn(),
+      updatePassword: jest.fn(),
+      updateActiveStatus: jest.fn(),
       countSuperAdmins: jest.fn(),
       count: jest.fn(),
       countWithFilters: jest.fn(),
@@ -56,10 +61,15 @@ describe('ListBusinessUseCase', () => {
       error: jest.fn(),
       warn: jest.fn(),
       debug: jest.fn(),
+      audit: jest.fn(),
+      child: jest.fn().mockReturnThis(),
     } as jest.Mocked<Logger>;
 
     mockI18n = {
+      translate: jest.fn().mockReturnValue('Mocked message'),
       t: jest.fn().mockReturnValue('Mocked message'),
+      setDefaultLanguage: jest.fn(),
+      exists: jest.fn().mockReturnValue(true),
     } as jest.Mocked<I18nService>;
 
     // Instanciation directe sans NestJS pour les tests unitaires

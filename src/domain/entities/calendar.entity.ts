@@ -463,6 +463,3 @@ export class Calendar {
     return [];
   }
 }
-
-// Re-export commonly used types for convenience
-export { CalendarId } from '../value-objects/calendar-id.value-object';

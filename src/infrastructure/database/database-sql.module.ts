@@ -2,19 +2,15 @@ import { Module, DynamicModule } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
-// SQL Entities
-import { BusinessEntity } from './entities/sql/business.entity';
-import { StaffEntity } from './entities/sql/staff.entity';
-import { ServiceEntity } from './entities/sql/service.entity';
-import { CalendarEntity } from './entities/sql/calendar.entity';
-import { AppointmentEntity } from './entities/sql/appointment.entity';
+// SQL Entities - Direct imports for Node.js 24 compatibility
+import { BusinessOrmEntity } from './entities/typeorm/business.entity';
+import { CalendarOrmEntity } from './entities/typeorm/calendar.entity';
+import { UserOrmEntity } from './entities/typeorm/user-orm.entity';
+import { RefreshTokenOrmEntity } from './entities/typeorm/refresh-token-orm.entity';
 
 // Repositories & Services
-import { BusinessSqlRepository } from './repositories/sql/business-sql.repository';
+import { TypeOrmBusinessRepository } from './repositories/sql/typeorm-business.repository';
 import { DatabaseConfigService } from '../config/database-config.service';
-
-// Mappers
-import { BusinessSqlMapper } from './mappers/business-sql.mapper';
 
 // Tokens
 import { BUSINESS_REPOSITORY } from '../../domain/repositories/business.repository.interface';
@@ -53,11 +49,10 @@ export class DatabaseSqlModule {
             password: configService.get('DB_PASS', 'password'),
             database: configService.get('DB_NAME', 'rvproject'),
             entities: [
-              BusinessEntity,
-              StaffEntity,
-              ServiceEntity,
-              CalendarEntity,
-              AppointmentEntity,
+              BusinessOrmEntity,
+              CalendarOrmEntity,
+              UserOrmEntity,
+              RefreshTokenOrmEntity,
             ],
             synchronize: configService.get('NODE_ENV') === 'development',
             logging: configService.get('NODE_ENV') === 'development',
@@ -68,11 +63,10 @@ export class DatabaseSqlModule {
 
         // Configuration TypeORM pour les entités SQL
         TypeOrmModule.forFeature([
-          BusinessEntity,
-          StaffEntity,
-          ServiceEntity,
-          CalendarEntity,
-          AppointmentEntity,
+          BusinessOrmEntity,
+          CalendarOrmEntity,
+          UserOrmEntity,
+          RefreshTokenOrmEntity,
         ]),
       ],
       providers: [
@@ -83,20 +77,16 @@ export class DatabaseSqlModule {
           useClass: DatabaseConfigService,
         },
 
-        // Mappers SQL
-        BusinessSqlMapper,
-
         // Repositories SQL
-        BusinessSqlRepository,
+        TypeOrmBusinessRepository,
         {
           provide: BUSINESS_REPOSITORY,
-          useClass: BusinessSqlRepository,
+          useClass: TypeOrmBusinessRepository,
         },
       ],
       exports: [
         DATABASE_CONFIG_SERVICE,
         BUSINESS_REPOSITORY,
-        BusinessSqlMapper,
       ],
       global: true,
     };

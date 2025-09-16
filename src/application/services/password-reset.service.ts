@@ -20,6 +20,7 @@ import { PasswordResetTokenRepository } from '../../domain/repositories/password
 import { UserRepository } from '../../domain/repositories/user.repository.interface';
 import { EmailService } from '../../domain/services/email.service';
 import { Email } from '../../domain/value-objects/email.vo';
+import type { Logger } from '../ports/logger.port';
 
 export interface PasswordResetResult {
   success: boolean;
@@ -34,10 +35,9 @@ export interface TokenValidationResult {
 }
 
 export class PasswordResetService {
-  private readonly logger = new Logger(PasswordResetService.name);
-
   constructor(
     private readonly userRepository: UserRepository,
+    private readonly logger: Logger,
     private readonly emailService: EmailService,
     private readonly tokenRepository: PasswordResetTokenRepository,
   ) {}
@@ -46,7 +46,7 @@ export class PasswordResetService {
    * Initie le processus de réinitialisation de mot de passe
    */
   async requestPasswordReset(email: Email): Promise<PasswordResetResult> {
-    this.logger.log('Attempting to initiate password reset');
+    this.logger.info('Attempting to initiate password reset');
 
     // Trouve l'utilisateur
     const _user = await this.userRepository.findByEmail(email);
@@ -64,7 +64,7 @@ export class PasswordResetService {
     // Nettoie les anciens tokens de cet utilisateur
     await this.tokenRepository.deleteByUserId(_user.id);
 
-    this.logger.log('Generating password reset token');
+    this.logger.info('Generating password reset token');
 
     // Génère un nouveau token
     const resetToken = PasswordResetTokenFactory.create(_user.id);
@@ -72,20 +72,20 @@ export class PasswordResetService {
     // Sauvegarde le token
     await this.tokenRepository.save(resetToken);
 
-    this.logger.log('Sending password reset email');
+    this.logger.info('Sending password reset email');
 
     try {
       // Envoie l'email
       await this.emailService.sendPasswordResetEmail(email, resetToken.token);
 
-      this.logger.log('Password reset email sent successfully');
+      this.logger.info('Password reset email sent successfully');
 
       return {
         success: true,
         message: 'Password reset initiated successfully',
       };
     } catch (error) {
-      this.logger.error('Password reset failed: email sending failed', error);
+      this.logger.error('Password reset failed: email sending failed', error as Error);
       // On retourne success même en cas d'erreur d'envoi
       // pour ne pas révéler l'existence du compte
       return {

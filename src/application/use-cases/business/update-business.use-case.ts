@@ -4,6 +4,8 @@
  * Mise à jour d'une entreprise avec validation métier et permissions
  */
 import { Business, BusinessStatus } from '../../../domain/entities/business.entity';
+import { BusinessId } from '../../../domain/value-objects/business-id.value-object';
+import { BusinessName } from '../../../domain/value-objects/business-name.value-object';
 import type { BusinessRepository } from '../../../domain/repositories/business.repository.interface';
 import type { Logger } from '../../../application/ports/logger.port';
 import type { I18nService } from '../../../application/ports/i18n.port';
@@ -89,12 +91,12 @@ export class UpdateBusinessUseCase {
     const context: AppContext = AppContextFactory.create()
       .operation('UpdateBusiness')
       .requestingUser(request.requestingUserId)
-      .businessEntity(request.businessId)
+      .metadata('businessId', request.businessId)
       .build();
 
     this.logger.info(
       this.i18n.t('operations.business.update_attempt'),
-      context as Record<string, unknown>,
+      { ...context } as Record<string, unknown>,
     );
 
     try {
@@ -110,34 +112,36 @@ export class UpdateBusinessUseCase {
 
       // 4. Mise à jour du branding si fourni
       if (request.branding) {
-        business.updateBranding(request.branding);
+        const branding = this.convertBrandingToDomain(request.branding);
+        business.updateBranding(branding);
       }
 
       // 5. Mise à jour des paramètres si fournis
       if (request.settings) {
-        business.updateSettings(request.settings);
+        const settings = this.convertSettingsToDomain(request.settings);
+        business.updateSettings(settings);
       }
 
       // Note: Pour les autres champs, nous aurions besoin de méthodes 
       // de mise à jour dans l'entité Business (immutable par design)
 
       // 6. Persistance
-      const savedBusiness = await this.businessRepository.save(business);
+      await this.businessRepository.save(business);
 
       // 7. Réponse typée
       const response: UpdateBusinessResponse = {
-        id: savedBusiness.id.getValue(),
-        name: savedBusiness.name.getValue(),
-        description: savedBusiness.description,
-        status: savedBusiness.status,
-        updatedAt: savedBusiness.updatedAt,
+        id: business.id.getValue(),
+        name: business.name.getValue(),
+        description: business.description,
+        status: business.status,
+        updatedAt: business.updatedAt,
       };
 
       this.logger.info(
         this.i18n.t('operations.business.update_success'),
         {
           ...context,
-          businessId: savedBusiness.id.getValue(),
+          businessId: business.id.getValue(),
         } as Record<string, unknown>,
       );
 
@@ -146,7 +150,7 @@ export class UpdateBusinessUseCase {
       this.logger.error(
         this.i18n.t('operations.business.update_failed'),
         error as Error,
-        context as Record<string, unknown>,
+        { ...context } as Record<string, unknown>,
       );
       throw error;
     }
@@ -165,7 +169,7 @@ export class UpdateBusinessUseCase {
       );
     }
 
-    const business = await this.businessRepository.findById(businessId);
+    const business = await this.businessRepository.findById(BusinessId.create(businessId));
     if (!business) {
       throw new BusinessNotFoundError(`Business with id ${businessId} not found`);
     }
@@ -206,19 +210,25 @@ export class UpdateBusinessUseCase {
     if (request.name !== undefined) {
       if (!request.name || request.name.trim().length < 3) {
         throw new BusinessValidationError(
+          'name',
+          request.name,
           'Business name must be at least 3 characters long',
+          request.businessId,
         );
       }
 
       if (request.name.trim().length > 100) {
         throw new BusinessValidationError(
+          'name',
+          request.name,
           'Business name cannot exceed 100 characters',
+          request.businessId,
         );
       }
 
       // Vérification d'unicité du nom (si différent de l'actuel)
       const existingBusiness = await this.businessRepository.findByName(
-        request.name.trim(),
+        BusinessName.create(request.name.trim()),
       );
 
       if (existingBusiness && existingBusiness.id.getValue() !== request.businessId) {
@@ -227,7 +237,10 @@ export class UpdateBusinessUseCase {
           { ...context, businessName: request.name },
         );
         throw new BusinessValidationError(
+          'name',
+          request.name,
           `Business with name "${request.name}" already exists`,
+          request.businessId,
         );
       }
     }
@@ -238,7 +251,10 @@ export class UpdateBusinessUseCase {
         Email.create(request.contactInfo.primaryEmail);
       } catch (error) {
         throw new BusinessValidationError(
+          'primaryEmail',
+          request.contactInfo.primaryEmail,
           'Invalid primary email address',
+          request.businessId,
         );
       }
     }
@@ -249,7 +265,10 @@ export class UpdateBusinessUseCase {
         Phone.create(request.contactInfo.primaryPhone);
       } catch (error) {
         throw new BusinessValidationError(
+          'primaryPhone',
+          request.contactInfo.primaryPhone,
           'Invalid primary phone number',
+          request.businessId,
         );
       }
     }
@@ -259,15 +278,30 @@ export class UpdateBusinessUseCase {
       const { primary, secondary, accent } = request.branding.brandColors;
       
       if (primary && !this.isValidHexColor(primary)) {
-        throw new BusinessValidationError('Primary color must be a valid hex color');
+        throw new BusinessValidationError(
+          'primaryColor',
+          primary,
+          'Primary color must be a valid hex color',
+          request.businessId,
+        );
       }
       
       if (secondary && !this.isValidHexColor(secondary)) {
-        throw new BusinessValidationError('Secondary color must be a valid hex color');
+        throw new BusinessValidationError(
+          'secondaryColor',
+          secondary,
+          'Secondary color must be a valid hex color',
+          request.businessId,
+        );
       }
       
       if (accent && !this.isValidHexColor(accent)) {
-        throw new BusinessValidationError('Accent color must be a valid hex color');
+        throw new BusinessValidationError(
+          'accentColor',
+          accent,
+          'Accent color must be a valid hex color',
+          request.businessId,
+        );
       }
     }
 
@@ -276,17 +310,44 @@ export class UpdateBusinessUseCase {
       const { defaultDuration, bufferTime, advanceBookingLimit } = request.settings.appointmentSettings;
       
       if (defaultDuration !== undefined && defaultDuration < 5) {
-        throw new BusinessValidationError('Default duration must be at least 5 minutes');
+        throw new BusinessValidationError(
+          'defaultDuration',
+          defaultDuration,
+          'Default duration must be at least 5 minutes',
+          request.businessId,
+        );
       }
       
       if (bufferTime !== undefined && bufferTime < 0) {
-        throw new BusinessValidationError('Buffer time cannot be negative');
+        throw new BusinessValidationError(
+          'bufferTime',
+          bufferTime,
+          'Buffer time cannot be negative',
+          request.businessId,
+        );
       }
       
       if (advanceBookingLimit !== undefined && advanceBookingLimit < 1) {
-        throw new BusinessValidationError('Advance booking limit must be at least 1 day');
+        throw new BusinessValidationError(
+          'advanceBookingLimit',
+          advanceBookingLimit,
+          'Advance booking limit must be at least 1 day',
+          request.businessId,
+        );
       }
     }
+  }
+
+  private convertBrandingToDomain(branding: any): any {
+    // Pour l'instant, retourner tel quel
+    // TODO: Implémenter la conversion vers les types domaine
+    return branding;
+  }
+
+  private convertSettingsToDomain(settings: any): any {
+    // Pour l'instant, retourner tel quel
+    // TODO: Implémenter la conversion vers les types domaine
+    return settings;
   }
 
   private isValidHexColor(color: string): boolean {

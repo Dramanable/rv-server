@@ -7,7 +7,8 @@
 
 import { User } from '../../../../domain/entities/user.entity';
 import { Email } from '../../../../domain/value-objects/email.vo';
-import { UserOrmEntity } from '../../entities/typeorm/user.entity';
+// Direct import without file extension for Node.js 24 + TypeScript
+import { UserOrmEntity } from '../../entities/typeorm/user-orm.entity';
 
 export class TypeOrmUserMapper {
   /**

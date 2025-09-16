@@ -178,8 +178,9 @@ export class CreateBusinessUseCase {
     const requestingUser = await this.userRepository.findById(requestingUserId);
     if (!requestingUser) {
       throw new InsufficientPermissionsError(
-        'Requesting user not found',
-        UserRole.REGULAR_CLIENT,
+        requestingUserId,
+        'CREATE_BUSINESS',
+        'business',
       );
     }
 
@@ -196,8 +197,9 @@ export class CreateBusinessUseCase {
         requiredPermissions: 'CREATE_BUSINESS',
       });
       throw new InsufficientPermissionsError(
-        Permission.CONFIGURE_BUSINESS_SETTINGS,
-        requestingUser.role,
+        requestingUserId,
+        'CREATE_BUSINESS',
+        'business',
       );
     }
   }
@@ -235,7 +237,8 @@ export class CreateBusinessUseCase {
         { ...context, businessName: request.name },
       );
       throw new BusinessAlreadyExistsError(
-        `Business with name "${request.name}" already exists`,
+        request.name,
+        'name',
       );
     }
 
@@ -266,7 +269,7 @@ export class CreateBusinessUseCase {
         !request.address.postalCode || !request.address.country) {
       throw new BusinessValidationError(
         'address',
-        request.address,
+        JSON.stringify(request.address),
         'Complete address is required (street, city, postal code, country)',
       );
     }

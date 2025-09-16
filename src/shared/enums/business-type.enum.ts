@@ -1,0 +1,8 @@
+export enum BusinessType {
+  MEDICAL = 'MEDICAL',
+  DENTAL = 'DENTAL',
+  BEAUTY = 'BEAUTY',
+  FITNESS = 'FITNESS',
+  CONSULTING = 'CONSULTING',
+  OTHER = 'OTHER'
+}

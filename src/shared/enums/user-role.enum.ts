@@ -764,7 +764,8 @@ export class RoleUtils {
     const businessPermissions = this.getBusinessTypePermissions(businessType);
     
     // Fusion sans doublons
-    return [...new Set([...basePermissions, ...businessPermissions])];
+    const uniquePermissions = new Set([...basePermissions, ...businessPermissions]);
+    return Array.from(uniquePermissions);
   }
   
   /**

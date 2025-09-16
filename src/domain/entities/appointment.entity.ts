@@ -329,7 +329,7 @@ export class Appointment {
    * Vérifie si le rendez-vous est dans le futur
    */
   isFuture(): boolean {
-    return this.timeSlot.startTime > new Date();
+    return this.timeSlot.getStartTime() > new Date();
   }
 
   /**
@@ -337,13 +337,13 @@ export class Appointment {
    */
   isInProgress(): boolean {
     const now = new Date();
-    return now >= this.timeSlot.startTime && now <= this.timeSlot.endTime;
+    return now >= this.timeSlot.getStartTime() && now <= this.timeSlot.getEndTime();
   }
 
   /**
    * Calcule la durée du rendez-vous en minutes
    */
   getDurationMinutes(): number {
-    return Math.round((this.timeSlot.endTime.getTime() - this.timeSlot.startTime.getTime()) / (1000 * 60));
+    return Math.round((this.timeSlot.getEndTime().getTime() - this.timeSlot.getStartTime().getTime()) / (1000 * 60));
   }
 }

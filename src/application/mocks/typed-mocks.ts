@@ -70,12 +70,20 @@ export function createMockUserRepository(): jest.Mocked<UserRepository> {
     findByEmail: jest.fn(),
     findByUsername: jest.fn(),
     delete: jest.fn(),
-    existsByEmail: jest.fn(),
+    emailExists: jest.fn(),
     existsByUsername: jest.fn(),
     updatePassword: jest.fn(),
     updateActiveStatus: jest.fn(),
-    findMany: jest.fn(),
+    findAll: jest.fn(),
+    search: jest.fn(),
+    findByRole: jest.fn(),
     count: jest.fn(),
+    countSuperAdmins: jest.fn(),
+    countWithFilters: jest.fn(),
+    update: jest.fn(),
+    updateBatch: jest.fn(),
+    deleteBatch: jest.fn(),
+    export: jest.fn(),
   } as jest.Mocked<UserRepository>;
 }
 

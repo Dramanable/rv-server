@@ -21,13 +21,7 @@ import { TypeOrmUserRepository } from './sql/typeorm-user.repository';
 import { TypeOrmBusinessRepository } from './sql/typeorm-business.repository';
 import { TypeOrmCalendarRepository } from './sql/typeorm-calendar.repository';
 
-// NoSQL Repositories
-import { MongoUserRepository } from './nosql/mongo-user.repository';
-import { MongoBusinessRepository } from './nosql/mongo-business.repository';
-import { MongoCalendarRepository } from './nosql/mongo-calendar.repository';
-
-export type DatabaseType = 'sql' | 'nosql';
-export type RepositoryType = 'user' | 'business' | 'calendar';
+import type { DatabaseType, RepositoryType } from './types';
 
 interface RepositoryFactoryConfig {
   readonly defaultDatabaseType: DatabaseType;
@@ -67,10 +61,8 @@ export class RepositoryFactory {
     switch (dbType) {
       case 'sql':
         return this.createSqlUserRepository();
-      case 'nosql':
-        return this.createNoSqlUserRepository();
       default:
-        throw new Error(`Unsupported database type for user repository: ${dbType}. Only 'sql' and 'nosql' are supported.`);
+        throw new Error(`Unsupported database type for user repository: ${dbType}. Only 'sql' is supported.`);
     }
   }
 
@@ -83,10 +75,8 @@ export class RepositoryFactory {
     switch (dbType) {
       case 'sql':
         return this.createSqlBusinessRepository();
-      case 'nosql':
-        return this.createNoSqlBusinessRepository();
       default:
-        throw new Error(`Unsupported database type for business repository: ${dbType}. Only 'sql' and 'nosql' are supported.`);
+        throw new Error(`Unsupported database type for business repository: ${dbType}. Only 'sql' is supported.`);
     }
   }
 
@@ -99,28 +89,27 @@ export class RepositoryFactory {
     switch (dbType) {
       case 'sql':
         return this.createSqlCalendarRepository();
-      case 'nosql':
-        return this.createNoSqlCalendarRepository();
       default:
-        throw new Error(`Unsupported database type for calendar repository: ${dbType}. Only 'sql' and 'nosql' are supported.`);
+        throw new Error(`Unsupported database type for calendar repository: ${dbType}. Only 'sql' is supported.`);
     }
   }
 
   /**
    * 📋 Créer un repository Appointment selon la configuration
+   * TODO: Implémenter quand AppointmentRepository sera disponible
    */
-  createAppointmentRepository(): AppointmentRepository {
-    const dbType = this.getDatabaseTypeFor('appointment');
-    
-    switch (dbType) {
-      case 'sql':
-        return this.createSqlAppointmentRepository();
-      case 'nosql':
-        return this.createNoSqlAppointmentRepository();
-      default:
-        throw new Error(`Unsupported database type for appointment repository: ${dbType}. Only 'sql' and 'nosql' are supported.`);
-    }
-  }
+  // createAppointmentRepository(): AppointmentRepository {
+  //   const dbType = this.getDatabaseTypeFor('appointment');
+  //   
+  //   switch (dbType) {
+  //     case 'sql':
+  //       return this.createSqlAppointmentRepository();
+  //     case 'nosql':
+  //       return this.createNoSqlAppointmentRepository();
+  //     default:
+  //       throw new Error(`Unsupported database type for appointment repository: ${dbType}. Only 'sql' and 'nosql' are supported.`);
+  //   }
+  // }
 
   /**
    * 🔄 Basculer dynamiquement vers un type de base de données
@@ -161,9 +150,9 @@ export class RepositoryFactory {
         user: this.getDatabaseTypeFor('user'),
         business: this.getDatabaseTypeFor('business'),
         calendar: this.getDatabaseTypeFor('calendar'),
-        appointment: this.getDatabaseTypeFor('appointment'),
+        // Note: service and staff repositories removed - using only core entities
       },
-      availableTypes: ['sql', 'nosql'],
+      availableTypes: ['sql'],
     };
   }
 
@@ -183,7 +172,7 @@ export class RepositoryFactory {
         user: this.configService.get<DatabaseType>('USER_REPOSITORY_TYPE', defaultType),
         business: this.configService.get<DatabaseType>('BUSINESS_REPOSITORY_TYPE', defaultType),
         calendar: this.configService.get<DatabaseType>('CALENDAR_REPOSITORY_TYPE', defaultType),
-        appointment: this.configService.get<DatabaseType>('APPOINTMENT_REPOSITORY_TYPE', defaultType),
+        // Note: service and staff repository types removed - core entities only
       },
       sqlConfig: {
         host: this.configService.get<string>('DATABASE_HOST', 'localhost'),
@@ -241,14 +230,15 @@ export class RepositoryFactory {
     throw new Error('SQL CalendarRepository creation not implemented - requires TypeORM dependencies injection');
   }
 
-  private createSqlAppointmentRepository(): AppointmentRepository {
-    this.logger.debug(
-      this.i18n.t('infrastructure.repository.creating_sql_repository'),
-      { type: 'appointment' },
-    );
-    // TODO: Implémenter TypeOrmAppointmentRepository
-    throw new Error('SQL AppointmentRepository not implemented yet');
-  }
+  // TODO: Implémenter quand AppointmentRepository sera disponible
+  // private createSqlAppointmentRepository(): AppointmentRepository {
+  //   this.logger.debug(
+  //     this.i18n.t('infrastructure.repository.creating_sql_repository'),
+  //     { type: 'appointment' },
+  //   );
+  //   // TODO: Implémenter TypeOrmAppointmentRepository
+  //   throw new Error('SQL AppointmentRepository not implemented yet');
+  // }
 
   // 🍃 NoSQL Repository Creators
   private createNoSqlUserRepository(): UserRepository {
@@ -278,14 +268,15 @@ export class RepositoryFactory {
     throw new Error('NoSQL CalendarRepository creation not implemented - requires Mongoose dependencies injection');
   }
 
-  private createNoSqlAppointmentRepository(): AppointmentRepository {
-    this.logger.debug(
-      this.i18n.t('infrastructure.repository.creating_nosql_repository'),
-      { type: 'appointment' },
-    );
-    // TODO: Implémenter MongoAppointmentRepository
-    throw new Error('NoSQL AppointmentRepository not implemented yet');
-  }
+  // TODO: Implémenter quand AppointmentRepository sera disponible
+  // private createNoSqlAppointmentRepository(): AppointmentRepository {
+  //   this.logger.debug(
+  //     this.i18n.t('infrastructure.repository.creating_nosql_repository'),
+  //     { type: 'appointment' },
+  //   );
+  //   // TODO: Implémenter MongoAppointmentRepository
+  //   throw new Error('NoSQL AppointmentRepository not implemented yet');
+  // }
 
   /**
    * 🔧 Test de connectivité pour chaque type de base de données
@@ -307,7 +298,7 @@ export class RepositoryFactory {
     } catch (error) {
       this.logger.warn(
         this.i18n.t('infrastructure.repository.sql_connection_failed'),
-        error as Error,
+        { error: error instanceof Error ? error.message : String(error) }
       );
     }
 
@@ -319,7 +310,7 @@ export class RepositoryFactory {
     } catch (error) {
       this.logger.warn(
         this.i18n.t('infrastructure.repository.nosql_connection_failed'),
-        error as Error,
+        { error: error instanceof Error ? error.message : String(error) }
       );
     }
 
@@ -398,12 +389,7 @@ PRODUCTION_DATABASE_TYPE=nosql
       errors.push('SQL configuration required but not provided');
     }
 
-    // Valider la config NoSQL si utilisée
-    const usesNoSql = config.defaultDatabaseType === 'nosql' || 
-                      Object.values(config.overrides || {}).includes('nosql');
-    if (usesNoSql && !config.nosqlConfig) {
-      errors.push('NoSQL configuration required but not provided');
-    }
+    // Note: NoSQL validation removed - SQL only implementation
 
     return errors;
   }

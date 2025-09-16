@@ -4,6 +4,145 @@
 
 Vous travaillez sur une **application enterprise NestJS** implémentant la **Clean Architecture de Robert C. Martin (Uncle Bob)** avec une approche **TDD rigoureuse**, les **principes SOLID**, et les **meilleures pratiques TypeScript** strictes. L'application est **production-ready** avec sécurité, i18n, et patterns enterprise.
 
+## 🏗️ **MÉTHODOLOGIE DE DÉVELOPPEMENT EN COUCHES ORDONNÉES**
+
+### 🎯 **ORDRE OBLIGATOIRE DE DÉVELOPPEMENT**
+
+**Pour éviter les erreurs de dépendances et garantir une architecture cohérente, TOUJOURS développer dans cet ordre strict :**
+
+#### **1️⃣ DOMAIN (Couche Métier) - EN PREMIER**
+```
+src/domain/
+├── entities/          # Entités métier pures
+├── value-objects/     # Objets valeur immutables
+├── services/          # Services métier (règles complexes)
+├── repositories/      # Interfaces repositories (ports)
+└── exceptions/        # Exceptions métier spécifiques
+```
+**✅ Caractéristiques** :
+- **ZÉRO dépendance externe** (pas de NestJS, pas d'ORM, pas de framework)
+- **Pure TypeScript** avec types stricts
+- **Logique métier uniquement**
+- **Testable en isolation**
+
+#### **2️⃣ APPLICATION (Cas d'Usage) - EN SECOND**
+```
+src/application/
+├── use-cases/         # Cases d'utilisation (orchestration)
+├── ports/             # Interfaces pour l'infrastructure
+├── services/          # Services applicatifs
+└── exceptions/        # Exceptions applicatives
+```
+**✅ Caractéristiques** :
+- **Dépend UNIQUEMENT** de la couche Domain
+- **ZÉRO dépendance** vers Infrastructure ou Presentation
+- **Orchestration** des entités et services métier
+- **Définit les ports** (interfaces) pour l'infrastructure
+
+#### **3️⃣ INFRASTRUCTURE (Technique) - EN TROISIÈME**
+```
+src/infrastructure/
+├── database/          # Repositories concrets, ORM, migrations
+├── services/          # Services techniques (JWT, Email, etc.)
+├── config/            # Configuration
+└── security/          # Sécurité technique
+```
+**✅ Caractéristiques** :
+- **Implémente les ports** définis dans Application
+- **Peut utiliser NestJS** et autres frameworks
+- **Aucune logique métier**
+- **Adaptateurs** vers le monde externe
+
+#### **4️⃣ PRESENTATION (Interface) - EN DERNIER**
+```
+src/presentation/
+├── controllers/       # Contrôleurs HTTP
+├── dtos/              # Objets de transfert
+├── decorators/        # Décorateurs NestJS
+└── mappers/           # Conversion DTO ↔ Domain
+```
+**✅ Caractéristiques** :
+- **Orchestration** des Use Cases
+- **Validation** des entrées
+- **Sérialisation** des sorties
+- **Interface utilisateur** (REST, GraphQL, etc.)
+
+### 🚀 **AVANTAGES DE CETTE APPROCHE**
+
+#### **✅ Réduction des Erreurs**
+- **Pas de dépendances circulaires** : chaque couche ne dépend que des précédentes
+- **Compilation incrémentale** : chaque couche compile avant de passer à la suivante
+- **Détection précoce** des violations architecturales
+
+#### **✅ Développement Efficace**
+- **Focus progressif** : une préoccupation à la fois
+- **Tests ciblés** : chaque couche testable indépendamment
+- **Refactoring sûr** : modifications isolées par couche
+
+#### **✅ Qualité Architecturale**
+- **Respect automatique** des principes Clean Architecture
+- **Séparation claire** des responsabilités
+- **Évolutivité** et maintenabilité garanties
+
+### 📋 **WORKFLOW PRATIQUE**
+
+```typescript
+// 1️⃣ DOMAIN - Créer d'abord l'entité
+export class User {
+  private constructor(
+    private readonly _id: string,
+    private readonly _email: Email,
+    private readonly _name: string,
+  ) {}
+
+  static create(email: Email, name: string): User {
+    // Validation métier
+    return new User(generateId(), email, name);
+  }
+}
+
+// 2️⃣ APPLICATION - Puis le use case
+export class CreateUserUseCase {
+  constructor(
+    private readonly userRepository: IUserRepository, // Interface définie ici
+  ) {}
+
+  async execute(request: CreateUserRequest): Promise<CreateUserResponse> {
+    // Orchestration métier
+  }
+}
+
+// 3️⃣ INFRASTRUCTURE - Ensuite l'implémentation
+export class TypeOrmUserRepository implements IUserRepository {
+  // Implémentation technique
+}
+
+// 4️⃣ PRESENTATION - Enfin le contrôleur
+@Controller('users')
+export class UserController {
+  constructor(private readonly createUserUseCase: CreateUserUseCase) {}
+  
+  @Post()
+  async create(@Body() dto: CreateUserDto) {
+    // Interface utilisateur
+  }
+}
+```
+
+### ⚠️ **INTERDICTIONS ABSOLUES**
+
+#### **❌ Ne JAMAIS faire** :
+- Commencer par les contrôleurs (Presentation)
+- Écrire de la logique métier dans Infrastructure
+- Utiliser NestJS dans Domain/Application
+- Créer des dépendances vers les couches supérieures
+
+#### **✅ TOUJOURS faire** :
+- Respecter l'ordre Domain → Application → Infrastructure → Presentation
+- Tester chaque couche avant de passer à la suivante
+- Valider la compilation à chaque étape
+- Documenter les interfaces (ports) dans Application
+
 ## 🏛️ **Clean Architecture - Principes Fondamentaux d'Uncle Bob**
 
 ### 📚 **Référence Officielle**
@@ -38,6 +177,62 @@ La Clean Architecture produit des systèmes qui sont :
 
 **❌ INTERDIT** : Rien dans un cercle intérieur ne peut connaître quoi que ce soit d'un cercle extérieur
 **❌ INTERDIT** : Le nom de quelque chose déclaré dans un cercle extérieur ne doit pas être mentionné par le code dans un cercle intérieur
+
+## 🚨 **RÈGLE CRITIQUE - AUCUNE DÉPENDANCE NESTJS DANS DOMAIN/APPLICATION**
+
+### ❌ **VIOLATIONS ABSOLUMENT INTERDITES**
+
+Les couches **Domain** et **Application** NE DOIVENT JAMAIS contenir :
+- `import { Injectable, Inject } from '@nestjs/common'`
+- `@Injectable()` decorator
+- `@Inject()` decorator  
+- Aucun import de `@nestjs/*` packages
+- Aucune référence aux tokens d'injection NestJS
+
+### ✅ **APPROCHE CORRECTE**
+
+```typescript
+// ❌ INTERDIT - Violation de Clean Architecture
+import { Injectable, Inject } from '@nestjs/common';
+
+@Injectable()
+export class CreateUserUseCase {
+  constructor(
+    @Inject('USER_REPOSITORY') private userRepo: IUserRepository
+  ) {}
+}
+
+// ✅ CORRECT - Clean Architecture respectée
+export class CreateUserUseCase {
+  constructor(
+    private readonly userRepository: IUserRepository,
+    private readonly logger: Logger,
+    private readonly i18n: I18nService,
+  ) {}
+}
+```
+
+### 🏗️ **Séparation des Responsabilités**
+
+- **Domain/Application** : Logic métier pure, sans framework
+- **Infrastructure** : Implémentations techniques avec NestJS
+- **Presentation** : Controllers NestJS qui orchestrent les Use Cases
+
+### 🔗 **Injection de Dépendances**
+
+L'injection NestJS se fait UNIQUEMENT dans la couche **Presentation/Infrastructure** :
+```typescript
+// Dans presentation/controllers/*.controller.ts
+@Controller()
+export class UserController {
+  constructor(
+    @Inject(TOKENS.CREATE_USER_USE_CASE) 
+    private readonly createUserUseCase: CreateUserUseCase
+  ) {}
+}
+```
+
+**Cette règle est NON-NÉGOCIABLE pour maintenir les principes de Clean Architecture !**
 
 ### 🏗️ **Les 4 Couches Principales**
 
@@ -681,7 +876,7 @@ BCRYPT_ROUNDS=12                     # Plus élevé en prod
 ### 🏢 **Pattern Entity (Domain)**
 
 ```typescript
-// ✅ GOOD - Entity avec SOLID et type safety
+// ✅ OBLIGATOIRE - Entity immutable avec factory
 export class User {
   private constructor(
     private readonly _id: string,
@@ -689,11 +884,11 @@ export class User {
     private readonly _name: string,
     private readonly _role: UserRole,
     private readonly _createdAt: Date,
-    private readonly _updatedAt: Date,
   ) {}
 
-  // Factory method - SRP pour la création
+  // Factory method - SRP pour création
   static create(email: Email, name: string, role: UserRole): User {
+    // Validation métier
     if (!name?.trim()) {
       throw new InvalidUserNameError('Name cannot be empty');
     }
@@ -708,7 +903,7 @@ export class User {
     );
   }
 
-  // Business logic pure - SRP pour les règles métier
+  // Business methods - SRP pour règles métier
   hasPermission(permission: Permission): boolean {
     return this.role.hasPermission(permission);
   }
@@ -720,7 +915,7 @@ export class User {
     return this.id === targetUser.id;
   }
 
-  // Getters read-only - LSP respecté
+  // Read-only getters - LSP compliance
   get id(): string {
     return this._id;
   }
@@ -742,7 +937,7 @@ export class User {
 ### 💼 **Pattern Use Case (Application)**
 
 ```typescript
-// ✅ GOOD - Use Case avec SOLID complet
+// ✅ OBLIGATOIRE - Use Case avec SOLID complet
 export class CreateUserUseCase {
   constructor(
     private readonly userRepository: IUserRepository, // DIP - Interface
@@ -841,7 +1036,7 @@ export class CreateUserUseCase {
 ### 🔧 **Pattern Repository (Infrastructure)**
 
 ```typescript
-// ✅ GOOD - Repository avec ISP et DIP
+// ✅ OBLIGATOIRE - Repository avec ISP et DIP
 export class TypeOrmUserRepository implements IUserRepository {
   constructor(
     private readonly ormRepository: Repository<UserEntity>, // DIP
@@ -897,7 +1092,7 @@ export class TypeOrmUserRepository implements IUserRepository {
 ### 🧪 **Pattern Test TDD avec Types**
 
 ```typescript
-// ✅ GOOD - Tests TDD avec type safety complet
+// ✅ OBLIGATOIRE - Tests typés avec mocks corrects
 describe('CreateUserUseCase', () => {
   let useCase: CreateUserUseCase;
   let mockRepository: jest.Mocked<IUserRepository>;
@@ -1020,6 +1215,7 @@ describe('CreateUserUseCase', () => {
 
 #### **🏗️ Architecture & SOLID**
 
+- ✅ **ORDRE OBLIGATOIRE**: TOUJOURS Domain → Application → Infrastructure → Presentation
 - ✅ **SRP**: Chaque classe/méthode a UNE seule responsabilité
 - ✅ **OCP**: Utiliser interfaces pour extensibilité (jamais de modifications)
 - ✅ **LSP**: Sous-types substituables sans surprise comportementale
@@ -1036,7 +1232,8 @@ describe('CreateUserUseCase', () => {
 
 #### **🎯 Clean Architecture**
 
-- ✅ **Respecter les couches**: Domain → Application → Infrastructure → Presentation
+- ✅ **Respecter l'ORDRE STRICT**: Domain → Application → Infrastructure → Presentation
+- ✅ **Développement incrémental**: Chaque couche compile avant la suivante
 - ✅ **Dependency Inversion**: Toujours via interfaces
 - ✅ **Use Cases**: Pattern avec AppContext + validation + logging
 - ✅ **TDD First**: Tests AVANT implémentation (maintenir 202 tests ✅)
@@ -1067,12 +1264,24 @@ describe('CreateUserUseCase', () => {
 
 #### **🚫 Architecture**
 
+- ❌ **Développement dans le mauvais ordre** (ex: Presentation avant Domain)
 - ❌ **Business logic** dans Infrastructure layer
 - ❌ **Direct database access** depuis Use Cases
 - ❌ **Dépendances circulaires** entre couches
+- ❌ **Dépendances vers couches supérieures** (ex: Domain → Application)
 - ❌ **Hardcoded strings** (toujours i18n)
 - ❌ **Operations sans permissions** check
 - ❌ **Tests sans mocks typés**
+
+#### **🚫 CLEAN ARCHITECTURE VIOLATIONS (CRITIQUE)**
+
+- ❌ **JAMAIS `@Injectable()` ou `@Inject()` dans Domain/Application**
+- ❌ **JAMAIS `import ... from '@nestjs/*'` dans Domain/Application**
+- ❌ **JAMAIS de tokens d'injection dans Domain/Application**
+- ❌ **JAMAIS de références NestJS dans les Use Cases**
+- ❌ **JAMAIS de frameworks dans la logique métier**
+
+**🚨 RÈGLE D'OR** : Domain et Application doivent être 100% framework-agnostic !
 
 ### 🎯 **Patterns Obligatoires**
 
@@ -1082,10 +1291,10 @@ describe('CreateUserUseCase', () => {
 // ✅ OBLIGATOIRE - Structure Use Case complète
 export class CreateUserUseCase {
   constructor(
-    private readonly userRepository: IUserRepository, // DIP - Interface only
-    private readonly logger: ILogger, // DIP - Interface only
-    private readonly i18n: II18nService, // DIP - Interface only
-    private readonly eventBus: IEventBus, // DIP - Interface only
+    private readonly userRepository: IUserRepository, // DIP - Interface
+    private readonly logger: ILogger, // DIP - Interface
+    private readonly i18n: II18nService, // DIP - Interface
+    private readonly eventBus: IEventBus, // DIP - Interface
   ) {}
 
   async execute(request: CreateUserRequest): Promise<CreateUserResponse> {
@@ -1178,17 +1387,31 @@ export class User {
 
   // Factory method - SRP pour création
   static create(email: Email, name: string, role: UserRole): User {
-    // Validation business rules
+    // Validation métier
     if (!name?.trim()) {
       throw new InvalidUserNameError('Name cannot be empty');
     }
 
-    return new User(generateId(), email, name.trim(), role, new Date());
+    return new User(
+      generateId(),
+      email,
+      name.trim(),
+      role,
+      new Date(),
+      new Date(),
+    );
   }
 
   // Business methods - SRP pour règles métier
   hasPermission(permission: Permission): boolean {
     return this.role.hasPermission(permission);
+  }
+
+  canActOn(targetUser: User): boolean {
+    if (this.role === UserRole.SUPER_ADMIN) return true;
+    if (this.role === UserRole.MANAGER)
+      return targetUser.role === UserRole.USER;
+    return this.id === targetUser.id;
   }
 
   // Read-only getters - LSP compliance
@@ -1255,127 +1478,6 @@ describe('CreateUserUseCase', () => {
     // Assert - Type safety guaranteed
     expect(result).toEqual(expectedResponse);
     expect(mockRepository.save).toHaveBeenCalledWith(expect.any(User));
-  });
-});
-```
-
-### 🎯 **Patterns de Code Préférés**
-
-#### **Use Case Structure**
-
-```typescript
-export class [Operation]UseCase {
-  constructor(
-    private readonly repository: I[Entity]Repository,
-    private readonly logger: Logger,
-    private readonly i18n: I18nService,
-  ) {}
-
-  async execute(request: [Operation]Request): Promise<[Operation]Response> {
-    const context = AppContextFactory.create()
-      .operation('[Operation]')
-      .requestingUser(request.requestingUserId)
-      .build();
-
-    this.logger.info(
-      this.i18n.t('operations.[entity].[operation]_attempt'),
-      context
-    );
-
-    try {
-      // 1. Validation des permissions
-      // 2. Validation des règles métier
-      // 3. Logique principale
-      // 4. Persistence
-      // 5. Logging de succès
-      // 6. Audit trail
-    } catch (error) {
-      this.logger.error(
-        this.i18n.t('operations.failed'),
-        error,
-        context
-      );
-      throw error;
-    }
-  }
-}
-```
-
-#### **Entity avec Business Rules**
-
-```typescript
-export class [Entity] {
-  private constructor(
-    public readonly id: string,
-    public readonly email: Email,
-    // ...autres propriétés
-  ) {}
-
-  static create(
-    email: Email,
-    // ...autres paramètres
-  ): [Entity] {
-    // Validation des règles métier
-    if (!email.isValid()) {
-      throw new InvalidEmailError();
-    }
-
-    return new [Entity](
-      generateId(),
-      email,
-      // ...
-    );
-  }
-
-  // Méthodes métier
-  public canPerform(action: string): boolean {
-    // Logique de permissions
-  }
-}
-```
-
-#### **Tests Structure**
-
-```typescript
-describe('[FeatureName]', () => {
-  let useCase: [Feature]UseCase;
-  let mockRepository: jest.Mocked<I[Entity]Repository>;
-
-  beforeEach(() => {
-    mockRepository = {
-      save: jest.fn(),
-      findById: jest.fn(),
-      // ... autres méthodes
-    } as jest.Mocked<I[Entity]Repository>;
-
-    useCase = new [Feature]UseCase(mockRepository, mockLogger, mockI18n);
-  });
-
-  describe('Successful Operations', () => {
-    it('should [action] when [valid condition]', async () => {
-      // Arrange
-      const request = { /* valid data */ };
-      mockRepository.findById.mockResolvedValue(validResult);
-
-      // Act
-      const result = await useCase.execute(request);
-
-      // Assert
-      expect(result).toEqual(expectedResult);
-      expect(mockRepository.findById).toHaveBeenCalledWith(expectedParams);
-    });
-  });
-
-  describe('Business Rules Validation', () => {
-    it('should reject when [business rule violated]', async () => {
-      // Test des règles métier
-    });
-  });
-
-  describe('Authorization Rules', () => {
-    it('should reject when [permission denied]', async () => {
-      // Test des autorisations
-    });
   });
 });
 ```
@@ -1521,27 +1623,40 @@ class PaymentService {
 
 #### **📋 AVANT de générer du code**
 
-- [ ] **Architecture**: Identifier la couche correcte (Domain/Application/Infrastructure/Presentation)
+- [ ] **Ordre des couches**: TOUJOURS commencer par Domain, puis Application, puis Infrastructure, enfin Presentation
+- [ ] **Architecture**: Identifier la couche correcte et ses dépendances autorisées
 - [ ] **SOLID**: Vérifier respect des 5 principes
 - [ ] **Types**: Définir interfaces et types stricts
-- [ ] **Dependencies**: Identifier abstractions nécessaires
+- [ ] **Dependencies**: Identifier abstractions nécessaires (uniquement vers couches inférieures)
 - [ ] **Tests**: Planifier structure TDD
 
 #### **📋 PENDANT la génération**
 
+- [ ] **Respect de l'ordre**: Ne jamais créer de dépendances vers les couches supérieures
 - [ ] **SRP**: Une responsabilité par classe/méthode
 - [ ] **Interfaces**: Utiliser abstractions pour toutes dépendances
 - [ ] **Types explicites**: Return types sur méthodes publiques
 - [ ] **Error handling**: Types d'erreurs spécifiques
 - [ ] **Logging**: AppContext + i18n messages
+- [ ] **Compilation incrémentale**: Vérifier que chaque couche compile avant de passer à la suivante
 
 #### **📋 APRÈS génération**
 
 - [ ] **Tests**: Créer tests TDD avec mocks typés
 - [ ] **ESLint**: Vérifier 0 erreurs
 - [ ] **Type check**: Compilation TypeScript sans erreurs
-- [ ] **Architecture**: Respect des couches
+- [ ] **Architecture**: Respect strict des couches et de l'ordre de développement
+- [ ] **Dependencies**: Aucune dépendance circulaire ou vers couches supérieures
 - [ ] **Documentation**: JSDoc sur APIs publiques
+
+#### **🔄 WORKFLOW DE DÉVELOPPEMENT OBLIGATOIRE**
+
+1. **🏢 DOMAIN FIRST**: Créer entités, value objects, interfaces repositories
+2. **💼 APPLICATION SECOND**: Implémenter use cases utilisant les interfaces domain
+3. **🔧 INFRASTRUCTURE THIRD**: Créer implémentations concrètes des interfaces
+4. **🎭 PRESENTATION LAST**: Exposer les use cases via contrôleurs HTTP
+
+**⚠️ RÈGLE D'OR**: Jamais de retour en arrière dans l'ordre des couches !
 
 ## 🔧 **Pipeline de Qualité de Code**
 

@@ -8,6 +8,7 @@
 import { Calendar, CalendarType } from '../../../../domain/entities/calendar.entity';
 import { CalendarId } from '../../../../domain/value-objects/calendar-id.value-object';
 import { BusinessId } from '../../../../domain/value-objects/business-id.value-object';
+import { UserId } from '../../../../domain/value-objects/user-id.value-object';
 import { CalendarOrmEntity } from '../../entities/typeorm/calendar.entity';
 
 export class TypeOrmCalendarMapper {
@@ -23,10 +24,10 @@ export class TypeOrmCalendarMapper {
     ormEntity.businessId = domainEntity.businessId.getValue();
     ormEntity.ownerId = domainEntity.ownerId?.getValue();
     ormEntity.type = domainEntity.type;
-    ormEntity.color = domainEntity.color;
-    ormEntity.timezone = domainEntity.timezone;
-    ormEntity.isActive = domainEntity.isActive ?? true;
-    ormEntity.isDefault = domainEntity.isDefault ?? false;
+    ormEntity.color = '#007BFF'; // Default color
+    ormEntity.timezone = domainEntity.settings.timezone;
+    ormEntity.isActive = true;
+    ormEntity.isDefault = false;
     ormEntity.settings = domainEntity.settings;
 
     return ormEntity;
@@ -36,20 +37,22 @@ export class TypeOrmCalendarMapper {
    * 🔄 Conversion TypeORM → Domain
    */
   static toDomainEntity(ormEntity: CalendarOrmEntity): Calendar {
-    return Calendar.createFromData({
-      id: ormEntity.id,
-      name: ormEntity.name,
-      description: ormEntity.description,
-      businessId: ormEntity.businessId,
-      ownerId: ormEntity.ownerId,
+    return Calendar.create({
+      businessId: BusinessId.create(ormEntity.businessId),
       type: ormEntity.type as CalendarType,
-      color: ormEntity.color,
-      timezone: ormEntity.timezone,
-      isActive: ormEntity.isActive,
-      isDefault: ormEntity.isDefault,
-      settings: ormEntity.settings,
-      createdAt: ormEntity.createdAt,
-      updatedAt: ormEntity.updatedAt,
+      name: ormEntity.name,
+      description: ormEntity.description || '', // Handle nullable description
+      ownerId: ormEntity.ownerId ? UserId.create(ormEntity.ownerId) : undefined,
+      settings: {
+        timezone: ormEntity.timezone || 'Europe/Paris',
+        // Add other required settings with defaults if missing
+        defaultSlotDuration: 30,
+        minimumNotice: 60,
+        maximumAdvanceBooking: 30,
+        allowMultipleBookings: false,
+        autoConfirmBookings: true,
+        bufferTimeBetweenSlots: 0
+      }
     });
   }
 

@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner, Table, Index } from 'typeorm';
+import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm';
 
 /**
  * 🏢 Business Management Tables Migration
@@ -784,38 +784,38 @@ export class CreateBusinessTables1694780000000 implements MigrationInterface {
     );
 
     // 8. Create indexes for performance
-    await queryRunner.createIndex('businesses', new Index('idx_businesses_email', ['email']));
-    await queryRunner.createIndex('businesses', new Index('idx_businesses_name', ['name']));
-    await queryRunner.createIndex('businesses', new Index('idx_businesses_type', ['business_type']));
-    await queryRunner.createIndex('businesses', new Index('idx_businesses_active', ['is_active']));
+    await queryRunner.createIndex('businesses', new TableIndex({ name: 'idx_businesses_email', columnNames: ['email'] }));
+    await queryRunner.createIndex('businesses', new TableIndex({ name: 'idx_businesses_name', columnNames: ['name'] }));
+    await queryRunner.createIndex('businesses', new TableIndex({ name: 'idx_businesses_type', columnNames: ['business_type'] }));
+    await queryRunner.createIndex('businesses', new TableIndex({ name: 'idx_businesses_active', columnNames: ['is_active'] }));
 
-    await queryRunner.createIndex('business_addresses', new Index('idx_business_addresses_business_id', ['business_id']));
-    await queryRunner.createIndex('business_addresses', new Index('idx_business_addresses_primary', ['business_id', 'is_primary']));
+    await queryRunner.createIndex('business_addresses', new TableIndex({ name: 'idx_business_addresses_business_id', columnNames: ['business_id'] }));
+    await queryRunner.createIndex('business_addresses', new TableIndex({ name: 'idx_business_addresses_primary', columnNames: ['business_id', 'is_primary'] }));
 
-    await queryRunner.createIndex('services', new Index('idx_services_business_id', ['business_id']));
-    await queryRunner.createIndex('services', new Index('idx_services_active', ['business_id', 'is_active']));
-    await queryRunner.createIndex('services', new Index('idx_services_category', ['business_id', 'category']));
+    await queryRunner.createIndex('services', new TableIndex({ name: 'idx_services_business_id', columnNames: ['business_id'] }));
+    await queryRunner.createIndex('services', new TableIndex({ name: 'idx_services_active', columnNames: ['business_id', 'is_active'] }));
+    await queryRunner.createIndex('services', new TableIndex({ name: 'idx_services_category', columnNames: ['business_id', 'category'] }));
 
-    await queryRunner.createIndex('staff', new Index('idx_staff_business_id', ['business_id']));
-    await queryRunner.createIndex('staff', new Index('idx_staff_user_id', ['user_id']));
-    await queryRunner.createIndex('staff', new Index('idx_staff_role', ['business_id', 'staff_role']));
-    await queryRunner.createIndex('staff', new Index('idx_staff_active', ['business_id', 'is_active']));
+    await queryRunner.createIndex('staff', new TableIndex({ name: 'idx_staff_business_id', columnNames: ['business_id'] }));
+    await queryRunner.createIndex('staff', new TableIndex({ name: 'idx_staff_user_id', columnNames: ['user_id'] }));
+    await queryRunner.createIndex('staff', new TableIndex({ name: 'idx_staff_role', columnNames: ['business_id', 'staff_role'] }));
+    await queryRunner.createIndex('staff', new TableIndex({ name: 'idx_staff_active', columnNames: ['business_id', 'is_active'] }));
 
-    await queryRunner.createIndex('calendars', new Index('idx_calendars_business_id', ['business_id']));
-    await queryRunner.createIndex('calendars', new Index('idx_calendars_owner_id', ['owner_id']));
-    await queryRunner.createIndex('calendars', new Index('idx_calendars_type', ['business_id', 'calendar_type']));
+    await queryRunner.createIndex('calendars', new TableIndex({ name: 'idx_calendars_business_id', columnNames: ['business_id'] }));
+    await queryRunner.createIndex('calendars', new TableIndex({ name: 'idx_calendars_owner_id', columnNames: ['owner_id'] }));
+    await queryRunner.createIndex('calendars', new TableIndex({ name: 'idx_calendars_type', columnNames: ['business_id', 'calendar_type'] }));
 
-    await queryRunner.createIndex('working_hours', new Index('idx_working_hours_calendar_id', ['calendar_id']));
-    await queryRunner.createIndex('working_hours', new Index('idx_working_hours_day', ['calendar_id', 'day_of_week']));
+    await queryRunner.createIndex('working_hours', new TableIndex({ name: 'idx_working_hours_calendar_id', columnNames: ['calendar_id'] }));
+    await queryRunner.createIndex('working_hours', new TableIndex({ name: 'idx_working_hours_day', columnNames: ['calendar_id', 'day_of_week'] }));
 
-    await queryRunner.createIndex('appointments', new Index('idx_appointments_business_id', ['business_id']));
-    await queryRunner.createIndex('appointments', new Index('idx_appointments_client_id', ['client_id']));
-    await queryRunner.createIndex('appointments', new Index('idx_appointments_staff_id', ['staff_id']));
-    await queryRunner.createIndex('appointments', new Index('idx_appointments_service_id', ['service_id']));
-    await queryRunner.createIndex('appointments', new Index('idx_appointments_calendar_id', ['calendar_id']));
-    await queryRunner.createIndex('appointments', new Index('idx_appointments_time_range', ['start_time', 'end_time']));
-    await queryRunner.createIndex('appointments', new Index('idx_appointments_status', ['business_id', 'status']));
-    await queryRunner.createIndex('appointments', new Index('idx_appointments_date', ['business_id', 'start_time']));
+    await queryRunner.createIndex('appointments', new TableIndex({ name: 'idx_appointments_business_id', columnNames: ['business_id'] }));
+    await queryRunner.createIndex('appointments', new TableIndex({ name: 'idx_appointments_client_id', columnNames: ['client_id'] }));
+    await queryRunner.createIndex('appointments', new TableIndex({ name: 'idx_appointments_staff_id', columnNames: ['staff_id'] }));
+    await queryRunner.createIndex('appointments', new TableIndex({ name: 'idx_appointments_service_id', columnNames: ['service_id'] }));
+    await queryRunner.createIndex('appointments', new TableIndex({ name: 'idx_appointments_calendar_id', columnNames: ['calendar_id'] }));
+    await queryRunner.createIndex('appointments', new TableIndex({ name: 'idx_appointments_time_range', columnNames: ['start_time', 'end_time'] }));
+    await queryRunner.createIndex('appointments', new TableIndex({ name: 'idx_appointments_status', columnNames: ['business_id', 'status'] }));
+    await queryRunner.createIndex('appointments', new TableIndex({ name: 'idx_appointments_date', columnNames: ['business_id', 'start_time'] }));
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {

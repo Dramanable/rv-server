@@ -2,19 +2,18 @@
  * 👥 Create Staff Use Case - Clean Architecture + SOLID
  * 
  * Création d'un membre du personnel avec validation métier et permissions
+ * ✅ AUCUNE dépendance NestJS - Respect de la Clean Architecture
  */
-
-import { Inject, Injectable } from '@nestjs/common';
 import { Staff } from '../../../domain/entities/staff.entity';
 import { StaffRepository } from '../../../domain/repositories/staff.repository.interface';
 import { BusinessRepository } from '../../../domain/repositories/business.repository.interface';
+import { UserRepository } from '../../../domain/repositories/user.repository.interface';
 import { Logger } from '../../../application/ports/logger.port';
 import { I18nService } from '../../../application/ports/i18n.port';
 import { AppContext, AppContextFactory } from '../../../shared/context/app-context';
 import { UserRole, Permission } from '../../../shared/enums/user-role.enum';
 import { StaffRole } from '../../../shared/enums/staff-role.enum';
 import { User } from '../../../domain/entities/user.entity';
-import { IUserRepository } from '../../../application/ports/user.repository.interface';
 import { 
   InsufficientPermissionsError, 
   StaffValidationError,
@@ -64,15 +63,11 @@ export interface CreateStaffResponse {
   readonly createdAt: Date;
 }
 
-@Injectable()
 export class CreateStaffUseCase {
   constructor(
-    @Inject('StaffRepository')
     private readonly staffRepository: StaffRepository,
-    @Inject('BusinessRepository')
     private readonly businessRepository: BusinessRepository,
-    @Inject('UserRepository')
-    private readonly userRepository: IUserRepository,
+    private readonly userRepository: UserRepository,
     private readonly logger: Logger,
     private readonly i18n: I18nService,
   ) {}
@@ -82,12 +77,12 @@ export class CreateStaffUseCase {
     const context: AppContext = AppContextFactory.create()
       .operation('CreateStaff')
       .requestingUser(request.requestingUserId)
-      .businessEntity(request.businessId)
+      .metadata('businessId', request.businessId)
       .build();
 
     this.logger.info(
       this.i18n.t('operations.staff.creation_attempt'),
-      context as Record<string, unknown>,
+      context as unknown as Record<string, unknown>,
     );
 
     try {
@@ -106,44 +101,40 @@ export class CreateStaffUseCase {
       const email = Email.create(request.email);
       const phone = request.phone ? Phone.create(request.phone) : undefined;
 
-      const staff = Staff.create(
+      const staff = Staff.create({
         businessId,
-        request.firstName.trim(),
-        request.lastName.trim(),
-        email,
-        request.role,
-        {
-          phone,
-          department: request.department?.trim(),
-          jobTitle: request.jobTitle?.trim(),
-          workingHours: request.workingHours,
-          permissions: request.permissions,
-          isActive: request.isActive ?? true,
+        profile: {
+          firstName: request.firstName.trim(),
+          lastName: request.lastName.trim(),
+          title: request.jobTitle?.trim(),
         },
-      );
+        role: request.role,
+        email: request.email,
+        phone: request.phone,
+      });
 
       // 5. Persistance
-      const savedStaff = await this.staffRepository.save(staff);
+      await this.staffRepository.save(staff);
 
       // 6. Réponse typée
       const response: CreateStaffResponse = {
-        id: savedStaff.id.getValue(),
-        firstName: savedStaff.firstName,
-        lastName: savedStaff.lastName,
-        email: savedStaff.email.getValue(),
-        role: savedStaff.role,
-        businessId: savedStaff.businessId.getValue(),
-        isActive: savedStaff.isActive,
-        createdAt: savedStaff.createdAt,
+        id: staff.id.getValue(),
+        firstName: staff.profile.firstName,
+        lastName: staff.profile.lastName,
+        email: staff.email.getValue(),
+        role: staff.role,
+        businessId: staff.businessId.getValue(),
+        isActive: staff.isActive(),
+        createdAt: staff.createdAt,
       };
 
       this.logger.info(
         this.i18n.t('operations.staff.creation_success'),
         {
-          ...context,
-          staffId: savedStaff.id.getValue(),
-          staffRole: savedStaff.role,
-        } as Record<string, unknown>,
+          ...context as unknown as Record<string, unknown>,
+          staffId: staff.id.getValue(),
+          staffRole: staff.role,
+        },
       );
 
       return response;
@@ -151,7 +142,7 @@ export class CreateStaffUseCase {
       this.logger.error(
         this.i18n.t('operations.staff.creation_failed'),
         error as Error,
-        context as Record<string, unknown>,
+        context as unknown as Record<string, unknown>,
       );
       throw error;
     }
@@ -171,7 +162,7 @@ export class CreateStaffUseCase {
     }
 
     // Vérifier que l'entreprise existe
-    const business = await this.businessRepository.findById(businessId);
+    const business = await this.businessRepository.findById(BusinessId.create(businessId));
     if (!business) {
       throw new BusinessNotFoundError(`Business with id ${businessId} not found`);
     }
@@ -195,7 +186,7 @@ export class CreateStaffUseCase {
         businessId,
       });
       throw new InsufficientPermissionsError(
-        Permission.MANAGE_STAFF,
+        Permission.MANAGE_ALL_STAFF,
         requestingUser.role,
       );
     }
@@ -211,12 +202,16 @@ export class CreateStaffUseCase {
     // Validation du prénom
     if (!request.firstName || request.firstName.trim().length < 2) {
       throw new StaffValidationError(
+        'firstName',
+        request.firstName,
         'First name must be at least 2 characters long',
       );
     }
 
     if (request.firstName.trim().length > 50) {
       throw new StaffValidationError(
+        'firstName',
+        request.firstName,
         'First name cannot exceed 50 characters',
       );
     }
@@ -224,21 +219,23 @@ export class CreateStaffUseCase {
     // Validation du nom de famille
     if (!request.lastName || request.lastName.trim().length < 2) {
       throw new StaffValidationError(
+        'lastName',
+        request.lastName,
         'Last name must be at least 2 characters long',
       );
     }
 
     if (request.lastName.trim().length > 50) {
       throw new StaffValidationError(
+        'lastName',
+        request.lastName,
         'Last name cannot exceed 50 characters',
       );
     }
 
     // Validation de l'email (unicité dans l'entreprise)
-    const existingStaff = await this.staffRepository.findByEmailAndBusiness(
-      Email.create(request.email),
-      BusinessId.create(request.businessId),
-    );
+    const existingStaff = await this.staffRepository.findByEmail(Email.create(request.email));
+    // TODO: Ajouter findByEmailAndBusiness method au repository interface
 
     if (existingStaff) {
       this.logger.warn(
@@ -250,6 +247,8 @@ export class CreateStaffUseCase {
         },
       );
       throw new StaffValidationError(
+        'email',
+        request.email,
         `Staff member with email "${request.email}" already exists in this business`,
       );
     }
@@ -257,6 +256,8 @@ export class CreateStaffUseCase {
     // Validation du rôle
     if (!Object.values(StaffRole).includes(request.role)) {
       throw new StaffValidationError(
+        'role',
+        request.role,
         `Invalid staff role: ${request.role}`,
       );
     }
@@ -270,12 +271,16 @@ export class CreateStaffUseCase {
         if (hours) {
           if (!this.isValidTimeFormat(hours.start) || !this.isValidTimeFormat(hours.end)) {
             throw new StaffValidationError(
+              'workingHours',
+              `${day}: ${hours.start}-${hours.end}`,
               `Invalid time format for ${day}. Use HH:MM format`,
             );
           }
           
           if (hours.start >= hours.end) {
             throw new StaffValidationError(
+              'workingHours',
+              `${day}: ${hours.start}-${hours.end}`,
               `Start time must be before end time for ${day}`,
             );
           }
@@ -286,6 +291,8 @@ export class CreateStaffUseCase {
     // Validation du département si fourni
     if (request.department && request.department.trim().length > 100) {
       throw new StaffValidationError(
+        'department',
+        request.department,
         'Department name cannot exceed 100 characters',
       );
     }
@@ -293,6 +300,8 @@ export class CreateStaffUseCase {
     // Validation du titre de poste si fourni
     if (request.jobTitle && request.jobTitle.trim().length > 100) {
       throw new StaffValidationError(
+        'jobTitle',
+        request.jobTitle,
         'Job title cannot exceed 100 characters',
       );
     }

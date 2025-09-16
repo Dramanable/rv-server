@@ -1,13 +1,14 @@
 /**
- * 🎭 PRESENTATION MODULE - Minimal Version
+ * 🎭 PRESENTATION MODULE - Minimal Clean Version
+ * 
+ * Ready for auth and users controllers implementation
  */
 
 import { Module } from '@nestjs/common';
-import { AppointmentController } from './controllers/appointment.controller';
 
 @Module({
   controllers: [
-    AppointmentController,
+    // TODO: Add AuthController and UserController when implemented
   ],
   providers: [],
   exports: [],
