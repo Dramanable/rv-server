@@ -1,0 +1,40 @@
+{
+  "operations": {
+    "user": {
+      "save_attempt": "Tentative de sauvegarde de l'utilisateur {{userId}} ({{email}})",
+      "find_by_id_attempt": "Recherche de l'utilisateur {{userId}}",
+      "find_by_email_attempt": "Recherche de l'utilisateur par email {{email}}",
+      "find_all_attempt": "Récupération des utilisateurs - page {{page}}, limite {{limit}}",
+      "update_attempt": "Tentative de mise à jour de l'utilisateur {{userId}} ({{email}})",
+      "delete_attempt": "Tentative de suppression de l'utilisateur {{userId}}"
+    }
+  },
+  "success": {
+    "user": {
+      "saved": "Utilisateur {{userId}} ({{email}}) sauvegardé avec succès",
+      "found": "Utilisateur {{userId}} ({{email}}) trouvé",
+      "found_by_email": "Utilisateur {{userId}} ({{email}}) trouvé par email",
+      "found_paginated": "{{count}} utilisateurs trouvés sur {{totalItems}} total (page {{page}})",
+      "updated": "Utilisateur {{userId}} ({{email}}) mis à jour avec succès",
+      "deleted": "Utilisateur {{userId}} supprimé avec succès"
+    }
+  },
+  "info": {
+    "user": {
+      "not_found": "Utilisateur {{userId}} non trouvé",
+      "not_found_by_email": "Aucun utilisateur trouvé avec l'email {{email}}"
+    }
+  },
+  "errors": {
+    "user": {
+      "save_failed": "Échec de la sauvegarde de l'utilisateur {{userId}} : {{error}}",
+      "find_failed": "Échec de la recherche de l'utilisateur {{userId}} : {{error}}",
+      "find_by_email_failed": "Échec de la recherche par email {{email}} : {{error}}",
+      "find_all_failed": "Échec de la récupération des utilisateurs : {{error}}",
+      "update_failed": "Échec de la mise à jour de l'utilisateur {{userId}} : {{error}}",
+      "delete_failed": "Échec de la suppression de l'utilisateur {{userId}} : {{error}}",
+      "not_found": "Utilisateur {{userId}} non trouvé",
+      "batch_delete_failed": "Échec de la suppression en lot : {{deleted}}/{{expected}} supprimés"
+    }
+  }
+}

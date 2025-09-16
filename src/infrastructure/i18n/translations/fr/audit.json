@@ -1,0 +1,17 @@
+{
+  "audit": {
+    "user": {
+      "created": "Utilisateur créé",
+      "updated": "Utilisateur modifié",
+      "deleted": "Utilisateur supprimé"
+    },
+    "permission": {
+      "denied": "Permission refusée"
+    },
+    "authentication": {
+      "login_success": "Connexion utilisateur réussie",
+      "login_failed": "Tentative de connexion échouée", 
+      "logout": "Déconnexion utilisateur"
+    }
+  }
+}

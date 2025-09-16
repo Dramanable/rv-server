@@ -1,0 +1,40 @@
+{
+  "operations": {
+    "user": {
+      "save_attempt": "Attempting to save user {{userId}} ({{email}})",
+      "find_by_id_attempt": "Looking up user {{userId}}",
+      "find_by_email_attempt": "Looking up user by email {{email}}",
+      "find_all_attempt": "Fetching users - page {{page}}, limit {{limit}}",
+      "update_attempt": "Attempting to update user {{userId}} ({{email}})",
+      "delete_attempt": "Attempting to delete user {{userId}}"
+    }
+  },
+  "success": {
+    "user": {
+      "saved": "User {{userId}} ({{email}}) saved successfully",
+      "found": "User {{userId}} ({{email}}) found",
+      "found_by_email": "User {{userId}} ({{email}}) found by email",
+      "found_paginated": "{{count}} users found out of {{totalItems}} total (page {{page}})",
+      "updated": "User {{userId}} ({{email}}) updated successfully",
+      "deleted": "User {{userId}} deleted successfully"
+    }
+  },
+  "info": {
+    "user": {
+      "not_found": "User {{userId}} not found",
+      "not_found_by_email": "No user found with email {{email}}"
+    }
+  },
+  "errors": {
+    "user": {
+      "save_failed": "Failed to save user {{userId}}: {{error}}",
+      "find_failed": "Failed to find user {{userId}}: {{error}}",
+      "find_by_email_failed": "Failed to find user by email {{email}}: {{error}}",
+      "find_all_failed": "Failed to fetch users: {{error}}",
+      "update_failed": "Failed to update user {{userId}}: {{error}}",
+      "delete_failed": "Failed to delete user {{userId}}: {{error}}",
+      "not_found": "User {{userId}} not found",
+      "batch_delete_failed": "Batch delete failed: {{deleted}}/{{expected}} deleted"
+    }
+  }
+}

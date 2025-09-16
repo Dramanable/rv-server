@@ -1,0 +1,164 @@
+# 🐳 Docker Ignore File pour Clean Architecture NestJS
+
+# ========================================
+# 📁 Node.js & NPM
+# ========================================
+node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+.pnpm-store
+
+# ========================================
+# 🏗️ Build & Distribution
+# ========================================
+dist
+build
+*.tgz
+*.tar.gz
+
+# ========================================
+# 🧪 Tests & Coverage
+# ========================================
+coverage
+.nyc_output
+junit.xml
+test-results
+.jest-cache
+
+# ========================================
+# 🔧 Development Tools
+# ========================================
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# ========================================
+# 📊 Logs & Monitoring
+# ========================================
+logs
+*.log
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# ========================================
+# 🔐 Environment & Secrets
+# ========================================
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.*.local
+
+# ========================================
+# 🗄️ Database & Cache
+# ========================================
+*.sqlite
+*.sqlite3
+*.db
+redis-data/
+postgres-data/
+mongodb-data/
+
+# ========================================
+# 🐳 Docker & Containers
+# ========================================
+.dockerignore
+Dockerfile*
+docker-compose*.yml
+.docker
+
+# ========================================
+# 📚 Documentation & README
+# ========================================
+README*.md
+CHANGELOG*.md
+LICENSE*
+docs/
+*.md
+
+# ========================================
+# 🎯 Git & Version Control
+# ========================================
+.git
+.gitignore
+.gitattributes
+.gitmodules
+
+# ========================================
+# 📦 Package Managers
+# ========================================
+.npm
+.yarn
+.pnpm-store
+
+# ========================================
+# 🔍 OS & System Files
+# ========================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# ========================================
+# 🚀 CI/CD & Deployment
+# ========================================
+.github/
+.gitlab-ci.yml
+.travis.yml
+.circleci/
+deployment/
+k8s/
+helm/
+
+# ========================================
+# 📈 Monitoring & Analytics
+# ========================================
+.next
+.nuxt
+.vuepress/dist
+
+# ========================================
+# 🔧 Temporary Files
+# ========================================
+tmp/
+temp/
+.tmp
+.temp
+
+# ========================================
+# 📱 Mobile & Hybrid
+# ========================================
+.expo/
+.expo-shared/
+
+# ========================================
+# 🎨 Design & Assets (si volumineux)
+# ========================================
+# assets/raw/
+# design/
+
+# ========================================
+# ⚙️ Configuration locale
+# ========================================
+.editorconfig
+.eslintrc*
+.prettierrc*
+jest.config*
+tsconfig*.json
+
+# ========================================
+# 📊 Reports & Analytics
+# ========================================
+reports/
+benchmarks/

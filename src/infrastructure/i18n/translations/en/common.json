@@ -1,0 +1,77 @@
+{
+  "errors": {
+    "user": {
+      "not_found": "User not found",
+      "email_already_exists": "Email already exists",
+      "self_deletion_forbidden": "User cannot delete themselves"
+    },
+    "auth": {
+      "insufficient_permissions": "Insufficient permissions",
+      "role_elevation_forbidden": "Role elevation forbidden"
+    },
+    "validation": {
+      "invalid_email": "Invalid email format",
+      "invalid_name": "Invalid name"
+    }
+  },
+  "success": {
+    "user": {
+      "created": "User created successfully",
+      "updated": "User updated successfully",
+      "deleted": "User deleted successfully"
+    }
+  },
+  "info": {
+    "user": {
+      "creation_attempt": "Attempting to create user",
+      "deletion_attempt": "Attempting to delete user {{userId}}",
+      "creation_success": "User {{email}} created successfully by {{requestingUser}}",
+      "deletion_success": "User {{email}} deleted successfully by {{requestingUser}}",
+      "update_attempt": "Attempting to update user {{userId}}",
+      "update_success": "User {{email}} updated successfully by {{requestingUser}}",
+      "validation_start": "Starting validation for user creation"
+    },
+    "permission": {
+      "check": "Checking permissions for {{operation}}"
+    }
+  },
+  "warn": {
+    "user": {
+      "not_found": "User creation failed: requesting user not found",
+      "target_not_found": "Target user {{userId}} not found",
+      "self_deletion_forbidden": "User cannot delete themselves"
+    },
+    "email": {
+      "already_exists": "User creation failed: email {{email}} already exists",
+      "invalid_format": "User creation failed: invalid email format {{email}}"
+    },
+    "permission": {
+      "denied": "Permission denied for user creation"
+    },
+    "role": {
+      "elevation_attempt": "Manager attempted to create {{targetRole}} user"
+    }
+  },
+  "audit": {
+    "user": {
+      "created": "User created",
+      "updated": "User updated",
+      "deleted": "User deleted"
+    },
+    "permission": {
+      "denied": "Permission denied"
+    }
+  },
+  "error": {
+    "operation": {
+      "failed": "Operation {{operation}} failed"
+    },
+    "validation": {
+      "failed": "Validation failed for field {{field}}"
+    },
+    "name": {
+      "empty": "Name cannot be empty",
+      "too_long": "Name is too long (max 100 characters)"
+    }
+  }
+}

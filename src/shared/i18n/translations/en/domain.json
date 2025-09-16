@@ -1,0 +1,28 @@
+{
+  "errors": {
+    "user": {
+      "not_found": "User not found",
+      "email_already_exists": "Email already exists",
+      "self_deletion_forbidden": "User cannot delete themselves"
+    },
+    "password_reset": {
+      "user_not_found": "User not found for password reset",
+      "invalid_email": "Invalid email address for password reset"
+    },
+    "auth": {
+      "insufficient_permissions": "Insufficient permissions",
+      "role_elevation_forbidden": "Role elevation forbidden"
+    },
+    "validation": {
+      "invalid_email": "Invalid email format",
+      "invalid_name": "Invalid name",
+      "failed": "Validation failed for field {{field}}"
+    }
+  },
+  "business": {
+    "name": {
+      "empty": "Name cannot be empty",
+      "too_long": "Name is too long (max 100 characters)"
+    }
+  }
+}

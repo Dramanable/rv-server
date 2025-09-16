@@ -1,0 +1,53 @@
+{
+  "auth": {
+    "public_route_accessed": "Public route accessed",
+    "token_missing": "Authentication token missing",
+    "token_required": "Authentication token is required",
+    "session_not_found": "User session not found in cache",
+    "session_expired": "User session has expired",
+    "user_authenticated": "User successfully authenticated",
+    "authentication_failed": "Authentication failed",
+    "invalid_token": "Invalid authentication token",
+    "token_verification_failed": "Token verification failed"
+  },
+  "infrastructure": {
+    "cache": {
+      "set_success": "Cache value set successfully",
+      "set_failed": "Failed to set cache value",
+      "get_attempt": "Attempting to get cache value",
+      "get_failed": "Failed to get cache value",
+      "delete_success": "Cache value deleted successfully",
+      "delete_failed": "Failed to delete cache value",
+      "exists_failed": "Failed to check cache key existence",
+      "pattern_delete_success": "Cache pattern deleted successfully",
+      "pattern_delete_failed": "Failed to delete cache pattern",
+      "connection_established": "Redis connection established",
+      "connection_error": "Redis connection error",
+      "connection_closed": "Redis connection closed",
+      "reconnecting": "Reconnecting to Redis",
+      "disconnected": "Disconnected from Redis"
+    },
+    "session": {
+      "user_stored": "User session stored in cache",
+      "store_failed": "Failed to store user session",
+      "not_found": "User session not found in cache",
+      "user_retrieved": "User session retrieved from cache",
+      "retrieve_failed": "Failed to retrieve user session",
+      "user_removed": "User session removed from cache",
+      "remove_failed": "Failed to remove user session",
+      "all_sessions_removed": "All user sessions removed",
+      "remove_all_failed": "Failed to remove all user sessions",
+      "exists_check_failed": "Failed to check session existence",
+      "refreshed": "User session refreshed",
+      "refresh_failed": "Failed to refresh user session"
+    }
+  },
+  "errors": {
+    "cache": {
+      "general_error": "Cache operation failed"
+    },
+    "session": {
+      "general_error": "Session operation failed"
+    }
+  }
+}

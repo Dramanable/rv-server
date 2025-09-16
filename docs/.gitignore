@@ -1,0 +1,8 @@
+# Documentation générée automatiquement
+# Ces fichiers sont créés par le script npm run swagger:generate
+
+swagger.json
+swagger-stats.json
+
+# Garder seulement le README.md dans le versioning
+!README.md

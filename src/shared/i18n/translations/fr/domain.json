@@ -1,0 +1,28 @@
+{
+  "errors": {
+    "user": {
+      "not_found": "Utilisateur non trouvé",
+      "email_already_exists": "Email déjà existant",
+      "self_deletion_forbidden": "Un utilisateur ne peut pas se supprimer lui-même"
+    },
+    "password_reset": {
+      "user_not_found": "Utilisateur non trouvé pour réinitialisation de mot de passe",
+      "invalid_email": "Adresse email invalide pour réinitialisation de mot de passe"
+    },
+    "auth": {
+      "insufficient_permissions": "Permissions insuffisantes",
+      "role_elevation_forbidden": "Élévation de rôle interdite"
+    },
+    "validation": {
+      "invalid_email": "Format email invalide",
+      "invalid_name": "Nom invalide",
+      "failed": "Échec de validation pour le champ {{field}}"
+    }
+  },
+  "business": {
+    "name": {
+      "empty": "Le nom ne peut pas être vide",
+      "too_long": "Le nom est trop long (max 100 caractères)"
+    }
+  }
+}

@@ -1,0 +1,90 @@
+# 🚫 .copilotignore - Optimisation mémoire GitHub Copilot
+# Exclut les fichiers non pertinents pour les suggestions de code
+
+# ===== DEPENDENCIES & BUILD =====
+node_modules/
+dist/
+build/
+coverage/
+*.tsbuildinfo
+.nyc_output/
+
+# ===== LOGS & TEMP FILES =====
+*.log
+*.tmp
+*.temp
+.cache/
+.DS_Store
+Thumbs.db
+
+# ===== CONFIGURATION FILES =====
+package-lock.json
+yarn.lock
+.env
+.env.*
+!.env.example
+
+# ===== IDE & EDITOR =====
+.vscode/settings.json
+.vscode/launch.json
+.idea/
+*.swp
+*.swo
+*~
+
+# ===== VERSION CONTROL =====
+.git/
+.gitignore
+
+# ===== DOCUMENTATION (sauf README) =====
+*.md
+!README.md
+docs/
+documentation/
+
+# ===== TEST OUTPUTS =====
+test-results/
+playwright-report/
+coverage/
+junit.xml
+
+# ===== ASSETS & MEDIA =====
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.svg
+*.ico
+*.pdf
+*.mp4
+*.avi
+
+# ===== DATABASE & DATA =====
+*.db
+*.sqlite
+*.sqlite3
+data/
+backups/
+
+# ===== SPECIFIC TO PROJECT =====
+# Garde les fichiers essentiels pour Copilot :
+# - src/ (code source principal)
+# - tests/ (exemples d'usage)
+# - package.json (dépendances)
+# - tsconfig.json (configuration TypeScript)
+
+# Exclut les exemples et documentation
+examples/
+APP_CONTEXT.md
+CONFIGURATION.md
+
+# Exclut les mocks (patterns répétitifs)
+tests/unit/mocks/
+tests/fixtures/
+
+# ===== OPTIMISATION COPILOT =====
+# Focus sur les fichiers les plus importants :
+# - Entities (logique métier)
+# - Use Cases (patterns d'usage)
+# - Interfaces/Ports (contrats)
+# - Types principaux

@@ -1,0 +1,54 @@
+{
+  "operations": {
+    "user": {
+      "creation_attempt": "Tentative de création utilisateur",
+      "deletion_attempt": "Tentative de suppression utilisateur {{userId}}",
+      "update_attempt": "Tentative de modification utilisateur {{userId}}",
+      "validation_start": "Début de validation pour création utilisateur"
+    },
+    "password_reset": {
+      "initiate_attempt": "Tentative d'initiation de réinitialisation de mot de passe",
+      "token_generation": "Génération du token de réinitialisation",
+      "email_sending": "Envoi de l'email de réinitialisation"
+    },
+    "permission": {
+      "check": "Vérification des permissions pour {{operation}}"
+    },
+    "failed": "Échec de l'opération {{operation}}"
+  },
+  "success": {
+    "user": {
+      "created": "Utilisateur créé avec succès",
+      "updated": "Utilisateur modifié avec succès",
+      "deleted": "Utilisateur supprimé avec succès",
+      "creation_success": "Utilisateur {{email}} créé avec succès par {{requestingUser}}",
+      "deletion_success": "Utilisateur {{email}} supprimé avec succès par {{requestingUser}}",
+      "update_success": "Utilisateur {{email}} modifié avec succès par {{requestingUser}}"
+    },
+    "password_reset": {
+      "initiated": "Réinitialisation de mot de passe initiée avec succès",
+      "email_sent": "Email de réinitialisation envoyé avec succès"
+    }
+  },
+  "warnings": {
+    "user": {
+      "not_found": "Échec opération utilisateur : utilisateur demandeur non trouvé",
+      "target_not_found": "Utilisateur cible {{userId}} non trouvé",
+      "self_deletion_forbidden": "Un utilisateur ne peut pas se supprimer lui-même"
+    },
+    "password_reset": {
+      "user_not_found": "Échec réinitialisation mot de passe : utilisateur non trouvé",
+      "email_send_failed": "Échec réinitialisation mot de passe : échec envoi email"
+    },
+    "email": {
+      "already_exists": "Échec opération utilisateur : email {{email}} déjà existant",
+      "invalid_format": "Échec opération utilisateur : format email invalide {{email}}"
+    },
+    "permission": {
+      "denied": "Permission refusée pour l'opération"
+    },
+    "role": {
+      "elevation_attempt": "Manager a tenté de créer un utilisateur {{targetRole}}"
+    }
+  }
+}

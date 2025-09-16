@@ -1,0 +1,12 @@
+### Test Authentication Flow
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@example.com",
+  "password": "admin123"
+}
+
+###
+GET http://localhost:3000/auth/me
+Cookie: {{access_token}}

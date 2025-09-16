@@ -1,0 +1,69 @@
+# 📦 Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# 🏗️ Build outputs
+dist/
+build/
+*.tsbuildinfo
+
+# 🔧 Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# 📊 Logs
+logs/
+*.log
+
+# 🧪 Test coverage
+coverage/
+.nyc_output/
+*.lcov
+
+# 🔍 IDE & Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 🏠 OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# 🔄 Temporary files
+*.tmp
+*.temp
+.cache/
+
+# 🗄️ Database files
+*.sqlite
+*.db
+
+# 🔐 Security & Keys
+*.pem
+*.key
+*.cert
+
+# 📋 Package manager locks (keep only one)
+yarn.lock
+package-lock.json
+
+# 🎯 TypeScript
+*.tsbuildinfo
+
+# 📁 Backup files
+*.backup
+*.old
+*.bak

@@ -1,0 +1,77 @@
+{
+  "errors": {
+    "user": {
+      "not_found": "Utilisateur non trouvé",
+      "email_already_exists": "Email déjà existant",
+      "self_deletion_forbidden": "Un utilisateur ne peut pas se supprimer lui-même"
+    },
+    "auth": {
+      "insufficient_permissions": "Permissions insuffisantes",
+      "role_elevation_forbidden": "Élévation de rôle interdite"
+    },
+    "validation": {
+      "invalid_email": "Format email invalide",
+      "invalid_name": "Nom invalide"
+    }
+  },
+  "success": {
+    "user": {
+      "created": "Utilisateur créé avec succès",
+      "updated": "Utilisateur modifié avec succès",
+      "deleted": "Utilisateur supprimé avec succès"
+    }
+  },
+  "info": {
+    "user": {
+      "creation_attempt": "Tentative de création utilisateur",
+      "deletion_attempt": "Tentative de suppression utilisateur {{userId}}",
+      "creation_success": "Utilisateur {{email}} créé avec succès par {{requestingUser}}",
+      "deletion_success": "Utilisateur {{email}} supprimé avec succès par {{requestingUser}}",
+      "update_attempt": "Tentative de modification utilisateur {{userId}}",
+      "update_success": "Utilisateur {{email}} modifié avec succès par {{requestingUser}}",
+      "validation_start": "Début de validation pour création utilisateur"
+    },
+    "permission": {
+      "check": "Vérification des permissions pour {{operation}}"
+    }
+  },
+  "warn": {
+    "user": {
+      "not_found": "Échec création utilisateur : utilisateur demandeur non trouvé",
+      "target_not_found": "Utilisateur cible {{userId}} non trouvé",
+      "self_deletion_forbidden": "Un utilisateur ne peut pas se supprimer lui-même"
+    },
+    "email": {
+      "already_exists": "Échec création utilisateur : email {{email}} déjà existant",
+      "invalid_format": "Échec création utilisateur : format email invalide {{email}}"
+    },
+    "permission": {
+      "denied": "Permission refusée pour la création utilisateur"
+    },
+    "role": {
+      "elevation_attempt": "Manager a tenté de créer un utilisateur {{targetRole}}"
+    }
+  },
+  "audit": {
+    "user": {
+      "created": "Utilisateur créé",
+      "updated": "Utilisateur modifié",
+      "deleted": "Utilisateur supprimé"
+    },
+    "permission": {
+      "denied": "Permission refusée"
+    }
+  },
+  "error": {
+    "operation": {
+      "failed": "Échec de l'opération {{operation}}"
+    },
+    "validation": {
+      "failed": "Échec de validation pour le champ {{field}}"
+    },
+    "name": {
+      "empty": "Le nom ne peut pas être vide",
+      "too_long": "Le nom est trop long (max 100 caractères)"
+    }
+  }
+}
