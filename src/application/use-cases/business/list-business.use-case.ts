@@ -1,6 +1,6 @@
 /**
  * 🏢 List Business Use Case - Clean Architecture + SOLID
- * 
+ *
  * ✅ COUCHE APPLICATION PURE - Sans dépendance NestJS
  * ✅ Dependency Inversion Principle respecté
  * ✅ Interface-driven design
@@ -10,7 +10,10 @@ import type { BusinessRepository } from '../../../domain/repositories/business.r
 import type { UserRepository } from '../../../domain/repositories/user.repository.interface';
 import type { Logger } from '../../../application/ports/logger.port';
 import type { I18nService } from '../../../application/ports/i18n.port';
-import { AppContext, AppContextFactory } from '../../../shared/context/app-context';
+import {
+  AppContext,
+  AppContextFactory,
+} from '../../../shared/context/app-context';
 import { UserRole } from '../../../shared/enums/user-role.enum';
 import { InsufficientPermissionsError } from '../../../application/exceptions/application.exceptions';
 
@@ -70,10 +73,11 @@ export class ListBusinessUseCase {
       .requestingUser(request.requestingUserId)
       .build();
 
-      this.logger.info(
-        this.i18n.t('operations.business.list_attempt'),
-        context as any,
-      );    try {
+    this.logger.info(
+      this.i18n.t('operations.business.list_attempt'),
+      context as any,
+    );
+    try {
       // 2. Validation des permissions
       await this.validatePermissions(request.requestingUserId, context);
 
@@ -96,7 +100,8 @@ export class ListBusinessUseCase {
       };
 
       // 6. Récupération des données avec pagination
-      const { businesses, total } = await this.businessRepository.search(searchCriteria);
+      const { businesses, total } =
+        await this.businessRepository.search(searchCriteria);
 
       // 7. Construction de la réponse paginée
       const totalPages = Math.ceil(total / limit);
@@ -104,7 +109,7 @@ export class ListBusinessUseCase {
       const hasPreviousPage = page > 1;
 
       const response: ListBusinessResponse = {
-        businesses: businesses.map(business => ({
+        businesses: businesses.map((business) => ({
           id: business.id.getValue(),
           name: business.name.getValue(),
           description: business.description,
@@ -125,15 +130,12 @@ export class ListBusinessUseCase {
         },
       };
 
-      this.logger.info(
-        this.i18n.t('operations.business.list_success'),
-        {
-          ...context,
-          totalBusinesses: total,
-          page,
-          limit,
-        } as Record<string, unknown>,
-      );
+      this.logger.info(this.i18n.t('operations.business.list_success'), {
+        ...context,
+        totalBusinesses: total,
+        page,
+        limit,
+      } as Record<string, unknown>);
 
       return response;
     } catch (error) {
@@ -191,19 +193,26 @@ export class ListBusinessUseCase {
       throw new Error('Page number must be greater than 0');
     }
 
-    if (request.limit !== undefined && (request.limit < 1 || request.limit > 100)) {
+    if (
+      request.limit !== undefined &&
+      (request.limit < 1 || request.limit > 100)
+    ) {
       throw new Error('Limit must be between 1 and 100');
     }
 
     // Validation du tri
     const validSortFields = ['name', 'createdAt', 'updatedAt'];
     if (request.sortBy && !validSortFields.includes(request.sortBy)) {
-      throw new Error(`Invalid sort field. Must be one of: ${validSortFields.join(', ')}`);
+      throw new Error(
+        `Invalid sort field. Must be one of: ${validSortFields.join(', ')}`,
+      );
     }
 
     const validSortOrders = ['ASC', 'DESC'];
     if (request.sortOrder && !validSortOrders.includes(request.sortOrder)) {
-      throw new Error(`Invalid sort order. Must be one of: ${validSortOrders.join(', ')}`);
+      throw new Error(
+        `Invalid sort order. Must be one of: ${validSortOrders.join(', ')}`,
+      );
     }
   }
 }

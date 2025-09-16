@@ -13,13 +13,13 @@ export enum ServiceCategory {
   MAINTENANCE = 'MAINTENANCE',
   EMERGENCY = 'EMERGENCY',
   FOLLOWUP = 'FOLLOWUP',
-  OTHER = 'OTHER'
+  OTHER = 'OTHER',
 }
 
 export enum ServiceStatus {
   ACTIVE = 'ACTIVE',
   INACTIVE = 'INACTIVE',
-  DRAFT = 'DRAFT'
+  DRAFT = 'DRAFT',
 }
 
 export interface ServicePricing {
@@ -66,7 +66,7 @@ export class Service {
     private _assignedStaffIds: UserId[] = [],
     private _status: ServiceStatus = ServiceStatus.DRAFT,
     private readonly _createdAt: Date = new Date(),
-    private _updatedAt: Date = new Date()
+    private _updatedAt: Date = new Date(),
   ) {}
 
   // Getters
@@ -136,13 +136,13 @@ export class Service {
     assignedStaffIds?: UserId[];
   }): Service {
     const pricing: ServicePricing = {
-      basePrice: Money.create(data.basePrice, data.currency)
+      basePrice: Money.create(data.basePrice, data.currency),
     };
 
     const scheduling: ServiceScheduling = {
       duration: data.duration,
       allowOnlineBooking: data.allowOnlineBooking ?? true,
-      requiresApproval: data.requiresApproval ?? false
+      requiresApproval: data.requiresApproval ?? false,
     };
 
     return new Service(
@@ -155,7 +155,7 @@ export class Service {
       scheduling,
       undefined,
       undefined,
-      data.assignedStaffIds || []
+      data.assignedStaffIds || [],
     );
   }
 
@@ -171,11 +171,19 @@ export class Service {
   public canBeBookedBy(clientAge?: number): boolean {
     if (!this.isBookable()) return false;
 
-    if (this._requirements?.minimumAge && clientAge && clientAge < this._requirements.minimumAge) {
+    if (
+      this._requirements?.minimumAge &&
+      clientAge &&
+      clientAge < this._requirements.minimumAge
+    ) {
       return false;
     }
 
-    if (this._requirements?.maximumAge && clientAge && clientAge > this._requirements.maximumAge) {
+    if (
+      this._requirements?.maximumAge &&
+      clientAge &&
+      clientAge > this._requirements.maximumAge
+    ) {
       return false;
     }
 
@@ -194,12 +202,12 @@ export class Service {
 
   public getEffectivePrice(packageName?: string): Money {
     if (packageName && this._pricing.packages) {
-      const pkg = this._pricing.packages.find(p => p.name === packageName);
+      const pkg = this._pricing.packages.find((p) => p.name === packageName);
       if (pkg) {
         // Prix par session du package
         return Money.create(
           pkg.price.getAmount() / pkg.sessions,
-          pkg.price.getCurrency()
+          pkg.price.getCurrency(),
         );
       }
     }
@@ -247,9 +255,11 @@ export class Service {
     if (!this._pricing.packages) {
       this._pricing.packages = [];
     }
-    
+
     // Vérifier que le nom du package n'existe pas déjà
-    const existingPackage = this._pricing.packages.find(p => p.name === packageData.name);
+    const existingPackage = this._pricing.packages.find(
+      (p) => p.name === packageData.name,
+    );
     if (existingPackage) {
       throw new Error(`Package with name ${packageData.name} already exists`);
     }
@@ -260,7 +270,9 @@ export class Service {
 
   public removePackage(packageName: string): void {
     if (this._pricing.packages) {
-      this._pricing.packages = this._pricing.packages.filter(p => p.name !== packageName);
+      this._pricing.packages = this._pricing.packages.filter(
+        (p) => p.name !== packageName,
+      );
       this._updatedAt = new Date();
     }
   }

@@ -1,6 +1,6 @@
 /**
  * 🏢 Get Business Use Case - Clean Architecture + SOLID
- * 
+ *
  * Récupération d'une entreprise par ID avec vérification des permissions
  */
 
@@ -8,13 +8,16 @@ import { Business } from '../../../domain/entities/business.entity';
 import type { BusinessRepository } from '../../../domain/repositories/business.repository.interface';
 import type { Logger } from '../../../application/ports/logger.port';
 import type { I18nService } from '../../../application/ports/i18n.port';
-import { AppContext, AppContextFactory } from '../../../shared/context/app-context';
+import {
+  AppContext,
+  AppContextFactory,
+} from '../../../shared/context/app-context';
 import { UserRole } from '../../../shared/enums/user-role.enum';
 import { User } from '../../../domain/entities/user.entity';
-import { UserRepository } from "../../../domain/repositories/user.repository.interface";
-import { 
+import { UserRepository } from '../../../domain/repositories/user.repository.interface';
+import {
   InsufficientPermissionsError,
-  BusinessNotFoundError
+  BusinessNotFoundError,
 } from '../../../application/exceptions/application.exceptions';
 import { BusinessId } from '../../../domain/value-objects/business-id.value-object';
 
@@ -37,13 +40,12 @@ export interface GetBusinessResponse {
 
 export class GetBusinessUseCase {
   constructor(
-    
     private readonly businessRepository: BusinessRepository,
-    
+
     private readonly userRepository: UserRepository,
-    
+
     private readonly logger: Logger,
-    
+
     private readonly i18n: I18nService,
   ) {}
 
@@ -84,13 +86,10 @@ export class GetBusinessUseCase {
         updatedAt: business.updatedAt,
       };
 
-      this.logger.info(
-        this.i18n.t('operations.business.get_success'),
-        {
-          ...context,
-          businessId: business.id.getValue(),
-        } as unknown as Record<string, unknown>,
-      );
+      this.logger.info(this.i18n.t('operations.business.get_success'), {
+        ...context,
+        businessId: business.id.getValue(),
+      } as unknown as Record<string, unknown>);
 
       return response;
     } catch (error) {

@@ -26,9 +26,9 @@ export class TypeOrmUserRepository implements UserRepository {
   constructor(
     @InjectRepository(UserOrmEntity)
     private readonly ormRepository: Repository<UserOrmEntity>,
-    @Inject(TOKENS.LOGGER) 
+    @Inject(TOKENS.LOGGER)
     private readonly logger: Logger,
-    @Inject(TOKENS.I18N_SERVICE) 
+    @Inject(TOKENS.I18N_SERVICE)
     private readonly i18n: I18nService,
   ) {}
 
@@ -133,7 +133,9 @@ export class TypeOrmUserRepository implements UserRepository {
     try {
       const query = this.buildQuery(params);
       const [entities, total] = await query.getManyAndCount();
-      const users = entities.map(entity => TypeOrmUserMapper.toDomainEntity(entity));
+      const users = entities.map((entity) =>
+        TypeOrmUserMapper.toDomainEntity(entity),
+      );
 
       return {
         data: users,
@@ -142,11 +144,16 @@ export class TypeOrmUserRepository implements UserRepository {
           totalPages: Math.ceil(total / (params?.limit || 10)),
           totalItems: total,
           itemsPerPage: params?.limit || 10,
-          hasNextPage: (params?.page || 1) < Math.ceil(total / (params?.limit || 10)),
+          hasNextPage:
+            (params?.page || 1) < Math.ceil(total / (params?.limit || 10)),
           hasPreviousPage: (params?.page || 1) > 1,
-          nextPage: (params?.page || 1) < Math.ceil(total / (params?.limit || 10)) ? (params?.page || 1) + 1 : undefined,
-          previousPage: (params?.page || 1) > 1 ? (params?.page || 1) - 1 : undefined
-        }
+          nextPage:
+            (params?.page || 1) < Math.ceil(total / (params?.limit || 10))
+              ? (params?.page || 1) + 1
+              : undefined,
+          previousPage:
+            (params?.page || 1) > 1 ? (params?.page || 1) - 1 : undefined,
+        },
       };
     } catch (error) {
       this.logger.error(
@@ -154,16 +161,16 @@ export class TypeOrmUserRepository implements UserRepository {
         error as Error,
         { params },
       );
-      return { 
-        data: [], 
-        meta: { 
-          currentPage: 1, 
-          totalPages: 0, 
-          totalItems: 0, 
+      return {
+        data: [],
+        meta: {
+          currentPage: 1,
+          totalPages: 0,
+          totalItems: 0,
           itemsPerPage: 10,
           hasNextPage: false,
-          hasPreviousPage: false
-        } 
+          hasPreviousPage: false,
+        },
       };
     }
   }
@@ -172,15 +179,18 @@ export class TypeOrmUserRepository implements UserRepository {
     return this.findAll(params);
   }
 
-  async findByRole(role: UserRole, params?: UserQueryParams): Promise<PaginatedResult<User>> {
-    const queryParams: UserQueryParams = { 
+  async findByRole(
+    role: UserRole,
+    params?: UserQueryParams,
+  ): Promise<PaginatedResult<User>> {
+    const queryParams: UserQueryParams = {
       ...params,
       page: params?.page || 1,
       limit: params?.limit || 10,
-      filters: { 
+      filters: {
         ...params?.filters,
-        role 
-      }
+        role,
+      },
     };
     return this.findAll(queryParams);
   }
@@ -302,9 +312,13 @@ export class TypeOrmUserRepository implements UserRepository {
 
   async updateBatch(users: User[]): Promise<User[]> {
     try {
-      const ormEntities = users.map(user => TypeOrmUserMapper.toOrmEntity(user));
+      const ormEntities = users.map((user) =>
+        TypeOrmUserMapper.toOrmEntity(user),
+      );
       const savedEntities = await this.ormRepository.save(ormEntities);
-      return savedEntities.map(entity => TypeOrmUserMapper.toDomainEntity(entity));
+      return savedEntities.map((entity) =>
+        TypeOrmUserMapper.toDomainEntity(entity),
+      );
     } catch (error) {
       this.logger.error(
         this.i18n.t('operations.user.update_batch_failed'),
@@ -331,15 +345,17 @@ export class TypeOrmUserRepository implements UserRepository {
   async export(params?: UserQueryParams): Promise<User[]> {
     try {
       // Pour export, on utilise les mêmes paramètres mais sans pagination
-      const exportParams: UserQueryParams = params ? {
-        ...params,
-        page: 1,
-        limit: Number.MAX_SAFE_INTEGER
-      } : { page: 1, limit: Number.MAX_SAFE_INTEGER };
-      
+      const exportParams: UserQueryParams = params
+        ? {
+            ...params,
+            page: 1,
+            limit: Number.MAX_SAFE_INTEGER,
+          }
+        : { page: 1, limit: Number.MAX_SAFE_INTEGER };
+
       const query = this.buildQuery(exportParams);
       const entities = await query.getMany();
-      return entities.map(entity => TypeOrmUserMapper.toDomainEntity(entity));
+      return entities.map((entity) => TypeOrmUserMapper.toDomainEntity(entity));
     } catch (error) {
       this.logger.error(
         this.i18n.t('operations.user.export_failed'),
@@ -350,49 +366,63 @@ export class TypeOrmUserRepository implements UserRepository {
     }
   }
 
-  private buildQuery(params?: UserQueryParams): SelectQueryBuilder<UserOrmEntity> {
+  private buildQuery(
+    params?: UserQueryParams,
+  ): SelectQueryBuilder<UserOrmEntity> {
     const query = this.ormRepository.createQueryBuilder('user');
 
     if (params?.filters?.role) {
       if (Array.isArray(params.filters.role)) {
-        query.andWhere('user.role IN (:...roles)', { roles: params.filters.role });
+        query.andWhere('user.role IN (:...roles)', {
+          roles: params.filters.role,
+        });
       } else {
         query.andWhere('user.role = :role', { role: params.filters.role });
       }
     }
 
     if (params?.filters?.isActive !== undefined) {
-      query.andWhere('user.isActive = :isActive', { isActive: params.filters.isActive });
+      query.andWhere('user.isActive = :isActive', {
+        isActive: params.filters.isActive,
+      });
     }
 
     if (params?.search?.query) {
       query.andWhere(
         '(LOWER(user.firstName) LIKE LOWER(:search) OR LOWER(user.lastName) LIKE LOWER(:search) OR LOWER(user.email) LIKE LOWER(:search) OR LOWER(user.username) LIKE LOWER(:search))',
-        { search: `%${params.search.query}%` }
+        { search: `%${params.search.query}%` },
       );
     }
 
     if (params?.search?.email) {
-      query.andWhere('LOWER(user.email) LIKE LOWER(:email)', { email: `%${params.search.email}%` });
+      query.andWhere('LOWER(user.email) LIKE LOWER(:email)', {
+        email: `%${params.search.email}%`,
+      });
     }
 
     if (params?.search?.name) {
       query.andWhere(
         '(LOWER(user.firstName) LIKE LOWER(:name) OR LOWER(user.lastName) LIKE LOWER(:name))',
-        { name: `%${params.search.name}%` }
+        { name: `%${params.search.name}%` },
       );
     }
 
     if (params?.filters?.emailDomain) {
-      query.andWhere('user.email LIKE :domain', { domain: `%@${params.filters.emailDomain}` });
+      query.andWhere('user.email LIKE :domain', {
+        domain: `%@${params.filters.emailDomain}`,
+      });
     }
 
     // Date filters
     if (params?.filters?.createdAt?.from) {
-      query.andWhere('user.createdAt >= :createdFrom', { createdFrom: params.filters.createdAt.from });
+      query.andWhere('user.createdAt >= :createdFrom', {
+        createdFrom: params.filters.createdAt.from,
+      });
     }
     if (params?.filters?.createdAt?.to) {
-      query.andWhere('user.createdAt <= :createdTo', { createdTo: params.filters.createdAt.to });
+      query.andWhere('user.createdAt <= :createdTo', {
+        createdTo: params.filters.createdAt.to,
+      });
     }
 
     // Pagination

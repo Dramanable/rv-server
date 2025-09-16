@@ -255,12 +255,7 @@ export class BusinessAlreadyExistsError extends ApplicationException {
  * 👥 Exception : Staff validation error
  */
 export class StaffValidationError extends ApplicationException {
-  constructor(
-    field: string,
-    value: unknown,
-    rule: string,
-    staffId?: string,
-  ) {
+  constructor(field: string, value: unknown, rule: string, staffId?: string) {
     const valueStr = String(value);
     super(
       `Staff validation failed for field ${field} with value ${valueStr}: ${rule}`,
@@ -275,12 +270,7 @@ export class StaffValidationError extends ApplicationException {
  * 🛎️ Exception : Service validation error
  */
 export class ServiceValidationError extends ApplicationException {
-  constructor(
-    field: string,
-    value: unknown,
-    rule: string,
-    serviceId?: string,
-  ) {
+  constructor(field: string, value: unknown, rule: string, serviceId?: string) {
     const valueStr = String(value);
     super(
       `Service validation failed for field ${field} with value ${valueStr}: ${rule}`,

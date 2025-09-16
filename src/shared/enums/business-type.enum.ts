@@ -4,5 +4,5 @@ export enum BusinessType {
   BEAUTY = 'BEAUTY',
   FITNESS = 'FITNESS',
   CONSULTING = 'CONSULTING',
-  OTHER = 'OTHER'
+  OTHER = 'OTHER',
 }

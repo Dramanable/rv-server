@@ -29,14 +29,22 @@ describe('User Entity with Roles', () => {
     });
 
     it('should create platform admin user', () => {
-      const user = new User(validEmail, 'Platform Admin', UserRole.PLATFORM_ADMIN);
+      const user = new User(
+        validEmail,
+        'Platform Admin',
+        UserRole.PLATFORM_ADMIN,
+      );
 
       expect(user.role).toBe(UserRole.PLATFORM_ADMIN);
       expect(user.isPlatformAdmin()).toBe(true);
     });
 
     it('should create business owner user', () => {
-      const user = new User(validEmail, 'Business Owner', UserRole.BUSINESS_OWNER);
+      const user = new User(
+        validEmail,
+        'Business Owner',
+        UserRole.BUSINESS_OWNER,
+      );
 
       expect(user.role).toBe(UserRole.BUSINESS_OWNER);
       expect(user.isBusinessOwner()).toBe(true);
@@ -68,52 +76,98 @@ describe('User Entity with Roles', () => {
       );
 
       // Act & Assert - Teste quelques permissions clés
-      expect(platformAdmin.hasPermission(Permission.MANAGE_SYSTEM_SETTINGS)).toBe(true);
-      expect(platformAdmin.hasPermission(Permission.MANAGE_ALL_STAFF)).toBe(true);
-      expect(platformAdmin.hasPermission(Permission.CONFIGURE_BUSINESS_SETTINGS)).toBe(true);
-      expect(platformAdmin.hasPermission(Permission.VIEW_FINANCIAL_REPORTS)).toBe(true);
+      expect(
+        platformAdmin.hasPermission(Permission.MANAGE_SYSTEM_SETTINGS),
+      ).toBe(true);
+      expect(platformAdmin.hasPermission(Permission.MANAGE_ALL_STAFF)).toBe(
+        true,
+      );
+      expect(
+        platformAdmin.hasPermission(Permission.CONFIGURE_BUSINESS_SETTINGS),
+      ).toBe(true);
+      expect(
+        platformAdmin.hasPermission(Permission.VIEW_FINANCIAL_REPORTS),
+      ).toBe(true);
     });
 
     it('should allow business owner to manage business but not platform', () => {
-      const businessOwner = new User(validEmail, 'Business Owner', UserRole.BUSINESS_OWNER);
+      const businessOwner = new User(
+        validEmail,
+        'Business Owner',
+        UserRole.BUSINESS_OWNER,
+      );
 
       // Peut gérer l'entreprise
-      expect(businessOwner.hasPermission(Permission.CONFIGURE_BUSINESS_SETTINGS)).toBe(true);
-      expect(businessOwner.hasPermission(Permission.MANAGE_ALL_STAFF)).toBe(true);
-      expect(businessOwner.hasPermission(Permission.VIEW_FINANCIAL_REPORTS)).toBe(true);
-      expect(businessOwner.hasPermission(Permission.MANAGE_SERVICE_CATALOG)).toBe(true);
+      expect(
+        businessOwner.hasPermission(Permission.CONFIGURE_BUSINESS_SETTINGS),
+      ).toBe(true);
+      expect(businessOwner.hasPermission(Permission.MANAGE_ALL_STAFF)).toBe(
+        true,
+      );
+      expect(
+        businessOwner.hasPermission(Permission.VIEW_FINANCIAL_REPORTS),
+      ).toBe(true);
+      expect(
+        businessOwner.hasPermission(Permission.MANAGE_SERVICE_CATALOG),
+      ).toBe(true);
 
       // Ne peut pas gérer la plateforme
-      expect(businessOwner.hasPermission(Permission.MANAGE_SYSTEM_SETTINGS)).toBe(false);
+      expect(
+        businessOwner.hasPermission(Permission.MANAGE_SYSTEM_SETTINGS),
+      ).toBe(false);
     });
 
     it('should allow practitioner to manage own schedule and view assigned clients', () => {
-      const practitioner = new User(validEmail, 'Doctor', UserRole.PRACTITIONER);
+      const practitioner = new User(
+        validEmail,
+        'Doctor',
+        UserRole.PRACTITIONER,
+      );
 
       // Permissions praticien
-      expect(practitioner.hasPermission(Permission.MANAGE_OWN_SCHEDULE)).toBe(true);
-      expect(practitioner.hasPermission(Permission.VIEW_OWN_APPOINTMENTS)).toBe(true);
-      expect(practitioner.hasPermission(Permission.VIEW_CLIENT_HISTORY)).toBe(true);
-      expect(practitioner.hasPermission(Permission.CONFIRM_APPOINTMENTS)).toBe(true);
+      expect(practitioner.hasPermission(Permission.MANAGE_OWN_SCHEDULE)).toBe(
+        true,
+      );
+      expect(practitioner.hasPermission(Permission.VIEW_OWN_APPOINTMENTS)).toBe(
+        true,
+      );
+      expect(practitioner.hasPermission(Permission.VIEW_CLIENT_HISTORY)).toBe(
+        true,
+      );
+      expect(practitioner.hasPermission(Permission.CONFIRM_APPOINTMENTS)).toBe(
+        true,
+      );
 
       // Ne peut pas faire de gestion avancée
-      expect(practitioner.hasPermission(Permission.MANAGE_ALL_STAFF)).toBe(false);
-      expect(practitioner.hasPermission(Permission.VIEW_FINANCIAL_REPORTS)).toBe(false);
+      expect(practitioner.hasPermission(Permission.MANAGE_ALL_STAFF)).toBe(
+        false,
+      );
+      expect(
+        practitioner.hasPermission(Permission.VIEW_FINANCIAL_REPORTS),
+      ).toBe(false);
     });
 
     it('should allow client basic booking permissions only', () => {
-      const client = new User(validEmail, 'Regular Client', UserRole.REGULAR_CLIENT);
+      const client = new User(
+        validEmail,
+        'Regular Client',
+        UserRole.REGULAR_CLIENT,
+      );
 
       // Permissions client
       expect(client.hasPermission(Permission.BOOK_APPOINTMENT)).toBe(true);
       expect(client.hasPermission(Permission.VIEW_OWN_APPOINTMENTS)).toBe(true);
-      expect(client.hasPermission(Permission.CANCEL_OWN_APPOINTMENTS)).toBe(true);
+      expect(client.hasPermission(Permission.CANCEL_OWN_APPOINTMENTS)).toBe(
+        true,
+      );
       expect(client.hasPermission(Permission.VIEW_SERVICE_CATALOG)).toBe(true);
 
       // Ne peut pas faire d'actions staff/admin
       expect(client.hasPermission(Permission.MANAGE_OWN_SCHEDULE)).toBe(false);
       expect(client.hasPermission(Permission.VIEW_CLIENT_HISTORY)).toBe(false);
-      expect(client.hasPermission(Permission.CONFIGURE_BUSINESS_SETTINGS)).toBe(false);
+      expect(client.hasPermission(Permission.CONFIGURE_BUSINESS_SETTINGS)).toBe(
+        false,
+      );
     });
   });
 
@@ -141,7 +195,11 @@ describe('User Entity with Roles', () => {
     });
 
     it('should allow business owner to act on lower hierarchy users only', () => {
-      const businessOwner = new User(validEmail, 'Business Owner', UserRole.BUSINESS_OWNER);
+      const businessOwner = new User(
+        validEmail,
+        'Business Owner',
+        UserRole.BUSINESS_OWNER,
+      );
       const practitioner = new User(
         new Email('doctor@example.com'),
         'Doctor',
@@ -191,7 +249,11 @@ describe('User Entity with Roles', () => {
     });
 
     it('should normalize name', () => {
-      const user = new User(validEmail, '  John Doe  ', UserRole.REGULAR_CLIENT);
+      const user = new User(
+        validEmail,
+        '  John Doe  ',
+        UserRole.REGULAR_CLIENT,
+      );
       expect(user.name).toBe('John Doe');
     });
   });

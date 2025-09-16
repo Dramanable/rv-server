@@ -2,7 +2,7 @@ import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm';
 
 /**
  * 🏢 Business Management Tables Migration
- * 
+ *
  * Creates core business entities tables with proper relationships,
  * indexes for performance, and multi-tenant support
  */
@@ -33,7 +33,7 @@ export class CreateBusinessTables1694780000000 implements MigrationInterface {
             type: 'enum',
             enum: [
               'MEDICAL_CLINIC',
-              'DENTAL_OFFICE', 
+              'DENTAL_OFFICE',
               'LAW_FIRM',
               'BEAUTY_SALON',
               'THERAPY_CENTER',
@@ -41,7 +41,7 @@ export class CreateBusinessTables1694780000000 implements MigrationInterface {
               'CONSULTING_FIRM',
               'WELLNESS_CENTER',
               'FITNESS_CENTER',
-              'EDUCATIONAL_CENTER'
+              'EDUCATIONAL_CENTER',
             ],
             isNullable: false,
           },
@@ -348,7 +348,7 @@ export class CreateBusinessTables1694780000000 implements MigrationInterface {
               'JUNIOR_PRACTITIONER',
               'RECEPTIONIST',
               'ASSISTANT',
-              'SCHEDULER'
+              'SCHEDULER',
             ],
             isNullable: false,
           },
@@ -784,38 +784,185 @@ export class CreateBusinessTables1694780000000 implements MigrationInterface {
     );
 
     // 8. Create indexes for performance
-    await queryRunner.createIndex('businesses', new TableIndex({ name: 'idx_businesses_email', columnNames: ['email'] }));
-    await queryRunner.createIndex('businesses', new TableIndex({ name: 'idx_businesses_name', columnNames: ['name'] }));
-    await queryRunner.createIndex('businesses', new TableIndex({ name: 'idx_businesses_type', columnNames: ['business_type'] }));
-    await queryRunner.createIndex('businesses', new TableIndex({ name: 'idx_businesses_active', columnNames: ['is_active'] }));
+    await queryRunner.createIndex(
+      'businesses',
+      new TableIndex({ name: 'idx_businesses_email', columnNames: ['email'] }),
+    );
+    await queryRunner.createIndex(
+      'businesses',
+      new TableIndex({ name: 'idx_businesses_name', columnNames: ['name'] }),
+    );
+    await queryRunner.createIndex(
+      'businesses',
+      new TableIndex({
+        name: 'idx_businesses_type',
+        columnNames: ['business_type'],
+      }),
+    );
+    await queryRunner.createIndex(
+      'businesses',
+      new TableIndex({
+        name: 'idx_businesses_active',
+        columnNames: ['is_active'],
+      }),
+    );
 
-    await queryRunner.createIndex('business_addresses', new TableIndex({ name: 'idx_business_addresses_business_id', columnNames: ['business_id'] }));
-    await queryRunner.createIndex('business_addresses', new TableIndex({ name: 'idx_business_addresses_primary', columnNames: ['business_id', 'is_primary'] }));
+    await queryRunner.createIndex(
+      'business_addresses',
+      new TableIndex({
+        name: 'idx_business_addresses_business_id',
+        columnNames: ['business_id'],
+      }),
+    );
+    await queryRunner.createIndex(
+      'business_addresses',
+      new TableIndex({
+        name: 'idx_business_addresses_primary',
+        columnNames: ['business_id', 'is_primary'],
+      }),
+    );
 
-    await queryRunner.createIndex('services', new TableIndex({ name: 'idx_services_business_id', columnNames: ['business_id'] }));
-    await queryRunner.createIndex('services', new TableIndex({ name: 'idx_services_active', columnNames: ['business_id', 'is_active'] }));
-    await queryRunner.createIndex('services', new TableIndex({ name: 'idx_services_category', columnNames: ['business_id', 'category'] }));
+    await queryRunner.createIndex(
+      'services',
+      new TableIndex({
+        name: 'idx_services_business_id',
+        columnNames: ['business_id'],
+      }),
+    );
+    await queryRunner.createIndex(
+      'services',
+      new TableIndex({
+        name: 'idx_services_active',
+        columnNames: ['business_id', 'is_active'],
+      }),
+    );
+    await queryRunner.createIndex(
+      'services',
+      new TableIndex({
+        name: 'idx_services_category',
+        columnNames: ['business_id', 'category'],
+      }),
+    );
 
-    await queryRunner.createIndex('staff', new TableIndex({ name: 'idx_staff_business_id', columnNames: ['business_id'] }));
-    await queryRunner.createIndex('staff', new TableIndex({ name: 'idx_staff_user_id', columnNames: ['user_id'] }));
-    await queryRunner.createIndex('staff', new TableIndex({ name: 'idx_staff_role', columnNames: ['business_id', 'staff_role'] }));
-    await queryRunner.createIndex('staff', new TableIndex({ name: 'idx_staff_active', columnNames: ['business_id', 'is_active'] }));
+    await queryRunner.createIndex(
+      'staff',
+      new TableIndex({
+        name: 'idx_staff_business_id',
+        columnNames: ['business_id'],
+      }),
+    );
+    await queryRunner.createIndex(
+      'staff',
+      new TableIndex({ name: 'idx_staff_user_id', columnNames: ['user_id'] }),
+    );
+    await queryRunner.createIndex(
+      'staff',
+      new TableIndex({
+        name: 'idx_staff_role',
+        columnNames: ['business_id', 'staff_role'],
+      }),
+    );
+    await queryRunner.createIndex(
+      'staff',
+      new TableIndex({
+        name: 'idx_staff_active',
+        columnNames: ['business_id', 'is_active'],
+      }),
+    );
 
-    await queryRunner.createIndex('calendars', new TableIndex({ name: 'idx_calendars_business_id', columnNames: ['business_id'] }));
-    await queryRunner.createIndex('calendars', new TableIndex({ name: 'idx_calendars_owner_id', columnNames: ['owner_id'] }));
-    await queryRunner.createIndex('calendars', new TableIndex({ name: 'idx_calendars_type', columnNames: ['business_id', 'calendar_type'] }));
+    await queryRunner.createIndex(
+      'calendars',
+      new TableIndex({
+        name: 'idx_calendars_business_id',
+        columnNames: ['business_id'],
+      }),
+    );
+    await queryRunner.createIndex(
+      'calendars',
+      new TableIndex({
+        name: 'idx_calendars_owner_id',
+        columnNames: ['owner_id'],
+      }),
+    );
+    await queryRunner.createIndex(
+      'calendars',
+      new TableIndex({
+        name: 'idx_calendars_type',
+        columnNames: ['business_id', 'calendar_type'],
+      }),
+    );
 
-    await queryRunner.createIndex('working_hours', new TableIndex({ name: 'idx_working_hours_calendar_id', columnNames: ['calendar_id'] }));
-    await queryRunner.createIndex('working_hours', new TableIndex({ name: 'idx_working_hours_day', columnNames: ['calendar_id', 'day_of_week'] }));
+    await queryRunner.createIndex(
+      'working_hours',
+      new TableIndex({
+        name: 'idx_working_hours_calendar_id',
+        columnNames: ['calendar_id'],
+      }),
+    );
+    await queryRunner.createIndex(
+      'working_hours',
+      new TableIndex({
+        name: 'idx_working_hours_day',
+        columnNames: ['calendar_id', 'day_of_week'],
+      }),
+    );
 
-    await queryRunner.createIndex('appointments', new TableIndex({ name: 'idx_appointments_business_id', columnNames: ['business_id'] }));
-    await queryRunner.createIndex('appointments', new TableIndex({ name: 'idx_appointments_client_id', columnNames: ['client_id'] }));
-    await queryRunner.createIndex('appointments', new TableIndex({ name: 'idx_appointments_staff_id', columnNames: ['staff_id'] }));
-    await queryRunner.createIndex('appointments', new TableIndex({ name: 'idx_appointments_service_id', columnNames: ['service_id'] }));
-    await queryRunner.createIndex('appointments', new TableIndex({ name: 'idx_appointments_calendar_id', columnNames: ['calendar_id'] }));
-    await queryRunner.createIndex('appointments', new TableIndex({ name: 'idx_appointments_time_range', columnNames: ['start_time', 'end_time'] }));
-    await queryRunner.createIndex('appointments', new TableIndex({ name: 'idx_appointments_status', columnNames: ['business_id', 'status'] }));
-    await queryRunner.createIndex('appointments', new TableIndex({ name: 'idx_appointments_date', columnNames: ['business_id', 'start_time'] }));
+    await queryRunner.createIndex(
+      'appointments',
+      new TableIndex({
+        name: 'idx_appointments_business_id',
+        columnNames: ['business_id'],
+      }),
+    );
+    await queryRunner.createIndex(
+      'appointments',
+      new TableIndex({
+        name: 'idx_appointments_client_id',
+        columnNames: ['client_id'],
+      }),
+    );
+    await queryRunner.createIndex(
+      'appointments',
+      new TableIndex({
+        name: 'idx_appointments_staff_id',
+        columnNames: ['staff_id'],
+      }),
+    );
+    await queryRunner.createIndex(
+      'appointments',
+      new TableIndex({
+        name: 'idx_appointments_service_id',
+        columnNames: ['service_id'],
+      }),
+    );
+    await queryRunner.createIndex(
+      'appointments',
+      new TableIndex({
+        name: 'idx_appointments_calendar_id',
+        columnNames: ['calendar_id'],
+      }),
+    );
+    await queryRunner.createIndex(
+      'appointments',
+      new TableIndex({
+        name: 'idx_appointments_time_range',
+        columnNames: ['start_time', 'end_time'],
+      }),
+    );
+    await queryRunner.createIndex(
+      'appointments',
+      new TableIndex({
+        name: 'idx_appointments_status',
+        columnNames: ['business_id', 'status'],
+      }),
+    );
+    await queryRunner.createIndex(
+      'appointments',
+      new TableIndex({
+        name: 'idx_appointments_date',
+        columnNames: ['business_id', 'start_time'],
+      }),
+    );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
@@ -830,7 +977,10 @@ export class CreateBusinessTables1694780000000 implements MigrationInterface {
     await queryRunner.dropIndex('appointments', 'idx_appointments_business_id');
 
     await queryRunner.dropIndex('working_hours', 'idx_working_hours_day');
-    await queryRunner.dropIndex('working_hours', 'idx_working_hours_calendar_id');
+    await queryRunner.dropIndex(
+      'working_hours',
+      'idx_working_hours_calendar_id',
+    );
 
     await queryRunner.dropIndex('calendars', 'idx_calendars_type');
     await queryRunner.dropIndex('calendars', 'idx_calendars_owner_id');
@@ -845,8 +995,14 @@ export class CreateBusinessTables1694780000000 implements MigrationInterface {
     await queryRunner.dropIndex('services', 'idx_services_active');
     await queryRunner.dropIndex('services', 'idx_services_business_id');
 
-    await queryRunner.dropIndex('business_addresses', 'idx_business_addresses_primary');
-    await queryRunner.dropIndex('business_addresses', 'idx_business_addresses_business_id');
+    await queryRunner.dropIndex(
+      'business_addresses',
+      'idx_business_addresses_primary',
+    );
+    await queryRunner.dropIndex(
+      'business_addresses',
+      'idx_business_addresses_business_id',
+    );
 
     await queryRunner.dropIndex('businesses', 'idx_businesses_active');
     await queryRunner.dropIndex('businesses', 'idx_businesses_type');

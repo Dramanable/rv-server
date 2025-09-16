@@ -1,6 +1,6 @@
 export enum DatabaseType {
   SQL = 'sql',
-  NOSQL = 'nosql'
+  NOSQL = 'nosql',
 }
 
 export interface IDatabaseConfigService {

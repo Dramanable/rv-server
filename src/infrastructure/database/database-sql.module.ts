@@ -18,14 +18,14 @@ import { DATABASE_CONFIG_SERVICE } from '../../application/ports/database-config
 
 /**
  * 🗄️ Module Base de Données SQL (PostgreSQL/TypeORM)
- * 
+ *
  * **Responsabilité** : Configuration exclusive SQL avec TypeORM
- * 
+ *
  * **Architecture** :
  * - ✅ PostgreSQL uniquement avec TypeORM
  * - ✅ Repositories SQL spécialisés
  * - ✅ Mappers SQL dédiés
- * 
+ *
  * **Variables d'Environnement** :
  * - `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASS`
  */
@@ -36,7 +36,7 @@ export class DatabaseSqlModule {
       module: DatabaseSqlModule,
       imports: [
         ConfigModule,
-        
+
         // Configuration TypeORM (PostgreSQL)
         TypeOrmModule.forRootAsync({
           imports: [ConfigModule],
@@ -84,10 +84,7 @@ export class DatabaseSqlModule {
           useClass: TypeOrmBusinessRepository,
         },
       ],
-      exports: [
-        DATABASE_CONFIG_SERVICE,
-        BUSINESS_REPOSITORY,
-      ],
+      exports: [DATABASE_CONFIG_SERVICE, BUSINESS_REPOSITORY],
       global: true,
     };
   }

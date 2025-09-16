@@ -1,7 +1,7 @@
 export class Money {
   constructor(
     private readonly amount: number,
-    private readonly currency: string
+    private readonly currency: string,
   ) {
     this.validateAmount(amount);
     this.validateCurrency(currency);
@@ -17,7 +17,7 @@ export class Money {
     }
 
     // Vérifier que le montant n'a pas plus de 2 décimales
-    if (Number((amount % 1).toFixed(2)) !== Number((amount % 1))) {
+    if (Number((amount % 1).toFixed(2)) !== Number(amount % 1)) {
       throw new Error('Amount cannot have more than 2 decimal places');
     }
   }
@@ -61,12 +61,12 @@ export class Money {
     if (this.currency !== other.currency) {
       throw new Error('Cannot subtract amounts with different currencies');
     }
-    
+
     const result = this.amount - other.amount;
     if (result < 0) {
       throw new Error('Result cannot be negative');
     }
-    
+
     return new Money(result, this.currency);
   }
 
@@ -113,9 +113,9 @@ export class Money {
       style: 'currency',
       currency: this.currency,
       minimumFractionDigits: 2,
-      maximumFractionDigits: 2
+      maximumFractionDigits: 2,
     });
-    
+
     return formatter.format(this.amount);
   }
 

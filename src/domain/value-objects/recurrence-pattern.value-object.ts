@@ -37,16 +37,32 @@ export class RecurrencePattern {
         break;
 
       case RecurrenceType.MONTHLY:
-        if (!this.rule.dayOfMonth || this.rule.dayOfMonth < 1 || this.rule.dayOfMonth > 31) {
-          throw new Error('Monthly recurrence requires valid dayOfMonth (1-31)');
+        if (
+          !this.rule.dayOfMonth ||
+          this.rule.dayOfMonth < 1 ||
+          this.rule.dayOfMonth > 31
+        ) {
+          throw new Error(
+            'Monthly recurrence requires valid dayOfMonth (1-31)',
+          );
         }
         break;
 
       case RecurrenceType.YEARLY:
-        if (!this.rule.monthOfYear || this.rule.monthOfYear < 1 || this.rule.monthOfYear > 12) {
-          throw new Error('Yearly recurrence requires valid monthOfYear (1-12)');
+        if (
+          !this.rule.monthOfYear ||
+          this.rule.monthOfYear < 1 ||
+          this.rule.monthOfYear > 12
+        ) {
+          throw new Error(
+            'Yearly recurrence requires valid monthOfYear (1-12)',
+          );
         }
-        if (!this.rule.dayOfMonth || this.rule.dayOfMonth < 1 || this.rule.dayOfMonth > 31) {
+        if (
+          !this.rule.dayOfMonth ||
+          this.rule.dayOfMonth < 1 ||
+          this.rule.dayOfMonth > 31
+        ) {
           throw new Error('Yearly recurrence requires valid dayOfMonth (1-31)');
         }
         break;
@@ -62,34 +78,46 @@ export class RecurrencePattern {
     return new RecurrencePattern({
       type: RecurrenceType.DAILY,
       interval,
-      endDate
+      endDate,
     });
   }
 
-  static weekly(daysOfWeek: WeekDay[], interval: number = 1, endDate?: Date): RecurrencePattern {
+  static weekly(
+    daysOfWeek: WeekDay[],
+    interval: number = 1,
+    endDate?: Date,
+  ): RecurrencePattern {
     return new RecurrencePattern({
       type: RecurrenceType.WEEKLY,
       interval,
       daysOfWeek,
-      endDate
+      endDate,
     });
   }
 
-  static monthly(dayOfMonth: number, interval: number = 1, endDate?: Date): RecurrencePattern {
+  static monthly(
+    dayOfMonth: number,
+    interval: number = 1,
+    endDate?: Date,
+  ): RecurrencePattern {
     return new RecurrencePattern({
       type: RecurrenceType.MONTHLY,
       interval,
       dayOfMonth,
-      endDate
+      endDate,
     });
   }
 
-  static yearly(monthOfYear: number, dayOfMonth: number, interval: number = 1): RecurrencePattern {
+  static yearly(
+    monthOfYear: number,
+    dayOfMonth: number,
+    interval: number = 1,
+  ): RecurrencePattern {
     return new RecurrencePattern({
       type: RecurrenceType.YEARLY,
       interval,
       monthOfYear,
-      dayOfMonth
+      dayOfMonth,
     });
   }
 
@@ -143,7 +171,7 @@ export class RecurrencePattern {
         // Find next occurrence based on days of week
         let daysToAdd = 1;
         const currentDay = nextDate.getDay();
-        
+
         // Look for next day in the pattern
         while (daysToAdd <= 7) {
           const checkDay = (currentDay + daysToAdd) % 7;
@@ -164,7 +192,7 @@ export class RecurrencePattern {
       case RecurrenceType.MONTHLY:
         nextDate.setMonth(nextDate.getMonth() + this.rule.interval);
         nextDate.setDate(this.rule.dayOfMonth!);
-        
+
         // Handle months with fewer days
         if (nextDate.getDate() !== this.rule.dayOfMonth) {
           nextDate.setDate(0); // Go to last day of previous month
@@ -175,7 +203,7 @@ export class RecurrencePattern {
         nextDate.setFullYear(nextDate.getFullYear() + this.rule.interval);
         nextDate.setMonth(this.rule.monthOfYear! - 1);
         nextDate.setDate(this.rule.dayOfMonth!);
-        
+
         // Handle leap years for Feb 29
         if (nextDate.getMonth() !== this.rule.monthOfYear! - 1) {
           nextDate.setDate(0); // Go to last day of February
@@ -205,26 +233,33 @@ export class RecurrencePattern {
 
       case RecurrenceType.DAILY:
         const daysDiff = Math.floor(
-          (date.getTime() - referenceDate.getTime()) / (1000 * 60 * 60 * 24)
+          (date.getTime() - referenceDate.getTime()) / (1000 * 60 * 60 * 24),
         );
         return daysDiff >= 0 && daysDiff % this.rule.interval === 0;
 
       case RecurrenceType.WEEKLY:
         const weeksDiff = Math.floor(
-          (date.getTime() - referenceDate.getTime()) / (1000 * 60 * 60 * 24 * 7)
+          (date.getTime() - referenceDate.getTime()) /
+            (1000 * 60 * 60 * 24 * 7),
         );
-        return weeksDiff >= 0 && 
-               weeksDiff % this.rule.interval === 0 &&
-               this.rule.daysOfWeek!.includes(date.getDay() as WeekDay);
+        return (
+          weeksDiff >= 0 &&
+          weeksDiff % this.rule.interval === 0 &&
+          this.rule.daysOfWeek!.includes(date.getDay() as WeekDay)
+        );
 
       case RecurrenceType.MONTHLY:
-        return date.getDate() === this.rule.dayOfMonth &&
-               this.isCorrectMonthInterval(date, referenceDate);
+        return (
+          date.getDate() === this.rule.dayOfMonth &&
+          this.isCorrectMonthInterval(date, referenceDate)
+        );
 
       case RecurrenceType.YEARLY:
-        return date.getDate() === this.rule.dayOfMonth &&
-               date.getMonth() === this.rule.monthOfYear! - 1 &&
-               this.isCorrectYearInterval(date, referenceDate);
+        return (
+          date.getDate() === this.rule.dayOfMonth &&
+          date.getMonth() === this.rule.monthOfYear! - 1 &&
+          this.isCorrectYearInterval(date, referenceDate)
+        );
 
       default:
         return false;
@@ -232,8 +267,9 @@ export class RecurrencePattern {
   }
 
   private isCorrectMonthInterval(date: Date, referenceDate: Date): boolean {
-    const monthsDiff = (date.getFullYear() - referenceDate.getFullYear()) * 12 + 
-                      (date.getMonth() - referenceDate.getMonth());
+    const monthsDiff =
+      (date.getFullYear() - referenceDate.getFullYear()) * 12 +
+      (date.getMonth() - referenceDate.getMonth());
     return monthsDiff >= 0 && monthsDiff % this.rule.interval === 0;
   }
 
@@ -244,9 +280,9 @@ export class RecurrencePattern {
 
   private isException(date: Date): boolean {
     if (!this.rule.exceptions) return false;
-    
-    return this.rule.exceptions.some(exception => 
-      exception.toDateString() === date.toDateString()
+
+    return this.rule.exceptions.some(
+      (exception) => exception.toDateString() === date.toDateString(),
     );
   }
 
@@ -275,7 +311,7 @@ export class RecurrencePattern {
     const newExceptions = [...(this.rule.exceptions || []), exceptionDate];
     return new RecurrencePattern({
       ...this.rule,
-      exceptions: newExceptions
+      exceptions: newExceptions,
     });
   }
 
@@ -291,13 +327,15 @@ export class RecurrencePattern {
         return 'Une seule fois';
 
       case RecurrenceType.DAILY:
-        return this.rule.interval === 1 
+        return this.rule.interval === 1
           ? 'Tous les jours'
           : `Tous les ${this.rule.interval} jours`;
 
       case RecurrenceType.WEEKLY:
         const dayNames = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
-        const days = this.rule.daysOfWeek!.map(day => dayNames[day]).join(', ');
+        const days = this.rule
+          .daysOfWeek!.map((day) => dayNames[day])
+          .join(', ');
         return this.rule.interval === 1
           ? `Chaque semaine le ${days}`
           : `Toutes les ${this.rule.interval} semaines le ${days}`;
@@ -309,8 +347,18 @@ export class RecurrencePattern {
 
       case RecurrenceType.YEARLY:
         const monthNames = [
-          'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
-          'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
+          'Janvier',
+          'Février',
+          'Mars',
+          'Avril',
+          'Mai',
+          'Juin',
+          'Juillet',
+          'Août',
+          'Septembre',
+          'Octobre',
+          'Novembre',
+          'Décembre',
         ];
         return `Le ${this.rule.dayOfMonth} ${monthNames[this.rule.monthOfYear! - 1]} chaque année`;
 

@@ -2,7 +2,13 @@
  * 🔄 Refresh Token Entity ORM - TypeORM + Clean Architecture
  */
 
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity('refresh_tokens')
 export class RefreshTokenOrmEntity {

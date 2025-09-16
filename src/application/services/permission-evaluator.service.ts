@@ -1,6 +1,6 @@
 /**
  * 🔐 SERVICE D'ÉVALUATION DE PERMISSIONS - Implémentation Exemple
- * 
+ *
  * Démontre l'utilisation du nouveau système de rôles et permissions
  * avec évaluation contextuelle et workflow d'approbation.
  */
@@ -28,14 +28,18 @@ import {
  * 🎯 Implémentation du Service d'Évaluation de Permissions
  */
 export class BusinessPermissionEvaluator implements PermissionEvaluator {
-
   /**
    * Évalue si une permission est accordée dans un contexte donné
    */
-  async evaluatePermission(context: PermissionContext): Promise<PermissionEvaluation> {
+  async evaluatePermission(
+    context: PermissionContext,
+  ): Promise<PermissionEvaluation> {
     // 1. Vérification de base du rôle
-    const hasBasePermission = RoleUtils.hasPermission(context.userRole, context.permission);
-    
+    const hasBasePermission = RoleUtils.hasPermission(
+      context.userRole,
+      context.permission,
+    );
+
     if (!hasBasePermission) {
       return {
         isAllowed: false,
@@ -44,20 +48,22 @@ export class BusinessPermissionEvaluator implements PermissionEvaluator {
     }
 
     // 2. Évaluation contextuelle
-    const contextualEvaluation = await this.evaluateContextualConstraints(context);
+    const contextualEvaluation =
+      await this.evaluateContextualConstraints(context);
     if (!contextualEvaluation.isAllowed) {
       return contextualEvaluation;
     }
 
     // 3. Vérification des contraintes spécifiques
-    const constraintEvaluation = await this.evaluateBusinessConstraints(context);
+    const constraintEvaluation =
+      await this.evaluateBusinessConstraints(context);
     if (!constraintEvaluation.isAllowed) {
       return constraintEvaluation;
     }
 
     // 4. Détermination du workflow d'approbation
     const requiresApproval = await this.shouldRequireApproval(context);
-    const approvalWorkflow = requiresApproval 
+    const approvalWorkflow = requiresApproval
       ? await this.getApprovalWorkflow(context.permission, context)
       : undefined;
 
@@ -72,8 +78,9 @@ export class BusinessPermissionEvaluator implements PermissionEvaluator {
   /**
    * Évalue les contraintes contextuelles
    */
-  private async evaluateContextualConstraints(context: PermissionContext): Promise<PermissionEvaluation> {
-    
+  private async evaluateContextualConstraints(
+    context: PermissionContext,
+  ): Promise<PermissionEvaluation> {
     // Contraintes temporelles
     if (context.temporal) {
       const temporalCheck = this.checkTemporalConstraints(context);
@@ -84,7 +91,8 @@ export class BusinessPermissionEvaluator implements PermissionEvaluator {
 
     // Contraintes relationnelles
     if (context.relationship) {
-      const relationshipCheck = await this.checkRelationshipConstraints(context);
+      const relationshipCheck =
+        await this.checkRelationshipConstraints(context);
       if (!relationshipCheck.isAllowed) {
         return relationshipCheck;
       }
@@ -96,7 +104,9 @@ export class BusinessPermissionEvaluator implements PermissionEvaluator {
   /**
    * Vérifie les contraintes temporelles
    */
-  private checkTemporalConstraints(context: PermissionContext): PermissionEvaluation {
+  private checkTemporalConstraints(
+    context: PermissionContext,
+  ): PermissionEvaluation {
     const temporal = context.temporal!;
     const now = new Date();
 
@@ -104,7 +114,7 @@ export class BusinessPermissionEvaluator implements PermissionEvaluator {
     if (temporal.isEmergency && this.canOverrideInEmergency(context.userRole)) {
       return {
         isAllowed: true,
-        reason: 'Accès d\'urgence accordé',
+        reason: "Accès d'urgence accordé",
       };
     }
 
@@ -112,14 +122,17 @@ export class BusinessPermissionEvaluator implements PermissionEvaluator {
     if (temporal.timeOfDay) {
       const currentTime = now.toTimeString().substring(0, 5); // "HH:MM"
       const { start, end } = temporal.timeOfDay;
-      
+
       if (currentTime < start || currentTime > end) {
         // Vérifier si le rôle peut opérer en dehors des heures
         if (!this.canWorkOutsideHours(context.userRole)) {
           return {
             isAllowed: false,
             reason: `Action non autorisée en dehors des heures ouvrables (${start}-${end})`,
-            suggestions: ['Programmer l\'action pour les heures ouvrables', 'Demander une approbation d\'urgence'],
+            suggestions: [
+              "Programmer l'action pour les heures ouvrables",
+              "Demander une approbation d'urgence",
+            ],
           };
         }
       }
@@ -131,9 +144,11 @@ export class BusinessPermissionEvaluator implements PermissionEvaluator {
   /**
    * Vérifie les contraintes relationnelles
    */
-  private async checkRelationshipConstraints(context: PermissionContext): Promise<PermissionEvaluation> {
+  private async checkRelationshipConstraints(
+    context: PermissionContext,
+  ): Promise<PermissionEvaluation> {
     const relationship = context.relationship!;
-    
+
     // Action sur soi-même toujours autorisée (si permission de base OK)
     if (relationship.isOwnResource) {
       return { isAllowed: true };
@@ -141,7 +156,10 @@ export class BusinessPermissionEvaluator implements PermissionEvaluator {
 
     // Vérification hiérarchique
     if (relationship.targetRole) {
-      const canActOnRole = RoleUtils.canActOnRole(context.userRole, relationship.targetRole);
+      const canActOnRole = RoleUtils.canActOnRole(
+        context.userRole,
+        relationship.targetRole,
+      );
       if (!canActOnRole) {
         return {
           isAllowed: false,
@@ -152,7 +170,10 @@ export class BusinessPermissionEvaluator implements PermissionEvaluator {
 
     // Vérification des relations spéciales
     if (relationship.relationship) {
-      const relationshipCheck = this.checkSpecialRelationships(context, relationship.relationship);
+      const relationshipCheck = this.checkSpecialRelationships(
+        context,
+        relationship.relationship,
+      );
       if (!relationshipCheck.isAllowed) {
         return relationshipCheck;
       }
@@ -164,7 +185,10 @@ export class BusinessPermissionEvaluator implements PermissionEvaluator {
   /**
    * Vérifie les relations spéciales (mentor/mentoré, famille, etc.)
    */
-  private checkSpecialRelationships(context: PermissionContext, relationshipType: RelationshipType): PermissionEvaluation {
+  private checkSpecialRelationships(
+    context: PermissionContext,
+    relationshipType: RelationshipType,
+  ): PermissionEvaluation {
     switch (relationshipType) {
       case RelationshipType.FAMILY_MEMBER:
         // Les clients peuvent réserver pour leur famille
@@ -183,7 +207,8 @@ export class BusinessPermissionEvaluator implements PermissionEvaluator {
         }
         return {
           isAllowed: false,
-          reason: 'Seuls les praticiens seniors peuvent superviser des mentorés',
+          reason:
+            'Seuls les praticiens seniors peuvent superviser des mentorés',
         };
 
       case RelationshipType.ASSIGNED_CLIENT:
@@ -204,20 +229,22 @@ export class BusinessPermissionEvaluator implements PermissionEvaluator {
   /**
    * Évalue les contraintes métier spécifiques
    */
-  private async evaluateBusinessConstraints(context: PermissionContext): Promise<PermissionEvaluation> {
+  private async evaluateBusinessConstraints(
+    context: PermissionContext,
+  ): Promise<PermissionEvaluation> {
     const { businessType } = context.organizational;
 
     // Contraintes spécifiques par secteur
     switch (businessType) {
       case BusinessType.MEDICAL_CLINIC:
         return this.evaluateMedicalConstraints(context);
-      
+
       case BusinessType.LAW_FIRM:
         return this.evaluateLegalConstraints(context);
-      
+
       case BusinessType.BEAUTY_SALON:
         return this.evaluateBeautyConstraints(context);
-      
+
       default:
         return { isAllowed: true };
     }
@@ -226,13 +253,19 @@ export class BusinessPermissionEvaluator implements PermissionEvaluator {
   /**
    * Contraintes spécifiques au secteur médical
    */
-  private evaluateMedicalConstraints(context: PermissionContext): PermissionEvaluation {
+  private evaluateMedicalConstraints(
+    context: PermissionContext,
+  ): PermissionEvaluation {
     // Exemple : Accès au dossier médical nécessite d'être praticien
     if (context.permission === Permission.VIEW_CLIENT_HISTORY) {
-      if (!RoleUtils.isPractitionerRole(context.userRole) && !RoleUtils.isManagementRole(context.userRole)) {
+      if (
+        !RoleUtils.isPractitionerRole(context.userRole) &&
+        !RoleUtils.isManagementRole(context.userRole)
+      ) {
         return {
           isAllowed: false,
-          reason: 'L\'accès au dossier médical nécessite d\'être praticien ou manager',
+          reason:
+            "L'accès au dossier médical nécessite d'être praticien ou manager",
         };
       }
     }
@@ -254,7 +287,9 @@ export class BusinessPermissionEvaluator implements PermissionEvaluator {
   /**
    * Contraintes spécifiques au secteur juridique
    */
-  private evaluateLegalConstraints(context: PermissionContext): PermissionEvaluation {
+  private evaluateLegalConstraints(
+    context: PermissionContext,
+  ): PermissionEvaluation {
     // Exemple : Accès aux dossiers confidentiels
     if (context.permission === Permission.VIEW_CLIENT_HISTORY) {
       // Vérifier l'habilitation secret
@@ -273,15 +308,20 @@ export class BusinessPermissionEvaluator implements PermissionEvaluator {
   /**
    * Contraintes spécifiques au secteur beauté
    */
-  private evaluateBeautyConstraints(context: PermissionContext): PermissionEvaluation {
+  private evaluateBeautyConstraints(
+    context: PermissionContext,
+  ): PermissionEvaluation {
     // Exemple : Certains services nécessitent une certification
     if (context.permission === Permission.CONFIRM_APPOINTMENTS) {
       const serviceType = context.metadata?.serviceType as string;
-      if (serviceType?.includes('chemical') && context.userRole === UserRole.JUNIOR_PRACTITIONER) {
+      if (
+        serviceType?.includes('chemical') &&
+        context.userRole === UserRole.JUNIOR_PRACTITIONER
+      ) {
         return {
           isAllowed: false,
           reason: 'Les traitements chimiques nécessitent un praticien certifié',
-          suggestions: ['Demander supervision d\'un praticien senior'],
+          suggestions: ["Demander supervision d'un praticien senior"],
         };
       }
     }
@@ -292,7 +332,9 @@ export class BusinessPermissionEvaluator implements PermissionEvaluator {
   /**
    * Détermine si une approbation est nécessaire
    */
-  private async shouldRequireApproval(context: PermissionContext): Promise<boolean> {
+  private async shouldRequireApproval(
+    context: PermissionContext,
+  ): Promise<boolean> {
     // Approbation pour les actions sensibles
     const sensitivePermissions = [
       Permission.FIRE_STAFF,
@@ -325,7 +367,10 @@ export class BusinessPermissionEvaluator implements PermissionEvaluator {
   /**
    * Obtient le workflow d'approbation
    */
-  async getApprovalWorkflow(permission: Permission, context: PermissionContext): Promise<ApprovalWorkflowStep[]> {
+  async getApprovalWorkflow(
+    permission: Permission,
+    context: PermissionContext,
+  ): Promise<ApprovalWorkflowStep[]> {
     const workflow: ApprovalWorkflowStep[] = [];
 
     // Workflow basique : approbation par le niveau supérieur
@@ -362,22 +407,26 @@ export class BusinessPermissionEvaluator implements PermissionEvaluator {
   async getEffectivePermissions(
     userRole: UserRole,
     userId: string,
-    organizationalContext: OrganizationalContext
+    organizationalContext: OrganizationalContext,
   ): Promise<Permission[]> {
-    
     // Permissions de base du rôle
     const basePermissions = RoleUtils.getRolePermissions(userRole);
-    
+
     // Permissions spécifiques au type d'entreprise
     const businessPermissions = RoleUtils.getBusinessTypePermissions(
-      organizationalContext.businessType
+      organizationalContext.businessType,
     );
-    
+
     // Fusion des permissions
-    const allPermissions = [...new Set([...basePermissions, ...businessPermissions])];
-    
+    const allPermissions = [
+      ...new Set([...basePermissions, ...businessPermissions]),
+    ];
+
     // Filtrage selon le contexte (ex: location, département)
-    return this.filterPermissionsByContext(allPermissions, organizationalContext);
+    return this.filterPermissionsByContext(
+      allPermissions,
+      organizationalContext,
+    );
   }
 
   /**
@@ -386,23 +435,24 @@ export class BusinessPermissionEvaluator implements PermissionEvaluator {
   async validateConstraints(
     permission: Permission,
     constraints: any[],
-    context: PermissionContext
+    context: PermissionContext,
   ): Promise<boolean> {
-    
     for (const constraint of constraints) {
       const isValid = await this.validateSingleConstraint(constraint, context);
       if (!isValid) {
         return false;
       }
     }
-    
+
     return true;
   }
 
   // === MÉTHODES UTILITAIRES ===
 
   private canOverrideInEmergency(role: UserRole): boolean {
-    return RoleUtils.isManagementRole(role) || RoleUtils.isPractitionerRole(role);
+    return (
+      RoleUtils.isManagementRole(role) || RoleUtils.isPractitionerRole(role)
+    );
   }
 
   private canWorkOutsideHours(role: UserRole): boolean {
@@ -429,7 +479,7 @@ export class BusinessPermissionEvaluator implements PermissionEvaluator {
       [UserRole.RECEPTIONIST]: UserRole.LOCATION_MANAGER,
       [UserRole.LOCATION_MANAGER]: UserRole.BUSINESS_ADMIN,
     };
-    
+
     return approverMap[requestorRole];
   }
 
@@ -443,30 +493,35 @@ export class BusinessPermissionEvaluator implements PermissionEvaluator {
 
   private async filterPermissionsByContext(
     permissions: Permission[],
-    context: OrganizationalContext
+    context: OrganizationalContext,
   ): Promise<Permission[]> {
     // Filtrage selon le contexte organisationnel
     // Ex: un manager de site ne peut gérer que son site
     return permissions; // Implémentation simplifiée
   }
 
-  private async validateSingleConstraint(constraint: any, context: PermissionContext): Promise<boolean> {
+  private async validateSingleConstraint(
+    constraint: any,
+    context: PermissionContext,
+  ): Promise<boolean> {
     // Validation des contraintes individuelles
     return true; // Implémentation simplifiée
   }
 
-  private async generateSuggestions(context: PermissionContext): Promise<string[]> {
+  private async generateSuggestions(
+    context: PermissionContext,
+  ): Promise<string[]> {
     const suggestions: string[] = [];
-    
+
     // Suggestions contextuelles
     if (context.userRole === UserRole.JUNIOR_PRACTITIONER) {
       suggestions.push('Demander une supervision par un praticien senior');
     }
-    
+
     if (context.temporal?.isEmergency) {
-      suggestions.push('Utiliser la procédure d\'urgence si disponible');
+      suggestions.push("Utiliser la procédure d'urgence si disponible");
     }
-    
+
     return suggestions;
   }
 }
@@ -475,10 +530,9 @@ export class BusinessPermissionEvaluator implements PermissionEvaluator {
  * 🎯 Exemple d'utilisation du service
  */
 export class PermissionUsageExample {
-  
   static async demonstrateUsage() {
     const evaluator = new BusinessPermissionEvaluator();
-    
+
     // Exemple 1: Praticien junior voulant modifier des notes médicales
     const juniorContext: PermissionContext = {
       userRole: UserRole.JUNIOR_PRACTITIONER,
@@ -495,11 +549,11 @@ export class PermissionUsageExample {
         relationship: RelationshipType.ASSIGNED_CLIENT,
       },
     };
-    
+
     const result1 = await evaluator.evaluatePermission(juniorContext);
     console.log('Praticien junior - Notes médicales:', result1);
     // Résultat attendu: isAllowed: true, requiresApproval: true
-    
+
     // Exemple 2: Client régulier voulant réserver pour sa famille
     const clientContext: PermissionContext = {
       userRole: UserRole.REGULAR_CLIENT,
@@ -514,11 +568,11 @@ export class PermissionUsageExample {
         relationship: RelationshipType.FAMILY_MEMBER,
       },
     };
-    
+
     const result2 = await evaluator.evaluatePermission(clientContext);
     console.log('Client - Réservation famille:', result2);
     // Résultat attendu: isAllowed: true, requiresApproval: false
-    
+
     // Exemple 3: Action en dehors des heures ouvrables
     const afterHoursContext: PermissionContext = {
       userRole: UserRole.RECEPTIONIST,
@@ -533,7 +587,7 @@ export class PermissionUsageExample {
         isEmergency: false,
       },
     };
-    
+
     const result3 = await evaluator.evaluatePermission(afterHoursContext);
     console.log('Réceptionniste - Hors heures:', result3);
     // Résultat attendu: isAllowed: false, suggestions incluses

@@ -1,6 +1,6 @@
 /**
  * 🔧 Repository Types
- * 
+ *
  * Types centralisés pour éviter les dépendances circulaires
  */
 

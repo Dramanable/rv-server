@@ -1,6 +1,6 @@
 /**
  * 🏢 Business Domain Exceptions
- * 
+ *
  * Exceptions spécifiques au domaine Business avec support i18n
  */
 
@@ -52,7 +52,9 @@ export class BusinessPermissionError extends Error {
   public readonly requiredPermission: string;
 
   constructor(businessId: string, userId: string, requiredPermission: string) {
-    super(`User '${userId}' lacks permission '${requiredPermission}' for business '${businessId}'`);
+    super(
+      `User '${userId}' lacks permission '${requiredPermission}' for business '${businessId}'`,
+    );
     this.name = 'BusinessPermissionError';
     this.businessId = businessId;
     this.userId = userId;

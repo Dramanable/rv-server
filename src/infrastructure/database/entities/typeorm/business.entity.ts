@@ -2,7 +2,13 @@
  * 🏢 Business Entity ORM - TypeORM + Clean Architecture
  */
 
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity('businesses')
 export class BusinessOrmEntity {
@@ -15,12 +21,19 @@ export class BusinessOrmEntity {
   @Column({ type: 'text', nullable: true })
   description?: string;
 
-  @Column({ 
+  @Column({
     type: 'enum',
     enum: [
-      'MEDICAL', 'BEAUTY', 'FITNESS', 'EDUCATION', 'LEGAL', 
-      'CONSULTING', 'AUTOMOTIVE', 'HOME_SERVICES', 'OTHER'
-    ]
+      'MEDICAL',
+      'BEAUTY',
+      'FITNESS',
+      'EDUCATION',
+      'LEGAL',
+      'CONSULTING',
+      'AUTOMOTIVE',
+      'HOME_SERVICES',
+      'OTHER',
+    ],
   })
   sector!: string;
 

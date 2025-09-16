@@ -11,7 +11,6 @@ import type { Logger } from '../ports/logger.port';
 
 export class PasswordResetService {
   constructor(
-    
     private readonly userRepository: UserRepository,
     private readonly emailService: EmailService,
     private readonly logger: Logger,

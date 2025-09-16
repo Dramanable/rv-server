@@ -1,7 +1,7 @@
 export enum CloudProvider {
   AWS_S3 = 'AWS_S3',
   AZURE_BLOB = 'AZURE_BLOB',
-  GCP_STORAGE = 'GCP_STORAGE'
+  GCP_STORAGE = 'GCP_STORAGE',
 }
 
 export class FileUrl {
@@ -11,7 +11,7 @@ export class FileUrl {
     private readonly bucket: string,
     private readonly key: string,
     private readonly contentType?: string,
-    private readonly size?: number
+    private readonly size?: number,
   ) {
     this.validateUrl(url);
     this.validateKey(key);
@@ -50,7 +50,7 @@ export class FileUrl {
     bucket: string,
     key: string,
     contentType?: string,
-    size?: number
+    size?: number,
   ): FileUrl {
     return new FileUrl(url, provider, bucket, key, contentType, size);
   }
@@ -61,10 +61,17 @@ export class FileUrl {
     key: string,
     region: string = 'eu-west-1',
     contentType?: string,
-    size?: number
+    size?: number,
   ): FileUrl {
     const url = `https://${bucket}.s3.${region}.amazonaws.com/${key}`;
-    return new FileUrl(url, CloudProvider.AWS_S3, bucket, key, contentType, size);
+    return new FileUrl(
+      url,
+      CloudProvider.AWS_S3,
+      bucket,
+      key,
+      contentType,
+      size,
+    );
   }
 
   static createAzureUrl(
@@ -72,20 +79,34 @@ export class FileUrl {
     container: string,
     blob: string,
     contentType?: string,
-    size?: number
+    size?: number,
   ): FileUrl {
     const url = `https://${storageAccount}.blob.core.windows.net/${container}/${blob}`;
-    return new FileUrl(url, CloudProvider.AZURE_BLOB, container, blob, contentType, size);
+    return new FileUrl(
+      url,
+      CloudProvider.AZURE_BLOB,
+      container,
+      blob,
+      contentType,
+      size,
+    );
   }
 
   static createGcpUrl(
     bucket: string,
     object: string,
     contentType?: string,
-    size?: number
+    size?: number,
   ): FileUrl {
     const url = `https://storage.googleapis.com/${bucket}/${object}`;
-    return new FileUrl(url, CloudProvider.GCP_STORAGE, bucket, object, contentType, size);
+    return new FileUrl(
+      url,
+      CloudProvider.GCP_STORAGE,
+      bucket,
+      object,
+      contentType,
+      size,
+    );
   }
 
   // Getters
@@ -121,37 +142,50 @@ export class FileUrl {
   getFileExtension(): string {
     const fileName = this.getFileName();
     const lastDotIndex = fileName.lastIndexOf('.');
-    return lastDotIndex > 0 ? fileName.substring(lastDotIndex + 1).toLowerCase() : '';
+    return lastDotIndex > 0
+      ? fileName.substring(lastDotIndex + 1).toLowerCase()
+      : '';
   }
 
   isImage(): boolean {
     const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg'];
     const extension = this.getFileExtension();
-    return imageExtensions.includes(extension) || 
-           (this.contentType?.startsWith('image/') ?? false);
+    return (
+      imageExtensions.includes(extension) ||
+      (this.contentType?.startsWith('image/') ?? false)
+    );
   }
 
   isDocument(): boolean {
     const documentExtensions = ['pdf', 'doc', 'docx', 'txt', 'rtf', 'odt'];
     const extension = this.getFileExtension();
-    return documentExtensions.includes(extension) ||
-           (this.contentType?.includes('document') ?? false) ||
-           (this.contentType === 'application/pdf');
+    return (
+      documentExtensions.includes(extension) ||
+      (this.contentType?.includes('document') ?? false) ||
+      this.contentType === 'application/pdf'
+    );
   }
 
   // Validation methods
-  validateImageConstraints(maxSizeMB: number = 5, allowedExtensions: string[] = ['jpg', 'jpeg', 'png', 'webp']): void {
+  validateImageConstraints(
+    maxSizeMB: number = 5,
+    allowedExtensions: string[] = ['jpg', 'jpeg', 'png', 'webp'],
+  ): void {
     if (!this.isImage()) {
       throw new Error('File is not a valid image');
     }
 
     const extension = this.getFileExtension();
     if (!allowedExtensions.includes(extension)) {
-      throw new Error(`Image extension ${extension} is not allowed. Allowed: ${allowedExtensions.join(', ')}`);
+      throw new Error(
+        `Image extension ${extension} is not allowed. Allowed: ${allowedExtensions.join(', ')}`,
+      );
     }
 
     if (this.size && this.size > maxSizeMB * 1024 * 1024) {
-      throw new Error(`Image size ${this.size} exceeds maximum allowed size of ${maxSizeMB}MB`);
+      throw new Error(
+        `Image size ${this.size} exceeds maximum allowed size of ${maxSizeMB}MB`,
+      );
     }
   }
 
@@ -187,7 +221,7 @@ export class FileUrl {
       bucket: this.bucket,
       key: this.key,
       contentType: this.contentType,
-      size: this.size
+      size: this.size,
     };
   }
 
@@ -205,7 +239,7 @@ export class FileUrl {
       data.bucket,
       data.key,
       data.contentType,
-      data.size
+      data.size,
     );
   }
 }

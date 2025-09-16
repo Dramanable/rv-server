@@ -44,11 +44,13 @@ export interface CalendarRepository {
     calendarIds: CalendarId[],
     startDate: Date,
     endDate: Date,
-    duration: number
-  ): Promise<{
-    calendarId: CalendarId;
-    slots: TimeSlot[];
-  }[]>;
+    duration: number,
+  ): Promise<
+    {
+      calendarId: CalendarId;
+      slots: TimeSlot[];
+    }[]
+  >;
 
   /**
    * Get booked time slots for a calendar
@@ -56,16 +58,13 @@ export interface CalendarRepository {
   getBookedSlots(
     calendarId: CalendarId,
     startDate: Date,
-    endDate: Date
+    endDate: Date,
   ): Promise<TimeSlot[]>;
 
   /**
    * Check if time slot is available
    */
-  isSlotAvailable(
-    calendarId: CalendarId,
-    timeSlot: TimeSlot
-  ): Promise<boolean>;
+  isSlotAvailable(calendarId: CalendarId, timeSlot: TimeSlot): Promise<boolean>;
 
   /**
    * Find overlapping calendars for a time slot
@@ -73,7 +72,7 @@ export interface CalendarRepository {
   findOverlappingCalendars(
     businessId: BusinessId,
     timeSlot: TimeSlot,
-    excludeCalendarIds?: CalendarId[]
+    excludeCalendarIds?: CalendarId[],
   ): Promise<Calendar[]>;
 
   /**
@@ -82,7 +81,7 @@ export interface CalendarRepository {
   getUtilizationStats(
     calendarId: CalendarId,
     startDate: Date,
-    endDate: Date
+    endDate: Date,
   ): Promise<{
     totalSlots: number;
     bookedSlots: number;
@@ -98,7 +97,7 @@ export interface CalendarRepository {
     businessId: BusinessId,
     startDate: Date,
     endDate: Date,
-    duration: number
+    duration: number,
   ): Promise<Calendar[]>;
 
   /**
@@ -107,10 +106,12 @@ export interface CalendarRepository {
   getRecurringPatterns(
     calendarId: CalendarId,
     startDate: Date,
-    endDate: Date
-  ): Promise<{
-    pattern: string;
-    nextOccurrence: Date;
-    frequency: number;
-  }[]>;
+    endDate: Date,
+  ): Promise<
+    {
+      pattern: string;
+      nextOccurrence: Date;
+      frequency: number;
+    }[]
+  >;
 }

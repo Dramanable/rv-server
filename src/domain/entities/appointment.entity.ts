@@ -43,13 +43,13 @@ export class AppointmentId {
 }
 
 export enum AppointmentStatus {
-  REQUESTED = 'REQUESTED',     // Demande de rendez-vous
-  CONFIRMED = 'CONFIRMED',     // Confirmé par le business
-  CANCELLED = 'CANCELLED',     // Annulé
-  NO_SHOW = 'NO_SHOW',        // Client absent
-  COMPLETED = 'COMPLETED',     // Terminé avec succès
+  REQUESTED = 'REQUESTED', // Demande de rendez-vous
+  CONFIRMED = 'CONFIRMED', // Confirmé par le business
+  CANCELLED = 'CANCELLED', // Annulé
+  NO_SHOW = 'NO_SHOW', // Client absent
+  COMPLETED = 'COMPLETED', // Terminé avec succès
   IN_PROGRESS = 'IN_PROGRESS', // En cours
-  RESCHEDULED = 'RESCHEDULED'  // Reprogrammé
+  RESCHEDULED = 'RESCHEDULED', // Reprogrammé
 }
 
 export enum AppointmentType {
@@ -58,14 +58,14 @@ export enum AppointmentType {
   FOLLOWUP = 'FOLLOWUP',
   EMERGENCY = 'EMERGENCY',
   GROUP = 'GROUP',
-  ONLINE = 'ONLINE'
+  ONLINE = 'ONLINE',
 }
 
 export enum NotificationMethod {
   EMAIL = 'EMAIL',
   SMS = 'SMS',
   PUSH = 'PUSH',
-  CALL = 'CALL'
+  CALL = 'CALL',
 }
 
 export interface ClientInfo {
@@ -219,7 +219,10 @@ export class Appointment {
    * Annule le rendez-vous
    */
   cancel(reason?: string): Appointment {
-    if (this.status === AppointmentStatus.CANCELLED || this.status === AppointmentStatus.COMPLETED) {
+    if (
+      this.status === AppointmentStatus.CANCELLED ||
+      this.status === AppointmentStatus.COMPLETED
+    ) {
       throw new Error(`Cannot cancel appointment with status ${this.status}`);
     }
 
@@ -258,7 +261,10 @@ export class Appointment {
    * Marque le rendez-vous comme terminé
    */
   complete(): Appointment {
-    if (this.status !== AppointmentStatus.CONFIRMED && this.status !== AppointmentStatus.IN_PROGRESS) {
+    if (
+      this.status !== AppointmentStatus.CONFIRMED &&
+      this.status !== AppointmentStatus.IN_PROGRESS
+    ) {
       throw new Error(`Cannot complete appointment with status ${this.status}`);
     }
 
@@ -322,7 +328,10 @@ export class Appointment {
    * Vérifie si le rendez-vous peut être modifié
    */
   canBeModified(): boolean {
-    return this.status === AppointmentStatus.REQUESTED || this.status === AppointmentStatus.CONFIRMED;
+    return (
+      this.status === AppointmentStatus.REQUESTED ||
+      this.status === AppointmentStatus.CONFIRMED
+    );
   }
 
   /**
@@ -337,13 +346,19 @@ export class Appointment {
    */
   isInProgress(): boolean {
     const now = new Date();
-    return now >= this.timeSlot.getStartTime() && now <= this.timeSlot.getEndTime();
+    return (
+      now >= this.timeSlot.getStartTime() && now <= this.timeSlot.getEndTime()
+    );
   }
 
   /**
    * Calcule la durée du rendez-vous en minutes
    */
   getDurationMinutes(): number {
-    return Math.round((this.timeSlot.getEndTime().getTime() - this.timeSlot.getStartTime().getTime()) / (1000 * 60));
+    return Math.round(
+      (this.timeSlot.getEndTime().getTime() -
+        this.timeSlot.getStartTime().getTime()) /
+        (1000 * 60),
+    );
   }
 }

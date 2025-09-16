@@ -16,7 +16,7 @@ export class TypeOrmUserMapper {
    */
   static toOrmEntity(domainEntity: User): Partial<UserOrmEntity> {
     const ormEntity = new UserOrmEntity();
-    
+
     ormEntity.id = domainEntity.id;
     ormEntity.email = domainEntity.email.value;
     ormEntity.username = domainEntity.username;

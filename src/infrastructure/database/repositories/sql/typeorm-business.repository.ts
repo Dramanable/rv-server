@@ -10,7 +10,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, SelectQueryBuilder } from 'typeorm';
 import type { I18nService } from '../../../../application/ports/i18n.port';
 import type { Logger } from '../../../../application/ports/logger.port';
-import { Business, BusinessSector } from '../../../../domain/entities/business.entity';
+import {
+  Business,
+  BusinessSector,
+} from '../../../../domain/entities/business.entity';
 import { BusinessRepository } from '../../../../domain/repositories/business.repository.interface';
 import { BusinessId } from '../../../../domain/value-objects/business-id.value-object';
 import { BusinessName } from '../../../../domain/value-objects/business-name.value-object';
@@ -23,9 +26,9 @@ export class TypeOrmBusinessRepository implements BusinessRepository {
   constructor(
     @InjectRepository(BusinessOrmEntity)
     private readonly ormRepository: Repository<BusinessOrmEntity>,
-    @Inject(TOKENS.LOGGER) 
+    @Inject(TOKENS.LOGGER)
     private readonly logger: Logger,
-    @Inject(TOKENS.I18N_SERVICE) 
+    @Inject(TOKENS.I18N_SERVICE)
     private readonly i18n: I18nService,
   ) {}
 
@@ -96,9 +99,12 @@ export class TypeOrmBusinessRepository implements BusinessRepository {
 
       await this.ormRepository.delete(id.getValue());
 
-      this.logger.info(this.i18n.t('operations.business.deleted_successfully'), {
-        businessId: id.getValue(),
-      });
+      this.logger.info(
+        this.i18n.t('operations.business.deleted_successfully'),
+        {
+          businessId: id.getValue(),
+        },
+      );
     } catch (error) {
       this.logger.error(
         this.i18n.t('operations.business.delete_failed'),
@@ -169,7 +175,9 @@ export class TypeOrmBusinessRepository implements BusinessRepository {
       }
 
       const entities = await query.getMany();
-      return entities.map((entity) => TypeOrmBusinessMapper.toDomainEntity(entity));
+      return entities.map((entity) =>
+        TypeOrmBusinessMapper.toDomainEntity(entity),
+      );
     } catch (error) {
       this.logger.error(
         this.i18n.t('operations.business.location_search_failed'),
@@ -255,7 +263,9 @@ export class TypeOrmBusinessRepository implements BusinessRepository {
         order: { createdAt: 'DESC' },
       });
 
-      return entities.map((entity) => TypeOrmBusinessMapper.toDomainEntity(entity));
+      return entities.map((entity) =>
+        TypeOrmBusinessMapper.toDomainEntity(entity),
+      );
     } catch (error) {
       this.logger.error(
         this.i18n.t('operations.business.find_by_sector_failed'),
@@ -363,7 +373,9 @@ export class TypeOrmBusinessRepository implements BusinessRepository {
    */
   async createOptimalIndexes(): Promise<void> {
     try {
-      this.logger.info('Creating optimal PostgreSQL indexes for businesses table');
+      this.logger.info(
+        'Creating optimal PostgreSQL indexes for businesses table',
+      );
 
       // Index composé pour recherche fréquente
       await this.ormRepository.query(`

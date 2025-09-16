@@ -7,7 +7,7 @@ export class Address {
     private readonly region?: string,
     private readonly additionalInfo?: string,
     private readonly latitude?: number,
-    private readonly longitude?: number
+    private readonly longitude?: number,
   ) {
     this.validate();
   }
@@ -30,7 +30,10 @@ export class Address {
     }
 
     // Validation du code postal français
-    if (this.country.toLowerCase() === 'france' || this.country.toLowerCase() === 'fr') {
+    if (
+      this.country.toLowerCase() === 'france' ||
+      this.country.toLowerCase() === 'fr'
+    ) {
       const frenchPostalRegex = /^[0-9]{5}$/;
       if (!frenchPostalRegex.test(this.postalCode.trim())) {
         throw new Error('Invalid French postal code format');
@@ -69,7 +72,7 @@ export class Address {
       data.region?.trim(),
       data.additionalInfo?.trim(),
       data.latitude,
-      data.longitude
+      data.longitude,
     );
   }
 
@@ -109,19 +112,19 @@ export class Address {
   // Utility methods
   getFullAddress(): string {
     const parts = [this.street];
-    
+
     if (this.additionalInfo) {
       parts.push(this.additionalInfo);
     }
-    
+
     parts.push(`${this.postalCode} ${this.city}`);
-    
+
     if (this.region) {
       parts.push(this.region);
     }
-    
+
     parts.push(this.country);
-    
+
     return parts.join(', ');
   }
 
@@ -137,7 +140,7 @@ export class Address {
     if (this.hasCoordinates()) {
       return {
         latitude: this.latitude!,
-        longitude: this.longitude!
+        longitude: this.longitude!,
       };
     }
     return null;
@@ -147,7 +150,7 @@ export class Address {
   distanceFrom(other: Address): number | null {
     const coords1 = this.getCoordinates();
     const coords2 = other.getCoordinates();
-    
+
     if (!coords1 || !coords2) {
       return null; // Cannot calculate distance without coordinates
     }
@@ -155,19 +158,21 @@ export class Address {
     const R = 6371; // Rayon de la Terre en kilomètres
     const dLat = this.toRadians(coords2.latitude - coords1.latitude);
     const dLon = this.toRadians(coords2.longitude - coords1.longitude);
-    
-    const a = 
-      Math.sin(dLat/2) * Math.sin(dLat/2) +
-      Math.cos(this.toRadians(coords1.latitude)) * Math.cos(this.toRadians(coords2.latitude)) * 
-      Math.sin(dLon/2) * Math.sin(dLon/2);
-    
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-    
+
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(this.toRadians(coords1.latitude)) *
+        Math.cos(this.toRadians(coords2.latitude)) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
     return R * c; // Distance en kilomètres
   }
 
   private toRadians(degrees: number): number {
-    return degrees * (Math.PI/180);
+    return degrees * (Math.PI / 180);
   }
 
   // Comparison methods
@@ -211,7 +216,7 @@ export class Address {
       region: this.region,
       additionalInfo: this.additionalInfo,
       latitude: this.latitude,
-      longitude: this.longitude
+      longitude: this.longitude,
     };
   }
 

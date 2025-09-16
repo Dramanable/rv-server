@@ -4,7 +4,11 @@
  * ✅ SOLID principles applied
  */
 
-import { ListBusinessUseCase, ListBusinessRequest, ListBusinessResponse } from './list-business.use-case';
+import {
+  ListBusinessUseCase,
+  ListBusinessRequest,
+  ListBusinessResponse,
+} from './list-business.use-case';
 import { BusinessRepository } from '../../../domain/repositories/business.repository.interface';
 import { UserRepository } from '../../../domain/repositories/user.repository.interface';
 import { User } from '../../../domain/entities/user.entity';
@@ -174,7 +178,10 @@ describe('ListBusinessUseCase', () => {
       } as User;
 
       mockUserRepository.findById.mockResolvedValue(mockUser);
-      mockBusinessRepository.search.mockResolvedValue({ businesses: [], total: 0 });
+      mockBusinessRepository.search.mockResolvedValue({
+        businesses: [],
+        total: 0,
+      });
 
       // Act
       await useCase.execute(request);
@@ -204,7 +211,10 @@ describe('ListBusinessUseCase', () => {
       } as User;
 
       mockUserRepository.findById.mockResolvedValue(mockUser);
-      mockBusinessRepository.search.mockResolvedValue({ businesses: [], total: 15 });
+      mockBusinessRepository.search.mockResolvedValue({
+        businesses: [],
+        total: 15,
+      });
 
       // Act
       const result = await useCase.execute(request);
@@ -240,7 +250,9 @@ describe('ListBusinessUseCase', () => {
       mockUserRepository.findById.mockResolvedValue(null);
 
       // Act & Assert
-      await expect(useCase.execute(request)).rejects.toThrow(InsufficientPermissionsError);
+      await expect(useCase.execute(request)).rejects.toThrow(
+        InsufficientPermissionsError,
+      );
       expect(mockBusinessRepository.search).not.toHaveBeenCalled();
     });
 
@@ -258,7 +270,9 @@ describe('ListBusinessUseCase', () => {
       mockUserRepository.findById.mockResolvedValue(mockUser);
 
       // Act & Assert
-      await expect(useCase.execute(request)).rejects.toThrow(InsufficientPermissionsError);
+      await expect(useCase.execute(request)).rejects.toThrow(
+        InsufficientPermissionsError,
+      );
       expect(mockBusinessRepository.search).not.toHaveBeenCalled();
     });
 
@@ -279,7 +293,10 @@ describe('ListBusinessUseCase', () => {
       } as User;
 
       mockUserRepository.findById.mockResolvedValue(mockUser);
-      mockBusinessRepository.search.mockResolvedValue({ businesses: [], total: 0 });
+      mockBusinessRepository.search.mockResolvedValue({
+        businesses: [],
+        total: 0,
+      });
 
       // Act & Assert
       await expect(useCase.execute(request)).resolves.toBeDefined();
@@ -300,68 +317,85 @@ describe('ListBusinessUseCase', () => {
       // Arrange
       setupAuthorizedUser();
       // Le mock repository ne devrait pas être appelé car la validation échoue avant
-      mockBusinessRepository.search.mockResolvedValue({ businesses: [], total: 0 });
-      
+      mockBusinessRepository.search.mockResolvedValue({
+        businesses: [],
+        total: 0,
+      });
+
       const request: ListBusinessRequest = {
         requestingUserId: 'admin-123',
         page: 0, // Invalid
       };
 
       // Act & Assert
-      await expect(useCase.execute(request)).rejects.toThrow('Page number must be greater than 0');
+      await expect(useCase.execute(request)).rejects.toThrow(
+        'Page number must be greater than 0',
+      );
     });
 
     it('should reject limit exceeding maximum', async () => {
       // Arrange
       setupAuthorizedUser();
       // Le mock repository ne devrait pas être appelé car la validation échoue avant
-      mockBusinessRepository.search.mockResolvedValue({ businesses: [], total: 0 });
-      
+      mockBusinessRepository.search.mockResolvedValue({
+        businesses: [],
+        total: 0,
+      });
+
       const request: ListBusinessRequest = {
         requestingUserId: 'admin-123',
         limit: 150, // Exceeds maximum of 100
       };
 
       // Act & Assert
-      await expect(useCase.execute(request)).rejects.toThrow('Limit must be between 1 and 100');
+      await expect(useCase.execute(request)).rejects.toThrow(
+        'Limit must be between 1 and 100',
+      );
     });
 
     it('should reject invalid sort field', async () => {
       // Arrange
       setupAuthorizedUser();
-      
+
       const request: ListBusinessRequest = {
         requestingUserId: 'admin-123',
         sortBy: 'invalidField' as any,
       };
 
       // Act & Assert
-      await expect(useCase.execute(request)).rejects.toThrow('Invalid sort field');
+      await expect(useCase.execute(request)).rejects.toThrow(
+        'Invalid sort field',
+      );
     });
 
     it('should reject invalid sort order', async () => {
       // Arrange
       setupAuthorizedUser();
-      
+
       const request: ListBusinessRequest = {
         requestingUserId: 'admin-123',
         sortOrder: 'INVALID' as any,
       };
 
       // Act & Assert
-      await expect(useCase.execute(request)).rejects.toThrow('Invalid sort order');
+      await expect(useCase.execute(request)).rejects.toThrow(
+        'Invalid sort order',
+      );
     });
 
     it('should enforce maximum limit of 100', async () => {
       // Arrange
       setupAuthorizedUser();
-      
+
       const request: ListBusinessRequest = {
         requestingUserId: 'admin-123',
         limit: 150, // Will be capped to 100
       };
 
-      mockBusinessRepository.search.mockResolvedValue({ businesses: [], total: 0 });
+      mockBusinessRepository.search.mockResolvedValue({
+        businesses: [],
+        total: 0,
+      });
 
       // Cette validation se fait maintenant dans validateBusinessRules
       await expect(useCase.execute(request)).rejects.toThrow();
@@ -386,7 +420,9 @@ describe('ListBusinessUseCase', () => {
       mockBusinessRepository.search.mockRejectedValue(repositoryError);
 
       // Act & Assert
-      await expect(useCase.execute(request)).rejects.toThrow('Database connection failed');
+      await expect(useCase.execute(request)).rejects.toThrow(
+        'Database connection failed',
+      );
 
       // Verify error was logged
       expect(mockLogger.error).toHaveBeenCalledWith(
@@ -410,13 +446,19 @@ describe('ListBusinessUseCase', () => {
       } as User;
 
       mockUserRepository.findById.mockResolvedValue(mockUser);
-      mockBusinessRepository.search.mockResolvedValue({ businesses: [], total: 0 });
+      mockBusinessRepository.search.mockResolvedValue({
+        businesses: [],
+        total: 0,
+      });
 
       // Act
       await useCase.execute(request);
 
       // Assert
-      expect(mockLogger.info).toHaveBeenCalledWith('Mocked message', expect.any(Object));
+      expect(mockLogger.info).toHaveBeenCalledWith(
+        'Mocked message',
+        expect.any(Object),
+      );
       expect(mockLogger.info).toHaveBeenCalledWith(
         'Mocked message',
         expect.objectContaining({

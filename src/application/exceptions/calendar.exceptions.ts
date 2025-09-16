@@ -1,6 +1,6 @@
 /**
  * 🗓️ Calendar Domain Exceptions
- * 
+ *
  * Exceptions spécifiques au domaine Calendar avec support i18n
  */
 
@@ -30,7 +30,9 @@ export class CalendarConflictError extends Error {
   public readonly calendarId: string;
 
   constructor(calendarId: string, startTime: Date, endTime: Date) {
-    super(`Calendar conflict detected for calendar '${calendarId}' between ${startTime.toISOString()} and ${endTime.toISOString()}`);
+    super(
+      `Calendar conflict detected for calendar '${calendarId}' between ${startTime.toISOString()} and ${endTime.toISOString()}`,
+    );
     this.name = 'CalendarConflictError';
     this.calendarId = calendarId;
     this.startTime = startTime;
@@ -43,7 +45,7 @@ export class InvalidTimeSlotError extends Error {
   public readonly endTime: Date;
 
   constructor(startTime: Date, endTime: Date, reason?: string) {
-    const message = reason 
+    const message = reason
       ? `Invalid time slot (${startTime.toISOString()} - ${endTime.toISOString()}): ${reason}`
       : `Invalid time slot: ${startTime.toISOString()} - ${endTime.toISOString()}`;
     super(message);
@@ -59,7 +61,9 @@ export class CalendarPermissionError extends Error {
   public readonly operation: string;
 
   constructor(calendarId: string, userId: string, operation: string) {
-    super(`User '${userId}' not authorized for operation '${operation}' on calendar '${calendarId}'`);
+    super(
+      `User '${userId}' not authorized for operation '${operation}' on calendar '${calendarId}'`,
+    );
     this.name = 'CalendarPermissionError';
     this.calendarId = calendarId;
     this.userId = userId;

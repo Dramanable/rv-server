@@ -50,14 +50,4 @@ export interface AuthenticationService {
    * Révoque tous les tokens d'un utilisateur
    */
   revokeAllUserTokens(userId: string): Promise<void>;
-
-  /**
-   * Hash un mot de passe
-   */
-  hashPassword(password: string): Promise<string>;
-
-  /**
-   * Vérifie un mot de passe
-   */
-  verifyPassword(password: string, hashedPassword: string): Promise<boolean>;
 }

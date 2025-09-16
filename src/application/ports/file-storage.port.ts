@@ -1,4 +1,7 @@
-import { FileUrl, CloudProvider } from '../../domain/value-objects/file-url.value-object';
+import {
+  FileUrl,
+  CloudProvider,
+} from '../../domain/value-objects/file-url.value-object';
 
 export interface UploadFileRequest {
   file: Buffer;
@@ -50,7 +53,7 @@ export interface FileStoragePort {
     fileName: string,
     contentType: string,
     expiresIn?: number,
-    folder?: string
+    folder?: string,
   ): Promise<string>;
 
   /**
@@ -58,7 +61,7 @@ export interface FileStoragePort {
    */
   generatePresignedDownloadUrl(
     fileUrl: FileUrl,
-    expiresIn?: number
+    expiresIn?: number,
   ): Promise<string>;
 
   /**
@@ -81,7 +84,7 @@ export interface FileStoragePort {
   copyFile(
     sourceUrl: FileUrl,
     destinationFolder: string,
-    newFileName?: string
+    newFileName?: string,
   ): Promise<FileUrl>;
 
   /**

@@ -85,7 +85,10 @@ export class PasswordResetService {
         message: 'Password reset initiated successfully',
       };
     } catch (error) {
-      this.logger.error('Password reset failed: email sending failed', error as Error);
+      this.logger.error(
+        'Password reset failed: email sending failed',
+        error as Error,
+      );
       // On retourne success même en cas d'erreur d'envoi
       // pour ne pas révéler l'existence du compte
       return {

@@ -11,7 +11,8 @@
 
 import { PasswordResetToken } from '../entities/password-reset-token.entity';
 
-export const PASSWORD_RESET_TOKEN_REPOSITORY = 'PASSWORD_RESET_TOKEN_REPOSITORY';
+export const PASSWORD_RESET_TOKEN_REPOSITORY =
+  'PASSWORD_RESET_TOKEN_REPOSITORY';
 
 export interface PasswordResetTokenRepository {
   /**

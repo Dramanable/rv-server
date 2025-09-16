@@ -2,7 +2,7 @@ export enum TimeSlotStatus {
   AVAILABLE = 'AVAILABLE',
   BOOKED = 'BOOKED',
   BLOCKED = 'BLOCKED',
-  MAINTENANCE = 'MAINTENANCE'
+  MAINTENANCE = 'MAINTENANCE',
 }
 
 export enum RecurrenceType {
@@ -11,7 +11,7 @@ export enum RecurrenceType {
   WEEKLY = 'WEEKLY',
   MONTHLY = 'MONTHLY',
   YEARLY = 'YEARLY',
-  CUSTOM = 'CUSTOM'
+  CUSTOM = 'CUSTOM',
 }
 
 export enum WeekDay {
@@ -21,7 +21,7 @@ export enum WeekDay {
   WEDNESDAY = 3,
   THURSDAY = 4,
   FRIDAY = 5,
-  SATURDAY = 6
+  SATURDAY = 6,
 }
 
 export class TimeSlot {
@@ -34,7 +34,7 @@ export class TimeSlot {
       reason?: string;
       isBreak?: boolean;
       isLunch?: boolean;
-    }
+    },
   ) {
     this.validate();
   }
@@ -44,17 +44,23 @@ export class TimeSlot {
       throw new Error('Start time must be before end time');
     }
 
-    const diffMinutes = (this.endTime.getTime() - this.startTime.getTime()) / (1000 * 60);
+    const diffMinutes =
+      (this.endTime.getTime() - this.startTime.getTime()) / (1000 * 60);
     if (diffMinutes < 5) {
       throw new Error('Time slot must be at least 5 minutes');
     }
 
-    if (diffMinutes > 480) { // 8 heures max
+    if (diffMinutes > 480) {
+      // 8 heures max
       throw new Error('Time slot cannot exceed 8 hours');
     }
   }
 
-  static create(startTime: Date, endTime: Date, status?: TimeSlotStatus): TimeSlot {
+  static create(
+    startTime: Date,
+    endTime: Date,
+    status?: TimeSlotStatus,
+  ): TimeSlot {
     return new TimeSlot(startTime, endTime, status);
   }
 
@@ -89,7 +95,10 @@ export class TimeSlot {
   }
 
   isBlocked(): boolean {
-    return this.status === TimeSlotStatus.BLOCKED || this.status === TimeSlotStatus.MAINTENANCE;
+    return (
+      this.status === TimeSlotStatus.BLOCKED ||
+      this.status === TimeSlotStatus.MAINTENANCE
+    );
   }
 
   overlaps(other: TimeSlot): boolean {
@@ -110,14 +119,16 @@ export class TimeSlot {
       throw new Error('Split time must be within the time slot');
     }
 
-    if (splitTime.getTime() === this.startTime.getTime() || 
-        splitTime.getTime() === this.endTime.getTime()) {
+    if (
+      splitTime.getTime() === this.startTime.getTime() ||
+      splitTime.getTime() === this.endTime.getTime()
+    ) {
       return [this];
     }
 
     return [
       new TimeSlot(this.startTime, splitTime, this.status, this.metadata),
-      new TimeSlot(splitTime, this.endTime, this.status, this.metadata)
+      new TimeSlot(splitTime, this.endTime, this.status, this.metadata),
     ];
   }
 
@@ -126,26 +137,37 @@ export class TimeSlot {
       throw new Error('Time slots cannot be merged');
     }
 
-    const newStart = this.startTime < other.startTime ? this.startTime : other.startTime;
+    const newStart =
+      this.startTime < other.startTime ? this.startTime : other.startTime;
     const newEnd = this.endTime > other.endTime ? this.endTime : other.endTime;
 
     return new TimeSlot(newStart, newEnd, this.status, this.metadata);
   }
 
   canMerge(other: TimeSlot): boolean {
-    return this.status === other.status && 
-           (this.overlaps(other) || this.isAdjacent(other));
+    return (
+      this.status === other.status &&
+      (this.overlaps(other) || this.isAdjacent(other))
+    );
   }
 
   private isAdjacent(other: TimeSlot): boolean {
-    return this.endTime.getTime() === other.startTime.getTime() ||
-           other.endTime.getTime() === this.startTime.getTime();
+    return (
+      this.endTime.getTime() === other.startTime.getTime() ||
+      other.endTime.getTime() === this.startTime.getTime()
+    );
   }
 
   // Formatting
   format(): string {
-    const start = this.startTime.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-    const end = this.endTime.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+    const start = this.startTime.toLocaleTimeString('fr-FR', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+    const end = this.endTime.toLocaleTimeString('fr-FR', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
     return `${start} - ${end}`;
   }
 

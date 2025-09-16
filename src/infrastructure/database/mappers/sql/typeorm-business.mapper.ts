@@ -5,7 +5,11 @@
  * Clean Architecture : Infrastructure ne dépend PAS du domain
  */
 
-import { Business, BusinessContactInfo, BusinessSector } from '../../../../domain/entities/business.entity';
+import {
+  Business,
+  BusinessContactInfo,
+  BusinessSector,
+} from '../../../../domain/entities/business.entity';
 import { BusinessId } from '../../../../domain/value-objects/business-id.value-object';
 import { BusinessName } from '../../../../domain/value-objects/business-name.value-object';
 import { Address } from '../../../../domain/value-objects/address.value-object';
@@ -19,12 +23,12 @@ export class TypeOrmBusinessMapper {
    */
   static toOrmEntity(domainEntity: Business): Partial<BusinessOrmEntity> {
     const ormEntity = new BusinessOrmEntity();
-    
+
     ormEntity.id = domainEntity.id.getValue();
     ormEntity.name = domainEntity.name.getValue();
     ormEntity.description = domainEntity.description;
     ormEntity.sector = domainEntity.sector;
-    
+
     // Address mapping
     ormEntity.street = domainEntity.address.getStreet();
     ormEntity.city = domainEntity.address.getCity();
@@ -32,12 +36,12 @@ export class TypeOrmBusinessMapper {
     ormEntity.country = domainEntity.address.getCountry();
     ormEntity.latitude = domainEntity.address.getLatitude();
     ormEntity.longitude = domainEntity.address.getLongitude();
-    
+
     // Contact info mapping
     ormEntity.email = domainEntity.contactInfo?.primaryEmail?.getValue();
     ormEntity.phone = domainEntity.contactInfo?.primaryPhone?.getValue();
     ormEntity.website = domainEntity.contactInfo?.website;
-    
+
     ormEntity.isActive = true; // Default active
     ormEntity.isVerified = false; // Default not verified
 
@@ -59,7 +63,7 @@ export class TypeOrmBusinessMapper {
 
     const primaryEmail = ormEntity.email ? Email.create(ormEntity.email) : null;
     const primaryPhone = ormEntity.phone ? Phone.create(ormEntity.phone) : null;
-    
+
     if (!primaryEmail || !primaryPhone) {
       throw new Error('Business must have primary email and phone');
     }
@@ -82,7 +86,9 @@ export class TypeOrmBusinessMapper {
   /**
    * 🔄 Conversion Domain → TypeORM (alias pour compatibilité)
    */
-  static toPersistenceEntity(domainEntity: Business): Partial<BusinessOrmEntity> {
+  static toPersistenceEntity(
+    domainEntity: Business,
+  ): Partial<BusinessOrmEntity> {
     return this.toOrmEntity(domainEntity);
   }
 }

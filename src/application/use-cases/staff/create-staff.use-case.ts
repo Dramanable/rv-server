@@ -1,6 +1,6 @@
 /**
  * 👥 Create Staff Use Case - Clean Architecture + SOLID
- * 
+ *
  * Création d'un membre du personnel avec validation métier et permissions
  * ✅ AUCUNE dépendance NestJS - Respect de la Clean Architecture
  */
@@ -10,14 +10,17 @@ import { BusinessRepository } from '../../../domain/repositories/business.reposi
 import { UserRepository } from '../../../domain/repositories/user.repository.interface';
 import { Logger } from '../../../application/ports/logger.port';
 import { I18nService } from '../../../application/ports/i18n.port';
-import { AppContext, AppContextFactory } from '../../../shared/context/app-context';
+import {
+  AppContext,
+  AppContextFactory,
+} from '../../../shared/context/app-context';
 import { UserRole, Permission } from '../../../shared/enums/user-role.enum';
 import { StaffRole } from '../../../shared/enums/staff-role.enum';
 import { User } from '../../../domain/entities/user.entity';
-import { 
-  InsufficientPermissionsError, 
+import {
+  InsufficientPermissionsError,
   StaffValidationError,
-  BusinessNotFoundError 
+  BusinessNotFoundError,
 } from '../../../application/exceptions/application.exceptions';
 import { Email } from '../../../domain/value-objects/email.value-object';
 import { Phone } from '../../../domain/value-objects/phone.value-object';
@@ -128,14 +131,11 @@ export class CreateStaffUseCase {
         createdAt: staff.createdAt,
       };
 
-      this.logger.info(
-        this.i18n.t('operations.staff.creation_success'),
-        {
-          ...context as unknown as Record<string, unknown>,
-          staffId: staff.id.getValue(),
-          staffRole: staff.role,
-        },
-      );
+      this.logger.info(this.i18n.t('operations.staff.creation_success'), {
+        ...(context as unknown as Record<string, unknown>),
+        staffId: staff.id.getValue(),
+        staffRole: staff.role,
+      });
 
       return response;
     } catch (error) {
@@ -162,9 +162,13 @@ export class CreateStaffUseCase {
     }
 
     // Vérifier que l'entreprise existe
-    const business = await this.businessRepository.findById(BusinessId.create(businessId));
+    const business = await this.businessRepository.findById(
+      BusinessId.create(businessId),
+    );
     if (!business) {
-      throw new BusinessNotFoundError(`Business with id ${businessId} not found`);
+      throw new BusinessNotFoundError(
+        `Business with id ${businessId} not found`,
+      );
     }
 
     // Platform admins peuvent créer du personnel dans n'importe quelle entreprise
@@ -173,10 +177,7 @@ export class CreateStaffUseCase {
     }
 
     // Business owners et admins peuvent créer du personnel dans leur entreprise
-    const allowedRoles = [
-      UserRole.BUSINESS_OWNER,
-      UserRole.BUSINESS_ADMIN,
-    ];
+    const allowedRoles = [UserRole.BUSINESS_OWNER, UserRole.BUSINESS_ADMIN];
 
     if (!allowedRoles.includes(requestingUser.role)) {
       this.logger.warn(this.i18n.t('warnings.permission.denied'), {
@@ -234,18 +235,17 @@ export class CreateStaffUseCase {
     }
 
     // Validation de l'email (unicité dans l'entreprise)
-    const existingStaff = await this.staffRepository.findByEmail(Email.create(request.email));
+    const existingStaff = await this.staffRepository.findByEmail(
+      Email.create(request.email),
+    );
     // TODO: Ajouter findByEmailAndBusiness method au repository interface
 
     if (existingStaff) {
-      this.logger.warn(
-        this.i18n.t('warnings.staff.email_already_exists'),
-        { 
-          ...context, 
-          email: request.email,
-          businessId: request.businessId,
-        },
-      );
+      this.logger.warn(this.i18n.t('warnings.staff.email_already_exists'), {
+        ...context,
+        email: request.email,
+        businessId: request.businessId,
+      });
       throw new StaffValidationError(
         'email',
         request.email,
@@ -264,19 +264,31 @@ export class CreateStaffUseCase {
 
     // Validation des horaires de travail si fournis
     if (request.workingHours) {
-      const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-      
+      const days = [
+        'monday',
+        'tuesday',
+        'wednesday',
+        'thursday',
+        'friday',
+        'saturday',
+        'sunday',
+      ];
+
       for (const day of days) {
-        const hours = request.workingHours[day as keyof typeof request.workingHours];
+        const hours =
+          request.workingHours[day as keyof typeof request.workingHours];
         if (hours) {
-          if (!this.isValidTimeFormat(hours.start) || !this.isValidTimeFormat(hours.end)) {
+          if (
+            !this.isValidTimeFormat(hours.start) ||
+            !this.isValidTimeFormat(hours.end)
+          ) {
             throw new StaffValidationError(
               'workingHours',
               `${day}: ${hours.start}-${hours.end}`,
               `Invalid time format for ${day}. Use HH:MM format`,
             );
           }
-          
+
           if (hours.start >= hours.end) {
             throw new StaffValidationError(
               'workingHours',

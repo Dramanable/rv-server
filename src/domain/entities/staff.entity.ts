@@ -9,7 +9,7 @@ export enum StaffStatus {
   ACTIVE = 'ACTIVE',
   INACTIVE = 'INACTIVE',
   ON_LEAVE = 'ON_LEAVE',
-  SUSPENDED = 'SUSPENDED'
+  SUSPENDED = 'SUSPENDED',
 }
 
 export interface StaffProfile {
@@ -69,7 +69,7 @@ export class Staff {
     private readonly _hireDate: Date = new Date(),
     private readonly _createdAt: Date = new Date(),
     private _updatedAt: Date = new Date(),
-    private _calendarIntegration?: StaffCalendarIntegration
+    private _calendarIntegration?: StaffCalendarIntegration,
   ) {}
 
   // Getters
@@ -147,7 +147,7 @@ export class Staff {
       new Date(),
       new Date(),
       new Date(),
-      data.calendarIntegration
+      data.calendarIntegration,
     );
   }
 
@@ -165,14 +165,25 @@ export class Staff {
   }
 
   public isManager(): boolean {
-    return [StaffRole.SITE_MANAGER, StaffRole.DEPARTMENT_HEAD, StaffRole.TEAM_LEAD].includes(this._role) || this.isOwner();
+    return (
+      [
+        StaffRole.SITE_MANAGER,
+        StaffRole.DEPARTMENT_HEAD,
+        StaffRole.TEAM_LEAD,
+      ].includes(this._role) || this.isOwner()
+    );
   }
 
   public isPractitioner(): boolean {
     return [
-      StaffRole.SENIOR_DOCTOR, StaffRole.DOCTOR, StaffRole.RESIDENT,
-      StaffRole.SENIOR_DENTIST, StaffRole.DENTIST, StaffRole.DENTAL_STUDENT,
-      StaffRole.SENIOR_LAWYER, StaffRole.LAWYER
+      StaffRole.SENIOR_DOCTOR,
+      StaffRole.DOCTOR,
+      StaffRole.RESIDENT,
+      StaffRole.SENIOR_DENTIST,
+      StaffRole.DENTIST,
+      StaffRole.DENTAL_STUDENT,
+      StaffRole.SENIOR_LAWYER,
+      StaffRole.LAWYER,
     ].includes(this._role);
   }
 
@@ -191,12 +202,24 @@ export class Staff {
       case StaffRole.DENTIST:
       case StaffRole.SENIOR_LAWYER:
       case StaffRole.LAWYER:
-        return ['view_appointments', 'manage_own_appointments', 'view_clients'].includes(permission);
+        return [
+          'view_appointments',
+          'manage_own_appointments',
+          'view_clients',
+        ].includes(permission);
       case StaffRole.SENIOR_ASSISTANT:
       case StaffRole.ASSISTANT:
-        return ['view_appointments', 'create_appointments', 'view_clients'].includes(permission);
+        return [
+          'view_appointments',
+          'create_appointments',
+          'view_clients',
+        ].includes(permission);
       case StaffRole.RECEPTIONIST:
-        return ['view_appointments', 'create_appointments', 'manage_clients'].includes(permission);
+        return [
+          'view_appointments',
+          'create_appointments',
+          'manage_clients',
+        ].includes(permission);
       default:
         return false;
     }
@@ -220,11 +243,11 @@ export class Staff {
     if (!this._availability.timeOff) {
       this._availability.timeOff = [];
     }
-    
+
     this._availability.timeOff.push({
       startDate,
       endDate,
-      reason
+      reason,
     });
     this._updatedAt = new Date();
   }
@@ -236,8 +259,8 @@ export class Staff {
 
     // Vérifier si en congé
     if (this._availability?.timeOff) {
-      const isOnLeave = this._availability.timeOff.some(leave => 
-        dateTime >= leave.startDate && dateTime <= leave.endDate
+      const isOnLeave = this._availability.timeOff.some(
+        (leave) => dateTime >= leave.startDate && dateTime <= leave.endDate,
       );
       if (isOnLeave) return false;
     }
@@ -246,10 +269,12 @@ export class Staff {
     if (this._availability?.workingHours) {
       const dayOfWeek = dateTime.getDay();
       const timeStr = dateTime.toTimeString().substring(0, 5); // "HH:MM"
-      
-      const workingDay = this._availability.workingHours.find(wh => wh.dayOfWeek === dayOfWeek);
+
+      const workingDay = this._availability.workingHours.find(
+        (wh) => wh.dayOfWeek === dayOfWeek,
+      );
       if (!workingDay?.isWorkingDay) return false;
-      
+
       return timeStr >= workingDay.startTime && timeStr <= workingDay.endTime;
     }
 

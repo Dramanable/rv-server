@@ -57,7 +57,7 @@ export interface BusinessRepository {
     latitude: number,
     longitude: number,
     radiusKm: number,
-    limit?: number
+    limit?: number,
   ): Promise<Business[]>;
 
   /**

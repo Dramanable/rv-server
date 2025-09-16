@@ -2,7 +2,13 @@
  * 📅 Calendar Entity ORM - TypeORM + Clean Architecture
  */
 
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity('calendars')
 export class CalendarOrmEntity {
@@ -21,10 +27,10 @@ export class CalendarOrmEntity {
   @Column({ type: 'uuid', name: 'owner_id', nullable: true })
   ownerId?: string;
 
-  @Column({ 
+  @Column({
     type: 'enum',
     enum: ['PERSONAL', 'BUSINESS', 'SHARED', 'PUBLIC'],
-    default: 'PERSONAL'
+    default: 'PERSONAL',
   })
   type!: string;
 

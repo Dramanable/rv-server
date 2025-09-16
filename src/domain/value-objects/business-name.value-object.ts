@@ -14,11 +14,15 @@ export class BusinessName {
     const trimmedValue = value.trim();
 
     if (trimmedValue.length < BusinessName.MIN_LENGTH) {
-      throw new Error(`Business name must be at least ${BusinessName.MIN_LENGTH} characters long`);
+      throw new Error(
+        `Business name must be at least ${BusinessName.MIN_LENGTH} characters long`,
+      );
     }
 
     if (trimmedValue.length > BusinessName.MAX_LENGTH) {
-      throw new Error(`Business name cannot exceed ${BusinessName.MAX_LENGTH} characters`);
+      throw new Error(
+        `Business name cannot exceed ${BusinessName.MAX_LENGTH} characters`,
+      );
     }
 
     // Vérifier les caractères interdits

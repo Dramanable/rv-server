@@ -1,26 +1,29 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { DatabaseType, IDatabaseConfigService } from '../../application/ports/database-config.port';
+import {
+  DatabaseType,
+  IDatabaseConfigService,
+} from '../../application/ports/database-config.port';
 
 /**
  * 🔧 Service de Configuration de Base de Données
- * 
+ *
  * **Responsabilité** : Détermine le type de base de données à utiliser (SQL/NoSQL)
- * 
+ *
  * **Fonctionnalités** :
  * - ✅ Configuration via variables d'environnement
  * - ✅ Support runtime switching (SQL ↔ NoSQL)
  * - ✅ Validation de configuration
  * - ✅ Helpers de vérification de mode
- * 
+ *
  * **Variables d'Environnement** :
  * - `DATABASE_TYPE`: 'sql' | 'nosql' (défaut: 'sql')
- * 
+ *
  * @example
  * ```typescript
  * // .env
  * DATABASE_TYPE=nosql
- * 
+ *
  * // Usage
  * if (databaseConfig.isSqlMode()) {
  *   // Utiliser TypeORM
@@ -34,11 +37,13 @@ export class DatabaseConfigService implements IDatabaseConfigService {
   private readonly databaseType: DatabaseType;
 
   constructor(private readonly configService: ConfigService) {
-    const dbType = this.configService.get<string>('DATABASE_TYPE', 'sql').toLowerCase();
-    
+    const dbType = this.configService
+      .get<string>('DATABASE_TYPE', 'sql')
+      .toLowerCase();
+
     if (!Object.values(DatabaseType).includes(dbType as DatabaseType)) {
       throw new Error(
-        `Invalid DATABASE_TYPE: ${dbType}. Must be one of: ${Object.values(DatabaseType).join(', ')}`
+        `Invalid DATABASE_TYPE: ${dbType}. Must be one of: ${Object.values(DatabaseType).join(', ')}`,
       );
     }
 
@@ -77,7 +82,7 @@ export class DatabaseConfigService implements IDatabaseConfigService {
     return {
       databaseType: this.databaseType,
       isSqlMode: this.isSqlMode(),
-      isNoSqlMode: this.isNoSqlMode()
+      isNoSqlMode: this.isNoSqlMode(),
     };
   }
 }

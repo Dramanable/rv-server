@@ -1,22 +1,28 @@
 /**
  * 📅 Create Calendar Use Case - Clean Architecture + SOLID
- * 
+ *
  * Création d'un calendrier avec validation métier et permissions
  * ✅ AUCUNE dépendance NestJS - Respect de la Clean Architecture
  */
-import { Calendar, CalendarType } from '../../../domain/entities/calendar.entity';
+import {
+  Calendar,
+  CalendarType,
+} from '../../../domain/entities/calendar.entity';
 import type { CalendarRepository } from '../../../domain/repositories/calendar.repository.interface';
 import type { BusinessRepository } from '../../../domain/repositories/business.repository.interface';
 import type { Logger } from '../../../application/ports/logger.port';
 import type { I18nService } from '../../../application/ports/i18n.port';
-import { AppContext, AppContextFactory } from '../../../shared/context/app-context';
+import {
+  AppContext,
+  AppContextFactory,
+} from '../../../shared/context/app-context';
 import { UserRole, Permission } from '../../../shared/enums/user-role.enum';
 import { User } from '../../../domain/entities/user.entity';
 import type { UserRepository } from '../../../domain/repositories/user.repository.interface';
-import { 
-  InsufficientPermissionsError, 
+import {
+  InsufficientPermissionsError,
   CalendarValidationError,
-  BusinessNotFoundError 
+  BusinessNotFoundError,
 } from '../../../application/exceptions/application.exceptions';
 import { BusinessId } from '../../../domain/value-objects/business-id.value-object';
 import { UserId } from '../../../domain/value-objects/user-id.value-object';
@@ -83,7 +89,9 @@ export class CreateCalendarUseCase {
     private readonly i18n: I18nService,
   ) {}
 
-  async execute(request: CreateCalendarRequest): Promise<CreateCalendarResponse> {
+  async execute(
+    request: CreateCalendarRequest,
+  ): Promise<CreateCalendarResponse> {
     // 1. Context pour traçabilité
     const context: AppContext = AppContextFactory.create()
       .operation('CreateCalendar')
@@ -145,15 +153,12 @@ export class CreateCalendarUseCase {
         createdAt: calendar.createdAt,
       };
 
-      this.logger.info(
-        this.i18n.t('operations.calendar.creation_success'),
-        {
-          ...context,
-          calendarId: calendar.id.getValue(),
-          calendarName: calendar.name,
-          calendarType: calendar.type,
-        } as unknown as Record<string, unknown>,
-      );
+      this.logger.info(this.i18n.t('operations.calendar.creation_success'), {
+        ...context,
+        calendarId: calendar.id.getValue(),
+        calendarName: calendar.name,
+        calendarType: calendar.type,
+      } as unknown as Record<string, unknown>);
 
       return response;
     } catch (error) {
@@ -181,9 +186,13 @@ export class CreateCalendarUseCase {
     }
 
     // Vérifier que l'entreprise existe
-    const business = await this.businessRepository.findById(BusinessId.create(businessId));
+    const business = await this.businessRepository.findById(
+      BusinessId.create(businessId),
+    );
     if (!business) {
-      throw new BusinessNotFoundError(`Business with id ${businessId} not found`);
+      throw new BusinessNotFoundError(
+        `Business with id ${businessId} not found`,
+      );
     }
 
     // Platform admins peuvent créer des calendriers dans n'importe quelle entreprise
@@ -192,10 +201,7 @@ export class CreateCalendarUseCase {
     }
 
     // Business owners et admins peuvent créer des calendriers
-    const allowedRoles = [
-      UserRole.BUSINESS_OWNER,
-      UserRole.BUSINESS_ADMIN,
-    ];
+    const allowedRoles = [UserRole.BUSINESS_OWNER, UserRole.BUSINESS_ADMIN];
 
     if (!allowedRoles.includes(requestingUser.role)) {
       this.logger.warn(this.i18n.t('warnings.permission.denied'), {
@@ -289,7 +295,7 @@ export class CreateCalendarUseCase {
 
     // Validation des horaires de travail
     const hasAtLeastOneWorkingDay = Object.values(request.workingHours).some(
-      hours => hours !== undefined,
+      (hours) => hours !== undefined,
     );
 
     if (!hasAtLeastOneWorkingDay) {
@@ -301,19 +307,31 @@ export class CreateCalendarUseCase {
     }
 
     // Validation des formats d'horaires
-    const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-    
+    const days = [
+      'monday',
+      'tuesday',
+      'wednesday',
+      'thursday',
+      'friday',
+      'saturday',
+      'sunday',
+    ];
+
     for (const day of days) {
-      const hours = request.workingHours[day as keyof typeof request.workingHours];
+      const hours =
+        request.workingHours[day as keyof typeof request.workingHours];
       if (hours) {
-        if (!this.isValidTimeFormat(hours.start) || !this.isValidTimeFormat(hours.end)) {
+        if (
+          !this.isValidTimeFormat(hours.start) ||
+          !this.isValidTimeFormat(hours.end)
+        ) {
           throw new CalendarValidationError(
             `workingHours.${day}`,
             JSON.stringify(hours),
             `Invalid time format for ${day}. Use HH:MM format`,
           );
         }
-        
+
         if (hours.start >= hours.end) {
           throw new CalendarValidationError(
             `workingHours.${day}`,
@@ -326,15 +344,18 @@ export class CreateCalendarUseCase {
 
     // Validation des paramètres si fournis
     if (request.settings) {
-      const { 
-        slotDuration, 
-        bufferTime, 
-        maxAdvanceBooking, 
+      const {
+        slotDuration,
+        bufferTime,
+        maxAdvanceBooking,
         minAdvanceBooking,
-        color 
+        color,
       } = request.settings;
 
-      if (slotDuration !== undefined && (slotDuration < 5 || slotDuration > 480)) {
+      if (
+        slotDuration !== undefined &&
+        (slotDuration < 5 || slotDuration > 480)
+      ) {
         throw new CalendarValidationError(
           'settings.slotDuration',
           slotDuration,
@@ -350,7 +371,10 @@ export class CreateCalendarUseCase {
         );
       }
 
-      if (maxAdvanceBooking !== undefined && (maxAdvanceBooking < 1 || maxAdvanceBooking > 365)) {
+      if (
+        maxAdvanceBooking !== undefined &&
+        (maxAdvanceBooking < 1 || maxAdvanceBooking > 365)
+      ) {
         throw new CalendarValidationError(
           'settings.maxAdvanceBooking',
           maxAdvanceBooking,
@@ -358,7 +382,10 @@ export class CreateCalendarUseCase {
         );
       }
 
-      if (minAdvanceBooking !== undefined && (minAdvanceBooking < 0 || minAdvanceBooking > 168)) {
+      if (
+        minAdvanceBooking !== undefined &&
+        (minAdvanceBooking < 0 || minAdvanceBooking > 168)
+      ) {
         throw new CalendarValidationError(
           'settings.minAdvanceBooking',
           minAdvanceBooking,

@@ -7,7 +7,7 @@ import { ConfigService } from '@nestjs/config';
 import { UnauthorizedException } from '@nestjs/common';
 import type { Request } from 'express';
 import { JwtStrategy } from './jwt.strategy';
-import { UserRepository } from "../../../domain/repositories/user.repository.interface";
+import { UserRepository } from '../../../domain/repositories/user.repository.interface';
 import type { ICacheService } from '../../../application/ports/cache.port';
 import type { Logger } from '../../../application/ports/logger.port';
 import type { I18nService } from '../../../application/ports/i18n.port';

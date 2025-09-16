@@ -1,9 +1,9 @@
 /**
  * 📅 Appointment Management Utilities
- * 
+ *
  * Comprehensive utility functions for appointment lifecycle management, validation,
  * and business rule enforcement in professional service environments.
- * 
+ *
  * Features:
  * - Smart appointment validation and conflict detection
  * - Recurrence pattern generation and management
@@ -35,7 +35,7 @@ import {
   isValidStatusTransition,
   DEFAULT_REMINDER_CONFIGS,
   APPOINTMENT_STATUS_COLORS,
-  APPOINTMENT_PRIORITY_COLORS
+  APPOINTMENT_PRIORITY_COLORS,
 } from '../enums/appointment.enums';
 
 /**
@@ -62,8 +62,10 @@ export class AppointmentTimeUtils {
    * Check if appointment times overlap
    */
   static doAppointmentsOverlap(
-    start1: Date, end1: Date,
-    start2: Date, end2: Date
+    start1: Date,
+    end1: Date,
+    start2: Date,
+    end2: Date,
   ): boolean {
     return start1 < end2 && start2 < end1;
   }
@@ -76,22 +78,28 @@ export class AppointmentTimeUtils {
     appointmentEnd: Date,
     businessHours: {
       start: string; // "09:00"
-      end: string;   // "17:00"
+      end: string; // "17:00"
       days: number[]; // [1,2,3,4,5] for Mon-Fri
-    }
+    },
   ): boolean {
     const dayOfWeek = appointmentStart.getDay();
-    
+
     if (!businessHours.days.includes(dayOfWeek)) {
       return false;
     }
 
-    const startHour = appointmentStart.getHours() + appointmentStart.getMinutes() / 60;
-    const endHour = appointmentEnd.getHours() + appointmentEnd.getMinutes() / 60;
-    
-    const [businessStartHour, businessStartMin] = businessHours.start.split(':').map(Number);
-    const [businessEndHour, businessEndMin] = businessHours.end.split(':').map(Number);
-    
+    const startHour =
+      appointmentStart.getHours() + appointmentStart.getMinutes() / 60;
+    const endHour =
+      appointmentEnd.getHours() + appointmentEnd.getMinutes() / 60;
+
+    const [businessStartHour, businessStartMin] = businessHours.start
+      .split(':')
+      .map(Number);
+    const [businessEndHour, businessEndMin] = businessHours.end
+      .split(':')
+      .map(Number);
+
     const businessStart = businessStartHour + businessStartMin / 60;
     const businessEnd = businessEndHour + businessEndMin / 60;
 
@@ -103,14 +111,14 @@ export class AppointmentTimeUtils {
    */
   static calculateBufferTime(
     serviceType: string,
-    defaultBufferMinutes: number = 15
+    defaultBufferMinutes: number = 15,
   ): number {
     // Different services may need different buffer times
     const bufferRules: Record<string, number> = {
-      'SURGERY': 30,
-      'CONSULTATION': 10,
-      'TREATMENT': 15,
-      'EMERGENCY': 5
+      SURGERY: 30,
+      CONSULTATION: 10,
+      TREATMENT: 15,
+      EMERGENCY: 5,
     };
 
     return bufferRules[serviceType] || defaultBufferMinutes;
@@ -122,13 +130,13 @@ export class AppointmentTimeUtils {
   static getNextAvailableSlot(
     lastAppointmentEnd: Date,
     bufferMinutes: number,
-    serviceDurationMinutes: number
+    serviceDurationMinutes: number,
   ): { startTime: Date; endTime: Date } {
     const startTime = new Date(lastAppointmentEnd);
     startTime.setMinutes(startTime.getMinutes() + bufferMinutes);
-    
+
     const endTime = this.calculateEndTime(startTime, serviceDurationMinutes);
-    
+
     return { startTime, endTime };
   }
 
@@ -138,16 +146,17 @@ export class AppointmentTimeUtils {
   static roundToNearestSlot(date: Date, intervalMinutes: number = 15): Date {
     const rounded = new Date(date);
     const minutes = rounded.getMinutes();
-    const roundedMinutes = Math.round(minutes / intervalMinutes) * intervalMinutes;
-    
+    const roundedMinutes =
+      Math.round(minutes / intervalMinutes) * intervalMinutes;
+
     rounded.setMinutes(roundedMinutes, 0, 0);
-    
+
     // Handle hour overflow
     if (roundedMinutes >= 60) {
       rounded.setHours(rounded.getHours() + 1);
       rounded.setMinutes(roundedMinutes - 60);
     }
-    
+
     return rounded;
   }
 
@@ -163,7 +172,7 @@ export class AppointmentTimeUtils {
    */
   static isWithinCancellationDeadline(
     appointmentTime: Date,
-    cancellationHours: number = 24
+    cancellationHours: number = 24,
   ): boolean {
     const deadline = new Date(appointmentTime);
     deadline.setHours(deadline.getHours() - cancellationHours);
@@ -180,13 +189,15 @@ export class AppointmentRecurrenceUtils {
    */
   static generateRecurringDates(
     startDate: Date,
-    config: AppointmentRecurrenceConfig
+    config: AppointmentRecurrenceConfig,
   ): Date[] {
     const dates: Date[] = [];
     let currentDate = new Date(startDate);
     let occurrenceCount = 0;
 
-    while (this.shouldContinueRecurrence(currentDate, config, occurrenceCount)) {
+    while (
+      this.shouldContinueRecurrence(currentDate, config, occurrenceCount)
+    ) {
       dates.push(new Date(currentDate));
       currentDate = this.getNextRecurrenceDate(currentDate, config);
       occurrenceCount++;
@@ -198,12 +209,12 @@ export class AppointmentRecurrenceUtils {
   private static shouldContinueRecurrence(
     date: Date,
     config: AppointmentRecurrenceConfig,
-    count: number
+    count: number,
   ): boolean {
     if (config.endDate && date > config.endDate) {
       return false;
     }
-    
+
     if (config.maxOccurrences && count >= config.maxOccurrences) {
       return false;
     }
@@ -213,7 +224,7 @@ export class AppointmentRecurrenceUtils {
 
   private static getNextRecurrenceDate(
     currentDate: Date,
-    config: AppointmentRecurrenceConfig
+    config: AppointmentRecurrenceConfig,
   ): Date {
     const nextDate = new Date(currentDate);
 
@@ -223,11 +234,11 @@ export class AppointmentRecurrenceUtils {
         break;
 
       case AppointmentRecurrenceType.WEEKLY:
-        nextDate.setDate(nextDate.getDate() + (7 * config.interval));
+        nextDate.setDate(nextDate.getDate() + 7 * config.interval);
         break;
 
       case AppointmentRecurrenceType.BI_WEEKLY:
-        nextDate.setDate(nextDate.getDate() + (14 * config.interval));
+        nextDate.setDate(nextDate.getDate() + 14 * config.interval);
         break;
 
       case AppointmentRecurrenceType.MONTHLY:
@@ -235,7 +246,7 @@ export class AppointmentRecurrenceUtils {
         break;
 
       case AppointmentRecurrenceType.QUARTERLY:
-        nextDate.setMonth(nextDate.getMonth() + (3 * config.interval));
+        nextDate.setMonth(nextDate.getMonth() + 3 * config.interval);
         break;
 
       case AppointmentRecurrenceType.YEARLY:
@@ -248,11 +259,11 @@ export class AppointmentRecurrenceUtils {
           // Find next occurrence on specified days of week
           const targetDays = config.daysOfWeek;
           let daysToAdd = 1;
-          
+
           while (!targetDays.includes((nextDate.getDay() + daysToAdd) % 7)) {
             daysToAdd++;
           }
-          
+
           nextDate.setDate(nextDate.getDate() + daysToAdd);
         }
         break;
@@ -264,7 +275,9 @@ export class AppointmentRecurrenceUtils {
   /**
    * Validate recurrence configuration
    */
-  static validateRecurrenceConfig(config: AppointmentRecurrenceConfig): string[] {
+  static validateRecurrenceConfig(
+    config: AppointmentRecurrenceConfig,
+  ): string[] {
     const errors: string[] = [];
 
     if (config.interval <= 0) {
@@ -296,21 +309,23 @@ export class AppointmentPricingUtils {
   /**
    * Calculate total appointment cost including taxes and discounts
    */
-  static calculateTotalPrice(pricing: Partial<AppointmentPricing>): AppointmentPricing {
+  static calculateTotalPrice(
+    pricing: Partial<AppointmentPricing>,
+  ): AppointmentPricing {
     const baseAmount = pricing.basePrice?.amount || 0;
     let totalAmount = baseAmount;
 
     // Apply discounts
     const discountAmount = (pricing.discounts || []).reduce(
       (sum, discount) => sum + discount.amount,
-      0
+      0,
     );
     totalAmount -= discountAmount;
 
     // Apply taxes
     const taxAmount = (pricing.taxes || []).reduce(
       (sum, tax) => sum + tax.amount,
-      0
+      0,
     );
     totalAmount += taxAmount;
 
@@ -320,9 +335,10 @@ export class AppointmentPricingUtils {
       taxes: pricing.taxes || [],
       totalAmount: {
         amount: Math.max(0, totalAmount), // Prevent negative amounts
-        currency: pricing.basePrice?.currency || 'EUR'
+        currency: pricing.basePrice?.currency || 'EUR',
       },
-      paymentStatus: pricing.paymentStatus || AppointmentPaymentStatus.NOT_REQUIRED
+      paymentStatus:
+        pricing.paymentStatus || AppointmentPaymentStatus.NOT_REQUIRED,
     };
   }
 
@@ -337,25 +353,29 @@ export class AppointmentPricingUtils {
       minimumNoticeHours: number;
       feePercentage: number; // 0-100
       flatFee?: number;
-    }
+    },
   ): { fee: number; refund: number; reason: string } {
-    const hoursNotice = (appointmentTime.getTime() - cancellationTime.getTime()) / (1000 * 60 * 60);
-    
+    const hoursNotice =
+      (appointmentTime.getTime() - cancellationTime.getTime()) /
+      (1000 * 60 * 60);
+
     if (hoursNotice >= policy.minimumNoticeHours) {
       return {
         fee: 0,
         refund: appointmentPrice,
-        reason: 'Cancelled within policy - no fee'
+        reason: 'Cancelled within policy - no fee',
       };
     }
 
     const percentageFee = (appointmentPrice * policy.feePercentage) / 100;
-    const fee = policy.flatFee ? Math.max(percentageFee, policy.flatFee) : percentageFee;
-    
+    const fee = policy.flatFee
+      ? Math.max(percentageFee, policy.flatFee)
+      : percentageFee;
+
     return {
       fee: Math.min(fee, appointmentPrice),
       refund: Math.max(0, appointmentPrice - fee),
-      reason: `Late cancellation - ${hoursNotice.toFixed(1)} hours notice`
+      reason: `Late cancellation - ${hoursNotice.toFixed(1)} hours notice`,
     };
   }
 
@@ -366,7 +386,7 @@ export class AppointmentPricingUtils {
     basePrice: number,
     demandFactor: number, // 0.5-2.0 (low to high demand)
     availabilityFactor: number, // 0.5-2.0 (high to low availability)
-    timeOfDay?: 'peak' | 'off-peak' | 'normal'
+    timeOfDay?: 'peak' | 'off-peak' | 'normal',
   ): number {
     let price = basePrice;
 
@@ -378,9 +398,9 @@ export class AppointmentPricingUtils {
 
     // Apply time-of-day pricing
     const timeMultipliers = {
-      'peak': 1.2,
+      peak: 1.2,
       'off-peak': 0.8,
-      'normal': 1.0
+      normal: 1.0,
     };
 
     if (timeOfDay) {
@@ -421,7 +441,7 @@ export class AppointmentValidationUtils {
     // Duration validation (minimum 5 minutes, maximum 8 hours)
     const duration = AppointmentTimeUtils.calculateDuration(
       appointmentData.startTime,
-      appointmentData.endTime
+      appointmentData.endTime,
     );
 
     if (duration < 5) {
@@ -453,7 +473,7 @@ export class AppointmentValidationUtils {
 
     return {
       isValid: errors.length === 0,
-      errors
+      errors,
     };
   }
 
@@ -508,7 +528,7 @@ export class AppointmentValidationUtils {
    */
   static validateAppointmentUpdate(
     currentStatus: AppointmentStatus,
-    updateData: any
+    updateData: any,
   ): { isValid: boolean; errors: string[] } {
     const errors: string[] = [];
 
@@ -516,8 +536,13 @@ export class AppointmentValidationUtils {
       errors.push(`Cannot modify appointment with status: ${currentStatus}`);
     }
 
-    if (updateData.status && !isValidStatusTransition(currentStatus, updateData.status)) {
-      errors.push(`Invalid status transition from ${currentStatus} to ${updateData.status}`);
+    if (
+      updateData.status &&
+      !isValidStatusTransition(currentStatus, updateData.status)
+    ) {
+      errors.push(
+        `Invalid status transition from ${currentStatus} to ${updateData.status}`,
+      );
     }
 
     if (updateData.startTime && updateData.endTime) {
@@ -528,7 +553,7 @@ export class AppointmentValidationUtils {
 
     return {
       isValid: errors.length === 0,
-      errors
+      errors,
     };
   }
 }
@@ -540,8 +565,13 @@ export class AppointmentNotificationUtils {
   /**
    * Get default reminder configuration for appointment type
    */
-  static getDefaultReminders(appointmentType: AppointmentType): AppointmentReminderConfig[] {
-    return DEFAULT_REMINDER_CONFIGS[appointmentType] || DEFAULT_REMINDER_CONFIGS[AppointmentType.CONSULTATION];
+  static getDefaultReminders(
+    appointmentType: AppointmentType,
+  ): AppointmentReminderConfig[] {
+    return (
+      DEFAULT_REMINDER_CONFIGS[appointmentType] ||
+      DEFAULT_REMINDER_CONFIGS[AppointmentType.CONSULTATION]
+    );
   }
 
   /**
@@ -549,17 +579,17 @@ export class AppointmentNotificationUtils {
    */
   static calculateReminderTimes(
     appointmentTime: Date,
-    reminders: AppointmentReminderConfig[]
+    reminders: AppointmentReminderConfig[],
   ): Array<{ reminderConfig: AppointmentReminderConfig; sendAt: Date }> {
-    return reminders.map(reminder => ({
+    return reminders.map((reminder) => ({
       reminderConfig: reminder,
-      sendAt: this.calculateReminderSendTime(appointmentTime, reminder.timing)
+      sendAt: this.calculateReminderSendTime(appointmentTime, reminder.timing),
     }));
   }
 
   private static calculateReminderSendTime(
     appointmentTime: Date,
-    timing: AppointmentReminderTiming
+    timing: AppointmentReminderTiming,
   ): Date {
     const sendTime = new Date(appointmentTime);
 
@@ -599,7 +629,7 @@ export class AppointmentNotificationUtils {
       location?: string;
     },
     reminderType: AppointmentReminderType,
-    language: string = 'fr'
+    language: string = 'fr',
   ): string {
     const formatTime = (date: Date) => {
       return date.toLocaleString(language, {
@@ -608,7 +638,7 @@ export class AppointmentNotificationUtils {
         month: 'long',
         day: 'numeric',
         hour: '2-digit',
-        minute: '2-digit'
+        minute: '2-digit',
       });
     };
 
@@ -630,7 +660,7 @@ export class AppointmentNotificationUtils {
           Rappel RDV: ${appointmentData.serviceName} 
           le ${formatTime(appointmentData.appointmentTime)} 
           chez ${appointmentData.businessName}
-        `
+        `,
       },
       en: {
         [AppointmentReminderType.EMAIL]: `
@@ -649,12 +679,16 @@ export class AppointmentNotificationUtils {
           Appointment reminder: ${appointmentData.serviceName} 
           on ${formatTime(appointmentData.appointmentTime)} 
           at ${appointmentData.businessName}
-        `
-      }
+        `,
+      },
     };
 
-    const languageTemplates = templates[language as keyof typeof templates] || templates.en;
-    return (languageTemplates as any)[reminderType] || languageTemplates[AppointmentReminderType.EMAIL];
+    const languageTemplates =
+      templates[language as keyof typeof templates] || templates.en;
+    return (
+      (languageTemplates as any)[reminderType] ||
+      languageTemplates[AppointmentReminderType.EMAIL]
+    );
   }
 }
 
@@ -665,13 +699,15 @@ export class AppointmentAnalyticsUtils {
   /**
    * Calculate appointment metrics for a given period
    */
-  static calculateMetrics(appointments: Array<{
-    status: AppointmentStatus;
-    startTime: Date;
-    endTime: Date;
-    price?: { amount: number; currency: string };
-    source: AppointmentSource;
-  }>): {
+  static calculateMetrics(
+    appointments: Array<{
+      status: AppointmentStatus;
+      startTime: Date;
+      endTime: Date;
+      price?: { amount: number; currency: string };
+      source: AppointmentSource;
+    }>,
+  ): {
     totalAppointments: number;
     completedAppointments: number;
     cancelledAppointments: number;
@@ -683,23 +719,39 @@ export class AppointmentAnalyticsUtils {
     sourceBuckets: Record<AppointmentSource, number>;
   } {
     const totalAppointments = appointments.length;
-    const completedAppointments = appointments.filter(a => a.status === AppointmentStatus.COMPLETED).length;
-    const cancelledAppointments = appointments.filter(a => a.status === AppointmentStatus.CANCELLED).length;
-    const noShowAppointments = appointments.filter(a => a.status === AppointmentStatus.NO_SHOW).length;
+    const completedAppointments = appointments.filter(
+      (a) => a.status === AppointmentStatus.COMPLETED,
+    ).length;
+    const cancelledAppointments = appointments.filter(
+      (a) => a.status === AppointmentStatus.CANCELLED,
+    ).length;
+    const noShowAppointments = appointments.filter(
+      (a) => a.status === AppointmentStatus.NO_SHOW,
+    ).length;
 
     const totalRevenue = appointments
-      .filter(a => a.status === AppointmentStatus.COMPLETED && a.price)
+      .filter((a) => a.status === AppointmentStatus.COMPLETED && a.price)
       .reduce((sum, a) => sum + (a.price?.amount || 0), 0);
 
-    const averageAppointmentValue = completedAppointments > 0 ? totalRevenue / completedAppointments : 0;
-    const completionRate = totalAppointments > 0 ? (completedAppointments / totalAppointments) * 100 : 0;
-    const noShowRate = totalAppointments > 0 ? (noShowAppointments / totalAppointments) * 100 : 0;
+    const averageAppointmentValue =
+      completedAppointments > 0 ? totalRevenue / completedAppointments : 0;
+    const completionRate =
+      totalAppointments > 0
+        ? (completedAppointments / totalAppointments) * 100
+        : 0;
+    const noShowRate =
+      totalAppointments > 0
+        ? (noShowAppointments / totalAppointments) * 100
+        : 0;
 
     // Source distribution
-    const sourceBuckets = appointments.reduce((buckets, appointment) => {
-      buckets[appointment.source] = (buckets[appointment.source] || 0) + 1;
-      return buckets;
-    }, {} as Record<AppointmentSource, number>);
+    const sourceBuckets = appointments.reduce(
+      (buckets, appointment) => {
+        buckets[appointment.source] = (buckets[appointment.source] || 0) + 1;
+        return buckets;
+      },
+      {} as Record<AppointmentSource, number>,
+    );
 
     return {
       totalAppointments,
@@ -710,7 +762,7 @@ export class AppointmentAnalyticsUtils {
       averageAppointmentValue,
       completionRate,
       noShowRate,
-      sourceBuckets
+      sourceBuckets,
     };
   }
 
@@ -726,7 +778,7 @@ export class AppointmentAnalyticsUtils {
     const hourlyDistribution: Record<number, number> = {};
     const dailyDistribution: Record<number, number> = {};
 
-    appointments.forEach(appointment => {
+    appointments.forEach((appointment) => {
       const hour = appointment.startTime.getHours();
       const day = appointment.startTime.getDay();
 
@@ -736,13 +788,16 @@ export class AppointmentAnalyticsUtils {
 
     // Find peak hours (top 25% by volume)
     const sortedHours = Object.entries(hourlyDistribution)
-      .sort(([,a], [,b]) => b - a)
+      .sort(([, a], [, b]) => b - a)
       .map(([hour]) => parseInt(hour));
-    const peakHours = sortedHours.slice(0, Math.ceil(sortedHours.length * 0.25));
+    const peakHours = sortedHours.slice(
+      0,
+      Math.ceil(sortedHours.length * 0.25),
+    );
 
     // Find peak days (top 25% by volume)
     const sortedDays = Object.entries(dailyDistribution)
-      .sort(([,a], [,b]) => b - a)
+      .sort(([, a], [, b]) => b - a)
       .map(([day]) => parseInt(day));
     const peakDays = sortedDays.slice(0, Math.ceil(sortedDays.length * 0.25));
 
@@ -750,7 +805,7 @@ export class AppointmentAnalyticsUtils {
       peakHours,
       peakDays,
       hourlyDistribution,
-      dailyDistribution
+      dailyDistribution,
     };
   }
 }
@@ -773,44 +828,44 @@ export class AppointmentUIUtils {
         label: 'En attente',
         color: APPOINTMENT_STATUS_COLORS[AppointmentStatus.PENDING],
         icon: '🕐',
-        description: 'Rendez-vous en attente de confirmation'
+        description: 'Rendez-vous en attente de confirmation',
       },
       [AppointmentStatus.CONFIRMED]: {
         label: 'Confirmé',
         color: APPOINTMENT_STATUS_COLORS[AppointmentStatus.CONFIRMED],
         icon: '✅',
-        description: 'Rendez-vous confirmé et planifié'
+        description: 'Rendez-vous confirmé et planifié',
       },
       [AppointmentStatus.IN_PROGRESS]: {
         label: 'En cours',
         color: APPOINTMENT_STATUS_COLORS[AppointmentStatus.IN_PROGRESS],
         icon: '🏃',
-        description: 'Rendez-vous actuellement en cours'
+        description: 'Rendez-vous actuellement en cours',
       },
       [AppointmentStatus.COMPLETED]: {
         label: 'Terminé',
         color: APPOINTMENT_STATUS_COLORS[AppointmentStatus.COMPLETED],
         icon: '🏁',
-        description: 'Rendez-vous terminé avec succès'
+        description: 'Rendez-vous terminé avec succès',
       },
       [AppointmentStatus.CANCELLED]: {
         label: 'Annulé',
         color: APPOINTMENT_STATUS_COLORS[AppointmentStatus.CANCELLED],
         icon: '❌',
-        description: 'Rendez-vous annulé'
+        description: 'Rendez-vous annulé',
       },
       [AppointmentStatus.NO_SHOW]: {
         label: 'Absence',
         color: APPOINTMENT_STATUS_COLORS[AppointmentStatus.NO_SHOW],
         icon: '👻',
-        description: 'Client non présenté'
+        description: 'Client non présenté',
       },
       [AppointmentStatus.RESCHEDULED]: {
         label: 'Reporté',
         color: APPOINTMENT_STATUS_COLORS[AppointmentStatus.RESCHEDULED],
         icon: '📅',
-        description: 'Rendez-vous reporté'
-      }
+        description: 'Rendez-vous reporté',
+      },
     };
 
     return displays[status];
@@ -830,26 +885,26 @@ export class AppointmentUIUtils {
         label: 'Urgence',
         color: APPOINTMENT_PRIORITY_COLORS[AppointmentPriority.EMERGENCY],
         icon: '🚨',
-        weight: 4
+        weight: 4,
       },
       [AppointmentPriority.HIGH]: {
         label: 'Haute',
         color: APPOINTMENT_PRIORITY_COLORS[AppointmentPriority.HIGH],
         icon: '🔴',
-        weight: 3
+        weight: 3,
       },
       [AppointmentPriority.NORMAL]: {
         label: 'Normale',
         color: APPOINTMENT_PRIORITY_COLORS[AppointmentPriority.NORMAL],
         icon: '🔵',
-        weight: 2
+        weight: 2,
       },
       [AppointmentPriority.LOW]: {
         label: 'Faible',
         color: APPOINTMENT_PRIORITY_COLORS[AppointmentPriority.LOW],
         icon: '🟢',
-        weight: 1
-      }
+        weight: 1,
+      },
     };
 
     return displays[priority];
@@ -886,7 +941,7 @@ export class AppointmentUIUtils {
     location?: string;
   } {
     const statusDisplay = this.getStatusDisplay(appointment.status);
-    
+
     return {
       id: appointment.id,
       title: `${appointment.service?.name || 'Appointment'} - ${appointment.clientInfo?.firstName} ${appointment.clientInfo?.lastName}`,
@@ -894,7 +949,7 @@ export class AppointmentUIUtils {
       end: new Date(appointment.endTime),
       color: statusDisplay.color,
       description: appointment.notes || statusDisplay.description,
-      location: appointment.location?.address
+      location: appointment.location?.address,
     };
   }
 }
@@ -907,7 +962,7 @@ export const AppointmentUtils = {
   Validation: AppointmentValidationUtils,
   Notifications: AppointmentNotificationUtils,
   Analytics: AppointmentAnalyticsUtils,
-  UI: AppointmentUIUtils
+  UI: AppointmentUIUtils,
 };
 
 export default AppointmentUtils;

@@ -1,6 +1,6 @@
 /**
  * 🔄 SQL Mappers Index
- * 
+ *
  * Export de tous les mappers SQL (TypeORM)
  */
 

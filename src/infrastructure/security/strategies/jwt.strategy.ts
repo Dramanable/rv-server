@@ -12,7 +12,7 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import type { Request } from 'express';
 import { User } from '../../../domain/entities/user.entity';
 import { UserRole } from '../../../shared/enums/user-role.enum';
-import type { UserRepository } from "../../../domain/repositories/user.repository.interface";
+import type { UserRepository } from '../../../domain/repositories/user.repository.interface';
 import type { ICacheService } from '../../../application/ports/cache.port';
 import type { Logger } from '../../../application/ports/logger.port';
 import type { I18nService } from '../../../application/ports/i18n.port';

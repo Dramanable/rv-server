@@ -12,20 +12,28 @@ import { RepositoryFactory } from './repositories/repository.factory';
     RepositoryFactory,
     {
       provide: 'BusinessRepository',
-      useFactory: (factory: RepositoryFactory) => factory.createBusinessRepository(),
+      useFactory: (factory: RepositoryFactory) =>
+        factory.createBusinessRepository(),
       inject: [RepositoryFactory],
     },
     {
       provide: 'UserRepository',
-      useFactory: (factory: RepositoryFactory) => factory.createUserRepository(),
+      useFactory: (factory: RepositoryFactory) =>
+        factory.createUserRepository(),
       inject: [RepositoryFactory],
     },
     {
       provide: 'CalendarRepository',
-      useFactory: (factory: RepositoryFactory) => factory.createCalendarRepository(),
+      useFactory: (factory: RepositoryFactory) =>
+        factory.createCalendarRepository(),
       inject: [RepositoryFactory],
     },
   ],
-  exports: ['BusinessRepository', 'UserRepository', 'CalendarRepository', RepositoryFactory],
+  exports: [
+    'BusinessRepository',
+    'UserRepository',
+    'CalendarRepository',
+    RepositoryFactory,
+  ],
 })
 export class DatabaseModule {}

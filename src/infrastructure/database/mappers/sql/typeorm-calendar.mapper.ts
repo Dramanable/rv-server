@@ -5,7 +5,10 @@
  * Clean Architecture : Infrastructure ne dépend PAS du domain
  */
 
-import { Calendar, CalendarType } from '../../../../domain/entities/calendar.entity';
+import {
+  Calendar,
+  CalendarType,
+} from '../../../../domain/entities/calendar.entity';
 import { CalendarId } from '../../../../domain/value-objects/calendar-id.value-object';
 import { BusinessId } from '../../../../domain/value-objects/business-id.value-object';
 import { UserId } from '../../../../domain/value-objects/user-id.value-object';
@@ -17,7 +20,7 @@ export class TypeOrmCalendarMapper {
    */
   static toOrmEntity(domainEntity: Calendar): Partial<CalendarOrmEntity> {
     const ormEntity = new CalendarOrmEntity();
-    
+
     ormEntity.id = domainEntity.id.getValue();
     ormEntity.name = domainEntity.name;
     ormEntity.description = domainEntity.description;
@@ -51,15 +54,17 @@ export class TypeOrmCalendarMapper {
         maximumAdvanceBooking: 30,
         allowMultipleBookings: false,
         autoConfirmBookings: true,
-        bufferTimeBetweenSlots: 0
-      }
+        bufferTimeBetweenSlots: 0,
+      },
     });
   }
 
   /**
    * 🔄 Conversion Domain → TypeORM (alias pour compatibilité)
    */
-  static toPersistenceEntity(domainEntity: Calendar): Partial<CalendarOrmEntity> {
+  static toPersistenceEntity(
+    domainEntity: Calendar,
+  ): Partial<CalendarOrmEntity> {
     return this.toOrmEntity(domainEntity);
   }
 }

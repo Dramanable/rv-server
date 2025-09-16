@@ -1,9 +1,9 @@
 /**
  * 📅 Appointment Management Enums & Types
- * 
+ *
  * Comprehensive type definitions for appointment lifecycle management in professional services.
  * Designed for multi-tenant appointment systems with complex business rules and integrations.
- * 
+ *
  * Features:
  * - Type-safe appointment status management
  * - Flexible recurrence pattern definitions
@@ -15,10 +15,10 @@
 
 /**
  * 🔄 Appointment Status Lifecycle
- * 
+ *
  * Defines the complete appointment lifecycle from booking to completion.
  * Each status represents a specific stage with defined business rules and transitions.
- * 
+ *
  * Status Flow Example:
  * PENDING → CONFIRMED → IN_PROGRESS → COMPLETED
  * PENDING → CANCELLED (client or staff cancellation)
@@ -87,12 +87,12 @@ export enum AppointmentStatus {
    * - Original slot is freed, new slot reserved
    * - Maintains appointment history and context
    */
-  RESCHEDULED = 'RESCHEDULED'
+  RESCHEDULED = 'RESCHEDULED',
 }
 
 /**
  * 🔁 Appointment Recurrence Patterns
- * 
+ *
  * Defines how appointments repeat over time for ongoing treatments,
  * regular check-ups, or therapy sessions.
  */
@@ -142,12 +142,12 @@ export enum AppointmentRecurrenceType {
    * 🛠️ Custom recurrence pattern
    * Example: Every 3 days, or specific days of the week
    */
-  CUSTOM = 'CUSTOM'
+  CUSTOM = 'CUSTOM',
 }
 
 /**
  * 🔔 Reminder and Notification Types
- * 
+ *
  * Defines when and how clients should be reminded about appointments.
  */
 export enum AppointmentReminderType {
@@ -174,12 +174,12 @@ export enum AppointmentReminderType {
   /**
    * 💬 WhatsApp message
    */
-  WHATSAPP = 'WHATSAPP'
+  WHATSAPP = 'WHATSAPP',
 }
 
 /**
  * ⏰ Reminder Timing Options
- * 
+ *
  * Defines when reminders should be sent before appointments.
  */
 export enum AppointmentReminderTiming {
@@ -211,12 +211,12 @@ export enum AppointmentReminderTiming {
   /**
    * 📅 1 week before appointment
    */
-  ONE_WEEK = 'ONE_WEEK'
+  ONE_WEEK = 'ONE_WEEK',
 }
 
 /**
  * 💰 Payment Status for Appointments
- * 
+ *
  * Tracks payment lifecycle for appointments with monetary value.
  */
 export enum AppointmentPaymentStatus {
@@ -248,12 +248,12 @@ export enum AppointmentPaymentStatus {
   /**
    * ⚠️ Payment failed or declined
    */
-  FAILED = 'FAILED'
+  FAILED = 'FAILED',
 }
 
 /**
  * 📊 Appointment Priority Levels
- * 
+ *
  * Helps staff prioritize appointments and manage urgent cases.
  */
 export enum AppointmentPriority {
@@ -275,12 +275,12 @@ export enum AppointmentPriority {
   /**
    * 🟢 Low priority - flexible scheduling
    */
-  LOW = 'LOW'
+  LOW = 'LOW',
 }
 
 /**
  * 🏢 Appointment Booking Source
- * 
+ *
  * Tracks how appointments were created for analytics and optimization.
  */
 export enum AppointmentSource {
@@ -317,12 +317,12 @@ export enum AppointmentSource {
   /**
    * 🔁 Created from recurring appointment pattern
    */
-  RECURRING = 'RECURRING'
+  RECURRING = 'RECURRING',
 }
 
 /**
  * 📋 Appointment Types by Business Category
- * 
+ *
  * Categorizes appointments by the type of service or business need.
  */
 export enum AppointmentType {
@@ -364,12 +364,12 @@ export enum AppointmentType {
   /**
    * 📝 Administrative or paperwork appointment
    */
-  ADMINISTRATIVE = 'ADMINISTRATIVE'
+  ADMINISTRATIVE = 'ADMINISTRATIVE',
 }
 
 /**
  * 📍 Appointment Location Types
- * 
+ *
  * Defines where the appointment takes place.
  */
 export enum AppointmentLocationType {
@@ -391,12 +391,12 @@ export enum AppointmentLocationType {
   /**
    * 🚗 Mobile service (traveling to client)
    */
-  MOBILE = 'MOBILE'
+  MOBILE = 'MOBILE',
 }
 
 /**
  * 🔒 Appointment Confirmation Requirements
- * 
+ *
  * Defines what confirmations are needed before appointment is final.
  */
 export enum AppointmentConfirmationType {
@@ -423,12 +423,12 @@ export enum AppointmentConfirmationType {
   /**
    * 💳 Payment confirmation required
    */
-  PAYMENT = 'PAYMENT'
+  PAYMENT = 'PAYMENT',
 }
 
 /**
  * 📊 Appointment Analytics Categories
- * 
+ *
  * Categories for grouping appointments in reports and analytics.
  */
 export enum AppointmentAnalyticsCategory {
@@ -460,7 +460,7 @@ export enum AppointmentAnalyticsCategory {
   /**
    * ⚡ Quick appointments (under threshold)
    */
-  QUICK = 'QUICK'
+  QUICK = 'QUICK',
 }
 
 /**
@@ -552,7 +552,9 @@ export interface AppointmentMetadata {
  * Check if appointment status allows modifications
  */
 export const isModifiableStatus = (status: AppointmentStatus): boolean => {
-  return [AppointmentStatus.PENDING, AppointmentStatus.CONFIRMED].includes(status);
+  return [AppointmentStatus.PENDING, AppointmentStatus.CONFIRMED].includes(
+    status,
+  );
 };
 
 /**
@@ -562,32 +564,34 @@ export const isFinalStatus = (status: AppointmentStatus): boolean => {
   return [
     AppointmentStatus.COMPLETED,
     AppointmentStatus.CANCELLED,
-    AppointmentStatus.NO_SHOW
+    AppointmentStatus.NO_SHOW,
   ].includes(status);
 };
 
 /**
  * Get valid status transitions for an appointment
  */
-export const getValidStatusTransitions = (currentStatus: AppointmentStatus): AppointmentStatus[] => {
+export const getValidStatusTransitions = (
+  currentStatus: AppointmentStatus,
+): AppointmentStatus[] => {
   switch (currentStatus) {
     case AppointmentStatus.PENDING:
       return [AppointmentStatus.CONFIRMED, AppointmentStatus.CANCELLED];
-    
+
     case AppointmentStatus.CONFIRMED:
       return [
         AppointmentStatus.IN_PROGRESS,
         AppointmentStatus.CANCELLED,
         AppointmentStatus.RESCHEDULED,
-        AppointmentStatus.NO_SHOW
+        AppointmentStatus.NO_SHOW,
       ];
-    
+
     case AppointmentStatus.IN_PROGRESS:
       return [AppointmentStatus.COMPLETED, AppointmentStatus.NO_SHOW];
-    
+
     case AppointmentStatus.RESCHEDULED:
       return [AppointmentStatus.CONFIRMED, AppointmentStatus.CANCELLED];
-    
+
     default:
       return []; // Final statuses cannot be changed
   }
@@ -598,7 +602,7 @@ export const getValidStatusTransitions = (currentStatus: AppointmentStatus): App
  */
 export const isValidStatusTransition = (
   currentStatus: AppointmentStatus,
-  newStatus: AppointmentStatus
+  newStatus: AppointmentStatus,
 ): boolean => {
   const validTransitions = getValidStatusTransitions(currentStatus);
   return validTransitions.includes(newStatus);
@@ -611,83 +615,86 @@ export const isValidStatusTransition = (
 /**
  * Default reminder configurations for different appointment types
  */
-export const DEFAULT_REMINDER_CONFIGS: Record<AppointmentType, AppointmentReminderConfig[]> = {
+export const DEFAULT_REMINDER_CONFIGS: Record<
+  AppointmentType,
+  AppointmentReminderConfig[]
+> = {
   [AppointmentType.CONSULTATION]: [
     {
       type: AppointmentReminderType.EMAIL,
       timing: AppointmentReminderTiming.ONE_DAY,
-      enabled: true
+      enabled: true,
     },
     {
       type: AppointmentReminderType.SMS,
       timing: AppointmentReminderTiming.TWO_HOURS,
-      enabled: true
-    }
+      enabled: true,
+    },
   ],
   [AppointmentType.TREATMENT]: [
     {
       type: AppointmentReminderType.EMAIL,
       timing: AppointmentReminderTiming.ONE_DAY,
-      enabled: true
+      enabled: true,
     },
     {
       type: AppointmentReminderType.SMS,
       timing: AppointmentReminderTiming.ONE_HOUR,
-      enabled: true
-    }
+      enabled: true,
+    },
   ],
   [AppointmentType.EMERGENCY]: [
     {
       type: AppointmentReminderType.SMS,
       timing: AppointmentReminderTiming.ONE_HOUR,
-      enabled: true
-    }
+      enabled: true,
+    },
   ],
   [AppointmentType.FOLLOW_UP]: [
     {
       type: AppointmentReminderType.EMAIL,
       timing: AppointmentReminderTiming.ONE_DAY,
-      enabled: true
-    }
+      enabled: true,
+    },
   ],
   [AppointmentType.ASSESSMENT]: [
     {
       type: AppointmentReminderType.EMAIL,
       timing: AppointmentReminderTiming.TWO_DAYS,
-      enabled: true
+      enabled: true,
     },
     {
       type: AppointmentReminderType.SMS,
       timing: AppointmentReminderTiming.ONE_HOUR,
-      enabled: true
-    }
+      enabled: true,
+    },
   ],
   [AppointmentType.CHECKUP]: [
     {
       type: AppointmentReminderType.EMAIL,
       timing: AppointmentReminderTiming.ONE_DAY,
-      enabled: true
-    }
+      enabled: true,
+    },
   ],
   [AppointmentType.TELECONSULTATION]: [
     {
       type: AppointmentReminderType.EMAIL,
       timing: AppointmentReminderTiming.ONE_DAY,
-      enabled: true
+      enabled: true,
     },
     {
       type: AppointmentReminderType.PUSH,
       timing: AppointmentReminderTiming.ONE_HOUR,
-      enabled: true
-    }
+      enabled: true,
+    },
   ],
   [AppointmentType.ADMINISTRATIVE]: [
     {
       type: AppointmentReminderType.EMAIL,
       timing: AppointmentReminderTiming.ONE_DAY,
-      enabled: true
-    }
-  ]
+      enabled: true,
+    },
+  ],
 };
 
 /**
@@ -700,15 +707,16 @@ export const APPOINTMENT_STATUS_COLORS: Record<AppointmentStatus, string> = {
   [AppointmentStatus.COMPLETED]: '#4CAF50', // Dark Green
   [AppointmentStatus.CANCELLED]: '#EF5350', // Red
   [AppointmentStatus.NO_SHOW]: '#FF7043', // Deep Orange
-  [AppointmentStatus.RESCHEDULED]: '#AB47BC' // Purple
+  [AppointmentStatus.RESCHEDULED]: '#AB47BC', // Purple
 };
 
 /**
  * Priority colors for UI components
  */
-export const APPOINTMENT_PRIORITY_COLORS: Record<AppointmentPriority, string> = {
-  [AppointmentPriority.EMERGENCY]: '#F44336', // Red
-  [AppointmentPriority.HIGH]: '#FF9800', // Orange
-  [AppointmentPriority.NORMAL]: '#2196F3', // Blue
-  [AppointmentPriority.LOW]: '#4CAF50' // Green
-};
+export const APPOINTMENT_PRIORITY_COLORS: Record<AppointmentPriority, string> =
+  {
+    [AppointmentPriority.EMERGENCY]: '#F44336', // Red
+    [AppointmentPriority.HIGH]: '#FF9800', // Orange
+    [AppointmentPriority.NORMAL]: '#2196F3', // Blue
+    [AppointmentPriority.LOW]: '#4CAF50', // Green
+  };

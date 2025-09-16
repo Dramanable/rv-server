@@ -3,10 +3,7 @@ import { PresentationModule } from './presentation/presentation.module';
 import { InfrastructureModule } from './infrastructure/infrastructure.module';
 
 @Module({
-  imports: [
-    InfrastructureModule,
-    PresentationModule,
-  ],
+  imports: [InfrastructureModule, PresentationModule],
   controllers: [],
   providers: [],
 })

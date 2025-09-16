@@ -1,6 +1,6 @@
 /**
  * 🛎️ Service Domain Exceptions
- * 
+ *
  * Exceptions spécifiques au domaine Service avec support i18n
  */
 
@@ -29,7 +29,9 @@ export class ServiceAlreadyExistsError extends Error {
   public readonly businessId: string;
 
   constructor(serviceName: string, businessId: string) {
-    super(`Service '${serviceName}' already exists in business '${businessId}'`);
+    super(
+      `Service '${serviceName}' already exists in business '${businessId}'`,
+    );
     this.name = 'ServiceAlreadyExistsError';
     this.serviceName = serviceName;
     this.businessId = businessId;
@@ -51,7 +53,7 @@ export class InvalidPricingError extends Error {
   public readonly currency: string;
 
   constructor(amount: number, currency: string, reason?: string) {
-    const message = reason 
+    const message = reason
       ? `Invalid pricing ${amount} ${currency}: ${reason}`
       : `Invalid pricing: ${amount} ${currency}`;
     super(message);
@@ -66,7 +68,7 @@ export class ServiceUnavailableError extends Error {
   public readonly requestedDate: Date;
 
   constructor(serviceId: string, requestedDate: Date, reason?: string) {
-    const message = reason 
+    const message = reason
       ? `Service '${serviceId}' unavailable on ${requestedDate.toISOString()}: ${reason}`
       : `Service '${serviceId}' unavailable on ${requestedDate.toISOString()}`;
     super(message);

@@ -3,5 +3,5 @@ export enum AppointmentType {
   TREATMENT = 'TREATMENT',
   FOLLOW_UP = 'FOLLOW_UP',
   EMERGENCY = 'EMERGENCY',
-  ROUTINE = 'ROUTINE'
+  ROUTINE = 'ROUTINE',
 }

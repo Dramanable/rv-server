@@ -181,7 +181,11 @@ export class CreateUserUseCase {
 
     // Business admins ne peuvent créer que des utilisateurs inférieurs
     if (requestingUser.role === UserRole.BUSINESS_ADMIN) {
-      const forbiddenRoles = [UserRole.PLATFORM_ADMIN, UserRole.BUSINESS_OWNER, UserRole.BUSINESS_ADMIN];
+      const forbiddenRoles = [
+        UserRole.PLATFORM_ADMIN,
+        UserRole.BUSINESS_OWNER,
+        UserRole.BUSINESS_ADMIN,
+      ];
       if (forbiddenRoles.includes(targetRole)) {
         this.logger.warn(
           this.i18n.t('warnings.role.elevation_attempt', {
@@ -193,10 +197,16 @@ export class CreateUserUseCase {
       }
       return;
     }
-    
+
     // Location managers peuvent créer du personnel opérationnel
     if (requestingUser.role === UserRole.LOCATION_MANAGER) {
-      const allowedRoles = [UserRole.PRACTITIONER, UserRole.JUNIOR_PRACTITIONER, UserRole.RECEPTIONIST, UserRole.ASSISTANT, UserRole.REGULAR_CLIENT];
+      const allowedRoles = [
+        UserRole.PRACTITIONER,
+        UserRole.JUNIOR_PRACTITIONER,
+        UserRole.RECEPTIONIST,
+        UserRole.ASSISTANT,
+        UserRole.REGULAR_CLIENT,
+      ];
       if (!allowedRoles.includes(targetRole)) {
         this.logger.warn(
           this.i18n.t('warnings.role.elevation_attempt', {

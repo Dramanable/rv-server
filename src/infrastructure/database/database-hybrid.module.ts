@@ -13,17 +13,17 @@ import { DATABASE_CONFIG_SERVICE } from '../../application/ports/database-config
 
 /**
  * 🔀 Module Base de Données Sélecteur (SQL OU NoSQL)
- * 
+ *
  * **Responsabilité** : Sélection dynamique SQL OU NoSQL selon DATABASE_TYPE
- * 
+ *
  * **Architecture** :
  * - ✅ Configuration exclusive : SOIT SQL SOIT NoSQL
  * - ✅ Délégation vers modules spécialisés
  * - ✅ Pas de mélange - choix au démarrage de l'application
- * 
+ *
  * **Variables d'Environnement** :
  * - `DATABASE_TYPE`: 'sql' | 'nosql' (défaut: 'sql')
- * 
+ *
  * **Patterns Implémentés** :
  * - Factory Pattern pour sélection de module
  * - Strategy Pattern exclusif
@@ -37,7 +37,7 @@ export class DatabaseHybridModule {
   static async forRootAsync(): Promise<DynamicModule> {
     // Déterminer le type de base de données
     const databaseType = process.env.DATABASE_TYPE?.toLowerCase() || 'sql';
-    
+
     // Sélectionner le module SQL uniquement
     const selectedModule = DatabaseSqlModule.forRootAsync();
 
@@ -55,9 +55,7 @@ export class DatabaseHybridModule {
           useClass: DatabaseConfigService,
         },
       ],
-      exports: [
-        DATABASE_CONFIG_SERVICE,
-      ],
+      exports: [DATABASE_CONFIG_SERVICE],
       global: true,
     };
   }

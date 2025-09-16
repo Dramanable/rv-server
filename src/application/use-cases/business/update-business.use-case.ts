@@ -1,22 +1,28 @@
 /**
  * 🏢 Update Business Use Case - Clean Architecture + SOLID
- * 
+ *
  * Mise à jour d'une entreprise avec validation métier et permissions
  */
-import { Business, BusinessStatus } from '../../../domain/entities/business.entity';
+import {
+  Business,
+  BusinessStatus,
+} from '../../../domain/entities/business.entity';
 import { BusinessId } from '../../../domain/value-objects/business-id.value-object';
 import { BusinessName } from '../../../domain/value-objects/business-name.value-object';
 import type { BusinessRepository } from '../../../domain/repositories/business.repository.interface';
 import type { Logger } from '../../../application/ports/logger.port';
 import type { I18nService } from '../../../application/ports/i18n.port';
-import { AppContext, AppContextFactory } from '../../../shared/context/app-context';
+import {
+  AppContext,
+  AppContextFactory,
+} from '../../../shared/context/app-context';
 import { UserRole, Permission } from '../../../shared/enums/user-role.enum';
 import { User } from '../../../domain/entities/user.entity';
-import { UserRepository } from "../../../domain/repositories/user.repository.interface";
-import { 
-  InsufficientPermissionsError, 
+import { UserRepository } from '../../../domain/repositories/user.repository.interface';
+import {
+  InsufficientPermissionsError,
   BusinessValidationError,
-  BusinessNotFoundError
+  BusinessNotFoundError,
 } from '../../../application/exceptions/application.exceptions';
 import { Email } from '../../../domain/value-objects/email.value-object';
 import { Phone } from '../../../domain/value-objects/phone.value-object';
@@ -78,15 +84,16 @@ export interface UpdateBusinessResponse {
 
 export class UpdateBusinessUseCase {
   constructor(
-    
     private readonly businessRepository: BusinessRepository,
-    
+
     private readonly userRepository: UserRepository,
     private readonly logger: Logger,
     private readonly i18n: I18nService,
   ) {}
 
-  async execute(request: UpdateBusinessRequest): Promise<UpdateBusinessResponse> {
+  async execute(
+    request: UpdateBusinessRequest,
+  ): Promise<UpdateBusinessResponse> {
     // 1. Context pour traçabilité
     const context: AppContext = AppContextFactory.create()
       .operation('UpdateBusiness')
@@ -94,10 +101,9 @@ export class UpdateBusinessUseCase {
       .metadata('businessId', request.businessId)
       .build();
 
-    this.logger.info(
-      this.i18n.t('operations.business.update_attempt'),
-      { ...context } as Record<string, unknown>,
-    );
+    this.logger.info(this.i18n.t('operations.business.update_attempt'), {
+      ...context,
+    } as Record<string, unknown>);
 
     try {
       // 2. Validation des permissions
@@ -122,7 +128,7 @@ export class UpdateBusinessUseCase {
         business.updateSettings(settings);
       }
 
-      // Note: Pour les autres champs, nous aurions besoin de méthodes 
+      // Note: Pour les autres champs, nous aurions besoin de méthodes
       // de mise à jour dans l'entité Business (immutable par design)
 
       // 6. Persistance
@@ -137,13 +143,10 @@ export class UpdateBusinessUseCase {
         updatedAt: business.updatedAt,
       };
 
-      this.logger.info(
-        this.i18n.t('operations.business.update_success'),
-        {
-          ...context,
-          businessId: business.id.getValue(),
-        } as Record<string, unknown>,
-      );
+      this.logger.info(this.i18n.t('operations.business.update_success'), {
+        ...context,
+        businessId: business.id.getValue(),
+      } as Record<string, unknown>);
 
       return response;
     } catch (error) {
@@ -169,9 +172,13 @@ export class UpdateBusinessUseCase {
       );
     }
 
-    const business = await this.businessRepository.findById(BusinessId.create(businessId));
+    const business = await this.businessRepository.findById(
+      BusinessId.create(businessId),
+    );
     if (!business) {
-      throw new BusinessNotFoundError(`Business with id ${businessId} not found`);
+      throw new BusinessNotFoundError(
+        `Business with id ${businessId} not found`,
+      );
     }
 
     // Platform admins peuvent modifier toutes les entreprises
@@ -181,10 +188,7 @@ export class UpdateBusinessUseCase {
 
     // Business owners et admins peuvent modifier leur entreprise
     // Note: Il faudrait ajouter une relation business-user pour vérifier l'appartenance
-    const allowedRoles = [
-      UserRole.BUSINESS_OWNER,
-      UserRole.BUSINESS_ADMIN,
-    ];
+    const allowedRoles = [UserRole.BUSINESS_OWNER, UserRole.BUSINESS_ADMIN];
 
     if (!allowedRoles.includes(requestingUser.role)) {
       this.logger.warn(this.i18n.t('warnings.permission.denied'), {
@@ -231,11 +235,14 @@ export class UpdateBusinessUseCase {
         BusinessName.create(request.name.trim()),
       );
 
-      if (existingBusiness && existingBusiness.id.getValue() !== request.businessId) {
-        this.logger.warn(
-          this.i18n.t('warnings.business.name_already_exists'),
-          { ...context, businessName: request.name },
-        );
+      if (
+        existingBusiness &&
+        existingBusiness.id.getValue() !== request.businessId
+      ) {
+        this.logger.warn(this.i18n.t('warnings.business.name_already_exists'), {
+          ...context,
+          businessName: request.name,
+        });
         throw new BusinessValidationError(
           'name',
           request.name,
@@ -276,7 +283,7 @@ export class UpdateBusinessUseCase {
     // Validation des couleurs de marque si fournies
     if (request.branding?.brandColors) {
       const { primary, secondary, accent } = request.branding.brandColors;
-      
+
       if (primary && !this.isValidHexColor(primary)) {
         throw new BusinessValidationError(
           'primaryColor',
@@ -285,7 +292,7 @@ export class UpdateBusinessUseCase {
           request.businessId,
         );
       }
-      
+
       if (secondary && !this.isValidHexColor(secondary)) {
         throw new BusinessValidationError(
           'secondaryColor',
@@ -294,7 +301,7 @@ export class UpdateBusinessUseCase {
           request.businessId,
         );
       }
-      
+
       if (accent && !this.isValidHexColor(accent)) {
         throw new BusinessValidationError(
           'accentColor',
@@ -307,8 +314,9 @@ export class UpdateBusinessUseCase {
 
     // Validation des paramètres d'appointment si fournis
     if (request.settings?.appointmentSettings) {
-      const { defaultDuration, bufferTime, advanceBookingLimit } = request.settings.appointmentSettings;
-      
+      const { defaultDuration, bufferTime, advanceBookingLimit } =
+        request.settings.appointmentSettings;
+
       if (defaultDuration !== undefined && defaultDuration < 5) {
         throw new BusinessValidationError(
           'defaultDuration',
@@ -317,7 +325,7 @@ export class UpdateBusinessUseCase {
           request.businessId,
         );
       }
-      
+
       if (bufferTime !== undefined && bufferTime < 0) {
         throw new BusinessValidationError(
           'bufferTime',
@@ -326,7 +334,7 @@ export class UpdateBusinessUseCase {
           request.businessId,
         );
       }
-      
+
       if (advanceBookingLimit !== undefined && advanceBookingLimit < 1) {
         throw new BusinessValidationError(
           'advanceBookingLimit',

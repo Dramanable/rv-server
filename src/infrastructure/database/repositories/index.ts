@@ -1,6 +1,6 @@
 /**
  * 🗄️ Repository Index
- * 
+ *
  * Point d'entrée centralisé pour tous les repositories
  * Simplifie les imports et l'organisation du code
  */
@@ -8,7 +8,10 @@
 import type { DatabaseType, RepositoryType } from './types';
 
 // 🏭 Factory Pattern
-export { RepositoryFactory, RepositoryConfigHelper } from './repository.factory';
+export {
+  RepositoryFactory,
+  RepositoryConfigHelper,
+} from './repository.factory';
 export type { DatabaseType, RepositoryType } from './types';
 
 // Note: In-Memory repositories removed - production architecture uses only SQL and NoSQL
@@ -29,11 +32,11 @@ import type { UserRepository } from '../../../domain/repositories/user.repositor
 import type { BusinessRepository } from '../../../domain/repositories/business.repository.interface';
 import type { CalendarRepository } from '../../../domain/repositories/calendar.repository.interface';
 
-export type AnyRepository = 
+export type AnyRepository =
   | UserRepository
   | BusinessRepository
   | CalendarRepository;
-  // | AppointmentRepository; // TODO: Ajouter quand AppointmentRepository sera implémenté
+// | AppointmentRepository; // TODO: Ajouter quand AppointmentRepository sera implémenté
 
 /**
  * 📊 Repository Metadata
@@ -63,7 +66,7 @@ export const DEFAULT_REPOSITORY_IMPLEMENTATIONS = {
     calendar: 'sql' as DatabaseType,
     appointment: 'sql' as DatabaseType,
   },
-  
+
   // Test - SQL uniquement
   test: {
     user: 'sql' as DatabaseType,
@@ -71,7 +74,7 @@ export const DEFAULT_REPOSITORY_IMPLEMENTATIONS = {
     calendar: 'sql' as DatabaseType,
     appointment: 'sql' as DatabaseType,
   },
-  
+
   // Staging - SQL uniquement
   staging: {
     user: 'sql' as DatabaseType,
@@ -79,7 +82,7 @@ export const DEFAULT_REPOSITORY_IMPLEMENTATIONS = {
     calendar: 'sql' as DatabaseType,
     appointment: 'sql' as DatabaseType,
   },
-  
+
   // Production - SQL uniquement
   production: {
     user: 'sql' as DatabaseType,
@@ -140,22 +143,25 @@ export interface RepositoryManager {
    * Obtenir un repository par type
    */
   getRepository<T extends AnyRepository>(type: RepositoryType): T;
-  
+
   /**
    * Changer le type de base de données pour un repository
    */
-  switchDatabase(repositoryType: RepositoryType, dbType: DatabaseType): Promise<void>;
-  
+  switchDatabase(
+    repositoryType: RepositoryType,
+    dbType: DatabaseType,
+  ): Promise<void>;
+
   /**
    * Vérifier la santé de tous les repositories
    */
   healthCheck(): Promise<Record<RepositoryType, RepositoryHealthStatus>>;
-  
+
   /**
    * Obtenir les métriques de performance
    */
   getMetrics(): Promise<Record<RepositoryType, RepositoryMetrics>>;
-  
+
   /**
    * Nettoyer les ressources (connexions, cache, etc.)
    */

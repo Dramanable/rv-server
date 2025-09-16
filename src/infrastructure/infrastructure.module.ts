@@ -23,9 +23,11 @@ class InfrastructureI18nService implements I18nService {
   t(key: string, params?: Record<string, unknown>): string {
     const translations: Record<string, string> = {
       'operations.refresh_token.lookup_attempt': 'Looking up refresh token',
-      'operations.refresh_token.lookup_success': 'Refresh token found successfully',
+      'operations.refresh_token.lookup_success':
+        'Refresh token found successfully',
       'operations.refresh_token.save_attempt': 'Saving refresh token',
-      'operations.refresh_token.save_success': 'Refresh token saved successfully',
+      'operations.refresh_token.save_success':
+        'Refresh token saved successfully',
       'operations.refresh_token.find_by_token_attempt': 'Finding token by hash',
       'operations.refresh_token.find_by_token_success': 'Token found by hash',
       'operations.login.attempt': 'User login attempt',
@@ -34,11 +36,14 @@ class InfrastructureI18nService implements I18nService {
       'warnings.refresh_token.token_not_found': 'Refresh token not found',
       'warnings.login.user_not_found': 'User not found during login',
       'warnings.login.invalid_password': 'Invalid password during login',
-      'warnings.login.token_revocation_failed': 'Failed to revoke old tokens during login',
-      'warnings.login.user_cache_failed': 'Failed to cache user in Redis after login',
+      'warnings.login.token_revocation_failed':
+        'Failed to revoke old tokens during login',
+      'warnings.login.user_cache_failed':
+        'Failed to cache user in Redis after login',
       'errors.refresh_token.lookup_failed': 'Failed to lookup refresh token',
       'errors.refresh_token.save_failed': 'Failed to save refresh token',
-      'errors.refresh_token.find_by_token_failed': 'Failed to find token by hash',
+      'errors.refresh_token.find_by_token_failed':
+        'Failed to find token by hash',
       'errors.login.user_lookup_failed': 'Failed to lookup user during login',
       'errors.login.invalid_credentials': 'Invalid credentials provided',
       'errors.login.token_save_failed': 'Failed to save refresh token',
@@ -71,7 +76,7 @@ class InfrastructureI18nService implements I18nService {
   imports: [
     // Module simple
     DatabaseModule,
-    
+
     // Modules existants
     CacheModule,
     JwtModule.register({
@@ -85,7 +90,10 @@ class InfrastructureI18nService implements I18nService {
     { provide: TOKENS.JWT_TOKEN_SERVICE, useClass: JwtTokenService },
     { provide: TOKENS.TOKEN_SERVICE, useClass: JwtTokenService },
     { provide: TOKENS.PASSWORD_SERVICE, useClass: BcryptPasswordService },
-    { provide: TOKENS.BCRYPT_PASSWORD_SERVICE, useClass: BcryptPasswordService },
+    {
+      provide: TOKENS.BCRYPT_PASSWORD_SERVICE,
+      useClass: BcryptPasswordService,
+    },
     { provide: TOKENS.EMAIL_SERVICE, useClass: MockEmailService },
     { provide: TOKENS.PASSWORD_GENERATOR, useClass: MockPasswordGenerator },
     AppConfigService,

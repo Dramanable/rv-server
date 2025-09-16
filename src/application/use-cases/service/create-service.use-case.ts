@@ -1,6 +1,6 @@
 /**
  * 🛠️ Create Service Use Case - Clean Architecture + SOLID
- * 
+ *
  * Création d'un service avec validation métier et permissions
  * ✅ AUCUNE dépendance NestJS - Respect de la Clean Architecture
  */
@@ -9,14 +9,17 @@ import { ServiceRepository } from '../../../domain/repositories/service.reposito
 import { BusinessRepository } from '../../../domain/repositories/business.repository.interface';
 import { Logger } from '../../../application/ports/logger.port';
 import { I18nService } from '../../../application/ports/i18n.port';
-import { AppContext, AppContextFactory } from '../../../shared/context/app-context';
+import {
+  AppContext,
+  AppContextFactory,
+} from '../../../shared/context/app-context';
 import { UserRole, Permission } from '../../../shared/enums/user-role.enum';
 import { User } from '../../../domain/entities/user.entity';
 import { UserRepository } from '../../../domain/repositories/user.repository.interface';
-import { 
-  InsufficientPermissionsError, 
+import {
+  InsufficientPermissionsError,
   ServiceValidationError,
-  BusinessNotFoundError 
+  BusinessNotFoundError,
 } from '../../../application/exceptions/application.exceptions';
 import { Money } from '../../../domain/value-objects/money.value-object';
 import { BusinessId } from '../../../domain/value-objects/business-id.value-object';
@@ -83,10 +86,9 @@ export class CreateServiceUseCase {
       .metadata('businessId', request.businessId)
       .build();
 
-    this.logger.info(
-      this.i18n.t('operations.service.creation_attempt'),
-      { ...context } as Record<string, unknown>,
-    );
+    this.logger.info(this.i18n.t('operations.service.creation_attempt'), {
+      ...context,
+    } as Record<string, unknown>);
 
     try {
       // 2. Validation des permissions
@@ -133,15 +135,12 @@ export class CreateServiceUseCase {
         createdAt: service.createdAt,
       };
 
-      this.logger.info(
-        this.i18n.t('operations.service.creation_success'),
-        {
-          ...context,
-          serviceId: service.id.getValue(),
-          serviceName: service.name,
-          servicePrice: service.pricing.basePrice.getAmount(),
-        } as Record<string, unknown>,
-      );
+      this.logger.info(this.i18n.t('operations.service.creation_success'), {
+        ...context,
+        serviceId: service.id.getValue(),
+        serviceName: service.name,
+        servicePrice: service.pricing.basePrice.getAmount(),
+      } as Record<string, unknown>);
 
       return response;
     } catch (error) {
@@ -168,9 +167,13 @@ export class CreateServiceUseCase {
     }
 
     // Vérifier que l'entreprise existe
-    const business = await this.businessRepository.findById(BusinessId.create(businessId));
+    const business = await this.businessRepository.findById(
+      BusinessId.create(businessId),
+    );
     if (!business) {
-      throw new BusinessNotFoundError(`Business with id ${businessId} not found`);
+      throw new BusinessNotFoundError(
+        `Business with id ${businessId} not found`,
+      );
     }
 
     // Platform admins peuvent créer des services dans n'importe quelle entreprise
@@ -179,10 +182,7 @@ export class CreateServiceUseCase {
     }
 
     // Business owners et admins peuvent créer des services
-    const allowedRoles = [
-      UserRole.BUSINESS_OWNER,
-      UserRole.BUSINESS_ADMIN,
-    ];
+    const allowedRoles = [UserRole.BUSINESS_OWNER, UserRole.BUSINESS_ADMIN];
 
     if (!allowedRoles.includes(requestingUser.role)) {
       this.logger.warn(this.i18n.t('warnings.permission.denied'), {
@@ -232,7 +232,8 @@ export class CreateServiceUseCase {
       );
     }
 
-    if (request.duration > 480) { // 8 heures maximum
+    if (request.duration > 480) {
+      // 8 heures maximum
       throw new ServiceValidationError(
         'duration',
         request.duration,
@@ -287,12 +288,12 @@ export class CreateServiceUseCase {
 
     // Validation des paramètres si fournis
     if (request.settings) {
-      const { 
-        maxAdvanceBookingDays, 
-        minAdvanceBookingHours, 
-        bufferTimeBefore, 
+      const {
+        maxAdvanceBookingDays,
+        minAdvanceBookingHours,
+        bufferTimeBefore,
         bufferTimeAfter,
-        maxGroupSize 
+        maxGroupSize,
       } = request.settings;
 
       if (maxAdvanceBookingDays !== undefined && maxAdvanceBookingDays < 1) {
@@ -346,7 +347,8 @@ export class CreateServiceUseCase {
 
     // Validation des exigences si fournies
     if (request.requirements) {
-      const { preparation, materials, restrictions, cancellationPolicy } = request.requirements;
+      const { preparation, materials, restrictions, cancellationPolicy } =
+        request.requirements;
 
       if (preparation && preparation.trim().length > 500) {
         throw new ServiceValidationError(

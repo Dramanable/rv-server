@@ -5,20 +5,23 @@ export { CalendarId } from '../value-objects/calendar-id.value-object';
 import { BusinessId } from '../value-objects/business-id.value-object';
 import { UserId } from '../value-objects/user-id.value-object';
 import { WorkingHours } from '../value-objects/working-hours.value-object';
-import { TimeSlot, TimeSlotStatus } from '../value-objects/time-slot.value-object';
+import {
+  TimeSlot,
+  TimeSlotStatus,
+} from '../value-objects/time-slot.value-object';
 import { RecurrencePattern } from '../value-objects/recurrence-pattern.value-object';
 
 export enum CalendarType {
   BUSINESS = 'BUSINESS', // Calendrier principal de l'entreprise
   STAFF = 'STAFF', // Calendrier personnel d'un membre du personnel
   RESOURCE = 'RESOURCE', // Calendrier pour une ressource (salle, équipement)
-  SERVICE = 'SERVICE' // Calendrier spécifique à un service
+  SERVICE = 'SERVICE', // Calendrier spécifique à un service
 }
 
 export enum CalendarStatus {
   ACTIVE = 'ACTIVE',
   INACTIVE = 'INACTIVE',
-  MAINTENANCE = 'MAINTENANCE'
+  MAINTENANCE = 'MAINTENANCE',
 }
 
 export interface CalendarSettings {
@@ -85,7 +88,7 @@ export class Calendar {
     private readonly _bookingRules: BookingRule[] = [],
     private readonly _status: CalendarStatus = CalendarStatus.ACTIVE,
     private readonly _createdAt: Date = new Date(),
-    private _updatedAt: Date = new Date()
+    private _updatedAt: Date = new Date(),
   ) {
     this.validate();
   }
@@ -109,7 +112,9 @@ export class Calendar {
 
     // Valider les horaires de travail
     if (this._availability.workingHours.length !== 7) {
-      throw new Error('Working hours must be defined for all 7 days of the week');
+      throw new Error(
+        'Working hours must be defined for all 7 days of the week',
+      );
     }
   }
 
@@ -147,7 +152,7 @@ export class Calendar {
       workingHours: [...this._availability.workingHours],
       specialDates: [...this._availability.specialDates],
       holidays: [...this._availability.holidays],
-      maintenancePeriods: [...this._availability.maintenancePeriods]
+      maintenancePeriods: [...this._availability.maintenancePeriods],
     };
   }
 
@@ -184,7 +189,7 @@ export class Calendar {
       maximumAdvanceBooking: 30,
       allowMultipleBookings: false,
       autoConfirmBookings: true,
-      bufferTimeBetweenSlots: 0
+      bufferTimeBetweenSlots: 0,
     };
 
     // Horaires par défaut (9h-17h du lundi au vendredi)
@@ -195,14 +200,14 @@ export class Calendar {
       WorkingHours.createWithLunchBreak(3, '09:00', '17:00'), // Mercredi
       WorkingHours.createWithLunchBreak(4, '09:00', '17:00'), // Jeudi
       WorkingHours.createWithLunchBreak(5, '09:00', '17:00'), // Vendredi
-      WorkingHours.createNonWorkingDay(6) // Samedi
+      WorkingHours.createNonWorkingDay(6), // Samedi
     ];
 
     const availability: CalendarAvailability = {
       workingHours: defaultWorkingHours,
       specialDates: [],
       holidays: [],
-      maintenancePeriods: []
+      maintenancePeriods: [],
     };
 
     return new Calendar(
@@ -213,7 +218,7 @@ export class Calendar {
       data.description,
       { ...defaultSettings, ...data.settings },
       availability,
-      data.ownerId
+      data.ownerId,
     );
   }
 
@@ -238,9 +243,9 @@ export class Calendar {
 
     // Vérifier les dates spéciales
     const specialDate = this._availability.specialDates.find(
-      sd => sd.date.toDateString() === date.toDateString()
+      (sd) => sd.date.toDateString() === date.toDateString(),
     );
-    
+
     if (specialDate) {
       return specialDate.isAvailable;
     }
@@ -254,7 +259,7 @@ export class Calendar {
   public getAvailableTimeSlots(
     date: Date,
     duration: number = this._settings.defaultSlotDuration,
-    excludeBooked: TimeSlot[] = []
+    excludeBooked: TimeSlot[] = [],
   ): TimeSlot[] {
     if (!this.isAvailableOnDate(date)) return [];
 
@@ -263,9 +268,9 @@ export class Calendar {
 
     // Vérifier s'il y a des horaires spéciaux pour cette date
     const specialDate = this._availability.specialDates.find(
-      sd => sd.date.toDateString() === date.toDateString()
+      (sd) => sd.date.toDateString() === date.toDateString(),
     );
-    
+
     if (specialDate?.specialHours) {
       workingHours = specialDate.specialHours;
     }
@@ -276,19 +281,21 @@ export class Calendar {
     const baseSlots = workingHours.generateTimeSlots(
       date,
       duration,
-      this._settings.bufferTimeBetweenSlots
+      this._settings.bufferTimeBetweenSlots,
     );
 
     // Convertir en TimeSlots et exclure les créneaux réservés/bloqués
     const availableSlots: TimeSlot[] = [];
 
-    baseSlots.forEach(slotStart => {
+    baseSlots.forEach((slotStart) => {
       const slotEnd = new Date(slotStart.getTime() + duration * 60 * 1000);
       const timeSlot = TimeSlot.create(slotStart, slotEnd);
 
       // Vérifier que le créneau ne chevauche pas avec les créneaux exclus
-      const overlaps = excludeBooked.some(booked => timeSlot.overlaps(booked));
-      
+      const overlaps = excludeBooked.some((booked) =>
+        timeSlot.overlaps(booked),
+      );
+
       if (!overlaps && this.isSlotBookable(timeSlot)) {
         availableSlots.push(timeSlot);
       }
@@ -300,14 +307,15 @@ export class Calendar {
   private isSlotBookable(timeSlot: TimeSlot): boolean {
     const now = new Date();
     const minimumNoticeMs = this._settings.minimumNotice * 60 * 1000;
-    
+
     // Vérifier le préavis minimum
     if (timeSlot.getStartTime().getTime() - now.getTime() < minimumNoticeMs) {
       return false;
     }
 
     // Vérifier la limite de réservation à l'avance
-    const maxAdvanceMs = this._settings.maximumAdvanceBooking * 24 * 60 * 60 * 1000;
+    const maxAdvanceMs =
+      this._settings.maximumAdvanceBooking * 24 * 60 * 60 * 1000;
     if (timeSlot.getStartTime().getTime() - now.getTime() > maxAdvanceMs) {
       return false;
     }
@@ -328,7 +336,9 @@ export class Calendar {
     let message: string | undefined;
 
     // Trier les règles par priorité
-    const sortedRules = [...this._bookingRules].sort((a, b) => b.priority - a.priority);
+    const sortedRules = [...this._bookingRules].sort(
+      (a, b) => b.priority - a.priority,
+    );
 
     for (const rule of sortedRules) {
       if (this.ruleApplies(rule, timeSlot)) {
@@ -356,7 +366,7 @@ export class Calendar {
       isAllowed,
       requiresApproval,
       adjustedDuration,
-      message
+      message,
     };
   }
 
@@ -373,16 +383,20 @@ export class Calendar {
     // Vérifier la plage horaire
     if (rule.conditions.timeRange) {
       const timeStr = startTime.toTimeString().substring(0, 5);
-      if (timeStr < rule.conditions.timeRange.start || 
-          timeStr > rule.conditions.timeRange.end) {
+      if (
+        timeStr < rule.conditions.timeRange.start ||
+        timeStr > rule.conditions.timeRange.end
+      ) {
         return false;
       }
     }
 
     // Vérifier la plage de dates
     if (rule.conditions.dateRange) {
-      if (startTime < rule.conditions.dateRange.start || 
-          startTime > rule.conditions.dateRange.end) {
+      if (
+        startTime < rule.conditions.dateRange.start ||
+        startTime > rule.conditions.dateRange.end
+      ) {
         return false;
       }
     }
@@ -392,7 +406,7 @@ export class Calendar {
 
   // Gestion des jours fériés
   private isHoliday(date: Date): boolean {
-    return this._availability.holidays.some(holiday => {
+    return this._availability.holidays.some((holiday) => {
       if (holiday.recurrence) {
         return holiday.recurrence.matchesPattern(date, holiday.date);
       }
@@ -402,8 +416,8 @@ export class Calendar {
 
   // Gestion de la maintenance
   private isInMaintenancePeriod(date: Date): boolean {
-    return this._availability.maintenancePeriods.some(period => 
-      date >= period.startDate && date <= period.endDate
+    return this._availability.maintenancePeriods.some(
+      (period) => date >= period.startDate && date <= period.endDate,
     );
   }
 
@@ -431,7 +445,10 @@ export class Calendar {
     this._updatedAt = new Date();
   }
 
-  public updateWorkingHours(dayOfWeek: number, workingHours: WorkingHours): void {
+  public updateWorkingHours(
+    dayOfWeek: number,
+    workingHours: WorkingHours,
+  ): void {
     if (dayOfWeek < 0 || dayOfWeek > 6) {
       throw new Error('Day of week must be between 0 and 6');
     }

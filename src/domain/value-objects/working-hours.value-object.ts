@@ -6,7 +6,11 @@ export class WorkingHours {
     private readonly startTime: string, // "09:00"
     private readonly endTime: string, // "17:00"
     private readonly isWorkingDay: boolean = true,
-    private readonly breaks: { start: string; end: string; name?: string }[] = []
+    private readonly breaks: {
+      start: string;
+      end: string;
+      name?: string;
+    }[] = [],
   ) {
     this.validate();
   }
@@ -25,8 +29,11 @@ export class WorkingHours {
     }
 
     // Valider les pauses
-    this.breaks.forEach(breakTime => {
-      if (!this.isValidTimeFormat(breakTime.start) || !this.isValidTimeFormat(breakTime.end)) {
+    this.breaks.forEach((breakTime) => {
+      if (
+        !this.isValidTimeFormat(breakTime.start) ||
+        !this.isValidTimeFormat(breakTime.end)
+      ) {
         throw new Error('Invalid break time format');
       }
 
@@ -52,9 +59,15 @@ export class WorkingHours {
     startTime: string,
     endTime: string,
     isWorkingDay: boolean = true,
-    breaks: { start: string; end: string; name?: string }[] = []
+    breaks: { start: string; end: string; name?: string }[] = [],
   ): WorkingHours {
-    return new WorkingHours(dayOfWeek, startTime, endTime, isWorkingDay, breaks);
+    return new WorkingHours(
+      dayOfWeek,
+      startTime,
+      endTime,
+      isWorkingDay,
+      breaks,
+    );
   }
 
   // Factory methods for common schedules
@@ -62,7 +75,11 @@ export class WorkingHours {
     return new WorkingHours(dayOfWeek, '00:00', '00:00', false, []);
   }
 
-  static createFullDay(dayOfWeek: WeekDay, startTime: string = '09:00', endTime: string = '17:00'): WorkingHours {
+  static createFullDay(
+    dayOfWeek: WeekDay,
+    startTime: string = '09:00',
+    endTime: string = '17:00',
+  ): WorkingHours {
     return new WorkingHours(dayOfWeek, startTime, endTime, true, []);
   }
 
@@ -71,7 +88,7 @@ export class WorkingHours {
     startTime: string = '09:00',
     endTime: string = '17:00',
     lunchStart: string = '12:00',
-    lunchEnd: string = '13:00'
+    lunchEnd: string = '13:00',
   ): WorkingHours {
     const breaks = [{ start: lunchStart, end: lunchEnd, name: 'Lunch' }];
     return new WorkingHours(dayOfWeek, startTime, endTime, true, breaks);
@@ -107,10 +124,10 @@ export class WorkingHours {
     let totalMinutes = endMinutes - startMinutes;
 
     // Soustraire les pauses
-    this.breaks.forEach(breakTime => {
+    this.breaks.forEach((breakTime) => {
       const breakStart = this.timeStringToMinutes(breakTime.start);
       const breakEnd = this.timeStringToMinutes(breakTime.end);
-      totalMinutes -= (breakEnd - breakStart);
+      totalMinutes -= breakEnd - breakStart;
     });
 
     return Math.max(0, totalMinutes);
@@ -131,7 +148,7 @@ export class WorkingHours {
   generateTimeSlots(
     date: Date,
     slotDuration: number = 30, // minutes
-    bufferTime: number = 0 // minutes between slots
+    bufferTime: number = 0, // minutes between slots
   ): Date[] {
     if (!this.isWorkingDay) return [];
 
@@ -139,13 +156,17 @@ export class WorkingHours {
     const startMinutes = this.timeStringToMinutes(this.startTime);
     const endMinutes = this.timeStringToMinutes(this.endTime);
 
-    for (let minutes = startMinutes; minutes < endMinutes; minutes += slotDuration + bufferTime) {
+    for (
+      let minutes = startMinutes;
+      minutes < endMinutes;
+      minutes += slotDuration + bufferTime
+    ) {
       // Vérifier si le créneau chevauche avec une pause
       const slotEndMinutes = minutes + slotDuration;
-      const overlapsBreak = this.breaks.some(breakTime => {
+      const overlapsBreak = this.breaks.some((breakTime) => {
         const breakStart = this.timeStringToMinutes(breakTime.start);
         const breakEnd = this.timeStringToMinutes(breakTime.end);
-        return (minutes < breakEnd && slotEndMinutes > breakStart);
+        return minutes < breakEnd && slotEndMinutes > breakStart;
       });
 
       if (!overlapsBreak && slotEndMinutes <= endMinutes) {
@@ -171,7 +192,7 @@ export class WorkingHours {
     }
 
     // Vérifier si le temps est pendant une pause
-    return !this.breaks.some(breakTime => {
+    return !this.breaks.some((breakTime) => {
       const breakStart = this.timeStringToMinutes(breakTime.start);
       const breakEnd = this.timeStringToMinutes(breakTime.end);
       return timeMinutes >= breakStart && timeMinutes < breakEnd;
@@ -187,13 +208,14 @@ export class WorkingHours {
     }
 
     const ranges: { start: string; end: string }[] = [];
-    const sortedBreaks = [...this.breaks].sort((a, b) => 
-      this.timeStringToMinutes(a.start) - this.timeStringToMinutes(b.start)
+    const sortedBreaks = [...this.breaks].sort(
+      (a, b) =>
+        this.timeStringToMinutes(a.start) - this.timeStringToMinutes(b.start),
     );
 
     let currentStart = this.startTime;
 
-    sortedBreaks.forEach(breakTime => {
+    sortedBreaks.forEach((breakTime) => {
       if (currentStart < breakTime.start) {
         ranges.push({ start: currentStart, end: breakTime.start });
       }
@@ -214,10 +236,10 @@ export class WorkingHours {
     }
 
     let result = `${this.startTime} - ${this.endTime}`;
-    
+
     if (this.breaks.length > 0) {
-      const breakStrings = this.breaks.map(b => 
-        `${b.name || 'Pause'}: ${b.start}-${b.end}`
+      const breakStrings = this.breaks.map(
+        (b) => `${b.name || 'Pause'}: ${b.start}-${b.end}`,
       );
       result += ` (${breakStrings.join(', ')})`;
     }
@@ -226,7 +248,15 @@ export class WorkingHours {
   }
 
   toString(): string {
-    const dayNames = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+    const dayNames = [
+      'Dimanche',
+      'Lundi',
+      'Mardi',
+      'Mercredi',
+      'Jeudi',
+      'Vendredi',
+      'Samedi',
+    ];
     return `${dayNames[this.dayOfWeek]}: ${this.format()}`;
   }
 }

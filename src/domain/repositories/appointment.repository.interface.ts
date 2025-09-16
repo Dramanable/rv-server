@@ -1,4 +1,9 @@
-import { Appointment, AppointmentId, AppointmentStatus, AppointmentType } from '../entities/appointment.entity';
+import {
+  Appointment,
+  AppointmentId,
+  AppointmentStatus,
+  AppointmentType,
+} from '../entities/appointment.entity';
 import { BusinessId } from '../value-objects/business-id.value-object';
 import { CalendarId } from '../value-objects/calendar-id.value-object';
 import { ServiceId } from '../value-objects/service-id.value-object';
@@ -61,7 +66,7 @@ export interface AppointmentRepository {
    */
   findByBusinessId(
     businessId: BusinessId,
-    criteria?: AppointmentSearchCriteria
+    criteria?: AppointmentSearchCriteria,
   ): Promise<Appointment[]>;
 
   /**
@@ -70,7 +75,7 @@ export interface AppointmentRepository {
   findByCalendarId(
     calendarId: CalendarId,
     startDate?: Date,
-    endDate?: Date
+    endDate?: Date,
   ): Promise<Appointment[]>;
 
   /**
@@ -78,7 +83,7 @@ export interface AppointmentRepository {
    */
   findByServiceId(
     serviceId: ServiceId,
-    criteria?: AppointmentSearchCriteria
+    criteria?: AppointmentSearchCriteria,
   ): Promise<Appointment[]>;
 
   /**
@@ -86,7 +91,7 @@ export interface AppointmentRepository {
    */
   findByClientEmail(
     email: Email,
-    criteria?: AppointmentSearchCriteria
+    criteria?: AppointmentSearchCriteria,
   ): Promise<Appointment[]>;
 
   /**
@@ -94,7 +99,7 @@ export interface AppointmentRepository {
    */
   findByStaffId(
     staffId: UserId,
-    criteria?: AppointmentSearchCriteria
+    criteria?: AppointmentSearchCriteria,
   ): Promise<Appointment[]>;
 
   /**
@@ -102,7 +107,7 @@ export interface AppointmentRepository {
    */
   findByStatus(
     status: AppointmentStatus[],
-    criteria?: AppointmentSearchCriteria
+    criteria?: AppointmentSearchCriteria,
   ): Promise<Appointment[]>;
 
   /**
@@ -130,7 +135,7 @@ export interface AppointmentRepository {
     calendarId: CalendarId,
     startTime: Date,
     endTime: Date,
-    excludeAppointmentId?: AppointmentId
+    excludeAppointmentId?: AppointmentId,
   ): Promise<Appointment[]>;
 
   /**
@@ -140,11 +145,13 @@ export interface AppointmentRepository {
     calendarId: CalendarId,
     serviceId: ServiceId,
     date: Date,
-    duration: number
-  ): Promise<{
-    startTime: Date;
-    endTime: Date;
-  }[]>;
+    duration: number,
+  ): Promise<
+    {
+      startTime: Date;
+      endTime: Date;
+    }[]
+  >;
 
   /**
    * Get appointment statistics
@@ -152,7 +159,7 @@ export interface AppointmentRepository {
   getStatistics(
     businessId: BusinessId,
     startDate: Date,
-    endDate: Date
+    endDate: Date,
   ): Promise<AppointmentStatistics>;
 
   /**
@@ -160,7 +167,7 @@ export interface AppointmentRepository {
    */
   getUpcomingAppointments(
     businessId: BusinessId,
-    hours?: number
+    hours?: number,
   ): Promise<Appointment[]>;
 
   /**
@@ -173,7 +180,7 @@ export interface AppointmentRepository {
    */
   findRecurringAppointments(
     businessId: BusinessId,
-    parentAppointmentId?: AppointmentId
+    parentAppointmentId?: AppointmentId,
   ): Promise<Appointment[]>;
 
   /**
@@ -181,7 +188,7 @@ export interface AppointmentRepository {
    */
   getAppointmentsForReminders(
     businessId: BusinessId,
-    reminderTime: Date
+    reminderTime: Date,
   ): Promise<Appointment[]>;
 
   /**
@@ -190,13 +197,10 @@ export interface AppointmentRepository {
   bulkUpdateStatus(
     appointmentIds: AppointmentId[],
     status: AppointmentStatus,
-    reason?: string
+    reason?: string,
   ): Promise<void>;
 
-  bulkCancel(
-    appointmentIds: AppointmentId[],
-    reason?: string
-  ): Promise<void>;
+  bulkCancel(appointmentIds: AppointmentId[], reason?: string): Promise<void>;
 
   /**
    * Get client appointment history
@@ -204,7 +208,7 @@ export interface AppointmentRepository {
   getClientHistory(
     email: Email,
     businessId?: BusinessId,
-    limit?: number
+    limit?: number,
   ): Promise<Appointment[]>;
 
   /**
@@ -212,7 +216,7 @@ export interface AppointmentRepository {
    */
   findAppointmentsNeedingFollowUp(
     businessId: BusinessId,
-    daysSinceCompletion: number
+    daysSinceCompletion: number,
   ): Promise<Appointment[]>;
 
   /**
@@ -221,7 +225,7 @@ export interface AppointmentRepository {
   getCalendarUtilization(
     calendarId: CalendarId,
     startDate: Date,
-    endDate: Date
+    endDate: Date,
   ): Promise<{
     totalSlots: number;
     bookedSlots: number;

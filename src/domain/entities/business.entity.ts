@@ -15,14 +15,14 @@ export enum BusinessSector {
   EDUCATION = 'EDUCATION', // Formations, Cours
   WELLNESS = 'WELLNESS', // Massage, Bien-être
   AUTOMOTIVE = 'AUTOMOTIVE', // Garages, Contrôle technique
-  OTHER = 'OTHER'
+  OTHER = 'OTHER',
 }
 
 export enum BusinessStatus {
   ACTIVE = 'ACTIVE',
   INACTIVE = 'INACTIVE',
   SUSPENDED = 'SUSPENDED',
-  PENDING_VERIFICATION = 'PENDING_VERIFICATION'
+  PENDING_VERIFICATION = 'PENDING_VERIFICATION',
 }
 
 export interface BusinessBranding {
@@ -80,7 +80,7 @@ export class Business {
     private readonly _settings: BusinessSettings,
     private _status: BusinessStatus,
     private readonly _createdAt: Date,
-    private _updatedAt: Date
+    private _updatedAt: Date,
   ) {}
 
   // Getters
@@ -150,13 +150,13 @@ export class Business {
         defaultDuration: 30,
         bufferTime: 5,
         advanceBookingLimit: 30,
-        cancellationPolicy: '24h avant le rendez-vous'
+        cancellationPolicy: '24h avant le rendez-vous',
       },
       notificationSettings: {
         emailNotifications: true,
         smsNotifications: true,
-        reminderTime: 24
-      }
+        reminderTime: 24,
+      },
     };
 
     return new Business(
@@ -171,7 +171,7 @@ export class Business {
       { ...defaultSettings, ...data.settings },
       BusinessStatus.PENDING_VERIFICATION,
       new Date(),
-      new Date()
+      new Date(),
     );
   }
 

@@ -149,7 +149,12 @@ export class GetUserUseCase {
     }
 
     // 2. Les clients réguliers ne peuvent voir que leur propre profil
-    const clientRoles = [UserRole.REGULAR_CLIENT, UserRole.VIP_CLIENT, UserRole.CORPORATE_CLIENT, UserRole.GUEST_CLIENT];
+    const clientRoles = [
+      UserRole.REGULAR_CLIENT,
+      UserRole.VIP_CLIENT,
+      UserRole.CORPORATE_CLIENT,
+      UserRole.GUEST_CLIENT,
+    ];
     if (clientRoles.includes(requestingUser.role)) {
       this.logger.warn(this.i18n.t('warnings.permission.denied'), {
         requestingUserId: requestingUser.id,

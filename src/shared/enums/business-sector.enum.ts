@@ -1,11 +1,11 @@
 /**
  * 🏢 Business Sector Enumeration
- * ✅ GDPR Compliant 
+ * ✅ GDPR Compliant
  * ✅ Clean Architecture
  */
 export enum BusinessSector {
   RESTAURANT = 'restaurant',
-  BEAUTY = 'beauty', 
+  BEAUTY = 'beauty',
   HEALTH = 'health',
   FITNESS = 'fitness',
   AUTOMOTIVE = 'automotive',

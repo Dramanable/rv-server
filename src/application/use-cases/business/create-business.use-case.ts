@@ -1,23 +1,30 @@
 /**
  * 🏢 Create Business Use Case - Clean Architecture + SOLID
- * 
+ *
  * ✅ COUCHE APPLICATION PURE - Sans dépendance NestJS
  * ✅ Dependency Inversion Principle respecté
  * ✅ Interface-driven design
  */
-import { Business, BusinessSector, BusinessStatus } from '../../../domain/entities/business.entity';
+import {
+  Business,
+  BusinessSector,
+  BusinessStatus,
+} from '../../../domain/entities/business.entity';
 import { BusinessName } from '../../../domain/value-objects/business-name.value-object';
 import type { BusinessRepository } from '../../../domain/repositories/business.repository.interface';
 import type { Logger } from '../../../application/ports/logger.port';
 import type { I18nService } from '../../../application/ports/i18n.port';
-import { AppContext, AppContextFactory } from '../../../shared/context/app-context';
+import {
+  AppContext,
+  AppContextFactory,
+} from '../../../shared/context/app-context';
 import { UserRole, Permission } from '../../../shared/enums/user-role.enum';
 import { User } from '../../../domain/entities/user.entity';
 import type { UserRepository } from '../../../domain/repositories/user.repository.interface';
-import { 
-  InsufficientPermissionsError, 
+import {
+  InsufficientPermissionsError,
   BusinessValidationError,
-  BusinessAlreadyExistsError 
+  BusinessAlreadyExistsError,
 } from '../../../application/exceptions/application.exceptions';
 import { Email } from '../../../domain/value-objects/email.value-object';
 import { Phone } from '../../../domain/value-objects/phone.value-object';
@@ -89,7 +96,9 @@ export class CreateBusinessUseCase {
     private readonly i18n: I18nService,
   ) {}
 
-  async execute(request: CreateBusinessRequest): Promise<CreateBusinessResponse> {
+  async execute(
+    request: CreateBusinessRequest,
+  ): Promise<CreateBusinessResponse> {
     // 1. Context pour traçabilité
     const context: AppContext = AppContextFactory.create()
       .operation('CreateBusiness')
@@ -119,12 +128,12 @@ export class CreateBusinessUseCase {
 
       const contactInfo = {
         primaryEmail: Email.create(request.contactInfo.primaryEmail),
-        secondaryEmails: request.contactInfo.secondaryEmails?.map(email => 
-          Email.create(email)
+        secondaryEmails: request.contactInfo.secondaryEmails?.map((email) =>
+          Email.create(email),
         ),
         primaryPhone: Phone.create(request.contactInfo.primaryPhone),
-        secondaryPhones: request.contactInfo.secondaryPhones?.map(phone => 
-          Phone.create(phone)
+        secondaryPhones: request.contactInfo.secondaryPhones?.map((phone) =>
+          Phone.create(phone),
         ),
         website: request.contactInfo.website,
         socialMedia: request.contactInfo.socialMedia,
@@ -153,18 +162,17 @@ export class CreateBusinessUseCase {
         createdAt: business.createdAt,
       };
 
-      this.logger.info(
-        this.i18n.t('operations.business.creation_success'),
-        {
-          ...context as any,
-          businessId: business.id.getValue(),
-        },
-      );
+      this.logger.info(this.i18n.t('operations.business.creation_success'), {
+        ...(context as any),
+        businessId: business.id.getValue(),
+      });
 
       return response;
     } catch (error) {
-            this.logger.error(
-        this.i18n.t('operations.business.creation_failed', { error: (error as Error).message }),
+      this.logger.error(
+        this.i18n.t('operations.business.creation_failed', {
+          error: (error as Error).message,
+        }),
         context as any,
       );
       throw error;
@@ -185,10 +193,7 @@ export class CreateBusinessUseCase {
     }
 
     // Seuls les admins et propriétaires peuvent créer des entreprises
-    const allowedRoles = [
-      UserRole.PLATFORM_ADMIN,
-      UserRole.BUSINESS_OWNER,
-    ];
+    const allowedRoles = [UserRole.PLATFORM_ADMIN, UserRole.BUSINESS_OWNER];
 
     if (!allowedRoles.includes(requestingUser.role)) {
       this.logger.warn(this.i18n.t('warnings.permission.denied'), {
@@ -227,19 +232,15 @@ export class CreateBusinessUseCase {
 
     // Vérification de l'unicité du nom
     const businessName = BusinessName.create(request.name.trim());
-    const existingBusiness = await this.businessRepository.existsByName(
-      businessName,
-    );
+    const existingBusiness =
+      await this.businessRepository.existsByName(businessName);
 
     if (existingBusiness) {
-      this.logger.warn(
-        this.i18n.t('warnings.business.name_already_exists'),
-        { ...context, businessName: request.name },
-      );
-      throw new BusinessAlreadyExistsError(
-        request.name,
-        'name',
-      );
+      this.logger.warn(this.i18n.t('warnings.business.name_already_exists'), {
+        ...context,
+        businessName: request.name,
+      });
+      throw new BusinessAlreadyExistsError(request.name, 'name');
     }
 
     // Validation de l'email
@@ -265,8 +266,12 @@ export class CreateBusinessUseCase {
     }
 
     // Validation de l'adresse
-    if (!request.address.street || !request.address.city || 
-        !request.address.postalCode || !request.address.country) {
+    if (
+      !request.address.street ||
+      !request.address.city ||
+      !request.address.postalCode ||
+      !request.address.country
+    ) {
       throw new BusinessValidationError(
         'address',
         JSON.stringify(request.address),

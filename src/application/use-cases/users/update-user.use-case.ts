@@ -227,7 +227,10 @@ export class UpdateUserUseCase {
 
     // Business owners peuvent modifier tous sauf platform admin et autres business owners
     if (requestingUser.role === UserRole.BUSINESS_OWNER) {
-      const restrictedRoles = [UserRole.PLATFORM_ADMIN, UserRole.BUSINESS_OWNER];
+      const restrictedRoles = [
+        UserRole.PLATFORM_ADMIN,
+        UserRole.BUSINESS_OWNER,
+      ];
       if (restrictedRoles.includes(targetUser.role)) {
         this.logger.warn(this.i18n.t('warnings.permission.denied'), {
           reason: 'cannot_modify_equal_or_higher_role',
@@ -248,7 +251,11 @@ export class UpdateUserUseCase {
 
     // Business admins peuvent modifier ceux de rang inférieur
     if (requestingUser.role === UserRole.BUSINESS_ADMIN) {
-      const restrictedRoles = [UserRole.PLATFORM_ADMIN, UserRole.BUSINESS_OWNER, UserRole.BUSINESS_ADMIN];
+      const restrictedRoles = [
+        UserRole.PLATFORM_ADMIN,
+        UserRole.BUSINESS_OWNER,
+        UserRole.BUSINESS_ADMIN,
+      ];
       if (restrictedRoles.includes(targetUser.role)) {
         this.logger.warn(this.i18n.t('warnings.permission.denied'), {
           reason: 'cannot_modify_equal_or_higher_role',
@@ -269,7 +276,13 @@ export class UpdateUserUseCase {
 
     // Location managers peuvent modifier le personnel opérationnel
     if (requestingUser.role === UserRole.LOCATION_MANAGER) {
-      const allowedRoles = [UserRole.PRACTITIONER, UserRole.JUNIOR_PRACTITIONER, UserRole.RECEPTIONIST, UserRole.ASSISTANT, UserRole.REGULAR_CLIENT];
+      const allowedRoles = [
+        UserRole.PRACTITIONER,
+        UserRole.JUNIOR_PRACTITIONER,
+        UserRole.RECEPTIONIST,
+        UserRole.ASSISTANT,
+        UserRole.REGULAR_CLIENT,
+      ];
       if (!allowedRoles.includes(targetUser.role)) {
         this.logger.warn(this.i18n.t('warnings.permission.denied'), {
           reason: 'manager_cannot_modify_manager_or_admin',
@@ -309,7 +322,12 @@ export class UpdateUserUseCase {
     if (requestingUser.role !== UserRole.PLATFORM_ADMIN) {
       // Les location managers ne peuvent pas élever vers des rôles de management
       if (requestingUser.role === UserRole.LOCATION_MANAGER) {
-        const restrictedRoles = [UserRole.PLATFORM_ADMIN, UserRole.BUSINESS_OWNER, UserRole.BUSINESS_ADMIN, UserRole.LOCATION_MANAGER];
+        const restrictedRoles = [
+          UserRole.PLATFORM_ADMIN,
+          UserRole.BUSINESS_OWNER,
+          UserRole.BUSINESS_ADMIN,
+          UserRole.LOCATION_MANAGER,
+        ];
         if (restrictedRoles.includes(newRole)) {
           this.logger.warn(
             this.i18n.t('warnings.role.elevation_attempt', {

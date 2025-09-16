@@ -24,7 +24,10 @@ export interface StaffRepository {
   /**
    * Find staff by role in a business
    */
-  findByBusinessIdAndRole(businessId: BusinessId, role: string): Promise<Staff[]>;
+  findByBusinessIdAndRole(
+    businessId: BusinessId,
+    role: string,
+  ): Promise<Staff[]>;
 
   /**
    * Find available staff for a specific time slot
@@ -32,7 +35,7 @@ export interface StaffRepository {
   findAvailableStaff(
     businessId: BusinessId,
     dateTime: Date,
-    duration: number
+    duration: number,
   ): Promise<Staff[]>;
 
   /**

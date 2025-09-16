@@ -63,12 +63,19 @@ export interface ServiceRepository {
   /**
    * Check if service name exists for business
    */
-  existsByName(businessId: BusinessId, name: string, excludeId?: ServiceId): Promise<boolean>;
+  existsByName(
+    businessId: BusinessId,
+    name: string,
+    excludeId?: ServiceId,
+  ): Promise<boolean>;
 
   /**
    * Get popular services for a business
    */
-  findPopularServices(businessId: BusinessId, limit?: number): Promise<Service[]>;
+  findPopularServices(
+    businessId: BusinessId,
+    limit?: number,
+  ): Promise<Service[]>;
 
   /**
    * Get service statistics

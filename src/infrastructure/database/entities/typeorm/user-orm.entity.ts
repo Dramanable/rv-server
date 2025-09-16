@@ -1,10 +1,16 @@
 /**
  * 👤 User Entity ORM - TypeORM + Clean Architecture + Node.js 24
- * 
+ *
  * Optimized for Node.js 24 with ES2024 syntax and modern decorators
  */
 
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity('users')
 export class UserOrmEntity {
@@ -26,14 +32,25 @@ export class UserOrmEntity {
   @Column({ type: 'varchar', length: 50, name: 'last_name' })
   lastName!: string;
 
-  @Column({ 
+  @Column({
     type: 'enum',
     enum: [
-      'PLATFORM_ADMIN', 'BUSINESS_OWNER', 'BUSINESS_ADMIN', 'LOCATION_MANAGER',
-      'DEPARTMENT_HEAD', 'SENIOR_PRACTITIONER', 'PRACTITIONER', 'JUNIOR_PRACTITIONER',
-      'RECEPTIONIST', 'ASSISTANT', 'SCHEDULER', 'CORPORATE_CLIENT', 'VIP_CLIENT',
-      'REGULAR_CLIENT', 'GUEST_CLIENT'
-    ]
+      'PLATFORM_ADMIN',
+      'BUSINESS_OWNER',
+      'BUSINESS_ADMIN',
+      'LOCATION_MANAGER',
+      'DEPARTMENT_HEAD',
+      'SENIOR_PRACTITIONER',
+      'PRACTITIONER',
+      'JUNIOR_PRACTITIONER',
+      'RECEPTIONIST',
+      'ASSISTANT',
+      'SCHEDULER',
+      'CORPORATE_CLIENT',
+      'VIP_CLIENT',
+      'REGULAR_CLIENT',
+      'GUEST_CLIENT',
+    ],
   })
   role!: string;
 

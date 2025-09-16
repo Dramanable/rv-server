@@ -10,7 +10,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, SelectQueryBuilder } from 'typeorm';
 import type { I18nService } from '../../../../application/ports/i18n.port';
 import type { Logger } from '../../../../application/ports/logger.port';
-import { Calendar, CalendarId } from '../../../../domain/entities/calendar.entity';
+import {
+  Calendar,
+  CalendarId,
+} from '../../../../domain/entities/calendar.entity';
 import { CalendarRepository } from '../../../../domain/repositories/calendar.repository.interface';
 import { BusinessId } from '../../../../domain/value-objects/business-id.value-object';
 import { UserId } from '../../../../domain/value-objects/user-id.value-object';
@@ -25,9 +28,9 @@ export class TypeOrmCalendarRepository implements CalendarRepository {
   constructor(
     @InjectRepository(CalendarOrmEntity)
     private readonly ormRepository: Repository<CalendarOrmEntity>,
-    @Inject(TOKENS.LOGGER) 
+    @Inject(TOKENS.LOGGER)
     private readonly logger: Logger,
-    @Inject(TOKENS.I18N_SERVICE) 
+    @Inject(TOKENS.I18N_SERVICE)
     private readonly i18n: I18nService,
   ) {}
 
@@ -57,7 +60,9 @@ export class TypeOrmCalendarRepository implements CalendarRepository {
         order: { createdAt: 'DESC' },
       });
 
-      return entities.map((entity) => TypeOrmCalendarMapper.toDomainEntity(entity));
+      return entities.map((entity) =>
+        TypeOrmCalendarMapper.toDomainEntity(entity),
+      );
     } catch (error) {
       this.logger.error(
         this.i18n.t('operations.calendar.find_by_business_failed'),
@@ -76,7 +81,9 @@ export class TypeOrmCalendarRepository implements CalendarRepository {
         order: { createdAt: 'DESC' },
       });
 
-      return entities.map((entity) => TypeOrmCalendarMapper.toDomainEntity(entity));
+      return entities.map((entity) =>
+        TypeOrmCalendarMapper.toDomainEntity(entity),
+      );
     } catch (error) {
       this.logger.error(
         this.i18n.t('operations.calendar.find_by_owner_failed'),
@@ -100,7 +107,9 @@ export class TypeOrmCalendarRepository implements CalendarRepository {
         .orderBy('calendar.createdAt', 'DESC')
         .getMany();
 
-      return entities.map((entity) => TypeOrmCalendarMapper.toDomainEntity(entity));
+      return entities.map((entity) =>
+        TypeOrmCalendarMapper.toDomainEntity(entity),
+      );
     } catch (error) {
       this.logger.error(
         this.i18n.t('operations.calendar.find_shared_failed'),
@@ -125,7 +134,9 @@ export class TypeOrmCalendarRepository implements CalendarRepository {
         order: { createdAt: 'DESC' },
       });
 
-      return entities.map((entity) => TypeOrmCalendarMapper.toDomainEntity(entity));
+      return entities.map((entity) =>
+        TypeOrmCalendarMapper.toDomainEntity(entity),
+      );
     } catch (error) {
       this.logger.error(
         this.i18n.t('operations.calendar.find_by_business_owner_failed'),
@@ -150,7 +161,9 @@ export class TypeOrmCalendarRepository implements CalendarRepository {
         order: { createdAt: 'DESC' },
       });
 
-      return entities.map((entity) => TypeOrmCalendarMapper.toDomainEntity(entity));
+      return entities.map((entity) =>
+        TypeOrmCalendarMapper.toDomainEntity(entity),
+      );
     } catch (error) {
       this.logger.error(
         this.i18n.t('operations.calendar.find_active_failed'),
@@ -192,9 +205,12 @@ export class TypeOrmCalendarRepository implements CalendarRepository {
 
       await this.ormRepository.delete(id.getValue());
 
-      this.logger.info(this.i18n.t('operations.calendar.deleted_successfully'), {
-        calendarId: id.getValue(),
-      });
+      this.logger.info(
+        this.i18n.t('operations.calendar.deleted_successfully'),
+        {
+          calendarId: id.getValue(),
+        },
+      );
     } catch (error) {
       this.logger.error(
         this.i18n.t('operations.calendar.delete_failed'),
@@ -219,14 +235,15 @@ export class TypeOrmCalendarRepository implements CalendarRepository {
         .where('calendar.businessId = :businessId', {
           businessId: businessId.getValue(),
         })
-        .andWhere(
-          '(calendar.ownerId = :userId OR sharedUsers.id = :userId)',
-          { userId: userId.getValue() },
-        )
+        .andWhere('(calendar.ownerId = :userId OR sharedUsers.id = :userId)', {
+          userId: userId.getValue(),
+        })
         .orderBy('calendar.createdAt', 'DESC')
         .getMany();
 
-      return entities.map((entity) => TypeOrmCalendarMapper.toDomainEntity(entity));
+      return entities.map((entity) =>
+        TypeOrmCalendarMapper.toDomainEntity(entity),
+      );
     } catch (error) {
       this.logger.error(
         this.i18n.t('operations.calendar.find_with_access_failed'),
@@ -270,7 +287,9 @@ export class TypeOrmCalendarRepository implements CalendarRepository {
         order: { createdAt: 'DESC' },
       });
 
-      return entities.map((entity) => TypeOrmCalendarMapper.toDomainEntity(entity));
+      return entities.map((entity) =>
+        TypeOrmCalendarMapper.toDomainEntity(entity),
+      );
     } catch (error) {
       this.logger.error(
         this.i18n.t('operations.calendar.find_by_status_failed'),
@@ -315,7 +334,8 @@ export class TypeOrmCalendarRepository implements CalendarRepository {
       if (settings.description !== undefined)
         updateData.description = settings.description;
       if (settings.color !== undefined) updateData.color = settings.color;
-      if (settings.isActive !== undefined) updateData.isActive = settings.isActive;
+      if (settings.isActive !== undefined)
+        updateData.isActive = settings.isActive;
       // Note: workingHours and breakTimes are handled separately via availability table
 
       updateData.updatedAt = new Date();
@@ -355,14 +375,13 @@ export class TypeOrmCalendarRepository implements CalendarRepository {
       await this.ormRepository.manager.transaction(async (manager) => {
         // TODO: Implémenter la logique de partage avec table de permissions
         // Cette implémentation dépend de la structure exacte des entités
-        
         // Exemple avec une table calendar_shares
         // for (const userId of userIds) {
         //   await manager.query(
         //     `INSERT INTO calendar_shares (calendar_id, user_id, can_view, can_edit, can_manage_appointments, created_at)
         //      VALUES ($1, $2, $3, $4, $5, $6)
-        //      ON CONFLICT (calendar_id, user_id) 
-        //      DO UPDATE SET 
+        //      ON CONFLICT (calendar_id, user_id)
+        //      DO UPDATE SET
         //        can_view = EXCLUDED.can_view,
         //        can_edit = EXCLUDED.can_edit,
         //        can_manage_appointments = EXCLUDED.can_manage_appointments,
@@ -379,10 +398,9 @@ export class TypeOrmCalendarRepository implements CalendarRepository {
         // }
       });
 
-      this.logger.info(
-        this.i18n.t('operations.calendar.shared_successfully'),
-        { calendarId: calendarId.getValue() },
-      );
+      this.logger.info(this.i18n.t('operations.calendar.shared_successfully'), {
+        calendarId: calendarId.getValue(),
+      });
     } catch (error) {
       this.logger.error(
         this.i18n.t('operations.calendar.share_failed'),
@@ -532,7 +550,9 @@ export class TypeOrmCalendarRepository implements CalendarRepository {
         order: { updatedAt: 'DESC' },
       });
 
-      return entities.map((entity) => TypeOrmCalendarMapper.toDomainEntity(entity));
+      return entities.map((entity) =>
+        TypeOrmCalendarMapper.toDomainEntity(entity),
+      );
     } catch (error) {
       this.logger.error(
         this.i18n.t('operations.calendar.sync_query_failed'),
@@ -645,7 +665,7 @@ export class TypeOrmCalendarRepository implements CalendarRepository {
       thursday: { start: '09:00', end: '17:00', isWorkingDay: true },
       friday: { start: '09:00', end: '17:00', isWorkingDay: true },
       saturday: { start: '09:00', end: '12:00', isWorkingDay: false },
-      sunday: { start: '00:00', end: '00:00', isWorkingDay: false }
+      sunday: { start: '00:00', end: '00:00', isWorkingDay: false },
     };
   }
 
@@ -667,26 +687,32 @@ export class TypeOrmCalendarRepository implements CalendarRepository {
   async findOverlappingCalendars(
     businessId: BusinessId,
     timeSlot: TimeSlot,
-    excludeCalendarIds?: CalendarId[]
+    excludeCalendarIds?: CalendarId[],
   ): Promise<Calendar[]> {
     try {
       const query = this.ormRepository
         .createQueryBuilder('calendar')
-        .where('calendar.businessId = :businessId', { businessId: businessId.getValue() })
+        .where('calendar.businessId = :businessId', {
+          businessId: businessId.getValue(),
+        })
         .andWhere('calendar.isActive = :isActive', { isActive: true });
 
       if (excludeCalendarIds && excludeCalendarIds.length > 0) {
-        const ids = excludeCalendarIds.map(id => id.getValue());
-        query.andWhere('calendar.id NOT IN (:...excludeIds)', { excludeIds: ids });
+        const ids = excludeCalendarIds.map((id) => id.getValue());
+        query.andWhere('calendar.id NOT IN (:...excludeIds)', {
+          excludeIds: ids,
+        });
       }
 
       const entities = await query.getMany();
-      return entities.map(entity => TypeOrmCalendarMapper.toDomainEntity(entity));
+      return entities.map((entity) =>
+        TypeOrmCalendarMapper.toDomainEntity(entity),
+      );
     } catch (error) {
       this.logger.error(
         this.i18n.t('operations.calendar.find_overlapping_failed'),
         error as Error,
-        { businessId: businessId.getValue() }
+        { businessId: businessId.getValue() },
       );
       return [];
     }
@@ -694,11 +720,11 @@ export class TypeOrmCalendarRepository implements CalendarRepository {
 
   async count(businessId?: BusinessId, isActive?: boolean): Promise<number> {
     const whereConditions: Record<string, unknown> = {};
-    
+
     if (businessId) {
       whereConditions.businessId = businessId.getValue();
     }
-    
+
     if (isActive !== undefined) {
       whereConditions.isActive = isActive;
     }
@@ -717,7 +743,9 @@ export class TypeOrmCalendarRepository implements CalendarRepository {
         order: { createdAt: 'DESC' },
       });
 
-      return entities.map((entity) => TypeOrmCalendarMapper.toDomainEntity(entity));
+      return entities.map((entity) =>
+        TypeOrmCalendarMapper.toDomainEntity(entity),
+      );
     } catch (error) {
       this.logger.error(
         this.i18n.t('operations.calendar.find_all_failed'),
@@ -732,7 +760,9 @@ export class TypeOrmCalendarRepository implements CalendarRepository {
    */
   async createOptimalIndexes(): Promise<void> {
     try {
-      this.logger.info('Creating optimal PostgreSQL indexes for calendars table');
+      this.logger.info(
+        'Creating optimal PostgreSQL indexes for calendars table',
+      );
 
       // Index composé pour requêtes fréquentes
       await this.ormRepository.query(`
@@ -765,18 +795,19 @@ export class TypeOrmCalendarRepository implements CalendarRepository {
   async findByType(businessId: BusinessId, type: string): Promise<Calendar[]> {
     try {
       const entities = await this.ormRepository.find({
-        where: { 
+        where: {
           businessId: businessId.getValue(),
-          type 
+          type,
         },
       });
-      return entities.map(entity => TypeOrmCalendarMapper.toDomainEntity(entity));
-    } catch (error) {
-      this.logger.error(
-        'Failed to find calendars by type',
-        error as Error,
-        { businessId: businessId.getValue(), type }
+      return entities.map((entity) =>
+        TypeOrmCalendarMapper.toDomainEntity(entity),
       );
+    } catch (error) {
+      this.logger.error('Failed to find calendars by type', error as Error, {
+        businessId: businessId.getValue(),
+        type,
+      });
       return [];
     }
   }
@@ -785,40 +816,42 @@ export class TypeOrmCalendarRepository implements CalendarRepository {
     calendarIds: CalendarId[],
     startDate: Date,
     endDate: Date,
-    duration: number
-  ): Promise<{
-    calendarId: CalendarId;
-    slots: TimeSlot[];
-  }[]> {
+    duration: number,
+  ): Promise<
+    {
+      calendarId: CalendarId;
+      slots: TimeSlot[];
+    }[]
+  > {
     // TODO: Implement available slots logic with appointments check
-    this.logger.warn('findAvailableSlots not fully implemented - TODO', { 
-      method: 'findAvailableSlots', 
-      status: 'TODO' 
+    this.logger.warn('findAvailableSlots not fully implemented - TODO', {
+      method: 'findAvailableSlots',
+      status: 'TODO',
     });
-    return calendarIds.map(calendarId => ({ calendarId, slots: [] }));
+    return calendarIds.map((calendarId) => ({ calendarId, slots: [] }));
   }
 
   async getBookedSlots(
     calendarId: CalendarId,
     startDate: Date,
-    endDate: Date
+    endDate: Date,
   ): Promise<TimeSlot[]> {
     // TODO: Implement booked slots from appointments table
-    this.logger.warn('getBookedSlots not fully implemented - TODO', { 
-      method: 'getBookedSlots', 
-      status: 'TODO' 
+    this.logger.warn('getBookedSlots not fully implemented - TODO', {
+      method: 'getBookedSlots',
+      status: 'TODO',
     });
     return [];
   }
 
   async isSlotAvailable(
     calendarId: CalendarId,
-    timeSlot: TimeSlot
+    timeSlot: TimeSlot,
   ): Promise<boolean> {
     // TODO: Implement slot availability check
-    this.logger.warn('isSlotAvailable not fully implemented - TODO', { 
-      method: 'isSlotAvailable', 
-      status: 'TODO' 
+    this.logger.warn('isSlotAvailable not fully implemented - TODO', {
+      method: 'isSlotAvailable',
+      status: 'TODO',
     });
     return true; // Default to available for now
   }
@@ -826,7 +859,7 @@ export class TypeOrmCalendarRepository implements CalendarRepository {
   async getUtilizationStats(
     calendarId: CalendarId,
     startDate: Date,
-    endDate: Date
+    endDate: Date,
   ): Promise<{
     totalSlots: number;
     bookedSlots: number;
@@ -835,40 +868,40 @@ export class TypeOrmCalendarRepository implements CalendarRepository {
     peakDays: { day: string; bookings: number }[];
   }> {
     // TODO: Implement utilization statistics
-    this.logger.warn('getUtilizationStats not fully implemented - TODO', { 
-      method: 'getUtilizationStats', 
-      status: 'TODO' 
+    this.logger.warn('getUtilizationStats not fully implemented - TODO', {
+      method: 'getUtilizationStats',
+      status: 'TODO',
     });
     return {
       totalSlots: 0,
       bookedSlots: 0,
       utilizationRate: 0,
       peakHours: [],
-      peakDays: []
+      peakDays: [],
     };
   }
 
   async createRecurringSlots(
     calendarId: CalendarId,
     timeSlot: TimeSlot,
-    recurrence: RecurrencePattern
+    recurrence: RecurrencePattern,
   ): Promise<void> {
     // TODO: Implement recurring slots creation
-    this.logger.warn('createRecurringSlots not fully implemented - TODO', { 
-      method: 'createRecurringSlots', 
-      status: 'TODO' 
+    this.logger.warn('createRecurringSlots not fully implemented - TODO', {
+      method: 'createRecurringSlots',
+      status: 'TODO',
     });
   }
 
   async blockTimeSlots(
     calendarId: CalendarId,
     timeSlots: TimeSlot[],
-    reason?: string
+    reason?: string,
   ): Promise<void> {
     // TODO: Implement time slot blocking
-    this.logger.warn('blockTimeSlots not fully implemented - TODO', { 
-      method: 'blockTimeSlots', 
-      status: 'TODO' 
+    this.logger.warn('blockTimeSlots not fully implemented - TODO', {
+      method: 'blockTimeSlots',
+      status: 'TODO',
     });
   }
 
@@ -876,13 +909,13 @@ export class TypeOrmCalendarRepository implements CalendarRepository {
   async findCalendarsWithAvailability(
     businessId: BusinessId,
     startDate: Date,
-    endDate: Date
+    endDate: Date,
   ): Promise<Calendar[]> {
-    this.logger.warn('findCalendarsWithAvailability not implemented - TODO', { 
-      method: 'findCalendarsWithAvailability', 
-      status: 'TODO' 
+    this.logger.warn('findCalendarsWithAvailability not implemented - TODO', {
+      method: 'findCalendarsWithAvailability',
+      status: 'TODO',
     });
-    
+
     // For now, return all calendars for the business
     return this.findByBusinessId(businessId);
   }
@@ -890,13 +923,13 @@ export class TypeOrmCalendarRepository implements CalendarRepository {
   async getRecurringPatterns(
     calendarId: CalendarId,
     startDate: Date,
-    endDate: Date
+    endDate: Date,
   ): Promise<{ pattern: string; nextOccurrence: Date; frequency: number }[]> {
-    this.logger.warn('getRecurringPatterns not implemented - TODO', { 
-      method: 'getRecurringPatterns', 
-      status: 'TODO' 
+    this.logger.warn('getRecurringPatterns not implemented - TODO', {
+      method: 'getRecurringPatterns',
+      status: 'TODO',
     });
-    
+
     // Return empty array with correct type for now
     return [];
   }

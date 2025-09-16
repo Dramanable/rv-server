@@ -146,7 +146,9 @@ export class SearchUsersUseCase {
     }
 
     if (requestingUser.role !== UserRole.PLATFORM_ADMIN) {
-      throw new ForbiddenError('Only PLATFORM_ADMIN can search and manage users');
+      throw new ForbiddenError(
+        'Only PLATFORM_ADMIN can search and manage users',
+      );
     }
   }
 

@@ -54,7 +54,7 @@ export interface CalendarServicePort {
   checkBookingConflicts(
     calendarIds: CalendarId[],
     timeSlot: TimeSlot,
-    excludeBookingIds?: string[]
+    excludeBookingIds?: string[],
   ): Promise<CalendarConflict[]>;
 
   /**
@@ -62,7 +62,7 @@ export interface CalendarServicePort {
    */
   synchronizeCalendars(
     businessId: BusinessId,
-    calendarIds: CalendarId[]
+    calendarIds: CalendarId[],
   ): Promise<CalendarSyncResult>;
 
   /**
@@ -73,7 +73,7 @@ export interface CalendarServicePort {
     pattern: RecurrencePattern,
     startDate: Date,
     duration: number,
-    maxOccurrences: number
+    maxOccurrences: number,
   ): Promise<TimeSlot[]>;
 
   /**
@@ -87,7 +87,7 @@ export interface CalendarServicePort {
       maxSlotDuration: number;
       preferredSlotDuration: number;
       bufferTime: number;
-    }
+    },
   ): Promise<{
     optimizedSlots: TimeSlot[];
     utilizationImprovement: number;
@@ -101,7 +101,7 @@ export interface CalendarServicePort {
     calendarIds: CalendarId[],
     preferredSlot: TimeSlot,
     flexibilityHours: number,
-    maxAlternatives: number
+    maxAlternatives: number,
   ): Promise<CalendarSlotResult[]>;
 
   /**
@@ -111,7 +111,7 @@ export interface CalendarServicePort {
     calendarId: CalendarId,
     timeSlots: TimeSlot[],
     reason: string,
-    recurrence?: RecurrencePattern
+    recurrence?: RecurrencePattern,
   ): Promise<void>;
 
   /**
@@ -119,7 +119,7 @@ export interface CalendarServicePort {
    */
   releaseTimeSlots(
     calendarId: CalendarId,
-    timeSlots: TimeSlot[]
+    timeSlots: TimeSlot[],
   ): Promise<void>;
 
   /**
@@ -127,7 +127,7 @@ export interface CalendarServicePort {
    */
   getAvailabilitySummary(
     calendarIds: CalendarId[],
-    period: { start: Date; end: Date }
+    period: { start: Date; end: Date },
   ): Promise<{
     totalSlots: number;
     availableSlots: number;
@@ -158,7 +158,7 @@ export interface CalendarServicePort {
       endTime: Date;
       isBlocking: boolean;
       recurrence?: RecurrencePattern;
-    }[]
+    }[],
   ): Promise<{
     imported: number;
     conflicts: CalendarConflict[];
@@ -172,6 +172,6 @@ export interface CalendarServicePort {
     calendarId: CalendarId,
     workingHours: { start: string; end: string },
     breakDuration: number,
-    minTimeBetweenBreaks: number
+    minTimeBetweenBreaks: number,
   ): Promise<TimeSlot[]>;
 }
