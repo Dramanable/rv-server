@@ -103,11 +103,13 @@ class InfrastructureI18nService implements I18nService {
   ],
   exports: [
     DatabaseModule,
+    CacheModule, // ✅ Exporte le cache module (inclut USER_CACHE)
     TOKENS.JWT_TOKEN_SERVICE,
     TOKENS.PASSWORD_SERVICE,
     TOKENS.EMAIL_SERVICE,
     TOKENS.PASSWORD_GENERATOR,
     TOKENS.CONFIG_SERVICE,
+    TOKENS.I18N_SERVICE,
     AppConfigService,
     PinoLoggerModule,
   ],

@@ -11,6 +11,7 @@ help:
 	@echo "  start        - Démarrer l'environnement de développement"
 	@echo "  start-build  - Démarrer avec reconstruction des images"
 	@echo "  start-logs   - Démarrer avec affichage des logs"
+	@echo "  start-memory - Démarrer avec optimisations mémoire"
 	@echo "  stop         - Arrêter tous les services"
 	@echo "  restart      - Redémarrer les services"
 	@echo ""
@@ -27,6 +28,7 @@ help:
 	@echo "  status       - Statut des services"
 	@echo "  health       - Vérifier la santé de l'application"
 	@echo "  health-all   - Vérifier la santé de tous les services"
+	@echo "  memory       - Afficher l'utilisation mémoire"
 	@echo ""
 	@echo "🔌 Base de données:"
 	@echo "  redis        - Connexion Redis CLI"
@@ -51,13 +53,21 @@ psql:
 	@echo "🐘 Connexion PostgreSQL..."
 	docker exec -it postgres psql -U postgres -d cleanarchi_dev
 # ========================================
-# � Commandes Docker Compose
+# 🐳 Commandes Docker Compose
 # ========================================
 
 # Démarrer l'environnement de développement
 start:
 	@echo "🚀 Démarrage de l'environnement de développement..."
 	docker compose up -d
+
+# Démarrer avec optimisations mémoire (utilise docker-compose.override.yml)
+start-memory:
+	@echo "🧠 Démarrage avec optimisations mémoire..."
+	@echo "💾 Allocation mémoire optimisée: App(512MB) + DB(256MB) + Cache(128MB)"
+	docker compose -f docker-compose.yml -f docker-compose.override.yml up -d
+	@echo "✅ Services démarrés avec limites mémoire"
+	@make memory
 
 # Démarrer avec reconstruction des images
 start-build:
@@ -148,6 +158,20 @@ health-all:
 	@docker exec mongodb mongosh --eval "db.runCommand('ping').ok" --quiet 2>/dev/null && echo "  ✅ MongoDB en bonne santé" || echo "  ❌ MongoDB non disponible"
 	@echo "🔴 Redis:"
 	@docker exec redis redis-cli -a redis123 ping 2>/dev/null && echo "  ✅ Redis en bonne santé" || echo "  ❌ Redis non disponible"
+
+# Afficher l'utilisation mémoire des conteneurs
+memory:
+	@echo "💾 Utilisation mémoire des conteneurs:"
+	@echo ""
+	@docker stats --no-stream --format "table {{.Container}}\t{{.CPUPerc}}\t{{.MemUsage}}\t{{.MemPerc}}" 2>/dev/null || echo "❌ Aucun conteneur en cours d'exécution"
+	@echo ""
+	@echo "📊 Limites mémoire configurées (docker-compose.override.yml):"
+	@echo "  🏗️  App:        512MB (limit) / 256MB (reservation)"
+	@echo "  🐘 PostgreSQL: 256MB (limit) / 128MB (reservation)"  
+	@echo "  🍃 MongoDB:    256MB (limit) / 128MB (reservation)"
+	@echo "  🔴 Redis:      128MB (limit) / 64MB  (reservation)"
+	@echo "  🔧 pgAdmin:    128MB (limit) / 64MB  (reservation)"
+	@echo "  📊 TOTAL:      ~1.28GB optimisé pour développement"
 
 # ========================================
 # 🧹 Nettoyage & Maintenance

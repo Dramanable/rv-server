@@ -57,6 +57,11 @@ export class NestJsConfigServiceAdapter implements IConfigService {
     return this.configService.get<string>('REFRESH_TOKEN_ALGORITHM', 'HS256');
   }
 
+  getJwtSecret(): string {
+    // Pour la sécurité des cookies, on utilise le secret d'access token
+    return this.getAccessTokenSecret();
+  }
+
   getPasswordHashAlgorithm(): string {
     return this.configService.get<string>('PASSWORD_HASH_ALGORITHM', 'bcrypt');
   }

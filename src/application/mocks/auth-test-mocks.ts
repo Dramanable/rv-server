@@ -2,6 +2,7 @@
  * 🧪 Mocks Typés pour Tests - Application Layer
  */
 
+import type { Mocked } from 'jest-mock';
 import type { UserRepository } from '../../domain/repositories/user.repository.interface';
 import type { IPasswordService } from '../ports/password.service.interface';
 import type { AuthenticationService } from '../ports/authentication.port';
@@ -51,32 +52,35 @@ export function createMockAuthService(): jest.Mocked<AuthenticationService> {
   };
 }
 
-export function createMockConfigService(): jest.Mocked<IConfigService> {
+export const createMockConfigService = () => {
   return {
-    getAccessTokenExpirationTime: jest.fn().mockReturnValue(3600), // 1 hour
+    getJwtSecret: jest.fn().mockReturnValue('test-jwt-secret-32chars-minimum-req'),
+    getAccessTokenExpirationTime: jest.fn().mockReturnValue(3600),
     getRefreshTokenExpirationDays: jest.fn().mockReturnValue(30),
     isProduction: jest.fn().mockReturnValue(false),
-    getAccessTokenSecret: jest.fn().mockReturnValue('access-secret'),
-    getRefreshTokenSecret: jest.fn().mockReturnValue('refresh-secret'),
-    getJwtIssuer: jest.fn().mockReturnValue('test-app'),
-    getJwtAudience: jest.fn().mockReturnValue('test-users'),
+    isDevelopment: jest.fn().mockReturnValue(true),
+    isTest: jest.fn().mockReturnValue(false),
+    getAccessTokenSecret: jest.fn().mockReturnValue('test-access-secret-32-chars-min-length'),
+    getRefreshTokenSecret: jest.fn().mockReturnValue('test-refresh-secret-32-chars-min-length'),
+    getJwtIssuer: jest.fn().mockReturnValue('test-issuer'),
+    getJwtAudience: jest.fn().mockReturnValue('test-audience'),
     getAccessTokenAlgorithm: jest.fn().mockReturnValue('HS256'),
     getRefreshTokenAlgorithm: jest.fn().mockReturnValue('HS256'),
-    getBcryptRounds: jest.fn().mockReturnValue(10),
     getPasswordHashAlgorithm: jest.fn().mockReturnValue('bcrypt'),
+    getBcryptRounds: jest.fn().mockReturnValue(12),
     getUserSessionDurationMinutes: jest.fn().mockReturnValue(30),
     getEnvironment: jest.fn().mockReturnValue('test'),
-    getDatabaseType: jest.fn().mockReturnValue('postgresql' as const),
+    getDatabaseType: jest.fn().mockReturnValue('postgresql'),
     getDatabaseHost: jest.fn().mockReturnValue('localhost'),
     getDatabasePort: jest.fn().mockReturnValue(5432),
-    getDatabaseUsername: jest.fn().mockReturnValue('test'),
-    getDatabasePassword: jest.fn().mockReturnValue('test'),
-    getDatabaseName: jest.fn().mockReturnValue('test'),
+    getDatabaseUsername: jest.fn().mockReturnValue('testuser'),
+    getDatabasePassword: jest.fn().mockReturnValue('testpass'),
+    getDatabaseName: jest.fn().mockReturnValue('testdb'),
     getDatabasePoolSize: jest.fn().mockReturnValue(10),
     getRedisHost: jest.fn().mockReturnValue('localhost'),
     getRedisPort: jest.fn().mockReturnValue(6379),
     getRedisPassword: jest.fn().mockReturnValue(''),
-    getPort: jest.fn().mockReturnValue(3000),
+    getPort: jest.fn().mockReturnValue(3001),
     getHost: jest.fn().mockReturnValue('localhost'),
     getCorsOrigins: jest.fn().mockReturnValue(['http://localhost:3000']),
     getCorsCredentials: jest.fn().mockReturnValue(true),
@@ -84,10 +88,8 @@ export function createMockConfigService(): jest.Mocked<IConfigService> {
     getCompressionConfig: jest.fn().mockReturnValue({}),
     getRateLimitConfig: jest.fn().mockReturnValue({}),
     getBodyParserConfig: jest.fn().mockReturnValue({}),
-    isDevelopment: jest.fn().mockReturnValue(true),
-    isTest: jest.fn().mockReturnValue(true),
   };
-}
+};
 
 export function createMockLogger(): jest.Mocked<Logger> {
   return {

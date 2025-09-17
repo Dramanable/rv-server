@@ -122,6 +122,11 @@ export class AppConfigService implements IConfigService {
     return this.configService.get<string>('REFRESH_TOKEN_ALGORITHM', 'HS256');
   }
 
+  getJwtSecret(): string {
+    // Pour la sécurité des cookies, on utilise le secret d'access token
+    return this.getAccessTokenSecret();
+  }
+
   getPasswordHashAlgorithm(): string {
     return this.configService.get<string>('PASSWORD_HASH_ALGORITHM', 'bcrypt');
   }
@@ -199,6 +204,23 @@ export class AppConfigService implements IConfigService {
 
   getRedisPassword(): string {
     return this.configService.get<string>('REDIS_PASSWORD', '');
+  }
+
+  // 🕰️ User Cache Configuration
+  getUserCacheRetentionMinutes(): number {
+    const retentionMinutes = this.configService.get<string>(
+      'USER_CACHE_RETENTION_MINUTES',
+      '60',
+    );
+
+    const parsed = parseInt(retentionMinutes, 10);
+    if (isNaN(parsed) || parsed <= 0) {
+      throw new Error(
+        `USER_CACHE_RETENTION_MINUTES must be a positive number. Got: ${retentionMinutes}`,
+      );
+    }
+
+    return parsed;
   }
 
   // 🌐 Server Configuration

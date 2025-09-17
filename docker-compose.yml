@@ -12,6 +12,7 @@ services:
         condition: service_healthy
     environment:
       NODE_ENV: development
+      PORT: 3000
       DATABASE_HOST: postgres
       DATABASE_PORT: 5432
       DATABASE_USERNAME: ${POSTGRES_USER:-postgres}
@@ -26,6 +27,14 @@ services:
       REDIS_PORT: 6379
       REDIS_PASSWORD: redis123
       USER_SESSION_DURATION_MINUTES: 30
+      USER_CACHE_RETENTION_MINUTES: 60
+      # JWT Configuration
+      ACCESS_TOKEN_SECRET: dev-access-token-secret-for-development-only-32chars
+      REFRESH_TOKEN_SECRET: dev-refresh-token-secret-for-development-only-32chars
+      ACCESS_TOKEN_EXPIRATION: 3600
+      REFRESH_TOKEN_EXPIRATION_DAYS: 30
+      # Security Settings
+      BCRYPT_ROUNDS: 4
     ports:
       - "3000:3000"
       - "9229:9229"
@@ -35,7 +44,7 @@ services:
       - ./package-lock.json:/app/package-lock.json
       - ./tsconfig.json:/app/tsconfig.json
       - ./tsconfig.build.json:/app/tsconfig.build.json
-      - node_modules_cache:/app/node_modules
+      # - node_modules_cache:/app/node_modules  # Commenté pour utiliser les node_modules de l'image Docker
     networks:
       - app-network
 

@@ -18,7 +18,8 @@ import { AppModule } from './app.module';
 import { AppConfigService } from './infrastructure/config/app-config.service';
 import { setupSwagger } from './infrastructure/swagger/swagger.config';
 import { I18nValidationPipe } from './infrastructure/validation/i18n-validation.pipe';
-// Import cookie-parser avec typage correct
+// 🛡️ Security imports
+import { SecurityHeadersMiddleware } from './presentation/security/headers.middleware';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -27,10 +28,13 @@ async function bootstrap() {
   // 🔧 Configuration Service
   const configService = app.get(AppConfigService);
 
-  // 🔒 Security Middlewares
-  logger.log('Configuring security middlewares...');
+  // �️ Security Middlewares - Couche Présentation
+  logger.log('🛡️ Configuring enhanced security middlewares...');
 
-  // CORS Configuration
+  // 🛡️ Custom Security Headers Middleware (PREMIER)
+  app.use(new SecurityHeadersMiddleware().use);
+
+  // CORS Configuration (sécurisé)
   app.enableCors({
     origin: configService.getCorsOrigins(),
     credentials: configService.getCorsCredentials(),
@@ -42,17 +46,25 @@ async function bootstrap() {
       'X-Requested-With',
       'Access-Control-Allow-Origin',
       'Access-Control-Allow-Headers',
+      'X-CSRF-Token',
     ],
-    exposedHeaders: ['X-Total-Count', 'X-Pagination'],
+    exposedHeaders: ['X-Total-Count', 'X-Pagination', 'X-RateLimit-Remaining'],
     maxAge: 86400, // 24 hours
+    optionsSuccessStatus: 204,
   });
 
-  // Helmet for security headers
-  app.use(helmet(configService.getHelmetConfig()));
+  // Helmet for additional security headers (complément)
+  app.use(
+    helmet({
+      contentSecurityPolicy: configService.isProduction() ? undefined : false, // CSP en prod seulement
+      hsts: configService.isProduction(), // HSTS en prod seulement
+      crossOriginEmbedderPolicy: false, // Compatible avec Swagger
+    }),
+  );
 
   // 🍪 Cookie Parser - CRITICAL pour JWT authentication via cookies
-  logger.log('Configuring cookie parser...');
-  app.use(cookieParser());
+  logger.log('🍪 Configuring secure cookie parser...');
+  app.use(cookieParser(configService.getJwtSecret())); // Signer les cookies avec JWT secret
 
   // ⚡ Performance Middlewares
   logger.log('Configuring performance middlewares...');

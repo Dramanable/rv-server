@@ -1,16 +1,23 @@
 /**
- * 🎭 PRESENTATION MODULE - Minimal Clean Version
+ * 🎭 PRESENTATION MODULE - Couche de présentation avec services
  *
- * Ready for auth and users controllers implementation
+ * Contient les contrôleurs et services spécifiques à la couche présentation
+ * (gestion HTTP, cookies, validation, sécurité)
  */
 
 import { Module } from '@nestjs/common';
+import { AuthController } from './controllers/auth.controller';
+import { PresentationCookieService } from './services/cookie.service';
 
 @Module({
   controllers: [
-    // TODO: Add AuthController and UserController when implemented
+    AuthController,
   ],
-  providers: [],
-  exports: [],
+  providers: [
+    PresentationCookieService,
+  ],
+  exports: [
+    PresentationCookieService,
+  ],
 })
 export class PresentationModule {}

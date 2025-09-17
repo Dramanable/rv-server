@@ -1,24 +1,25 @@
 /**
  * 🔐 Login Use Case - Clean Architecture
- *
- * Authentification utilisateur avec access/refresh tokens et cookies HttpOnly
- * Utilise les variables d'environnement et le logger standard NestJS
+ * ✅ Pure Application Layer - SANS préoccupations HTTP/cookies
+ * 
+ * Authentification utilisateur avec génération de tokens JWT
+ * La gestion des cookies se fait dans la couche Presentation
  */
 
 import type { UserRepository } from '../../../domain/repositories/user.repository.interface';
-import type { IPasswordService } from '../../ports/password.service.interface';
+import type { IPasswordHasher } from '../../ports/password-hasher.port'; // ✅ NOUVEAU: Port Clean Architecture
 import type { AuthenticationService } from '../../ports/authentication.port';
 import type { Logger } from '../../ports/logger.port';
 import type { I18nService } from '../../ports/i18n.port';
 import type { IConfigService } from '../../ports/config.port';
-import { InvalidCredentialsError } from '../../exceptions/auth.exceptions';
+import type { UserCacheService } from '../../services/user-cache.service';
+import { InvalidCredentialsError, UserNotFoundError, AuthenticationFailedError } from '../../exceptions/auth.exceptions';
 import { Email } from '../../../domain/value-objects/email.vo';
 import { AppContextFactory } from '../../../shared/context/app-context';
 
 export interface LoginRequest {
   readonly email: string;
   readonly password: string;
-  readonly rememberMe?: boolean;
   readonly ip?: string;
   readonly userAgent?: string;
 }
@@ -35,22 +36,18 @@ export interface LoginResponse {
     readonly refreshToken: string;
     readonly expiresIn: number;
   };
-  readonly cookieSettings: {
-    readonly accessTokenMaxAge: number;
-    readonly refreshTokenMaxAge?: number;
-    readonly isProduction: boolean;
-  };
   readonly message: string;
 }
 
 export class LoginUseCase {
   constructor(
     private readonly userRepository: UserRepository,
-    private readonly passwordService: IPasswordService,
+    private readonly passwordHasher: IPasswordHasher, // ✅ NOUVEAU: Utilise le port Clean Architecture
     private readonly authService: AuthenticationService,
     private readonly configService: IConfigService,
     private readonly logger: Logger,
     private readonly i18n: I18nService,
+    private readonly userCacheService: UserCacheService, // ✅ NOUVEAU: Service de cache utilisateur
   ) {}
 
   async execute(request: LoginRequest): Promise<LoginResponse> {
@@ -72,29 +69,29 @@ export class LoginUseCase {
 
       if (!user) {
         this.logger.warn(
-          this.i18n.t('operations.auth.user_not_found', {
+          this.i18n.translate('operations.auth.user_not_found', {
             email: request.email,
           }),
           { context: context.correlationId },
         );
-        throw new InvalidCredentialsError(
-          this.i18n.t('errors.auth.invalid_credentials'),
+        throw new UserNotFoundError(
+          this.i18n.translate('errors.auth.user_not_found'),
         );
       }
 
-      // 2. 🔐 Vérifier le mot de passe
-      const isPasswordValid = await this.passwordService.verify(
+      // 2. 🔐 Vérifier le mot de passe avec le port IPasswordHasher
+      const isPasswordValid = await this.passwordHasher.verify(
         request.password,
         user.hashedPassword || '',
       );
 
       if (!isPasswordValid) {
         this.logger.warn(
-          this.i18n.t('operations.auth.invalid_password', { userId: user.id }),
+          this.i18n.translate('operations.auth.invalid_password', { userId: user.id }),
           { context: context.correlationId },
         );
-        throw new InvalidCredentialsError(
-          this.i18n.t('errors.auth.invalid_credentials'),
+        throw new AuthenticationFailedError(
+          this.i18n.translate('errors.auth.invalid_credentials'),
         );
       }
 
@@ -102,16 +99,32 @@ export class LoginUseCase {
       const { accessToken, refreshToken, expiresIn } =
         await this.authService.generateTokens(user);
 
-      // 4. 📊 Préparer les paramètres de cookies pour la couche Presentation
-      const cookieSettings = this.prepareCookieSettings(request.rememberMe);
+      // 4. � Stocker l'utilisateur en cache Redis pour les requêtes futures
+      try {
+        await this.userCacheService.execute({ user });
+        this.logger.info(
+          this.i18n.translate('operations.auth.user_cached'),
+          { userId: user.id, context: context.correlationId },
+        );
+      } catch (error) {
+        // ⚠️ Le cache n'est pas critique - on log mais on continue
+        this.logger.warn(
+          this.i18n.translate('warnings.auth.user_cache_failed'),
+          { 
+            userId: user.id, 
+            error: error instanceof Error ? error.message : 'Unknown error',
+            context: context.correlationId,
+          },
+        );
+      }
 
-      // 5. 📊 Audit de succès
+      // 5. �📊 Audit de succès
       this.logger.info(
-        this.i18n.t('operations.auth.login_success', { userId: user.id }),
+        this.i18n.translate('operations.auth.login_success', { userId: user.id }),
         { context: context.correlationId },
       );
 
-      // 6. 📤 Réponse avec tokens et paramètres de cookies
+      // 5. 📤 Réponse PURE Application (sans détails HTTP/cookies)
       return {
         user: {
           id: user.id,
@@ -124,12 +137,11 @@ export class LoginUseCase {
           refreshToken,
           expiresIn,
         },
-        cookieSettings,
-        message: this.i18n.t('success.auth.login_successful'),
+        message: this.i18n.translate('success.auth.login_successful'),
       };
     } catch (error) {
       this.logger.error(
-        this.i18n.t('operations.auth.login_failed', {
+        this.i18n.translate('operations.auth.login_failed', {
           error: error instanceof Error ? error.message : 'Unknown error',
         }),
         error instanceof Error ? error : undefined,
@@ -139,37 +151,5 @@ export class LoginUseCase {
     }
   }
 
-  /**
-   * 📊 Prépare les paramètres de cookies pour la couche Presentation
-   * Les durées des cookies correspondent exactement aux durées des tokens JWT
-   */
-  private prepareCookieSettings(
-    rememberMe?: boolean,
-  ): LoginResponse['cookieSettings'] {
-    const accessTokenExpirationSeconds =
-      this.configService.getAccessTokenExpirationTime(); // seconds
-    const refreshTokenExpirationDays =
-      this.configService.getRefreshTokenExpirationDays(); // days
-    const isProduction = this.configService.isProduction();
 
-    // Access Token Cookie: même durée que le JWT access token
-    const accessTokenMaxAge = accessTokenExpirationSeconds * 1000; // seconds to milliseconds
-
-    // Refresh Token Cookie: même durée que le JWT refresh token (si rememberMe activé)
-    // Si rememberMe = false, cookie de session (supprimé à la fermeture du navigateur)
-    const refreshTokenMaxAge = rememberMe
-      ? refreshTokenExpirationDays * 24 * 60 * 60 * 1000 // days to milliseconds
-      : undefined; // Session cookie if not rememberMe
-
-    this.logger.debug(
-      `Cookie settings prepared - AccessToken: ${accessTokenExpirationSeconds}s, RefreshToken: ${refreshTokenMaxAge ? refreshTokenExpirationDays + 'days' : 'session'}`,
-      { operation: 'prepareCookieSettings', rememberMe },
-    );
-
-    return {
-      accessTokenMaxAge,
-      refreshTokenMaxAge,
-      isProduction,
-    };
-  }
 }

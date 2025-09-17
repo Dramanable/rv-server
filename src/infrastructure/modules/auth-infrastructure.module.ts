@@ -13,11 +13,13 @@ import { PassportModule } from '@nestjs/passport';
 // Infrastructure Services
 import { JwtAuthenticationService } from '../services/jwt-authentication.service';
 import { BcryptPasswordService } from '../services/bcrypt-password.service';
+import { BcryptPasswordHasher } from '../services/bcrypt-password-hasher.service'; // ✅ NOUVEAU: Clean Architecture
 import { NestJsConfigServiceAdapter } from '../config/nestjs-config.adapter';
 
 // Application Ports
 import { AuthenticationService } from '../../application/ports/authentication.port';
 import { IPasswordService } from '../../application/ports/password.service.interface';
+import { IPasswordHasher } from '../../application/ports/password-hasher.port'; // ✅ NOUVEAU: Clean Architecture
 import { IConfigService } from '../../application/ports/config.port';
 import { Logger } from '../../application/ports/logger.port';
 import { I18nService } from '../../application/ports/i18n.port';
@@ -70,6 +72,12 @@ import { TOKENS } from '../../shared/constants/injection-tokens';
       useClass: BcryptPasswordService,
     },
 
+    // Password Hasher Service ✅ NOUVEAU: Clean Architecture
+    {
+      provide: TOKENS.PASSWORD_HASHER,
+      useClass: BcryptPasswordHasher,
+    },
+
     // Logger Service (using NestJS Logger)
     {
       provide: TOKENS.LOGGER,
@@ -100,7 +108,7 @@ import { TOKENS } from '../../shared/constants/injection-tokens';
       provide: TOKENS.LOGIN_USE_CASE,
       useFactory: (
         userRepository: UserRepository,
-        passwordService: IPasswordService,
+        passwordHasher: IPasswordHasher, // ✅ NOUVEAU: Port Clean Architecture
         authService: AuthenticationService,
         configService: IConfigService,
         logger: Logger,
@@ -108,7 +116,7 @@ import { TOKENS } from '../../shared/constants/injection-tokens';
       ) =>
         new LoginUseCase(
           userRepository,
-          passwordService,
+          passwordHasher, // ✅ NOUVEAU: Utilise le port IPasswordHasher
           authService,
           configService,
           logger,
@@ -116,7 +124,7 @@ import { TOKENS } from '../../shared/constants/injection-tokens';
         ),
       inject: [
         TOKENS.USER_REPOSITORY,
-        TOKENS.PASSWORD_SERVICE,
+        TOKENS.PASSWORD_HASHER, // ✅ NOUVEAU: Utilise le port Clean Architecture
         TOKENS.AUTH_SERVICE,
         TOKENS.APP_CONFIG,
         TOKENS.LOGGER,

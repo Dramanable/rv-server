@@ -235,9 +235,20 @@ export class ComputeService {
 
 ## 🏗️ **MÉTHODOLOGIE DE DÉVELOPPEMENT EN COUCHES ORDONNÉES**
 
-### 🎯 **ORDRE OBLIGATOIRE DE DÉVELOPPEMENT**
+### 🎯 **ORDRE OBLIGATOIRE DE DÉVELOPPEMENT - TDD STRICT**
 
-**Pour éviter les erreurs de dépendances et garantir une architecture cohérente, TOUJOURS développer dans cet ordre strict :**
+**Pour éviter les erreurs de dépendances et garantir une architecture cohérente, TOUJOURS développer dans cet ordre strict avec TDD :**
+
+### 🔄 **Processus TDD par Couche** :
+1. **Red** : Écrire le test qui échoue
+2. **Green** : Écrire le code minimal qui fait passer le test
+3. **Refactor** : Améliorer le code en gardant les tests verts
+
+### ⚠️ **RÈGLE CRITIQUE : DÉVELOPPEMENT ÉTAPE PAR ÉTAPE**
+- ❌ **JAMAIS** développer plusieurs fonctionnalités simultanément
+- ✅ **TOUJOURS** une seule fonctionnalité à la fois (ex: Login → Register → Password Reset)
+- ✅ **TOUJOURS** finir complètement une couche avant de passer à la suivante
+- ✅ **TOUJOURS** écrire les tests AVANT le code (TDD strict)
 
 #### **1️⃣ DOMAIN (Couche Métier) - EN PREMIER**
 ```
@@ -257,16 +268,18 @@ src/domain/
 #### **2️⃣ APPLICATION (Cas d'Usage) - EN SECOND**
 ```
 src/application/
-├── use-cases/         # Cases d'utilisation (orchestration)
-├── ports/             # Interfaces pour l'infrastructure
-├── services/          # Services applicatifs
+├── services/          # Services applicatifs (PRÉFÉRER aux use-cases)
+├── ports/             # Interfaces pour l'infrastructure  
+├── use-cases/         # Cases d'utilisation (seulement si nécessaire)
 └── exceptions/        # Exceptions applicatives
 ```
 **✅ Caractéristiques** :
+- **PRÉFÉRER les Services** aux Use Cases complexes
 - **Dépend UNIQUEMENT** de la couche Domain
 - **ZÉRO dépendance** vers Infrastructure ou Presentation
-- **Orchestration** des entités et services métier
+- **Orchestration simple** des entités et services métier
 - **Définit les ports** (interfaces) pour l'infrastructure
+- **Logique d'application claire** et testable
 
 #### **3️⃣ INFRASTRUCTURE (Technique) - EN TROISIÈME**
 ```
@@ -291,10 +304,18 @@ src/presentation/
 └── mappers/           # Conversion DTO ↔ Domain
 ```
 **✅ Caractéristiques** :
-- **Orchestration** des Use Cases
-- **Validation** des entrées
+- **Orchestration** des Services Application (PAS d'Use Cases complexes)
+- **Validation** des entrées avec class-validator
 - **Sérialisation** des sorties
+- **Documentation Swagger** complète et détaillée
+- **Support i18n** pour messages d'erreur
 - **Interface utilisateur** (REST, GraphQL, etc.)
+
+### 📧 **RÈGLE PORTS & ADAPTERS pour Services Externes**
+**Tous les services externes (Email, SMS, etc.) DOIVENT être des ports/adapters :**
+- **Port** (Interface) dans `/application/ports/`
+- **Adapter** (Implémentation) dans `/infrastructure/services/`
+- **Exemples** : EmailPort → GmailAdapter, SmsPort → TwilioAdapter
 
 ### 🚀 **AVANTAGES DE CETTE APPROCHE**
 

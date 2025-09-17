@@ -13,6 +13,7 @@ export const APPLICATION_TOKENS = {
   CONFIG_SERVICE: 'IConfigService',
   EMAIL_SERVICE: 'EmailService',
   PASSWORD_SERVICE: 'PasswordService',
+  PASSWORD_HASHER: 'IPasswordHasher', // ✅ NOUVEAU: Port pour hachage sécurisé
   PASSWORD_GENERATOR: 'PasswordGenerator',
   TOKEN_SERVICE: 'TokenService',
 
@@ -27,6 +28,7 @@ export const APPLICATION_TOKENS = {
 
   // Application Services
   USER_ONBOARDING_SERVICE: 'UserOnboardingApplicationService',
+  USER_CACHE_SERVICE: 'UserCacheService',
 
   // Authentication Services
   AUTH_TOKEN_SERVICE: 'AuthTokenService',
@@ -35,6 +37,7 @@ export const APPLICATION_TOKENS = {
 
   // Cache Services
   CACHE_SERVICE: 'CacheService',
+  USER_CACHE: 'IUserCache',
 
   // Session Services
   USER_SESSION_SERVICE: 'UserSessionService',
@@ -69,6 +72,7 @@ export const INFRASTRUCTURE_TOKENS = {
   CONSOLE_LOGGER: 'ConsoleLogger',
   SMTP_EMAIL_SERVICE: 'SmtpEmailService',
   BCRYPT_PASSWORD_SERVICE: 'BcryptPasswordService',
+  BCRYPT_PASSWORD_HASHER: 'BcryptPasswordHasher', // ✅ NOUVEAU: Adapter bcrypt
   JWT_TOKEN_SERVICE: 'JwtTokenService',
   COOKIE_SERVICE: 'CookieService',
 

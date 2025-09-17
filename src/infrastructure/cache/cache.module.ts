@@ -3,8 +3,12 @@
  */
 
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import Redis from 'ioredis';
 import { SimpleCacheService } from '../services/simple-cache.service';
-import { CookieService } from '../services/cookie.service';
+import { RedisUserCacheAdapter } from './redis-user-cache.adapter';
+import { AppConfigService } from '../config/app-config.service';
+
 import { PinoLoggerModule } from '../logging/pino-logger.module';
 import { TOKENS } from '../../shared/constants/injection-tokens';
 import type { I18nService } from '../../application/ports/i18n.port';
@@ -75,6 +79,8 @@ class InfrastructureI18nService implements I18nService {
 
 @Module({
   imports: [
+    // 📝 Module de configuration
+    ConfigModule,
     // 📝 Module de logging global
     PinoLoggerModule,
   ],
@@ -89,12 +95,31 @@ class InfrastructureI18nService implements I18nService {
       provide: TOKENS.CACHE_SERVICE,
       useClass: SimpleCacheService,
     },
-    // 🍪 Service de gestion des cookies
+    // 🔧 Configuration service (pour Redis)
+    AppConfigService,
+    // 🔴 Client Redis
     {
-      provide: TOKENS.COOKIE_SERVICE,
-      useClass: CookieService,
+      provide: 'REDIS_CLIENT',
+      useFactory: (configService: AppConfigService) => {
+        return new Redis({
+          host: configService.getRedisHost(),
+          port: configService.getRedisPort(),
+          password: configService.getRedisPassword(),
+          retryDelayOnFailover: 100,
+          maxRetriesPerRequest: 3,
+        });
+      },
+      inject: [AppConfigService],
+    },
+    // 💾 Adaptateur Redis pour cache utilisateur
+    {
+      provide: TOKENS.USER_CACHE,
+      useFactory: (redisClient: Redis, configService: AppConfigService) => {
+        return new RedisUserCacheAdapter(redisClient, configService);
+      },
+      inject: ['REDIS_CLIENT', AppConfigService],
     },
   ],
-  exports: [TOKENS.CACHE_SERVICE, TOKENS.COOKIE_SERVICE],
+  exports: [TOKENS.CACHE_SERVICE, TOKENS.USER_CACHE],
 })
 export class CacheModule {}

@@ -67,6 +67,16 @@ export class InvalidCredentialsError extends AuthenticationError {
   }
 }
 
+export class AuthenticationFailedError extends AuthenticationError {
+  constructor(
+    message: string = 'Authentication failed',
+    context?: Record<string, any>,
+  ) {
+    super(message, 'AUTHENTICATION_FAILED', context);
+    this.name = 'AuthenticationFailedError';
+  }
+}
+
 export class ForbiddenError extends AuthenticationError {
   constructor(
     message: string = 'Access forbidden',

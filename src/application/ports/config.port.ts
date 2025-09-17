@@ -56,6 +56,11 @@ export interface IConfigService {
   getRefreshTokenAlgorithm(): string;
 
   /**
+   * Secret JWT pour signer les cookies de sécurité
+   */
+  getJwtSecret(): string;
+
+  /**
    * Algorithme de hachage pour les mots de passe
    * @default 'bcrypt'
    */
@@ -93,6 +98,12 @@ export interface IConfigService {
   getRedisHost(): string;
   getRedisPort(): number;
   getRedisPassword(): string;
+
+  /**
+   * Durée de rétention des utilisateurs dans le cache Redis en minutes
+   * @default 60 minutes
+   */
+  getUserCacheRetentionMinutes(): number;
 
   /**
    * Server Configuration

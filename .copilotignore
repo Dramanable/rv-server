@@ -1,90 +1,264 @@
-# 🚫 .copilotignore - Optimisation mémoire GitHub Copilot
-# Exclut les fichiers non pertinents pour les suggestions de code
+# 🤖 .copilotignore - Optimisation avancée GitHub Copilot
+# Configuration pour réduire l'usage mémoire et améliorer les performances
 
-# ===== DEPENDENCIES & BUILD =====
+# =====================================
+# 📦 DEPENDENCIES & BUILD ARTIFACTS
+# =====================================
 node_modules/
+.npm/
+.pnpm-store/
+.yarn/
 dist/
 build/
+out/
 coverage/
 *.tsbuildinfo
 .nyc_output/
+.rollup.cache/
+.parcel-cache/
+.next/
+.nuxt/
 
-# ===== LOGS & TEMP FILES =====
+# =====================================
+# 📋 LOGS & TEMPORARY FILES  
+# =====================================
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
 *.tmp
 *.temp
+*~
 .cache/
 .DS_Store
 Thumbs.db
 
-# ===== CONFIGURATION FILES =====
+# =====================================
+# 🔧 CONFIGURATION & LOCK FILES
+# =====================================
 package-lock.json
 yarn.lock
+pnpm-lock.yaml
 .env
 .env.*
 !.env.example
+webpack-stats.json
+bundle-report.html
 
-# ===== IDE & EDITOR =====
+# =====================================
+# 💻 IDE & EDITOR FILES
+# =====================================
 .vscode/settings.json
 .vscode/launch.json
+.vscode/*.code-workspace
 .idea/
 *.swp
 *.swo
-*~
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
 
-# ===== VERSION CONTROL =====
+# =====================================
+# 🔄 VERSION CONTROL
+# =====================================
 .git/
 .gitignore
+.gitattributes
+.svn/
+.hg/
 
-# ===== DOCUMENTATION (sauf README) =====
+# =====================================
+# 📚 DOCUMENTATION (Performance Impact)
+# =====================================
 *.md
 !README.md
+!.github/copilot-instructions.md
+!.github/copilot-instructions-en.md
 docs/
 documentation/
+*.pdf
+*.doc
+*.docx
 
-# ===== TEST OUTPUTS =====
+# =====================================
+# 🧪 TEST ARTIFACTS & REPORTS
+# =====================================
 test-results/
 playwright-report/
 coverage/
 junit.xml
+.jest/
+**/__snapshots__/
+screenshots/
+e2e-results/
+test-coverage/
+*.lcov
 
-# ===== ASSETS & MEDIA =====
+# =====================================
+# 🖼️ MEDIA & BINARY FILES
+# =====================================
 *.png
 *.jpg
 *.jpeg
 *.gif
 *.svg
 *.ico
-*.pdf
+*.webp
 *.mp4
 *.avi
+*.mov
+*.wmv
+*.flv
+*.pdf
+*.zip
+*.tar
+*.gz
+*.rar
+*.7z
+*.exe
+*.dll
+*.so
+*.dylib
 
-# ===== DATABASE & DATA =====
+# =====================================
+# 🗄️ DATABASE & DATA FILES
+# =====================================
 *.db
 *.sqlite
 *.sqlite3
+*.mdb
+*.accdb
 data/
 backups/
+dumps/
+seeds/
+fixtures/
+**/migrations/*.sql
+**/mock-data/*.json
 
-# ===== SPECIFIC TO PROJECT =====
-# Garde les fichiers essentiels pour Copilot :
-# - src/ (code source principal)
-# - tests/ (exemples d'usage)
-# - package.json (dépendances)
-# - tsconfig.json (configuration TypeScript)
+# =====================================
+# 🎯 PROJECT-SPECIFIC EXCLUSIONS
+# =====================================
 
-# Exclut les exemples et documentation
+# Garde UNIQUEMENT les fichiers essentiels pour Copilot :
+# ✅ src/ (code source principal)  
+# ✅ package.json (dépendances)
+# ✅ tsconfig.json (configuration TypeScript)
+# ✅ Types et interfaces principales
+
+# Exclut la documentation volumineuse
 examples/
 APP_CONTEXT.md
 CONFIGURATION.md
+BUSINESS_SCOPE.md
+CLEAN_ARCHITECTURE_REPORT.md
+FINAL_STATUS_REPORT.md
+HARMONISATION_HASHEDPASSWORD_REPORT.md
+IMPROVEMENT_ROADMAP.md
+PASSPORT_INTEGRATION.md
 
-# Exclut les mocks (patterns répétitifs)
+# Exclut les mocks répétitifs (impact mémoire)
 tests/unit/mocks/
 tests/fixtures/
+**/typed-mocks.ts
+**/mock-*.service.ts
 
-# ===== OPTIMISATION COPILOT =====
-# Focus sur les fichiers les plus importants :
-# - Entities (logique métier)
-# - Use Cases (patterns d'usage)
-# - Interfaces/Ports (contrats)
-# - Types principaux
+# Exclut les scripts utilitaires
+scripts/
+*.sh
+*.bat
+*.ps1
+
+# =====================================
+# 🚀 PERFORMANCE OPTIMIZATIONS COPILOT
+# =====================================
+
+# Focus sur les patterns architecturaux importants :
+# 🏛️ KEEP: Domain entities (business logic patterns)
+# 🏛️ KEEP: Use Cases (application patterns)  
+# 🏛️ KEEP: Ports/Interfaces (contract patterns)
+# 🏛️ KEEP: Main configuration files
+
+# EXCLUDE: Repetitive implementation details
+**/repositories/sql/*.repository.ts
+**/repositories/nosql/*.repository.ts
+
+# EXCLUDE: Generated/auto code  
+swagger.json
+swagger-stats.json
+openapi.json
+
+# EXCLUDE: Build configuration (not code patterns)
+docker-compose.yml
+docker-compose.*.yml
+Dockerfile.*
+Makefile
+*.config.js
+*.config.ts
+!tsconfig.json
+!jest.config.js
+!eslint.config.mjs
+
+# =====================================
+# 🎨 FRONTEND BUILD ARTIFACTS
+# =====================================
+storybook-static/
+vite.config.*.timestamp-*
+*.chunk.js
+*.bundle.js
+*.js.map
+*.css.map
+
+# =====================================
+# 🔒 SECURITY & SENSITIVE FILES
+# =====================================
+*.pem
+*.crt
+*.key
+*.p12
+*.pfx
+secrets.json
+credentials.json
+*.keystore
+
+# =====================================
+# 📊 ANALYTICS & MONITORING
+# =====================================
+newrelic_agent.log
+*.trace
+sonar-report.json
+codeclimate.json
+eslint-report.json
+security-scan.json
+audit-report.json
+benchmark-results.json
+lighthouse-report.json
+
+# =====================================
+# 🎪 DEMO & EXAMPLES (Memory Heavy)
+# =====================================
+demo/
+examples/
+sample/
+playground/
+sandbox/
+
+# =====================================
+# 💡 COPILOT FOCUS STRATEGY
+# =====================================
+
+# Garde seulement les fichiers avec des patterns réutilisables :
+# ✅ Core business entities
+# ✅ Application use cases  
+# ✅ Interface definitions
+# ✅ Type definitions
+# ✅ Main module configurations
+
+# Exclut tout ce qui est :
+# ❌ Répétitif (mocks, fixtures)
+# ❌ Généré automatiquement
+# ❌ Configuration d'infrastructure
+# ❌ Documentation extensive
+# ❌ Assets binaires
