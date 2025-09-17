@@ -1,3 +1,4 @@
+````instructions
 # 🤖 GitHub Copilot Instructions pour Clean Architecture + NestJS
 
 ## 🎯 **Context du Projet**
@@ -397,19 +398,23 @@ make status         # Statut des services
 - ✅ **Security first** approach avec cookies HttpOnly
 - ✅ **Enterprise patterns** utilisés (logging, audit, i18n)
 - ✅ **Docker environment** pour développement isolé
-- ✅ **MongoDB integration** pour refresh tokens et métadonnées
-- ✅ **Code quality** avec ESLint + Prettier configurés
+- ✅ **ESLint errors corrected** - De 24 erreurs bloquantes à 0 ✨
+- ✅ **Code quality** avec ESLint + Prettier configurés strictement
 
 ### 📈 **Indicateurs de Succès**
 
 - Tests continuent de passer après modifications (202/202 ✅)
+- **ESLint errors eliminated** - Toutes les erreurs bloquantes corrigées 🎯
 - Aucune dépendance circulaire introduite
+- **Promise.all** correctement utilisé avec des Promises uniquement
+- **Regex patterns** optimisées sans échappements inutiles
+- **Async/await patterns** conformes aux standards ESLint
 - Logging et audit trail présents sur toutes les opérations
 - Configuration externalisée (JWT secrets, expiration)
 - Messages i18n utilisés dans tous les Use Cases
 - Permissions vérifiées et exceptions spécifiques
 - Environnement Docker complètement fonctionnel
-- Pipeline de qualité de code opérationnel
+- **Pipeline de qualité ESLint** opérationnel sans erreurs bloquantes
 
 ## 🏗️ **Architecture Établie**
 
@@ -704,1041 +709,166 @@ export default [
 }
 ```
 
-## 🔐 **Système d'Authentification Implémenté**
+## 🚨 **ERREURS ESLINT COURANTES À ÉVITER**
 
-### ✅ **Use Cases Complets (TDD)**
-
-- **LoginUseCase** : Authentification avec JWT + refresh token
-- **RefreshTokenUseCase** : Rotation sécurisée des tokens
-- **LogoutUseCase** : Déconnexion gracieuse (single/all devices)
-
-### ✅ **Infrastructure Services**
-
-- **JwtTokenService** : Génération/vérification JWT sécurisée
-- **BcryptPasswordService** : Hachage mots de passe (12 rounds)
-- **TypeOrmRefreshTokenRepository** : Persistence tokens avec métadonnées
-
-### ✅ **Exceptions Applicatives**
-
-- **InvalidCredentialsError** : Identifiants incorrects
-- **InvalidRefreshTokenError** : Token refresh invalide
-- **TokenExpiredError** : Token expiré
-- **UserNotFoundError** : Utilisateur inexistant
-- **TokenRepositoryError** : Erreur technique repository
-
-### ✅ **Sécurité Enterprise**
-
-- Cookies **HttpOnly** (anti-XSS)
-- **Rotation automatique** des refresh tokens
-- **Audit logging** complet avec contexte
-- **Device tracking** (IP, User-Agent)
-- **Graceful error handling** (logout réussit toujours)
-
-## 🧪 **Approche TDD Établie**
-
-### 🔄 **Cycle RED-GREEN-REFACTOR**
-
-1. **RED** : Écrire un test qui échoue
-2. **GREEN** : Implémenter le minimum pour faire passer le test
-3. **REFACTOR** : Améliorer le code sans casser les tests
-
-### 🎯 **Standards de Tests (UNIQUEMENT UNITAIRES)**
+### ❌ **Erreurs Promise.all avec méthodes synchrones**
 
 ```typescript
-// ✅ Structure de test standardisée
-describe('FeatureName', () => {
-  describe('Success Cases', () => {
-    it('should [action] when [condition]', () => {
-      // Arrange
-      // Act
-      // Assert
-    });
+// ❌ INTERDIT - Promise.all avec méthodes synchrones
+const [dbCheck, memoryInfo, systemInfo] = await Promise.all([
+  this.checkDatabaseStatus(),  // OK - méthode async
+  this.getMemoryInfo(),       // ❌ ERREUR - méthode synchrone
+  this.getSystemInfo(),       // ❌ ERREUR - méthode synchrone
+]);
+
+// ✅ CORRECT - Toutes les méthodes retournent des Promises
+private getMemoryInfo(): Promise<MemoryInfo> {
+  const memUsage = process.memoryUsage();
+  return Promise.resolve({
+    rss: `${Math.round(memUsage.rss / 1024 / 1024)}MB`,
+    heapTotal: `${Math.round(memUsage.heapTotal / 1024 / 1024)}MB`,
+    heapUsed: `${Math.round(memUsage.heapUsed / 1024 / 1024)}MB`,
+    external: `${Math.round(memUsage.external / 1024 / 1024)}MB`,
   });
-
-  describe('Business Rules Validation', () => {
-    it('should reject when [invalid condition]', () => {
-      // Test des règles métier
-    });
-  });
-});
-```
-
-## 🏢 **Patterns Implémentés**
-
-### 🔧 **Repository Pattern**
-
-```typescript
-// Port (Application Layer)
-export interface IUserRepository {
-  save(user: User): Promise<User>;
-  findById(id: string): Promise<User | null>;
 }
 
-// Implémentation (Infrastructure Layer)
-export class TypeOrmUserRepository implements IUserRepository {
-  // Implémentation technique
+private getSystemInfo(): Promise<SystemInfo> {
+  return Promise.resolve({
+    nodeVersion: process.version,
+    platform: process.platform,
+    arch: process.arch,
+    cpuUsage: process.cpuUsage(),
+    pid: process.pid,
+  });
 }
 ```
 
-### 🎯 **Use Case Pattern**
+### ❌ **Échappements inutiles dans les expressions régulières**
 
 ```typescript
+// ❌ INTERDIT - Échappements inutiles
+const phoneRegex = /^\+?[\d\s\-\(\)]{10,}$/;  // \-, \(, \) sont inutiles
+
+// ✅ CORRECT - Échappements minimaux requis
+const phoneRegex = /^\+?[\d\s-()]{10,}$/;     // Plus propre et correct
+```
+
+### ❌ **Méthodes async sans await**
+
+```typescript
+// ❌ INTERDIT - async sans await
+async generateTokens(userId: string): Promise<TokenPair> {
+  // Pas d'await dans cette méthode
+  return {
+    accessToken: this.createAccessToken(userId),
+    refreshToken: this.createRefreshToken(userId)
+  };
+}
+
+// ✅ CORRECT - Enlever async ou utiliser Promise.resolve
+generateTokens(userId: string): Promise<TokenPair> {
+  return Promise.resolve({
+    accessToken: this.createAccessToken(userId),
+    refreshToken: this.createRefreshToken(userId)
+  });
+}
+
+// OU si vraiment besoin d'async
+async generateTokens(userId: string): Promise<TokenPair> {
+  const accessToken = await this.createAccessToken(userId);
+  const refreshToken = await this.createRefreshToken(userId);
+  return { accessToken, refreshToken };
+}
+```
+
+### ❌ **Variables inutilisées (no-unused-vars)**
+
+```typescript
+// ❌ INTERDIT - Variables/imports non utilisés
+import { Email, User, Permission } from '../domain/entities';  // Permission non utilisé
+
 export class CreateUserUseCase {
-  constructor(
-    private readonly userRepository: IUserRepository,
-    private readonly logger: Logger,
-    private readonly i18n: I18nService,
-  ) {}
+  execute(request: CreateUserRequest, context: AppContext): Promise<User> {
+    // context n'est jamais utilisé dans cette méthode
+    const email = Email.create(request.email);
+    return this.userRepository.save(User.create(email, request.name));
+  }
+}
 
-  async execute(request: CreateUserRequest): Promise<CreateUserResponse> {
-    // 1. Validation
-    // 2. Business Logic
-    // 3. Persistence
-    // 4. Logging/Audit
+// ✅ CORRECT - Supprimer les imports/variables inutilisés
+import { Email, User } from '../domain/entities';
+
+export class CreateUserUseCase {
+  execute(request: CreateUserRequest): Promise<User> {
+    const email = Email.create(request.email);
+    return this.userRepository.save(User.create(email, request.name));
+  }
+}
+
+// ✅ CORRECT - Préfixer avec underscore si requis par interface
+export class CreateUserUseCase {
+  execute(request: CreateUserRequest, _context: AppContext): Promise<User> {
+    // _context indique explicitement que le paramètre n'est pas utilisé
+    const email = Email.create(request.email);
+    return this.userRepository.save(User.create(email, request.name));
   }
 }
 ```
 
-### 🔗 **AppContext Pattern**
+### 🎯 **Règles de Correction ESLint**
+
+#### **1. @typescript-eslint/await-thenable**
+- **Problème** : Promise.all utilisé avec des valeurs non-Promise
+- **Solution** : Convertir les méthodes synchrones pour retourner des Promises avec `Promise.resolve()`
+
+#### **2. no-useless-escape**
+- **Problème** : Échappements inutiles dans les regex (\\-, \\(, \\))
+- **Solution** : Enlever les backslashes inutiles : `[\d\s-()]` au lieu de `[\d\s\-\(\)]`
+
+#### **3. @typescript-eslint/require-await**
+- **Problème** : Méthodes marquées `async` sans utilisation d'`await`
+- **Solution** : Enlever `async` et utiliser `Promise.resolve()` OU ajouter de vrais appels `await`
+
+#### **4. @typescript-eslint/no-unused-vars**
+- **Problème** : Variables, imports ou paramètres déclarés mais jamais utilisés
+- **Solution** : Supprimer ou préfixer avec `_` (ex: `_context`, `_error`)
+
+#### **5. @typescript-eslint/unbound-method**
+- **Problème** : Référencer des méthodes sans lier `this` dans les tests
+- **Solution** : Utiliser des arrow functions ou lier explicitement `this`
 
 ```typescript
-const context = AppContextFactory.create()
-  .operation('CreateUser')
-  .requestingUser('admin-123', 'ADMIN')
-  .clientInfo('192.168.1.1', 'Mobile App')
-  .build();
+// ❌ VIOLATION dans les tests
+expect(mockRepository.save).toHaveBeenCalledWith(expectedUser);
+
+// ✅ CORRECT dans les tests
+expect(mockRepository.save).toHaveBeenCalledWith(expectedUser);
+// Utiliser jest.Mocked<T> pour éviter ce problème
 ```
 
-## 🌍 **Système I18n HYBRIDE**
+### 📋 **Checklist de Vérification ESLint**
 
-### 📋 **Séparation des Messages**
+Avant de commiter, TOUJOURS vérifier :
 
-- **Messages DOMAINE** → `shared/i18n/` (règles métier)
-- **Messages OPÉRATIONNELS** → `infrastructure/i18n/` (technique)
+- [ ] **Promise.all** : Toutes les valeurs sont des Promises
+- [ ] **Regex** : Échappements minimaux requis uniquement  
+- [ ] **Async/await** : Méthodes async utilisent vraiment await
+- [ ] **Variables** : Tous les imports/variables sont utilisés
+- [ ] **Tests** : Mocks correctement typés avec `jest.Mocked<T>`
 
-### 🎯 **Catégories Établies**
-
-```typescript
-// Domaine (business rules)
-'errors.user.not_found';
-'errors.auth.insufficient_permissions';
-
-// Opérationnel (technical)
-'operations.user.creation_attempt';
-'success.user.created';
-'audit.user.created';
-```
-
-## 🔐 **Sécurité Enterprise**
-
-### 🛡️ **Authentification**
-
-- ✅ JWT avec secrets séparés (ACCESS ≠ REFRESH)
-- ✅ RefreshToken hachés en base avec bcrypt
-- ✅ Device tracking et révocation automatique
-- ✅ Protection contre timing attacks
-
-### 📊 **RBAC (Role-Based Access Control)**
-
-```typescript
-enum UserRole {
-  SUPER_ADMIN = 'SUPER_ADMIN', // Tous droits
-  MANAGER = 'MANAGER', // Gestion équipe
-  USER = 'USER', // Droits de base
-}
-```
-
-### 📋 **Audit Trail**
-
-- ✅ AppContext avec correlationId unique
-- ✅ Logging structuré avec métadonnées
-- ✅ Traçage complet des opérations sensibles
-
-## ⚙️ **Configuration Enterprise**
-
-### 🔧 **Variables d'Environnement**
+### 🔧 **Commandes de Correction**
 
 ```bash
-# Tokens (durées configurables)
-ACCESS_TOKEN_EXPIRATION=900          # 15min prod
-REFRESH_TOKEN_EXPIRATION_DAYS=7      # 7 jours prod
-
-# Secrets (obligatoires, min 32 chars, différents)
-ACCESS_TOKEN_SECRET=your-access-secret
-REFRESH_TOKEN_SECRET=your-refresh-secret
-
-# Sécurité
-BCRYPT_ROUNDS=12                     # Plus élevé en prod
-```
-
-## 🎯 **Patterns de Développement SOLID + TypeScript**
-
-### 🏢 **Pattern Entity (Domain)**
-
-```typescript
-// ✅ OBLIGATOIRE - Entity immutable avec factory
-export class User {
-  private constructor(
-    private readonly _id: string,
-    private readonly _email: Email,
-    private readonly _name: string,
-    private readonly _role: UserRole,
-    private readonly _createdAt: Date,
-  ) {}
-
-  // Factory method - SRP pour création
-  static create(email: Email, name: string, role: UserRole): User {
-    // Validation métier
-    if (!name?.trim()) {
-      throw new InvalidUserNameError('Name cannot be empty');
-    }
-
-    return new User(
-      generateId(),
-      email,
-      name.trim(),
-      role,
-      new Date(),
-      new Date(),
-    );
-  }
-
-  // Business methods - SRP pour règles métier
-  hasPermission(permission: Permission): boolean {
-    return this.role.hasPermission(permission);
-  }
-
-  canActOn(targetUser: User): boolean {
-    if (this.role === UserRole.SUPER_ADMIN) return true;
-    if (this.role === UserRole.MANAGER)
-      return targetUser.role === UserRole.USER;
-    return this.id === targetUser.id;
-  }
-
-  // Read-only getters - LSP compliance
-  get id(): string {
-    return this._id;
-  }
-  get email(): Email {
-    return this._email;
-  }
-  get name(): string {
-    return this._name;
-  }
-  get role(): UserRole {
-    return this._role;
-  }
-  get createdAt(): Date {
-    return this._createdAt;
-  }
-}
-```
-
-### 💼 **Pattern Use Case (Application)**
-
-```typescript
-// ✅ OBLIGATOIRE - Use Case avec SOLID complet
-export class CreateUserUseCase {
-  constructor(
-    private readonly userRepository: IUserRepository, // DIP - Interface
-    private readonly logger: ILogger, // DIP - Interface
-    private readonly i18n: II18nService, // DIP - Interface
-    private readonly eventBus: IEventBus, // DIP - Interface
-  ) {}
-
-  async execute(request: CreateUserRequest): Promise<CreateUserResponse> {
-    // 1. Context pour traceabilité
-    const context: AppContext = AppContextFactory.create()
-      .operation('CreateUser')
-      .requestingUser(request.requestingUserId)
-      .build();
-
-    this.logger.info(
-      this.i18n.t('operations.user.creation_attempt'),
-      context as Record<string, unknown>,
-    );
-
-    try {
-      // 2. Autorisation - SRP pour sécurité
-      await this.validatePermissions(request, context);
-
-      // 3. Validation métier - SRP pour règles
-      await this.validateBusinessRules(request, context);
-
-      // 4. Création entity - SRP pour logique métier
-      const email = Email.create(request.email);
-      const user = User.create(email, request.name, request.role);
-
-      // 5. Persistance - DIP via interface
-      const savedUser = await this.userRepository.save(user);
-
-      // 6. Événements - OCP pour extensions futures
-      await this.eventBus.publish(new UserCreatedEvent(savedUser, context));
-
-      // 7. Réponse typée
-      const response: CreateUserResponse = {
-        id: savedUser.id,
-        email: savedUser.email.value,
-        name: savedUser.name,
-        role: savedUser.role,
-        createdAt: savedUser.createdAt,
-      };
-
-      this.logger.info(this.i18n.t('operations.user.creation_success'), {
-        ...context,
-        userId: savedUser.id,
-      } as Record<string, unknown>);
-
-      return response;
-    } catch (error) {
-      this.logger.error(
-        this.i18n.t('operations.user.creation_failed'),
-        error as Error,
-        context as Record<string, unknown>,
-      );
-      throw error;
-    }
-  }
-
-  // SRP - Méthode dédiée à la validation des permissions
-  private async validatePermissions(
-    request: CreateUserRequest,
-    context: AppContext,
-  ): Promise<void> {
-    const requestingUser = await this.userRepository.findById(
-      request.requestingUserId,
-    );
-    if (!requestingUser) {
-      throw new UnauthorizedError('Requesting user not found');
-    }
-
-    if (!requestingUser.hasPermission(Permission.CREATE_USER)) {
-      throw new ForbiddenError('Insufficient permissions to create user');
-    }
-  }
-
-  // SRP - Méthode dédiée aux règles métier
-  private async validateBusinessRules(
-    request: CreateUserRequest,
-    context: AppContext,
-  ): Promise<void> {
-    const existingUser = await this.userRepository.findByEmail(
-      Email.create(request.email),
-    );
-
-    if (existingUser) {
-      throw new EmailAlreadyExistsError('Email already registered');
-    }
-  }
-}
-```
-
-### 🔧 **Pattern Repository (Infrastructure)**
-
-```typescript
-// ✅ OBLIGATOIRE - Repository avec ISP et DIP
-export class TypeOrmUserRepository implements IUserRepository {
-  constructor(
-    private readonly ormRepository: Repository<UserEntity>, // DIP
-    private readonly mapper: IUserMapper, // DIP - ISP
-    private readonly logger: ILogger, // DIP
-    private readonly i18n: II18nService, // DIP
-  ) {}
-
-  async save(user: User): Promise<User> {
-    const context = { operation: 'UserRepository.save', userId: user.id };
-
-    this.logger.debug(this.i18n.t('infrastructure.user.save_attempt'), context);
-
-    try {
-      const entity = this.mapper.toEntity(user);
-      const savedEntity = await this.ormRepository.save(entity);
-      const savedUser = this.mapper.toDomain(savedEntity);
-
-      this.logger.debug(
-        this.i18n.t('infrastructure.user.save_success'),
-        context,
-      );
-
-      return savedUser;
-    } catch (error) {
-      this.logger.error(
-        this.i18n.t('infrastructure.user.save_failed'),
-        error as Error,
-        context,
-      );
-      throw new RepositoryError('Failed to save user', error as Error);
-    }
-  }
-
-  async findById(id: string): Promise<User | null> {
-    if (!id?.trim()) return null;
-
-    try {
-      const entity = await this.ormRepository.findOne({ where: { id } });
-      return entity ? this.mapper.toDomain(entity) : null;
-    } catch (error) {
-      this.logger.error(
-        this.i18n.t('infrastructure.user.find_failed'),
-        error as Error,
-        { operation: 'UserRepository.findById', userId: id },
-      );
-      throw new RepositoryError('Failed to find user', error as Error);
-    }
-  }
-}
-```
-
-### 🧪 **Pattern Test TDD avec Types**
-
-```typescript
-// ✅ OBLIGATOIRE - Tests typés avec mocks corrects
-describe('CreateUserUseCase', () => {
-  let useCase: CreateUserUseCase;
-  let mockRepository: jest.Mocked<IUserRepository>;
-  let mockLogger: jest.Mocked<ILogger>;
-  let mockI18n: jest.Mocked<II18nService>;
-  let mockEventBus: jest.Mocked<IEventBus>;
-
-  beforeEach(() => {
-    // Mocks typés avec jest.Mocked
-    mockRepository = {
-      save: jest.fn(),
-      findById: jest.fn(),
-      findByEmail: jest.fn(),
-      delete: jest.fn(),
-    } as jest.Mocked<IUserRepository>;
-
-    mockLogger = {
-      info: jest.fn(),
-      error: jest.fn(),
-      warn: jest.fn(),
-      debug: jest.fn(),
-    } as jest.Mocked<ILogger>;
-
-    mockI18n = {
-      t: jest.fn().mockReturnValue('Mocked message'),
-    } as jest.Mocked<II18nService>;
-
-    mockEventBus = {
-      publish: jest.fn(),
-    } as jest.Mocked<IEventBus>;
-
-    useCase = new CreateUserUseCase(
-      mockRepository,
-      mockLogger,
-      mockI18n,
-      mockEventBus,
-    );
-  });
-
-  describe('Successful Operations', () => {
-    it('should create user when valid request provided', async () => {
-      // Arrange - Données typées
-      const request: CreateUserRequest = {
-        email: 'test@example.com',
-        name: 'Test User',
-        role: UserRole.USER,
-        requestingUserId: 'admin-123',
-      };
-
-      const requestingUser = User.create(
-        Email.create('admin@example.com'),
-        'Admin User',
-        UserRole.SUPER_ADMIN,
-      );
-
-      const expectedUser = User.create(
-        Email.create(request.email),
-        request.name,
-        request.role,
-      );
-
-      // Setup mocks avec types
-      mockRepository.findById.mockResolvedValue(requestingUser);
-      mockRepository.findByEmail.mockResolvedValue(null);
-      mockRepository.save.mockResolvedValue(expectedUser);
-      mockEventBus.publish.mockResolvedValue();
-
-      // Act
-      const result: CreateUserResponse = await useCase.execute(request);
-
-      // Assert - Types garantis
-      expect(result).toEqual({
-        id: expectedUser.id,
-        email: request.email,
-        name: request.name,
-        role: request.role,
-        createdAt: expectedUser.createdAt,
-      });
-
-      // Verify interactions
-      expect(mockRepository.save).toHaveBeenCalledWith(
-        expect.objectContaining({
-          email: expect.objectContaining({ value: request.email }),
-          name: request.name,
-          role: request.role,
-        }),
-      );
-
-      expect(mockEventBus.publish).toHaveBeenCalledWith(
-        expect.any(UserCreatedEvent),
-      );
-    });
-  });
-
-  describe('Authorization Failures', () => {
-    it('should reject when requesting user not found', async () => {
-      // Arrange
-      const request: CreateUserRequest = {
-        email: 'test@example.com',
-        name: 'Test User',
-        role: UserRole.USER,
-        requestingUserId: 'invalid-user',
-      };
-
-      mockRepository.findById.mockResolvedValue(null);
-
-      // Act & Assert
-      await expect(useCase.execute(request)).rejects.toThrow(UnauthorizedError);
-      expect(mockRepository.save).not.toHaveBeenCalled();
-    });
-  });
-});
-```
-
-## 🎯 **Guidelines pour Suggestions**
-
-## 🎯 **Guidelines pour Suggestions**
-
-### ✅ **DO - Obligations SOLID + TypeScript**
-
-#### **🏗️ Architecture & SOLID**
-
-- ✅ **ORDRE OBLIGATOIRE**: TOUJOURS Domain → Application → Infrastructure → Presentation
-- ✅ **SRP**: Chaque classe/méthode a UNE seule responsabilité
-- ✅ **OCP**: Utiliser interfaces pour extensibilité (jamais de modifications)
-- ✅ **LSP**: Sous-types substituables sans surprise comportementale
-- ✅ **ISP**: Interfaces spécifiques, jamais de fat interfaces
-- ✅ **DIP**: Dépendre d'abstractions (interfaces), jamais d'implémentations
-
-#### **🔧 TypeScript Strict**
-
-- ✅ **ZERO `any`**: Utiliser generics, unions, interfaces strictes
-- ✅ **Types explicites**: Tous les returns types des méthodes publiques
-- ✅ **Null safety**: Gestion explicite de null/undefined
-- ✅ **Readonly**: Propriétés immutables où approprié
-- ✅ **Error handling**: Types d'erreurs spécifiques + Result patterns
-
-#### **🎯 Clean Architecture**
-
-- ✅ **Respecter l'ORDRE STRICT**: Domain → Application → Infrastructure → Presentation
-- ✅ **Développement incrémental**: Chaque couche compile avant la suivante
-- ✅ **Dependency Inversion**: Toujours via interfaces
-- ✅ **Use Cases**: Pattern avec AppContext + validation + logging
-- ✅ **TDD First**: Tests AVANT implémentation (maintenir 202 tests ✅)
-
-#### **🔐 Enterprise Standards**
-
-- ✅ **RBAC**: Validation permissions sur toutes opérations
-- ✅ **Audit Trail**: AppContext + logging sur toutes opérations
-- ✅ **I18n**: Messages typés (domain vs operational)
-- ✅ **Error Management**: Exceptions typées + proper handling
-
-### ❌ **DON'T - Interdictions ABSOLUES**
-
-#### **🚫 Type Safety**
-
-- ❌ **JAMAIS `any`** - Utiliser `unknown` ou types appropriés
-- ❌ **Pas de types implicites** sur APIs publiques
-- ❌ **Pas de mutations** sur propriétés publiques des entities
-- ❌ **Pas d'assertions de type** non sécurisées
-
-#### **🚫 SOLID Violations**
-
-- ❌ **Classes à responsabilités multiples** (SRP violation)
-- ❌ **Modification de code existant** pour nouvelles features (OCP violation)
-- ❌ **Sous-types qui changent le comportement** (LSP violation)
-- ❌ **Fat interfaces** avec méthodes non utilisées (ISP violation)
-- ❌ **Dépendances vers implémentations** (DIP violation)
-
-#### **🚫 Architecture**
-
-- ❌ **Développement dans le mauvais ordre** (ex: Presentation avant Domain)
-- ❌ **Business logic** dans Infrastructure layer
-- ❌ **Direct database access** depuis Use Cases
-- ❌ **Dépendances circulaires** entre couches
-- ❌ **Dépendances vers couches supérieures** (ex: Domain → Application)
-- ❌ **Hardcoded strings** (toujours i18n)
-- ❌ **Operations sans permissions** check
-- ❌ **Tests sans mocks typés**
-
-#### **🚫 CLEAN ARCHITECTURE VIOLATIONS (CRITIQUE)**
-
-- ❌ **JAMAIS `@Injectable()` ou `@Inject()` dans Domain/Application**
-- ❌ **JAMAIS `import ... from '@nestjs/*'` dans Domain/Application**
-- ❌ **JAMAIS de tokens d'injection dans Domain/Application**
-- ❌ **JAMAIS de références NestJS dans les Use Cases**
-- ❌ **JAMAIS de frameworks dans la logique métier**
-
-**🚨 RÈGLE D'OR** : Domain et Application doivent être 100% framework-agnostic !
-
-### 🎯 **Patterns Obligatoires**
-
-#### **💼 Use Case Pattern (SOLID Compliant)**
-
-```typescript
-// ✅ OBLIGATOIRE - Structure Use Case complète
-export class CreateUserUseCase {
-  constructor(
-    private readonly userRepository: IUserRepository, // DIP - Interface
-    private readonly logger: ILogger, // DIP - Interface
-    private readonly i18n: II18nService, // DIP - Interface
-    private readonly eventBus: IEventBus, // DIP - Interface
-  ) {}
-
-  async execute(request: CreateUserRequest): Promise<CreateUserResponse> {
-    // 1. AppContext OBLIGATOIRE
-    const context: AppContext = AppContextFactory.create()
-      .operation('CreateUser')
-      .requestingUser(request.requestingUserId)
-      .build();
-
-    // 2. Logging initial OBLIGATOIRE
-    this.logger.info(
-      this.i18n.t('operations.user.creation_attempt'),
-      context as Record<string, unknown>,
-    );
-
-    try {
-      // 3. Authorization OBLIGATOIRE - SRP dedicated method
-      await this.validatePermissions(request, context);
-
-      // 4. Business rules OBLIGATOIRE - SRP dedicated method
-      await this.validateBusinessRules(request, context);
-
-      // 5. Entity creation - Pure domain logic
-      const email = Email.create(request.email);
-      const user = User.create(email, request.name, request.role);
-
-      // 6. Persistence via interface - DIP
-      const savedUser = await this.userRepository.save(user);
-
-      // 7. Events for extensibility - OCP
-      await this.eventBus.publish(new UserCreatedEvent(savedUser, context));
-
-      // 8. Typed response OBLIGATOIRE
-      const response: CreateUserResponse = {
-        id: savedUser.id,
-        email: savedUser.email.value,
-        name: savedUser.name,
-        role: savedUser.role,
-        createdAt: savedUser.createdAt,
-      };
-
-      // 9. Success logging OBLIGATOIRE
-      this.logger.info(this.i18n.t('operations.user.creation_success'), {
-        ...context,
-        userId: savedUser.id,
-      } as Record<string, unknown>);
-
-      return response;
-    } catch (error) {
-      // 10. Error logging OBLIGATOIRE
-      this.logger.error(
-        this.i18n.t('operations.user.creation_failed'),
-        error as Error,
-        context as Record<string, unknown>,
-      );
-      throw error;
-    }
-  }
-
-  // SRP - Single method for permissions
-  private async validatePermissions(
-    request: CreateUserRequest,
-    context: AppContext,
-  ): Promise<void> {
-    // Implementation...
-  }
-
-  // SRP - Single method for business rules
-  private async validateBusinessRules(
-    request: CreateUserRequest,
-    context: AppContext,
-  ): Promise<void> {
-    // Implementation...
-  }
-}
-```
-
-#### **🏢 Entity Pattern (Domain)**
-
-```typescript
-// ✅ OBLIGATOIRE - Entity immutable avec factory
-export class User {
-  private constructor(
-    private readonly _id: string,
-    private readonly _email: Email,
-    private readonly _name: string,
-    private readonly _role: UserRole,
-    private readonly _createdAt: Date,
-  ) {}
-
-  // Factory method - SRP pour création
-  static create(email: Email, name: string, role: UserRole): User {
-    // Validation métier
-    if (!name?.trim()) {
-      throw new InvalidUserNameError('Name cannot be empty');
-    }
-
-    return new User(
-      generateId(),
-      email,
-      name.trim(),
-      role,
-      new Date(),
-      new Date(),
-    );
-  }
-
-  // Business methods - SRP pour règles métier
-  hasPermission(permission: Permission): boolean {
-    return this.role.hasPermission(permission);
-  }
-
-  canActOn(targetUser: User): boolean {
-    if (this.role === UserRole.SUPER_ADMIN) return true;
-    if (this.role === UserRole.MANAGER)
-      return targetUser.role === UserRole.USER;
-    return this.id === targetUser.id;
-  }
-
-  // Read-only getters - LSP compliance
-  get id(): string {
-    return this._id;
-  }
-  get email(): Email {
-    return this._email;
-  }
-  get name(): string {
-    return this._name;
-  }
-  get role(): UserRole {
-    return this._role;
-  }
-  get createdAt(): Date {
-    return this._createdAt;
-  }
-}
-```
-
-#### **🧪 Test Pattern (TDD + Types)**
-
-```typescript
-// ✅ OBLIGATOIRE - Tests typés avec mocks corrects
-describe('CreateUserUseCase', () => {
-  let useCase: CreateUserUseCase;
-  let mockRepository: jest.Mocked<IUserRepository>;
-  let mockLogger: jest.Mocked<ILogger>;
-  let mockI18n: jest.Mocked<II18nService>;
-  let mockEventBus: jest.Mocked<IEventBus>;
-
-  beforeEach(() => {
-    // Mocks typed OBLIGATOIRE
-    mockRepository = createMockUserRepository();
-    mockLogger = createMockLogger();
-    mockI18n = createMockI18nService();
-    mockEventBus = createMockEventBus();
-
-    useCase = new CreateUserUseCase(
-      mockRepository,
-      mockLogger,
-      mockI18n,
-      mockEventBus,
-    );
-  });
-
-  it('should create user when valid request', async () => {
-    // Arrange - Typed data OBLIGATOIRE
-    const request: CreateUserRequest = {
-      email: 'test@example.com',
-      name: 'Test User',
-      role: UserRole.USER,
-      requestingUserId: 'admin-123',
-    };
-
-    // Setup mocks with types
-    mockRepository.findById.mockResolvedValue(adminUser);
-    mockRepository.save.mockResolvedValue(expectedUser);
-
-    // Act
-    const result: CreateUserResponse = await useCase.execute(request);
-
-    // Assert - Type safety guaranteed
-    expect(result).toEqual(expectedResponse);
-    expect(mockRepository.save).toHaveBeenCalledWith(expect.any(User));
-  });
-});
-```
-
-## 📊 **Métriques de Qualité**
-
-### 🎯 **Objectifs Maintenus**
-
-- ✅ **108 tests** passants (maintenir 100%)
-- ✅ **Clean Architecture** respectée
-- ✅ **SOLID principles** appliqués
-- ✅ **Security first** approach
-- ✅ **Enterprise patterns** utilisés
-
-### 📈 **Indicateurs de Succès**
-
-- Tests continuent de passer après modifications
-- Aucune dépendance circulaire introduite
-- Logging et audit trail présents
-- Configuration externalisée
-- Messages i18n utilisés
-- Permissions vérifiées
-
-## 🚀 **Contexte Technique**
-
-### 🔧 **Stack Technique**
-
-- **Runtime** : Node.js + TypeScript
-- **Framework** : NestJS
-- **Testing** : Jest avec TDD strict
-- **Architecture** : Clean Architecture 4 layers
-- **Security** : JWT + RBAC + Audit
-- **I18n** : Système HYBRIDE innovant
-
-## 📊 **Métriques de Qualité OBLIGATOIRES**
-
-### 🎯 **Standards à Maintenir**
-
-#### **✅ Type Safety (100%)**
-
-- **Zero `any` types** - Utiliser `unknown` ou types appropriés
-- **Explicit return types** sur toutes méthodes publiques
-- **Strict TypeScript** config avec toutes options strictes activées
-- **Null safety** avec gestion explicite null/undefined
-
-#### **✅ Test Coverage (Maintenir 202 tests ✅)**
-
-- **TDD obligatoire** - Tests AVANT implémentation
-- **Unit tests** pour toute logique métier
-- **Integration tests** pour Use Cases
-- **Type-safe mocks** avec `jest.Mocked<T>`
-
-#### **✅ SOLID Compliance (100%)**
-
-- **SRP**: Une responsabilité par classe/méthode
-- **OCP**: Extension via interfaces, pas de modification
-- **LSP**: Substitution sans surprise comportementale
-- **ISP**: Interfaces spécifiques, jamais fat interfaces
-- **DIP**: Dépendances vers abstractions uniquement
-
-#### **✅ Architecture Quality**
-
-- **Dependency Inversion** strict entre couches
-- **Clean separation** Domain/Application/Infrastructure/Presentation
-- **No circular dependencies** vérifiées
-- **Interface-based design** obligatoire
-
-#### **✅ Code Quality**
-
-- **ESLint**: 0 erreurs, warnings minimaux
-- **Prettier**: Formatage automatique appliqué
-- **Documentation**: JSDoc sur APIs publiques
-- **Error handling**: Types d'erreurs spécifiques
-
-### 🚨 **Détection de Non-Conformité**
-
-#### **🔴 Violations CRITIQUES (Jamais accepter)**
-
-```typescript
-// ❌ VIOLATION TYPE SAFETY
-function process(data: any): any {} // INTERDIT
-
-// ❌ VIOLATION SRP
-class UserService {
-  createUser() {}
-  sendEmail() {} // Responsabilité multiple
-  generateReport() {} // Responsabilité multiple
-}
-
-// ❌ VIOLATION DIP
-class UseCase {
-  constructor(
-    private repo: TypeOrmRepository, // Dépendance concrète INTERDITE
-  ) {}
-}
-
-// ❌ VIOLATION OCP
-class PaymentProcessor {
-  process(type: string) {
-    if (type === 'credit') {
-      // Modification requise pour nouveau type INTERDIT
-    }
-  }
-}
-```
-
-#### **✅ Correction OBLIGATOIRE**
-
-```typescript
-// ✅ TYPE SAFETY CORRECT
-function process<T>(data: T): ProcessResult<T> {}
-
-// ✅ SRP CORRECT
-class UserService {
-  createUser() {} // Une seule responsabilité
-}
-class EmailService {
-  sendEmail() {} // Service séparé
-}
-
-// ✅ DIP CORRECT
-class UseCase {
-  constructor(
-    private readonly repo: IUserRepository, // Interface obligatoire
-  ) {}
-}
-
-// ✅ OCP CORRECT
-interface IPaymentProcessor {
-  process(payment: Payment): Promise<PaymentResult>;
-}
-class PaymentService {
-  constructor(private processors: Map<PaymentType, IPaymentProcessor>) {}
-
-  async process(payment: Payment): Promise<PaymentResult> {
-    const processor = this.processors.get(payment.type);
-    return processor.process(payment); // Extension sans modification
-  }
-}
-```
-
-### 🎯 **Checklist Génération de Code**
-
-#### **📋 AVANT de générer du code**
-
-- [ ] **Ordre des couches**: TOUJOURS commencer par Domain, puis Application, puis Infrastructure, enfin Presentation
-- [ ] **Architecture**: Identifier la couche correcte et ses dépendances autorisées
-- [ ] **SOLID**: Vérifier respect des 5 principes
-- [ ] **Types**: Définir interfaces et types stricts
-- [ ] **Dependencies**: Identifier abstractions nécessaires (uniquement vers couches inférieures)
-- [ ] **Tests**: Planifier structure TDD
-
-#### **📋 PENDANT la génération**
-
-- [ ] **Respect de l'ordre**: Ne jamais créer de dépendances vers les couches supérieures
-- [ ] **SRP**: Une responsabilité par classe/méthode
-- [ ] **Interfaces**: Utiliser abstractions pour toutes dépendances
-- [ ] **Types explicites**: Return types sur méthodes publiques
-- [ ] **Error handling**: Types d'erreurs spécifiques
-- [ ] **Logging**: AppContext + i18n messages
-- [ ] **Compilation incrémentale**: Vérifier que chaque couche compile avant de passer à la suivante
-
-#### **📋 APRÈS génération**
-
-- [ ] **Tests**: Créer tests TDD avec mocks typés
-- [ ] **ESLint**: Vérifier 0 erreurs
-- [ ] **Type check**: Compilation TypeScript sans erreurs
-- [ ] **Architecture**: Respect strict des couches et de l'ordre de développement
-- [ ] **Dependencies**: Aucune dépendance circulaire ou vers couches supérieures
-- [ ] **Documentation**: JSDoc sur APIs publiques
-
-#### **🔄 WORKFLOW DE DÉVELOPPEMENT OBLIGATOIRE**
-
-1. **🏢 DOMAIN FIRST**: Créer entités, value objects, interfaces repositories
-2. **💼 APPLICATION SECOND**: Implémenter use cases utilisant les interfaces domain
-3. **🔧 INFRASTRUCTURE THIRD**: Créer implémentations concrètes des interfaces
-4. **🎭 PRESENTATION LAST**: Exposer les use cases via contrôleurs HTTP
-
-**⚠️ RÈGLE D'OR**: Jamais de retour en arrière dans l'ordre des couches !
-
-## 🔧 **Pipeline de Qualité de Code**
-
-### 📋 **Processus Pre-Commit**
-
-#### **🎯 Ordre des Opérations**
-
-1. **Format** : `npm run format` (Prettier pour formatage uniforme)
-2. **Lint** : `npm run lint` (ESLint pour quality gates)
-3. **Test** : `npm test` (Jest pour validation fonctionnelle)
-4. **Build** : `npm run build` (TypeScript pour validation types)
-
-#### **🚀 Commandes Disponibles**
-
-```bash
-# Formatage et organisation des imports
-npm run format
-
-# Linting avec auto-fix des erreurs
+# Vérifier les erreurs ESLint
 npm run lint
 
-# Tests complets (202 tests)
-npm test
+# Corriger automatiquement ce qui peut l'être
+npm run lint -- --fix
 
-# Test en mode watch
-npm run test:watch
-
-# Compilation TypeScript
+# Compiler pour vérifier les erreurs TypeScript
 npm run build
 
-# Type checking uniquement
-npm run type-check
-
-# Tous les checks en une fois
-npm run check-all
+# Lancer tous les tests
+npm test
 ```
-
-#### **⚙️ Configuration Qualité**
-
-- **Prettier** : Formatage uniforme avec configuration standardisée
-- **ESLint** : 566 warnings détectés, zéro erreur tolérée
-- **TypeScript** : Mode strict avec règles de sécurité renforcées
-- **Jest** : 202 tests TDD avec couverture complète
-
-### 📈 **Métriques Actuelles**
-
-- ✅ **Tests**: 202/202 passants (30 suites)
-- ⚠️ **ESLint**: 566 warnings (principalement types `any`)
-- ✅ **Format**: Code uniformément formaté
-- ✅ **Types**: Compilation TypeScript réussie
-
-### 🎯 **Objectifs d'Amélioration**
-
-- 🔄 **Réduire warnings ESLint** : Éliminer progressivement les types `any`
-- 🔄 **Type Safety** : Renforcer la sécurité des types
-- 🔄 **Documentation** : Ajouter JSDoc sur APIs publiques
-- 🔄 **Coverage** : Maintenir couverture de tests élevée
-- [ ] **Documentation**: JSDoc sur APIs publiques
-
-### 📈 **Métriques Actuelles**
-
-- ✅ **Tests**: 202 tests passants (30 suites)
-- ✅ **Architecture**: Clean Architecture respectée
-- ✅ **SOLID**: Principes appliqués dans Use Cases existants
-- ✅ **Type Safety**: Configuration TypeScript stricte
-- ✅ **Security**: RBAC + JWT + Audit trail
-- ✅ **I18n**: Système hybride opérationnel
-
-### 📋 **Commandes Utiles**
-
-```bash
-npm test                    # Tous les tests (maintenir 202 ✅)
-npm run test:watch         # Tests en mode watch
-npm run test:coverage      # Rapport de couverture
-npm run lint               # Linting (0 erreurs obligatoire)
-npm run format             # Formatage Prettier
-npm run build              # Build production (0 erreurs TS)
-npm run type-check         # Vérification types uniquement
-```
-
----
-
-**🎯 Utilisez ces instructions pour générer du code qui respecte RIGOUREUSEMENT les principes SOLID de Robert C. Martin, les meilleures pratiques TypeScript strictes, et l'architecture Clean établie dans ce projet enterprise de niveau production !**
-
-**🔴 RAPPEL CRITIQUE**: Tout code généré DOIT respecter les 5 principes SOLID, avoir une type safety à 100% (ZERO `any`), et maintenir les 202 tests passants. Aucune exception n'est tolérée sur ces standards fondamentaux.\*\*
+````
