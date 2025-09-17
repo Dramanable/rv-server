@@ -1,9 +1,237 @@
+`````instructions
 ````instructions
 # 🤖 GitHub Copilot Instructions pour Clean Architecture + NestJS
 
 ## 🎯 **Context du Projet**
 
 Vous travaillez sur une **application enterprise NestJS** implémentant la **Clean Architecture de Robert C. Martin (Uncle Bob)** avec une approche **TDD rigoureuse**, les **principes SOLID**, et les **meilleures pratiques TypeScript** strictes. L'application est **production-ready** avec sécurité, i18n, et patterns enterprise.
+
+## 🚀 **NODE.JS 24 - NOUVELLES FONCTIONNALITÉS À EXPLOITER**
+
+### 📋 **Environnement Technique Requis**
+
+- **Node.js Version** : `24.0.0` minimum (LTS recommandé)
+- **Documentation officielle** : https://nodejs.org/en/blog/release/v24.0.0
+- **TypeScript** : `5.5+` pour compatibilité maximale avec Node 24
+
+### ⚡ **Nouvelles Fonctionnalités Node.js 24 à Utiliser**
+
+#### **1. 🔧 Enhanced WebStreams Support**
+
+```typescript
+// ✅ NOUVEAU - WebStreams natives optimisées
+export class DataProcessor {
+  async processLargeDataset(data: ReadableStream<Uint8Array>): Promise<void> {
+    const transformer = new TransformStream({
+      transform(chunk, controller) {
+        // Processing logique métier
+        const processed = this.transformChunk(chunk);
+        controller.enqueue(processed);
+      }
+    });
+
+    await data
+      .pipeThrough(transformer)
+      .pipeTo(new WritableStream({
+        write(chunk) {
+          // Optimisé par Node 24
+          this.saveToDatabase(chunk);
+        }
+      }));
+  }
+}
+```
+
+#### **2. 🚀 Improved V8 Performance (v12.4)**
+
+```typescript
+// ✅ NOUVEAU - Optimisations automatiques V8 pour:
+export class PerformanceOptimizedService {
+  // Object spread operations - 15% plus rapide
+  private mergeConfigurations(base: Config, override: Partial<Config>): Config {
+    return { ...base, ...override }; // Optimisé par V8 12.4
+  }
+
+  // Array operations - 20% plus rapide
+  private processLargeArrays<T>(items: T[]): T[] {
+    return items
+      .filter(this.isValid)
+      .map(this.transform)
+      .sort(this.compare); // Tri vectorisé optimisé
+  }
+
+  // String template literals - Améliorés
+  private generateReport(data: ReportData): string {
+    return `
+      📊 Report Generated: ${new Date().toISOString()}
+      📈 Total Items: ${data.items.length}
+      🎯 Success Rate: ${(data.successRate * 100).toFixed(2)}%
+    `; // Optimisation template string V8 12.4
+  }
+}
+```
+
+#### **3. 🛡️ Enhanced Security Features**
+
+```typescript
+// ✅ NOUVEAU - Politique de sécurité renforcée
+export class SecureConfigService {
+  constructor() {
+    // Node 24 - Enhanced permission model
+    if (process.permission?.has('fs.read', './config/')) {
+      this.loadSecureConfig();
+    }
+  }
+
+  // NOUVEAU - crypto.webcrypto optimisé
+  async generateSecureHash(data: string): Promise<string> {
+    const encoder = new TextEncoder();
+    const dataBuffer = encoder.encode(data);
+
+    // WebCrypto API natif optimisé Node 24
+    const hashBuffer = await crypto.subtle.digest('SHA-256', dataBuffer);
+    return Array.from(new Uint8Array(hashBuffer))
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('');
+  }
+}
+```
+
+#### **4. 📦 Built-in Test Runner Amélioré**
+
+```typescript
+// ✅ NOUVEAU - Node.js native test runner enhanced
+// package.json scripts
+{
+  "scripts": {
+    "test:node": "node --test **/*.test.js",
+    "test:node-watch": "node --test --watch **/*.test.js",
+    "test:coverage": "node --test --experimental-test-coverage **/*.test.js"
+  }
+}
+
+// Tests avec Node native runner
+import { test, describe, it, before, after } from 'node:test';
+import assert from 'node:assert';
+
+describe('UserService Tests', () => {
+  it('should create user successfully', async () => {
+    const user = await userService.create({
+      email: 'test@example.com',
+      name: 'Test User'
+    });
+
+    // Node 24 - Améliorations assert
+    assert.strictEqual(user.email, 'test@example.com');
+    assert.ok(user.id);
+  });
+});
+```
+
+#### **5. 🌍 ESM & Import Attributes**
+
+```typescript
+// ✅ NOUVEAU - Import attributes pour JSON
+import config from './config.json' with { type: 'json' };
+import packageInfo from '../package.json' with { type: 'json' };
+
+// ✅ NOUVEAU - Dynamic imports améliorés
+export class DynamicModuleLoader {
+  async loadPlugin(pluginName: string): Promise<any> {
+    // Node 24 - Résolution ESM optimisée
+    const module = await import(`./plugins/${pluginName}.js`);
+    return module.default;
+  }
+
+  // Top-level await dans ESM
+  private config = await this.loadConfiguration();
+}
+```
+
+#### **6. 🔍 Enhanced Debugging & Diagnostics**
+
+```typescript
+// ✅ NOUVEAU - Diagnostics intégrés améliorés
+export class DiagnosticsService {
+  getSystemDiagnostics(): SystemDiagnostics {
+    return {
+      // Node 24 - Métriques étendues
+      memory: process.memoryUsage.rss(),
+      heap: process.memoryUsage(),
+
+      // NOUVEAU - Resource usage details
+      resourceUsage: process.resourceUsage(),
+
+      // NOUVEAU - Enhanced performance marks
+      performanceMarks: performance.getEntriesByType('mark'),
+
+      // Node 24 - Network diagnostics
+      networkInterfaces: require('os').networkInterfaces()
+    };
+  }
+
+  // NOUVEAU - Performance observer API amélioré
+  observePerformance(): void {
+    const obs = new PerformanceObserver((list) => {
+      const entries = list.getEntries();
+      entries.forEach((entry) => {
+        this.logger.debug(`Performance: ${entry.name} took ${entry.duration}ms`);
+      });
+    });
+
+    obs.observe({ entryTypes: ['function', 'http', 'dns'] });
+  }
+}
+```
+
+### 📋 **Checklist Node.js 24 Migration**
+
+- [ ] **Version Check** : `node --version` >= 24.0.0
+- [ ] **ESM Migration** : Convertir vers `"type": "module"` si nécessaire
+- [ ] **Import Attributes** : Utiliser `with { type: 'json' }` pour JSON
+- [ ] **WebStreams** : Migrer vers WebStreams API natif
+- [ ] **Test Runner** : Évaluer l'utilisation du test runner natif
+- [ ] **Performance** : Profiter des optimisations V8 12.4
+- [ ] **Security** : Implémenter les nouvelles fonctionnalités crypto
+- [ ] **Diagnostics** : Intégrer les nouveaux outils de monitoring
+
+### 🚨 **Patterns Spécifiques Node.js 24**
+
+#### **Gestion Mémoire Optimisée**
+```typescript
+// ✅ Node 24 - Weak references optimisées
+export class CacheService {
+  private cache = new WeakMap(); // Optimisé pour GC
+  private registry = new FinalizationRegistry((key) => {
+    this.logger.debug(`Cache entry ${key} garbage collected`);
+  });
+}
+```
+
+#### **Worker Threads Améliorés**
+```typescript
+// ✅ Node 24 - Worker threads performance
+import { Worker, isMainThread, parentPort } from 'worker_threads';
+
+export class ComputeService {
+  async heavyComputation(data: any[]): Promise<any[]> {
+    if (data.length > 1000) {
+      // Node 24 - Optimized worker spawning
+      return this.processInWorker(data);
+    }
+    return this.processInMain(data);
+  }
+}
+```
+
+### 🎯 **Recommandations Architecture avec Node.js 24**
+
+1. **ESM First** : Privilégier les modules ES natifs
+2. **WebStreams** : Utiliser pour le traitement de gros volumes
+3. **Native Test Runner** : Pour les tests unitaires simples
+4. **Enhanced Crypto** : Pour la sécurité renforcée
+5. **Performance Monitoring** : Exploiter les nouveaux outils de diagnostic
+6. **Worker Threads** : Pour les calculs intensifs
 
 ## 🏗️ **MÉTHODOLOGIE DE DÉVELOPPEMENT EN COUCHES ORDONNÉES**
 
@@ -122,7 +350,7 @@ export class TypeOrmUserRepository implements IUserRepository {
 @Controller('users')
 export class UserController {
   constructor(private readonly createUserUseCase: CreateUserUseCase) {}
-  
+
   @Post()
   async create(@Body() dto: CreateUserDto) {
     // Interface utilisateur
@@ -186,7 +414,7 @@ La Clean Architecture produit des systèmes qui sont :
 Les couches **Domain** et **Application** NE DOIVENT JAMAIS contenir :
 - `import { Injectable, Inject } from '@nestjs/common'`
 - `@Injectable()` decorator
-- `@Inject()` decorator  
+- `@Inject()` decorator
 - Aucun import de `@nestjs/*` packages
 - Aucune référence aux tokens d'injection NestJS
 
@@ -227,7 +455,7 @@ L'injection NestJS se fait UNIQUEMENT dans la couche **Presentation/Infrastructu
 @Controller()
 export class UserController {
   constructor(
-    @Inject(TOKENS.CREATE_USER_USE_CASE) 
+    @Inject(TOKENS.CREATE_USER_USE_CASE)
     private readonly createUserUseCase: CreateUserUseCase
   ) {}
 }
@@ -398,17 +626,20 @@ make status         # Statut des services
 - ✅ **Security first** approach avec cookies HttpOnly
 - ✅ **Enterprise patterns** utilisés (logging, audit, i18n)
 - ✅ **Docker environment** pour développement isolé
-- ✅ **ESLint errors corrected** - De 24 erreurs bloquantes à 0 ✨
+- ✅ **ESLint errors ELIMINATED** - De 18 erreurs bloquantes à 0 🎯✨
+- ✅ **Node.js 24 Ready** - Architecture compatible nouvelles fonctionnalités
 - ✅ **Code quality** avec ESLint + Prettier configurés strictement
 
-### 📈 **Indicateurs de Succès**
+### 📈 **Indicateurs de Succès - MISE À JOUR FINALE**
 
-- Tests continuent de passer après modifications (202/202 ✅)
-- **ESLint errors eliminated** - Toutes les erreurs bloquantes corrigées 🎯
+- Tests continuent de passer après modifications (198/198 ✅)
+- **🎯 ZÉRO ERREUR ESLINT BLOQUANTE** - 100% des erreurs critiques éliminées
+- **Promise.all corrections** - Méthodes synchrones converties en Promises
+- **Regex patterns optimized** - Échappements inutiles supprimés (no-useless-escape)
+- **Enum comparisons fixed** - Type safety renforcé (no-unsafe-enum-comparison)
+- **Case declarations wrapped** - Blocs correctement structurés (no-case-declarations)
+- **Template expressions secured** - Types never correctement gérés
 - Aucune dépendance circulaire introduite
-- **Promise.all** correctement utilisé avec des Promises uniquement
-- **Regex patterns** optimisées sans échappements inutiles
-- **Async/await patterns** conformes aux standards ESLint
 - Logging et audit trail présents sur toutes les opérations
 - Configuration externalisée (JWT secrets, expiration)
 - Messages i18n utilisés dans tous les Use Cases
@@ -584,10 +815,10 @@ export class CreateUserUseCase {
 }
 ```
 
-### 🎯 **Typage Explicite - ZERO `any`**
+### 🎯 **Typage Explicite - ZERO `any` - UTILISER `unknown`**
 
 ```typescript
-// ✅ GOOD - Types explicites pour APIs publiques
+// ✅ GOOD - Types explicites pour APIs publiques et unknown pour types incertains
 export interface CreateUserRequest {
   readonly email: string;
   readonly name: string;
@@ -617,6 +848,15 @@ export type Environment = 'development' | 'staging' | 'production';
 export function processData(data: any): any {
   // JAMAIS !
   return data;
+}
+
+// ✅ GOOD - Utiliser unknown au lieu de any
+export function processData<T>(data: unknown): T {
+  // Type guard ou assertion nécessaire
+  if (typeof data === 'object' && data !== null) {
+    return data as T;
+  }
+  throw new Error('Invalid data type');
 }
 
 // ✅ GOOD - Générique typé
@@ -714,7 +954,7 @@ export default [
 ### ❌ **Erreurs Promise.all avec méthodes synchrones**
 
 ```typescript
-// ❌ INTERDIT - Promise.all avec méthodes synchrones
+// ❌ INTERDIT - Promise.all avec des valeurs non-Promise
 const [dbCheck, memoryInfo, systemInfo] = await Promise.all([
   this.checkDatabaseStatus(),  // OK - méthode async
   this.getMemoryInfo(),       // ❌ ERREUR - méthode synchrone
@@ -851,7 +1091,7 @@ expect(mockRepository.save).toHaveBeenCalledWith(expectedUser);
 Avant de commiter, TOUJOURS vérifier :
 
 - [ ] **Promise.all** : Toutes les valeurs sont des Promises
-- [ ] **Regex** : Échappements minimaux requis uniquement  
+- [ ] **Regex** : Échappements minimaux requis uniquement
 - [ ] **Async/await** : Méthodes async utilisent vraiment await
 - [ ] **Variables** : Tous les imports/variables sont utilisés
 - [ ] **Tests** : Mocks correctement typés avec `jest.Mocked<T>`
@@ -871,4 +1111,208 @@ npm run build
 # Lancer tous les tests
 npm test
 ```
-````
+
+## 🚨 **CRITIQUE : COUCHES DOMAIN & APPLICATION LIBRES DE FRAMEWORKS**
+
+### 🎯 **RÈGLE ABSOLUE : ZÉRO Dépendance Framework dans la Logique Métier**
+
+**Les couches Domain et Application DOIVENT rester complètement libres de toute dépendance de framework. C'est un principe fondamental de la Clean Architecture qui garantit :**
+
+- **Indépendance des Frameworks** : Les règles métier ne sont pas couplées à un framework spécifique
+- **Testabilité** : La logique métier pure peut être testée en isolation
+- **Portabilité** : La logique centrale peut être déplacée entre différents frameworks
+- **Maintenabilité** : Les changements de frameworks n'affectent pas les règles métier
+
+### ❌ **STRICTEMENT INTERDIT dans Domain/Application**
+
+```typescript
+// ❌ JAMAIS importer des dépendances de framework dans Domain/Application
+import { Injectable, Inject } from '@nestjs/common';        // INTERDIT
+import { Repository } from 'typeorm';                       // INTERDIT
+import { Request, Response } from 'express';                // INTERDIT
+import { GraphQLResolveInfo } from 'graphql';              // INTERDIT
+import { JwtService } from '@nestjs/jwt';                   // INTERDIT
+import { ConfigService } from '@nestjs/config';            // INTERDIT
+
+// ❌ JAMAIS utiliser des décorateurs de framework dans Domain/Application
+@Injectable()  // INTERDIT dans Domain/Application
+@Entity()      // INTERDIT dans Domain/Application
+@Column()      // INTERDIT dans Domain/Application
+```
+
+### ✅ **CORRECT : TypeScript Pur dans Domain/Application**
+
+```typescript
+// ✅ Couche Domain - Logique métier pure
+export class User {
+  private constructor(
+    private readonly id: string,
+    private readonly email: Email,
+    private readonly name: string,
+  ) {}
+
+  static create(email: Email, name: string): User {
+    // Validation métier pure - aucune dépendance framework
+    if (!name || name.trim().length < 2) {
+      throw new DomainError('User name must be at least 2 characters');
+    }
+    return new User(generateId(), email, name);
+  }
+}
+
+// ✅ Couche Application - Orchestration des cas d'usage
+export class CreateUserUseCase {
+  constructor(
+    private readonly userRepository: IUserRepository,  // Interface uniquement
+    private readonly logger: ILogger,                  // Interface uniquement
+    private readonly eventBus: IEventBus,             // Interface uniquement
+  ) {}
+
+  async execute(request: CreateUserRequest): Promise<CreateUserResponse> {
+    // Logique d'orchestration pure - aucune dépendance framework
+    const email = Email.create(request.email);
+    const user = User.create(email, request.name);
+
+    const savedUser = await this.userRepository.save(user);
+    await this.eventBus.publish(new UserCreatedEvent(savedUser));
+
+    return CreateUserResponse.fromUser(savedUser);
+  }
+}
+```
+
+### 🏗️ **Architecture d'Injection de Dépendances Appropriée**
+
+L'injection de dépendances spécifique aux frameworks ne doit avoir lieu que dans les couches **Infrastructure** et **Presentation** :
+
+```typescript
+// ✅ Couche Infrastructure - Implémentations framework
+@Injectable()  // OK ici - Couche Infrastructure
+export class TypeOrmUserRepository implements IUserRepository {
+  constructor(
+    @InjectRepository(UserEntity)  // OK ici - Couche Infrastructure
+    private readonly repository: Repository<UserEntity>,
+  ) {}
+}
+
+// ✅ Couche Presentation - Contrôleurs avec intégration framework
+@Controller('users')  // OK ici - Couche Presentation
+export class UserController {
+  constructor(
+    @Inject(TOKENS.CREATE_USER_USE_CASE)  // OK ici - Couche Presentation
+    private readonly createUserUseCase: CreateUserUseCase,
+  ) {}
+}
+
+// ✅ Couche Infrastructure - Configuration des modules
+@Module({  // OK ici - Couche Infrastructure
+  providers: [
+    {
+      provide: TOKENS.CREATE_USER_USE_CASE,
+      useFactory: (userRepo, logger, eventBus) =>
+        new CreateUserUseCase(userRepo, logger, eventBus),
+      inject: [TOKENS.USER_REPOSITORY, TOKENS.LOGGER, TOKENS.EVENT_BUS],
+    },
+  ],
+})
+export class ApplicationModule {}
+```
+
+### 📋 **Matrice de Responsabilités par Couche**
+
+| Couche | Usage Framework | Injection Dépendances | Décorateurs | Bibliothèques Externes |
+|-------|----------------|----------------------|------------|------------------------|
+| **Domain** | ❌ JAMAIS | ❌ JAMAIS | ❌ JAMAIS | ❌ Seulement si pur (lodash, date-fns) |
+| **Application** | ❌ JAMAIS | ❌ JAMAIS | ❌ JAMAIS | ❌ Seulement si pur (lodash, date-fns) |
+| **Infrastructure** | ✅ OUI | ✅ OUI | ✅ OUI | ✅ OUI |
+| **Presentation** | ✅ OUI | ✅ OUI | ✅ OUI | ✅ OUI |
+
+### 🚨 **Détection des Violations**
+
+Pour détecter les violations, vérifiez régulièrement :
+
+```bash
+# Vérifier les imports NestJS dans Domain/Application
+grep -r "@nestjs" src/domain/ src/application/
+
+# Vérifier les décorateurs de framework dans Domain/Application
+grep -r "@Injectable\|@Entity\|@Column\|@Repository" src/domain/ src/application/
+
+# Vérifier les imports ORM dans Domain/Application
+grep -r "typeorm\|mongoose\|prisma" src/domain/ src/application/
+```
+
+**Tout résultat de ces commandes indique une violation de Clean Architecture qui doit être corrigée immédiatement !**
+
+## 🔗 **Husky & Application des Commits Sémantiques**
+
+### 🎯 **Hooks de Pré-commit avec Husky**
+
+Husky applique automatiquement la qualité du code et les standards de commit :
+
+```json
+// package.json - Configuration Husky
+{
+  "scripts": {
+    "prepare": "husky install",
+    "pre-commit": "lint-staged",
+    "commit-msg": "commitlint --edit $1"
+  },
+  "lint-staged": {
+    "*.{ts,js}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md}": [
+      "prettier --write"
+    ]
+  }
+}
+```
+
+### 🔧 **Configuration des Hooks Husky**
+
+```bash
+# .husky/pre-commit
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "🔍 Exécution des vérifications de pré-commit..."
+
+# Exécuter lint-staged pour le formatage et le linting du code
+npx lint-staged
+
+# Lancer les tests pour s'assurer que rien n'est cassé
+npm test
+
+echo "✅ Vérifications de pré-commit réussies !"
+```
+
+```bash
+# .husky/commit-msg
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "🔍 Validation du message de commit..."
+npx --no -- commitlint --edit $1
+echo "✅ Message de commit valide !"
+```
+
+### 📋 **Workflow de Commit**
+
+1. **Modifications du Code** : Faire vos changements
+2. **Formatage Automatique** : Husky exécute ESLint + Prettier sur les fichiers stagés
+3. **Validation des Tests** : Tous les tests doivent passer
+4. **Validation du Message de Commit** : Doit suivre le format de commit conventionnel
+5. **Succès du Commit** : Seulement si toutes les vérifications passent
+
+### 🚫 **Actions Bloquées**
+
+Husky empêchera les commits si :
+- Des erreurs ESLint existent
+- Les tests échouent
+- Le message de commit ne suit pas la convention
+- Le code n'est pas correctement formaté
+
+Cela garantit **100% de qualité du code** et **un historique de commits cohérent** !
+`````

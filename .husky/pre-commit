@@ -1,0 +1,12 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "🔍 Exécution des vérifications de pré-commit..."
+
+# Exécuter lint-staged pour le formatage et le linting du code
+npx lint-staged
+
+# Lancer les tests pour s'assurer que rien n'est cassé
+npm test
+
+echo "✅ Vérifications de pré-commit réussies !"

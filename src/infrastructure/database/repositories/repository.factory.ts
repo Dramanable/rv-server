@@ -63,7 +63,7 @@ export class RepositoryFactory {
         return this.createSqlUserRepository();
       default:
         throw new Error(
-          `Unsupported database type for user repository: ${dbType}. Only 'sql' is supported.`,
+          `Unsupported database type for user repository: ${dbType as string}. Only 'sql' is supported.`,
         );
     }
   }
@@ -79,7 +79,7 @@ export class RepositoryFactory {
         return this.createSqlBusinessRepository();
       default:
         throw new Error(
-          `Unsupported database type for business repository: ${dbType}. Only 'sql' is supported.`,
+          `Unsupported database type for business repository: ${dbType as string}. Only 'sql' is supported.`,
         );
     }
   }
@@ -95,7 +95,7 @@ export class RepositoryFactory {
         return this.createSqlCalendarRepository();
       default:
         throw new Error(
-          `Unsupported database type for calendar repository: ${dbType}. Only 'sql' is supported.`,
+          `Unsupported database type for calendar repository: ${dbType as string}. Only 'sql' is supported.`,
         );
     }
   }

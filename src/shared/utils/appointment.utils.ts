@@ -519,7 +519,7 @@ export class AppointmentValidationUtils {
    * Validate phone number format (international)
    */
   private static isValidPhone(phone: string): boolean {
-    const phoneRegex = /^\+?[\d\s\-\(\)]{10,}$/;
+    const phoneRegex = /^\+?[\d\s-()]{10,}$/;
     return phoneRegex.test(phone.replace(/\s/g, ''));
   }
 

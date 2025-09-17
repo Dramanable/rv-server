@@ -4,7 +4,10 @@
  * Création d'un service avec validation métier et permissions
  * ✅ AUCUNE dépendance NestJS - Respect de la Clean Architecture
  */
-import { Service } from '../../../domain/entities/service.entity';
+import {
+  Service,
+  ServiceStatus,
+} from '../../../domain/entities/service.entity';
 import { ServiceRepository } from '../../../domain/repositories/service.repository.interface';
 import { BusinessRepository } from '../../../domain/repositories/business.repository.interface';
 import { Logger } from '../../../application/ports/logger.port';
@@ -131,7 +134,7 @@ export class CreateServiceUseCase {
           currency: service.pricing.basePrice.getCurrency(),
         },
         businessId: service.businessId.getValue(),
-        isActive: service.status === 'ACTIVE',
+        isActive: service.status === ServiceStatus.ACTIVE,
         createdAt: service.createdAt,
       };
 

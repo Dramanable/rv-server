@@ -1,5 +1,5 @@
 export class Phone {
-  private static readonly PHONE_REGEX = /^\+?[\d\s\-\(\)\.]{8,20}$/;
+  private static readonly PHONE_REGEX = /^\+?[\d\s-().]{8,20}$/;
 
   constructor(private readonly value: string) {
     this.validate(value);
@@ -18,7 +18,7 @@ export class Phone {
   }
 
   private cleanPhoneNumber(phone: string): string {
-    return phone.replace(/[\s\-\(\)\.]/g, '');
+    return phone.replace(/[\s-().]/g, '');
   }
 
   static create(value: string): Phone {

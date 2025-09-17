@@ -26,7 +26,7 @@ export class BusinessName {
     }
 
     // Vérifier les caractères interdits
-    const forbiddenChars = /[<>{}[\]\\\/]/;
+    const forbiddenChars = /[<>{}[\]\\/]/;
     if (forbiddenChars.test(trimmedValue)) {
       throw new Error('Business name contains forbidden characters');
     }

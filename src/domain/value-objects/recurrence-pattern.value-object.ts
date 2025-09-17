@@ -167,7 +167,7 @@ export class RecurrencePattern {
         nextDate.setDate(nextDate.getDate() + this.rule.interval);
         break;
 
-      case RecurrenceType.WEEKLY:
+      case RecurrenceType.WEEKLY: {
         // Find next occurrence based on days of week
         let daysToAdd = 1;
         const currentDay = nextDate.getDay();
@@ -188,6 +188,7 @@ export class RecurrencePattern {
 
         nextDate.setDate(nextDate.getDate() + daysToAdd);
         break;
+      }
 
       case RecurrenceType.MONTHLY:
         nextDate.setMonth(nextDate.getMonth() + this.rule.interval);
@@ -231,13 +232,14 @@ export class RecurrencePattern {
       case RecurrenceType.NONE:
         return date.toDateString() === referenceDate.toDateString();
 
-      case RecurrenceType.DAILY:
+      case RecurrenceType.DAILY: {
         const daysDiff = Math.floor(
           (date.getTime() - referenceDate.getTime()) / (1000 * 60 * 60 * 24),
         );
         return daysDiff >= 0 && daysDiff % this.rule.interval === 0;
+      }
 
-      case RecurrenceType.WEEKLY:
+      case RecurrenceType.WEEKLY: {
         const weeksDiff = Math.floor(
           (date.getTime() - referenceDate.getTime()) /
             (1000 * 60 * 60 * 24 * 7),
@@ -247,6 +249,7 @@ export class RecurrencePattern {
           weeksDiff % this.rule.interval === 0 &&
           this.rule.daysOfWeek!.includes(date.getDay() as WeekDay)
         );
+      }
 
       case RecurrenceType.MONTHLY:
         return (
@@ -331,7 +334,7 @@ export class RecurrencePattern {
           ? 'Tous les jours'
           : `Tous les ${this.rule.interval} jours`;
 
-      case RecurrenceType.WEEKLY:
+      case RecurrenceType.WEEKLY: {
         const dayNames = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
         const days = this.rule
           .daysOfWeek!.map((day) => dayNames[day])
@@ -339,13 +342,14 @@ export class RecurrencePattern {
         return this.rule.interval === 1
           ? `Chaque semaine le ${days}`
           : `Toutes les ${this.rule.interval} semaines le ${days}`;
+      }
 
       case RecurrenceType.MONTHLY:
         return this.rule.interval === 1
           ? `Le ${this.rule.dayOfMonth} de chaque mois`
           : `Le ${this.rule.dayOfMonth} tous les ${this.rule.interval} mois`;
 
-      case RecurrenceType.YEARLY:
+      case RecurrenceType.YEARLY: {
         const monthNames = [
           'Janvier',
           'Février',
@@ -361,6 +365,7 @@ export class RecurrencePattern {
           'Décembre',
         ];
         return `Le ${this.rule.dayOfMonth} ${monthNames[this.rule.monthOfYear! - 1]} chaque année`;
+      }
 
       default:
         return 'Récurrence personnalisée';
