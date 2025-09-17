@@ -35,7 +35,12 @@ describe('LogoutUseCase', () => {
     mockI18n = createMockI18nService();
 
     // 🏗️ Création de l'instance à tester
-    useCase = new LogoutUseCase(mockAuthService, mockConfigService, mockLogger, mockI18n);
+    useCase = new LogoutUseCase(
+      mockAuthService,
+      mockConfigService,
+      mockLogger,
+      mockI18n,
+    );
   });
 
   describe('🎯 Successful Logout Cases', () => {

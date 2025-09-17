@@ -107,7 +107,7 @@ export function createMockI18nService(): jest.Mocked<I18nService> {
     'success.auth.login_successful': 'Login successful',
     'success.auth.tokens_refreshed': 'Tokens refreshed successfully',
     'success.auth.logout_successful': 'Logged out successfully',
-    
+
     // Error messages
     'errors.auth.invalid_credentials': 'Invalid credentials',
     'errors.auth.user_not_found': 'User not found',
@@ -115,7 +115,7 @@ export function createMockI18nService(): jest.Mocked<I18nService> {
     'errors.auth.no_refresh_token': 'Refresh token is required',
     'errors.auth.invalid_refresh_token': 'Invalid refresh token',
     'errors.auth.token_expired': 'Token expired',
-    
+
     // Operations
     'operations.auth.login_attempt': 'Login attempt',
     'operations.auth.login_success': 'Login success',
@@ -124,7 +124,8 @@ export function createMockI18nService(): jest.Mocked<I18nService> {
     'operations.auth.logout_success': 'Logout success',
     'operations.auth.logout_failed': 'Logout failed',
     'operations.auth.current_token_revoked': 'Current refresh token revoked',
-    'operations.auth.all_tokens_revoked': 'All tokens revoked for user: {{userId}}',
+    'operations.auth.all_tokens_revoked':
+      'All tokens revoked for user: {{userId}}',
     'operations.auth.logout_error': 'Logout error: {{error}}',
     'operations.auth.token_refresh_attempt': 'Token refresh attempt',
     'operations.auth.token_refresh_success': 'Token refresh success',
@@ -134,16 +135,21 @@ export function createMockI18nService(): jest.Mocked<I18nService> {
     'operations.auth.no_refresh_token': 'No refresh token provided',
   };
 
-  const mockTranslate = jest.fn().mockImplementation((key: string, params?: any) => {
-    let translation = translations[key] || key;
-    // Handle template substitution for parameters like {{userId}}, {{message}}
-    if (params && typeof translation === 'string') {
-      Object.keys(params).forEach(paramKey => {
-        translation = translation.replace(new RegExp(`{{${paramKey}}}`, 'g'), params[paramKey]);
-      });
-    }
-    return translation;
-  });
+  const mockTranslate = jest
+    .fn()
+    .mockImplementation((key: string, params?: any) => {
+      let translation = translations[key] || key;
+      // Handle template substitution for parameters like {{userId}}, {{message}}
+      if (params && typeof translation === 'string') {
+        Object.keys(params).forEach((paramKey) => {
+          translation = translation.replace(
+            new RegExp(`{{${paramKey}}}`, 'g'),
+            params[paramKey],
+          );
+        });
+      }
+      return translation;
+    });
 
   return {
     translate: mockTranslate,

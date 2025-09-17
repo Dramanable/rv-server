@@ -162,7 +162,9 @@ describe('RefreshTokenUseCase', () => {
       };
 
       // 🎬 Act & Assert
-      await expect(useCase.execute(request)).rejects.toThrow('Refresh token is required');
+      await expect(useCase.execute(request)).rejects.toThrow(
+        'Refresh token is required',
+      );
 
       // 🔍 Assert - Auth service should NOT be called for missing token
       expect(mockAuthService.refreshTokens).not.toHaveBeenCalled();
