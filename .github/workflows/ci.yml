@@ -59,6 +59,7 @@ jobs:
       
       # Test environment
       NODE_ENV: test
+      CI: true
       JWT_SECRET: test_jwt_secret_for_ci
       JWT_REFRESH_SECRET: test_refresh_secret_for_ci
 

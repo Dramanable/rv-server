@@ -37,11 +37,12 @@ module.exports = {
     }),
   },
   
-  // 📊 Coverage spécifique à l'intégration
+  // 📊 Coverage spécifique à l'intégration - SEULEMENT Infrastructure et Presentation
   collectCoverageFrom: [
     'src/infrastructure/**/*.ts',
     'src/presentation/**/*.ts',
-    'src/application/use-cases/**/*.ts', // Use cases avec vraies dépendances
+    // ❌ PAS de couche Application - Tests unitaires uniquement
+    // ❌ PAS de couche Domain - Tests unitaires uniquement
     '!**/*.spec.ts',
     '!**/*.test.ts',
     '!**/*.d.ts',
@@ -106,10 +107,7 @@ module.exports = {
     NODE_ENV: 'test'
   },
   
-  // 🔄 Retry logique pour les tests d'intégration instables
-  retry: 2,
-  
-  // 📋 Hooks globaux
+  //  Hooks globaux
   globalSetup: '<rootDir>/src/__tests__/setup/global-integration-setup.ts',
   globalTeardown: '<rootDir>/src/__tests__/setup/global-integration-teardown.ts',
 };

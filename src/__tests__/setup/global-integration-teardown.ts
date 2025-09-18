@@ -23,7 +23,7 @@ export default async (): Promise<void> => {
  * Nettoyer Redis après les tests
  */
 async function cleanupRedis(): Promise<void> {
-  const redisUrl = process.env.REDIS_URL || 'redis://localhost:6380';
+  const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
   const redis = new Redis(redisUrl);
 
   try {
