@@ -421,6 +421,93 @@ npm run build     # Build TypeScript
 - 🎯 Couverture de tests > 90%
 - 🎯 Taux de conversion RDV > 85%
 
+## 🔧 **Optimisation VS Code**
+
+### **Configuration Automatisée**
+
+Ce projet inclut une configuration VS Code optimisée pour un développement efficace :
+
+```bash
+# 📊 Auditer les extensions installées
+./scripts/audit-vscode-extensions.sh
+
+# 🚀 Installer les extensions essentielles uniquement
+./scripts/install-essential-extensions.sh
+
+# 🧹 Désactiver les extensions inutiles/redondantes
+./scripts/disable-vscode-bloat.sh
+```
+
+### **Extensions Essentielles** ✅
+
+```jsonc
+{
+  "recommendations": [
+    // 🔧 Core Development
+    "ms-vscode.vscode-typescript-next",    // TypeScript moderne
+    "dbaeumer.vscode-eslint",              // ESLint intégré
+    "esbenp.prettier-vscode",              // Formatage automatique
+    
+    // 🤖 AI Assistant
+    "github.copilot",                      // GitHub Copilot
+    "github.copilot-chat",                 // Copilot Chat
+    
+    // 🧪 Testing & Quality
+    "orta.vscode-jest",                    // Jest intégré
+    "sonarsource.sonarlint-vscode",        // SonarLint
+    
+    // 🐳 Infrastructure
+    "ms-azuretools.vscode-docker",         // Docker support
+    "cweijan.vscode-postgresql-client2",   // PostgreSQL
+    "mongodb.mongodb-vscode"               // MongoDB
+  ]
+}
+```
+
+### **Extensions Désactivées** 🚫
+
+Le projet désactive automatiquement **+50 extensions inutiles** :
+
+- 🤖 **AI Concurrents** (Tabnine, Codeium, BlackBox...)
+- 🎨 **Thèmes & Icônes** (garder l'interface par défaut)
+- 🌐 **Frameworks Non Utilisés** (Angular, Vue, React...)
+- 📊 **Outils de Productivité** (Code Time, Pomodoro...)
+- 🔧 **Utilitaires Redondants** (File Utils, Console Utils...)
+
+### **Bénéfices de l'Optimisation**
+
+- ⚡ **Performance** : VS Code plus rapide au démarrage
+- 🎯 **Focus** : Interface simplifiée, moins de distractions
+- 🔋 **Ressources** : Consommation mémoire réduite
+- 🛠️ **Maintenance** : Configuration standardisée équipe
+
+### **Configuration Workspace**
+
+Le projet inclut `.vscode/settings.json` optimisé :
+
+```jsonc
+{
+  // ✅ Format automatique + ESLint au save
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.organizeImports": "explicit"
+  },
+  
+  // 🎯 Copilot optimisé pour NestJS
+  "github.copilot.enable": {
+    "*": true,
+    "plaintext": false,
+    "markdown": false
+  },
+  
+  // 📁 Fichiers de test groupés avec leurs sources
+  "explorer.fileNesting.patterns": {
+    "*.ts": "${capture}.spec.ts, ${capture}.test.ts"
+  }
+}
+```
+
 ## 🤝 **Contribution**
 
 Ce projet suit les **meilleures pratiques enterprise** :
@@ -430,6 +517,7 @@ Ce projet suit les **meilleures pratiques enterprise** :
 - **TDD** avec Jest pour toute nouvelle fonctionnalité
 - **TypeScript strict** (zero tolerance pour `any`)
 - **Commits sémantiques** obligatoires
+- **VS Code optimisé** pour l'efficacité développeur
 
 ## 📄 **License**
 

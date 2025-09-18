@@ -227,4 +227,52 @@ urls:
 	@echo "  📧 Email:           admin@cleanarchi.dev"
 	@echo "  🔐 Mot de passe:    admin123"
 
+# ========================================
+# 🔧 Optimisation VS Code
+# ========================================
+
+# Setup complet environnement de développement
+setup-env:
+	@echo "🚀 Setup environnement de développement VS Code..."
+	./scripts/setup-dev-environment.sh
+
+# Installer les extensions VS Code essentielles
+vscode-install:
+	@echo "📦 Installation extensions VS Code essentielles..."
+	./scripts/install-essential-extensions.sh
+
+# Désactiver les extensions VS Code inutiles
+vscode-clean:
+	@echo "🧹 Désactivation extensions VS Code inutiles..."
+	./scripts/disable-vscode-bloat.sh
+
+# Audit des extensions VS Code
+vscode-audit:
+	@echo "📊 Audit des extensions VS Code..."
+	./scripts/audit-vscode-extensions.sh
+
+# Configuration complète VS Code (install + clean + audit)
+vscode-setup: vscode-install vscode-clean vscode-audit
+	@echo ""
+	@echo "✅ VS Code configuré et optimisé pour NestJS Clean Architecture"
+	@echo "🔄 Redémarrez VS Code pour appliquer tous les changements"
+
+# ========================================
+# 🎯 Commandes Développeur Complètes
+# ========================================
+
+# Setup projet complet (première installation)
+setup: vscode-setup install start-db
+	@echo ""
+	@echo "🎉 SETUP PROJET TERMINÉ !"
+	@echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+	@echo "✅ Extensions VS Code optimisées"
+	@echo "✅ Dépendances NPM installées"
+	@echo "✅ Bases de données démarrées"
+	@echo ""
+	@echo "🚀 Prochaines étapes :"
+	@echo "   1. Redémarrer VS Code"
+	@echo "   2. make dev  # Démarrer l'environnement complet"
+	@echo "   3. npm test  # Vérifier que tous les tests passent"
+
  

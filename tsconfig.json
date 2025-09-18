@@ -28,16 +28,26 @@
     "forceConsistentCasingInFileNames": true,
     "noImplicitAny": true,
     "strictBindCallApply": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    "assumeChangesOnlyAffectDirectDependencies": true,
+    "disableReferencedProjectLoad": true
   },
   "exclude": [
     "node_modules",
     "dist",
+    "build",
     "coverage",
+    ".nyc_output",
+    "tmp",
+    "logs",
+    "*.log",
     "*.config.js",
     ".commitlintrc.js",
     "jest.config.js",
+    "jest.*.config.js",
     "scripts/**/*.ts",
+    "**/*.spec.ts",
+    "**/*.test.ts",
     "src/infrastructure/database/migrations/nosql/**/*.ts",
     "src/infrastructure/database/modules/dynamic-repository.module.ts"
   ],

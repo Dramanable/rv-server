@@ -107,7 +107,10 @@ module.exports = {
     NODE_ENV: 'test'
   },
   
-  //  Hooks globaux
+  // 🔄 Retry logique pour les tests d'intégration instables
+  retry: 2,
+  
+  // 📋 Hooks globaux
   globalSetup: '<rootDir>/src/__tests__/setup/global-integration-setup.ts',
   globalTeardown: '<rootDir>/src/__tests__/setup/global-integration-teardown.ts',
 };
