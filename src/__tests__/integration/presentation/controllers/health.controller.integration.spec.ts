@@ -20,7 +20,9 @@ const testConfig = () => ({
     environment: 'test',
   },
   database: {
-    url: process.env.DATABASE_URL || 'postgresql://test:test@localhost:5432/test_db',
+    url:
+      process.env.DATABASE_URL ||
+      'postgresql://test:test@localhost:5432/test_db',
   },
   redis: {
     url: process.env.REDIS_URL || 'redis://localhost:6379',
@@ -81,8 +83,9 @@ describe('🏥 HealthController - Integration Tests (Presentation Layer)', () =>
     }).compile();
 
     app = moduleFixture.createNestApplication();
-    healthCheckService = moduleFixture.get<HealthCheckService>(HealthCheckService);
-    
+    healthCheckService =
+      moduleFixture.get<HealthCheckService>(HealthCheckService);
+
     await app.init();
   });
 
@@ -109,15 +112,18 @@ describe('🏥 HealthController - Integration Tests (Presentation Layer)', () =>
       expect(response.body).toHaveProperty('environment', 'test');
       expect(response.body).toHaveProperty('version');
       expect(response.body).toHaveProperty('services');
-      
+
       // ✅ Vérifier les services
       expect(response.body.services).toHaveProperty('database');
       expect(response.body.services).toHaveProperty('redis');
       expect(response.body.services).toHaveProperty('memory');
-      
-      expect(response.body.services.database).toHaveProperty('status', 'healthy');
+
+      expect(response.body.services.database).toHaveProperty(
+        'status',
+        'healthy',
+      );
       expect(response.body.services.redis).toHaveProperty('status', 'healthy');
-      
+
       // ✅ Headers HTTP corrects
       expect(response.headers['content-type']).toMatch(/json/);
     });
@@ -138,7 +144,7 @@ describe('🏥 HealthController - Integration Tests (Presentation Layer)', () =>
     });
 
     it('GET /health/readiness should return readiness probe', async () => {
-      // 🔴 TDD RED - Kubernetes readiness probe  
+      // 🔴 TDD RED - Kubernetes readiness probe
       const response = await request(app.getHttpServer())
         .get('/health/readiness')
         .expect(200);
@@ -147,28 +153,22 @@ describe('🏥 HealthController - Integration Tests (Presentation Layer)', () =>
       expect(response.body).toHaveProperty('status', 'ready');
       expect(response.body).toHaveProperty('timestamp');
       expect(response.body).toHaveProperty('dependencies');
-      
+
       expect(response.body.dependencies).toHaveProperty('database', 'ready');
       expect(response.body.dependencies).toHaveProperty('redis', 'ready');
     });
 
     it('should handle health check with proper HTTP status codes', async () => {
       // 🔴 TDD RED - Test des status codes HTTP appropriés
-      
-      // Service healthy → 200 OK
-      await request(app.getHttpServer())
-        .get('/health')
-        .expect(200);
 
-      // Liveness alive → 200 OK  
-      await request(app.getHttpServer())
-        .get('/health/liveness')
-        .expect(200);
+      // Service healthy → 200 OK
+      await request(app.getHttpServer()).get('/health').expect(200);
+
+      // Liveness alive → 200 OK
+      await request(app.getHttpServer()).get('/health/liveness').expect(200);
 
       // Readiness ready → 200 OK
-      await request(app.getHttpServer())
-        .get('/health/readiness')
-        .expect(200);
+      await request(app.getHttpServer()).get('/health/readiness').expect(200);
     });
   });
 
@@ -186,7 +186,11 @@ describe('🏥 HealthController - Integration Tests (Presentation Layer)', () =>
         version: '1.0.0-test',
         services: {
           database: { status: 'healthy', responseTime: 10 },
-          redis: { status: 'unhealthy', responseTime: 1000, error: 'Connection timeout' },
+          redis: {
+            status: 'unhealthy',
+            responseTime: 1000,
+            error: 'Connection timeout',
+          },
           memory: {
             rss: '900MB', // Mémoire élevée
             heapTotal: '800MB',
@@ -231,14 +235,14 @@ describe('🏥 HealthController - Integration Tests (Presentation Layer)', () =>
     it('should maintain liveness even under load', async () => {
       // 🔴 TDD RED - Test de charge basique
       const requests = Array.from({ length: 5 }, () =>
-        request(app.getHttpServer()).get('/health/liveness')
+        request(app.getHttpServer()).get('/health/liveness'),
       );
 
       // 🟢 TDD GREEN - Toutes les requêtes doivent réussir
       const responses = await Promise.all(requests);
 
       // ✅ Assert - Liveness toujours disponible
-      responses.forEach(response => {
+      responses.forEach((response) => {
         expect(response.status).toBe(200);
         expect(response.body.status).toBe('alive');
       });
@@ -246,7 +250,7 @@ describe('🏥 HealthController - Integration Tests (Presentation Layer)', () =>
 
     it('should handle malformed health check requests', async () => {
       // 🔴 TDD RED - Requêtes avec paramètres invalides
-      
+
       // Query params ignorés gracieusement
       await request(app.getHttpServer())
         .get('/health?invalid=param')
@@ -282,7 +286,7 @@ describe('🏥 HealthController - Integration Tests (Presentation Layer)', () =>
     it('should handle concurrent health check requests', async () => {
       // 🔴 TDD RED - Concurrence sur health checks
       const concurrentRequests = Array.from({ length: 10 }, () =>
-        request(app.getHttpServer()).get('/health')
+        request(app.getHttpServer()).get('/health'),
       );
 
       // 🟢 TDD GREEN - Toutes doivent réussir en parallèle
@@ -290,14 +294,16 @@ describe('🏥 HealthController - Integration Tests (Presentation Layer)', () =>
 
       // ✅ Assert
       expect(responses).toHaveLength(10);
-      responses.forEach(response => {
+      responses.forEach((response) => {
         expect(response.status).toBe(200);
         expect(response.body).toHaveProperty('status');
         expect(response.body).toHaveProperty('timestamp');
       });
 
       // Tous les timestamps doivent être récents et différents
-      const timestamps = responses.map(r => new Date(r.body.timestamp).getTime());
+      const timestamps = responses.map((r) =>
+        new Date(r.body.timestamp).getTime(),
+      );
       const timeSpread = Math.max(...timestamps) - Math.min(...timestamps);
       expect(timeSpread).toBeLessThan(2000); // Étalé sur moins de 2 secondes
     });
@@ -309,7 +315,7 @@ describe('🏥 HealthController - Integration Tests (Presentation Layer)', () =>
         .expect(200);
 
       // Petit délai
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       const response2 = await request(app.getHttpServer())
         .get('/health')
@@ -318,11 +324,12 @@ describe('🏥 HealthController - Integration Tests (Presentation Layer)', () =>
       // ✅ Assert - Données cohérentes
       expect(response1.body.version).toBe(response2.body.version);
       expect(response1.body.environment).toBe(response2.body.environment);
-      
+
       // Timestamps différents mais récents
       expect(response1.body.timestamp).not.toBe(response2.body.timestamp);
-      expect(new Date(response2.body.timestamp).getTime())
-        .toBeGreaterThan(new Date(response1.body.timestamp).getTime());
+      expect(new Date(response2.body.timestamp).getTime()).toBeGreaterThan(
+        new Date(response1.body.timestamp).getTime(),
+      );
     });
   });
 
@@ -348,31 +355,25 @@ describe('🏥 HealthController - Integration Tests (Presentation Layer)', () =>
         .expect(200);
 
       // ✅ Health checks ne doivent PAS être cachés
-      expect(response.headers['cache-control']).toMatch(/no-cache|no-store|max-age=0/);
+      expect(response.headers['cache-control']).toMatch(
+        /no-cache|no-store|max-age=0/,
+      );
     });
 
     it('should handle HTTP method restrictions', async () => {
       // 🔴 TDD RED - Seul GET autorisé
-      
-      // POST non autorisé
-      await request(app.getHttpServer())
-        .post('/health')
-        .expect(405); // Method Not Allowed
 
-      // PUT non autorisé  
-      await request(app.getHttpServer())
-        .put('/health')
-        .expect(405);
+      // POST non autorisé
+      await request(app.getHttpServer()).post('/health').expect(405); // Method Not Allowed
+
+      // PUT non autorisé
+      await request(app.getHttpServer()).put('/health').expect(405);
 
       // DELETE non autorisé
-      await request(app.getHttpServer())
-        .delete('/health')
-        .expect(405);
+      await request(app.getHttpServer()).delete('/health').expect(405);
 
       // GET autorisé
-      await request(app.getHttpServer())
-        .get('/health')
-        .expect(200);
+      await request(app.getHttpServer()).get('/health').expect(200);
     });
 
     it('should provide proper HTTP status for different health states', async () => {
@@ -388,9 +389,7 @@ describe('🏥 HealthController - Integration Tests (Presentation Layer)', () =>
         services: {},
       });
 
-      await request(app.getHttpServer())
-        .get('/health')
-        .expect(200);
+      await request(app.getHttpServer()).get('/health').expect(200);
 
       // Degraded → 200 OK (pour observabilité)
       jest.spyOn(healthCheckService, 'checkHealth').mockResolvedValueOnce({
@@ -402,9 +401,7 @@ describe('🏥 HealthController - Integration Tests (Presentation Layer)', () =>
         services: {},
       });
 
-      await request(app.getHttpServer())
-        .get('/health')
-        .expect(200);
+      await request(app.getHttpServer()).get('/health').expect(200);
     });
   });
 });

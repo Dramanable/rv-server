@@ -44,7 +44,7 @@ describe('📧 NodejsEmailService - Integration Tests (Infrastructure)', () => {
       // 🔴 TDD RED - Arrange
       const resetToken = 'test-reset-token-12345';
       const resetLink = `https://app.example.com/reset-password?token=${resetToken}`;
-      
+
       const emailMessage: EmailMessage = {
         to: 'password-reset@example.com',
         subject: 'Reset Your Password',
@@ -123,7 +123,9 @@ describe('📧 NodejsEmailService - Integration Tests (Infrastructure)', () => {
       };
 
       // 🟢 TDD GREEN - Act & Assert
-      await expect(emailService.sendEmail(invalidEmailMessage)).rejects.toThrow();
+      await expect(
+        emailService.sendEmail(invalidEmailMessage),
+      ).rejects.toThrow();
     });
 
     it('should handle empty recipient list gracefully', async () => {
@@ -136,7 +138,9 @@ describe('📧 NodejsEmailService - Integration Tests (Infrastructure)', () => {
       };
 
       // 🟢 TDD GREEN - Act & Assert
-      await expect(emailService.sendEmail(emptyRecipientsMessage)).rejects.toThrow();
+      await expect(
+        emailService.sendEmail(emptyRecipientsMessage),
+      ).rejects.toThrow();
     });
 
     it('should require both subject and content', async () => {
@@ -194,15 +198,18 @@ describe('📧 NodejsEmailService - Integration Tests (Infrastructure)', () => {
 
     it('should handle concurrent email sending', async () => {
       // 🔴 TDD RED - Test de concurrence
-      const emailMessages: EmailMessage[] = Array.from({ length: 3 }, (_, i) => ({
-        to: `concurrent-test-${i + 1}@example.com`,
-        subject: `Concurrent Test Email #${i + 1}`,
-        html: `<h1>Concurrent Test #${i + 1}</h1><p>Testing concurrent email sending.</p>`,
-        text: `Concurrent Test #${i + 1} - Testing concurrent email sending.`,
-      }));
+      const emailMessages: EmailMessage[] = Array.from(
+        { length: 3 },
+        (_, i) => ({
+          to: `concurrent-test-${i + 1}@example.com`,
+          subject: `Concurrent Test Email #${i + 1}`,
+          html: `<h1>Concurrent Test #${i + 1}</h1><p>Testing concurrent email sending.</p>`,
+          text: `Concurrent Test #${i + 1} - Testing concurrent email sending.`,
+        }),
+      );
 
       // 🟢 TDD GREEN - Act: Envoyer en parallèle
-      const promises = emailMessages.map(msg => emailService.sendEmail(msg));
+      const promises = emailMessages.map((msg) => emailService.sendEmail(msg));
       const results = await Promise.all(promises);
 
       // ✅ Assert - Tous doivent réussir
@@ -225,18 +232,27 @@ describe('📧 NodejsEmailService - Integration Tests (Infrastructure)', () => {
 
       // 🟢 TDD GREEN - Envoyer le même email plusieurs fois
       const results = await Promise.all([
-        emailService.sendEmail({ ...baseMessage, subject: 'Consistency Test 1' }),
-        emailService.sendEmail({ ...baseMessage, subject: 'Consistency Test 2' }),
-        emailService.sendEmail({ ...baseMessage, subject: 'Consistency Test 3' }),
+        emailService.sendEmail({
+          ...baseMessage,
+          subject: 'Consistency Test 1',
+        }),
+        emailService.sendEmail({
+          ...baseMessage,
+          subject: 'Consistency Test 2',
+        }),
+        emailService.sendEmail({
+          ...baseMessage,
+          subject: 'Consistency Test 3',
+        }),
       ]);
 
       // ✅ Assert - Tous doivent avoir des IDs uniques mais être envoyés
       expect(results).toHaveLength(3);
-      const messageIds = results.map(r => r.messageId);
+      const messageIds = results.map((r) => r.messageId);
       const uniqueIds = new Set(messageIds);
-      
+
       expect(uniqueIds.size).toBe(3); // Tous les IDs doivent être uniques
-      results.forEach(result => {
+      results.forEach((result) => {
         expect(result.success).toBe(true);
         expect(result.to).toBe('consistency-test@example.com');
       });

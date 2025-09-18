@@ -1,0 +1,143 @@
+{
+  // 🎯 Configuration Workspace - NestJS Clean Architecture
+  // 📦 Force l'utilisation de NPM (pas Yarn)
+  // 🧠 Optimisations mémoire pour développement efficace
+  
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  
+  "settings": {
+    // 📦 FORCE NPM UNIQUEMENT
+    "npm.packageManager": "npm",
+    "terminal.integrated.defaultProfile.linux": "bash",
+    "terminal.integrated.defaultProfile.osx": "bash",
+    "terminal.integrated.defaultProfile.windows": "Command Prompt",
+    
+    // 🚫 DÉSACTIVER YARN COMPLÈTEMENT
+    "search.exclude": {
+      "**/yarn.lock": true,
+      "**/.yarn": true,
+      "**/.pnp.*": true
+    },
+    
+    // 📋 TASKS NPM OPTIMISÉES
+    "npm.enableRunFromFolder": true,
+    "npm.fetchOnlinePackageInfo": false,
+    "npm.exclude": [
+      "**/node_modules/**",
+      "**/coverage/**",
+      "**/dist/**"
+    ]
+  },
+  
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "🚀 Setup NVM Environment", 
+        "type": "shell",
+        "command": "source ~/.bashrc && nvm use && ./scripts/setup-nvm-env.sh",
+        "group": "build",
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "focus": true,
+          "panel": "shared"
+        },
+        "problemMatcher": []
+      },
+      {
+        "label": "🧹 NPM Clean Install",
+        "type": "shell",
+        "command": "source ~/.bashrc && nvm use && ./scripts/npm-cleanup-optimize.sh",
+        "group": "build",
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "focus": false,
+          "panel": "shared"
+        },
+        "problemMatcher": []
+      },
+      {
+        "label": "📦 NPM Install",
+        "type": "shell", 
+        "command": "source ~/.bashrc && nvm use && npm install --prefer-offline --no-audit --no-fund",
+        "group": "build",
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "focus": false,
+          "panel": "shared"
+        }
+      },
+      {
+        "label": "🚀 NPM Start Dev",
+        "type": "shell",
+        "command": "source ~/.bashrc && nvm use && npm run start:dev",
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        },
+        "isBackground": true,
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "focus": false,
+          "panel": "dedicated"
+        }
+      },
+      {
+        "label": "🧪 Run Tests with NVM",
+        "type": "shell",
+        "command": "source ~/.bashrc && nvm use && npm test",
+        "group": "test",
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "focus": false,
+          "panel": "shared"
+        }
+      },
+      {
+        "label": "🔧 Lint with NVM", 
+        "type": "shell",
+        "command": "source ~/.bashrc && nvm use && npm run lint",
+        "group": "build",
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "focus": false,
+          "panel": "shared"
+        }
+      }
+    ]
+  },
+  
+  "extensions": {
+    "recommendations": [
+      // 🔧 CORE - Minimum vital
+      "ms-vscode.vscode-typescript-next",
+      "dbaeumer.vscode-eslint", 
+      "esbenp.prettier-vscode",
+      
+      // 🤖 AI - GitHub Copilot uniquement
+      "github.copilot",
+      "github.copilot-chat"
+    ],
+    
+    "unwantedRecommendations": [
+      // 📦 Gestionnaires de packages concurrents
+      "ms-vscode.vscode-yarn",
+      "arcanis.vscode-zipfs",
+      
+      // 🤖 AI concurrents
+      "tabnine.tabnine-vscode",
+      "codeium.codeium",
+      "blackboxapp.blackbox"
+    ]
+  }
+}

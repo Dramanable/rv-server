@@ -13,9 +13,9 @@ process.env.NODE_ENV = 'test';
 process.env.JWT_SECRET =
   'integration-test-jwt-secret-key-do-not-use-in-production';
 process.env.DATABASE_URL =
-  process.env.DATABASE_URL || 'postgresql://test_user:test_password@localhost:5433/test_db';
-process.env.REDIS_URL = 
-  process.env.REDIS_URL || 'redis://localhost:6380'; // Port Redis local Docker, ou GitHub Actions
+  process.env.DATABASE_URL ||
+  'postgresql://test_user:test_password@localhost:5433/test_db';
+process.env.REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6380'; // Port Redis local Docker, ou GitHub Actions
 process.env.USER_CACHE_RETENTION_MINUTES = '5'; // TTL court pour les tests
 
 // 📊 Configuration des timeouts pour l'intégration

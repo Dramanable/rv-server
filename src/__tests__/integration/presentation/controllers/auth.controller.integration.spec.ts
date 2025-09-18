@@ -74,7 +74,8 @@ describe('🏗️ AuthController - Integration Tests (Presentation Layer)', () =
     configService = moduleFixture.get<ConfigService>(ConfigService);
 
     // 🔗 Connexion Redis réelle pour les tests d'intégration
-    const redisUrl = configService.get<string>('REDIS_URL') || 'redis://localhost:6379';
+    const redisUrl =
+      configService.get<string>('REDIS_URL') || 'redis://localhost:6379';
     redis = new Redis(redisUrl);
   });
 
@@ -241,7 +242,12 @@ describe('🏗️ AuthController - Integration Tests (Presentation Layer)', () =
     it('should set proper security headers', async () => {
       const mockLoginUseCase = app.get(TOKENS.LOGIN_USE_CASE);
       mockLoginUseCase.execute.mockResolvedValue({
-        user: { id: 'test', email: 'test@test.com', name: 'Test', role: UserRole.CLIENT },
+        user: {
+          id: 'test',
+          email: 'test@test.com',
+          name: 'Test',
+          role: UserRole.CLIENT,
+        },
         tokens: { accessToken: 'token', refreshToken: 'refresh' },
       });
 
@@ -256,9 +262,7 @@ describe('🏗️ AuthController - Integration Tests (Presentation Layer)', () =
 
     it('should handle CORS properly for auth endpoints', async () => {
       // 🔴 TDD RED - Tester CORS
-      await request(app.getHttpServer())
-        .options('/auth/login')
-        .expect(200); // ou le code de statut attendu pour OPTIONS
+      await request(app.getHttpServer()).options('/auth/login').expect(200); // ou le code de statut attendu pour OPTIONS
     });
   });
 });
