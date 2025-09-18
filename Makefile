@@ -18,6 +18,7 @@ help:
 	@echo "🏗️  Build & Test:"
 	@echo "  build        - Construire l'image Docker"
 	@echo "  test         - Exécuter les tests dans Docker"
+	@echo "  test-services - Tester la connectivité des services"
 	@echo ""
 	@echo "🔍 Monitoring:"
 	@echo "  logs         - Afficher les logs de l'application"
@@ -275,4 +276,52 @@ setup: vscode-setup install start-db
 	@echo "   2. make dev  # Démarrer l'environnement complet"
 	@echo "   3. npm test  # Vérifier que tous les tests passent"
 
- 
+# ========================================
+# 🧪 Tests & Connectivité
+# ========================================
+
+# Tester la connectivité des services pour tests d'intégration
+test-services:
+	@echo "🧪 Test de connectivité des services..."
+	@./scripts/test-services-connectivity.sh
+
+# Audit des extensions VS Code
+vscode-audit:
+	@echo "📊 Audit des extensions VS Code..."
+	@./scripts/audit-vscode-extensions.sh
+
+# Installation des extensions VS Code essentielles
+vscode-setup:
+	@echo "🚀 Configuration VS Code pour NestJS..."
+	@./scripts/install-essential-extensions.sh
+
+# Désactivation des extensions VS Code inutiles
+vscode-cleanup:
+	@echo "🧹 Nettoyage des extensions VS Code..."
+	@./scripts/disable-vscode-bloat.sh
+
+# Configuration complète VS Code (install + clean + audit)
+vscode-setup: vscode-install vscode-clean vscode-audit
+	@echo ""
+	@echo "✅ VS Code configuré et optimisé pour NestJS Clean Architecture"
+	@echo "🔄 Redémarrez VS Code pour appliquer tous les changements"
+
+# ========================================
+# 🎯 Commandes Développeur Complètes
+# ========================================
+
+# Setup projet complet (première installation)
+setup: vscode-setup install start-db
+	@echo ""
+	@echo "🎉 SETUP PROJET TERMINÉ !"
+	@echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+	@echo "✅ Extensions VS Code optimisées"
+	@echo "✅ Dépendances NPM installées"
+	@echo "✅ Bases de données démarrées"
+	@echo ""
+	@echo "🚀 Prochaines étapes :"
+	@echo "   1. Redémarrer VS Code"
+	@echo "   2. make dev  # Démarrer l'environnement complet"
+	@echo "   3. npm test  # Vérifier que tous les tests passent"
+
+
