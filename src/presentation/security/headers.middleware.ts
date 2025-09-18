@@ -14,14 +14,14 @@ export class SecurityHeadersMiddleware implements NestMiddleware {
     res.setHeader(
       'Content-Security-Policy',
       "default-src 'self'; " +
-      "script-src 'self' 'unsafe-inline'; " +
-      "style-src 'self' 'unsafe-inline'; " +
-      "img-src 'self' data: https:; " +
-      "connect-src 'self'; " +
-      "font-src 'self'; " +
-      "object-src 'none'; " +
-      "media-src 'self'; " +
-      "frame-src 'none';"
+        "script-src 'self' 'unsafe-inline'; " +
+        "style-src 'self' 'unsafe-inline'; " +
+        "img-src 'self' data: https:; " +
+        "connect-src 'self'; " +
+        "font-src 'self'; " +
+        "object-src 'none'; " +
+        "media-src 'self'; " +
+        "frame-src 'none';",
     );
 
     // X-Content-Type-Options
@@ -39,12 +39,15 @@ export class SecurityHeadersMiddleware implements NestMiddleware {
     // Permissions-Policy
     res.setHeader(
       'Permissions-Policy',
-      'camera=(), microphone=(), geolocation=(), payment=(), usb=()'
+      'camera=(), microphone=(), geolocation=(), payment=(), usb=()',
     );
 
     // Strict-Transport-Security (HSTS) - seulement en HTTPS
     if (req.secure || req.get('X-Forwarded-Proto') === 'https') {
-      res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
+      res.setHeader(
+        'Strict-Transport-Security',
+        'max-age=31536000; includeSubDomains; preload',
+      );
     }
 
     // Remove server signature
@@ -58,11 +61,14 @@ export class SecurityHeadersMiddleware implements NestMiddleware {
  * 🌍 CORS Configuration sécurisée
  */
 export const corsOptions = {
-  origin: (origin: string, callback: (err: Error | null, allow?: boolean) => void) => {
+  origin: (
+    origin: string,
+    callback: (err: Error | null, allow?: boolean) => void,
+  ) => {
     // Liste des domaines autorisés
     const allowedOrigins = [
       'http://localhost:3000',
-      'http://localhost:4200', 
+      'http://localhost:4200',
       'https://yourdomain.com',
       process.env.FRONTEND_URL,
     ].filter(Boolean);
@@ -82,7 +88,7 @@ export const corsOptions = {
     'Content-Type',
     'Accept',
     'Authorization',
-    'X-API-Key'
+    'X-API-Key',
   ],
   exposedHeaders: ['X-Total-Count', 'X-Page-Count'],
   maxAge: 86400, // 24 heures

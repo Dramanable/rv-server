@@ -32,12 +32,16 @@ export class PasswordService {
     const hasNumbers = /\d/.test(plainPassword);
     const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(plainPassword);
 
-    const complexityCount = [hasUpperCase, hasLowerCase, hasNumbers, hasSpecialChar]
-      .filter(Boolean).length;
+    const complexityCount = [
+      hasUpperCase,
+      hasLowerCase,
+      hasNumbers,
+      hasSpecialChar,
+    ].filter(Boolean).length;
 
     if (complexityCount < 3) {
       throw new DomainError(
-        'Password must contain at least 3 of: uppercase, lowercase, numbers, special characters'
+        'Password must contain at least 3 of: uppercase, lowercase, numbers, special characters',
       );
     }
   }
@@ -61,7 +65,10 @@ export class PasswordService {
    * Compare deux mots de passe hashés (logique métier)
    * ✅ DOMAIN LOGIC: Égalité métier
    */
-  static arePasswordsEqual(password1: HashedPassword, password2: HashedPassword): boolean {
+  static arePasswordsEqual(
+    password1: HashedPassword,
+    password2: HashedPassword,
+  ): boolean {
     if (!password1 || !password2) {
       return false;
     }

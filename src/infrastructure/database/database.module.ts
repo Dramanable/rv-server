@@ -9,14 +9,22 @@ import type { I18nService } from '../../application/ports/i18n.port';
 class DatabaseI18nService implements I18nService {
   t(key: string, params?: Record<string, unknown>): string {
     const translations: Record<string, string> = {
-      'infrastructure.repository.factory_initialized': 'Repository factory initialized',
-      'infrastructure.repository.switching_database_type': 'Switching database type',
-      'infrastructure.repository.database_type_switched': 'Database type switched',
-      'infrastructure.repository.creating_sql_repository': 'Creating SQL repository',
-      'infrastructure.repository.creating_nosql_repository': 'Creating NoSQL repository',
-      'infrastructure.repository.sql_connection_failed': 'SQL connection failed',
-      'infrastructure.repository.nosql_connection_failed': 'NoSQL connection failed',
-      'infrastructure.repository.connectivity_test_results': 'Connectivity test results',
+      'infrastructure.repository.factory_initialized':
+        'Repository factory initialized',
+      'infrastructure.repository.switching_database_type':
+        'Switching database type',
+      'infrastructure.repository.database_type_switched':
+        'Database type switched',
+      'infrastructure.repository.creating_sql_repository':
+        'Creating SQL repository',
+      'infrastructure.repository.creating_nosql_repository':
+        'Creating NoSQL repository',
+      'infrastructure.repository.sql_connection_failed':
+        'SQL connection failed',
+      'infrastructure.repository.nosql_connection_failed':
+        'NoSQL connection failed',
+      'infrastructure.repository.connectivity_test_results':
+        'Connectivity test results',
     };
 
     let result = translations[key] || key;
@@ -42,7 +50,7 @@ class DatabaseI18nService implements I18nService {
 }
 
 /**
- * 🗄️ Simple Database Module  
+ * 🗄️ Simple Database Module
  * ✅ Clean Architecture compliant
  * ✅ Minimal setup for application startup
  * 🚫 Repository factories disabled until TypeORM implementation complete

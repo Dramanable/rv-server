@@ -17,7 +17,11 @@ export class RedisUserCacheAdapter implements IUserCache {
     private readonly configService: AppConfigService,
   ) {}
 
-  async storeUser(userId: string, user: User, ttlMinutes?: number): Promise<void> {
+  async storeUser(
+    userId: string,
+    user: User,
+    ttlMinutes?: number,
+  ): Promise<void> {
     const key = this.buildKey(userId);
     const ttlSeconds = this.convertMinutesToSeconds(
       ttlMinutes ?? this.configService.getUserCacheRetentionMinutes(),

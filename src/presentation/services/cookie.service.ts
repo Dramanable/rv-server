@@ -1,6 +1,6 @@
 /**
  * 🍪 COOKIE SERVICE - Service de gestion des cookies HTTP (Couche Presentation)
- * 
+ *
  * ✅ Responsabilité : Gestion des cookies HTTP pour l'interface web
  * ✅ Couche : Presentation (détails d'implémentation HTTP)
  * ❌ Ne doit PAS être utilisé dans Domain/Application/Infrastructure
@@ -54,7 +54,7 @@ export class PresentationCookieService {
     const finalOptions = { ...defaultOptions, ...options };
 
     response.cookie(name, value, finalOptions);
-    
+
     this.logger.debug('Cookie set', {
       name,
       secure: finalOptions.secure,
@@ -68,11 +68,11 @@ export class PresentationCookieService {
    */
   getCookie(request: Request, name: string): string | undefined {
     const value = request.cookies?.[name];
-    
+
     if (value) {
       this.logger.debug('Cookie retrieved', { name });
     }
-    
+
     return value;
   }
 
@@ -90,12 +90,12 @@ export class PresentationCookieService {
     const finalOptions = { ...defaultOptions, ...options };
 
     response.clearCookie(name, finalOptions);
-    
+
     this.logger.debug('Cookie cleared', { name });
   }
 
   /**
-   * 🔐 Configure les cookies d'authentification 
+   * 🔐 Configure les cookies d'authentification
    * ✅ Méthode spécialisée pour gérer les tokens d'authentification
    */
   setAuthenticationCookies(
@@ -107,7 +107,8 @@ export class PresentationCookieService {
     },
     rememberMe: boolean,
   ): void {
-    const isProduction = this.configService.get<string>('NODE_ENV') === 'production';
+    const isProduction =
+      this.configService.get<string>('NODE_ENV') === 'production';
 
     // 🔑 Access Token Cookie - Même durée que le JWT
     const accessTokenMaxAge = tokens.expiresIn * 1000; // seconds to milliseconds
@@ -146,7 +147,7 @@ export class PresentationCookieService {
   clearAuthenticationCookies(response: Response): void {
     this.clearCookie(response, 'accessToken', { path: '/' });
     this.clearCookie(response, 'refreshToken', { path: '/auth/refresh' });
-    
+
     this.logger.debug('Authentication cookies cleared');
   }
 }

@@ -9,11 +9,11 @@ import { Redis } from 'ioredis';
 
 export default async (): Promise<void> => {
   console.log('🏗️ Setting up integration test environment...');
-  
+
   // 🔍 Vérifier que les services nécessaires sont disponibles
   await verifyRedisConnection();
   // TODO: await verifyDatabaseConnection();
-  
+
   console.log('✅ Integration test environment ready');
 };
 
@@ -23,14 +23,14 @@ export default async (): Promise<void> => {
 async function verifyRedisConnection(): Promise<void> {
   const redisUrl = process.env.REDIS_URL || 'redis://localhost:6380';
   const redis = new Redis(redisUrl);
-  
+
   try {
     await redis.ping();
     console.log('✅ Redis connection verified');
   } catch (error) {
     console.error('❌ Redis connection failed:', error);
     throw new Error(
-      `Redis is not available at ${redisUrl}. Please ensure Redis is running for integration tests.`
+      `Redis is not available at ${redisUrl}. Please ensure Redis is running for integration tests.`,
     );
   } finally {
     await redis.quit();
@@ -43,7 +43,7 @@ async function verifyRedisConnection(): Promise<void> {
  */
 // async function verifyDatabaseConnection(): Promise<void> {
 //   const dbUrl = process.env.DATABASE_URL || 'postgresql://test_user:test_password@localhost:5433/test_db';
-//   
+//
 //   try {
 //     // Test de connexion à la base de données
 //     console.log('✅ Database connection verified');

@@ -156,7 +156,9 @@ describe('User Entity with Roles', () => {
 
       // Permissions client
       expect(client.hasPermission(Permission.BOOK_APPOINTMENT)).toBe(true);
-      expect(client.hasPermission(Permission.CANCEL_OWN_APPOINTMENTS)).toBe(true);
+      expect(client.hasPermission(Permission.CANCEL_OWN_APPOINTMENTS)).toBe(
+        true,
+      );
       expect(client.hasPermission(Permission.RESCHEDULE_OWN_APPOINTMENTS)).toBe(
         true,
       );

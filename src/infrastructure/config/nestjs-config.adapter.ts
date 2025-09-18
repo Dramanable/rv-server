@@ -176,4 +176,8 @@ export class NestJsConfigServiceAdapter implements IConfigService {
   isTest(): boolean {
     return this.getEnvironment() === 'test';
   }
+
+  getUserCacheRetentionMinutes(): number {
+    return this.configService.get<number>('USER_CACHE_RETENTION_MINUTES', 60);
+  }
 }

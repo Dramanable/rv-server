@@ -152,7 +152,9 @@ describe('RedisUserCacheAdapter - TDD Infrastructure', () => {
       const exists = await adapter.exists(userId);
 
       // 🔍 Assert
-      expect(mockRedisClient.exists).toHaveBeenCalledWith('user:nonexistent-user');
+      expect(mockRedisClient.exists).toHaveBeenCalledWith(
+        'user:nonexistent-user',
+      );
       expect(exists).toBe(false);
     });
   });

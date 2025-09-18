@@ -29,7 +29,10 @@ export class BcryptPasswordHasher implements IPasswordHasher {
   /**
    * Vérifie un mot de passe avec bcrypt
    */
-  async verify(plainPassword: string, hashedPassword: string): Promise<boolean> {
+  async verify(
+    plainPassword: string,
+    hashedPassword: string,
+  ): Promise<boolean> {
     if (!plainPassword || !hashedPassword) {
       return false;
     }

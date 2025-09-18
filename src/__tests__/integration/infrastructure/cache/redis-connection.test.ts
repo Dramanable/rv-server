@@ -4,10 +4,10 @@
 
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
-import type { ICacheService } from '../../application/ports/cache.port';
-import { CacheModule } from '../cache/cache.module';
-import { PinoLoggerModule } from '../logging/pino-logger.module';
-import { TOKENS } from '../../shared/constants/injection-tokens';
+import type { ICacheService } from '@application/ports/cache.port';
+import { CacheModule } from '@infrastructure/cache/cache.module';
+import { PinoLoggerModule } from '@infrastructure/logging/pino-logger.module';
+import { TOKENS } from '@shared/constants/injection-tokens';
 
 describe('Redis Connection Integration Test', () => {
   let cacheService: ICacheService;

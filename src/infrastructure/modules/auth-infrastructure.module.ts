@@ -23,6 +23,7 @@ import { IPasswordHasher } from '../../application/ports/password-hasher.port'; 
 import { IConfigService } from '../../application/ports/config.port';
 import { Logger } from '../../application/ports/logger.port';
 import { I18nService } from '../../application/ports/i18n.port';
+import { UserCacheService } from '../../application/services/user-cache.service'; // ✅ NOUVEAU: Service de cache
 
 // Use Cases
 import { LoginUseCase } from '../../application/use-cases/auth/login.use-case';
@@ -113,6 +114,7 @@ import { TOKENS } from '../../shared/constants/injection-tokens';
         configService: IConfigService,
         logger: Logger,
         i18n: I18nService,
+        userCacheService: UserCacheService, // ✅ NOUVEAU: Service de cache utilisateur
       ) =>
         new LoginUseCase(
           userRepository,
@@ -121,6 +123,7 @@ import { TOKENS } from '../../shared/constants/injection-tokens';
           configService,
           logger,
           i18n,
+          userCacheService, // ✅ NOUVEAU: Service de cache utilisateur
         ),
       inject: [
         TOKENS.USER_REPOSITORY,
@@ -129,6 +132,7 @@ import { TOKENS } from '../../shared/constants/injection-tokens';
         TOKENS.APP_CONFIG,
         TOKENS.LOGGER,
         TOKENS.I18N_SERVICE,
+        TOKENS.USER_CACHE_SERVICE, // ✅ NOUVEAU: Service de cache utilisateur
       ],
     },
 

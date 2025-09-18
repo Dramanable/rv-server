@@ -10,14 +10,8 @@ import { AuthController } from './controllers/auth.controller';
 import { PresentationCookieService } from './services/cookie.service';
 
 @Module({
-  controllers: [
-    AuthController,
-  ],
-  providers: [
-    PresentationCookieService,
-  ],
-  exports: [
-    PresentationCookieService,
-  ],
+  controllers: [AuthController],
+  providers: [PresentationCookieService],
+  exports: [PresentationCookieService],
 })
 export class PresentationModule {}

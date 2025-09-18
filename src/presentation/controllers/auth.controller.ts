@@ -19,7 +19,13 @@ import {
   UsePipes,
 } from '@nestjs/common';
 import type { Response, Request } from 'express';
-import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiSecurity } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBody,
+  ApiSecurity,
+} from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import { LoginUseCase } from '../../application/use-cases/auth/login.use-case';
 import { RefreshTokenUseCase } from '../../application/use-cases/auth/refresh-token.use-case';
@@ -55,7 +61,8 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: '🔐 User Login',
-    description: 'Authenticate user with email/password and return secure JWT cookies',
+    description:
+      'Authenticate user with email/password and return secure JWT cookies',
   })
   @ApiBody({ type: LoginDto })
   @ApiResponse({
@@ -64,14 +71,14 @@ export class AuthController {
     schema: {
       properties: {
         message: { type: 'string', example: 'Login successful' },
-        user: { 
+        user: {
           type: 'object',
           example: {
             id: 'user-123',
             email: 'user@example.com',
             name: 'John Doe',
-            role: 'USER'
-          }
+            role: 'USER',
+          },
         },
       },
     },
@@ -113,7 +120,11 @@ export class AuthController {
       });
 
       // ✅ Gestion des cookies dans la couche Presentation UNIQUEMENT
-      this.cookieService.setAuthenticationCookies(res, result.tokens, loginDto.rememberMe || false);
+      this.cookieService.setAuthenticationCookies(
+        res,
+        result.tokens,
+        loginDto.rememberMe || false,
+      );
 
       // Retourner la réponse (sans les tokens sensibles)
       res.status(200).json({
@@ -126,13 +137,14 @@ export class AuthController {
     }
   }
 
-    @Post('refresh')
+  @Post('refresh')
   @Public() // 🔓 Public mais sécurisé par refresh token
   @Throttle({ default: { limit: 10, ttl: 300000 } }) // 🛡️ 10 refresh max par 5 minutes
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: '🔄 Refresh Access Token',
-    description: 'Generate new access token using valid refresh token from secure cookie',
+    description:
+      'Generate new access token using valid refresh token from secure cookie',
   })
   @ApiBody({ type: RefreshTokenDto })
   @ApiResponse({
@@ -141,12 +153,12 @@ export class AuthController {
     schema: {
       properties: {
         message: { type: 'string', example: 'Token refreshed successfully' },
-        user: { 
+        user: {
           type: 'object',
           example: {
             id: 'user-123',
-            email: 'user@example.com'
-          }
+            email: 'user@example.com',
+          },
         },
       },
     },

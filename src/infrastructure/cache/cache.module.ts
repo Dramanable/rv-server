@@ -105,8 +105,6 @@ class InfrastructureI18nService implements I18nService {
           host: configService.getRedisHost(),
           port: configService.getRedisPort(),
           password: configService.getRedisPassword(),
-          retryDelayOnFailover: 100,
-          maxRetriesPerRequest: 3,
         });
       },
       inject: [AppConfigService],

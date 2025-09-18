@@ -91,10 +91,10 @@ describe('UserCacheService - TDD Clean Architecture', () => {
         user,
         60, // TTL par défaut du configService
       );
-      expect(mockLogger.info).toHaveBeenCalledWith(
-        'Storing user in cache',
-        { userId: user.id, ttlMinutes: 60 },
-      );
+      expect(mockLogger.info).toHaveBeenCalledWith('Storing user in cache', {
+        userId: user.id,
+        ttlMinutes: 60,
+      });
     });
 
     it('should store user in cache with custom TTL', async () => {
@@ -121,10 +121,10 @@ describe('UserCacheService - TDD Clean Architecture', () => {
         user,
         customTTL,
       );
-      expect(mockLogger.info).toHaveBeenCalledWith(
-        'Storing user in cache',
-        { userId: user.id, ttlMinutes: customTTL },
-      );
+      expect(mockLogger.info).toHaveBeenCalledWith('Storing user in cache', {
+        userId: user.id,
+        ttlMinutes: customTTL,
+      });
     });
   });
 
@@ -152,10 +152,10 @@ describe('UserCacheService - TDD Clean Architecture', () => {
 
       expect(mockLogger.error).toHaveBeenCalledWith(
         'Error storing user in cache',
-        {
+        expect.any(Error),
+        expect.objectContaining({
           userId: user.id,
-          error: cacheError.message,
-        },
+        }),
       );
     });
   });

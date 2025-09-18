@@ -54,14 +54,20 @@ export function createMockAuthService(): jest.Mocked<AuthenticationService> {
 
 export const createMockConfigService = () => {
   return {
-    getJwtSecret: jest.fn().mockReturnValue('test-jwt-secret-32chars-minimum-req'),
+    getJwtSecret: jest
+      .fn()
+      .mockReturnValue('test-jwt-secret-32chars-minimum-req'),
     getAccessTokenExpirationTime: jest.fn().mockReturnValue(3600),
     getRefreshTokenExpirationDays: jest.fn().mockReturnValue(30),
     isProduction: jest.fn().mockReturnValue(false),
     isDevelopment: jest.fn().mockReturnValue(true),
     isTest: jest.fn().mockReturnValue(false),
-    getAccessTokenSecret: jest.fn().mockReturnValue('test-access-secret-32-chars-min-length'),
-    getRefreshTokenSecret: jest.fn().mockReturnValue('test-refresh-secret-32-chars-min-length'),
+    getAccessTokenSecret: jest
+      .fn()
+      .mockReturnValue('test-access-secret-32-chars-min-length'),
+    getRefreshTokenSecret: jest
+      .fn()
+      .mockReturnValue('test-refresh-secret-32-chars-min-length'),
     getJwtIssuer: jest.fn().mockReturnValue('test-issuer'),
     getJwtAudience: jest.fn().mockReturnValue('test-audience'),
     getAccessTokenAlgorithm: jest.fn().mockReturnValue('HS256'),

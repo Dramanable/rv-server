@@ -4,24 +4,51 @@
  * ⚠️ TODO: Implémenter le use-case LogoutUseCase
  */
 
-// TODO: Créer le use-case logout.use-case.ts
-// import {
-//   LogoutUseCase,
-//   LogoutRequest,
-//   LogoutResponse,
-// } from './logout.use-case';
-import { AuthenticationService } from '../../../../application/ports/authentication.port';
-import { Logger } from '../../../../application/ports/logger.port';
-import { IConfigService } from '../../../../application/ports/config.port';
-import { I18nService } from '../../../../application/ports/i18n.port';
-// Mock créés directement ici car le fichier auth-test-mocks n'existe plus
-const createMockAuthService = () => ({});
-const createMockConfigService = () => ({});
-const createMockLogger = () => ({});
-const createMockUserRepository = () => ({});
-const createMockI18nService = () => ({});
+import {
+  LogoutUseCase,
+  LogoutRequest,
+  LogoutResponse,
+} from '@application/use-cases/auth/logout.use-case';
+import { AuthenticationService } from '@application/ports/authentication.port';
+import { Logger } from '@application/ports/logger.port';
+import { IConfigService } from '@application/ports/config.port';
+import { I18nService } from '@application/ports/i18n.port';
+// Mock créés directement ici avec les méthodes nécessaires
+const createMockAuthService = () => ({
+  revokeRefreshToken: jest.fn(),
+  revokeAllUserTokens: jest.fn(),
+  refreshTokens: jest.fn(),
+});
 
-describe.skip('LogoutUseCase - TODO: Implémenter le use-case', () => {
+const createMockConfigService = () => ({
+  isProduction: jest.fn().mockReturnValue(false),
+  getAccessTokenExpirationTime: jest.fn().mockReturnValue(3600), // 1 hour
+  getRefreshTokenExpirationDays: jest.fn().mockReturnValue(30), // 30 days
+});
+
+const createMockLogger = () => ({
+  info: jest.fn(),
+  error: jest.fn(),
+  debug: jest.fn(),
+  warn: jest.fn(),
+});
+
+const createMockI18nService = () => ({
+  t: jest.fn().mockImplementation((key: string) => {
+    const translations: Record<string, string> = {
+      'success.auth.logout_successful': 'Logged out successfully',
+      'operations.auth.logout_attempt': 'Logout attempt',
+      'operations.auth.current_token_revoked': 'Current refresh token revoked',
+      'operations.auth.logout_success': 'Logout success',
+      'All tokens revoked for user: {{userId}}':
+        'All tokens revoked for user: {{userId}}',
+      'operations.auth.logout_error': 'operations.auth.logout_error',
+    };
+    return translations[key] || key;
+  }),
+});
+
+describe('LogoutUseCase', () => {
   let useCase: LogoutUseCase;
   let mockAuthService: jest.Mocked<AuthenticationService>;
   let mockLogger: jest.Mocked<Logger>;
@@ -128,7 +155,7 @@ describe.skip('LogoutUseCase - TODO: Implémenter le use-case', () => {
 
       // 🔍 Assert - Logging for all devices logout
       expect(mockLogger.info).toHaveBeenCalledWith(
-        `All tokens revoked for user: ${request.userId}`,
+        'operations.auth.all_tokens_revoked',
         expect.objectContaining({
           context: expect.any(String),
         }),
@@ -214,7 +241,7 @@ describe.skip('LogoutUseCase - TODO: Implémenter le use-case', () => {
 
       // 🔍 Assert - Error should be logged
       expect(mockLogger.error).toHaveBeenCalledWith(
-        `Logout error: ${revocationError.message}`,
+        'operations.auth.logout_error',
         revocationError,
         expect.objectContaining({
           context: expect.any(String),
@@ -248,7 +275,7 @@ describe.skip('LogoutUseCase - TODO: Implémenter le use-case', () => {
 
       // 🔍 Assert - Error should be logged
       expect(mockLogger.error).toHaveBeenCalledWith(
-        `Logout error: ${revocationError.message}`,
+        'operations.auth.logout_error',
         revocationError,
         expect.objectContaining({
           context: expect.any(String),
@@ -281,7 +308,7 @@ describe.skip('LogoutUseCase - TODO: Implémenter le use-case', () => {
 
       // 🔍 Assert - Unknown error should be logged appropriately
       expect(mockLogger.error).toHaveBeenCalledWith(
-        'Logout error: Unknown error',
+        'operations.auth.logout_error',
         undefined, // Not an Error instance
         expect.objectContaining({
           context: expect.any(String),

@@ -1,6 +1,6 @@
 /**
  * 🧪 Bcrypt Password Hasher Tests - INFRASTRUCTURE
- * ✅ Clean Architecture - Infrastructure Layer Tests  
+ * ✅ Clean Architecture - Infrastructure Layer Tests
  * ✅ TDD - Tests avec dépendances techniques (bcrypt)
  * ✅ Tests d'intégration pour l'adapter
  */
@@ -138,7 +138,7 @@ describe('BcryptPasswordHasher - Infrastructure', () => {
       ];
 
       // Act & Assert
-      validHashes.forEach(hash => {
+      validHashes.forEach((hash) => {
         expect(passwordHasher.isValidHashFormat(hash)).toBe(true);
       });
     });
@@ -152,14 +152,14 @@ describe('BcryptPasswordHasher - Infrastructure', () => {
         '$2b$invalidformat',
         '$3b$10$EixZaYVK1fsbw1ZfbX3OXe', // Wrong version
         '$2b$99$EixZaYVK1fsbw1ZfbX3OXe', // Invalid rounds
-        '$2b$10$short',                    // Too short
+        '$2b$10$short', // Too short
         'not-bcrypt-at-all',
         null as any,
         undefined as any,
       ];
 
       // Act & Assert
-      invalidHashes.forEach(hash => {
+      invalidHashes.forEach((hash) => {
         expect(passwordHasher.isValidHashFormat(hash)).toBe(false);
       });
     });
@@ -167,9 +167,9 @@ describe('BcryptPasswordHasher - Infrastructure', () => {
     it('should validate different bcrypt versions', () => {
       // Arrange
       const versions = ['$2a$', '$2b$', '$2x$', '$2y$'];
-      
+
       // Act & Assert
-      versions.forEach(version => {
+      versions.forEach((version) => {
         const hash = `${version}10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW`;
         expect(passwordHasher.isValidHashFormat(hash)).toBe(true);
       });
@@ -178,9 +178,9 @@ describe('BcryptPasswordHasher - Infrastructure', () => {
     it('should validate different cost factors', () => {
       // Arrange
       const costs = ['04', '08', '10', '12', '15'];
-      
+
       // Act & Assert
-      costs.forEach(cost => {
+      costs.forEach((cost) => {
         const hash = `$2b$${cost}$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW`;
         expect(passwordHasher.isValidHashFormat(hash)).toBe(true);
       });

@@ -4,21 +4,20 @@
  * ⚠️ TODO: Implémenter le use-case ListBusinessUseCase
  */
 
-// TODO: Créer le use-case list-business.use-case.ts
-// import {
-//   ListBusinessUseCase,
-//   ListBusinessRequest,
-//   ListBusinessResponse,
-// } from './list-business.use-case';
-import { BusinessRepository } from '../../../domain/repositories/business.repository.interface';
-import { UserRepository } from '../../../domain/repositories/user.repository.interface';
-import { User } from '../../../domain/entities/user.entity';
-import { Logger } from '../../../application/ports/logger.port';
-import { I18nService } from '../../../application/ports/i18n.port';
-import { UserRole } from '../../../../../shared/enums/user-role.enum';
-import { InsufficientPermissionsError } from '../../../../../application/exceptions/application.exceptions';
+import {
+  ListBusinessUseCase,
+  ListBusinessRequest,
+  ListBusinessResponse,
+} from '@application/use-cases/business/list-business.use-case';
+import { BusinessRepository } from '@domain/repositories/business.repository.interface';
+import { UserRepository } from '@domain/repositories/user.repository.interface';
+import { User } from '@domain/entities/user.entity';
+import { Logger } from '@application/ports/logger.port';
+import { I18nService } from '@application/ports/i18n.port';
+import { UserRole } from '@shared/enums/user-role.enum';
+import { InsufficientPermissionsError } from '@application/exceptions/application.exceptions';
 
-describe.skip('ListBusinessUseCase - TODO: Implémenter le use-case', () => {
+describe('ListBusinessUseCase', () => {
   let useCase: ListBusinessUseCase;
   let mockBusinessRepository: jest.Mocked<BusinessRepository>;
   let mockUserRepository: jest.Mocked<UserRepository>;

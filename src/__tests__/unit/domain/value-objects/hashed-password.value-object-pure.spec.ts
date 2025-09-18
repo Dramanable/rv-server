@@ -27,17 +27,19 @@ describe('HashedPassword Value Object - Domain Pure', () => {
       expect(() => HashedPassword.create('')).toThrow(DomainError);
       expect(() => HashedPassword.create('   ')).toThrow(DomainError);
       expect(() => HashedPassword.create(null as any)).toThrow(DomainError);
-      expect(() => HashedPassword.create(undefined as any)).toThrow(DomainError);
+      expect(() => HashedPassword.create(undefined as any)).toThrow(
+        DomainError,
+      );
     });
 
     it('should accept any valid string as hash', () => {
       // Arrange - Différents formats de string (validation technique dans Infrastructure)
       const validStrings = [
         'bcrypt-hash-format',
-        'argon2-hash-format', 
+        'argon2-hash-format',
         'scrypt-hash-format',
         'simple-hash-for-testing',
-        '$2b$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW'
+        '$2b$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW',
       ];
 
       // Act & Assert
@@ -116,12 +118,12 @@ describe('HashedPassword Value Object - Domain Pure', () => {
       // Act & Assert - Vérifier que la propriété est readonly
       expect(typeof hashedPassword.value).toBe('string');
       expect(hashedPassword.value).toBe('immutable-hash');
-      
+
       // Vérifier qu'on ne peut pas modifier l'objet
       expect(() => {
         (hashedPassword as any).newProperty = 'test';
       }).not.toThrow(); // TypeScript empêche mais JS n'interdit pas l'ajout de propriétés
-      
+
       // Le plus important : la valeur reste constante
       expect(hashedPassword.value).toBe('immutable-hash');
     });

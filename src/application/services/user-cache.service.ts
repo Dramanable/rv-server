@@ -34,14 +34,15 @@ export class UserCacheService {
     const userId = user.id;
 
     // Utiliser TTL configuré si non spécifié
-    const effectiveTTL = ttlMinutes ?? this.configService.getUserCacheRetentionMinutes();
+    const effectiveTTL =
+      ttlMinutes ?? this.configService.getUserCacheRetentionMinutes();
 
     try {
       // 📝 Log de l'opération
-      this.logger.info(
-        this.i18n.translate('operations.cache.storing_user'),
-        { userId, ttlMinutes: effectiveTTL },
-      );
+      this.logger.info(this.i18n.translate('operations.cache.storing_user'), {
+        userId,
+        ttlMinutes: effectiveTTL,
+      });
 
       // 💾 Stocker l'utilisateur en cache
       await this.userCache.storeUser(userId, user, effectiveTTL);
@@ -51,14 +52,11 @@ export class UserCacheService {
       cachedUntil.setMinutes(cachedUntil.getMinutes() + effectiveTTL);
 
       // 📝 Log de succès
-      this.logger.info(
-        this.i18n.translate('operations.cache.user_stored'),
-        { 
-          userId, 
-          ttlMinutes: effectiveTTL,
-          cachedUntil: cachedUntil.toISOString(),
-        },
-      );
+      this.logger.info(this.i18n.translate('operations.cache.user_stored'), {
+        userId,
+        ttlMinutes: effectiveTTL,
+        cachedUntil: cachedUntil.toISOString(),
+      });
 
       return {
         success: true,
@@ -69,6 +67,7 @@ export class UserCacheService {
       // 🚨 Log et propagation de l'erreur
       this.logger.error(
         this.i18n.translate('operations.cache.cache_error'),
+        error instanceof Error ? error : new Error(String(error)),
         {
           userId,
           error: error instanceof Error ? error.message : 'Unknown error',

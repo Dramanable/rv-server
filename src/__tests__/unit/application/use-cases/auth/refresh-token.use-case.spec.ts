@@ -4,27 +4,52 @@
  * ⚠️ TODO: Implémenter le use-case RefreshTokenUseCase
  */
 
-// TODO: Créer le use-case refresh-token.use-case.ts
-// import {
-//   RefreshTokenUseCase,
-//   RefreshTokenRequest,
-//   RefreshTokenResponse,
-// } from './refresh-token.use-case';
+import {
+  RefreshTokenUseCase,
+  RefreshTokenRequest,
+  RefreshTokenResponse,
+} from '@application/use-cases/auth/refresh-token.use-case';
 import {
   AuthenticationService,
   AuthTokens,
-} from '../../ports/authentication.port';
-import { Logger } from '../../../../application/ports/logger.port';
-import { I18nService } from '../../../../application/ports/i18n.port';
-import { IConfigService } from '../../../../application/ports/config.port';
-// Mock créés directement ici car le fichier auth-test-mocks n'existe plus
-const createMockAuthService = () => ({});
-const createMockConfigService = () => ({});
-const createMockLogger = () => ({});
-const createMockUserRepository = () => ({});
-const createMockI18nService = () => ({});
+} from '@application/ports/authentication.port';
+import { Logger } from '@application/ports/logger.port';
+import { I18nService } from '@application/ports/i18n.port';
+import { IConfigService } from '@application/ports/config.port';
+// Mock créés directement ici avec les méthodes nécessaires
+const createMockAuthService = () => ({
+  refreshTokens: jest.fn(),
+  revokeRefreshToken: jest.fn(),
+  revokeAllUserTokens: jest.fn(),
+});
 
-describe.skip('RefreshTokenUseCase - TODO: Implémenter le use-case', () => {
+const createMockConfigService = () => ({
+  isProduction: jest.fn().mockReturnValue(false),
+  getAccessTokenExpirationTime: jest.fn().mockReturnValue(3600), // 1 hour
+  getRefreshTokenExpirationDays: jest.fn().mockReturnValue(30), // 30 days
+});
+
+const createMockLogger = () => ({
+  info: jest.fn(),
+  error: jest.fn(),
+  debug: jest.fn(),
+  warn: jest.fn(),
+});
+
+const createMockI18nService = () => ({
+  t: jest.fn().mockImplementation((key: string) => {
+    const translations: Record<string, string> = {
+      'success.auth.tokens_refreshed': 'Tokens refreshed successfully',
+      'errors.auth.no_refresh_token': 'Refresh token is required',
+      'operations.auth.token_refresh_attempt': 'Token refresh attempt',
+      'operations.auth.token_refresh_failed': 'Token refresh failed',
+      'operations.auth.token_refresh_success': 'Token refresh success',
+    };
+    return translations[key] || key;
+  }),
+});
+
+describe('RefreshTokenUseCase', () => {
   let useCase: RefreshTokenUseCase;
   let mockAuthService: jest.Mocked<AuthenticationService>;
   let mockLogger: jest.Mocked<Logger>;

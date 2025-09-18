@@ -1,21 +1,25 @@
 /**
  * 🔐 Login Use Case - Clean Architecture
  * ✅ Pure Application Layer - SANS préoccupations HTTP/cookies
- * 
+ *
  * Authentification utilisateur avec génération de tokens JWT
  * La gestion des cookies se fait dans la couche Presentation
  */
 
-import type { UserRepository } from '../../../domain/repositories/user.repository.interface';
-import type { IPasswordHasher } from '../../ports/password-hasher.port'; // ✅ NOUVEAU: Port Clean Architecture
-import type { AuthenticationService } from '../../ports/authentication.port';
-import type { Logger } from '../../ports/logger.port';
-import type { I18nService } from '../../ports/i18n.port';
-import type { IConfigService } from '../../ports/config.port';
-import type { UserCacheService } from '../../services/user-cache.service';
-import { InvalidCredentialsError, UserNotFoundError, AuthenticationFailedError } from '../../exceptions/auth.exceptions';
-import { Email } from '../../../domain/value-objects/email.vo';
-import { AppContextFactory } from '../../../shared/context/app-context';
+import type { UserRepository } from '@domain/repositories/user.repository.interface';
+import type { IPasswordHasher } from '@application/ports/password-hasher.port'; // ✅ NOUVEAU: Port Clean Architecture
+import type { AuthenticationService } from '@application/ports/authentication.port';
+import type { Logger } from '@application/ports/logger.port';
+import type { I18nService } from '@application/ports/i18n.port';
+import type { IConfigService } from '@application/ports/config.port';
+import type { UserCacheService } from '@application/services/user-cache.service';
+import {
+  InvalidCredentialsError,
+  UserNotFoundError,
+  AuthenticationFailedError,
+} from '@application/exceptions/auth.exceptions';
+import { Email } from '@domain/value-objects/email.vo';
+import { AppContextFactory } from '@shared/context/app-context';
 
 export interface LoginRequest {
   readonly email: string;
@@ -87,7 +91,9 @@ export class LoginUseCase {
 
       if (!isPasswordValid) {
         this.logger.warn(
-          this.i18n.translate('operations.auth.invalid_password', { userId: user.id }),
+          this.i18n.translate('operations.auth.invalid_password', {
+            userId: user.id,
+          }),
           { context: context.correlationId },
         );
         throw new AuthenticationFailedError(
@@ -102,16 +108,16 @@ export class LoginUseCase {
       // 4. � Stocker l'utilisateur en cache Redis pour les requêtes futures
       try {
         await this.userCacheService.execute({ user });
-        this.logger.info(
-          this.i18n.translate('operations.auth.user_cached'),
-          { userId: user.id, context: context.correlationId },
-        );
+        this.logger.info(this.i18n.translate('operations.auth.user_cached'), {
+          userId: user.id,
+          context: context.correlationId,
+        });
       } catch (error) {
         // ⚠️ Le cache n'est pas critique - on log mais on continue
         this.logger.warn(
           this.i18n.translate('warnings.auth.user_cache_failed'),
-          { 
-            userId: user.id, 
+          {
+            userId: user.id,
             error: error instanceof Error ? error.message : 'Unknown error',
             context: context.correlationId,
           },
@@ -120,7 +126,9 @@ export class LoginUseCase {
 
       // 5. �📊 Audit de succès
       this.logger.info(
-        this.i18n.translate('operations.auth.login_success', { userId: user.id }),
+        this.i18n.translate('operations.auth.login_success', {
+          userId: user.id,
+        }),
         { context: context.correlationId },
       );
 
@@ -150,6 +158,4 @@ export class LoginUseCase {
       throw error;
     }
   }
-
-
 }

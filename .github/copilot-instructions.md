@@ -269,7 +269,7 @@ src/domain/
 ```
 src/application/
 ├── services/          # Services applicatifs (PRÉFÉRER aux use-cases)
-├── ports/             # Interfaces pour l'infrastructure  
+├── ports/             # Interfaces pour l'infrastructure
 ├── use-cases/         # Cases d'utilisation (seulement si nécessaire)
 └── exceptions/        # Exceptions applicatives
 ```
@@ -1336,4 +1336,116 @@ Husky empêchera les commits si :
 - Le code n'est pas correctement formaté
 
 Cela garantit **100% de qualité du code** et **un historique de commits cohérent** !
+
+## 🚨 **RÈGLE CRITIQUE : JAMAIS COMMITER AVEC DES ERREURS ESLINT**
+
+### ❌ **INTERDICTION ABSOLUE**
+
+**Il est STRICTEMENT INTERDIT de commiter du code avec des erreurs ESLint ou des tests qui échouent.**
+
+Cette règle est **NON-NÉGOCIABLE** pour maintenir :
+- **Qualité du code** constante
+- **Stabilité** du projet
+- **Maintenabilité** à long terme
+- **Cohérence** de l'équipe
+
+### 🔧 **Workflow de Commit OBLIGATOIRE**
+
+#### **1️⃣ Format + Reorganize Imports**
+```bash
+# Formatter le code avec Prettier
+npm run format
+
+# Réorganiser automatiquement les imports TypeScript
+npx tsc --organizeImports src/**/*.ts
+# OU utiliser l'action VS Code "Organize Imports" (Shift+Alt+O)
+```
+
+#### **2️⃣ Lint avec Correction Automatique**
+```bash
+# Lancer ESLint avec correction automatique
+npm run lint -- --fix
+
+# Vérifier qu'il n'y a AUCUNE erreur restante
+npm run lint
+```
+
+#### **3️⃣ Vérification des Tests**
+```bash
+# S'assurer que TOUS les tests passent
+npm test
+
+# Vérification spécifique des tests unitaires
+npm run test:unit
+
+# Optionnel : Vérifier la coverage
+npm run test:cov
+```
+
+#### **4️⃣ Commit Sémantique**
+```bash
+# Commit avec message sémantique conforme
+git add .
+git commit -m "🎉 feat(scope): description claire et concise"
+```
+
+### ⚡ **Commandes Rapides Pré-Commit**
+
+```bash
+# Script complet de pré-commit (recommandé)
+npm run format && npm run lint -- --fix && npm test && git add .
+
+# Vérification finale avant commit
+npm run lint && npm test
+```
+
+### 🎯 **Organiser les Imports TypeScript**
+
+#### **Automatique avec VS Code**
+- **Raccourci** : `Shift + Alt + O`
+- **Command Palette** : `> TypeScript: Organize Imports`
+- **Au sauvegarde** : Configurer `"editor.codeActionsOnSave": {"source.organizeImports": true}`
+
+#### **Via Terminal**
+```bash
+# Organiser les imports pour tous les fichiers TypeScript
+find src -name "*.ts" -exec npx tsc --noEmit --organizeImports {} \;
+
+# Ou utiliser un plugin ESLint
+npm run lint -- --fix-type suggestion
+```
+
+### 📋 **Checklist Pré-Commit OBLIGATOIRE**
+
+- [ ] ✅ **Format** : Code formaté avec Prettier
+- [ ] ✅ **Imports** : Imports réorganisés automatiquement
+- [ ] ✅ **Lint** : Aucune erreur ESLint (0 errors, warnings acceptables)
+- [ ] ✅ **Tests** : Tous les tests passent (0 failed)
+- [ ] ✅ **Build** : Compilation TypeScript réussie
+- [ ] ✅ **Message** : Commit sémantique conforme
+
+### 🚨 **Sanctions pour Non-Respect**
+
+Le non-respect de ces règles entraîne :
+- **Rejet automatique** du commit par Husky
+- **Blocage de la CI/CD**
+- **Demande de correction immédiate**
+- **Review obligatoire** pour violations répétées
+
+### 💡 **Configuration IDE Recommandée**
+
+```json
+// .vscode/settings.json
+{
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": true,
+    "source.fixAll.eslint": true
+  },
+  "eslint.validate": ["typescript"],
+  "typescript.preferences.organizeImports": true
+}
+```
+
+**Cette règle garantit un code de qualité professionnelle et une collaboration d'équipe fluide !**
 `````

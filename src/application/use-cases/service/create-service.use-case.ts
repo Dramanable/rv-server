@@ -4,28 +4,22 @@
  * Création d'un service avec validation métier et permissions
  * ✅ AUCUNE dépendance NestJS - Respect de la Clean Architecture
  */
-import {
-  Service,
-  ServiceStatus,
-} from '../../../domain/entities/service.entity';
-import { ServiceRepository } from '../../../domain/repositories/service.repository.interface';
-import { BusinessRepository } from '../../../domain/repositories/business.repository.interface';
-import { Logger } from '../../../application/ports/logger.port';
-import { I18nService } from '../../../application/ports/i18n.port';
-import {
-  AppContext,
-  AppContextFactory,
-} from '../../../shared/context/app-context';
-import { UserRole, Permission } from '../../../shared/enums/user-role.enum';
-import { User } from '../../../domain/entities/user.entity';
-import { UserRepository } from '../../../domain/repositories/user.repository.interface';
+import { Service, ServiceStatus } from '@domain/entities/service.entity';
+import { ServiceRepository } from '@domain/repositories/service.repository.interface';
+import { BusinessRepository } from '@domain/repositories/business.repository.interface';
+import { Logger } from '@application/ports/logger.port';
+import { I18nService } from '@application/ports/i18n.port';
+import { AppContext, AppContextFactory } from '@shared/context/app-context';
+import { UserRole, Permission } from '@shared/enums/user-role.enum';
+import { User } from '@domain/entities/user.entity';
+import { UserRepository } from '@domain/repositories/user.repository.interface';
 import {
   InsufficientPermissionsError,
   ServiceValidationError,
   BusinessNotFoundError,
-} from '../../../application/exceptions/application.exceptions';
-import { Money } from '../../../domain/value-objects/money.value-object';
-import { BusinessId } from '../../../domain/value-objects/business-id.value-object';
+} from '@application/exceptions/application.exceptions';
+import { Money } from '@domain/value-objects/money.value-object';
+import { BusinessId } from '@domain/value-objects/business-id.value-object';
 
 export interface CreateServiceRequest {
   readonly requestingUserId: string;

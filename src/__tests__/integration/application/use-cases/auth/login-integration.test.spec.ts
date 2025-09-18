@@ -9,12 +9,12 @@ import { TOKENS } from '../../../shared/constants/injection-tokens';
 
 /**
  * 🧪 Test d'intégration End-to-End - Login avec Cache Redis
- * 
+ *
  * Ce test vérifie que la chaîne complète fonctionne :
  * 1. Authentification avec mot de passe
  * 2. Stockage automatique du user dans Redis après login réussi
  * 3. Vérification que l'utilisateur est bien présent dans le cache
- * 
+ *
  * Architecture Clean : Test sans dépendances externes concrètes
  */
 describe('LoginUseCase - Integration Test with Redis Cache', () => {
@@ -35,7 +35,7 @@ describe('LoginUseCase - Integration Test with Redis Cache', () => {
     'johndoe',
     true, // isActive
     true, // isVerified
-    false // passwordChangeRequired
+    false, // passwordChangeRequired
   );
 
   beforeEach(async () => {
@@ -135,18 +135,18 @@ describe('LoginUseCase - Integration Test with Redis Cache', () => {
       const result = await loginUseCase.execute(loginRequest);
 
       // ✅ Assert: Vérifications du comportement
-      
+
       // 1. Vérifier que l'utilisateur a été trouvé
       expect(mockUserRepository.findByEmail).toHaveBeenCalledWith(
         expect.objectContaining({
-          value: 'john.doe@example.com'
-        })
+          value: 'john.doe@example.com',
+        }),
       );
 
       // 2. Vérifier que le mot de passe a été vérifié
       expect(mockPasswordHasher.verify).toHaveBeenCalledWith(
         'ValidPassword123!',
-        '$2b$10$valid.hashed.password'
+        '$2b$10$valid.hashed.password',
       );
 
       // 3. Vérifier que l'utilisateur a été stocké dans le cache
@@ -191,7 +191,9 @@ describe('LoginUseCase - Integration Test with Redis Cache', () => {
         expiresIn: 3600,
       });
       // Simulation d'une erreur Redis
-      mockUserCacheService.execute.mockRejectedValue(new Error('Redis connection failed'));
+      mockUserCacheService.execute.mockRejectedValue(
+        new Error('Redis connection failed'),
+      );
 
       // 🎯 Act: Le login doit réussir malgré l'erreur cache
       const result = await loginUseCase.execute(loginRequest);
@@ -201,7 +203,9 @@ describe('LoginUseCase - Integration Test with Redis Cache', () => {
       expect(result.tokens.accessToken).toBe('mock-access-token');
 
       // Vérifier que le cache a été tenté
-      expect(mockUserCacheService.execute).toHaveBeenCalledWith({ user: validUser });
+      expect(mockUserCacheService.execute).toHaveBeenCalledWith({
+        user: validUser,
+      });
     });
 
     it('should use custom TTL from configuration', async () => {
@@ -225,7 +229,9 @@ describe('LoginUseCase - Integration Test with Redis Cache', () => {
       await loginUseCase.execute(loginRequest);
 
       // ✅ Assert: Vérifier que le cache service a été appelé
-      expect(mockUserCacheService.execute).toHaveBeenCalledWith({ user: validUser });
+      expect(mockUserCacheService.execute).toHaveBeenCalledWith({
+        user: validUser,
+      });
     });
   });
 

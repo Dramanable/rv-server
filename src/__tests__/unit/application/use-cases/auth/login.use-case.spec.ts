@@ -3,7 +3,11 @@
  * ✅ Tests PURS Application Layer (SANS cookies/HTTP)
  */
 
-import { LoginUseCase, LoginRequest, LoginResponse } from '../../../../../application/use-cases/auth/login.use-case';
+import {
+  LoginUseCase,
+  LoginRequest,
+  LoginResponse,
+} from '../../../../../application/use-cases/auth/login.use-case';
 import type { UserRepository } from '../../../../../domain/repositories/user.repository.interface';
 import type { IPasswordHasher } from '../../../../../application/ports/auth-token.service.interface';
 import type { AuthenticationService } from '../../../../../application/ports/authentication.port';
@@ -11,7 +15,10 @@ import type { Logger } from '../../../../../application/ports/logger.port';
 import type { I18nService } from '../../../../../application/ports/i18n.port';
 import type { IConfigService } from '../../../../../application/ports/config.port';
 import type { UserCacheService } from '../../../../../application/services/user-cache.service';
-import { UserNotFoundError, AuthenticationFailedError } from '../../../../../application/exceptions/auth.exceptions';
+import {
+  UserNotFoundError,
+  AuthenticationFailedError,
+} from '../../../../../application/exceptions/auth.exceptions';
 import { User } from '../../../../../domain/entities/user.entity';
 import { UserRole } from '../../../../../shared/enums/user-role.enum';
 
@@ -77,7 +84,8 @@ describe('LoginUseCase - Clean Architecture', () => {
         'operations.auth.login_success': 'Login successful for user',
         'operations.auth.login_failed': 'Login failed',
         'operations.auth.user_cached': 'User cached in Redis after login',
-        'warnings.auth.user_cache_failed': 'Failed to cache user in Redis after login',
+        'warnings.auth.user_cache_failed':
+          'Failed to cache user in Redis after login',
         'errors.auth.user_not_found': 'User not found',
         'errors.auth.invalid_credentials': 'Invalid credentials',
         'success.auth.login_successful': 'success.auth.login_successful',

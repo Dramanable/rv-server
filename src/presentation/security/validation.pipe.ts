@@ -1,10 +1,15 @@
 /**
- * 🧹 Input Sanitization & Validation - Presentation Layer  
+ * 🧹 Input Sanitization & Validation - Presentation Layer
  * ✅ Protection contre XSS, SQL Injection, NoSQL Injection
  * ✅ Validation stricte des inputs
  */
 
-import { Injectable, PipeTransform, ArgumentMetadata, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  PipeTransform,
+  ArgumentMetadata,
+  BadRequestException,
+} from '@nestjs/common';
 import { validate } from 'class-validator';
 import { plainToInstance } from 'class-transformer';
 import DOMPurify from 'isomorphic-dompurify';
@@ -18,21 +23,21 @@ export class SecurityValidationPipe implements PipeTransform<any> {
 
     // Sanitization AVANT validation
     const sanitizedValue = this.sanitizeInput(value);
-    
+
     // Transformation vers DTO
     const object = plainToInstance(metatype, sanitizedValue);
-    
+
     // Validation avec class-validator
     const errors = await validate(object);
-    
+
     if (errors.length > 0) {
-      const errorMessages = errors.map(error => 
-        Object.values(error.constraints || {}).join(', ')
-      ).join('; ');
-      
+      const errorMessages = errors
+        .map((error) => Object.values(error.constraints || {}).join(', '))
+        .join('; ');
+
       throw new BadRequestException(`Validation failed: ${errorMessages}`);
     }
-    
+
     return object;
   }
 
@@ -47,14 +52,14 @@ export class SecurityValidationPipe implements PipeTransform<any> {
   private sanitizeInput(value: any): any {
     if (typeof value === 'string') {
       // Protection XSS
-      return DOMPurify.sanitize(value, { 
+      return DOMPurify.sanitize(value, {
         ALLOWED_TAGS: [], // Aucun tag HTML autorisé
-        ALLOWED_ATTR: [] 
+        ALLOWED_ATTR: [],
       }).trim();
     }
 
     if (Array.isArray(value)) {
-      return value.map(item => this.sanitizeInput(item));
+      return value.map((item) => this.sanitizeInput(item));
     }
 
     if (value && typeof value === 'object') {

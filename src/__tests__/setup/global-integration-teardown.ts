@@ -9,13 +9,13 @@ import { Redis } from 'ioredis';
 
 export default async (): Promise<void> => {
   console.log('🧹 Cleaning up integration test environment...');
-  
+
   // 🗑️ Nettoyer les données de test dans Redis
   await cleanupRedis();
-  
+
   // TODO: Nettoyer la base de données de test
   // await cleanupDatabase();
-  
+
   console.log('✅ Integration test environment cleaned up');
 };
 
@@ -25,7 +25,7 @@ export default async (): Promise<void> => {
 async function cleanupRedis(): Promise<void> {
   const redisUrl = process.env.REDIS_URL || 'redis://localhost:6380';
   const redis = new Redis(redisUrl);
-  
+
   try {
     // Vider toutes les données de test
     await redis.flushall();

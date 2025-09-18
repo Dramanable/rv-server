@@ -5,6 +5,8 @@
  * Compatible avec UserRole mais plus granulaire pour les employés
  */
 
+import { UserRole } from './user-role.enum';
+
 /**
  * 🏥 Rôles du Personnel - Mapping avec UserRole
  */
@@ -90,54 +92,54 @@ export const STAFF_TO_USER_ROLE_MAPPING: Record<
   import('./user-role.enum').UserRole
 > = {
   // Direction
-  [StaffRole.OWNER]: 'BUSINESS_OWNER' as any,
-  [StaffRole.DIRECTOR]: 'BUSINESS_ADMIN' as any,
+  [StaffRole.OWNER]: UserRole.BUSINESS_OWNER,
+  [StaffRole.DIRECTOR]: UserRole.BUSINESS_ADMIN,
 
   // Management
-  [StaffRole.SITE_MANAGER]: 'LOCATION_MANAGER' as any,
-  [StaffRole.DEPARTMENT_HEAD]: 'DEPARTMENT_HEAD' as any,
-  [StaffRole.TEAM_LEAD]: 'DEPARTMENT_HEAD' as any,
+  [StaffRole.SITE_MANAGER]: UserRole.LOCATION_MANAGER,
+  [StaffRole.DEPARTMENT_HEAD]: UserRole.DEPARTMENT_HEAD,
+  [StaffRole.TEAM_LEAD]: UserRole.DEPARTMENT_HEAD,
 
   // Praticiens Médicaux
-  [StaffRole.SENIOR_DOCTOR]: 'SENIOR_PRACTITIONER' as any,
-  [StaffRole.DOCTOR]: 'PRACTITIONER' as any,
-  [StaffRole.RESIDENT]: 'JUNIOR_PRACTITIONER' as any,
+  [StaffRole.SENIOR_DOCTOR]: UserRole.SENIOR_PRACTITIONER,
+  [StaffRole.DOCTOR]: UserRole.PRACTITIONER,
+  [StaffRole.RESIDENT]: UserRole.JUNIOR_PRACTITIONER,
 
   // Praticiens Dentaires
-  [StaffRole.SENIOR_DENTIST]: 'SENIOR_PRACTITIONER' as any,
-  [StaffRole.DENTIST]: 'PRACTITIONER' as any,
-  [StaffRole.DENTAL_STUDENT]: 'JUNIOR_PRACTITIONER' as any,
+  [StaffRole.SENIOR_DENTIST]: UserRole.SENIOR_PRACTITIONER,
+  [StaffRole.DENTIST]: UserRole.PRACTITIONER,
+  [StaffRole.DENTAL_STUDENT]: UserRole.JUNIOR_PRACTITIONER,
 
   // Praticiens Juridiques
-  [StaffRole.SENIOR_LAWYER]: 'SENIOR_PRACTITIONER' as any,
-  [StaffRole.LAWYER]: 'PRACTITIONER' as any,
-  [StaffRole.PARALEGAL]: 'JUNIOR_PRACTITIONER' as any,
+  [StaffRole.SENIOR_LAWYER]: UserRole.SENIOR_PRACTITIONER,
+  [StaffRole.LAWYER]: UserRole.PRACTITIONER,
+  [StaffRole.PARALEGAL]: UserRole.JUNIOR_PRACTITIONER,
 
   // Thérapeutes
-  [StaffRole.SENIOR_THERAPIST]: 'SENIOR_PRACTITIONER' as any,
-  [StaffRole.THERAPIST]: 'PRACTITIONER' as any,
-  [StaffRole.THERAPY_INTERN]: 'JUNIOR_PRACTITIONER' as any,
+  [StaffRole.SENIOR_THERAPIST]: UserRole.SENIOR_PRACTITIONER,
+  [StaffRole.THERAPIST]: UserRole.PRACTITIONER,
+  [StaffRole.THERAPY_INTERN]: UserRole.JUNIOR_PRACTITIONER,
 
   // Beauté
-  [StaffRole.SENIOR_STYLIST]: 'SENIOR_PRACTITIONER' as any,
-  [StaffRole.STYLIST]: 'PRACTITIONER' as any,
-  [StaffRole.JUNIOR_STYLIST]: 'JUNIOR_PRACTITIONER' as any,
+  [StaffRole.SENIOR_STYLIST]: UserRole.SENIOR_PRACTITIONER,
+  [StaffRole.STYLIST]: UserRole.PRACTITIONER,
+  [StaffRole.JUNIOR_STYLIST]: UserRole.JUNIOR_PRACTITIONER,
 
   // Conseil
-  [StaffRole.SENIOR_CONSULTANT]: 'SENIOR_PRACTITIONER' as any,
-  [StaffRole.CONSULTANT]: 'PRACTITIONER' as any,
-  [StaffRole.JUNIOR_CONSULTANT]: 'JUNIOR_PRACTITIONER' as any,
+  [StaffRole.SENIOR_CONSULTANT]: UserRole.SENIOR_PRACTITIONER,
+  [StaffRole.CONSULTANT]: UserRole.PRACTITIONER,
+  [StaffRole.JUNIOR_CONSULTANT]: UserRole.JUNIOR_PRACTITIONER,
 
   // Support
-  [StaffRole.HEAD_RECEPTIONIST]: 'RECEPTIONIST' as any,
-  [StaffRole.RECEPTIONIST]: 'RECEPTIONIST' as any,
-  [StaffRole.SENIOR_ASSISTANT]: 'ASSISTANT' as any,
-  [StaffRole.ASSISTANT]: 'ASSISTANT' as any,
-  [StaffRole.APPOINTMENT_COORDINATOR]: 'SCHEDULER' as any,
-  [StaffRole.SCHEDULER]: 'SCHEDULER' as any,
+  [StaffRole.HEAD_RECEPTIONIST]: UserRole.RECEPTIONIST,
+  [StaffRole.RECEPTIONIST]: UserRole.RECEPTIONIST,
+  [StaffRole.SENIOR_ASSISTANT]: UserRole.ASSISTANT,
+  [StaffRole.ASSISTANT]: UserRole.ASSISTANT,
+  [StaffRole.APPOINTMENT_COORDINATOR]: UserRole.SCHEDULER,
+  [StaffRole.SCHEDULER]: UserRole.SCHEDULER,
 
   // Spécialisés
-  [StaffRole.HYGIENIST]: 'PRACTITIONER' as any,
+  [StaffRole.HYGIENIST]: UserRole.PRACTITIONER,
   [StaffRole.NURSE]: 'ASSISTANT' as any,
   [StaffRole.TECHNICIAN]: 'ASSISTANT' as any,
   [StaffRole.INTERPRETER]: 'ASSISTANT' as any,

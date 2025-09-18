@@ -43,11 +43,11 @@ export class EntityNotFoundError extends DomainError {
     identifier: string | Record<string, unknown>,
     context?: Record<string, unknown>,
   ) {
-    super(
-      `${entityName} not found`,
-      'ENTITY_NOT_FOUND',
-      { entityName, identifier, ...context },
-    );
+    super(`${entityName} not found`, 'ENTITY_NOT_FOUND', {
+      entityName,
+      identifier,
+      ...context,
+    });
     this.name = 'EntityNotFoundError';
   }
 }
