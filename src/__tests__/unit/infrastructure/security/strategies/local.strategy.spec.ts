@@ -68,15 +68,27 @@ describe('LocalStrategy', () => {
 
   describe('Technical Validation (Clean Architecture)', () => {
     it('should return user data when valid credentials provided', async () => {
-            // Arrange
+      // Arrange
       const email = 'valid@example.com';
       const password = 'password123';
-      const mockReq = { ip: '127.0.0.1', get: () => 'test-agent' };
+      const mockReq = {
+        ip: '127.0.0.1',
+        headers: { 'user-agent': 'test-agent' },
+        path: '/auth/login',
+      };
 
-      const mockUser = new User(
+      const mockUser = User.createWithHashedPassword(
+        'test-user-id',
         Email.create('valid@example.com'),
         'Test User',
         UserRole.REGULAR_CLIENT,
+        'hashedPassword123',
+        new Date(),
+        undefined,
+        undefined,
+        true,
+        false,
+        false,
       );
 
       mockUserRepository.findByEmail.mockResolvedValue(mockUser);
@@ -91,6 +103,7 @@ describe('LocalStrategy', () => {
         email: email,
         name: 'Test User',
         role: UserRole.REGULAR_CLIENT,
+        createdAt: expect.any(Date),
       });
       expect(mockUserRepository.findByEmail).toHaveBeenCalledWith(
         expect.any(Email),
@@ -105,7 +118,11 @@ describe('LocalStrategy', () => {
       // Arrange
       const email = 'nonexistent@example.com';
       const password = 'anyPassword';
-      const mockReq = { headers: { 'user-agent': 'test' }, ip: '127.0.0.1' };
+      const mockReq = {
+        headers: { 'user-agent': 'test-agent' },
+        ip: '127.0.0.1',
+        path: '/auth/login',
+      };
 
       mockUserRepository.findByEmail.mockResolvedValue(null);
 
@@ -121,7 +138,11 @@ describe('LocalStrategy', () => {
       // Arrange
       const email = 'test@example.com';
       const password = 'invalidPassword';
-      const mockReq = { headers: { 'user-agent': 'test' }, ip: '127.0.0.1' };
+      const mockReq = {
+        headers: { 'user-agent': 'test-agent' },
+        ip: '127.0.0.1',
+        path: '/auth/login',
+      };
       const mockUser = User.createWithHashedPassword(
         'user-456',
         Email.create(email),
@@ -154,7 +175,11 @@ describe('LocalStrategy', () => {
       // Arrange
       const invalidEmail = 'invalid-email';
       const password = 'anyPassword';
-      const mockReq = { headers: { 'user-agent': 'test' }, ip: '127.0.0.1' };
+      const mockReq = {
+        headers: { 'user-agent': 'test-agent' },
+        ip: '127.0.0.1',
+        path: '/auth/login',
+      };
 
       // Act
       const result = await strategy.validate(

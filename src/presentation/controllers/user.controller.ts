@@ -3,11 +3,12 @@
  * Présentation layer pour la gestion des utilisateurs
  */
 
+import { Controller, Get } from '@nestjs/common';
 import {
-    ApiBearerAuth,
-    ApiOperation,
-    ApiResponse,
-    ApiTags,
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
 } from '@nestjs/swagger';
 // Imports simplifiés pour éviter les erreurs de build
 // TODO: Implémenter les décorateurs et guards manquants

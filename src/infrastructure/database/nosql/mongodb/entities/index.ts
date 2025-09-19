@@ -5,10 +5,9 @@
  */
 
 export {
-    RefreshTokenMongoEntity,
-    RefreshTokenMongoSchema
+  RefreshTokenMongoEntity,
+  RefreshTokenMongoSchema,
 } from './refresh-token-mongo.entity';
 export type { RefreshTokenDocument } from './refresh-token-mongo.entity';
 export { UserMongoEntity, UserMongoSchema } from './user-mongo.entity';
 export type { UserDocument } from './user-mongo.entity';
-

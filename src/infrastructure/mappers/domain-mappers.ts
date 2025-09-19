@@ -20,9 +20,9 @@ import { UserOrmEntity } from '../database/sql/postgresql/entities/user-orm.enti
 
 // Presentation DTOs
 import {
-    LoginResponseDto,
-    RegisterResponseDto,
-    UserResponseDto,
+  LoginResponseDto,
+  RegisterResponseDto,
+  UserResponseDto,
 } from '../../presentation/dtos/auth.dto';
 
 /**
