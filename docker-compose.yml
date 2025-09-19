@@ -1,53 +1,74 @@
 services:
+  # 🚀 NestJS Application - Development Mode
   app:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: api
+    container_name: nestjs-dev
     restart: unless-stopped
-    # 🎯 Memory optimization
-    mem_limit: 512m
-    mem_reservation: 256m
-    cpus: '0.5'
+    
+    # 🔧 Development resource allocation
+    mem_limit: 1g
+    mem_reservation: 512m
+    cpus: '1.0'
+    
+    # 🔗 Service dependencies
     depends_on:
       postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
+    
+    # 🌍 Environment configuration
     env_file:
       - .env
+    environment:
+      - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true  # For hot reload in Docker
+    
+    # 🚪 Port mapping
     ports:
-      - "3000:3000"
-      - "9229:9229"
+      - "3000:3000"      # Application
+      - "9229:9229"      # Debug port
+    
+    # � Development volumes for hot reload
     volumes:
-      # 🔄 Hot reload - Source code
-      - ./src:/app/src:cached
+      # Source code hot reload
+      - ./src:/app/src:delegated
+      - ./test:/app/test:delegated
+      
+      # Configuration files
       - ./package.json:/app/package.json:cached
       - ./package-lock.json:/app/package-lock.json:cached
       - ./tsconfig.json:/app/tsconfig.json:cached
       - ./tsconfig.build.json:/app/tsconfig.build.json:cached
       - ./nest-cli.json:/app/nest-cli.json:cached
       - ./.env:/app/.env:cached
-
-      # 🎯 Performance - Cache node_modules to avoid reinstall
-      - node_modules_cache:/app/node_modules
-
-      # 📁 Development files
-      - ./test:/app/test:cached
       - ./.eslintrc.js:/app/.eslintrc.js:cached
       - ./.prettierrc:/app/.prettierrc:cached
+      
+      # Development tools
+      - ./scripts:/app/scripts:cached
+      
+      # Node modules cache for performance
+      - node_modules_cache:/app/node_modules
+    
+    # 🌐 Network
     networks:
       - app-network
+    
+    # 🏥 Health check for development
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/health"]
-      interval: 60s
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 30s
+      start_period: 45s
 
+  # 🗄️ PostgreSQL Database - Development
   postgres:
     image: postgres:15-alpine
-    container_name: postgres
+    container_name: postgres-dev
     restart: unless-stopped
     # 🎯 Memory optimization
     mem_limit: 256m
@@ -155,8 +176,6 @@ services:
       timeout: 10s
       retries: 3
       start_period: 30s
-
-      - testing
 
 volumes:
   postgres_data:

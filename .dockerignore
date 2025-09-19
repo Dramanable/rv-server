@@ -159,7 +159,7 @@ jest.config*
 # tsconfig*.json
 
 # ========================================
-# 📊 Reports & Analytics  
+# 📊 Reports & Analytics
 # ========================================
 reports/
 benchmarks/
@@ -172,8 +172,8 @@ sonar-report.json
 # 🎯 Memory Optimization Exclusions
 # ========================================
 
-# Large lock files (will be regenerated)
-package-lock.json
+# Large lock files (will be regenerated) - Keep package-lock.json for Docker
+# package-lock.json  # REQUIRED for Docker builds
 yarn.lock
 pnpm-lock.yaml
 
@@ -194,7 +194,7 @@ pnpm-lock.yaml
 # Media files (large size)
 *.png
 *.jpg
-*.jpeg  
+*.jpeg
 *.gif
 *.svg
 *.ico
@@ -230,7 +230,7 @@ sample/
 BUSINESS_SCOPE.md
 CLEAN_ARCHITECTURE_REPORT.md
 FINAL_STATUS_REPORT.md
-HARMONISATION_HASHEDPASSWORD_REPORT.md  
+HARMONISATION_HASHEDPASSWORD_REPORT.md
 IMPROVEMENT_ROADMAP.md
 PASSPORT_INTEGRATION.md
 APP_CONTEXT.md
@@ -254,6 +254,6 @@ tests/mocks/
 
 # RUNTIME OPTIMIZATIONS:
 # ✅ Only essential files copied
-# ✅ No development artifacts  
+# ✅ No development artifacts
 # ✅ Minimal attack surface
 # ✅ Faster container startup

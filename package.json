@@ -61,10 +61,22 @@
     "migration:run": "typeorm-ts-node-commonjs migration:run -d src/infrastructure/database/typeorm.config.ts",
     "migration:revert": "typeorm-ts-node-commonjs migration:revert -d src/infrastructure/database/typeorm.config.ts",
     "migration:show": "typeorm-ts-node-commonjs migration:show -d src/infrastructure/database/typeorm.config.ts",
+    "migration:status": "typeorm-ts-node-commonjs migration:show -d src/infrastructure/database/typeorm.config.ts",
     "schema:drop": "typeorm-ts-node-commonjs schema:drop -d src/infrastructure/database/typeorm.config.ts",
     "schema:sync": "typeorm-ts-node-commonjs schema:sync -d src/infrastructure/database/typeorm.config.ts",
+    "schema:log": "typeorm-ts-node-commonjs schema:log -d src/infrastructure/database/typeorm.config.ts",
     "db:setup": "./scripts/setup-database.sh",
-    "db:reset": "npm run schema:drop && npm run migration:run"
+    "db:reset": "npm run schema:drop && npm run migration:run",
+    "db:fresh": "npm run db:reset",
+    "db:seed": "echo 'TODO: Implement database seeding'",
+    "typeorm": "typeorm-ts-node-commonjs -d src/infrastructure/database/typeorm.config.ts",
+    "migrate": "./scripts/migration.sh",
+    "migrate:run": "./scripts/migration.sh run",
+    "migrate:revert": "./scripts/migration.sh revert",
+    "migrate:generate": "./scripts/migration.sh generate",
+    "migrate:create": "./scripts/migration.sh create",
+    "migrate:status": "./scripts/migration.sh status",
+    "migrate:reset": "./scripts/migration.sh reset"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.888.0",

@@ -438,6 +438,51 @@ npm run build     # Build TypeScript
 
 ### **Configuration Automatisée**
 
+## 🔄 Database Migrations avec TypeORM
+
+Ce projet utilise **TypeORM** pour la gestion des migrations de base de données avec une approche Clean Architecture.
+
+### **Commandes de Migration Rapides** ⚡
+
+```bash
+# 🚀 Commandes principales (recommandées)
+npm run migrate              # Afficher l'aide complète
+npm run migrate:run          # Exécuter les migrations en attente
+npm run migrate:status       # Vérifier le statut des migrations
+npm run migrate:revert       # Annuler la dernière migration
+
+# 📝 Création de migrations
+npm run migrate:generate AddUserTable  # Générer depuis changements entités
+npm run migrate:create AddIndexes      # Créer migration vide
+
+# 🛠️ Gestion avancée
+npm run migrate:reset        # Reset complet (DEV uniquement)
+```
+
+### **Utilisation du Script Helper** 🎯
+
+```bash
+# Script interactif avec confirmations de sécurité
+./scripts/migration.sh run           # Exécuter migrations
+./scripts/migration.sh status        # Statut détaillé
+./scripts/migration.sh generate AddUserProfile  # Générer migration
+./scripts/migration.sh revert        # Annuler (avec confirmation)
+```
+
+### **Workflow de Migration Recommandé** 📋
+
+1. **Modifier les entités** TypeORM dans `src/infrastructure/database/sql/postgresql/entities/`
+2. **Générer la migration** : `npm run migrate:generate NomDeLaMigration`
+3. **Réviser le fichier** généré dans `src/infrastructure/database/sql/postgresql/migrations/`
+4. **Tester en développement** : `npm run migrate:run`
+5. **Vérifier le statut** : `npm run migrate:status`
+
+> 📚 **Documentation complète** : Voir [docs/MIGRATIONS.md](./docs/MIGRATIONS.md) pour tous les détails
+
+---
+
+## 💡 VS Code - Configuration Optimisée pour l'Efficacité
+
 Ce projet inclut une configuration VS Code optimisée pour un développement efficace :
 
 ```bash
