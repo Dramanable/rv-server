@@ -10,7 +10,7 @@ export class GetMeUseCase {
     // TODO: Inject user repository
   }
 
-  async execute(userId: string): Promise<User | null> {
+  async execute(): Promise<User | null> {
     // TODO: Implement user retrieval logic
     return null;
   }

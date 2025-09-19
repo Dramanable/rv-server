@@ -16,7 +16,7 @@ Pour votre première connexion, utilisez ce mot de passe temporaire :
 
 ✨ Ce que vous pouvez faire maintenant :
 • 📅 Prendre des rendez-vous en ligne
-• 📱 Recevoir des notifications SMS/Email  
+• 📱 Recevoir des notifications SMS/Email
 • ⏰ Gérer vos créneaux horaires
 • 👥 Consulter l'historique de vos rendez-vous
 

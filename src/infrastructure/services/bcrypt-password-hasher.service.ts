@@ -5,9 +5,9 @@
  * ✅ Respecte le port IPasswordHasher
  */
 
+import { Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { IPasswordHasher } from '../../application/ports/password-hasher.port';
-import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class BcryptPasswordHasher implements IPasswordHasher {

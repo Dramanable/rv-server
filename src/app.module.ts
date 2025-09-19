@@ -6,10 +6,10 @@
  */
 
 import { Module } from '@nestjs/common';
-import { APP_GUARD, APP_PIPE } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
-import { PresentationModule } from './presentation/presentation.module';
+import { APP_GUARD, APP_PIPE } from '@nestjs/core';
 import { InfrastructureModule } from './infrastructure/infrastructure.module';
+import { PresentationModule } from './presentation/presentation.module';
 import { JwtAuthGuard } from './presentation/security/auth.guard';
 import { SecurityValidationPipe } from './presentation/security/validation.pipe';
 

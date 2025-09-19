@@ -5,14 +5,14 @@
  * ✅ Support environnements multiples
  */
 
-import { TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { MongooseModuleOptions } from '@nestjs/mongoose';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { MongooseModuleOptions } from '@nestjs/mongoose';
+import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 
 // Entities SQL
-import { UserOrmEntity } from './sql/postgresql/entities/user-orm.entity';
 import { RefreshTokenOrmEntity } from './sql/postgresql/entities/refresh-token-orm.entity';
+import { UserOrmEntity } from './sql/postgresql/entities/user-orm.entity';
 
 export type DatabaseType = 'postgresql' | 'mongodb';
 
@@ -51,7 +51,6 @@ export class DatabaseSwitchConfig {
 
       default: {
         // TypeScript exhaustiveness check - ce cas ne devrait jamais arriver
-        const _exhaustiveCheck: never = dbType;
         throw new Error(`Database type non supporté: ${String(dbType)}`);
       }
     }

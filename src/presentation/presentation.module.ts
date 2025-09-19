@@ -10,9 +10,9 @@ import { Module } from '@nestjs/common';
 
 // 🎮 Controllers
 import { AuthController } from './controllers/auth.controller';
-import { UserController } from './controllers/user.controller';
 import { BusinessController } from './controllers/business.controller';
 import { HealthController } from './controllers/health.controller';
+import { UserController } from './controllers/user.controller';
 
 // 🛡️ Security
 import { JwtAuthGuard } from './security/auth.guard';
@@ -20,11 +20,11 @@ import { SecurityValidationPipe } from './security/validation.pipe';
 
 // 💼 Use Cases
 import { LoginUseCase } from '../application/use-cases/auth/login.use-case';
-import { RegisterUseCase } from '../application/use-cases/auth/register.use-case';
-import { RefreshTokenUseCase } from '../application/use-cases/auth/refresh-token.use-case';
 import { LogoutUseCase } from '../application/use-cases/auth/logout.use-case';
-import { GetMeUseCase } from '../application/use-cases/users/get-me.use-case';
+import { RefreshTokenUseCase } from '../application/use-cases/auth/refresh-token.use-case';
+import { RegisterUseCase } from '../application/use-cases/auth/register.use-case';
 import { ListBusinessUseCase } from '../application/use-cases/business/list-business.use-case';
+import { GetMeUseCase } from '../application/use-cases/users/get-me.use-case';
 
 // 🔧 Services
 import { MockI18nService } from '../application/mocks/mock-i18n.service';

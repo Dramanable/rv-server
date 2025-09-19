@@ -7,13 +7,13 @@
 
 import { Injectable } from '@nestjs/common';
 import {
-  IEmailService,
-  EmailOptions,
-  EmailResult,
-  EmailTemplateOptions,
-  WelcomeEmailData,
-  PasswordResetEmailData,
-  AppointmentConfirmationEmailData,
+    AppointmentConfirmationEmailData,
+    EmailOptions,
+    EmailResult,
+    EmailTemplateOptions,
+    IEmailService,
+    PasswordResetEmailData,
+    WelcomeEmailData,
 } from '../../application/ports/email.port';
 
 @Injectable()

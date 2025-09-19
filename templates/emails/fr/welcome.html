@@ -118,15 +118,15 @@
         <div class="header">
             <h1>🎉 Bienvenue !</h1>
         </div>
-        
+
         <div class="content">
             <div class="welcome-message">
                 <strong>Bonjour {{userName}},</strong><br>
                 Nous sommes ravis de vous accueillir sur <strong>{{companyName}}</strong> !
             </div>
-            
+
             <p>Votre compte a été créé avec succès. Vous pouvez maintenant profiter de tous nos services de prise de rendez-vous en ligne.</p>
-            
+
             {{#if temporaryPassword}}
             <div class="temp-password">
                 <h3>🔐 Votre mot de passe temporaire</h3>
@@ -135,7 +135,7 @@
                 <p><small>⚠️ Nous vous recommandons de le changer lors de votre première connexion.</small></p>
             </div>
             {{/if}}
-            
+
             <div class="info-box">
                 <h3>✨ Ce que vous pouvez faire maintenant :</h3>
                 <ul>
@@ -145,7 +145,7 @@
                     <li>👥 Consulter l'historique de vos rendez-vous</li>
                 </ul>
             </div>
-            
+
             <div style="text-align: center;">
                 {{#if activationLink}}
                 <a href="{{activationLink}}" class="btn">🚀 Activer mon compte</a>
@@ -153,10 +153,10 @@
                 <a href="{{loginUrl}}" class="btn">🚀 Se connecter</a>
                 {{/if}}
             </div>
-            
+
             <p>Si vous avez des questions, n'hésitez pas à nous contacter. Notre équipe est là pour vous aider !</p>
         </div>
-        
+
         <div class="footer">
             <p>À bientôt,<br><strong>L'équipe {{companyName}}</strong></p>
             <div class="social-links">

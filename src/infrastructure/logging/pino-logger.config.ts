@@ -75,7 +75,7 @@ export const createPinoConfig = (configService: {
 
     // 🔍 Customisation des logs de requêtes HTTP
     customLogLevel: (
-      req: IncomingMessage,
+      _req: IncomingMessage,
       res: ServerResponse<IncomingMessage>,
       err?: Error,
     ) => {
