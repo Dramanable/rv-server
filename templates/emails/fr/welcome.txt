@@ -1,0 +1,36 @@
+🎉 Bienvenue {{userName}} !
+
+Bonjour {{userName}},
+
+Nous sommes ravis de vous accueillir sur {{companyName}} !
+
+Votre compte a été créé avec succès. Vous pouvez maintenant profiter de tous nos services de prise de rendez-vous en ligne.
+
+{{#if temporaryPassword}}
+🔐 VOTRE MOT DE PASSE TEMPORAIRE
+Pour votre première connexion, utilisez ce mot de passe temporaire :
+{{temporaryPassword}}
+
+⚠️ Nous vous recommandons de le changer lors de votre première connexion.
+{{/if}}
+
+✨ Ce que vous pouvez faire maintenant :
+• 📅 Prendre des rendez-vous en ligne
+• 📱 Recevoir des notifications SMS/Email  
+• ⏰ Gérer vos créneaux horaires
+• 👥 Consulter l'historique de vos rendez-vous
+
+{{#if activationLink}}
+🚀 Activez votre compte : {{activationLink}}
+{{else if loginUrl}}
+🚀 Connectez-vous : {{loginUrl}}
+{{/if}}
+
+Si vous avez des questions, n'hésitez pas à nous contacter. Notre équipe est là pour vous aider !
+
+À bientôt,
+L'équipe {{companyName}}
+
+---
+📧 Support | 📱 Mobile App | 🌐 Site Web
+Cet email a été envoyé automatiquement, merci de ne pas y répondre directement.

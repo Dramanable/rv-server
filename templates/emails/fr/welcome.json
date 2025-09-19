@@ -1,0 +1,9 @@
+{
+  "subject": "Bienvenue {{userName}} sur {{companyName}} !",
+  "metadata": {
+    "templateName": "welcome",
+    "language": "fr",
+    "version": "1.0",
+    "description": "Email de bienvenue pour les nouveaux utilisateurs"
+  }
+}

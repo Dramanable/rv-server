@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bienvenue sur {{companyName}}</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 300;
+        }
+        .content {
+            padding: 40px 30px;
+        }
+        .welcome-message {
+            font-size: 18px;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .info-box {
+            background-color: #e8f5e8;
+            border: 1px solid #4caf50;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 30px 0;
+        }
+        .info-box h3 {
+            color: #2e7d32;
+            margin-top: 0;
+            font-size: 16px;
+        }
+        .btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+            margin: 20px 0;
+            transition: all 0.3s ease;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .temp-password {
+            background-color: #fff3cd;
+            border: 1px solid #ffd700;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .temp-password code {
+            background-color: #333;
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .footer {
+            background-color: #f8f9fa;
+            color: #6c757d;
+            padding: 30px;
+            text-align: center;
+            font-size: 14px;
+            border-top: 1px solid #dee2e6;
+        }
+        .social-links {
+            margin: 20px 0;
+        }
+        .social-links a {
+            color: #667eea;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+        @media (max-width: 600px) {
+            .container {
+                margin: 0;
+                box-shadow: none;
+            }
+            .header, .content, .footer {
+                padding: 20px;
+            }
+            .header h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎉 Bienvenue !</h1>
+        </div>
+        
+        <div class="content">
+            <div class="welcome-message">
+                <strong>Bonjour {{userName}},</strong><br>
+                Nous sommes ravis de vous accueillir sur <strong>{{companyName}}</strong> !
+            </div>
+            
+            <p>Votre compte a été créé avec succès. Vous pouvez maintenant profiter de tous nos services de prise de rendez-vous en ligne.</p>
+            
+            {{#if temporaryPassword}}
+            <div class="temp-password">
+                <h3>🔐 Votre mot de passe temporaire</h3>
+                <p>Pour votre première connexion, utilisez ce mot de passe temporaire :</p>
+                <code>{{temporaryPassword}}</code>
+                <p><small>⚠️ Nous vous recommandons de le changer lors de votre première connexion.</small></p>
+            </div>
+            {{/if}}
+            
+            <div class="info-box">
+                <h3>✨ Ce que vous pouvez faire maintenant :</h3>
+                <ul>
+                    <li>📅 Prendre des rendez-vous en ligne</li>
+                    <li>📱 Recevoir des notifications SMS/Email</li>
+                    <li>⏰ Gérer vos créneaux horaires</li>
+                    <li>👥 Consulter l'historique de vos rendez-vous</li>
+                </ul>
+            </div>
+            
+            <div style="text-align: center;">
+                {{#if activationLink}}
+                <a href="{{activationLink}}" class="btn">🚀 Activer mon compte</a>
+                {{else if loginUrl}}
+                <a href="{{loginUrl}}" class="btn">🚀 Se connecter</a>
+                {{/if}}
+            </div>
+            
+            <p>Si vous avez des questions, n'hésitez pas à nous contacter. Notre équipe est là pour vous aider !</p>
+        </div>
+        
+        <div class="footer">
+            <p>À bientôt,<br><strong>L'équipe {{companyName}}</strong></p>
+            <div class="social-links">
+                <a href="#">📧 Support</a> |
+                <a href="#">📱 Mobile App</a> |
+                <a href="#">🌐 Site Web</a>
+            </div>
+            <p><small>Cet email a été envoyé automatiquement, merci de ne pas y répondre directement.</small></p>
+        </div>
+    </div>
+</body>
+</html>

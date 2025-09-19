@@ -6,7 +6,15 @@
  */
 
 import { Injectable } from '@nestjs/common';
-import { IEmailService } from '../../application/ports/email.port';
+import {
+  IEmailService,
+  EmailOptions,
+  EmailResult,
+  EmailTemplateOptions,
+  WelcomeEmailData,
+  PasswordResetEmailData,
+  AppointmentConfirmationEmailData,
+} from '../../application/ports/email.port';
 
 @Injectable()
 export class MockEmailService implements IEmailService {
@@ -17,69 +25,95 @@ export class MockEmailService implements IEmailService {
     timestamp: Date;
   }> = [];
 
-  async sendWelcomeEmail(
-    to: string,
-    userName: string,
-    temporaryPassword: string,
-    loginUrl: string,
-  ): Promise<void> {
-    // Simulation d'envoi d'email
+  async sendEmail(options: EmailOptions): Promise<EmailResult> {
     const emailContent = {
-      to,
-      subject: `Bienvenue ${userName} !`,
-      body: `
-        Bonjour ${userName},
-        
-        Votre compte a été créé avec succès !
-        
-        Votre mot de passe temporaire : ${temporaryPassword}
-        Lien de connexion : ${loginUrl}
-        
-        Veuillez changer votre mot de passe lors de votre première connexion.
-        
-        Cordialement,
-        L'équipe
-      `,
+      to: Array.isArray(options.to) ? options.to.join(', ') : options.to,
+      subject: options.subject,
+      body: options.html || options.text || 'Email content',
       timestamp: new Date(),
     };
 
     this.sentEmails.push(emailContent);
-
-    // Simulation délai réseau
     await new Promise((resolve) => setTimeout(resolve, 100));
 
-    console.log(`📧 EMAIL SENT: ${emailContent.subject} to ${to}`);
+    console.log(`📧 EMAIL SENT: ${emailContent.subject} to ${emailContent.to}`);
+
+    return {
+      success: true,
+      messageId: `mock-${Date.now()}`,
+    };
+  }
+
+  async sendTemplatedEmail(
+    options: EmailTemplateOptions,
+  ): Promise<EmailResult> {
+    return this.sendEmail({
+      ...options,
+      subject: options.subject || `Template: ${options.template.templateName}`,
+      text: `Template ${options.template.templateName} rendered`,
+    });
+  }
+
+  async sendTransactionalEmail(options: EmailOptions): Promise<EmailResult> {
+    return this.sendEmail(options);
+  }
+
+  async sendBackgroundEmail(options: EmailOptions): Promise<EmailResult> {
+    return this.sendEmail(options);
+  }
+
+  async sendWelcomeEmail(data: WelcomeEmailData): Promise<EmailResult> {
+    return this.sendEmail({
+      to: data.userEmail,
+      subject: `Bienvenue ${data.userName} sur ${data.companyName}!`,
+      html: `
+        <h1>Bienvenue ${data.userName}!</h1>
+        <p>Votre compte a été créé avec succès sur ${data.companyName}.</p>
+        ${data.temporaryPassword ? `<p>Mot de passe temporaire : <strong>${data.temporaryPassword}</strong></p>` : ''}
+        ${data.activationLink ? `<p><a href="${data.activationLink}">Activer mon compte</a></p>` : ''}
+        ${data.loginUrl ? `<p><a href="${data.loginUrl}">Se connecter</a></p>` : ''}
+        <p>Cordialement,<br>L'équipe ${data.companyName}</p>
+      `,
+    });
   }
 
   async sendPasswordResetEmail(
-    to: string,
-    userName: string,
-    resetToken: string,
-    resetUrl: string,
-  ): Promise<void> {
-    const emailContent = {
-      to,
-      subject: 'Réinitialisation de mot de passe',
-      body: `
-        Bonjour ${userName},
-        
-        Une demande de réinitialisation de mot de passe a été effectuée.
-        
-        Token de réinitialisation : ${resetToken}
-        Lien de réinitialisation : ${resetUrl}
-        
-        Si vous n'avez pas demandé cette réinitialisation, ignorez cet email.
-        
-        Cordialement,
-        L'équipe
+    data: PasswordResetEmailData,
+  ): Promise<EmailResult> {
+    return this.sendEmail({
+      to: data.userName, // Assuming userName contains email for backward compatibility
+      subject: `Réinitialisation de mot de passe - ${data.companyName}`,
+      html: `
+        <h1>Réinitialisation de mot de passe</h1>
+        <p>Bonjour ${data.userName},</p>
+        <p>Cliquez sur ce lien pour réinitialiser votre mot de passe :</p>
+        <p><a href="${data.resetUrl}">Réinitialiser mon mot de passe</a></p>
+        <p>Ce lien expire le ${data.expirationTime}</p>
+        <p>L'équipe ${data.companyName}</p>
       `,
-      timestamp: new Date(),
-    };
+    });
+  }
 
-    this.sentEmails.push(emailContent);
-    await new Promise((resolve) => setTimeout(resolve, 100));
-
-    console.log(`🔑 PASSWORD RESET EMAIL SENT to ${to}`);
+  async sendAppointmentConfirmationEmail(
+    data: AppointmentConfirmationEmailData,
+  ): Promise<EmailResult> {
+    return this.sendEmail({
+      to: data.clientName, // Assuming clientName contains email
+      subject: `Confirmation de rendez-vous - ${data.appointmentDate}`,
+      html: `
+        <h1>Rendez-vous confirmé</h1>
+        <p>Bonjour ${data.clientName},</p>
+        <p>Votre rendez-vous a été confirmé :</p>
+        <ul>
+          <li>Service : ${data.serviceName}</li>
+          <li>Praticien : ${data.practitionerName}</li>
+          <li>Date : ${data.appointmentDate}</li>
+          <li>Heure : ${data.appointmentTime}</li>
+          <li>Lieu : ${data.location}</li>
+        </ul>
+        ${data.cancelationLink ? `<p><a href="${data.cancelationLink}">Annuler ce rendez-vous</a></p>` : ''}
+      `,
+    });
   }
 
   async sendNotificationEmail(
@@ -87,19 +121,17 @@ export class MockEmailService implements IEmailService {
     subject: string,
     htmlContent: string,
     textContent?: string,
-  ): Promise<void> {
-    // Simulation d'envoi d'email de notification
-    const emailContent = {
+  ): Promise<EmailResult> {
+    return this.sendEmail({
       to,
       subject,
-      body: htmlContent || textContent || 'Notification email',
-      timestamp: new Date(),
-    };
+      html: htmlContent,
+      text: textContent,
+    });
+  }
 
-    this.sentEmails.push(emailContent);
-    await new Promise((resolve) => setTimeout(resolve, 100));
-
-    console.log(`📧 NOTIFICATION EMAIL SENT to ${to}: ${subject}`);
+  async verifyConfiguration(): Promise<boolean> {
+    return true; // Mock always returns true
   }
 
   // 🧪 Méthodes utilitaires pour les tests
