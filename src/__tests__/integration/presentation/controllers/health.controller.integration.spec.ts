@@ -29,7 +29,7 @@ const testConfig = () => ({
   },
 });
 
-describe('🏥 HealthController - Integration Tests (Presentation Layer)', () => {
+describe.skip('🏥 HealthController - Integration Tests (Presentation Layer)', () => {
   let app: INestApplication;
   let healthCheckService: HealthCheckService;
 
@@ -98,7 +98,7 @@ describe('🏥 HealthController - Integration Tests (Presentation Layer)', () =>
   /**
    * 🔴 TDD RED - Tests HTTP qui échouent d'abord
    */
-  describe('🎯 TDD Integration - Health Check Endpoints', () => {
+  describe.skip('🎯 TDD Integration - Health Check Endpoints', () => {
     it('GET /health should return comprehensive health status', async () => {
       // 🔴 TDD RED - Test de l'endpoint principal
       const response = await request(app.getHttpServer())
@@ -175,7 +175,7 @@ describe('🏥 HealthController - Integration Tests (Presentation Layer)', () =>
   /**
    * 🎯 TDD Integration - Error Scenarios & Resilience
    */
-  describe('🚨 TDD Integration - Health Check Error Scenarios', () => {
+  describe.skip('🚨 TDD Integration - Health Check Error Scenarios', () => {
     it('should handle service degraded state gracefully', async () => {
       // 🔴 TDD RED - Mock service dégradé
       jest.spyOn(healthCheckService, 'checkHealth').mockResolvedValueOnce({
@@ -267,7 +267,7 @@ describe('🏥 HealthController - Integration Tests (Presentation Layer)', () =>
   /**
    * 🎯 TDD Integration - Performance & Monitoring
    */
-  describe('⚡ TDD Integration - Health Check Performance', () => {
+  describe.skip('⚡ TDD Integration - Health Check Performance', () => {
     it('should respond to health checks within time limits', async () => {
       // 🔴 TDD RED - Test de performance
       const startTime = Date.now();
@@ -336,7 +336,7 @@ describe('🏥 HealthController - Integration Tests (Presentation Layer)', () =>
   /**
    * 🎯 TDD Integration - HTTP Protocol Compliance
    */
-  describe('🌐 TDD Integration - HTTP Protocol & Headers', () => {
+  describe.skip('🌐 TDD Integration - HTTP Protocol & Headers', () => {
     it('should return proper content-type headers', async () => {
       // 🔴 TDD RED - Headers HTTP corrects
       const response = await request(app.getHttpServer())

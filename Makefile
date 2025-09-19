@@ -3,6 +3,7 @@ help:
 	@echo ""
 	@echo "Docker:"
 	@echo "  start       - Demarrer environnement"
+	@echo "  start-dev   - Demarrer mode dev avec hot reload"
 	@echo "  start-build - Demarrer avec build"
 	@echo "  start-db    - Demarrer bases de donnees"
 	@echo "  stop        - Arreter services"
@@ -29,6 +30,9 @@ help:
 
 start:
 	docker compose up -d
+
+start-dev:
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
 
 start-build:
 	docker compose up -d --build

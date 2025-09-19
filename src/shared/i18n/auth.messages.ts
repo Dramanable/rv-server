@@ -53,7 +53,29 @@ export const authMessages = {
     en: 'Token refresh error',
   },
 
-  // 🚪 Logout
+  // � Registration
+  'auth.register_attempt': {
+    fr: "Tentative d'inscription pour {email}",
+    en: 'Registration attempt for {email}',
+  },
+  'auth.register_success': {
+    fr: 'Inscription réussie pour {userId} ({email})',
+    en: 'Registration successful for {userId} ({email})',
+  },
+  'auth.register_failed': {
+    fr: "Échec de l'inscription pour {email}: {error}",
+    en: 'Registration failed for {email}: {error}',
+  },
+  'auth.email_already_exists': {
+    fr: 'Cette adresse email est déjà utilisée',
+    en: 'This email address is already in use',
+  },
+  'auth.no_refresh_token': {
+    fr: 'Token de rafraîchissement manquant',
+    en: 'Refresh token missing',
+  },
+
+  // �🚪 Logout
   'auth.logout_attempt': {
     fr: 'Tentative de déconnexion',
     en: 'Logout attempt',
@@ -159,6 +181,24 @@ export const authMessages = {
   'auth.device_changed': {
     fr: "Changement d'appareil détecté pour l'utilisateur {userId}",
     en: 'Device change detected for user {userId}',
+  },
+
+  // ✅ Success Messages
+  'success.auth.login_successful': {
+    fr: 'Connexion réussie',
+    en: 'Login successful',
+  },
+  'success.auth.register_successful': {
+    fr: 'Inscription réussie',
+    en: 'Registration successful',
+  },
+  'success.auth.token_refreshed': {
+    fr: 'Token renouvelé avec succès',
+    en: 'Token refreshed successfully',
+  },
+  'success.auth.logout_successful': {
+    fr: 'Déconnexion réussie',
+    en: 'Logout successful',
   },
 
   // 🎯 Development

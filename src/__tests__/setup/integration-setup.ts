@@ -15,7 +15,7 @@ process.env.JWT_SECRET =
 process.env.DATABASE_URL =
   process.env.DATABASE_URL ||
   'postgresql://test_user:test_password@localhost:5433/test_db';
-process.env.REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6380'; // Port Redis local Docker, ou GitHub Actions
+process.env.REDIS_URL = process.env.REDIS_URL || 'redis://:redis123@localhost:6379'; // Port Redis Docker avec auth
 process.env.USER_CACHE_RETENTION_MINUTES = '5'; // TTL court pour les tests
 
 // 📊 Configuration des timeouts pour l'intégration

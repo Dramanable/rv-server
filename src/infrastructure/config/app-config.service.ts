@@ -364,4 +364,9 @@ export class AppConfigService implements IConfigService {
   getHealthCheckInterval(): number {
     return this.configService.get<number>('HEALTH_CHECK_INTERVAL', 30000);
   }
+
+  // 🌐 Frontend Configuration
+  getFrontendUrl(): string | undefined {
+    return this.configService.get<string>('FRONTEND_URL');
+  }
 }

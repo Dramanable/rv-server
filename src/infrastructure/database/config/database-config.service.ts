@@ -133,7 +133,10 @@ export class DatabaseConfigService implements TypeOrmOptionsFactory {
 
       case 'sqlite':
         return {
-          database: process.env.TEST_DATABASE_NAME || 'test_db', // Pour les tests
+          database:
+            this.configService.getEnvironment() === 'test'
+              ? 'test_db'
+              : 'sqlite_db', // Pour les tests
         };
 
       default:

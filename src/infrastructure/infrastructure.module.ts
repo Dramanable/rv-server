@@ -10,11 +10,12 @@ import type { I18nService } from '../application/ports/i18n.port';
 
 // Import du nouveau module simple
 import { DatabaseModule } from './database/database.module';
+import { MappersModule } from './mappers/mappers.module';
 import { TOKENS } from '../shared/constants/injection-tokens';
 import { AppConfigService } from './config/app-config.service';
 import { MockEmailService } from './email/mock-email.service';
 import { PinoLoggerModule } from './logging/pino-logger.module';
-import { MockPasswordGenerator } from './security/mock-password-generator.service';
+import { MockPasswordGenerator } from './services/mock-password-generator.service';
 import { BcryptPasswordService } from './services/bcrypt-password.service';
 import { JwtTokenService } from './services/jwt-token.service';
 import { CacheModule } from './cache/cache.module';
@@ -76,13 +77,25 @@ class InfrastructureI18nService implements I18nService {
   imports: [
     // Module simple
     DatabaseModule,
+    MappersModule,
 
     // Modules existants
     CacheModule,
-    JwtModule.register({
+    JwtModule.registerAsync({
       global: true,
-      secret: process.env.JWT_SECRET || 'default-secret-key',
-      signOptions: { expiresIn: '1h' },
+      imports: [
+        // Assurer que AppConfigService est disponible
+        {
+          module: class ConfigModule {},
+          providers: [AppConfigService],
+          exports: [AppConfigService],
+        }
+      ],
+      useFactory: (config: AppConfigService) => ({
+        secret: config.getJwtSecret(),
+        signOptions: { expiresIn: `${config.getAccessTokenExpirationTime()}m` },
+      }),
+      inject: [AppConfigService],
     }),
     PinoLoggerModule,
   ],
@@ -102,16 +115,18 @@ class InfrastructureI18nService implements I18nService {
     { provide: TOKENS.I18N_SERVICE, useClass: InfrastructureI18nService },
   ],
   exports: [
-    DatabaseModule,
-    CacheModule, // ✅ Exporte le cache module (inclut USER_CACHE)
+    DatabaseModule, // ✅ Exports USER_REPOSITORY from database module
+    MappersModule, // ✅ Exports domain mappers
+    CacheModule, // ✅ Exporte le cache module (inclut USER_CACHE et CACHE_SERVICE)
+    PinoLoggerModule, // ✅ Exports PINO_LOGGER
     TOKENS.JWT_TOKEN_SERVICE,
     TOKENS.PASSWORD_SERVICE,
+    TOKENS.BCRYPT_PASSWORD_SERVICE, // ✅ Export BcryptPasswordService for strategies
     TOKENS.EMAIL_SERVICE,
     TOKENS.PASSWORD_GENERATOR,
     TOKENS.CONFIG_SERVICE,
     TOKENS.I18N_SERVICE,
     AppConfigService,
-    PinoLoggerModule,
   ],
 })
 export class InfrastructureModule {}

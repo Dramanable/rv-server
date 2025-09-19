@@ -1,8 +1,8 @@
 /**
- * 🔓 PUBLIC DECORATOR - Marqueur pour les routes publiques
+ * 🔓 PUBLIC DECORATOR - Presentation Layer Security Decorator
  *
  * Décorateur pour marquer les routes qui ne nécessitent pas d'authentification
- * Utilisé en conjonction avec le GlobalAuthGuard
+ * Couche présentation/sécurité - contrôle d'accès HTTP
  */
 
 import { SetMetadata } from '@nestjs/common';

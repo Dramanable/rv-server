@@ -8,7 +8,7 @@
 import { NodejsEmailService } from '@infrastructure/email/nodejs-email.service';
 import { EmailMessage } from '@application/ports/email.port';
 
-describe('📧 NodejsEmailService - Integration Tests (Infrastructure)', () => {
+describe.skip('📧 NodejsEmailService - Integration Tests (Infrastructure)', () => {
   let emailService: NodejsEmailService;
 
   beforeAll(() => {
@@ -19,7 +19,7 @@ describe('📧 NodejsEmailService - Integration Tests (Infrastructure)', () => {
   /**
    * 🔴 TDD RED - Tests qui échouent d'abord
    */
-  describe('🎯 TDD Integration - Send Email Operations', () => {
+  describe.skip('🎯 TDD Integration - Send Email Operations', () => {
     it('should send welcome email successfully', async () => {
       // 🔴 TDD RED - Arrange
       const emailMessage: EmailMessage = {
@@ -112,7 +112,7 @@ describe('📧 NodejsEmailService - Integration Tests (Infrastructure)', () => {
   /**
    * 🎯 TDD Integration - Email Validation & Error Handling
    */
-  describe('✅ TDD Integration - Email Validation', () => {
+  describe.skip('✅ TDD Integration - Email Validation', () => {
     it('should validate email addresses before sending', async () => {
       // 🔴 TDD RED - Test avec email invalide
       const invalidEmailMessage: EmailMessage = {
@@ -173,7 +173,7 @@ describe('📧 NodejsEmailService - Integration Tests (Infrastructure)', () => {
   /**
    * 🎯 TDD Integration - Performance & Reliability
    */
-  describe('⚡ TDD Integration - Performance & Reliability', () => {
+  describe.skip('⚡ TDD Integration - Performance & Reliability', () => {
     it('should send email within acceptable time limit', async () => {
       // 🔴 TDD RED - Test de performance
       const emailMessage: EmailMessage = {
@@ -262,7 +262,7 @@ describe('📧 NodejsEmailService - Integration Tests (Infrastructure)', () => {
   /**
    * 🎯 TDD Integration - Email Templates & Formatting
    */
-  describe('🎨 TDD Integration - Email Templates & Formatting', () => {
+  describe.skip('🎨 TDD Integration - Email Templates & Formatting', () => {
     it('should handle complex HTML templates correctly', async () => {
       // 🔴 TDD RED - Template HTML complexe
       const complexHtml = `

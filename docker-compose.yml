@@ -20,11 +20,22 @@ services:
       - "3000:3000"
       - "9229:9229"
     volumes:
-      - ./src:/app/src
-      - ./package.json:/app/package.json
-      - ./package-lock.json:/app/package-lock.json
-      - ./tsconfig.json:/app/tsconfig.json
-      - ./tsconfig.build.json:/app/tsconfig.build.json
+      # 🔄 Hot reload - Source code
+      - ./src:/app/src:cached
+      - ./package.json:/app/package.json:cached
+      - ./package-lock.json:/app/package-lock.json:cached
+      - ./tsconfig.json:/app/tsconfig.json:cached
+      - ./tsconfig.build.json:/app/tsconfig.build.json:cached
+      - ./nest-cli.json:/app/nest-cli.json:cached
+      - ./.env:/app/.env:cached
+      
+      # 🎯 Performance - Cache node_modules to avoid reinstall
+      - node_modules_cache:/app/node_modules
+      
+      # 📁 Development files
+      - ./test:/app/test:cached
+      - ./.eslintrc.js:/app/.eslintrc.js:cached
+      - ./.prettierrc:/app/.prettierrc:cached
     networks:
       - app-network
     healthcheck:
@@ -144,6 +155,31 @@ services:
       timeout: 10s
       retries: 3
       start_period: 30s
+
+  # 🧪 Service pour les tests d'intégration
+  test-integration:
+    image: server-app:latest
+    container_name: integration-tests
+    environment:
+      - NODE_ENV=test
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/rvserver_dev
+      - REDIS_URL=redis://:redis123@redis:6379
+      - JWT_SECRET=super-secret-jwt-key-for-integration-tests-only
+    volumes:
+      - ./src:/app/src:cached
+      - ./package.json:/app/package.json:cached
+      - ./tsconfig.json:/app/tsconfig.json:cached
+      - ./jest.integration.config.js:/app/jest.integration.config.js:cached
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - app-network
+    command: npm run test:integration
+    profiles:
+      - testing
 
 volumes:
   postgres_data:

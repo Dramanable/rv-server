@@ -23,6 +23,7 @@ export const APPLICATION_TOKENS = {
   UPDATE_USER_USE_CASE: 'UpdateUserUseCase',
   DELETE_USER_USE_CASE: 'DeleteUserUseCase',
   LOGIN_USE_CASE: 'LoginUseCase',
+  REGISTER_USE_CASE: 'RegisterUseCase',
   REFRESH_TOKEN_USE_CASE: 'RefreshTokenUseCase',
   LOGOUT_USE_CASE: 'LogoutUseCase',
 

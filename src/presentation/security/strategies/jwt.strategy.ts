@@ -1,13 +1,12 @@
 /**
- * 🔐 JWT STRATEGY - Passport.js JWT Strategy with Clean Architecture
+ * 🔐 JWT STRATEGY - Presentation Layer Security Strategy
  *
  * Strategy Passport.js qui valide les tokens JWT et peuple req.user
- * Compatible avec le système d'authentification existant
+ * Couche présentation/sécurité - configuration et extraction des tokens HTTP
  */
 
 import { Injectable, Inject, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { ConfigService } from '@nestjs/config';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import type { Request } from 'express';
 import { User } from '../../../domain/entities/user.entity';
@@ -16,11 +15,13 @@ import type { UserRepository } from '../../../domain/repositories/user.repositor
 import type { ICacheService } from '../../../application/ports/cache.port';
 import type { Logger } from '../../../application/ports/logger.port';
 import type { I18nService } from '../../../application/ports/i18n.port';
+import type { IConfigService } from '../../../application/ports/config.port';
 import { TOKENS } from '../../../shared/constants/injection-tokens';
 
 interface JwtPayload {
   sub: string; // User ID
   email: string; // User Email
+  role: string; // User Role
   iat?: number;
   exp?: number;
 }
@@ -28,7 +29,8 @@ interface JwtPayload {
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor(
-    private readonly configService: ConfigService,
+    @Inject(TOKENS.CONFIG_SERVICE)
+    private readonly configService: IConfigService,
     @Inject(TOKENS.USER_REPOSITORY)
     private readonly userRepository: UserRepository,
     @Inject(TOKENS.CACHE_SERVICE)
@@ -39,19 +41,27 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     private readonly i18n: I18nService,
   ) {
     super({
-      // 🍪 Extraction du token depuis les cookies (compatible avec le système existant)
+      // 🍪 Extraction du token depuis les cookies sécurisés (couche présentation)
       jwtFromRequest: ExtractJwt.fromExtractors([
         (request: Request) => {
-          const token = request?.cookies?.access_token;
-          if (!token) {
-            // Fallback vers Authorization header si pas de cookie
-            return ExtractJwt.fromAuthHeaderAsBearerToken()(request);
+          // 1. Priorité aux cookies sécurisés (production)
+          const cookieToken = request?.cookies?.accessToken;
+          if (cookieToken) {
+            return cookieToken;
           }
-          return token;
+
+          // 2. Fallback vers Authorization header (développement/tests)
+          const authHeader = request?.headers?.authorization;
+          if (authHeader && authHeader.startsWith('Bearer ')) {
+            return authHeader.substring(7);
+          }
+
+          // 3. Aucun token trouvé
+          return null;
         },
       ]),
       ignoreExpiration: false,
-      secretOrKey: configService.get<string>('ACCESS_TOKEN_SECRET'),
+      secretOrKey: configService.getAccessTokenSecret(),
       passReqToCallback: true,
     } as any);
   }
@@ -66,54 +76,65 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
       userId: payload.sub,
       userAgent: req.headers['user-agent'],
       ip: req.ip,
+      path: req.path,
     };
 
-    this.logger.debug(this.i18n.t('auth.jwt_validation_attempt'), context);
+    this.logger.debug('JWT validation attempt', context);
 
     try {
-      // 👤 Récupérer l'utilisateur avec cache Redis (même pattern que GlobalAuthGuard)
+      // 👤 Récupérer l'utilisateur avec cache (pattern optimisé)
       const user = await this.getUserWithCache(payload.sub);
 
       if (!user) {
-        this.logger.warn(this.i18n.t('auth.user_not_found'), {
+        this.logger.warn('JWT validation failed - user not found', {
           ...context,
           email: payload.email,
         });
-        throw new UnauthorizedException(this.i18n.t('auth.user_not_found'));
+        throw new UnauthorizedException('User not found or account disabled');
       }
 
-      this.logger.info(this.i18n.t('auth.jwt_validation_success'), {
+      // ✅ Vérification additionnelle de cohérence
+      if (user.email.value !== payload.email) {
+        this.logger.error(
+          'JWT payload email mismatch',
+          new Error('Token integrity violation'),
+          {
+            ...context,
+            payloadEmail: payload.email,
+            userEmail: user.email.value,
+          },
+        );
+        throw new UnauthorizedException('Token integrity violation');
+      }
+
+      this.logger.debug('JWT validation successful', {
         ...context,
         userEmail: user.email.value,
         userRole: user.role,
       });
 
-      // ✅ Retourner l'utilisateur (Passport l'injectera automatiquement dans req.user)
+      // ✅ Retourner l'utilisateur (Passport l'injectera dans req.user)
       return user;
     } catch (error) {
-      this.logger.error(
-        this.i18n.t('auth.jwt_validation_failed'),
-        error as Error,
-        context,
-      );
+      this.logger.error('JWT validation error', error as Error, context);
 
       if (error instanceof UnauthorizedException) {
         throw error;
       }
 
-      throw new UnauthorizedException(this.i18n.t('auth.invalid_token'));
+      throw new UnauthorizedException('Invalid or expired token');
     }
   }
 
   /**
    * 🎯 Récupère l'utilisateur avec cache Redis et fallback DB
-   * Pattern Cache-Aside identique au GlobalAuthGuard pour cohérence
+   * Pattern Cache-Aside optimisé pour les requêtes fréquentes
    */
   private async getUserWithCache(userId: string): Promise<User | null> {
-    const cacheKey = `user:${userId}:auth`;
+    const cacheKey = `auth:user:${userId}`;
 
     try {
-      // 🔍 Vérifier le cache Redis d'abord
+      // 🔍 Vérifier le cache Redis d'abord (performance)
       const cachedUserJson = await this.cacheService.get(cacheKey);
 
       if (cachedUserJson) {
@@ -121,6 +142,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
           userId,
           operation: 'getUserWithCache',
         });
+
         // 🔄 Reconstruire l'objet User depuis le cache JSON
         const userData = JSON.parse(cachedUserJson) as {
           id: string;
@@ -132,6 +154,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
           hashedPassword?: string;
           passwordChangeRequired?: boolean;
         };
+
         return User.restore(
           userData.id,
           userData.email,
@@ -149,7 +172,18 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
 
       if (user) {
         // 💾 Mettre en cache pour les prochaines requêtes (TTL: 15 minutes)
-        await this.cacheService.set(cacheKey, JSON.stringify(user), 15 * 60);
+        const userJson = JSON.stringify({
+          id: user.id,
+          email: user.email.value,
+          name: user.name,
+          role: user.role,
+          createdAt: user.createdAt.toISOString(),
+          updatedAt: user.updatedAt?.toISOString(),
+          hashedPassword: user.hashedPassword,
+          passwordChangeRequired: user.passwordChangeRequired,
+        });
+
+        await this.cacheService.set(cacheKey, userJson, 15 * 60);
 
         this.logger.debug('User cached from database (JWT Strategy)', {
           userId,
@@ -160,7 +194,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
       return user;
     } catch (cacheError) {
       // 🛡️ Si Redis est indisponible, fallback direct vers DB
-      this.logger.warn('Cache unavailable, falling back to database (JWT)', {
+      this.logger.warn('Cache unavailable, using database fallback (JWT)', {
         userId,
         operation: 'getUserWithCache',
         error: (cacheError as Error).message,

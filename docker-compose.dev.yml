@@ -1,0 +1,36 @@
+# 🚀 Docker Compose pour Développement avec Hot Reload
+# Usage: docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+
+services:
+  app:
+    # 🔄 Override pour développement
+    command: ["npm", "run", "start:dev"]
+    environment:
+      - NODE_ENV=development
+      - NODE_OPTIONS=--max-old-space-size=512 --inspect=0.0.0.0:9229
+      - CHOKIDAR_USEPOLLING=true
+    volumes:
+      # 🎯 Volumes optimisés pour hot reload
+      - ./src:/app/src:cached
+      - ./package.json:/app/package.json:cached
+      - ./package-lock.json:/app/package-lock.json:cached
+      - ./tsconfig.json:/app/tsconfig.json:cached
+      - ./tsconfig.build.json:/app/tsconfig.build.json:cached
+      - ./nest-cli.json:/app/nest-cli.json:cached
+      - ./.env:/app/.env:cached
+      - ./.eslintrc.js:/app/.eslintrc.js:cached
+      - ./.prettierrc:/app/.prettierrc:cached
+      
+      # 📁 Test files pour développement
+      - ./test:/app/test:cached
+      
+      # 🚫 Exclusions - éviter les conflits
+      - /app/node_modules
+      - /app/dist
+    
+    # 🎯 Restart policy pour développement
+    restart: "no"
+    
+    # 🐛 Debug configuration
+    stdin_open: true
+    tty: true

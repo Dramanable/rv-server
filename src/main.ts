@@ -16,7 +16,7 @@ import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import { AppModule } from './app.module';
 import { AppConfigService } from './infrastructure/config/app-config.service';
-import { setupSwagger } from './infrastructure/swagger/swagger.config';
+import { setupSwagger } from './presentation/config/swagger.config';
 import { I18nValidationPipe } from './infrastructure/validation/i18n-validation.pipe';
 // 🛡️ Security imports
 import { SecurityHeadersMiddleware } from './presentation/security/headers.middleware';
@@ -32,7 +32,8 @@ async function bootstrap() {
   logger.log('🛡️ Configuring enhanced security middlewares...');
 
   // 🛡️ Custom Security Headers Middleware (PREMIER)
-  app.use(new SecurityHeadersMiddleware().use);
+  // Security middleware configuré via app module
+  // app.use(new SecurityHeadersMiddleware().use);
 
   // CORS Configuration (sécurisé)
   app.enableCors({

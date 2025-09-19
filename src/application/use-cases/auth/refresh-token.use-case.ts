@@ -84,7 +84,7 @@ export class RefreshTokenUseCase {
           expiresIn,
         },
         cookieSettings,
-        message: this.i18n.t('success.auth.tokens_refreshed'),
+        message: this.i18n.t('success.auth.token_refreshed'),
       };
     } catch (error) {
       this.logger.error(

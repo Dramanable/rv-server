@@ -21,7 +21,7 @@ export default async (): Promise<void> => {
  * Vérifier la connexion Redis
  */
 async function verifyRedisConnection(): Promise<void> {
-  const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
+  const redisUrl = process.env.REDIS_URL || 'redis://:redis123@localhost:6379';
   const redis = new Redis(redisUrl);
 
   try {

@@ -100,6 +100,13 @@ export class MockI18nService implements I18nService {
       'auth.user_not_found': 'User not found',
       'auth.service_unavailable': 'Service unavailable',
       'auth.unexpected_error': 'Unexpected error',
+      'auth.login_success': 'Login successful for {email}',
+      'auth.login_failed': 'Login failed for {email}: {error}',
+      'auth.register_success': 'Registration successful for {email}',
+      'auth.register_failed': 'Registration failed for {email}: {error}',
+      'auth.logout_success': 'Logout successful',
+      'auth.refresh_success': 'Token refresh successful',
+      'auth.refresh_failed': 'Token refresh failed: {error}',
     },
     fr: {
       // Domain messages (business rules)
@@ -173,6 +180,13 @@ export class MockI18nService implements I18nService {
       'auth.user_not_found': 'Utilisateur non trouvé',
       'auth.service_unavailable': 'Service indisponible',
       'auth.unexpected_error': 'Erreur inattendue',
+      'auth.login_success': 'Connexion réussie pour {email}',
+      'auth.login_failed': 'Échec de connexion pour {email}: {error}',
+      'auth.register_success': 'Inscription réussie pour {email}',
+      'auth.register_failed': 'Échec d\'inscription pour {email}: {error}',
+      'auth.logout_success': 'Déconnexion réussie',
+      'auth.refresh_success': 'Rafraîchissement du token réussi',
+      'auth.refresh_failed': 'Échec du rafraîchissement du token: {error}',
     },
   };
 

@@ -35,7 +35,7 @@ export class DatabaseHybridModule {
    * Configure dynamiquement SOIT SQL SOIT NoSQL selon DATABASE_TYPE
    */
   static async forRootAsync(): Promise<DynamicModule> {
-    // Déterminer le type de base de données
+    // Déterminer le type de base de données via ConfigService sera géré dans AppModule
     const databaseType = process.env.DATABASE_TYPE?.toLowerCase() || 'sql';
 
     // Sélectionner le module SQL uniquement

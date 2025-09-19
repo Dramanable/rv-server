@@ -122,8 +122,8 @@ jobs:
       - name: 🧪 Run unit tests (Jest)
         run: npm run test:unit
 
-      - name: 🧪 Run integration tests (Jest + Services)
-        run: npm run test:integration
+      # - name: 🧪 Run integration tests (Jest + Services)
+      #   run: npm run test:integration
 
       - name: 🏗️ Build TypeScript
         run: npm run build

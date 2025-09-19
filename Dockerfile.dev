@@ -1,0 +1,42 @@
+# 🐳 Development Docker Image with Hot Reload
+# Optimized for fast builds and volume mounting
+FROM node:24-alpine
+
+# Install dumb-init for proper signal handling
+RUN apk add --no-cache dumb-init
+
+# Create non-root user for security
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nestjs -u 1001
+
+# Set working directory
+WORKDIR /app
+
+# Copy only package files first (better caching)
+COPY --chown=nestjs:nodejs package*.json ./
+
+# Install dependencies (keep cache for faster rebuilds)
+ENV HUSKY=0
+RUN npm install --no-audit --no-fund
+
+# Create essential directories with correct permissions
+RUN mkdir -p /app/dist /app/src && \
+    chown -R nestjs:nodejs /app/dist /app/src
+
+# Switch to non-root user early
+USER nestjs
+
+# Set development environment
+ENV NODE_ENV=development \
+    NODE_OPTIONS="--max-old-space-size=512 --inspect=0.0.0.0:9229" \
+    NPM_CONFIG_LOGLEVEL=warn
+
+# Expose ports
+EXPOSE 3000
+EXPOSE 9229
+
+# Use dumb-init for proper signal handling
+ENTRYPOINT ["dumb-init", "--"]
+
+# Start with hot reload (source code mounted as volume)
+CMD ["npm", "run", "start:dev"]

@@ -30,19 +30,19 @@ RUN rm -rf .git .github docs scripts *.md && \
     find . -name "*.spec.ts" -delete && \
     find . -name "*.test.ts" -delete
 
-# Build the application
+# Build the application pour production, mais préparer pour dev
 RUN npx nest build
 
-# Create necessary directories with correct permissions
-RUN mkdir -p /app/dist /app/node_modules && \
-    chown -R nestjs:nodejs /app
+# Ensure proper ownership for critical directories only (faster than full /app)
+# This allows the nestjs user to write to dist/ during hot reload
+RUN chown -R nestjs:nodejs /app/dist /app/src
 
 # Switch to non-root user
 USER nestjs
 
 # Set Node.js memory limits and optimizations
 ENV NODE_ENV=development \
-    NODE_OPTIONS="--max-old-space-size=512" \
+    NODE_OPTIONS="--max-old-space-size=512 --inspect=0.0.0.0:9229" \
     NPM_CONFIG_LOGLEVEL=warn
 
 # Expose ports
@@ -52,6 +52,5 @@ EXPOSE 9229
 # Use dumb-init for proper signal handling and memory management
 ENTRYPOINT ["dumb-init", "--"]
 
-# Start command with memory optimization
-# Use npx pour résoudre le problème de chemin
-CMD ["node", "--max-old-space-size=512", "dist/main.js"]
+# Start command avec hot reload pour développement
+CMD ["npm", "run", "start:dev"]

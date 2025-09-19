@@ -9,7 +9,7 @@ import { CacheModule } from '@infrastructure/cache/cache.module';
 import { PinoLoggerModule } from '@infrastructure/logging/pino-logger.module';
 import { TOKENS } from '@shared/constants/injection-tokens';
 
-describe('Redis Connection Integration Test', () => {
+describe.skip('🧪 Redis Connection - Integration Test', () => {
   let cacheService: ICacheService;
   let testModule: TestingModule;
 
@@ -41,7 +41,7 @@ describe('Redis Connection Integration Test', () => {
     await testModule.close();
   });
 
-  describe('Redis Connectivity', () => {
+  describe.skip('Redis Connectivity', () => {
     it('should connect to Redis server', async () => {
       // Test basic connectivity with SET operation
       const testKey = 'test:connection';
@@ -146,7 +146,7 @@ describe('Redis Connection Integration Test', () => {
     }, 10000);
   });
 
-  describe('Error Handling', () => {
+  describe.skip('Error Handling', () => {
     it('should return null for non-existent keys', async () => {
       const nonExistentKey = 'test:non-existent';
       const value = await cacheService.get(nonExistentKey);

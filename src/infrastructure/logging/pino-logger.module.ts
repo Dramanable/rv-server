@@ -9,12 +9,14 @@ import { Global, Module } from '@nestjs/common';
 import { LoggerModule } from 'nestjs-pino';
 import { TOKENS } from '../../shared/constants/injection-tokens';
 import { pinoConfig } from './pino-logger.config';
+import { AppConfigService } from '../config/app-config.service';
 import { PinoLoggerService } from './pino-logger.service';
 
 @Global()
 @Module({
   imports: [LoggerModule.forRoot(pinoConfig)],
   providers: [
+    AppConfigService,
     PinoLoggerService,
     {
       provide: TOKENS.LOGGER,

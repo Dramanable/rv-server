@@ -17,6 +17,7 @@ import {
   Inject,
   UseGuards,
   UsePipes,
+  UnauthorizedException,
 } from '@nestjs/common';
 import type { Response, Request } from 'express';
 import {
@@ -28,15 +29,31 @@ import {
 } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import { LoginUseCase } from '../../application/use-cases/auth/login.use-case';
+import { RegisterUseCase } from '../../application/use-cases/auth/register.use-case';
 import { RefreshTokenUseCase } from '../../application/use-cases/auth/refresh-token.use-case';
 import { LogoutUseCase } from '../../application/use-cases/auth/logout.use-case';
-import { LoginDto, RefreshTokenDto, LogoutDto } from '../dtos/auth.dto';
+import {
+  LoginDto,
+  RegisterDto,
+  RefreshTokenDto,
+  LogoutDto,
+  LoginResponseDto,
+  RegisterResponseDto,
+  RefreshResponseDto,
+  LogoutResponseDto,
+  ValidationErrorDto,
+  UnauthorizedErrorDto,
+  ThrottleErrorDto,
+} from '../dtos/auth.dto';
 import { TOKENS } from '../../shared/constants/injection-tokens';
 import { PresentationCookieService } from '../services/cookie.service';
+import type { I18nService } from '../../application/ports/i18n.port';
+import { UserMapper, AuthResponseMapper } from '../../infrastructure/mappers/domain-mappers';
 // 🛡️ Security imports
 import { CustomThrottlerGuard } from '../security/throttler.guard';
 import { SecurityValidationPipe } from '../security/validation.pipe';
-import { Public, JwtAuthGuard } from '../security/auth.guard';
+import { Public } from '../security/decorators/public.decorator';
+import { JwtAuthGuard } from '../security/guards/jwt-auth.guard';
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -48,10 +65,16 @@ export class AuthController {
   constructor(
     @Inject(TOKENS.LOGIN_USE_CASE)
     private readonly loginUseCase: LoginUseCase,
+    @Inject(TOKENS.REGISTER_USE_CASE)
+    private readonly registerUseCase: RegisterUseCase,
+    @Inject(TOKENS.REFRESH_TOKEN_USE_CASE)
+    private readonly refreshTokenUseCase: RefreshTokenUseCase,
     @Inject(TOKENS.LOGOUT_USE_CASE)
     private readonly logoutUseCase: LogoutUseCase,
     @Inject(TOKENS.LOGGER)
     private readonly logger: Logger,
+    @Inject(TOKENS.I18N_SERVICE)
+    private readonly i18n: I18nService,
     private readonly cookieService: PresentationCookieService,
   ) {}
 
@@ -67,39 +90,47 @@ export class AuthController {
   @ApiBody({ type: LoginDto })
   @ApiResponse({
     status: 200,
-    description: '✅ Login successful - Secure cookies set',
-    schema: {
-      properties: {
-        message: { type: 'string', example: 'Login successful' },
-        user: {
-          type: 'object',
-          example: {
-            id: 'user-123',
-            email: 'user@example.com',
-            name: 'John Doe',
-            role: 'USER',
-          },
+    description:
+      '✅ Login successful - Secure JWT tokens set in HttpOnly cookies with appropriate security flags',
+    type: LoginResponseDto,
+    headers: {
+      'Set-Cookie': {
+        description:
+          'Secure authentication cookies: accessToken (15min) and refreshToken (7-30 days)',
+        schema: {
+          type: 'string',
+          example:
+            'accessToken=eyJhbGc...; HttpOnly; Secure; SameSite=Strict; Path=/',
         },
       },
     },
   })
   @ApiResponse({
+    status: 400,
+    description: '❌ Validation errors in request data',
+    type: ValidationErrorDto,
+  })
+  @ApiResponse({
     status: 401,
-    description: '❌ Invalid credentials',
-    schema: {
-      properties: {
-        message: { type: 'string', example: 'Invalid credentials' },
-        error: { type: 'string', example: 'Unauthorized' },
-      },
-    },
+    description: '🔒 Authentication failed - Invalid email or password',
+    type: UnauthorizedErrorDto,
   })
   @ApiResponse({
     status: 429,
-    description: '🚫 Too many login attempts',
+    description: '🚫 Rate limit exceeded - Too many login attempts',
+    type: ThrottleErrorDto,
+  })
+  @ApiResponse({
+    status: 500,
+    description: '� Internal server error during authentication',
     schema: {
       properties: {
-        message: { type: 'string', example: 'Too many login attempts' },
-        retryAfter: { type: 'number', example: 300 },
+        message: { type: 'string', example: 'Internal server error' },
+        error: {
+          type: 'string',
+          example: 'Authentication service unavailable',
+        },
+        statusCode: { type: 'number', example: 500 },
       },
     },
   })
@@ -108,7 +139,12 @@ export class AuthController {
     @Req() req: Request,
     @Res() res: Response,
   ): Promise<void> {
-    this.controllerLogger.log(`Login attempt for email: ${loginDto.email}`);
+    // 🌍 Log avec i18n
+    const loginAttemptMessage = this.i18n.t('operations.auth.login_attempt', { 
+      email: loginDto.email 
+    });
+    this.controllerLogger.log(loginAttemptMessage);
+    this.logger.log(`${loginAttemptMessage} - IP: ${req.ip} - UserAgent: ${req.get('User-Agent')}`);
 
     try {
       // Exécuter le use case PURE (Application Layer)
@@ -126,13 +162,127 @@ export class AuthController {
         loginDto.rememberMe || false,
       );
 
+      // 🌍 Message de succès avec i18n
+      const successMessage = this.i18n.t('success.auth.login_success', {
+        email: loginDto.email,
+        userId: result.user.id
+      });
+      this.logger.log(successMessage);
+
       // Retourner la réponse (sans les tokens sensibles)
       res.status(200).json({
         user: result.user,
-        message: result.message,
+        message: this.i18n.t('auth.login_success', { email: loginDto.email }),
       });
     } catch (error) {
-      this.controllerLogger.error(`Login failed for ${loginDto.email}`, error);
+      // 🌍 Message d'erreur avec i18n
+      const errorMessage = this.i18n.t('auth.login_failed', { 
+        email: loginDto.email,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+      this.controllerLogger.error(errorMessage, error);
+      this.logger.error(errorMessage, error);
+      throw error;
+    }
+  }
+
+  @Post('register')
+  @Public() // 🔓 Endpoint public - inscription ouverte
+  @Throttle({ default: { limit: 3, ttl: 300000 } }) // 🛡️ 3 inscriptions max par 5 minutes
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({
+    summary: '📝 User Registration',
+    description:
+      'Register new user account with email/password and return secure JWT cookies',
+  })
+  @ApiBody({ type: RegisterDto })
+  @ApiResponse({
+    status: 201,
+    description:
+      '✅ Registration successful - New user account created and automatically logged in with secure cookies',
+    type: RegisterResponseDto,
+    headers: {
+      'Set-Cookie': {
+        description:
+          'Secure authentication cookies set automatically after successful registration',
+        schema: {
+          type: 'string',
+          example:
+            'accessToken=eyJhbGc...; HttpOnly; Secure; SameSite=Strict; Path=/',
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description:
+      '❌ Registration failed - Validation errors or email already exists',
+    type: ValidationErrorDto,
+  })
+  @ApiResponse({
+    status: 409,
+    description: '⚠️ Conflict - Email address already registered',
+    schema: {
+      properties: {
+        message: { type: 'string', example: 'Email already exists' },
+        error: { type: 'string', example: 'Conflict' },
+        statusCode: { type: 'number', example: 409 },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 429,
+    description:
+      '🚫 Rate limit exceeded - Too many registration attempts from this IP',
+    type: ThrottleErrorDto,
+  })
+  async register(
+    @Body() registerDto: RegisterDto,
+    @Req() req: Request,
+    @Res() res: Response,
+  ): Promise<void> {
+    // 🌍 Log avec i18n
+    const registerAttemptMessage = this.i18n.t('operations.user.creation_attempt');
+    this.controllerLogger.log(`${registerAttemptMessage} - ${registerDto.email}`);
+    this.logger.log(`${registerAttemptMessage} - Email: ${registerDto.email} - IP: ${req.ip}`);
+
+    try {
+      // Exécuter le use case PURE (Application Layer)
+      const result = await this.registerUseCase.execute({
+        email: registerDto.email,
+        name: registerDto.name,
+        password: registerDto.password,
+        ip: req.ip || req.connection.remoteAddress,
+        userAgent: req.get('User-Agent'),
+      });
+
+      // ✅ Gestion des cookies dans la couche Presentation UNIQUEMENT
+      this.cookieService.setAuthenticationCookies(
+        res,
+        result.tokens,
+        registerDto.rememberMe || false,
+      );
+
+      // 🌍 Message de succès avec i18n
+      const successMessage = this.i18n.t('success.user.creation_success', {
+        email: registerDto.email,
+        requestingUser: 'self'
+      });
+      this.logger.log(successMessage);
+
+      // Retourner la réponse (sans les tokens sensibles)
+      res.status(201).json({
+        user: result.user,
+        message: this.i18n.t('auth.register_success', { email: registerDto.email }),
+      });
+    } catch (error) {
+      // 🌍 Message d'erreur avec i18n
+      const errorMessage = this.i18n.t('auth.register_failed', {
+        email: registerDto.email,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+      this.controllerLogger.error(errorMessage, error);
+      this.logger.error(errorMessage, error);
       throw error;
     }
   }
@@ -149,30 +299,76 @@ export class AuthController {
   @ApiBody({ type: RefreshTokenDto })
   @ApiResponse({
     status: 200,
-    description: '✅ Token refreshed successfully',
-    schema: {
-      properties: {
-        message: { type: 'string', example: 'Token refreshed successfully' },
-        user: {
-          type: 'object',
-          example: {
-            id: 'user-123',
-            email: 'user@example.com',
-          },
+    description:
+      '✅ Tokens refreshed successfully - New access token generated and both tokens rotated in secure cookies',
+    type: RefreshResponseDto,
+    headers: {
+      'Set-Cookie': {
+        description:
+          'Updated secure authentication cookies with new rotated tokens',
+        schema: {
+          type: 'string',
+          example:
+            'accessToken=eyJhbGc...; HttpOnly; Secure; SameSite=Strict; Path=/',
         },
       },
     },
   })
   @ApiResponse({
     status: 401,
-    description: '❌ Invalid or expired refresh token',
+    description:
+      '🔒 Refresh failed - Invalid, expired, or missing refresh token in cookies',
+    type: UnauthorizedErrorDto,
+  })
+  @ApiResponse({
+    status: 429,
+    description: '🚫 Rate limit exceeded - Too many refresh attempts',
+    type: ThrottleErrorDto,
   })
   async refreshToken(
     @Body() refreshTokenDto: RefreshTokenDto,
+    @Req() req: Request,
     @Res() res: Response,
   ): Promise<void> {
-    // TODO: Implémenter le refresh token use case
-    throw new Error('RefreshToken endpoint not yet implemented');
+    this.controllerLogger.log('Refresh token attempt');
+
+    try {
+      // Extraire le refresh token des cookies sécurisés
+      const refreshToken = req.cookies?.refreshToken;
+      if (!refreshToken) {
+        this.controllerLogger.warn('No refresh token found in cookies');
+        throw new UnauthorizedException({
+          message: 'Refresh token not found',
+          error: 'No refresh token provided in cookies',
+        });
+      }
+
+      // Exécuter le refresh token use case PURE (Application Layer)
+      const result = await this.refreshTokenUseCase.execute({
+        refreshToken,
+        ip: req.ip || req.connection.remoteAddress,
+        userAgent: req.get('User-Agent'),
+      });
+
+      // ✅ Gestion des cookies dans la couche Presentation UNIQUEMENT
+      this.cookieService.setAuthenticationCookies(
+        res,
+        {
+          accessToken: result.tokens.accessToken,
+          refreshToken: result.tokens.refreshToken,
+          expiresIn: result.tokens.expiresIn,
+        },
+        false, // pas de remember me pour refresh
+      );
+
+      // Retourner la réponse (sans les tokens sensibles)
+      res.status(200).json({
+        message: result.message,
+      });
+    } catch (error) {
+      this.controllerLogger.error('Refresh token failed', error);
+      throw error;
+    }
   }
 
   @Post('logout')
@@ -187,16 +383,30 @@ export class AuthController {
   @ApiBody({ type: LogoutDto })
   @ApiResponse({
     status: 200,
-    description: '✅ Logout successful - All cookies cleared',
-    schema: {
-      properties: {
-        message: { type: 'string', example: 'Logout successful' },
+    description:
+      '✅ Logout successful - All authentication cookies cleared and tokens revoked from server',
+    type: LogoutResponseDto,
+    headers: {
+      'Set-Cookie': {
+        description: 'Authentication cookies cleared with secure flags',
+        schema: {
+          type: 'string',
+          example:
+            'accessToken=; HttpOnly; Secure; SameSite=Strict; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT',
+        },
       },
     },
   })
   @ApiResponse({
     status: 401,
-    description: '❌ Authentication required',
+    description:
+      '🔒 Authentication required - Valid JWT token needed in cookies',
+    type: UnauthorizedErrorDto,
+  })
+  @ApiResponse({
+    status: 429,
+    description: '🚫 Rate limit exceeded - Too many logout attempts',
+    type: ThrottleErrorDto,
   })
   async logout(
     @Body() logoutDto: LogoutDto,

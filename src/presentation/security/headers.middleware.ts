@@ -6,9 +6,11 @@
 
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
+import { AppConfigService } from '../../infrastructure/config/app-config.service';
 
 @Injectable()
 export class SecurityHeadersMiddleware implements NestMiddleware {
+  constructor(private readonly configService?: AppConfigService) {}
   use(req: Request, res: Response, next: NextFunction): void {
     // Content Security Policy
     res.setHeader(
@@ -68,9 +70,9 @@ export const corsOptions = {
     // Liste des domaines autorisés
     const allowedOrigins = [
       'http://localhost:3000',
-      'http://localhost:4200',
+      'http://localhost:4200', 
       'https://yourdomain.com',
-      process.env.FRONTEND_URL,
+      process.env.FRONTEND_URL, // Fallback temporaire
     ].filter(Boolean);
 
     // Permettre les requêtes sans origin (mobile apps, Postman, etc.)
