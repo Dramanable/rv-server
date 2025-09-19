@@ -4,16 +4,18 @@
  * ✅ Compatible avec les interfaces Clean Architecture
  */
 
+import type { ICacheService } from '@application/ports/cache.port';
+import type { I18nService } from '@application/ports/i18n.port';
+import type { Logger } from '@application/ports/logger.port';
+import type { IPasswordService } from '@application/ports/password.service.interface';
+import type { UserRepository } from '@domain/repositories/user.repository.interface';
 import type { ExecutionContext } from '@nestjs/common';
 import type { Request, Response } from 'express';
-import type { UserRepository } from '@domain/repositories/user.repository.interface';
-import type { ICacheService } from '@application/ports/cache.port';
-import type { Logger } from '@application/ports/logger.port';
-import type { I18nService } from '@application/ports/i18n.port';
-import type { IPasswordService } from '@application/ports/password.service.interface';
 
 // 🎭 Mock ExecutionContext
-export const createMockExecutionContext = (request?: Partial<Request>): jest.Mocked<ExecutionContext> => {
+export const createMockExecutionContext = (
+  request?: Partial<Request>,
+): jest.Mocked<ExecutionContext> => {
   const mockRequest = {
     path: '/test',
     method: 'GET',
@@ -38,28 +40,29 @@ export const createMockExecutionContext = (request?: Partial<Request>): jest.Moc
 };
 
 // 🗄️ Mock UserRepository (méthodes principales pour les tests)
-export const createMockUserRepository = () => ({
-  save: jest.fn(),
-  findById: jest.fn(),
-  findByEmail: jest.fn(),
-  findByUsername: jest.fn(),
-  delete: jest.fn(),
-  findAll: jest.fn(),
-  search: jest.fn(),
-  findByRole: jest.fn(),
-  emailExists: jest.fn(),
-  existsByUsername: jest.fn(),
-  updatePassword: jest.fn(),
-  updateActiveStatus: jest.fn(),
-  countSuperAdmins: jest.fn(),
-  count: jest.fn(),
-  // Méthodes supplémentaires (si nécessaires dans les tests)
-  countWithFilters: jest.fn(),
-  update: jest.fn(),
-  updateBatch: jest.fn(),
-  deleteBatch: jest.fn(),
-  export: jest.fn(),
-} as jest.Mocked<UserRepository>);
+export const createMockUserRepository = () =>
+  ({
+    save: jest.fn(),
+    findById: jest.fn(),
+    findByEmail: jest.fn(),
+    findByUsername: jest.fn(),
+    delete: jest.fn(),
+    findAll: jest.fn(),
+    search: jest.fn(),
+    findByRole: jest.fn(),
+    emailExists: jest.fn(),
+    existsByUsername: jest.fn(),
+    updatePassword: jest.fn(),
+    updateActiveStatus: jest.fn(),
+    countSuperAdmins: jest.fn(),
+    count: jest.fn(),
+    // Méthodes supplémentaires (si nécessaires dans les tests)
+    countWithFilters: jest.fn(),
+    update: jest.fn(),
+    updateBatch: jest.fn(),
+    deleteBatch: jest.fn(),
+    export: jest.fn(),
+  }) as jest.Mocked<UserRepository>;
 
 // 🗂️ Mock CacheService
 export const createMockCacheService = (): jest.Mocked<ICacheService> => ({

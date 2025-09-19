@@ -4,10 +4,10 @@
  * ✅ HttpOnly, Secure, SameSite, Path restrictions
  */
 
-import { ConfigService } from '@nestjs/config';
-import type { Request, Response } from 'express';
-import { PresentationCookieService } from '@presentation/services/cookie.service';
 import { createMockLogger } from '@application/mocks/typed-mocks';
+import { ConfigService } from '@nestjs/config';
+import { PresentationCookieService } from '@presentation/services/cookie.service';
+import type { Request, Response } from 'express';
 
 describe('🔐 PresentationCookieService - Security Tests', () => {
   let cookieService: PresentationCookieService;

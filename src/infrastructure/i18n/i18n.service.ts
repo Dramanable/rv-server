@@ -183,7 +183,7 @@ export class MockI18nService implements I18nService {
       'auth.login_success': 'Connexion réussie pour {email}',
       'auth.login_failed': 'Échec de connexion pour {email}: {error}',
       'auth.register_success': 'Inscription réussie pour {email}',
-      'auth.register_failed': 'Échec d\'inscription pour {email}: {error}',
+      'auth.register_failed': "Échec d'inscription pour {email}: {error}",
       'auth.logout_success': 'Déconnexion réussie',
       'auth.refresh_success': 'Rafraîchissement du token réussi',
       'auth.refresh_failed': 'Échec du rafraîchissement du token: {error}',

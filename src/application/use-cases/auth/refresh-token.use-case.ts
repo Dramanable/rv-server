@@ -4,12 +4,12 @@
  * Rafraîchissement des tokens d'accès via le refresh token
  */
 
-import type { AuthenticationService } from '../../ports/authentication.port';
-import type { Logger } from '../../ports/logger.port';
-import type { I18nService } from '../../ports/i18n.port';
-import type { IConfigService } from '../../ports/config.port';
-import { InvalidCredentialsError } from '../../exceptions/auth.exceptions';
 import { AppContextFactory } from '../../../shared/context/app-context';
+import { InvalidCredentialsError } from '../../exceptions/auth.exceptions';
+import type { AuthenticationService } from '../../ports/authentication.port';
+import type { IConfigService } from '../../ports/config.port';
+import type { I18nService } from '../../ports/i18n.port';
+import type { Logger } from '../../ports/logger.port';
 
 export interface RefreshTokenRequest {
   readonly refreshToken: string;

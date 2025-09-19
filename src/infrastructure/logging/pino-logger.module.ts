@@ -8,8 +8,8 @@
 import { Global, Module } from '@nestjs/common';
 import { LoggerModule } from 'nestjs-pino';
 import { TOKENS } from '../../shared/constants/injection-tokens';
-import { pinoConfig } from './pino-logger.config';
 import { AppConfigService } from '../config/app-config.service';
+import { pinoConfig } from './pino-logger.config';
 import { PinoLoggerService } from './pino-logger.service';
 
 @Global()

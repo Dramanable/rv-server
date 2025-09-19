@@ -5,18 +5,18 @@
  * Couche présentation/sécurité - configuration et extraction des tokens HTTP
  */
 
-import { Injectable, Inject, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { ExtractJwt, Strategy } from 'passport-jwt';
 import type { Request } from 'express';
-import { User } from '../../../domain/entities/user.entity';
-import { UserRole } from '../../../shared/enums/user-role.enum';
-import type { UserRepository } from '../../../domain/repositories/user.repository.interface';
+import { ExtractJwt, Strategy } from 'passport-jwt';
 import type { ICacheService } from '../../../application/ports/cache.port';
-import type { Logger } from '../../../application/ports/logger.port';
-import type { I18nService } from '../../../application/ports/i18n.port';
 import type { IConfigService } from '../../../application/ports/config.port';
+import type { I18nService } from '../../../application/ports/i18n.port';
+import type { Logger } from '../../../application/ports/logger.port';
+import { User } from '../../../domain/entities/user.entity';
+import type { UserRepository } from '../../../domain/repositories/user.repository.interface';
 import { TOKENS } from '../../../shared/constants/injection-tokens';
+import { UserRole } from '../../../shared/enums/user-role.enum';
 
 interface JwtPayload {
   sub: string; // User ID

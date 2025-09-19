@@ -16,7 +16,7 @@ L'authentification au niveau de la couche présentation est maintenant **complè
   - Messages i18n
   - Audit logging complet
 
-### 2. 📝 POST /auth/register  
+### 2. 📝 POST /auth/register
 - **Description** : Inscription automatique nouveau client
 - **Input** : `RegisterDto` (email, password, name)
 - **Output** : Utilisateur créé + tokens d'authentification
@@ -63,7 +63,7 @@ L'authentification au niveau de la couche présentation est maintenant **complè
 
 ### Protection Rate Limiting
 - **Login** : 5 tentatives par 5 minutes
-- **Register** : 3 inscriptions par 15 minutes  
+- **Register** : 3 inscriptions par 15 minutes
 - **Refresh** : 10 renouvellements par 5 minutes
 - **Global Auth** : Protection throttling globale
 

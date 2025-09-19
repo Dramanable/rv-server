@@ -16,10 +16,9 @@ import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import { AppModule } from './app.module';
 import { AppConfigService } from './infrastructure/config/app-config.service';
-import { setupSwagger } from './presentation/config/swagger.config';
 import { I18nValidationPipe } from './infrastructure/validation/i18n-validation.pipe';
+import { setupSwagger } from './presentation/config/swagger.config';
 // 🛡️ Security imports
-import { SecurityHeadersMiddleware } from './presentation/security/headers.middleware';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);

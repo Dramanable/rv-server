@@ -16,7 +16,7 @@ WORKDIR /app
 # Use regular package.json
 COPY --chown=nestjs:nodejs package*.json ./
 
-# 📦 Install dependencies (dev included for flexibility) 
+# 📦 Install dependencies (dev included for flexibility)
 # Disable Husky hooks in Docker environment
 ENV HUSKY=0
 RUN npm install --no-audit --no-fund && \

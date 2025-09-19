@@ -17,7 +17,7 @@ help:
 	@echo ""
 	@echo "Debug:"
 	@echo "  logs        - Logs application"
-	@echo "  shell       - Shell dans conteneur"  
+	@echo "  shell       - Shell dans conteneur"
 	@echo "  status      - Statut services"
 	@echo ""
 	@echo "BDD:"

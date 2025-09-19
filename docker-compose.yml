@@ -28,10 +28,10 @@ services:
       - ./tsconfig.build.json:/app/tsconfig.build.json:cached
       - ./nest-cli.json:/app/nest-cli.json:cached
       - ./.env:/app/.env:cached
-      
+
       # 🎯 Performance - Cache node_modules to avoid reinstall
       - node_modules_cache:/app/node_modules
-      
+
       # 📁 Development files
       - ./test:/app/test:cached
       - ./.eslintrc.js:/app/.eslintrc.js:cached
@@ -57,7 +57,7 @@ services:
     environment:
       PGDATA: /var/lib/postgresql/data/pgdata
     command: >
-      postgres 
+      postgres
       -c shared_buffers=64MB
       -c effective_cache_size=192MB
       -c maintenance_work_mem=16MB
@@ -85,7 +85,7 @@ services:
     env_file:
       - .env
     command: >
-      mongod 
+      mongod
       --wiredTigerCacheSizeGB 0.1
       --wiredTigerCollectionBlockCompressor snappy
       --quiet
@@ -111,7 +111,7 @@ services:
     env_file:
       - .env
     command: >
-      redis-server 
+      redis-server
       --maxmemory 96mb
       --maxmemory-policy allkeys-lru
       --appendonly yes
@@ -156,29 +156,6 @@ services:
       retries: 3
       start_period: 30s
 
-  # 🧪 Service pour les tests d'intégration
-  test-integration:
-    image: server-app:latest
-    container_name: integration-tests
-    environment:
-      - NODE_ENV=test
-      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/rvserver_dev
-      - REDIS_URL=redis://:redis123@redis:6379
-      - JWT_SECRET=super-secret-jwt-key-for-integration-tests-only
-    volumes:
-      - ./src:/app/src:cached
-      - ./package.json:/app/package.json:cached
-      - ./tsconfig.json:/app/tsconfig.json:cached
-      - ./jest.integration.config.js:/app/jest.integration.config.js:cached
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    networks:
-      - app-network
-    command: npm run test:integration
-    profiles:
       - testing
 
 volumes:

@@ -5,16 +5,16 @@
  * Production-ready avec validation stricte et documentation complète
  */
 
-import {
-  IsEmail,
-  IsString,
-  IsOptional,
-  IsBoolean,
-  MinLength,
-  MaxLength,
-  Matches,
-} from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import {
+  IsBoolean,
+  IsEmail,
+  IsOptional,
+  IsString,
+  Matches,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
 
 export class LoginDto {
   @ApiProperty({

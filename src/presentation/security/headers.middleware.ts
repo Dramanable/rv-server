@@ -5,7 +5,7 @@
  */
 
 import { Injectable, NestMiddleware } from '@nestjs/common';
-import { Request, Response, NextFunction } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { AppConfigService } from '../../infrastructure/config/app-config.service';
 
 @Injectable()
@@ -70,9 +70,9 @@ export const corsOptions = {
     // Liste des domaines autorisés
     const allowedOrigins = [
       'http://localhost:3000',
-      'http://localhost:4200', 
+      'http://localhost:4200',
       'https://yourdomain.com',
-      process.env.FRONTEND_URL, // Fallback temporaire
+      // Note: FRONTEND_URL should be injected via ConfigService in the module
     ].filter(Boolean);
 
     // Permettre les requêtes sans origin (mobile apps, Postman, etc.)

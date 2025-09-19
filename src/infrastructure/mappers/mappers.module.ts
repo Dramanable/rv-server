@@ -6,7 +6,7 @@
  */
 
 import { Module } from '@nestjs/common';
-import { UserMapper, AuthResponseMapper } from './domain-mappers';
+import { AuthResponseMapper, UserMapper } from './domain-mappers';
 
 @Module({
   providers: [
@@ -16,13 +16,10 @@ import { UserMapper, AuthResponseMapper } from './domain-mappers';
       useValue: UserMapper,
     },
     {
-      provide: 'AUTH_RESPONSE_MAPPER', 
+      provide: 'AUTH_RESPONSE_MAPPER',
       useValue: AuthResponseMapper,
     },
   ],
-  exports: [
-    'USER_MAPPER',
-    'AUTH_RESPONSE_MAPPER',
-  ],
+  exports: ['USER_MAPPER', 'AUTH_RESPONSE_MAPPER'],
 })
 export class MappersModule {}

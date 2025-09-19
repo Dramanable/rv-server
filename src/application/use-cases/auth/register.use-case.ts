@@ -6,19 +6,18 @@
  * Auto-registration pour les clients avec rôle CLIENT par défaut
  */
 
-import type { UserRepository } from '@domain/repositories/user.repository.interface';
-import type { IPasswordHasher } from '@application/ports/password-hasher.port';
 import type { AuthenticationService } from '@application/ports/authentication.port';
-import type { Logger } from '@application/ports/logger.port';
-import type { I18nService } from '@application/ports/i18n.port';
 import type { IConfigService } from '@application/ports/config.port';
+import type { I18nService } from '@application/ports/i18n.port';
+import type { Logger } from '@application/ports/logger.port';
+import type { IPasswordHasher } from '@application/ports/password-hasher.port';
 import type { UserCacheService } from '@application/services/user-cache.service';
-import { InvalidCredentialsError } from '@application/exceptions/auth.exceptions';
-import { EmailAlreadyExistsError } from '@domain/exceptions/user.exceptions';
 import { User } from '@domain/entities/user.entity';
+import { EmailAlreadyExistsError } from '@domain/exceptions/user.exceptions';
+import type { UserRepository } from '@domain/repositories/user.repository.interface';
 import { Email } from '@domain/value-objects/email.vo';
-import { UserRole } from '@shared/enums/user-role.enum';
 import { AppContextFactory } from '@shared/context/app-context';
+import { UserRole } from '@shared/enums/user-role.enum';
 import { randomUUID } from 'crypto';
 
 export interface RegisterRequest {

@@ -39,7 +39,7 @@ export class BcryptPasswordHasher implements IPasswordHasher {
 
     try {
       return await bcrypt.compare(plainPassword, hashedPassword);
-    } catch (error) {
+    } catch {
       // Log error en production mais retourne false pour sécurité
       return false;
     }

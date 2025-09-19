@@ -18,7 +18,7 @@ export function setupSwagger(app: INestApplication): void {
 ## 🔐 Security-First Approach
 This API implements **enterprise-grade authentication** with:
 - **JWT tokens** in secure HttpOnly cookies
-- **Rate limiting** to prevent brute force attacks  
+- **Rate limiting** to prevent brute force attacks
 - **Token rotation** for enhanced security
 - **CORS protection** and security headers
 - **Input validation** and sanitization
@@ -88,12 +88,12 @@ const refreshToken = async () => {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({}) // Empty body
   });
-  
+
   if (response.ok) {
     console.log('Tokens refreshed successfully');
     return true;
   }
-  
+
   // Refresh failed, redirect to login
   window.location.href = '/login';
   return false;
@@ -109,7 +109,7 @@ const logout = async (logoutAllDevices = false) => {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ logoutAllDevices })
   });
-  
+
   if (response.ok) {
     // All cookies cleared, user logged out
     window.location.href = '/login';
@@ -222,7 +222,7 @@ All endpoints return standardized error responses:
     customSiteTitle: '🚀 Enterprise Authentication API - Developer Portal',
     customfavIcon: '/favicon.ico',
     customCss: `
-      .swagger-ui .topbar { 
+      .swagger-ui .topbar {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         border-bottom: 3px solid #3b82f6;
       }

@@ -5,17 +5,17 @@
  */
 
 import {
-  RefreshTokenUseCase,
-  RefreshTokenRequest,
-  RefreshTokenResponse,
-} from '@application/use-cases/auth/refresh-token.use-case';
-import {
   AuthenticationService,
   AuthTokens,
 } from '@application/ports/authentication.port';
-import { Logger } from '@application/ports/logger.port';
-import { I18nService } from '@application/ports/i18n.port';
 import { IConfigService } from '@application/ports/config.port';
+import { I18nService } from '@application/ports/i18n.port';
+import { Logger } from '@application/ports/logger.port';
+import {
+  RefreshTokenRequest,
+  RefreshTokenResponse,
+  RefreshTokenUseCase,
+} from '@application/use-cases/auth/refresh-token.use-case';
 // Mock créés directement ici avec les méthodes nécessaires
 const createMockAuthService = () => ({
   refreshTokens: jest.fn(),

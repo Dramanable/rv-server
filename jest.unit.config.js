@@ -19,10 +19,11 @@ module.exports = {
     '<rootDir>/src/__tests__/unit/**/*.test.ts'
   ],
   
-  // 🚫 Exclure les tests d'intégration
+  // 🚫 Exclure les tests d'intégration et tests temporaires
   testPathIgnorePatterns: [
     '/node_modules/',
     '<rootDir>/src/__tests__/integration/',
+    '<rootDir>/src/__tests__/unit/infrastructure/security/temp/',
     '/dist/',
     '/coverage/'
   ],

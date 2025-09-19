@@ -6,54 +6,53 @@
  */
 
 import {
-  Controller,
-  Post,
   Body,
-  Res,
-  Req,
-  HttpStatus,
+  Controller,
   HttpCode,
-  Logger,
+  HttpStatus,
   Inject,
+  Logger,
+  Post,
+  Req,
+  Res,
+  UnauthorizedException,
   UseGuards,
   UsePipes,
-  UnauthorizedException,
 } from '@nestjs/common';
-import type { Response, Request } from 'express';
 import {
-  ApiTags,
+  ApiBody,
   ApiOperation,
   ApiResponse,
-  ApiBody,
   ApiSecurity,
+  ApiTags,
 } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
+import type { Request, Response } from 'express';
+import type { I18nService } from '../../application/ports/i18n.port';
 import { LoginUseCase } from '../../application/use-cases/auth/login.use-case';
-import { RegisterUseCase } from '../../application/use-cases/auth/register.use-case';
-import { RefreshTokenUseCase } from '../../application/use-cases/auth/refresh-token.use-case';
 import { LogoutUseCase } from '../../application/use-cases/auth/logout.use-case';
+import { RefreshTokenUseCase } from '../../application/use-cases/auth/refresh-token.use-case';
+import { RegisterUseCase } from '../../application/use-cases/auth/register.use-case';
+import { TOKENS } from '../../shared/constants/injection-tokens';
 import {
   LoginDto,
-  RegisterDto,
-  RefreshTokenDto,
-  LogoutDto,
   LoginResponseDto,
-  RegisterResponseDto,
-  RefreshResponseDto,
+  LogoutDto,
   LogoutResponseDto,
-  ValidationErrorDto,
-  UnauthorizedErrorDto,
+  RefreshResponseDto,
+  RefreshTokenDto,
+  RegisterDto,
+  RegisterResponseDto,
   ThrottleErrorDto,
+  UnauthorizedErrorDto,
+  ValidationErrorDto,
 } from '../dtos/auth.dto';
-import { TOKENS } from '../../shared/constants/injection-tokens';
 import { PresentationCookieService } from '../services/cookie.service';
-import type { I18nService } from '../../application/ports/i18n.port';
-import { UserMapper, AuthResponseMapper } from '../../infrastructure/mappers/domain-mappers';
 // 🛡️ Security imports
-import { CustomThrottlerGuard } from '../security/throttler.guard';
-import { SecurityValidationPipe } from '../security/validation.pipe';
 import { Public } from '../security/decorators/public.decorator';
 import { JwtAuthGuard } from '../security/guards/jwt-auth.guard';
+import { CustomThrottlerGuard } from '../security/throttler.guard';
+import { SecurityValidationPipe } from '../security/validation.pipe';
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -69,8 +68,6 @@ export class AuthController {
     private readonly registerUseCase: RegisterUseCase,
     @Inject(TOKENS.REFRESH_TOKEN_USE_CASE)
     private readonly refreshTokenUseCase: RefreshTokenUseCase,
-    @Inject(TOKENS.LOGOUT_USE_CASE)
-    private readonly logoutUseCase: LogoutUseCase,
     @Inject(TOKENS.LOGGER)
     private readonly logger: Logger,
     @Inject(TOKENS.I18N_SERVICE)
@@ -140,11 +137,13 @@ export class AuthController {
     @Res() res: Response,
   ): Promise<void> {
     // 🌍 Log avec i18n
-    const loginAttemptMessage = this.i18n.t('operations.auth.login_attempt', { 
-      email: loginDto.email 
+    const loginAttemptMessage = this.i18n.t('operations.auth.login_attempt', {
+      email: loginDto.email,
     });
     this.controllerLogger.log(loginAttemptMessage);
-    this.logger.log(`${loginAttemptMessage} - IP: ${req.ip} - UserAgent: ${req.get('User-Agent')}`);
+    this.logger.log(
+      `${loginAttemptMessage} - IP: ${req.ip} - UserAgent: ${req.get('User-Agent')}`,
+    );
 
     try {
       // Exécuter le use case PURE (Application Layer)
@@ -165,7 +164,7 @@ export class AuthController {
       // 🌍 Message de succès avec i18n
       const successMessage = this.i18n.t('success.auth.login_success', {
         email: loginDto.email,
-        userId: result.user.id
+        userId: result.user.id,
       });
       this.logger.log(successMessage);
 
@@ -176,9 +175,9 @@ export class AuthController {
       });
     } catch (error) {
       // 🌍 Message d'erreur avec i18n
-      const errorMessage = this.i18n.t('auth.login_failed', { 
+      const errorMessage = this.i18n.t('auth.login_failed', {
         email: loginDto.email,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
       });
       this.controllerLogger.error(errorMessage, error);
       this.logger.error(errorMessage, error);
@@ -242,9 +241,15 @@ export class AuthController {
     @Res() res: Response,
   ): Promise<void> {
     // 🌍 Log avec i18n
-    const registerAttemptMessage = this.i18n.t('operations.user.creation_attempt');
-    this.controllerLogger.log(`${registerAttemptMessage} - ${registerDto.email}`);
-    this.logger.log(`${registerAttemptMessage} - Email: ${registerDto.email} - IP: ${req.ip}`);
+    const registerAttemptMessage = this.i18n.t(
+      'operations.user.creation_attempt',
+    );
+    this.controllerLogger.log(
+      `${registerAttemptMessage} - ${registerDto.email}`,
+    );
+    this.logger.log(
+      `${registerAttemptMessage} - Email: ${registerDto.email} - IP: ${req.ip}`,
+    );
 
     try {
       // Exécuter le use case PURE (Application Layer)
@@ -266,20 +271,22 @@ export class AuthController {
       // 🌍 Message de succès avec i18n
       const successMessage = this.i18n.t('success.user.creation_success', {
         email: registerDto.email,
-        requestingUser: 'self'
+        requestingUser: 'self',
       });
       this.logger.log(successMessage);
 
       // Retourner la réponse (sans les tokens sensibles)
       res.status(201).json({
         user: result.user,
-        message: this.i18n.t('auth.register_success', { email: registerDto.email }),
+        message: this.i18n.t('auth.register_success', {
+          email: registerDto.email,
+        }),
       });
     } catch (error) {
       // 🌍 Message d'erreur avec i18n
       const errorMessage = this.i18n.t('auth.register_failed', {
         email: registerDto.email,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
       });
       this.controllerLogger.error(errorMessage, error);
       this.logger.error(errorMessage, error);
@@ -325,11 +332,7 @@ export class AuthController {
     description: '🚫 Rate limit exceeded - Too many refresh attempts',
     type: ThrottleErrorDto,
   })
-  async refreshToken(
-    @Body() refreshTokenDto: RefreshTokenDto,
-    @Req() req: Request,
-    @Res() res: Response,
-  ): Promise<void> {
+  async refreshToken(@Req() req: Request, @Res() res: Response): Promise<void> {
     this.controllerLogger.log('Refresh token attempt');
 
     try {
@@ -408,11 +411,7 @@ export class AuthController {
     description: '🚫 Rate limit exceeded - Too many logout attempts',
     type: ThrottleErrorDto,
   })
-  async logout(
-    @Body() logoutDto: LogoutDto,
-    @Req() req: Request,
-    @Res() res: Response,
-  ): Promise<void> {
+  async logout(@Req() req: Request, @Res() res: Response): Promise<void> {
     // Supprimer les cookies d'authentification
     this.cookieService.clearAuthenticationCookies(res);
 

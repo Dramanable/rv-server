@@ -9,16 +9,16 @@ import { JwtModule } from '@nestjs/jwt';
 import type { I18nService } from '../application/ports/i18n.port';
 
 // Import du nouveau module simple
-import { DatabaseModule } from './database/database.module';
-import { MappersModule } from './mappers/mappers.module';
 import { TOKENS } from '../shared/constants/injection-tokens';
+import { CacheModule } from './cache/cache.module';
 import { AppConfigService } from './config/app-config.service';
+import { DatabaseModule } from './database/database.module';
 import { MockEmailService } from './email/mock-email.service';
 import { PinoLoggerModule } from './logging/pino-logger.module';
-import { MockPasswordGenerator } from './services/mock-password-generator.service';
+import { MappersModule } from './mappers/mappers.module';
 import { BcryptPasswordService } from './services/bcrypt-password.service';
 import { JwtTokenService } from './services/jwt-token.service';
-import { CacheModule } from './cache/cache.module';
+import { MockPasswordGenerator } from './services/mock-password-generator.service';
 
 class InfrastructureI18nService implements I18nService {
   t(key: string, params?: Record<string, unknown>): string {
@@ -89,7 +89,7 @@ class InfrastructureI18nService implements I18nService {
           module: class ConfigModule {},
           providers: [AppConfigService],
           exports: [AppConfigService],
-        }
+        },
       ],
       useFactory: (config: AppConfigService) => ({
         secret: config.getJwtSecret(),

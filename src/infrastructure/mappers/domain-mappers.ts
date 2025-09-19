@@ -4,7 +4,7 @@
  * Mappers statiques pour conversion entre couches :
  * - Domain ↔ Infrastructure (TypeORM, MongoDB)
  * - Domain ↔ Presentation (DTOs)
- * 
+ *
  * ✅ Respect strict de Clean Architecture
  * ✅ Performance optimisée (pas de reflection)
  * ✅ Type-safe avec TypeScript strict
@@ -16,20 +16,19 @@ import { Email } from '../../domain/value-objects/email.vo';
 import { UserRole } from '../../shared/enums/user-role.enum';
 
 // Infrastructure Entities
-import { UserOrmEntity } from '../database/entities/typeorm/user-orm.entity';
+import { UserOrmEntity } from '../database/sql/postgresql/entities/user-orm.entity';
 
 // Presentation DTOs
-import { 
-  UserResponseDto, 
-  LoginResponseDto, 
-  RegisterResponseDto 
+import {
+  LoginResponseDto,
+  RegisterResponseDto,
+  UserResponseDto,
 } from '../../presentation/dtos/auth.dto';
 
 /**
  * 🏛️ USER MAPPERS - Domain ↔ Infrastructure ↔ Presentation
  */
 export class UserMapper {
-
   /**
    * Domain User → TypeORM UserOrmEntity
    */
@@ -37,8 +36,12 @@ export class UserMapper {
     const entity = new UserOrmEntity();
     entity.id = domainUser.id;
     entity.email = domainUser.email.value;
-    entity.firstName = domainUser.firstName || domainUser.name.split(' ')[0] || domainUser.name;
-    entity.lastName = domainUser.lastName || domainUser.name.split(' ').slice(1).join(' ') || '';
+    entity.firstName =
+      domainUser.firstName || domainUser.name.split(' ')[0] || domainUser.name;
+    entity.lastName =
+      domainUser.lastName ||
+      domainUser.name.split(' ').slice(1).join(' ') ||
+      '';
     entity.hashedPassword = domainUser.hashedPassword || '';
     entity.role = domainUser.role;
     entity.isActive = domainUser.isActive ?? true;
@@ -64,7 +67,7 @@ export class UserMapper {
       entity.username,
       entity.isActive,
       entity.isVerified,
-      false // passwordChangeRequired par défaut
+      false, // passwordChangeRequired par défaut
     );
   }
 
@@ -85,14 +88,14 @@ export class UserMapper {
    * Array mapping - Domain Users → UserResponseDto[]
    */
   static toResponseDtoArray(domainUsers: User[]): UserResponseDto[] {
-    return domainUsers.map(user => this.toResponseDto(user));
+    return domainUsers.map((user) => this.toResponseDto(user));
   }
 
   /**
    * Array mapping - TypeORM Entities → Domain Users
    */
   static fromTypeOrmEntityArray(entities: UserOrmEntity[]): User[] {
-    return entities.map(entity => this.fromTypeOrmEntity(entity));
+    return entities.map((entity) => this.fromTypeOrmEntity(entity));
   }
 }
 
@@ -100,13 +103,12 @@ export class UserMapper {
  * 🔐 AUTH RESPONSE MAPPERS - Use Cases Results → DTOs
  */
 export class AuthResponseMapper {
-
   /**
    * Login Use Case Result → LoginResponseDto
    */
   static toLoginResponseDto(
-    user: User, 
-    message: string, 
+    user: User,
+    message: string,
     // tokens ne sont pas exposés dans la réponse (HttpOnly cookies)
   ): LoginResponseDto {
     return {
@@ -120,7 +122,7 @@ export class AuthResponseMapper {
    * Register Use Case Result → RegisterResponseDto
    */
   static toRegisterResponseDto(
-    user: User, 
+    user: User,
     message: string,
   ): RegisterResponseDto {
     return {
@@ -155,7 +157,6 @@ export const Mappers = {
  * Utilitaires pour valider les mappings
  */
 export class MapperValidator {
-  
   /**
    * Valide qu'un objet n'est pas null/undefined avant mapping
    */
@@ -169,9 +170,14 @@ export class MapperValidator {
   /**
    * Valide qu'un array n'est pas null/undefined avant mapping
    */
-  static validateArray<T>(arr: T[] | null | undefined, entityName: string): T[] {
+  static validateArray<T>(
+    arr: T[] | null | undefined,
+    entityName: string,
+  ): T[] {
     if (arr === null || arr === undefined) {
-      throw new Error(`Cannot map ${entityName} array: array is null or undefined`);
+      throw new Error(
+        `Cannot map ${entityName} array: array is null or undefined`,
+      );
     }
     return arr;
   }

@@ -15,7 +15,7 @@ export { JwtAuthGuard } from './guards/jwt-auth.guard';
 export { LocalAuthGuard } from './guards/local-auth.guard';
 
 // Decorators
-export { Public, IS_PUBLIC_KEY } from './decorators/public.decorator';
+export { IS_PUBLIC_KEY, Public } from './decorators/public.decorator';
 
 // Security components
 export { CustomThrottlerGuard } from './throttler.guard';

@@ -40,7 +40,7 @@ export class RedisUserCacheAdapter implements IUserCache {
 
     try {
       return JSON.parse(result) as User;
-    } catch (error) {
+    } catch {
       // En cas d'erreur de parsing, considérer comme non trouvé
       return null;
     }

@@ -1,10 +1,9 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { RepositoryFactory } from './repositories/repository.factory';
-import { TOKENS } from '../../shared/constants/injection-tokens';
-import { PinoLoggerModule } from '../logging/pino-logger.module';
-import { AppConfigService } from '../config/app-config.service';
 import type { I18nService } from '../../application/ports/i18n.port';
+import { TOKENS } from '../../shared/constants/injection-tokens';
+import { AppConfigService } from '../config/app-config.service';
+import { PinoLoggerModule } from '../logging/pino-logger.module';
 
 class DatabaseI18nService implements I18nService {
   t(key: string, params?: Record<string, unknown>): string {
@@ -71,25 +70,72 @@ class DatabaseI18nService implements I18nService {
       provide: TOKENS.USER_REPOSITORY,
       useValue: {
         // Implémentation temporaire simple pour démarrer l'app
-        async save(user: any) { return user; },
-        async findById(id: string) { return null; },
-        async findByEmail(email: any) { return null; },
-        async findByUsername(username: string) { return null; },
-        async delete(id: string) { return; },
-        async findAll(params?: any) { return { data: [], meta: { total: 0, page: 1, limit: 10, totalPages: 0 } }; },
-        async search(params: any) { return { data: [], meta: { total: 0, page: 1, limit: 10, totalPages: 0 } }; },
-        async findByRole(role: any, params?: any) { return { data: [], meta: { total: 0, page: 1, limit: 10, totalPages: 0 } }; },
-        async emailExists(email: any) { return false; },
-        async existsByUsername(username: string) { return false; },
-        async updatePassword(id: string, passwordHash: string) { return; },
-        async updateActiveStatus(id: string, isActive: boolean) { return; },
-        async countSuperAdmins() { return 0; },
-        async count() { return 0; },
-        async countWithFilters(params: any) { return 0; },
-        async update(user: any) { return user; },
-        async updateBatch(users: any[]) { return users; },
-        async deleteBatch(ids: string[]) { return; },
-        async export(params?: any) { return []; },
+        async save(user: any) {
+          return user;
+        },
+        async findById(id: string) {
+          return null;
+        },
+        async findByEmail(email: any) {
+          return null;
+        },
+        async findByUsername(username: string) {
+          return null;
+        },
+        async delete(id: string) {
+          return;
+        },
+        async findAll(params?: any) {
+          return {
+            data: [],
+            meta: { total: 0, page: 1, limit: 10, totalPages: 0 },
+          };
+        },
+        async search(params: any) {
+          return {
+            data: [],
+            meta: { total: 0, page: 1, limit: 10, totalPages: 0 },
+          };
+        },
+        async findByRole(role: any, params?: any) {
+          return {
+            data: [],
+            meta: { total: 0, page: 1, limit: 10, totalPages: 0 },
+          };
+        },
+        async emailExists(email: any) {
+          return false;
+        },
+        async existsByUsername(username: string) {
+          return false;
+        },
+        async updatePassword(id: string, passwordHash: string) {
+          return;
+        },
+        async updateActiveStatus(id: string, isActive: boolean) {
+          return;
+        },
+        async countSuperAdmins() {
+          return 0;
+        },
+        async count() {
+          return 0;
+        },
+        async countWithFilters(params: any) {
+          return 0;
+        },
+        async update(user: any) {
+          return user;
+        },
+        async updateBatch(users: any[]) {
+          return users;
+        },
+        async deleteBatch(ids: string[]) {
+          return;
+        },
+        async export(params?: any) {
+          return [];
+        },
       },
     },
   ],
