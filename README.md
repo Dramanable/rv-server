@@ -7,18 +7,21 @@
 ## ⏰ **Gestion Horaires Complexes Enterprise**
 
 ### 🏢 **Horaires Variables par Jour**
-- **Jours de fermeture** configurables (ex: fermé lundi/mardi)  
+
+- **Jours de fermeture** configurables (ex: fermé lundi/mardi)
 - **Horaires différents** par jour de la semaine
 - **Périodes multiples** dans une journée (ex: 8h-12h puis 14h-18h)
 - **Pauses variables** selon le jour et l'activité
 
 ### 👥 **Planning Personnel Flexible**
+
 - **Horaires individuels** par employé et par site
 - **Pauses personnelles** configurables par jour
 - **Jours de congé** et disponibilités variables
 - **Heures supplémentaires** avec limites configurables
 
 ### 📅 **Cas d'Usage Supportés**
+
 ```typescript
 // Salon fermé lundi/mardi
 { dayOfWeek: MONDAY, isClosed: true }
@@ -34,6 +37,7 @@
 ```
 
 ## 🏛️ **Architecture Clean Architecture**ogo-small.svg" width="120" alt="NestJS Logo" />
+
 </p>
 
 <p align="center">
@@ -55,6 +59,7 @@
 ## �️ **Architecture Séparée Frontend/Backend**
 
 ### 🎨 **Frontend Next.js** (Application Séparée)
+
 - **Site web public SEO-optimisé** pour prise de rendez-vous internautes
 - **Pages statiques générées** avec référencement optimal
 - **Interface responsive** mobile-first
@@ -62,6 +67,7 @@
 - **Schema.org markup** et rich snippets
 
 ### 🚀 **Backend NestJS** (Ce Projet)
+
 - **API REST enterprise** avec authentification sécurisée
 - **Gestion métier complète** des rendez-vous multi-sites
 - **Dashboard administrateur** pour entreprises
@@ -87,6 +93,7 @@ API REST optimisée pour consommation par le site web Next.js avec **cache-contr
 ### 📍 **API Publique - Prise de Rendez-vous**
 
 #### **🔍 Recherche & Disponibilités**
+
 ```http
 GET /public/businesses              # Liste entreprises avec SEO data
 GET /public/businesses/:id/services # Services disponibles + metadata SEO
@@ -95,6 +102,7 @@ GET /public/availability            # Créneaux disponibles (cache 5min)
 ```
 
 #### **📅 Réservation Internautes**
+
 ```http
 POST /public/appointments           # Création rendez-vous public
 GET /public/appointments/:token     # Détails RDV (token public)
@@ -103,6 +111,7 @@ DELETE /public/appointments/:token  # Annulation RDV client
 ```
 
 #### **👥 Réservations Tierces & Groupes**
+
 ```http
 POST /public/appointments/third-party    # RDV pour proche/famille
 POST /public/appointments/group          # RDV de groupe/famille
@@ -112,6 +121,7 @@ GET /public/family-relationships         # Types relations autorisées
 ### 🔒 **API Privée - Dashboard Entreprise**
 
 #### **🏢 Gestion Entreprise**
+
 ```http
 GET /admin/dashboard/stats          # KPIs et métriques
 GET /admin/businesses/:id           # Config entreprise
@@ -119,6 +129,7 @@ PUT /admin/businesses/:id/settings  # Paramètres calendaire
 ```
 
 #### **👨‍💼 Gestion Personnel**
+
 ```http
 GET /admin/staff                    # Liste personnel avec plannings
 POST /admin/staff                   # Ajout nouvel employé
@@ -126,6 +137,7 @@ PUT /admin/staff/:id/schedule       # Modification planning
 ```
 
 #### **📊 Analytics & Rapports**
+
 ```http
 GET /admin/analytics/appointments   # Stats RDV (CA, taux occupation)
 GET /admin/analytics/capacity       # Optimisation capacités
@@ -133,6 +145,7 @@ GET /admin/reports/export           # Export données (PDF/Excel)
 ```
 
 #### **⏰ Gestion Horaires & Créneaux**
+
 ```http
 GET /admin/businesses/:id/hours     # Horaires d'ouverture par site
 PUT /admin/businesses/:id/hours     # Modification horaires
@@ -444,23 +457,23 @@ Ce projet inclut une configuration VS Code optimisée pour un développement eff
 {
   "recommendations": [
     // 🔧 Core Development
-    "ms-vscode.vscode-typescript-next",    // TypeScript moderne
-    "dbaeumer.vscode-eslint",              // ESLint intégré
-    "esbenp.prettier-vscode",              // Formatage automatique
-    
+    "ms-vscode.vscode-typescript-next", // TypeScript moderne
+    "dbaeumer.vscode-eslint", // ESLint intégré
+    "esbenp.prettier-vscode", // Formatage automatique
+
     // 🤖 AI Assistant
-    "github.copilot",                      // GitHub Copilot
-    "github.copilot-chat",                 // Copilot Chat
-    
+    "github.copilot", // GitHub Copilot
+    "github.copilot-chat", // Copilot Chat
+
     // 🧪 Testing & Quality
-    "orta.vscode-jest",                    // Jest intégré
-    "sonarsource.sonarlint-vscode",        // SonarLint
-    
+    "orta.vscode-jest", // Jest intégré
+    "sonarsource.sonarlint-vscode", // SonarLint
+
     // 🐳 Infrastructure
-    "ms-azuretools.vscode-docker",         // Docker support
-    "cweijan.vscode-postgresql-client2",   // PostgreSQL
-    "mongodb.mongodb-vscode"               // MongoDB
-  ]
+    "ms-azuretools.vscode-docker", // Docker support
+    "cweijan.vscode-postgresql-client2", // PostgreSQL
+    "mongodb.mongodb-vscode", // MongoDB
+  ],
 }
 ```
 
@@ -491,20 +504,20 @@ Le projet inclut `.vscode/settings.json` optimisé :
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit",
-    "source.organizeImports": "explicit"
+    "source.organizeImports": "explicit",
   },
-  
+
   // 🎯 Copilot optimisé pour NestJS
   "github.copilot.enable": {
     "*": true,
     "plaintext": false,
-    "markdown": false
+    "markdown": false,
   },
-  
+
   // 📁 Fichiers de test groupés avec leurs sources
   "explorer.fileNesting.patterns": {
-    "*.ts": "${capture}.spec.ts, ${capture}.test.ts"
-  }
+    "*.ts": "${capture}.spec.ts, ${capture}.test.ts",
+  },
 }
 ```
 

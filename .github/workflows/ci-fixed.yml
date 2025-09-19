@@ -44,11 +44,15 @@ jobs:
           MONGO_INITDB_DATABASE: test_db
         ports:
           - 27017:27017
+        options: >-
+          --health-cmd "echo 'db.runCommand(\"ping\").ok' | mongosh --quiet"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     # 🌍 Environment variables for tests
     env:
       # Database URLs for integration tests
-      DATABASE_URL: postgresql://test_user:test_password@localhost:5432/test_db
       POSTGRES_URL: postgresql://test_user:test_password@localhost:5432/test_db
       REDIS_URL: redis://localhost:6379
       MONGODB_URL: mongodb://test_user:test_password@localhost:27017/test_db
@@ -57,7 +61,6 @@ jobs:
       NODE_ENV: test
       JWT_SECRET: test_jwt_secret_for_ci
       JWT_REFRESH_SECRET: test_refresh_secret_for_ci
-      USER_CACHE_RETENTION_MINUTES: 5
 
     steps:
       - name: 📥 Checkout code
@@ -67,52 +70,35 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '24'
-          cache: 'npm'
 
       - name: 🔧 Install database clients
         run: |
-          # Install Redis tools and PostgreSQL client
+          # Install PostgreSQL client and Redis tools
           sudo apt-get update -qq
-          sudo apt-get install -y redis-tools postgresql-client
+          sudo apt-get install -y postgresql-client redis-tools
 
-          # Verify installations
-          redis-cli --version
-          pg_isready --version
+          # Install MongoDB client (mongosh) - simplified method
+          curl -fsSL https://pgp.mongodb.com/server-7.0.asc | sudo gpg --dearmor -o /usr/share/keyrings/mongodb-server-7.0.gpg
+          echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/7.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list
+          sudo apt-get update -qq
+          sudo apt-get install -y mongodb-mongosh
 
       - name: 📦 Install dependencies
-        run: npm ci --legacy-peer-deps
+        run: npm i --legacy-peer-deps
 
       - name: ⏳ Wait for services to be healthy
         run: |
           echo "⏳ Waiting for PostgreSQL..."
-          for i in {1..30}; do
-            if pg_isready -h localhost -p 5432 >/dev/null 2>&1; then
-              echo "✅ PostgreSQL is ready!"
-              break
-            fi
-            echo "  Attempt $i/30 - PostgreSQL not ready yet..."
-            sleep 2
-          done
+          timeout 60s bash -c 'until pg_isready -h localhost -p 5432; do sleep 2; done'
+          echo "✅ PostgreSQL is ready!"
 
           echo "⏳ Waiting for Redis..."
-          for i in {1..30}; do
-            if redis-cli -h localhost -p 6379 ping >/dev/null 2>&1; then
-              echo "✅ Redis is ready!"
-              break
-            fi
-            echo "  Attempt $i/30 - Redis not ready yet..."
-            sleep 2
-          done
+          timeout 60s bash -c 'until redis-cli -h localhost -p 6379 ping | grep -q PONG; do sleep 2; done'
+          echo "✅ Redis is ready!"
 
           echo "⏳ Waiting for MongoDB..."
-          for i in {1..30}; do
-            if nc -z localhost 27017 >/dev/null 2>&1; then
-              echo "✅ MongoDB is ready!"
-              break
-            fi
-            echo "  Attempt $i/30 - MongoDB not ready yet..."
-            sleep 2
-          done
+          timeout 60s bash -c 'until mongosh --host localhost:27017 --eval "db.adminCommand(\"ping\")" --quiet; do sleep 2; done'
+          echo "✅ MongoDB is ready!"
 
           echo "🎉 All services are ready!"
 
@@ -130,6 +116,9 @@ jobs:
 
       - name: 📊 Test Coverage
         run: npm run test:cov
+
+      - name: 📚 Generate Docs (Swagger)
+        run: npm run docs || echo "No docs script"
 
       - name: ✅ Success
         run: echo "✅ CI passed for Clean Architecture NestJS"

@@ -67,10 +67,10 @@ npm config list
 
 ### 📋 Scripts Disponibles
 
-| Script | Description | Usage |
-|--------|-------------|--------|
-| `./scripts/setup-nvm-env.sh` | Configuration complète NVM + Node.js 24 | `./scripts/setup-nvm-env.sh` |
-| `./scripts/npm-cleanup-optimize.sh` | Nettoyage et optimisation npm | `./scripts/npm-cleanup-optimize.sh` |
+| Script                              | Description                             | Usage                               |
+| ----------------------------------- | --------------------------------------- | ----------------------------------- |
+| `./scripts/setup-nvm-env.sh`        | Configuration complète NVM + Node.js 24 | `./scripts/setup-nvm-env.sh`        |
+| `./scripts/npm-cleanup-optimize.sh` | Nettoyage et optimisation npm           | `./scripts/npm-cleanup-optimize.sh` |
 
 ### 🚀 Configuration Rapide
 
@@ -116,6 +116,7 @@ Le workspace VS Code inclut des tâches optimisées pour nvm :
 ### ⚠️ Problèmes Courants
 
 #### **1. nvm command not found**
+
 ```bash
 # Solution
 source ~/.bashrc
@@ -124,6 +125,7 @@ source ~/.zshrc  # si vous utilisez zsh
 ```
 
 #### **2. Version Node.js incorrecte**
+
 ```bash
 # Forcer l'utilisation de Node.js 24
 nvm use 24
@@ -132,12 +134,14 @@ nvm use
 ```
 
 #### **3. Conflits de dépendances**
+
 ```bash
 # Nettoyer et réinstaller
 ./scripts/npm-cleanup-optimize.sh
 ```
 
 #### **4. npm warnings**
+
 ```bash
 # Les warnings suivants sont normaux et sans impact :
 # - "Unknown project config" (npm 11 ignore certaines options)

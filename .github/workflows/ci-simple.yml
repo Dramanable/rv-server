@@ -48,7 +48,6 @@ jobs:
     # 🌍 Environment variables for tests
     env:
       # Database URLs for integration tests
-      DATABASE_URL: postgresql://test_user:test_password@localhost:5432/test_db
       POSTGRES_URL: postgresql://test_user:test_password@localhost:5432/test_db
       REDIS_URL: redis://localhost:6379
       MONGODB_URL: mongodb://test_user:test_password@localhost:27017/test_db
@@ -57,7 +56,6 @@ jobs:
       NODE_ENV: test
       JWT_SECRET: test_jwt_secret_for_ci
       JWT_REFRESH_SECRET: test_refresh_secret_for_ci
-      USER_CACHE_RETENTION_MINUTES: 5
 
     steps:
       - name: 📥 Checkout code

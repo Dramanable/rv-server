@@ -67,3 +67,27 @@ yarn.lock
 *.backup
 *.old
 *.bak
+
+# VS Code Memory Optimization
+*.tsbuildinfo
+*.log
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Build and Coverage (memory heavy)
+dist/
+coverage/
+.nyc_output/
+logs/
+tmp/
+temp/
+
+# Caches (memory heavy)
+.npm/
+.jest/
+.eslintcache
+
+# Large Documentation (keep only essential)
+*_REPORT.md
+cookies*.txt
