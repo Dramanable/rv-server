@@ -5,36 +5,17 @@ services:
       dockerfile: Dockerfile
     container_name: api
     restart: unless-stopped
+    # 🎯 Memory optimization
+    mem_limit: 512m
+    mem_reservation: 256m
+    cpus: '0.5'
     depends_on:
       postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
-    environment:
-      NODE_ENV: development
-      PORT: 3000
-      DATABASE_HOST: postgres
-      DATABASE_PORT: 5432
-      DATABASE_USERNAME: ${POSTGRES_USER:-postgres}
-      DATABASE_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
-      DATABASE_NAME: ${POSTGRES_DB:-cleanarchi_dev}
-      MONGODB_HOST: mongodb
-      MONGODB_PORT: 27017
-      MONGODB_USERNAME: ${MONGO_ROOT_USERNAME:-admin}
-      MONGODB_PASSWORD: ${MONGO_ROOT_PASSWORD:-admin}
-      MONGODB_DATABASE: ${MONGO_DB:-cleanarchi_dev}
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-      REDIS_PASSWORD: redis123
-      USER_SESSION_DURATION_MINUTES: 30
-      USER_CACHE_RETENTION_MINUTES: 60
-      # JWT Configuration
-      ACCESS_TOKEN_SECRET: dev-access-token-secret-for-development-only-32chars
-      REFRESH_TOKEN_SECRET: dev-refresh-token-secret-for-development-only-32chars
-      ACCESS_TOKEN_EXPIRATION: 3600
-      REFRESH_TOKEN_EXPIRATION_DAYS: 30
-      # Security Settings
-      BCRYPT_ROUNDS: 4
+    env_file:
+      - .env
     ports:
       - "3000:3000"
       - "9229:9229"
@@ -44,19 +25,33 @@ services:
       - ./package-lock.json:/app/package-lock.json
       - ./tsconfig.json:/app/tsconfig.json
       - ./tsconfig.build.json:/app/tsconfig.build.json
-      # - node_modules_cache:/app/node_modules  # Commenté pour utiliser les node_modules de l'image Docker
     networks:
       - app-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/health"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
 
   postgres:
     image: postgres:15-alpine
     container_name: postgres
     restart: unless-stopped
+    # 🎯 Memory optimization
+    mem_limit: 256m
+    mem_reservation: 128m
+    env_file:
+      - .env
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
-      POSTGRES_DB: ${POSTGRES_DB:-cleanarchi_dev}
       PGDATA: /var/lib/postgresql/data/pgdata
+    command: >
+      postgres 
+      -c shared_buffers=64MB
+      -c effective_cache_size=192MB
+      -c maintenance_work_mem=16MB
+      -c work_mem=2MB
+      -c max_connections=50
     ports:
       - "5432:5432"
     volumes:
@@ -73,10 +68,16 @@ services:
     image: mongo:7-jammy
     container_name: mongodb
     restart: unless-stopped
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME:-admin}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-admin}
-      MONGO_INITDB_DATABASE: ${MONGO_DB:-cleanarchi_dev}
+    # 🎯 Memory optimization
+    mem_limit: 256m
+    mem_reservation: 128m
+    env_file:
+      - .env
+    command: >
+      mongod 
+      --wiredTigerCacheSizeGB 0.1
+      --wiredTigerCollectionBlockCompressor snappy
+      --quiet
     ports:
       - "27017:27017"
     volumes:
@@ -93,7 +94,17 @@ services:
     image: redis:7-alpine
     container_name: redis
     restart: unless-stopped
-    command: redis-server --appendonly yes --requirepass redis123
+    # 🎯 Memory optimization
+    mem_limit: 128m
+    mem_reservation: 64m
+    env_file:
+      - .env
+    command: >
+      redis-server 
+      --maxmemory 96mb
+      --maxmemory-policy allkeys-lru
+      --appendonly yes
+      --requirepass redis123
     ports:
       - "6379:6379"
     volumes:
@@ -110,9 +121,12 @@ services:
     image: dpage/pgadmin4:latest
     container_name: pgadmin
     restart: unless-stopped
+    # 🎯 Memory optimization
+    mem_limit: 128m
+    mem_reservation: 64m
+    env_file:
+      - .env
     environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@cleanarchi.dev}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin123}
       PGADMIN_CONFIG_SERVER_MODE: 'False'
       PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: 'False'
     ports:
