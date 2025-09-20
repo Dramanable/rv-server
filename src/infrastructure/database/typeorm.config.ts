@@ -4,10 +4,10 @@
  * ✅ Clean Architecture - Infrastructure Layer
  */
 
-import { DataSource } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
 import { config } from 'dotenv';
 import * as path from 'path';
+import { DataSource } from 'typeorm';
 
 // Load environment variables for CLI usage
 config();
@@ -17,11 +17,11 @@ const configService = new ConfigService();
 // Default export for TypeORM CLI
 export default new DataSource({
   type: 'postgres',
-  host: configService.get('DB_HOST', 'localhost'),
-  port: configService.get('DB_PORT', 5432),
-  username: configService.get('DB_USERNAME', 'postgres'),
-  password: configService.get('DB_PASSWORD', 'postgres'),
-  database: configService.get('DB_NAME', 'appointment_system'),
+  host: configService.get('DATABASE_HOST', 'localhost'),
+  port: configService.get('DATABASE_PORT', 5432),
+  username: configService.get('DATABASE_USERNAME', 'postgres'),
+  password: configService.get('DATABASE_PASSWORD', 'postgres'),
+  database: configService.get('DATABASE_NAME', 'rvproject'),
 
   // 📁 Entities - Clean Architecture paths
   entities: [

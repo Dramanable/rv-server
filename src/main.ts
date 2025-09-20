@@ -15,9 +15,9 @@ import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import { AppModule } from './app.module';
-import { AppConfigService } from './infrastructure/config/app-config.service';
-import { I18nValidationPipe } from './infrastructure/validation/i18n-validation.pipe';
-import { setupSwagger } from './presentation/config/swagger.config';
+import { AppConfigService } from '@infrastructure/config/app-config.service';
+import { I18nValidationPipe } from '@infrastructure/validation/i18n-validation.pipe';
+import { setupSwagger } from '@presentation/config/swagger.config';
 // 🛡️ Security imports
 
 async function bootstrap() {

@@ -86,3 +86,33 @@ export class ForbiddenError extends AuthenticationError {
     this.name = 'ForbiddenError';
   }
 }
+
+export class ValidationError extends AuthenticationError {
+  constructor(
+    message: string = 'Validation failed',
+    context?: Record<string, any>,
+  ) {
+    super(message, 'VALIDATION_ERROR', context);
+    this.name = 'ValidationError';
+  }
+}
+
+export class DuplicationError extends AuthenticationError {
+  constructor(
+    message: string = 'Resource already exists',
+    context?: Record<string, any>,
+  ) {
+    super(message, 'DUPLICATION_ERROR', context);
+    this.name = 'DuplicationError';
+  }
+}
+
+export class InsufficientPermissionsError extends AuthenticationError {
+  constructor(
+    message: string = 'Insufficient permissions',
+    context?: Record<string, any>,
+  ) {
+    super(message, 'INSUFFICIENT_PERMISSIONS', context);
+    this.name = 'InsufficientPermissionsError';
+  }
+}

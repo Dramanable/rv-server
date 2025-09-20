@@ -7,36 +7,37 @@ services:
     container_name: nestjs-dev
     restart: unless-stopped
     
-    # 🔧 Development resource allocation
-    mem_limit: 1g
-    mem_reservation: 512m
-    cpus: '1.0'
-    
-    # 🔗 Service dependencies
+    # 🔧 Development resource allocation - Increased for TypeScript compilation
+    mem_limit: 4g
+    mem_reservation: 2g
+    cpus: '2.0'    # 🔗 Service dependencies
     depends_on:
       postgres:
         condition: service_healthy
+      mongodb:
+        condition: service_healthy
       redis:
         condition: service_healthy
-    
+
     # 🌍 Environment configuration
     env_file:
       - .env
     environment:
       - NODE_ENV=development
       - CHOKIDAR_USEPOLLING=true  # For hot reload in Docker
-    
+      - NODE_OPTIONS=--max-old-space-size=3072  # 3GB heap for TypeScript compilation
+
     # 🚪 Port mapping
     ports:
       - "3000:3000"      # Application
       - "9229:9229"      # Debug port
-    
-    # � Development volumes for hot reload
+
+    # 📁 Development volumes for hot reload
     volumes:
       # Source code hot reload
       - ./src:/app/src:delegated
       - ./test:/app/test:delegated
-      
+
       # Configuration files
       - ./package.json:/app/package.json:cached
       - ./package-lock.json:/app/package-lock.json:cached
@@ -46,24 +47,26 @@ services:
       - ./.env:/app/.env:cached
       - ./.eslintrc.js:/app/.eslintrc.js:cached
       - ./.prettierrc:/app/.prettierrc:cached
-      
+
       # Development tools
       - ./scripts:/app/scripts:cached
-      
+
       # Node modules cache for performance
       - node_modules_cache:/app/node_modules
-    
+
     # 🌐 Network
     networks:
       - app-network
-    
-    # 🏥 Health check for development
+
+    # 🏥 Health check
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 45s
+      start_period: 60s
+
+
 
   # 🗄️ PostgreSQL Database - Development
   postgres:
@@ -101,13 +104,13 @@ services:
     container_name: mongodb
     restart: unless-stopped
     # 🎯 Memory optimization
-    mem_limit: 256m
-    mem_reservation: 128m
+    mem_limit: 512m
+    mem_reservation: 256m
     env_file:
       - .env
     command: >
       mongod
-      --wiredTigerCacheSizeGB 0.1
+      --wiredTigerCacheSizeGB 0.25
       --wiredTigerCollectionBlockCompressor snappy
       --quiet
     ports:
@@ -159,6 +162,8 @@ services:
     env_file:
       - .env
     environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
       PGADMIN_CONFIG_SERVER_MODE: 'False'
       PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: 'False'
     ports:

@@ -5,13 +5,17 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import Redis from 'ioredis';
-import { SimpleCacheService } from '../services/simple-cache.service';
+import { SimpleCacheService } from '@infrastructure/services/simple-cache.service';
 import { RedisUserCacheAdapter } from './redis-user-cache.adapter';
-import { AppConfigService } from '../config/app-config.service';
+import { AppConfigService } from '@infrastructure/config/app-config.service';
 
-import { PinoLoggerModule } from '../logging/pino-logger.module';
-import { TOKENS } from '../../shared/constants/injection-tokens';
-import type { I18nService } from '../../application/ports/i18n.port';
+import { PinoLoggerModule } from '@infrastructure/logging/pino-logger.module';
+import { AuthInfrastructureModule } from '../modules/auth-infrastructure.module';
+import { TOKENS } from '@shared/constants/injection-tokens';
+import type { I18nService } from '@application/ports/i18n.port';
+
+// Application Services
+import { UserCacheService } from '@application/services/user-cache.service';
 
 /**
  * 🌍 Infrastructure I18n Service - Service I18n simplifié pour l'infrastructure
@@ -83,13 +87,13 @@ class InfrastructureI18nService implements I18nService {
     ConfigModule,
     // 📝 Module de logging global
     PinoLoggerModule,
+    // 🔐 Module d'authentification pour I18nService
+    AuthInfrastructureModule,
   ],
   providers: [
-    // 🌍 Service I18n pour l'infrastructure
-    {
-      provide: TOKENS.I18N_SERVICE,
-      useClass: InfrastructureI18nService,
-    },
+    // 🌍 Service I18n pour l'infrastructure (local usage only)
+    InfrastructureI18nService,
+
     // 🗄️ Service de cache simple
     {
       provide: TOKENS.CACHE_SERVICE,
@@ -117,7 +121,24 @@ class InfrastructureI18nService implements I18nService {
       },
       inject: ['REDIS_CLIENT', AppConfigService],
     },
+
+    // 👤 Service de cache utilisateur (Application Layer)
+    {
+      provide: TOKENS.USER_CACHE_SERVICE,
+      useFactory: (userCache, logger, i18n, configService) =>
+        new UserCacheService(userCache, logger, i18n, configService),
+      inject: [
+        TOKENS.USER_CACHE,
+        TOKENS.LOGGER,
+        TOKENS.I18N_SERVICE, // Will come from AuthInfrastructureModule (exported)
+        TOKENS.APP_CONFIG,
+      ],
+    },
   ],
-  exports: [TOKENS.CACHE_SERVICE, TOKENS.USER_CACHE],
+  exports: [
+    TOKENS.CACHE_SERVICE,
+    TOKENS.USER_CACHE,
+    TOKENS.USER_CACHE_SERVICE, // ✅ Export UserCacheService
+  ],
 })
 export class CacheModule {}

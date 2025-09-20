@@ -8,7 +8,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
-import { IPasswordService } from '../../application/ports/password.service.interface';
+import { IPasswordService } from '@application/ports/password.service.interface';
 
 @Injectable()
 export class BcryptPasswordService implements IPasswordService {

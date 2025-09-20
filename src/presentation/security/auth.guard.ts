@@ -10,11 +10,13 @@ import {
   ExecutionContext,
   UnauthorizedException,
   ForbiddenException,
+  Inject,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
-import { AppConfigService } from '../../infrastructure/config/app-config.service';
+import type { IConfigService } from '@application/ports/config.port';
+import { TOKENS } from '@shared/constants/injection-tokens';
 
 export const IS_PUBLIC_KEY = 'isPublic';
 export const Public = () => SetMetadata(IS_PUBLIC_KEY, true);
@@ -24,7 +26,8 @@ export class JwtAuthGuard implements CanActivate {
   constructor(
     private jwtService: JwtService,
     private reflector: Reflector,
-    private configService: AppConfigService,
+    @Inject(TOKENS.APP_CONFIG)
+    private configService: IConfigService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {

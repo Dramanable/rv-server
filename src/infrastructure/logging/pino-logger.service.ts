@@ -7,7 +7,7 @@
 
 import { Inject, Injectable } from '@nestjs/common';
 import { PinoLogger } from 'nestjs-pino';
-import { Logger } from '../../application/ports/logger.port';
+import { Logger } from '@application/ports/logger.port';
 
 @Injectable()
 export class PinoLoggerService implements Logger {

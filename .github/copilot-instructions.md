@@ -1144,6 +1144,671 @@ npm test
 - **Portabilité** : La logique centrale peut être déplacée entre différents frameworks
 - **Maintenabilité** : Les changements de frameworks n'affectent pas les règles métier
 
+## 🔍 **STANDARDISATION API - RECHERCHE & FILTRAGE PAGINÉS OBLIGATOIRES**
+
+### 🎯 **RÈGLE CRITIQUE : TOUTES LES RESSOURCES DOIVENT AVOIR UNE API DE RECHERCHE COHÉRENTE**
+
+**Chaque ressource (User, BusinessSector, Business, etc.) DOIT respecter le même pattern de recherche et filtrage paginés pour garantir une expérience développeur cohérente.**
+
+#### **📋 Pattern Obligatoire : POST /api/v1/{resource}/list**
+
+```typescript
+// ✅ CORRECT - Pattern standardisé pour TOUTES les ressources
+@Post('list')
+@ApiOperation({ 
+  summary: 'List {ResourceName}s with advanced search and pagination',
+  description: 'Provides comprehensive search, filtering, and pagination for {ResourceName}s'
+})
+@ApiResponse({ type: List{ResourceName}ResponseDto })
+@UseGuards(JwtAuthGuard)
+async list(
+  @Body() dto: List{ResourceName}sDto,
+  @GetUser() user: User,
+): Promise<List{ResourceName}ResponseDto> {
+  // Implémentation avec use case
+}
+```
+
+#### **🔧 Structure DTO Standardisée**
+
+```typescript
+// ✅ OBLIGATOIRE - Chaque ressource doit avoir cette structure de base
+export class List{ResourceName}sDto {
+  @ApiPropertyOptional({ minimum: 1, default: 1 })
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  readonly page?: number = 1;
+
+  @ApiPropertyOptional({ minimum: 1, maximum: 100, default: 10 })
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Max(100)
+  readonly limit?: number = 10;
+
+  @ApiPropertyOptional({ enum: ['{field1}', '{field2}', 'createdAt'], default: 'createdAt' })
+  @IsOptional()
+  @IsIn(['{field1}', '{field2}', 'createdAt'])
+  readonly sortBy?: string = 'createdAt';
+
+  @ApiPropertyOptional({ enum: ['asc', 'desc'], default: 'desc' })
+  @IsOptional()
+  @IsIn(['asc', 'desc'])
+  readonly sortOrder?: 'asc' | 'desc' = 'desc';
+
+  @ApiPropertyOptional({ description: 'Search term for text fields' })
+  @IsOptional()
+  @IsString()
+  @Length(1, 100)
+  readonly search?: string;
+
+  // ✅ Filtres spécifiques à la ressource
+  @ApiPropertyOptional({ description: 'Filter by active status' })
+  @IsOptional()
+  @IsBoolean()
+  readonly isActive?: boolean;
+
+  // Autres filtres spécifiques...
+}
+```
+
+#### **📊 Response DTO Standardisée**
+
+```typescript
+// ✅ OBLIGATOIRE - Métadonnées de pagination cohérentes
+export class List{ResourceName}ResponseDto {
+  @ApiProperty({ type: [{ResourceName}Dto] })
+  readonly data: {ResourceName}Dto[];
+
+  @ApiProperty({
+    description: 'Pagination metadata',
+    example: {
+      currentPage: 1,
+      totalPages: 5,
+      totalItems: 47,
+      itemsPerPage: 10,
+      hasNextPage: true,
+      hasPrevPage: false
+    }
+  })
+  readonly meta: {
+    readonly currentPage: number;
+    readonly totalPages: number;
+    readonly totalItems: number;
+    readonly itemsPerPage: number;
+    readonly hasNextPage: boolean;
+    readonly hasPrevPage: boolean;
+  };
+}
+```
+
+#### **🎯 Use Case Pattern Standardisé**
+
+```typescript
+// ✅ OBLIGATOIRE - Chaque ressource doit avoir un use case de liste
+export interface List{ResourceName}sRequest {
+  readonly requestingUserId: string;
+  readonly pagination: {
+    readonly page: number;
+    readonly limit: number;
+  };
+  readonly sorting: {
+    readonly sortBy: string;
+    readonly sortOrder: 'asc' | 'desc';
+  };
+  readonly filters: {
+    readonly search?: string;
+    readonly isActive?: boolean;
+    // Filtres spécifiques...
+  };
+}
+
+export interface List{ResourceName}sResponse {
+  readonly data: {ResourceName}[];
+  readonly meta: {
+    readonly currentPage: number;
+    readonly totalPages: number;
+    readonly totalItems: number;
+    readonly itemsPerPage: number;
+    readonly hasNextPage: boolean;
+    readonly hasPrevPage: boolean;
+  };
+}
+
+export class List{ResourceName}sUseCase {
+  async execute(request: List{ResourceName}sRequest): Promise<List{ResourceName}sResponse> {
+    // 1. Validation des permissions
+    // 2. Application des filtres
+    // 3. Pagination
+    // 4. Tri
+    // 5. Mapping vers response
+  }
+}
+```
+
+#### **📋 Checklist Obligatoire pour Chaque Ressource**
+
+- [ ] **Endpoint POST /api/v1/{resource}/list** implémenté
+- [ ] **DTO de requête** avec pagination, tri, recherche, filtres
+- [ ] **DTO de réponse** avec metadata pagination cohérente  
+- [ ] **Use Case dédié** pour la logique de recherche
+- [ ] **Repository method findAll()** avec support filtres avancés
+- [ ] **Mapper** pour conversion DTO ↔ Domain ↔ Response
+- [ ] **Tests unitaires** complets pour use case et controller
+- [ ] **Documentation Swagger** détaillée avec exemples
+- [ ] **Validation des permissions** basée sur les rôles utilisateur
+- [ ] **Gestion d'erreurs** avec messages i18n appropriés
+
+#### **🚫 INTERDICTIONS**
+
+- ❌ **JAMAIS** d'endpoint GET simple sans filtrage avancé
+- ❌ **JAMAIS** de pagination sans métadonnées complètes
+- ❌ **JAMAIS** de recherche sans validation de permissions
+- ❌ **JAMAIS** de tri sans validation des champs autorisés
+- ❌ **JAMAIS** de limite de pagination > 100 éléments
+
+#### **✅ Ressources Déjà Conformes**
+
+- **Users** : ✅ POST /api/v1/users/list avec recherche, filtrage, pagination
+- **BusinessSectors** : 🔄 À mettre à jour selon ce standard
+
+#### **📝 TODO : Mise à Jour des Ressources Existantes**
+
+1. **BusinessSectors** : Remplacer l'endpoint simple par le pattern standardisé
+2. **Businesses** : Implémenter le pattern dès la création
+3. **Services** : Implémenter le pattern dès la création
+4. **Appointments** : Implémenter le pattern dès la création
+
+**Cette standardisation garantit une API cohérente, performante et facilement utilisable par les développeurs frontend !**
+
+### 🛣️ **CONVENTIONS D'ENDPOINTS REST STANDARDISÉES**
+
+#### **📋 Pattern Obligatoire pour TOUTES les Ressources**
+
+```typescript
+// ✅ STRUCTURE ENDPOINT STANDARDISÉE
+@Controller('api/v1/{resources}') // Toujours au pluriel
+export class {Resource}Controller {
+  
+  // 🔍 RECHERCHE & LISTE (POST pour filtres complexes)
+  @Post('list') // ✅ OBLIGATOIRE pour toutes les ressources
+  async list(@Body() dto: List{Resource}sDto): Promise<List{Resource}ResponseDto>
+
+  // 📄 RÉCUPÉRATION PAR ID
+  @Get(':id') // ✅ Standard REST
+  async findById(@Param('id') id: string): Promise<{Resource}Dto>
+
+  // ➕ CRÉATION
+  @Post() // ✅ Standard REST
+  async create(@Body() dto: Create{Resource}Dto): Promise<Create{Resource}ResponseDto>
+
+  // ✏️ MISE À JOUR
+  @Put(':id') // ✅ Standard REST
+  async update(@Param('id') id: string, @Body() dto: Update{Resource}Dto): Promise<Update{Resource}ResponseDto>
+
+  // 🗑️ SUPPRESSION
+  @Delete(':id') // ✅ Standard REST
+  async delete(@Param('id') id: string): Promise<Delete{Resource}ResponseDto>
+
+  // 📊 STATISTIQUES/MÉTRIQUES (optionnel)
+  @Get('stats')
+  async getStats(): Promise<{Resource}StatsDto>
+}
+```
+
+#### **🎯 Exemples Concrets d'URLs**
+
+```bash
+# ✅ CORRECT - Endpoints standardisés
+POST   /api/v1/users/list          # Recherche utilisateurs paginée
+GET    /api/v1/users/123           # Récupérer utilisateur par ID
+POST   /api/v1/users               # Créer utilisateur
+PUT    /api/v1/users/123           # Mettre à jour utilisateur
+DELETE /api/v1/users/123           # Supprimer utilisateur
+GET    /api/v1/users/stats         # Statistiques utilisateurs
+
+POST   /api/v1/business-sectors/list    # Recherche secteurs paginée
+GET    /api/v1/business-sectors/456     # Récupérer secteur par ID
+POST   /api/v1/business-sectors         # Créer secteur
+PUT    /api/v1/business-sectors/456     # Mettre à jour secteur
+DELETE /api/v1/business-sectors/456     # Supprimer secteur
+
+POST   /api/v1/businesses/list          # Recherche entreprises paginée
+POST   /api/v1/appointments/list        # Recherche rendez-vous paginée
+POST   /api/v1/services/list            # Recherche services paginée
+```
+
+#### **❌ ANTI-PATTERNS À ÉVITER**
+
+```bash
+# ❌ INTERDIT - Endpoints non standardisés
+GET    /api/v1/users/all           # Pas de filtrage avancé
+GET    /api/v1/users/search        # Limité, utiliser POST /list
+POST   /api/v1/users/filter        # Utiliser POST /list
+GET    /api/v1/users/paginated     # Utiliser POST /list
+POST   /api/v1/users/find          # Utiliser POST /list
+
+# ❌ INTERDIT - URLs mal formées
+GET    /api/v1/user/123            # Singulier interdit
+GET    /api/v1/Users/123           # Casse incorrecte
+GET    /api/v1/businessSector/123  # camelCase interdit, utiliser kebab-case
+```
+
+#### **📝 Règles de Nommage**
+
+1. **Ressources** : Toujours au **pluriel** et en **kebab-case**
+   - ✅ `/users`, `/business-sectors`, `/appointments`
+   - ❌ `/user`, `/businessSectors`, `/Users`
+
+2. **Actions** : Verbes HTTP standard + suffixes conventionnels
+   - ✅ `POST /list` pour recherche avancée
+   - ✅ `GET /stats` pour statistiques
+   - ❌ `GET /getAll`, `POST /search`
+
+3. **Paramètres** : ID en paramètre de route, filtres complexes en body
+   - ✅ `GET /users/123`, `POST /users/list`
+   - ❌ `GET /users?id=123`
+
+**Cette standardisation assure une API REST cohérente et prévisible pour tous les développeurs !**
+
+### 🚨 **GESTION D'ERREURS API STANDARDISÉE**
+
+#### **📋 Format de Réponse d'Erreur Obligatoire**
+
+```typescript
+// ✅ OBLIGATOIRE - Format d'erreur standardisé pour toutes les ressources
+export interface ApiErrorResponse {
+  readonly success: false;
+  readonly error: {
+    readonly code: string;           // Code d'erreur technique
+    readonly message: string;        // Message utilisateur (i18n)
+    readonly details?: string;       // Détails techniques (dev only)
+    readonly field?: string;         // Champ en erreur (validation)
+    readonly timestamp: string;      // ISO timestamp
+    readonly path: string;           // Endpoint appelé
+    readonly correlationId: string;  // ID pour tracing
+  };
+}
+
+// ✅ OBLIGATOIRE - Format de réponse succès standardisé
+export interface ApiSuccessResponse<T> {
+  readonly success: true;
+  readonly data: T;
+  readonly meta?: {
+    readonly timestamp: string;
+    readonly correlationId: string;
+  };
+}
+```
+
+#### **🎯 Codes d'Erreur Standardisés par Ressource**
+
+```typescript
+// ✅ OBLIGATOIRE - Chaque ressource doit définir ses codes d'erreur
+export enum {Resource}ErrorCodes {
+  // Erreurs génériques (4xx)
+  NOT_FOUND = '{RESOURCE}_NOT_FOUND',
+  INVALID_DATA = '{RESOURCE}_INVALID_DATA',
+  DUPLICATE_ENTRY = '{RESOURCE}_DUPLICATE_ENTRY',
+  PERMISSION_DENIED = '{RESOURCE}_PERMISSION_DENIED',
+  
+  // Erreurs métier spécifiques
+  CANNOT_DELETE_REFERENCED = '{RESOURCE}_CANNOT_DELETE_REFERENCED',
+  STATUS_TRANSITION_INVALID = '{RESOURCE}_STATUS_TRANSITION_INVALID',
+  
+  // Erreurs système (5xx)
+  REPOSITORY_ERROR = '{RESOURCE}_REPOSITORY_ERROR',
+  EXTERNAL_SERVICE_ERROR = '{RESOURCE}_EXTERNAL_SERVICE_ERROR',
+}
+
+// Exemple concret pour BusinessSector
+export enum BusinessSectorErrorCodes {
+  NOT_FOUND = 'BUSINESS_SECTOR_NOT_FOUND',
+  INVALID_DATA = 'BUSINESS_SECTOR_INVALID_DATA',
+  DUPLICATE_CODE = 'BUSINESS_SECTOR_DUPLICATE_CODE',
+  PERMISSION_DENIED = 'BUSINESS_SECTOR_PERMISSION_DENIED',
+  CANNOT_DELETE_REFERENCED = 'BUSINESS_SECTOR_CANNOT_DELETE_REFERENCED',
+  REPOSITORY_ERROR = 'BUSINESS_SECTOR_REPOSITORY_ERROR',
+}
+```
+
+#### **📊 Codes de Statut HTTP Standardisés**
+
+```typescript
+// ✅ OBLIGATOIRE - Mapping cohérent des erreurs métier vers HTTP
+export const ERROR_HTTP_STATUS_MAP = {
+  // 400 - Bad Request
+  INVALID_DATA: 400,
+  VALIDATION_ERROR: 400,
+  BUSINESS_RULE_VIOLATION: 400,
+  
+  // 401 - Unauthorized
+  AUTHENTICATION_REQUIRED: 401,
+  INVALID_CREDENTIALS: 401,
+  TOKEN_EXPIRED: 401,
+  
+  // 403 - Forbidden
+  PERMISSION_DENIED: 403,
+  INSUFFICIENT_PERMISSIONS: 403,
+  
+  // 404 - Not Found
+  NOT_FOUND: 404,
+  RESOURCE_NOT_FOUND: 404,
+  
+  // 409 - Conflict
+  DUPLICATE_ENTRY: 409,
+  RESOURCE_ALREADY_EXISTS: 409,
+  CONCURRENT_MODIFICATION: 409,
+  
+  // 422 - Unprocessable Entity
+  CANNOT_DELETE_REFERENCED: 422,
+  STATUS_TRANSITION_INVALID: 422,
+  
+  // 500 - Internal Server Error
+  REPOSITORY_ERROR: 500,
+  EXTERNAL_SERVICE_ERROR: 500,
+  UNKNOWN_ERROR: 500,
+} as const;
+```
+
+#### **🔧 Exception Filter Global**
+
+```typescript
+// ✅ OBLIGATOIRE - Gestionnaire d'erreurs global pour cohérence
+@Catch()
+export class GlobalExceptionFilter implements ExceptionFilter {
+  catch(exception: unknown, host: ArgumentsHost): void {
+    const ctx = host.switchToHttp();
+    const response = ctx.getResponse<Response>();
+    const request = ctx.getRequest<Request>();
+    
+    const errorResponse: ApiErrorResponse = {
+      success: false,
+      error: {
+        code: this.getErrorCode(exception),
+        message: this.getI18nMessage(exception),
+        details: this.getErrorDetails(exception),
+        field: this.getFieldName(exception),
+        timestamp: new Date().toISOString(),
+        path: request.url,
+        correlationId: this.getCorrelationId(request),
+      },
+    };
+    
+    const statusCode = this.getHttpStatus(exception);
+    response.status(statusCode).json(errorResponse);
+  }
+}
+```
+
+#### **📝 Messages d'Erreur Internationalisés**
+
+```typescript
+// ✅ OBLIGATOIRE - Messages i18n pour toutes les erreurs
+// src/shared/i18n/en/errors.json
+{
+  "BUSINESS_SECTOR_NOT_FOUND": "Business sector not found",
+  "BUSINESS_SECTOR_DUPLICATE_CODE": "A business sector with this code already exists",
+  "BUSINESS_SECTOR_PERMISSION_DENIED": "You don't have permission to manage business sectors",
+  "BUSINESS_SECTOR_CANNOT_DELETE_REFERENCED": "Cannot delete business sector: it is referenced by existing businesses"
+}
+
+// src/shared/i18n/fr/errors.json
+{
+  "BUSINESS_SECTOR_NOT_FOUND": "Secteur d'activité introuvable",
+  "BUSINESS_SECTOR_DUPLICATE_CODE": "Un secteur d'activité avec ce code existe déjà",
+  "BUSINESS_SECTOR_PERMISSION_DENIED": "Vous n'avez pas l'autorisation de gérer les secteurs d'activité",
+  "BUSINESS_SECTOR_CANNOT_DELETE_REFERENCED": "Impossible de supprimer le secteur : il est référencé par des entreprises existantes"
+}
+```
+
+#### **🚫 INTERDICTIONS - Gestion d'Erreurs**
+
+- ❌ **JAMAIS** renvoyer des stack traces en production
+- ❌ **JAMAIS** exposer des détails internes de la base de données
+- ❌ **JAMAIS** utiliser des messages d'erreur génériques ("Internal Error")
+- ❌ **JAMAIS** oublier la corrélation ID pour le debugging
+- ❌ **JAMAIS** renvoyer des codes HTTP incohérents
+
+**Cette standardisation garantit une gestion d'erreurs cohérente et debuggable sur toute l'API !**
+
+### 🧪 **TESTS D'INTÉGRATION API STANDARDISÉS**
+
+#### **📋 Pattern de Tests Obligatoire pour Chaque Ressource**
+
+```typescript
+// ✅ OBLIGATOIRE - Structure de tests d'intégration pour chaque ressource
+describe('{Resource}Controller (e2e)', () => {
+  let app: INestApplication;
+  let authToken: string;
+  
+  beforeAll(async () => {
+    // Setup application et authentification
+  });
+  
+  describe('POST /api/v1/{resources}/list', () => {
+    it('should return paginated list with default parameters', async () => {
+      const response = await request(app.getHttpServer())
+        .post('/api/v1/{resources}/list')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({})
+        .expect(200);
+        
+      expect(response.body).toMatchObject({
+        success: true,
+        data: expect.any(Array),
+        meta: {
+          currentPage: 1,
+          totalPages: expect.any(Number),
+          totalItems: expect.any(Number),
+          itemsPerPage: 10,
+          hasNextPage: expect.any(Boolean),
+          hasPrevPage: false,
+        },
+      });
+    });
+    
+    it('should apply search filters correctly', async () => {
+      const response = await request(app.getHttpServer())
+        .post('/api/v1/{resources}/list')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({
+          search: 'test search term',
+          isActive: true,
+          page: 1,
+          limit: 5,
+        })
+        .expect(200);
+        
+      expect(response.body.meta.itemsPerPage).toBe(5);
+      // Vérifier que les résultats correspondent au filtre
+    });
+    
+    it('should enforce pagination limits', async () => {
+      await request(app.getHttpServer())
+        .post('/api/v1/{resources}/list')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({ limit: 150 }) // > 100
+        .expect(400);
+    });
+    
+    it('should require authentication', async () => {
+      await request(app.getHttpServer())
+        .post('/api/v1/{resources}/list')
+        .send({})
+        .expect(401);
+    });
+  });
+  
+  describe('GET /api/v1/{resources}/:id', () => {
+    it('should return resource by ID', async () => {
+      const response = await request(app.getHttpServer())
+        .get('/api/v1/{resources}/valid-uuid')
+        .set('Authorization', `Bearer ${authToken}`)
+        .expect(200);
+        
+      expect(response.body).toMatchObject({
+        success: true,
+        data: {
+          id: 'valid-uuid',
+          // Autres propriétés attendues
+        },
+      });
+    });
+    
+    it('should return 404 for non-existent resource', async () => {
+      const response = await request(app.getHttpServer())
+        .get('/api/v1/{resources}/non-existent-uuid')
+        .set('Authorization', `Bearer ${authToken}`)
+        .expect(404);
+        
+      expect(response.body).toMatchObject({
+        success: false,
+        error: {
+          code: '{RESOURCE}_NOT_FOUND',
+          message: expect.any(String),
+        },
+      });
+    });
+  });
+  
+  describe('POST /api/v1/{resources}', () => {
+    it('should create resource with valid data', async () => {
+      const createDto = {
+        // Données valides pour création
+      };
+      
+      const response = await request(app.getHttpServer())
+        .post('/api/v1/{resources}')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send(createDto)
+        .expect(201);
+        
+      expect(response.body).toMatchObject({
+        success: true,
+        data: {
+          id: expect.any(String),
+          ...createDto,
+          createdAt: expect.any(String),
+          updatedAt: expect.any(String),
+        },
+      });
+    });
+    
+    it('should validate required fields', async () => {
+      const response = await request(app.getHttpServer())
+        .post('/api/v1/{resources}')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({}) // Données manquantes
+        .expect(400);
+        
+      expect(response.body.error.code).toBe('{RESOURCE}_INVALID_DATA');
+    });
+  });
+  
+  describe('PUT /api/v1/{resources}/:id', () => {
+    it('should update resource with valid data', async () => {
+      const updateDto = {
+        // Données de mise à jour
+      };
+      
+      const response = await request(app.getHttpServer())
+        .put('/api/v1/{resources}/valid-uuid')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send(updateDto)
+        .expect(200);
+        
+      expect(response.body.data).toMatchObject(updateDto);
+    });
+  });
+  
+  describe('DELETE /api/v1/{resources}/:id', () => {
+    it('should delete resource successfully', async () => {
+      await request(app.getHttpServer())
+        .delete('/api/v1/{resources}/valid-uuid')
+        .set('Authorization', `Bearer ${authToken}`)
+        .expect(200);
+        
+      // Vérifier que la ressource est supprimée
+      await request(app.getHttpServer())
+        .get('/api/v1/{resources}/valid-uuid')
+        .set('Authorization', `Bearer ${authToken}`)
+        .expect(404);
+    });
+  });
+});
+```
+
+#### **🎯 Données de Test Standardisées**
+
+```typescript
+// ✅ OBLIGATOIRE - Factory de données de test pour chaque ressource
+export class {Resource}TestDataFactory {
+  static createValid{Resource}Data(): Create{Resource}Dto {
+    return {
+      // Données valides minimales
+    };
+  }
+  
+  static createInvalid{Resource}Data(): Partial<Create{Resource}Dto> {
+    return {
+      // Données invalides pour tests de validation
+    };
+  }
+  
+  static createUpdate{Resource}Data(): Update{Resource}Dto {
+    return {
+      // Données de mise à jour
+    };
+  }
+  
+  static createList{Resource}Filters(): List{Resource}sDto {
+    return {
+      search: 'test',
+      isActive: true,
+      page: 1,
+      limit: 10,
+      sortBy: 'createdAt',
+      sortOrder: 'desc',
+    };
+  }
+}
+```
+
+#### **📊 Métriques de Couverture Obligatoires**
+
+```typescript
+// ✅ OBLIGATOIRE - Checklist de couverture des tests API
+const API_TEST_COVERAGE_CHECKLIST = {
+  // Endpoints CRUD complets
+  'POST /list': ['success', 'pagination', 'filters', 'auth', 'permissions'],
+  'GET /:id': ['success', 'not_found', 'auth', 'permissions'],
+  'POST /': ['success', 'validation', 'auth', 'permissions', 'duplicates'],
+  'PUT /:id': ['success', 'validation', 'not_found', 'auth', 'permissions'],
+  'DELETE /:id': ['success', 'not_found', 'auth', 'permissions', 'constraints'],
+  
+  // Cas d'erreur obligatoires
+  error_handling: ['400', '401', '403', '404', '409', '422', '500'],
+  
+  // Validations métier
+  business_rules: ['required_fields', 'format_validation', 'constraints'],
+  
+  // Sécurité
+  security: ['authentication', 'authorization', 'input_sanitization'],
+} as const;
+```
+
+#### **🚫 INTERDICTIONS - Tests API**
+
+- ❌ **JAMAIS** tester sans données de test isolées
+- ❌ **JAMAIS** ignorer les tests de permissions/sécurité
+- ❌ **JAMAIS** oublier les tests de validation des limites
+- ❌ **JAMAIS** tester sans cleanup des données
+- ❌ **JAMAIS** utiliser des données de production dans les tests
+
+**Cette standardisation garantit une couverture de tests complète et cohérente pour toutes les APIs !**
+
 ### ❌ **STRICTEMENT INTERDIT dans Domain/Application**
 
 ```typescript

@@ -79,7 +79,7 @@ generate_migration() {
         echo "Usage: $0 generate <MigrationName>"
         exit 1
     fi
-    
+
     echo -e "${BLUE}🔧 Generating migration: $name${NC}"
     npm run migration:generate -- "$MIGRATION_DIR/$name"
     echo -e "${GREEN}✅ Migration generated successfully!${NC}"
@@ -93,7 +93,7 @@ create_migration() {
         echo "Usage: $0 create <MigrationName>"
         exit 1
     fi
-    
+
     echo -e "${BLUE}📝 Creating empty migration: $name${NC}"
     npm run migration:create -- "$MIGRATION_DIR/$name"
     echo -e "${GREEN}✅ Empty migration created successfully!${NC}"
@@ -124,7 +124,7 @@ reset_database() {
 # Main command processing
 main() {
     check_dependencies
-    
+
     case "$1" in
         "run")
             run_migrations

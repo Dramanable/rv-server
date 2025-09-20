@@ -1,194 +1,226 @@
 /**
- * 🗑️ Delete User Use Case
+ * 🗑️ DELETE USER USE CASE - Clean Architecture
  *
- * Règles métier pour la suppression d'utilisateurs avec logging et i18n
+ * Use Case pour la suppression d'utilisateurs avec permissions strictes par rôle
+ * Application Layer      case UserRole.LOCATION_MANAGER: {
+        // LOCATION_MANAGER peut supprimer seulement les utilisateurs opérationnels
+        const allowedTargetsForManager = [
+          UserRole.DEPARTMENT_HEAD,
+          UserRole.SENIOR_PRACTITIONER,
+          UserRole.PRACTITIONER,
+          UserRole.JUNIOR_PRACTITIONER,
+          UserRole.RECEPTIONIST,
+          UserRole.ASSISTANT,
+          UserRole.SCHEDULER,
+          UserRole.CORPORATE_CLIENT,
+          UserRole.VIP_CLIENT,
+          UserRole.REGULAR_CLIENT,
+        ];
+        if (!allowedTargetsForManager.includes(targetRole)) {
+          throw new ForbiddenError(
+            `Location manager cannot delete ${targetRole} users`,
+          );
+        }
+        return;
+      }la logique métier sans dépendance framework
  */
 
-import { UserRepository } from '../../../domain/repositories/user.repository.interface';
+import { UserRole } from '../../../shared/enums/user-role.enum';
 import { User } from '../../../domain/entities/user.entity';
-import { UserRole, Permission } from '../../../shared/enums/user-role.enum';
+import { UserRepository } from '../../../domain/repositories/user.repository.interface';
 import { Logger } from '../../ports/logger.port';
-import type { I18nService } from '../../ports/i18n.port';
-import type { ICacheService } from '../../ports/cache.port';
+import { I18nService } from '../../ports/i18n.port';
+import { AppContextFactory } from '../../../shared/context/app-context';
 import {
   UserNotFoundError,
-  InsufficientPermissionsError,
-  SelfDeletionError,
-} from '../../../domain/exceptions/user.exceptions';
+  ForbiddenError,
+  ValidationError,
+} from '../../exceptions/auth.exceptions';
 
-// DTOs
+// ═══════════════════════════════════════════════════════════════
+// 📋 REQUEST & RESPONSE TYPES
+// ═══════════════════════════════════════════════════════════════
+
 export interface DeleteUserRequest {
-  userId: string;
   requestingUserId: string;
+  targetUserId: string;
 }
 
 export interface DeleteUserResponse {
-  success: boolean;
-  deletedUserId: string;
+  id: string;
+  email: string;
   deletedAt: Date;
+  deletedBy: string;
 }
+
+// ═══════════════════════════════════════════════════════════════
+// 🗑️ DELETE USER USE CASE
+// ═══════════════════════════════════════════════════════════════
 
 export class DeleteUserUseCase {
   constructor(
     private readonly userRepository: UserRepository,
     private readonly logger: Logger,
     private readonly i18n: I18nService,
-    private readonly cacheService: ICacheService,
   ) {}
 
   async execute(request: DeleteUserRequest): Promise<DeleteUserResponse> {
-    const startTime = Date.now();
-    const requestContext = {
-      operation: 'DeleteUser',
-      requestingUserId: request.requestingUserId,
-      targetUserId: request.userId,
-    };
-
-    this.logger.info(
-      this.i18n.t('operations.user.deletion_attempt', {
-        userId: request.userId,
-      }),
-      requestContext,
+    const context = AppContextFactory.userOperation(
+      'DeleteUser',
+      request.requestingUserId,
+      request.targetUserId,
     );
 
-    try {
-      // 1. Validation de l'utilisateur demandeur
-      this.logger.debug(
-        this.i18n.t('info.user.validation_start'),
-        requestContext,
-      );
+    this.logger.info('delete_attempt', {
+      ...context,
+      targetUserId: request.targetUserId,
+    });
 
+    try {
+      // 1. Vérifier que l'utilisateur requérant existe
       const requestingUser = await this.userRepository.findById(
         request.requestingUserId,
       );
       if (!requestingUser) {
-        this.logger.warn(
-          this.i18n.t('warnings.user.not_found'),
-          requestContext,
-        );
-        throw new UserNotFoundError(request.requestingUserId);
+        throw new UserNotFoundError('Requesting user not found', {
+          userId: request.requestingUserId,
+        });
       }
 
-      // 2. Validation de l'utilisateur cible
-      const targetUser = await this.userRepository.findById(request.userId);
+      // 2. Vérifier que l'utilisateur cible existe
+      const targetUser = await this.userRepository.findById(
+        request.targetUserId,
+      );
       if (!targetUser) {
-        this.logger.warn(
-          this.i18n.t('warnings.user.target_not_found', {
-            userId: request.userId,
-          }),
-          requestContext,
-        );
-        throw new UserNotFoundError(request.userId);
+        throw new UserNotFoundError('Target user not found', {
+          userId: request.targetUserId,
+        });
       }
 
-      // 3. Vérification des permissions
-      this.logger.debug(
-        this.i18n.t('info.permission.check', { operation: 'DeleteUser' }),
-        requestContext,
-      );
-      this.validatePermissions(requestingUser, targetUser);
+      // 3. Vérifier les permissions
+      await this.validatePermissions(requestingUser, targetUser);
 
-      // 4. Invalider le cache de l'utilisateur avant suppression
-      try {
-        await this.cacheService.invalidateUserCache(request.userId);
-        this.logger.debug(
-          this.i18n.t('infrastructure.cache.user_cache_invalidated'),
-          {
-            ...requestContext,
-            invalidatedUserId: request.userId,
-          },
-        );
-      } catch (cacheError) {
-        // Ne pas faire échouer l'opération si le cache échoue
-        this.logger.warn(
-          this.i18n.t('infrastructure.cache.user_cache_invalidation_failed'),
-          {
-            ...requestContext,
-            cacheError: (cacheError as Error).message,
-          },
-        );
-      }
+      // 4. Vérifier que l'utilisateur n'est pas déjà supprimé
+      await this.validateNotAlreadyDeleted(request.targetUserId);
 
-      // 5. Suppression de l'utilisateur
-      await this.userRepository.delete(request.userId);
+      // 5. Effectuer la suppression (pour l'instant avec delete, plus tard softDelete)
+      await this.userRepository.delete(request.targetUserId);
 
-      const duration = Date.now() - startTime;
+      const response = this.buildResponse(targetUser, request.requestingUserId);
 
-      // Log de succès avec détails
-      this.logger.info(
-        this.i18n.t('success.user.deletion_success', {
-          email: targetUser.email.value,
-          requestingUser: requestingUser.email.value,
-        }),
-        { ...requestContext, duration },
-      );
+      this.logger.info('delete_success', {
+        ...context,
+        deletedUserId: response.id,
+        deletedBy: request.requestingUserId,
+      });
 
-      // Audit trail traduit
-      this.logger.audit(
-        this.i18n.t('audit.user.deleted'),
-        request.requestingUserId,
-        {
-          targetUserId: targetUser.id,
-          targetEmail: targetUser.email.value,
-          targetRole: targetUser.role,
-        },
-      );
-
-      // 5. Retour de la réponse
-      return {
-        success: true,
-        deletedUserId: request.userId,
-        deletedAt: new Date(),
-      };
+      return response;
     } catch (error) {
-      const duration = Date.now() - startTime;
       this.logger.error(
-        this.i18n.t('operations.failed', { operation: 'DeleteUser' }),
+        'delete_failed',
         error as Error,
-        { ...requestContext, duration },
+        context as unknown as Record<string, unknown>,
       );
       throw error;
     }
   }
 
-  private validatePermissions(requestingUser: User, targetUser: User): void {
-    // Interdiction de se supprimer soi-même
+  // ═══════════════════════════════════════════════════════════════
+  // 🔒 VALIDATION METHODS
+  // ═══════════════════════════════════════════════════════════════
+
+  private async validatePermissions(
+    requestingUser: User,
+    targetUser: User,
+  ): Promise<void> {
+    const requestingRole = requestingUser.role;
+    const targetRole = targetUser.role;
+
+    // Interdiction d'auto-suppression
     if (requestingUser.id === targetUser.id) {
-      this.logger.warn(this.i18n.t('warnings.user.self_deletion_forbidden'), {
-        requestingUserId: requestingUser.id,
-      });
-      throw new SelfDeletionError(requestingUser.id);
+      throw new ForbiddenError('Users cannot delete themselves');
     }
 
-    // Vérification de la permission DELETE_USER
-    if (!requestingUser.hasPermission(Permission.MANAGE_ALL_STAFF)) {
-      this.logger.warn(this.i18n.t('warnings.permission.denied'), {
-        requestingUserId: requestingUser.id,
-        requestingUserRole: requestingUser.role,
-        requiredPermission: Permission.MANAGE_ALL_STAFF,
-      });
-      throw new InsufficientPermissionsError(
-        Permission.MANAGE_ALL_STAFF,
-        requestingUser.role,
-      );
-    }
+    // Règles de permissions par rôle
+    switch (requestingRole) {
+      case UserRole.PLATFORM_ADMIN:
+        // PLATFORM_ADMIN peut supprimer n'importe qui (sauf eux-mêmes)
+        return;
 
-    // Les managers ne peuvent supprimer que des utilisateurs réguliers
-    if (requestingUser.role === UserRole.LOCATION_MANAGER) {
-      if (
-        targetUser.role === UserRole.LOCATION_MANAGER ||
-        targetUser.role === UserRole.PLATFORM_ADMIN
-      ) {
-        this.logger.warn(this.i18n.t('warnings.permission.denied'), {
-          reason: 'manager_cannot_delete_manager_or_admin',
-          requestingUserId: requestingUser.id,
-          targetUserRole: targetUser.role,
-        });
-        throw new InsufficientPermissionsError(
-          'DELETE_MANAGER_OR_ADMIN',
-          requestingUser.role,
-        );
+      case UserRole.BUSINESS_OWNER: {
+        // BUSINESS_OWNER ne peut pas supprimer PLATFORM_ADMIN ou autres BUSINESS_OWNER
+        const forbiddenTargetsForOwner = [
+          UserRole.PLATFORM_ADMIN,
+          UserRole.BUSINESS_OWNER,
+        ];
+        if (forbiddenTargetsForOwner.includes(targetRole)) {
+          throw new ForbiddenError(
+            `Business owner cannot delete ${targetRole} users`,
+          );
+        }
+        return;
       }
+
+      case UserRole.BUSINESS_ADMIN: {
+        // BUSINESS_ADMIN ne peut supprimer que des utilisateurs de niveau inférieur
+        const forbiddenTargetsForAdmin = [
+          UserRole.PLATFORM_ADMIN,
+          UserRole.BUSINESS_OWNER,
+          UserRole.BUSINESS_ADMIN,
+        ];
+        if (forbiddenTargetsForAdmin.includes(targetRole)) {
+          throw new ForbiddenError(
+            `Business admin cannot delete ${targetRole} users`,
+          );
+        }
+        return;
+      }
+
+      case UserRole.LOCATION_MANAGER: {
+        // LOCATION_MANAGER peut supprimer seulement les utilisateurs opérationnels
+        const allowedTargetsForManager = [
+          UserRole.DEPARTMENT_HEAD,
+          UserRole.SENIOR_PRACTITIONER,
+          UserRole.PRACTITIONER,
+          UserRole.JUNIOR_PRACTITIONER,
+          UserRole.RECEPTIONIST,
+          UserRole.ASSISTANT,
+          UserRole.SCHEDULER,
+          UserRole.CORPORATE_CLIENT,
+          UserRole.VIP_CLIENT,
+          UserRole.REGULAR_CLIENT,
+        ];
+        if (!allowedTargetsForManager.includes(targetRole)) {
+          throw new ForbiddenError(
+            `Location manager cannot delete ${targetRole} users`,
+          );
+        }
+        return;
+      }
+
+      default:
+        // Tous les autres rôles ne peuvent pas supprimer d'autres utilisateurs
+        throw new ForbiddenError(
+          `Role ${requestingRole} is not authorized to delete users`,
+        );
     }
+  }
+
+  private async validateNotAlreadyDeleted(userId: string): Promise<void> {
+    // Pour l'instant, on considère que si findById retourne null, c'est "supprimé"
+    // Plus tard, on implémentera isDeleted() quand on aura le soft delete
+    const user = await this.userRepository.findById(userId);
+    if (!user) {
+      throw new ValidationError('User is already deleted', { userId });
+    }
+  }
+
+  private buildResponse(user: User, deletedBy: string): DeleteUserResponse {
+    return {
+      id: user.id,
+      email: user.email.value,
+      deletedAt: new Date(),
+      deletedBy,
+    };
   }
 }

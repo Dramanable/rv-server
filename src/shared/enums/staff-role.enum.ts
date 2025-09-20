@@ -140,17 +140,17 @@ export const STAFF_TO_USER_ROLE_MAPPING: Record<
 
   // Spécialisés
   [StaffRole.HYGIENIST]: UserRole.PRACTITIONER,
-  [StaffRole.NURSE]: 'ASSISTANT' as any,
-  [StaffRole.TECHNICIAN]: 'ASSISTANT' as any,
-  [StaffRole.INTERPRETER]: 'ASSISTANT' as any,
-  [StaffRole.SECURITY]: 'ASSISTANT' as any,
-  [StaffRole.MAINTENANCE]: 'ASSISTANT' as any,
+  [StaffRole.NURSE]: UserRole.ASSISTANT,
+  [StaffRole.TECHNICIAN]: UserRole.ASSISTANT,
+  [StaffRole.INTERPRETER]: UserRole.ASSISTANT,
+  [StaffRole.SECURITY]: UserRole.ASSISTANT,
+  [StaffRole.MAINTENANCE]: UserRole.ASSISTANT,
 
   // Temporaires
-  [StaffRole.SUBSTITUTE]: 'PRACTITIONER' as any,
-  [StaffRole.TEMP_STAFF]: 'ASSISTANT' as any,
-  [StaffRole.INTERN]: 'JUNIOR_PRACTITIONER' as any,
-  [StaffRole.VOLUNTEER]: 'ASSISTANT' as any,
+  [StaffRole.SUBSTITUTE]: UserRole.PRACTITIONER,
+  [StaffRole.TEMP_STAFF]: UserRole.ASSISTANT,
+  [StaffRole.INTERN]: UserRole.JUNIOR_PRACTITIONER,
+  [StaffRole.VOLUNTEER]: UserRole.ASSISTANT,
 };
 
 /**

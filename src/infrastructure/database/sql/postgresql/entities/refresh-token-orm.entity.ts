@@ -27,9 +27,17 @@ export class RefreshTokenOrmEntity {
   @Column({ type: 'boolean', default: false, name: 'is_revoked' })
   isRevoked!: boolean;
 
-  @CreateDateColumn({ name: 'created_at' })
+  @CreateDateColumn({
+    name: 'created_at',
+    type: 'timestamp',
+    comment: 'Timestamp when the refresh token was created',
+  })
   createdAt!: Date;
 
-  @UpdateDateColumn({ name: 'updated_at' })
+  @UpdateDateColumn({
+    name: 'updated_at',
+    type: 'timestamp',
+    comment: 'Timestamp when the refresh token was last updated',
+  })
   updatedAt!: Date;
 }

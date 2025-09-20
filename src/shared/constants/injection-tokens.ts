@@ -20,12 +20,21 @@ export const APPLICATION_TOKENS = {
   // Use Cases
   CREATE_USER_USE_CASE: 'CreateUserUseCase',
   GET_USER_USE_CASE: 'GetUserUseCase',
+  GET_USER_BY_ID_USE_CASE: 'GetUserByIdUseCase',
+  GET_ME_USE_CASE: 'GetMeUseCase',
   UPDATE_USER_USE_CASE: 'UpdateUserUseCase',
   DELETE_USER_USE_CASE: 'DeleteUserUseCase',
+  LIST_USERS_USE_CASE: 'ListUsersUseCase',
   LOGIN_USE_CASE: 'LoginUseCase',
   REGISTER_USE_CASE: 'RegisterUseCase',
   REFRESH_TOKEN_USE_CASE: 'RefreshTokenUseCase',
   LOGOUT_USE_CASE: 'LogoutUseCase',
+
+  // BusinessSector Use Cases
+  CREATE_BUSINESS_SECTOR_USE_CASE: 'CreateBusinessSectorUseCase',
+  LIST_BUSINESS_SECTORS_USE_CASE: 'ListBusinessSectorsUseCase',
+  UPDATE_BUSINESS_SECTOR_USE_CASE: 'UpdateBusinessSectorUseCase',
+  DELETE_BUSINESS_SECTOR_USE_CASE: 'DeleteBusinessSectorUseCase',
 
   // Application Services
   USER_ONBOARDING_SERVICE: 'UserOnboardingApplicationService',
@@ -49,11 +58,13 @@ export const DOMAIN_TOKENS = {
   // Repository Interfaces
   USER_REPOSITORY: 'UserRepository',
   REFRESH_TOKEN_REPOSITORY: 'RefreshTokenRepository',
+  BUSINESS_SECTOR_REPOSITORY: 'BusinessSectorRepository',
 
   // Domain Services
   USER_DOMAIN_SERVICE: 'UserDomainService',
   PASSWORD_DOMAIN_SERVICE: 'PasswordDomainService',
   EMAIL_DOMAIN_SERVICE: 'EmailDomainService',
+  PERMISSION_SERVICE: 'IPermissionService',
 } as const;
 
 // 🏗️ Infrastructure Layer Tokens
@@ -67,6 +78,7 @@ export const INFRASTRUCTURE_TOKENS = {
   // Repository Implementations
   TYPEORM_USER_REPOSITORY: 'TypeOrmUserRepository',
   MONGO_USER_REPOSITORY: 'MongoUserRepository',
+  TYPEORM_BUSINESS_SECTOR_REPOSITORY: 'TypeOrmBusinessSectorRepository',
 
   // External Services
   PINO_LOGGER: 'PinoLogger',

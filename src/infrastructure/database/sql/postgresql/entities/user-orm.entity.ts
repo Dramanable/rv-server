@@ -23,7 +23,7 @@ export class UserOrmEntity {
   @Column({ type: 'varchar', length: 100, unique: true, nullable: true })
   username?: string;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ type: 'varchar', length: 255, name: 'hashed_password' })
   hashedPassword!: string;
 
   @Column({ type: 'varchar', length: 50, name: 'first_name' })
@@ -60,9 +60,17 @@ export class UserOrmEntity {
   @Column({ type: 'boolean', default: false, name: 'is_verified' })
   isVerified!: boolean;
 
-  @CreateDateColumn({ name: 'created_at' })
+  @CreateDateColumn({
+    name: 'created_at',
+    type: 'timestamp',
+    comment: 'Timestamp when the user was created',
+  })
   createdAt!: Date;
 
-  @UpdateDateColumn({ name: 'updated_at' })
+  @UpdateDateColumn({
+    name: 'updated_at',
+    type: 'timestamp',
+    comment: 'Timestamp when the user was last updated',
+  })
   updatedAt!: Date;
 }

@@ -26,6 +26,10 @@ export enum Permission {
   MANAGE_TEAM = 'manage_team',
   VIEW_TEAM = 'view_team',
 
+  // Gestion des secteurs d'activité
+  MANAGE_BUSINESS_SECTORS = 'manage_business_sectors',
+  VIEW_BUSINESS_SECTORS = 'view_business_sectors',
+
   // Permissions de base
   VIEW_PROFILE = 'view_profile',
   UPDATE_PROFILE = 'update_profile',

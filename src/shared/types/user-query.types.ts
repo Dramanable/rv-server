@@ -5,7 +5,7 @@
  */
 
 import { UserRole } from '../enums/user-role.enum';
-import { QueryParams, DateFilter } from './pagination.types';
+import { DateFilter } from './pagination.types';
 
 /**
  * Filtres spécifiques aux utilisateurs

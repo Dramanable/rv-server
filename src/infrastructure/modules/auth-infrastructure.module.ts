@@ -20,18 +20,11 @@ import { JwtAuthenticationService } from '../services/jwt-authentication.service
 import { AuthenticationService } from '../../application/ports/authentication.port';
 import { IConfigService } from '../../application/ports/config.port';
 import { I18nService } from '../../application/ports/i18n.port';
-import { Logger } from '../../application/ports/logger.port';
+import { Logger as AppLogger } from '../../application/ports/logger.port';
 import { IPasswordHasher } from '../../application/ports/password-hasher.port'; // ✅ NOUVEAU: Clean Architecture
 import { UserCacheService } from '../../application/services/user-cache.service'; // ✅ NOUVEAU: Service de cache
 
-// Use Cases
-import { LoginUseCase } from '../../application/use-cases/auth/login.use-case';
-import { LogoutUseCase } from '../../application/use-cases/auth/logout.use-case';
-import { RefreshTokenUseCase } from '../../application/use-cases/auth/refresh-token.use-case';
-import { RegisterUseCase } from '../../application/use-cases/auth/register.use-case';
-
-// Repositories
-import { UserRepository } from '../../domain/repositories/user.repository.interface';
+// Note: Use Cases are imported and configured in PresentationModule
 
 // Shared Constants
 import { TOKENS } from '../../shared/constants/injection-tokens';
@@ -79,20 +72,6 @@ import { TOKENS } from '../../shared/constants/injection-tokens';
       useClass: BcryptPasswordHasher,
     },
 
-    // Logger Service (using NestJS Logger)
-    {
-      provide: TOKENS.LOGGER,
-      useFactory: () => ({
-        info: (message: string, context?: any) => console.log(message, context),
-        warn: (message: string, context?: any) =>
-          console.warn(message, context),
-        error: (message: string, error?: Error, context?: any) =>
-          console.error(message, error, context),
-        debug: (message: string, context?: any) =>
-          console.debug(message, context),
-      }),
-    },
-
     // I18n Service (mock implementation for now)
     {
       provide: TOKENS.I18N_SERVICE,
@@ -104,109 +83,16 @@ import { TOKENS } from '../../shared/constants/injection-tokens';
       }),
     },
 
-    // Use Cases
-    {
-      provide: TOKENS.LOGIN_USE_CASE,
-      useFactory: (
-        userRepository: UserRepository,
-        passwordHasher: IPasswordHasher, // ✅ NOUVEAU: Port Clean Architecture
-        authService: AuthenticationService,
-        configService: IConfigService,
-        logger: Logger,
-        i18n: I18nService,
-        userCacheService: UserCacheService, // ✅ NOUVEAU: Service de cache utilisateur
-      ) =>
-        new LoginUseCase(
-          userRepository,
-          passwordHasher, // ✅ NOUVEAU: Utilise le port IPasswordHasher
-          authService,
-          configService,
-          logger,
-          i18n,
-          userCacheService, // ✅ NOUVEAU: Service de cache utilisateur
-        ),
-      inject: [
-        TOKENS.USER_REPOSITORY,
-        TOKENS.PASSWORD_HASHER, // ✅ NOUVEAU: Utilise le port Clean Architecture
-        TOKENS.AUTH_SERVICE,
-        TOKENS.APP_CONFIG,
-        TOKENS.LOGGER,
-        TOKENS.I18N_SERVICE,
-        TOKENS.USER_CACHE_SERVICE, // ✅ NOUVEAU: Service de cache utilisateur
-      ],
-    },
-
-    {
-      provide: TOKENS.REGISTER_USE_CASE,
-      useFactory: (
-        userRepository: UserRepository,
-        passwordHasher: IPasswordHasher,
-        authService: AuthenticationService,
-        configService: IConfigService,
-        logger: Logger,
-        i18n: I18nService,
-        userCacheService: UserCacheService,
-      ) =>
-        new RegisterUseCase(
-          userRepository,
-          passwordHasher,
-          authService,
-          configService,
-          logger,
-          i18n,
-          userCacheService,
-        ),
-      inject: [
-        TOKENS.USER_REPOSITORY,
-        TOKENS.PASSWORD_HASHER,
-        TOKENS.AUTH_SERVICE,
-        TOKENS.APP_CONFIG,
-        TOKENS.LOGGER,
-        TOKENS.I18N_SERVICE,
-        TOKENS.USER_CACHE_SERVICE,
-      ],
-    },
-
-    {
-      provide: TOKENS.REFRESH_TOKEN_USE_CASE,
-      useFactory: (
-        authService: AuthenticationService,
-        configService: IConfigService,
-        logger: Logger,
-        i18n: I18nService,
-      ) => new RefreshTokenUseCase(authService, configService, logger, i18n),
-      inject: [
-        TOKENS.AUTH_SERVICE,
-        TOKENS.APP_CONFIG,
-        TOKENS.LOGGER,
-        TOKENS.I18N_SERVICE,
-      ],
-    },
-
-    {
-      provide: TOKENS.LOGOUT_USE_CASE,
-      useFactory: (
-        authService: AuthenticationService,
-        configService: IConfigService,
-        logger: Logger,
-        i18n: I18nService,
-      ) => new LogoutUseCase(authService, configService, logger, i18n),
-      inject: [
-        TOKENS.AUTH_SERVICE,
-        TOKENS.APP_CONFIG,
-        TOKENS.LOGGER,
-        TOKENS.I18N_SERVICE,
-      ],
-    },
+    // Note: Use Cases are handled in PresentationModule with proper DI
   ],
   exports: [
-    TOKENS.LOGIN_USE_CASE,
-    TOKENS.REGISTER_USE_CASE,
-    TOKENS.REFRESH_TOKEN_USE_CASE,
-    TOKENS.LOGOUT_USE_CASE,
     TOKENS.AUTH_SERVICE,
     TOKENS.PASSWORD_SERVICE,
+    TOKENS.PASSWORD_HASHER,
     TOKENS.APP_CONFIG,
+    TOKENS.I18N_SERVICE,
+    JwtModule, // ✅ Export JwtModule pour JwtService
+    PassportModule, // ✅ Export PassportModule si nécessaire
   ],
 })
 export class AuthInfrastructureModule {}

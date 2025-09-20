@@ -1,30 +1,37 @@
 /**
- * 🎯 Create User Use Case
+ * 👤 CREATE USER USE CASE - Clean Architecture
  *
- * Règles métier pour la création d'utilisateurs avec logging et i18n
+ * Use Case pour la création d'utilisateurs avec permissions strictes par rôle
+ * Application Layer : Orchestration de la logique métier sans dépendance framework
  */
 
+import { UserRole } from '../../../shared/enums/user-role.enum';
 import { User } from '../../../domain/entities/user.entity';
-import {
-  EmailAlreadyExistsError,
-  InsufficientPermissionsError,
-  InvalidEmailFormatError,
-  InvalidNameError,
-  RoleElevationError,
-  UserNotFoundError,
-} from '../../../domain/exceptions/user.exceptions';
-import { UserRepository } from '../../../domain/repositories/user.repository.interface';
 import { Email } from '../../../domain/value-objects/email.vo';
-import { Permission, UserRole } from '../../../shared/enums/user-role.enum';
-import type { I18nService } from '../../ports/i18n.port';
+import { UserRepository } from '../../../domain/repositories/user.repository.interface';
 import { Logger } from '../../ports/logger.port';
+import { I18nService } from '../../ports/i18n.port';
+import { AppContextFactory } from '../../../shared/context/app-context';
+import {
+  UserNotFoundError,
+  ForbiddenError,
+  ValidationError,
+  DuplicationError,
+} from '../../exceptions/auth.exceptions';
 
-// DTOs
+// ═══════════════════════════════════════════════════════════════
+// 📋 REQUEST & RESPONSE TYPES
+// ═══════════════════════════════════════════════════════════════
+
 export interface CreateUserRequest {
+  requestingUserId: string;
   email: string;
   name: string;
   role: UserRole;
-  requestingUserId: string;
+  businessId?: string;
+  locationId?: string;
+  temporaryPassword?: string;
+  requirePasswordChange?: boolean;
 }
 
 export interface CreateUserResponse {
@@ -32,226 +39,232 @@ export interface CreateUserResponse {
   email: string;
   name: string;
   role: UserRole;
+  businessId?: string;
+  locationId?: string;
+  isActive: boolean;
+  requirePasswordChange: boolean;
   createdAt: Date;
 }
 
+// ═══════════════════════════════════════════════════════════════
+// 🎯 CREATE USER USE CASE
+// ═══════════════════════════════════════════════════════════════
+
 export class CreateUserUseCase {
   constructor(
-    protected readonly userRepository: UserRepository,
-    protected readonly logger: Logger,
-    protected readonly i18n: I18nService,
+    private readonly userRepository: UserRepository,
+    private readonly logger: Logger,
+    private readonly i18n: I18nService,
   ) {}
 
   async execute(request: CreateUserRequest): Promise<CreateUserResponse> {
-    const startTime = Date.now();
-    const requestContext = {
-      operation: 'CreateUser',
-      requestingUserId: request.requestingUserId,
-      targetEmail: request.email,
-      targetRole: request.role,
-    };
-
-    this.logger.info(
-      this.i18n.t('operations.user.creation_attempt'),
-      requestContext,
+    const context = AppContextFactory.userOperation(
+      'CreateUser',
+      request.requestingUserId,
     );
 
-    try {
-      // 1. Validation de l'utilisateur demandeur
-      this.logger.debug(
-        this.i18n.t('operations.user.validation_process'),
-        requestContext,
-      );
+    this.logger.info('create_attempt', {
+      ...context,
+      targetEmail: request.email,
+      targetRole: request.role,
+    });
 
+    try {
+      // 1. Vérifier que l'utilisateur requérant existe
       const requestingUser = await this.userRepository.findById(
         request.requestingUserId,
       );
       if (!requestingUser) {
-        this.logger.warn(
-          this.i18n.t('warnings.user.not_found'),
-          requestContext,
-        );
-        throw new UserNotFoundError(request.requestingUserId);
+        throw new UserNotFoundError('Requesting user not found', {
+          userId: request.requestingUserId,
+        });
       }
 
-      // 2. Vérification des permissions
-      this.logger.debug(
-        this.i18n.t('operations.permission.check', { operation: 'CreateUser' }),
-        requestContext,
-      );
-      this.validatePermissions(requestingUser, request.role);
+      // 2. Vérifier les permissions
+      this.validatePermissions(requestingUser, request);
 
-      // 3. Validation des données d'entrée
+      // 3. Valider les données
       this.validateInput(request);
 
-      // 4. Création de l'email (validation automatique)
-      let email: Email;
-      try {
-        email = new Email(request.email.trim());
-      } catch {
-        this.logger.warn(
-          this.i18n.t('warnings.email.invalid_format', {
-            email: request.email,
-          }),
-          { ...requestContext, email: request.email },
-        );
-        throw new InvalidEmailFormatError(request.email);
-      }
+      // 4. Vérifier unicité email
+      await this.validateEmailUniqueness(request.email);
 
-      // 5. Vérification de l'unicité de l'email
-      const existingUser = await this.userRepository.findByEmail(email);
-      if (existingUser) {
-        this.logger.warn(
-          this.i18n.t('warnings.email.already_exists', {
-            email: email.value,
-          }),
-          { ...requestContext, email: email.value },
-        );
-        throw new EmailAlreadyExistsError(email.value);
-      }
+      // 5. Créer l'utilisateur
+      const newUser = await this.createUser(request);
 
-      // 6. Création et sauvegarde de l'utilisateur
-      const newUser = new User(email, request.name.trim(), request.role);
+      // 6. Sauvegarder
       const savedUser = await this.userRepository.save(newUser);
 
-      const duration = Date.now() - startTime;
+      const response = this.buildResponse(savedUser);
 
-      // Log de succès avec détails
-      this.logger.info(
-        this.i18n.t('success.user.creation_success', {
-          email: savedUser.email.value,
-          requestingUser: requestingUser.email.value,
-        }),
-        { ...requestContext, userId: savedUser.id, duration },
-      );
+      this.logger.info('create_success', {
+        ...context,
+        createdUserId: response.id,
+        createdUserRole: response.role,
+      });
 
-      // Audit trail traduit
-      this.logger.audit(
-        this.i18n.t('audit.user.created'),
-        request.requestingUserId,
-        {
-          targetUserId: savedUser.id,
-          targetEmail: savedUser.email.value,
-          targetRole: savedUser.role,
-        },
-      );
-
-      // 7. Retour de la réponse
-      return {
-        id: savedUser.id || 'generated-id',
-        email: savedUser.email.value,
-        name: savedUser.name,
-        role: savedUser.role,
-        createdAt: savedUser.createdAt || new Date(),
-      };
+      return response;
     } catch (error) {
-      const duration = Date.now() - startTime;
       this.logger.error(
-        this.i18n.t('operations.failed', { operation: 'CreateUser' }),
+        'create_failed',
         error as Error,
-        { ...requestContext, duration },
+        context as unknown as Record<string, unknown>,
       );
       throw error;
     }
   }
 
+  // ═══════════════════════════════════════════════════════════════
+  // 🔒 VALIDATION METHODS
+  // ═══════════════════════════════════════════════════════════════
+
   private validatePermissions(
     requestingUser: User,
-    targetRole: UserRole,
+    request: CreateUserRequest,
   ): void {
-    // Platform admins peuvent tout créer
-    if (requestingUser.role === UserRole.PLATFORM_ADMIN) {
-      return;
-    }
+    const userRole = requestingUser.role;
+    const targetRole = request.role;
 
-    // Business owners peuvent créer tous sauf platform admin et autres business owners
-    if (requestingUser.role === UserRole.BUSINESS_OWNER) {
-      const forbiddenRoles = [UserRole.PLATFORM_ADMIN, UserRole.BUSINESS_OWNER];
-      if (forbiddenRoles.includes(targetRole)) {
-        this.logger.warn(
-          this.i18n.t('warnings.role.elevation_attempt', {
-            targetRole: targetRole,
-          }),
-          { requestingUserId: requestingUser.id, targetRole },
-        );
-        throw new RoleElevationError(UserRole.BUSINESS_OWNER, targetRole);
+    // Règles de permissions par rôle
+    switch (userRole) {
+      case UserRole.PLATFORM_ADMIN:
+        // PLATFORM_ADMIN peut créer n'importe qui
+        return;
+
+      case UserRole.BUSINESS_OWNER: {
+        // BUSINESS_OWNER peut créer des rôles inférieurs seulement
+        const forbiddenForOwner = [
+          UserRole.PLATFORM_ADMIN,
+          UserRole.BUSINESS_OWNER,
+        ];
+        if (forbiddenForOwner.includes(targetRole)) {
+          throw new ForbiddenError(
+            `Business owner cannot create ${targetRole} users`,
+          );
+        }
+        return;
       }
-      return;
-    }
 
-    // Business admins ne peuvent créer que des utilisateurs inférieurs
-    if (requestingUser.role === UserRole.BUSINESS_ADMIN) {
-      const forbiddenRoles = [
-        UserRole.PLATFORM_ADMIN,
-        UserRole.BUSINESS_OWNER,
-        UserRole.BUSINESS_ADMIN,
-      ];
-      if (forbiddenRoles.includes(targetRole)) {
-        this.logger.warn(
-          this.i18n.t('warnings.role.elevation_attempt', {
-            targetRole: targetRole,
-          }),
-          { requestingUserId: requestingUser.id, targetRole },
-        );
-        throw new RoleElevationError(UserRole.BUSINESS_ADMIN, targetRole);
+      case UserRole.BUSINESS_ADMIN: {
+        // BUSINESS_ADMIN peut créer des rôles location/practitioner/client seulement
+        const allowedForAdmin = [
+          UserRole.LOCATION_MANAGER,
+          UserRole.DEPARTMENT_HEAD,
+          UserRole.SENIOR_PRACTITIONER,
+          UserRole.PRACTITIONER,
+          UserRole.JUNIOR_PRACTITIONER,
+          UserRole.RECEPTIONIST,
+          UserRole.ASSISTANT,
+          UserRole.SCHEDULER,
+          UserRole.CORPORATE_CLIENT,
+          UserRole.VIP_CLIENT,
+          UserRole.REGULAR_CLIENT,
+        ];
+        if (!allowedForAdmin.includes(targetRole)) {
+          throw new ForbiddenError(
+            `Business admin cannot create ${targetRole} users`,
+          );
+        }
+        return;
       }
-      return;
-    }
 
-    // Location managers peuvent créer du personnel opérationnel
-    if (requestingUser.role === UserRole.LOCATION_MANAGER) {
-      const allowedRoles = [
-        UserRole.PRACTITIONER,
-        UserRole.JUNIOR_PRACTITIONER,
-        UserRole.RECEPTIONIST,
-        UserRole.ASSISTANT,
-        UserRole.REGULAR_CLIENT,
-      ];
-      if (!allowedRoles.includes(targetRole)) {
-        this.logger.warn(
-          this.i18n.t('warnings.role.elevation_attempt', {
-            targetRole: targetRole,
-          }),
-          { requestingUserId: requestingUser.id, targetRole },
-        );
-        throw new RoleElevationError(UserRole.LOCATION_MANAGER, targetRole);
+      case UserRole.LOCATION_MANAGER: {
+        // LOCATION_MANAGER peut créer des rôles practitioner/client seulement
+        const allowedForManager = [
+          UserRole.DEPARTMENT_HEAD,
+          UserRole.SENIOR_PRACTITIONER,
+          UserRole.PRACTITIONER,
+          UserRole.JUNIOR_PRACTITIONER,
+          UserRole.RECEPTIONIST,
+          UserRole.ASSISTANT,
+          UserRole.SCHEDULER,
+          UserRole.CORPORATE_CLIENT,
+          UserRole.VIP_CLIENT,
+          UserRole.REGULAR_CLIENT,
+        ];
+        if (!allowedForManager.includes(targetRole)) {
+          throw new ForbiddenError(
+            `Location manager cannot create ${targetRole} users`,
+          );
+        }
+        return;
       }
-      return;
-    }
 
-    // Tous les autres rôles ne peuvent pas créer d'utilisateurs
-    this.logger.warn(this.i18n.t('warnings.permission.denied'), {
-      requestingUserId: requestingUser.id,
-      requestingUserRole: requestingUser.role,
-      requiredPermission: 'CREATE_USERS',
-    });
-    throw new InsufficientPermissionsError(
-      Permission.MANAGE_ALL_STAFF,
-      requestingUser.role,
-    );
+      default:
+        // Tous les autres rôles ne peuvent pas créer d'utilisateurs
+        throw new ForbiddenError(
+          `Role ${userRole} is not authorized to create users`,
+        );
+    }
   }
 
   private validateInput(request: CreateUserRequest): void {
-    if (!request.name || request.name.trim().length === 0) {
-      this.logger.warn(
-        this.i18n.t('operations.validation.failed', { field: 'name' }),
-        { name: request.name, reason: 'empty' },
-      );
-      throw new InvalidNameError(
-        request.name,
-        this.i18n.t('errors.name.empty'),
-      );
+    // Validation email
+    try {
+      Email.create(request.email);
+    } catch (error) {
+      throw new ValidationError('Invalid email format', {
+        email: request.email,
+      });
     }
 
-    if (request.name.trim().length > 100) {
-      this.logger.warn(
-        this.i18n.t('operations.validation.failed', { field: 'name' }),
-        { name: request.name, reason: 'too_long' },
-      );
-      throw new InvalidNameError(
-        request.name,
-        this.i18n.t('errors.name.too_long'),
-      );
+    // Validation nom
+    if (!request.name || request.name.trim().length === 0) {
+      throw new ValidationError('Name is required');
     }
+
+    if (request.name.trim().length < 2) {
+      throw new ValidationError('Name must be at least 2 characters long');
+    }
+
+    if (request.name.length > 100) {
+      throw new ValidationError('Name must be less than 100 characters');
+    }
+
+    // Validation rôle
+    if (!Object.values(UserRole).includes(request.role)) {
+      throw new ValidationError('Invalid user role', { role: request.role });
+    }
+  }
+
+  private async validateEmailUniqueness(email: string): Promise<void> {
+    const emailVO = Email.create(email);
+    const exists = await this.userRepository.emailExists(emailVO);
+
+    if (exists) {
+      throw new DuplicationError('Email already exists', { email });
+    }
+  }
+
+  private async createUser(request: CreateUserRequest): Promise<User> {
+    const email = Email.create(request.email);
+    const normalizedName = request.name.trim();
+
+    const user = User.create(email, normalizedName, request.role);
+
+    // Si un mot de passe temporaire est fourni
+    if (request.temporaryPassword) {
+      // TODO: Hash du mot de passe temporaire
+      // Pour l'instant, on force le changement de mot de passe
+    }
+
+    // Forcer le changement de mot de passe si demandé
+    if (request.requirePasswordChange !== undefined) {
+      // TODO: Setter le flag passwordChangeRequired
+    }
+
+    return user;
+  }
+
+  private buildResponse(user: User): CreateUserResponse {
+    return {
+      id: user.id,
+      email: user.email.value,
+      name: user.name,
+      role: user.role,
+      isActive: true, // Par défaut
+      requirePasswordChange: false, // TODO: Récupérer la vraie valeur
+      createdAt: new Date(), // TODO: Récupérer la vraie date de création
+    };
   }
 }

@@ -6,7 +6,7 @@
 
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { IConfigService } from '../../application/ports/config.port';
+import { IConfigService } from '@application/ports/config.port';
 
 @Injectable()
 export class AppConfigService implements IConfigService {

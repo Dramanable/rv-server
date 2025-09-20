@@ -51,12 +51,12 @@ import { PresentationCookieService } from '../services/cookie.service';
 // 🛡️ Security imports
 import { Public } from '../security/decorators/public.decorator';
 import { JwtAuthGuard } from '../security/guards/jwt-auth.guard';
-import { CustomThrottlerGuard } from '../security/throttler.guard';
+// import { CustomThrottlerGuard } from '../security/throttler.guard';
 import { SecurityValidationPipe } from '../security/validation.pipe';
 
 @ApiTags('Authentication')
 @Controller('auth')
-@UseGuards(CustomThrottlerGuard) // 🛡️ Rate limiting global pour auth
+// @UseGuards(CustomThrottlerGuard) // 🛡️ Rate limiting global pour auth - Temporarily disabled
 @UsePipes(SecurityValidationPipe) // 🛡️ Validation/sanitization globale
 export class AuthController {
   private readonly controllerLogger = new Logger(AuthController.name);

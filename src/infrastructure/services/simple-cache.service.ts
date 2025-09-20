@@ -7,7 +7,6 @@
 import { Injectable, Inject } from '@nestjs/common';
 import type { ICacheService } from '../../application/ports/cache.port';
 import type { Logger } from '../../application/ports/logger.port';
-import type { I18nService } from '../../application/ports/i18n.port';
 import { TOKENS } from '../../shared/constants/injection-tokens';
 
 @Injectable()
@@ -17,8 +16,6 @@ export class SimpleCacheService implements ICacheService {
   constructor(
     @Inject(TOKENS.PINO_LOGGER)
     private readonly logger: Logger,
-    @Inject(TOKENS.I18N_SERVICE)
-    private readonly i18n: I18nService,
   ) {}
 
   async set<T>(key: string, value: T, _ttl?: number): Promise<void> {

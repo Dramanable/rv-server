@@ -5,22 +5,24 @@
  * Implémentation concrète pour la couche Infrastructure avec NestJS
  */
 
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import {
   AuthenticationService,
   AuthTokens,
   TokenPayload,
-} from '../../application/ports/authentication.port';
-import type { Logger } from '../../application/ports/logger.port';
-import { User } from '../../domain/entities/user.entity';
+} from '@application/ports/authentication.port';
+import type { Logger } from '@application/ports/logger.port';
+import { User } from '@domain/entities/user.entity';
+import { TOKENS } from '@shared/constants/injection-tokens';
 
 @Injectable()
 export class JwtAuthenticationService implements AuthenticationService {
   constructor(
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
+    @Inject(TOKENS.LOGGER)
     private readonly logger: Logger,
   ) {}
 
