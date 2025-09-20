@@ -21,29 +21,32 @@ export class SimpleCacheService implements ICacheService {
   async set<T>(key: string, value: T, _ttl?: number): Promise<void> {
     this.logger.debug(`Cache SET: ${key}`);
     this.cache.set(key, value);
+    return Promise.resolve();
   }
 
   async get<T>(key: string): Promise<T | null> {
     this.logger.debug(`Cache GET: ${key}`);
-    return this.cache.get(key) || null;
+    return Promise.resolve(this.cache.get(key) || null);
   }
 
   async delete(key: string): Promise<void> {
     this.logger.debug(`Cache DELETE: ${key}`);
     this.cache.delete(key);
+    return Promise.resolve();
   }
 
   async clear(): Promise<void> {
     this.logger.debug('Cache CLEAR');
     this.cache.clear();
+    return Promise.resolve();
   }
 
   async keys(_pattern?: string): Promise<string[]> {
-    return Array.from(this.cache.keys());
+    return Promise.resolve(Array.from(this.cache.keys()));
   }
 
   async exists(key: string): Promise<boolean> {
-    return this.cache.has(key);
+    return Promise.resolve(this.cache.has(key));
   }
 
   async invalidateUserCache(userId: string): Promise<void> {
@@ -52,6 +55,7 @@ export class SimpleCacheService implements ICacheService {
       key.includes(userId),
     );
     userKeys.forEach((key) => this.cache.delete(key));
+    return Promise.resolve();
   }
 
   async createUserSession(userId: string, sessionData: any): Promise<void> {
@@ -81,6 +85,7 @@ export class SimpleCacheService implements ICacheService {
     const keys = Array.from(this.cache.keys());
     const matchingKeys = keys.filter((key) => key.includes(pattern));
     matchingKeys.forEach((key) => this.cache.delete(key));
+    return Promise.resolve();
   }
 
   setWithExpiry(key: string, value: string, _seconds: number): Promise<void> {

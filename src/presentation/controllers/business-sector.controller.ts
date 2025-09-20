@@ -28,6 +28,7 @@ import {
   ApiParam,
   ApiQuery,
 } from '@nestjs/swagger';
+import { getUserIdFromRequestSafe } from '../../shared/types/request.types';
 
 // 🔐 Security & Validation
 import { JwtAuthGuard } from '@presentation/security/guards/jwt-auth.guard';

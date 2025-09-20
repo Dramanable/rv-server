@@ -95,7 +95,7 @@ export class UpdateUserUseCase {
       }
 
       // 3. Vérifier les permissions (avant la validation des données)
-      await this.validatePermissions(requestingUser, targetUser, request);
+      this.validatePermissions(requestingUser, targetUser, request);
 
       // 4. Valider les données
       this.validateInput(request);
@@ -184,11 +184,11 @@ export class UpdateUserUseCase {
     }
   }
 
-  private async validatePermissions(
+  private validatePermissions(
     requestingUser: User,
     targetUser: User,
     request: UpdateUserRequest,
-  ): Promise<void> {
+  ): void {
     const requestingRole = requestingUser.role;
     const targetRole = targetUser.role;
     const isSelfUpdate = requestingUser.id === targetUser.id;

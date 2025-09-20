@@ -17,6 +17,7 @@ import {
   UseGuards,
   Request,
 } from '@nestjs/common';
+import { getUserIdFromRequestSafe } from '../../shared/types/request.types';
 import {
   ApiBearerAuth,
   ApiOperation,
@@ -85,7 +86,7 @@ export class UserController {
   })
   async getMe(): Promise<UserResponseDto> {
     // TODO: Implement GetMeUseCase with proper authentication
-    return {
+    return Promise.resolve({
       id: 'temp-id',
       email: 'user@example.com',
       firstName: 'Test',
@@ -95,7 +96,7 @@ export class UserController {
       isVerified: true,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-    };
+    });
   }
 
   @Post('list')
@@ -168,8 +169,7 @@ export class UserController {
     @Request() req: any,
   ): Promise<ListUsersResponseDto> {
     // Extraction de l'utilisateur connecté depuis la requête
-    // TODO: Implémenter l'extraction correcte du user ID depuis le JWT/session
-    const requestingUserId = req.user?.id || 'temp-admin-id';
+    const requestingUserId = getUserIdFromRequestSafe(req, 'temp-admin-id');
 
     // Appel du Use Case avec les paramètres de la requête
     const result = await this.listUsersUseCase.execute({

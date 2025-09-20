@@ -90,7 +90,7 @@ export class CreateUserUseCase {
       await this.validateEmailUniqueness(request.email);
 
       // 5. Créer l'utilisateur
-      const newUser = await this.createUser(request);
+      const newUser = this.createUser(request);
 
       // 6. Sauvegarder
       const savedUser = await this.userRepository.save(newUser);
@@ -236,7 +236,7 @@ export class CreateUserUseCase {
     }
   }
 
-  private async createUser(request: CreateUserRequest): Promise<User> {
+  private createUser(request: CreateUserRequest): User {
     const email = Email.create(request.email);
     const normalizedName = request.name.trim();
 

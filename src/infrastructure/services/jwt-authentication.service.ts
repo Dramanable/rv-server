@@ -73,11 +73,11 @@ export class JwtAuthenticationService implements AuthenticationService {
 
       this.logger.info(`Tokens generated for user: ${user.id}`);
 
-      return {
+      return Promise.resolve({
         accessToken,
         refreshToken,
         expiresIn: accessTokenExpiration,
-      };
+      });
     } catch (error) {
       this.logger.error(
         `Failed to generate tokens for user ${user.id}`,

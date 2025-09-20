@@ -72,13 +72,13 @@ export class CreateBusinessSectorUseCase {
       await this.validatePermissions(requestingUserId);
 
       // ✅ Validation des données d'entrée
-      await this.validateInput(request);
+      this.validateInput(request);
 
       // 🔍 Vérification de l'unicité du code
       await this.validateCodeUniqueness(code, requestingUserId);
 
       // 🏭 Création de l'entité métier
-      const businessSector = await this.createBusinessSectorEntity(request);
+      const businessSector = this.createBusinessSectorEntity(request);
 
       // 💾 Sauvegarde en base de données
       const savedSector =
@@ -155,9 +155,7 @@ export class CreateBusinessSectorUseCase {
   /**
    * ✅ Valider les données d'entrée
    */
-  private async validateInput(
-    request: CreateBusinessSectorRequest,
-  ): Promise<void> {
+  private validateInput(request: CreateBusinessSectorRequest): void {
     const errors: string[] = [];
 
     // Validation du nom
@@ -228,9 +226,9 @@ export class CreateBusinessSectorUseCase {
   /**
    * 🏭 Créer l'entité métier BusinessSector
    */
-  private async createBusinessSectorEntity(
+  private createBusinessSectorEntity(
     request: CreateBusinessSectorRequest,
-  ): Promise<BusinessSector> {
+  ): BusinessSector {
     const normalizedName = request.name.trim();
     const normalizedDescription = request.description?.trim() || '';
     const normalizedCode = this.normalizeCode(request.code);

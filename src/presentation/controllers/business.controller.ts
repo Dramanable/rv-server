@@ -13,6 +13,6 @@ export class BusinessController {
   @ApiOperation({ summary: 'Get business list' })
   async getBusiness(): Promise<any[]> {
     // TODO: Implement business logic
-    return [];
+    return Promise.resolve([]);
   }
 }

@@ -8,11 +8,11 @@ import { PinoLoggerModule } from '../logging/pino-logger.module';
 import { TypeOrmRepositoriesModule } from './typeorm-repositories.module';
 
 // Import des entités TypeORM
-import {
-  UserOrmEntity,
-  BusinessSectorOrmEntity,
-  RefreshTokenOrmEntity,
-} from './entities/typeorm';
+import { UserOrmEntity } from './sql/postgresql/entities/user-orm.entity';
+import { RefreshTokenOrmEntity } from './sql/postgresql/entities/refresh-token-orm.entity';
+
+// Temporairement commenté jusqu'à résolution des problèmes de décorateurs TypeScript 5.7
+// import { BusinessSectorOrmEntity } from './sql/postgresql/entities/business-sector-orm.entity';
 
 class DatabaseI18nService implements I18nService {
   t(key: string, params?: Record<string, unknown>): string {
@@ -82,8 +82,8 @@ class DatabaseI18nService implements I18nService {
         database: configService.get('DATABASE_NAME', 'rvproject'),
         entities: [
           UserOrmEntity,
-          BusinessSectorOrmEntity,
           RefreshTokenOrmEntity,
+          // BusinessSectorOrmEntity, // Temporairement commenté
         ],
         migrations: [
           'dist/infrastructure/database/sql/postgresql/migrations/*.js',
@@ -288,7 +288,8 @@ class DatabaseI18nService implements I18nService {
     TOKENS.I18N_SERVICE,
     TOKENS.USER_REPOSITORY, // ✅ Export du vrai UserRepository
     TOKENS.REFRESH_TOKEN_REPOSITORY, // ✅ Export du RefreshTokenRepository
-    TypeOrmRepositoriesModule, // ✅ Export le module qui contient BUSINESS_SECTOR_REPOSITORY et PERMISSION_SERVICE
+    TOKENS.BUSINESS_SECTOR_REPOSITORY, // ✅ Export du mock BusinessSectorRepository
+    TypeOrmRepositoriesModule, // ✅ Export le module qui contient PERMISSION_SERVICE
   ],
 })
 export class DatabaseModule {}

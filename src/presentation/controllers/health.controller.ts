@@ -13,9 +13,9 @@ export class HealthController {
   @Public() // 🔓 Route publique - pas d'authentification requise
   @ApiOperation({ summary: 'Health check' })
   async getHealth(): Promise<{ status: string; timestamp: string }> {
-    return {
+    return Promise.resolve({
       status: 'OK',
       timestamp: new Date().toISOString(),
-    };
+    });
   }
 }

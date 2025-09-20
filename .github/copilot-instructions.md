@@ -836,7 +836,7 @@ export class CreateUserUseCase {
 }
 ```
 
-### 🎯 **Typage Explicite - ZERO `any` - UTILISER `unknown`**
+### 🎯 **Typage Explicite - ZERO `any` - PRÉFÉRER `unknown`**
 
 ```typescript
 // ✅ GOOD - Types explicites pour APIs publiques et unknown pour types incertains
@@ -850,7 +850,7 @@ export interface CreateUserRequest {
 export interface CreateUserResponse {
   readonly id: string;
   readonly email: string;
-  readonly name: string;
+  readonly name: string;  
   readonly role: UserRole;
   readonly createdAt: Date;
 }
@@ -865,26 +865,81 @@ export interface Repository<T extends Entity> {
 export type DatabaseType = 'mongodb' | 'postgresql' | 'mysql';
 export type Environment = 'development' | 'staging' | 'production';
 
-// ❌ INTERDIT - Usage de any
+// ❌ STRICTEMENT INTERDIT - Usage de any
 export function processData(data: any): any {
-  // JAMAIS !
+  // JAMAIS ! Utilise unknown à la place
   return data;
 }
 
-// ✅ GOOD - Utiliser unknown au lieu de any
-export function processData<T>(data: unknown): T {
-  // Type guard ou assertion nécessaire
+// ✅ EXCELLENT - Utiliser unknown au lieu de any
+export function processData(data: unknown): unknown {
+  // Type guard OBLIGATOIRE avec unknown
   if (typeof data === 'object' && data !== null) {
-    return data as T;
+    return data;
   }
   throw new Error('Invalid data type');
 }
 
-// ✅ GOOD - Générique typé
+// ✅ MEILLEUR - Types spécifiques avec générique
 export function processData<T>(data: T): T {
   return data;
 }
+
+// ✅ PATTERN RECOMMANDÉ - Type guards avec unknown
+function isValidUser(data: unknown): data is User {
+  return (
+    typeof data === 'object' &&
+    data !== null &&
+    'id' in data &&
+    'email' in data &&
+    typeof (data as { id: unknown }).id === 'string' &&
+    typeof (data as { email: unknown }).email === 'string'
+  );
+}
+
+// ✅ PATTERN RECOMMANDÉ - Parsing sécurisé avec unknown
+export function parseUserFromRequest(req: unknown): User {
+  if (!isValidUser(req)) {
+    throw new ValidationError('Invalid user data structure');
+  }
+  return req; // TypeScript sait maintenant que c'est un User
+}
+
+// ✅ PATTERN RECOMMANDÉ - API Responses typées  
+export interface SafeApiResponse<T = unknown> {
+  readonly success: boolean;
+  readonly data: T;
+  readonly errors?: readonly string[];
+  readonly meta?: {
+    readonly timestamp: string;
+    readonly requestId: string;
+  };
+}
+
+// ❌ ANTI-PATTERNS À ÉVITER
+// Ne jamais utiliser : as any, any[], Array<any>, Record<string, any>
+// Ne jamais typer les paramètres de requête comme any
+// Ne jamais retourner any depuis une fonction publique
 ```
+
+### 🚨 **RÈGLES STRICTES DE TYPAGE**
+
+#### **🔴 INTERDICTIONS ABSOLUES**
+
+- **`any`** : Usage strictement interdit sauf cas exceptionnels documentés
+- **`as any`** : Casting dangereux interdit
+- **`any[]`** : Tableaux non typés interdits  
+- **`Record<string, any>`** : Objets non typés interdits
+- **`function(param: any)`** : Paramètres non typés interdits
+
+#### **🟢 ALTERNATIVES RECOMMANDÉES**
+
+- **`unknown`** : Pour types incertains nécessitant type guards
+- **`object`** : Pour objets génériques
+- **`Record<string, unknown>`** : Pour objets avec clés dynamiques
+- **Generics `<T>`** : Pour types paramétrés
+- **Union types** : Pour valeurs connues limitées
+- **Type guards** : Pour validation runtime des types
 
 ### 🎯 **Gestion Null-Safe & Erreurs**
 

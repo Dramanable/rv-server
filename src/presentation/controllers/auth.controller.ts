@@ -26,6 +26,7 @@ import {
   ApiSecurity,
   ApiTags,
 } from '@nestjs/swagger';
+import { getUserIdFromRequestSafe } from '../../shared/types/request.types';
 import { Throttle } from '@nestjs/throttler';
 import type { Request, Response } from 'express';
 import type { I18nService } from '../../application/ports/i18n.port';
@@ -425,5 +426,7 @@ export class AuthController {
     res.status(200).json({
       message: 'Logout successful',
     });
+
+    return Promise.resolve();
   }
 }

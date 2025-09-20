@@ -10,6 +10,7 @@ import { Module } from '@nestjs/common';
 
 // 🏗️ Modules d'infrastructure
 import { InfrastructureModule } from '@infrastructure/infrastructure.module';
+import { DatabaseModule } from '@infrastructure/database/database.module';
 
 // 📝 Tokens pour l'injection de dépendances
 import { TOKENS } from '@shared/constants/injection-tokens';
@@ -54,6 +55,8 @@ import { PresentationCookieService } from './services/cookie.service';
   imports: [
     // 🏗️ Infrastructure module pour tous les services nécessaires
     InfrastructureModule,
+    // 🗄️ Database module pour les repositories (avec mocks BusinessSector)
+    DatabaseModule,
   ],
   controllers: [
     AuthController,

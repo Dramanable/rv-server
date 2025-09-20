@@ -12,11 +12,11 @@ import { TOKENS } from '../../shared/constants/injection-tokens';
 import { PinoLoggerModule } from '../logging/pino-logger.module';
 
 // Entities TypeORM
-import {
-  UserOrmEntity,
-  BusinessSectorOrmEntity,
-  RefreshTokenOrmEntity,
-} from './entities/typeorm';
+import { UserOrmEntity } from './sql/postgresql/entities/user-orm.entity';
+import { RefreshTokenOrmEntity } from './sql/postgresql/entities/refresh-token-orm.entity';
+
+// Temporairement commenté jusqu'à résolution des problèmes de décorateurs TypeScript 5.7
+// import { BusinessSectorOrmEntity } from './sql/postgresql/entities/business-sector-orm.entity';
 
 // Repository Implementations
 import { TypeOrmBusinessSectorRepository } from './sql/postgresql/repositories/business-sector.repository';
@@ -90,18 +90,18 @@ class SimplePermissionService {
     // Configuration TypeORM pour les entités spécifiques
     TypeOrmModule.forFeature([
       UserOrmEntity,
-      BusinessSectorOrmEntity,
       RefreshTokenOrmEntity,
+      // BusinessSectorOrmEntity, // Temporairement commenté
     ]),
     // Import du PinoLoggerModule pour avoir accès au Logger
     PinoLoggerModule,
   ],
   providers: [
-    // BusinessSector Repository (vraie implémentation TypeORM)
-    {
-      provide: TOKENS.BUSINESS_SECTOR_REPOSITORY,
-      useClass: TypeOrmBusinessSectorRepository,
-    },
+    // BusinessSector Repository (temporairement commenté à cause des problèmes de décorateurs TS 5.7)
+    // {
+    //   provide: TOKENS.BUSINESS_SECTOR_REPOSITORY,
+    //   useClass: TypeOrmBusinessSectorRepository,
+    // },
 
     // RefreshToken Repository (vraie implémentation TypeORM)
     {
@@ -119,7 +119,7 @@ class SimplePermissionService {
     },
   ],
   exports: [
-    TOKENS.BUSINESS_SECTOR_REPOSITORY,
+    // TOKENS.BUSINESS_SECTOR_REPOSITORY, // Temporairement commenté
     TOKENS.REFRESH_TOKEN_REPOSITORY,
     TOKENS.PERMISSION_SERVICE,
   ],
