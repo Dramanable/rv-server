@@ -38,10 +38,41 @@ describe('🔐 PresentationCookieService - Security Tests', () => {
     );
   });
 
+  // 🔧 Helper function to setup config mocks
+  const setupConfigMock = (nodeEnv: string) => {
+    mockConfigService.get.mockImplementation((key: string) => {
+      switch (key) {
+        case 'NODE_ENV':
+          return nodeEnv;
+        case 'ACCESS_TOKEN_COOKIE_NAME':
+          return 'accessToken';
+        case 'REFRESH_TOKEN_COOKIE_NAME':
+          return 'refreshToken';
+        case 'REFRESH_TOKEN_COOKIE_PATH':
+          return '/auth/refresh';
+        default:
+          return undefined;
+      }
+    });
+  };
+
   describe('🔒 Security Configuration Tests', () => {
     it('should set secure cookies in production environment', () => {
       // 🔴 Arrange
-      mockConfigService.get.mockReturnValue('production');
+      mockConfigService.get.mockImplementation((key: string) => {
+        switch (key) {
+          case 'NODE_ENV':
+            return 'production';
+          case 'ACCESS_TOKEN_COOKIE_NAME':
+            return 'accessToken';
+          case 'REFRESH_TOKEN_COOKIE_NAME':
+            return 'refreshToken';
+          case 'REFRESH_TOKEN_COOKIE_PATH':
+            return '/auth/refresh';
+          default:
+            return undefined;
+        }
+      });
 
       const tokens = {
         accessToken: 'access_token_123',
@@ -81,7 +112,20 @@ describe('🔐 PresentationCookieService - Security Tests', () => {
 
     it('should set insecure cookies in development environment', () => {
       // 🔴 Arrange
-      mockConfigService.get.mockReturnValue('development');
+      mockConfigService.get.mockImplementation((key: string) => {
+        switch (key) {
+          case 'NODE_ENV':
+            return 'development';
+          case 'ACCESS_TOKEN_COOKIE_NAME':
+            return 'accessToken';
+          case 'REFRESH_TOKEN_COOKIE_NAME':
+            return 'refreshToken';
+          case 'REFRESH_TOKEN_COOKIE_PATH':
+            return '/auth/refresh';
+          default:
+            return undefined;
+        }
+      });
 
       const tokens = {
         accessToken: 'dev_access_token',
@@ -120,7 +164,7 @@ describe('🔐 PresentationCookieService - Security Tests', () => {
 
     it('should set proper cookie durations based on rememberMe flag', () => {
       // 🔴 Arrange
-      mockConfigService.get.mockReturnValue('production');
+      setupConfigMock('production');
 
       const tokens = {
         accessToken: 'access_token',
@@ -158,7 +202,7 @@ describe('🔐 PresentationCookieService - Security Tests', () => {
 
     it('should enforce HttpOnly flag on all authentication cookies', () => {
       // 🔴 Arrange
-      mockConfigService.get.mockReturnValue('production');
+      setupConfigMock('production');
 
       const tokens = {
         accessToken: 'test_access',
@@ -181,7 +225,7 @@ describe('🔐 PresentationCookieService - Security Tests', () => {
 
     it('should restrict refresh token path to /auth/refresh', () => {
       // 🔴 Arrange
-      mockConfigService.get.mockReturnValue('production');
+      setupConfigMock('production');
 
       const tokens = {
         accessToken: 'access_token',
@@ -213,7 +257,7 @@ describe('🔐 PresentationCookieService - Security Tests', () => {
 
     it('should clear cookies with same security options during logout', () => {
       // 🔴 Arrange
-      mockConfigService.get.mockReturnValue('production');
+      setupConfigMock('production');
 
       // 🟢 Act
       cookieService.clearAuthenticationCookies(mockResponse);
@@ -276,7 +320,7 @@ describe('🔐 PresentationCookieService - Security Tests', () => {
   describe('🛡️ XSS and CSRF Protection', () => {
     it('should configure cookies to prevent XSS attacks', () => {
       // 🔴 Arrange
-      mockConfigService.get.mockReturnValue('production');
+      setupConfigMock('production');
 
       // 🟢 Act
       cookieService.setCookie(mockResponse, 'testCookie', 'testValue');
@@ -293,7 +337,7 @@ describe('🔐 PresentationCookieService - Security Tests', () => {
 
     it('should configure cookies to prevent CSRF attacks', () => {
       // 🔴 Arrange
-      mockConfigService.get.mockReturnValue('production');
+      setupConfigMock('production');
 
       // 🟢 Act
       cookieService.setCookie(mockResponse, 'testCookie', 'testValue');

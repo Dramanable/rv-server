@@ -33,11 +33,12 @@ import {
 import { CreateCalendarUseCase } from '../../application/use-cases/calendar/create-calendar.use-case';
 import { GetCalendarByIdUseCase } from '../../application/use-cases/calendar/get-calendar-by-id.use-case';
 import { ListCalendarsUseCase } from '../../application/use-cases/calendar/list-calendars.use-case';
-import { CalendarStatus } from '../../domain/entities/calendar.entity';
+import { CalendarStatus as DomainCalendarStatus } from '../../domain/entities/calendar.entity';
 import { User } from '../../domain/entities/user.entity';
 import { TOKENS } from '../../shared/constants/injection-tokens';
 import {
   CalendarResponseDto,
+  CalendarStatus,
   CreateCalendarDto,
   CreateCalendarResponseDto,
   DeleteCalendarResponseDto,
@@ -45,7 +46,8 @@ import {
   ListCalendarsResponseDto,
   UpdateCalendarDto,
   UpdateCalendarResponseDto,
-} from '../dtos/calendar/calendar.dto';
+} from '../dtos/calendar.dto';
+import { CalendarRequestMapper } from '../mappers/calendar-request.mapper';
 import { GetUser } from '../security/decorators/get-user.decorator';
 import { JwtAuthGuard } from '../security/guards/jwt-auth.guard';
 
@@ -107,23 +109,8 @@ export class CalendarController {
     @Body() dto: ListCalendarsDto,
     @GetUser() user: User,
   ): Promise<ListCalendarsResponseDto> {
-    const request = {
-      requestingUserId: user.id,
-      pagination: {
-        page: dto.page ?? 1,
-        limit: dto.limit ?? 10,
-      },
-      sorting: {
-        sortBy: dto.sortBy ?? 'createdAt',
-        sortOrder: dto.sortOrder ?? 'desc',
-      },
-      filters: {
-        search: dto.search,
-        businessId: dto.businessId,
-        type: dto.type,
-        status: dto.status,
-      },
-    };
+    // Utilisation du mapper dédié pour éviter les conflits d'enums
+    const request = CalendarRequestMapper.toListCalendarsRequest(dto, user.id);
 
     const result = await this.listCalendarsUseCase.execute(request);
 
@@ -137,7 +124,7 @@ export class CalendarController {
             : calendar.description || '',
         businessId: calendar.businessId,
         type: calendar.type,
-        status: calendar.status,
+        status: this.mapCalendarStatusToDto(calendar.status),
         timeZone: 'Europe/Paris', // TODO: Add to use case response
         isDefault: false, // TODO: Add to use case response
         color: '#007bff', // TODO: Add to use case response
@@ -213,7 +200,7 @@ export class CalendarController {
       description: calendar.description,
       businessId: calendar.businessId,
       type: calendar.type,
-      status: calendar.status,
+      status: this.mapCalendarStatusToDto(calendar.status),
       settings: calendar.settings,
       availability: calendar.availability,
       bookingRulesCount: 0, // TODO: Calculate from actual booking rules
@@ -341,9 +328,8 @@ export class CalendarController {
     description: 'Insufficient permissions to update this calendar',
   })
   async update(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id') id: string,
     @Body() dto: UpdateCalendarDto,
-    @GetUser() user: User,
   ): Promise<UpdateCalendarResponseDto> {
     // TODO: Implement UpdateCalendarUseCase
     throw new Error('Update calendar use case not implemented yet');
@@ -390,11 +376,53 @@ export class CalendarController {
     description:
       'Cannot delete calendar with active appointments or constraints',
   })
-  async delete(
-    @Param('id', ParseUUIDPipe) id: string,
-    @GetUser() user: User,
-  ): Promise<DeleteCalendarResponseDto> {
+  async delete(@Param('id') id: string): Promise<DeleteCalendarResponseDto> {
     // TODO: Implement DeleteCalendarUseCase
     throw new Error('Delete calendar use case not implemented yet');
+  }
+
+  /**
+   * 🔄 MAPPER: Convert DTO CalendarStatus to Domain CalendarStatus
+   * Nécessaire pour éviter les conflits d'enums entre couches
+   */
+  private mapCalendarStatusToDomain(
+    status?: CalendarStatus,
+  ): DomainCalendarStatus | undefined {
+    if (!status) return undefined;
+
+    // Conversion explicite par valeur string pour éviter les conflits d'enum
+    const statusValue = status as string;
+
+    switch (statusValue) {
+      case 'ACTIVE':
+        return DomainCalendarStatus.ACTIVE;
+      case 'INACTIVE':
+        return DomainCalendarStatus.INACTIVE;
+      case 'MAINTENANCE':
+        return DomainCalendarStatus.MAINTENANCE;
+      case 'SUSPENDED':
+        return DomainCalendarStatus.INACTIVE; // Suspended → Inactive
+      case 'ARCHIVED':
+        return DomainCalendarStatus.INACTIVE; // Archived → Inactive
+      default:
+        return undefined;
+    }
+  }
+
+  /**
+   * 🔄 MAPPER: Convert Domain CalendarStatus to DTO CalendarStatus
+   * Pour les réponses API
+   */
+  private mapCalendarStatusToDto(status: DomainCalendarStatus): CalendarStatus {
+    switch (status) {
+      case DomainCalendarStatus.ACTIVE:
+        return CalendarStatus.ACTIVE;
+      case DomainCalendarStatus.INACTIVE:
+        return CalendarStatus.INACTIVE;
+      case DomainCalendarStatus.MAINTENANCE:
+        return CalendarStatus.MAINTENANCE;
+      default:
+        return CalendarStatus.INACTIVE;
+    }
   }
 }

@@ -31,7 +31,6 @@ export class TypeOrmUserRepository implements UserRepository {
   constructor(
     @InjectRepository(UserOrmEntity)
     private readonly repository: TypeOrmRepository<UserOrmEntity>,
-    private readonly dataSource: DataSource,
   ) {}
 
   /**
@@ -79,9 +78,22 @@ export class TypeOrmUserRepository implements UserRepository {
    */
   async findByEmail(email: Email | string): Promise<User | null> {
     const emailValue = typeof email === 'string' ? email : email.value;
+    console.log('🔍 DEBUG findByEmail - Searching for email:', emailValue);
+
     const user = await this.repository.findOne({
       where: { email: emailValue },
     });
+
+    console.log('🔍 DEBUG findByEmail - Found user:', user ? 'YES' : 'NO');
+    if (user) {
+      console.log('🔍 DEBUG findByEmail - User data:', {
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+      });
+    }
+
     return user ? this.toDomainUser(user) : null;
   }
 
@@ -297,38 +309,12 @@ export class TypeOrmUserRepository implements UserRepository {
       firstName: ormUser.firstName,
       lastName: ormUser.lastName,
       username: ormUser.username,
-      hashedPassword: {
-        value: ormUser.hashedPassword,
-      } as any, // HashedPassword type
+      hashedPassword: ormUser.hashedPassword, // ✅ CORRECTION: String directe
       role: ormUser.role as UserRole,
       isActive: ormUser.isActive,
       isVerified: ormUser.isVerified,
       createdAt: ormUser.createdAt,
       updatedAt: ormUser.updatedAt,
     } as User;
-  }
-
-  /**
-   * 🔄 Convert domain object to ORM entity data
-   */
-  private toOrmEntityData(domainUser: User): Partial<UserOrmEntity> {
-    // Extract raw values from domain value objects
-    const emailValue = (domainUser.email as any)?.value || domainUser.email;
-    const passwordValue =
-      (domainUser.hashedPassword as any)?.value || domainUser.hashedPassword;
-
-    return {
-      id: domainUser.id,
-      email: emailValue,
-      firstName: domainUser.firstName,
-      lastName: domainUser.lastName,
-      username: domainUser.username,
-      hashedPassword: passwordValue,
-      role: domainUser.role,
-      isActive: domainUser.isActive,
-      isVerified: domainUser.isVerified,
-      createdAt: domainUser.createdAt,
-      updatedAt: domainUser.updatedAt || new Date(),
-    };
   }
 }

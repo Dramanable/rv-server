@@ -16,8 +16,8 @@ import { Business } from '../../../../../domain/entities/business.entity';
 import { BusinessRepository } from '../../../../../domain/repositories/business.repository.interface';
 import { BusinessId } from '../../../../../domain/value-objects/business-id.value-object';
 import { BusinessName } from '../../../../../domain/value-objects/business-name.value-object';
-import { BusinessOrmEntity } from '../entities/business-orm.entity';
 import { BusinessMapper } from '../../../../mappers/domain-mappers';
+import { BusinessOrmEntity } from '../entities/business-orm.entity';
 
 @Injectable()
 export class TypeOrmBusinessRepository implements BusinessRepository {

@@ -29,7 +29,7 @@ interface JwtPayload {
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor(
-    @Inject(TOKENS.CONFIG_SERVICE)
+    @Inject(TOKENS.APP_CONFIG)
     private readonly configService: IConfigService,
     @Inject(TOKENS.USER_REPOSITORY)
     private readonly userRepository: UserRepository,
@@ -45,7 +45,9 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
       jwtFromRequest: ExtractJwt.fromExtractors([
         (request: Request) => {
           // 1. Priorité aux cookies sécurisés (production)
-          const cookieToken = request?.cookies?.accessToken;
+          const accessTokenCookieName =
+            configService.getAccessTokenCookieName();
+          const cookieToken = request?.cookies?.[accessTokenCookieName];
           if (cookieToken) {
             return cookieToken;
           }

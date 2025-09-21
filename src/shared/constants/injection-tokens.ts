@@ -77,6 +77,7 @@ export const DOMAIN_TOKENS = {
   CALENDAR_REPOSITORY: 'CalendarRepository',
   SERVICE_REPOSITORY: 'ServiceRepository',
   STAFF_REPOSITORY: 'StaffRepository',
+  APPOINTMENT_REPOSITORY: 'AppointmentRepository',
 
   // Domain Services
   USER_DOMAIN_SERVICE: 'UserDomainService',

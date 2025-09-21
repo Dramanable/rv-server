@@ -68,36 +68,6 @@ export class UserController {
     private readonly deleteUserUseCase: DeleteUserUseCase,
   ) {}
 
-  @Get('me')
-  @ApiOperation({
-    summary: '👤 Get current user profile',
-    description:
-      'Retrieve the profile information of the currently authenticated user',
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'Current user profile retrieved successfully',
-    type: UserResponseDto,
-  })
-  @ApiUnauthorizedResponse({
-    description: 'User not authenticated',
-    type: UnauthorizedErrorDto,
-  })
-  async getMe(): Promise<UserResponseDto> {
-    // TODO: Implement GetMeUseCase with proper authentication
-    return Promise.resolve({
-      id: 'temp-id',
-      email: 'user@example.com',
-      firstName: 'Test',
-      lastName: 'User',
-      role: 'REGULAR_CLIENT' as any,
-      isActive: true,
-      isVerified: true,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    });
-  }
-
   @Post('list')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({

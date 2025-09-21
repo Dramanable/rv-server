@@ -381,6 +381,77 @@ src/presentation/
 - **Adapter** (Implémentation) dans `/infrastructure/services/`
 - **Exemples** : EmailPort → GmailAdapter, SmsPort → TwilioAdapter
 
+### 🗄️ **RÈGLE OBLIGATOIRE : MIGRATIONS TYPEORM POUR NOUVELLES ENTITÉS**
+**Pour chaque nouvelle entité créée dans la couche infrastructure, créer SYSTÉMATIQUEMENT :**
+- **Migration TypeORM** dans `/src/infrastructure/database/sql/postgresql/migrations/`
+- **Nom du fichier** : `{timestamp}-{ActionEntityTable}.ts` (ex: `1695829200000-CreateAppointmentsTable.ts`)
+- **Contenu** : Utiliser l'API TypeORM 0.3+ avec `QueryRunner`
+- **Validation** : Tester la migration avant de commiter
+
+#### **🛠️ Template Obligatoire pour Migration TypeORM**
+
+```typescript
+import { MigrationInterface, QueryRunner, Table, Index, ForeignKey } from 'typeorm';
+
+export class Create{Entity}Table{Timestamp} implements MigrationInterface {
+  name = 'Create{Entity}Table{Timestamp}';
+
+  public async up(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.createTable(
+      new Table({
+        name: '{entity_name}s',
+        columns: [
+          {
+            name: 'id',
+            type: 'uuid',
+            isPrimary: true,
+            generationStrategy: 'uuid',
+            default: 'uuid_generate_v4()',
+          },
+          // Autres colonnes...
+          {
+            name: 'created_at',
+            type: 'timestamp',
+            default: 'CURRENT_TIMESTAMP',
+          },
+          {
+            name: 'updated_at',
+            type: 'timestamp',
+            default: 'CURRENT_TIMESTAMP',
+            onUpdate: 'CURRENT_TIMESTAMP',
+          },
+        ],
+      }),
+      true,
+    );
+
+    // Index et Foreign Keys si nécessaire
+    await queryRunner.createIndex('{entity_name}s', new Index('{entity_name}_idx', ['column']));
+
+    // Foreign Keys
+    await queryRunner.createForeignKey('{entity_name}s', new ForeignKey({
+      columnNames: ['foreign_column_id'],
+      referencedTableName: 'referenced_table',
+      referencedColumnNames: ['id'],
+      onDelete: 'CASCADE',
+    }));
+  }
+
+  public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.dropTable('{entity_name}s');
+  }
+}
+```
+
+#### **📋 Checklist Migration Obligatoire**
+- [ ] ✅ **Nom du fichier** respecte le format `{timestamp}-{Action}{Entity}Table.ts`
+- [ ] ✅ **UUID par défaut** avec `uuid_generate_v4()`
+- [ ] ✅ **created_at/updated_at** avec defaults appropriés
+- [ ] ✅ **Index** sur les colonnes fréquemment utilisées
+- [ ] ✅ **Foreign Keys** avec contraintes appropriées (`CASCADE`, `RESTRICT`)
+- [ ] ✅ **Méthode down()** pour rollback complet
+- [ ] ✅ **Test migration** avec `npm run migration:run` et `npm run migration:revert`
+
 ### 🚀 **AVANTAGES DE CETTE APPROCHE**
 
 #### **✅ Réduction des Erreurs**
@@ -797,7 +868,7 @@ export class UserOrmMapper {
   static toDomainEntity(orm: UserOrmEntity): User {
     const email = Email.create(orm.email);
     const userId = UserId.fromString(orm.id);
-    
+
     return User.reconstruct({
       id: userId,
       email: email,
@@ -876,10 +947,10 @@ export class TypeOrmUserRepository implements IUserRepository {
   async save(user: User): Promise<User> {
     // 1. Conversion Domain → ORM via Mapper
     const ormEntity = UserOrmMapper.toOrmEntity(user);
-    
+
     // 2. Persistence en base
     const savedOrm = await this.repository.save(ormEntity);
-    
+
     // 3. Conversion ORM → Domain via Mapper
     return UserOrmMapper.toDomainEntity(savedOrm);
   }
@@ -889,9 +960,9 @@ export class TypeOrmUserRepository implements IUserRepository {
     const ormEntity = await this.repository.findOne({
       where: { id: id.getValue() }
     });
-    
+
     if (!ormEntity) return null;
-    
+
     // 2. Conversion ORM → Domain via Mapper
     return UserOrmMapper.toDomainEntity(ormEntity);
   }
@@ -899,7 +970,7 @@ export class TypeOrmUserRepository implements IUserRepository {
   async findAll(criteria: UserCriteria): Promise<User[]> {
     // 1. Requête ORM avec critères
     const ormEntities = await this.repository.find(/* critères */);
-    
+
     // 2. Conversion batch via Mapper
     return UserOrmMapper.toDomainEntities(ormEntities);
   }
@@ -924,12 +995,12 @@ export class UserOrmEntity {
 // VIOLATION - Mapper ne doit contenir QUE de la conversion
 static toDomainEntity(orm: UserOrmEntity): User {
   const email = Email.create(orm.email);
-  
+
   // ❌ INTERDIT - Pas de logique métier dans mapper
   if (email.getValue().includes('admin')) {
     user.grantAdminRights(); // VIOLATION !
   }
-  
+
   return user;
 }
 ```
@@ -941,7 +1012,7 @@ async save(user: User): Promise<User> {
   // ❌ INTERDIT - Conversion manuelle
   const ormEntity = new UserOrmEntity();
   ormEntity.email = user.getEmail().getValue(); // VIOLATION !
-  
+
   // ✅ CORRECT - Utiliser le mapper
   const ormEntity = UserOrmMapper.toOrmEntity(user);
 }
@@ -967,10 +1038,10 @@ describe('UserOrmMapper', () => {
     it('should convert ORM entity to Domain entity', () => {
       // Given
       const ormEntity = createValidUserOrmEntity();
-      
+
       // When
       const domainEntity = UserOrmMapper.toDomainEntity(ormEntity);
-      
+
       // Then
       expect(domainEntity).toBeInstanceOf(User);
       expect(domainEntity.getEmail().getValue()).toBe(ormEntity.email);
@@ -1011,7 +1082,7 @@ export class UserOrmMapper {
     const userId = UserId.fromString(orm.id);
     const email = Email.create(orm.email); // Pour validation
     const phone = orm.phone ? Phone.create(orm.phone) : undefined;
-    
+
     return User.reconstruct({
       id: userId,
       email: email,
@@ -1024,7 +1095,7 @@ export class UserOrmMapper {
 
   static toOrmEntity(domain: User): UserOrmEntity {
     const orm = new UserOrmEntity();
-    
+
     // ✅ Extraction des valeurs primitives
     orm.id = domain.getId().getValue();
     orm.email = domain.getEmail().getValue();
@@ -1032,7 +1103,7 @@ export class UserOrmMapper {
     orm.phone = domain.getPhone()?.getValue();
     orm.created_at = domain.getCreatedAt();
     orm.updated_at = domain.getUpdatedAt();
-    
+
     return orm;
   }
 }
@@ -1078,8 +1149,8 @@ const phone = orm.phone ? Phone.create(orm.phone) : undefined;
 const price = Money.create(orm.price_amount, orm.price_currency);
 
 // 🌐 URL (avec validation)
-const profileImage = orm.profile_image_url 
-  ? FileUrl.create(orm.profile_image_url) 
+const profileImage = orm.profile_image_url
+  ? FileUrl.create(orm.profile_image_url)
   : undefined;
 
 // 📅 Dates (primitives)
@@ -1096,7 +1167,7 @@ export class {Entity}OrmMapper {
     const id = {Entity}Id.fromString(orm.id);
     const email = Email.create(orm.email);
     const phone = orm.phone ? Phone.create(orm.phone) : undefined;
-    
+
     // 2. Reconstruction de l'entité Domain
     return {Entity}.reconstruct({
       id,
@@ -1110,16 +1181,16 @@ export class {Entity}OrmMapper {
 
   static toOrmEntity(domain: {Entity}): {Entity}OrmEntity {
     const orm = new {Entity}OrmEntity();
-    
+
     // 1. Extraction des valeurs primitives
     orm.id = domain.getId().getValue();
     orm.email = domain.getEmail().getValue();
     orm.phone = domain.getPhone()?.getValue();
-    
+
     // 2. Dates et primitives directes
     orm.created_at = domain.getCreatedAt();
     orm.updated_at = domain.getUpdatedAt();
-    
+
     return orm;
   }
 

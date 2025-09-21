@@ -109,3 +109,79 @@ export const createMockConfigService = () => ({
     return config[key as keyof typeof config];
   }),
 });
+
+// 📅 Mock AppointmentRepository
+export const createMockAppointmentRepository = () => ({
+  findById: jest.fn(),
+  findByBusinessId: jest.fn(),
+  findByCalendarId: jest.fn(),
+  findByServiceId: jest.fn(),
+  findByClientEmail: jest.fn(),
+  findByStaffId: jest.fn(),
+  findByStatus: jest.fn(),
+  search: jest.fn(),
+  save: jest.fn(),
+  delete: jest.fn(),
+  findConflictingAppointments: jest.fn(),
+  findAvailableSlots: jest.fn(),
+  getStatistics: jest.fn(),
+  getUpcomingAppointments: jest.fn(),
+  getOverdueAppointments: jest.fn(),
+  findRecurringAppointments: jest.fn(),
+  getAppointmentsForReminders: jest.fn(),
+  bulkUpdateStatus: jest.fn(),
+  bulkCancel: jest.fn(),
+  getClientHistory: jest.fn(),
+  findAppointmentsNeedingFollowUp: jest.fn(),
+  getCalendarUtilization: jest.fn(),
+  count: jest.fn(),
+  export: jest.fn(),
+});
+
+// 🏢 Mock BusinessRepository
+export const createMockBusinessRepository = () => ({
+  findById: jest.fn(),
+  findByName: jest.fn(),
+  findBySector: jest.fn(),
+  search: jest.fn(),
+  save: jest.fn(),
+  delete: jest.fn(),
+  findAll: jest.fn(),
+  existsByName: jest.fn(),
+  count: jest.fn(),
+  getStatistics: jest.fn(),
+});
+
+// 🛠️ Mock ServiceRepository
+export const createMockServiceRepository = () => ({
+  findById: jest.fn(),
+  findByBusinessId: jest.fn(),
+  findActiveByBusinessId: jest.fn(),
+  findByCategory: jest.fn(),
+  findByStaffId: jest.fn(),
+  search: jest.fn(),
+  save: jest.fn(),
+  delete: jest.fn(),
+  count: jest.fn(),
+  existsByName: jest.fn(),
+  bulkUpdateStatus: jest.fn(),
+  findMostPopular: jest.fn(),
+  getBusinessServiceStatistics: jest.fn(),
+});
+
+// 📅 Mock CalendarRepository
+export const createMockCalendarRepository = () => ({
+  findById: jest.fn(),
+  findByBusinessId: jest.fn(),
+  findByOwnerId: jest.fn(),
+  findByType: jest.fn(),
+  findAvailableSlots: jest.fn(),
+  getBookedSlots: jest.fn(),
+  search: jest.fn(),
+  save: jest.fn(),
+  delete: jest.fn(),
+  count: jest.fn(),
+  bulkUpdateStatus: jest.fn(),
+  getUtilizationStats: jest.fn(),
+  getRecurringPatterns: jest.fn(),
+});

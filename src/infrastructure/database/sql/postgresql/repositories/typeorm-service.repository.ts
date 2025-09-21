@@ -21,8 +21,8 @@ import { ServiceRepository } from '../../../../../domain/repositories/service.re
 import { BusinessId } from '../../../../../domain/value-objects/business-id.value-object';
 import { ServiceId } from '../../../../../domain/value-objects/service-id.value-object';
 import { UserId } from '../../../../../domain/value-objects/user-id.value-object';
-import { ServiceOrmEntity } from '../entities/service-orm.entity';
 import { ServiceMapper } from '../../../../mappers/domain-mappers';
+import { ServiceOrmEntity } from '../entities/service-orm.entity';
 
 @Injectable()
 export class TypeOrmServiceRepository implements ServiceRepository {
@@ -253,7 +253,7 @@ export class TypeOrmServiceRepository implements ServiceRepository {
     );
   }
 
-  async getServiceStatistics(serviceId: ServiceId): Promise<{
+  async getServiceStatistics(_serviceId: ServiceId): Promise<{
     totalBookings: number;
     completedBookings: number;
     cancelledBookings: number;

@@ -1,6 +1,31 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
+echo "🔍 Exécution des vérifications de pré-commit..."
+
+# 🏛️ Vérification Clean Architecture (CRITIQUE)
+echo "🏛️ Vérification Clean Architecture..."
+npm run check:clean-arch
+if [ $? -ne 0 ]; then
+  echo "❌ ÉCHEC: Violations de Clean Architecture détectées!"
+  exit 1
+fi
+
+# 🧹 Lint et formatage du code
+echo "🧹 Vérification et correction du code..."
+npx lint-staged
+
+# 🧪 Tests unitaires
+echo "🧪 Exécution des tests..."
+npm test
+if [ $? -ne 0 ]; then
+  echo "❌ ÉCHEC: Des tests échouent!"
+  exit 1
+fi
+
+echo "✅ Toutes les vérifications de pré-commit réussies !"/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
 echo "� Vérifications de pré-commit désactivées temporairement..."
 
 # Désactivé temporairement pour permettre le commit de refactoring

@@ -12,22 +12,25 @@ import { TOKENS } from '../../shared/constants/injection-tokens';
 import { PinoLoggerModule } from '../logging/pino-logger.module';
 
 // Entities TypeORM
-import { RefreshTokenOrmEntity } from './sql/postgresql/entities/refresh-token-orm.entity';
-import { UserOrmEntity } from './sql/postgresql/entities/user-orm.entity';
+import { AppointmentOrmEntity } from './sql/postgresql/entities/appointment-orm.entity';
 import { BusinessOrmEntity } from './sql/postgresql/entities/business-orm.entity';
+import { CalendarOrmEntity } from './sql/postgresql/entities/calendar-orm.entity';
+import { RefreshTokenOrmEntity } from './sql/postgresql/entities/refresh-token-orm.entity';
 import { ServiceOrmEntity } from './sql/postgresql/entities/service-orm.entity';
 import { StaffOrmEntity } from './sql/postgresql/entities/staff-orm.entity';
-import { CalendarOrmEntity } from './sql/postgresql/entities/calendar-orm.entity';
+import { UserOrmEntity } from './sql/postgresql/entities/user-orm.entity';
 
 // Temporairement commenté jusqu'à résolution des problèmes de décorateurs TypeScript 5.7
 // import { BusinessSectorOrmEntity } from './sql/postgresql/entities/business-sector-orm.entity';
 
 // Repository Implementations
 import { RefreshTokenOrmRepository } from './sql/postgresql/repositories/refresh-token-orm.repository';
+import { TypeOrmAppointmentRepository } from './sql/postgresql/repositories/typeorm-appointment.repository';
 import { TypeOrmBusinessRepository } from './sql/postgresql/repositories/typeorm-business.repository';
+import { TypeOrmCalendarRepository } from './sql/postgresql/repositories/typeorm-calendar.repository';
 import { TypeOrmServiceRepository } from './sql/postgresql/repositories/typeorm-service.repository';
 import { TypeOrmStaffRepository } from './sql/postgresql/repositories/typeorm-staff.repository';
-import { TypeOrmCalendarRepository } from './sql/postgresql/repositories/typeorm-calendar.repository';
+import { TypeOrmUserRepository } from './sql/postgresql/repositories/user.repository';
 
 // Services nécessaires
 import type { Logger } from '../../application/ports/logger.port';
@@ -98,6 +101,7 @@ class SimplePermissionService {
     TypeOrmModule.forFeature([
       UserOrmEntity,
       RefreshTokenOrmEntity,
+      AppointmentOrmEntity,
       BusinessOrmEntity,
       ServiceOrmEntity,
       StaffOrmEntity,
@@ -108,6 +112,12 @@ class SimplePermissionService {
     PinoLoggerModule,
   ],
   providers: [
+    // User Repository (vraie implémentation TypeORM)
+    {
+      provide: TOKENS.USER_REPOSITORY,
+      useClass: TypeOrmUserRepository,
+    },
+
     // BusinessSector Repository (temporairement commenté à cause des problèmes de décorateurs TS 5.7)
     // {
     //   provide: TOKENS.BUSINESS_SECTOR_REPOSITORY,
@@ -146,6 +156,12 @@ class SimplePermissionService {
       useClass: TypeOrmCalendarRepository,
     },
 
+    // Appointment Repository
+    {
+      provide: TOKENS.APPOINTMENT_REPOSITORY,
+      useClass: TypeOrmAppointmentRepository,
+    },
+
     // Permission Service (simple mais réel)
     {
       provide: TOKENS.PERMISSION_SERVICE,
@@ -154,6 +170,7 @@ class SimplePermissionService {
     },
   ],
   exports: [
+    TOKENS.USER_REPOSITORY,
     // TOKENS.BUSINESS_SECTOR_REPOSITORY, // Temporairement commenté
     TOKENS.REFRESH_TOKEN_REPOSITORY,
     TOKENS.PERMISSION_SERVICE,
@@ -161,6 +178,7 @@ class SimplePermissionService {
     TOKENS.SERVICE_REPOSITORY,
     TOKENS.STAFF_REPOSITORY,
     TOKENS.CALENDAR_REPOSITORY,
+    TOKENS.APPOINTMENT_REPOSITORY,
   ],
 })
 export class TypeOrmRepositoriesModule {}

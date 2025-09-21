@@ -81,9 +81,10 @@ class DatabaseI18nService implements I18nService {
         type: 'postgres',
         host: configService.get('DATABASE_HOST', 'localhost'),
         port: configService.get('DATABASE_PORT', 5432),
-        username: configService.get('DATABASE_USERNAME', 'postgres'),
-        password: configService.get('DATABASE_PASSWORD', 'postgres'),
-        database: configService.get('DATABASE_NAME', 'rvproject'),
+        username: configService.get('DATABASE_USERNAME', 'rvproject_user'),
+        password: configService.get('DATABASE_PASSWORD', 'rvproject_password'),
+        database: configService.get('DATABASE_NAME', 'rvproject_app'),
+        schema: configService.get('DB_SCHEMA', 'rvproject_schema'),
         entities: [
           UserOrmEntity,
           RefreshTokenOrmEntity,
@@ -98,7 +99,7 @@ class DatabaseI18nService implements I18nService {
         ],
         synchronize: false, // ✅ Always false - use migrations instead
         migrationsRun: true, // ✅ Run migrations automatically on startup
-        logging: configService.get('NODE_ENV') === 'development',
+        logging: true, // ✅ Activer les logs SQL pour debug
         ssl:
           configService.get('NODE_ENV') === 'production'
             ? { rejectUnauthorized: false }
@@ -113,79 +114,6 @@ class DatabaseI18nService implements I18nService {
     AppConfigService,
     ConfigService, // Ajout du ConfigService de NestJS
     { provide: TOKENS.I18N_SERVICE, useClass: DatabaseI18nService },
-    // ✅ Simple provider pour TypeOrmUserRepository (sans factory complexity)
-    {
-      provide: TOKENS.USER_REPOSITORY,
-      useValue: {
-        // Implémentation temporaire simple pour démarrer l'app
-        async save(user: any) {
-          return user;
-        },
-        async findById() {
-          return null;
-        },
-        async findByEmail() {
-          return null;
-        },
-        async findByUsername() {
-          return null;
-        },
-        async delete() {
-          return;
-        },
-        async findAll() {
-          return {
-            data: [],
-            meta: { total: 0, page: 1, limit: 10, totalPages: 0 },
-          };
-        },
-        async search() {
-          return {
-            data: [],
-            meta: { total: 0, page: 1, limit: 10, totalPages: 0 },
-          };
-        },
-        async findByRole() {
-          return {
-            data: [],
-            meta: { total: 0, page: 1, limit: 10, totalPages: 0 },
-          };
-        },
-        async emailExists() {
-          return false;
-        },
-        async existsByUsername() {
-          return false;
-        },
-        async updatePassword() {
-          return;
-        },
-        async updateActiveStatus() {
-          return;
-        },
-        async countSuperAdmins() {
-          return 0;
-        },
-        async count() {
-          return 0;
-        },
-        async countWithFilters() {
-          return 0;
-        },
-        async update(user: any) {
-          return user;
-        },
-        async updateBatch(users: any[]) {
-          return users;
-        },
-        async deleteBatch() {
-          return;
-        },
-        async export() {
-          return [];
-        },
-      },
-    },
 
     // ✅ Mock BusinessSector Repository pour démarrer l'app
     {
@@ -296,12 +224,9 @@ class DatabaseI18nService implements I18nService {
   exports: [
     ConfigService, // Export du ConfigService
     TOKENS.I18N_SERVICE,
-    TOKENS.USER_REPOSITORY, // ✅ Export du vrai UserRepository
-    TOKENS.REFRESH_TOKEN_REPOSITORY, // ✅ Export du RefreshTokenRepository
     TOKENS.BUSINESS_SECTOR_REPOSITORY, // ✅ Export du mock BusinessSectorRepository
-    TypeOrmRepositoriesModule, // ✅ Export le module qui contient PERMISSION_SERVICE
-    // Les tokens BUSINESS_REPOSITORY, CALENDAR_REPOSITORY, SERVICE_REPOSITORY, STAFF_REPOSITORY
-    // doivent être ajoutés manuellement si nécessaires
+    TypeOrmRepositoriesModule, // ✅ Export le module qui contient USER_REPOSITORY, PERMISSION_SERVICE, etc.
+    // Les autres repositories sont exportés via TypeOrmRepositoriesModule
   ],
 })
 export class DatabaseModule {}

@@ -11,15 +11,14 @@ import {
   ForbiddenException,
   Inject,
   Injectable,
+  SetMetadata,
   UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { TOKENS } from '@shared/constants/injection-tokens';
 import { Request } from 'express';
-
-export const IS_PUBLIC_KEY = 'isPublic';
-export const Public = () => SetMetadata(IS_PUBLIC_KEY, true);
+import { IS_PUBLIC_KEY } from './decorators/public.decorator';
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
@@ -83,14 +82,14 @@ export class JwtAuthGuard implements CanActivate {
   }
 
   private extractTokenFromCookie(request: Request): string | undefined {
-    return request.cookies?.access_token;
+    const cookieName = this.configService.getAccessTokenCookieName();
+    return request.cookies?.[cookieName];
   }
 }
 
 /**
  * 🎭 Role-Based Access Control Guard
  */
-import { SetMetadata } from '@nestjs/common';
 
 export const ROLES_KEY = 'roles';
 export const Roles = (...roles: string[]) => SetMetadata(ROLES_KEY, roles);

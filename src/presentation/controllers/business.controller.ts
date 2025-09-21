@@ -49,7 +49,7 @@ import {
   ListBusinessesResponseDto,
   UpdateBusinessDto,
   UpdateBusinessResponseDto,
-} from '../dtos/business/business.dto';
+} from '../dtos/business.dto';
 import { GetUser } from '../security/decorators/get-user.decorator';
 import { JwtAuthGuard } from '../security/guards/jwt-auth.guard';
 
@@ -468,10 +468,7 @@ export class BusinessController {
     description:
       'Cannot delete business with active appointments or dependencies',
   })
-  async delete(
-    @Param('id', ParseUUIDPipe) id: string,
-    @GetUser() user: User,
-  ): Promise<DeleteBusinessResponseDto> {
+  async delete(): Promise<DeleteBusinessResponseDto> {
     // TODO: Implémenter DeleteBusinessUseCase
     throw new Error('Delete business use case not implemented yet');
   }

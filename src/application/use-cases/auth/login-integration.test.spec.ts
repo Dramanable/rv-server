@@ -1,11 +1,10 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
-import { LoginUseCase, LoginRequest } from './login.use-case';
+import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '../../../domain/entities/user.entity';
-import { HashedPassword } from '../../../domain/value-objects/hashed-password.value-object';
 import { Email } from '../../../domain/value-objects/email.vo';
-import { UserRole } from '../../../shared/enums/user-role.enum';
 import { TOKENS } from '../../../shared/constants/injection-tokens';
+import { UserRole } from '../../../shared/enums/user-role.enum';
+import { LoginRequest, LoginUseCase } from './login.use-case';
 
 /**
  * 🧪 Test d'intégration End-to-End - Login avec Cache Redis
@@ -28,7 +27,7 @@ describe('LoginUseCase - Integration Test with Redis Cache', () => {
     'user-123',
     Email.create('john.doe@example.com'),
     'John Doe',
-    UserRole.CLIENT,
+    UserRole.REGULAR_CLIENT,
     '$2b$10$valid.hashed.password',
     new Date('2024-01-01T00:00:00Z'),
     new Date('2024-01-01T00:00:00Z'),

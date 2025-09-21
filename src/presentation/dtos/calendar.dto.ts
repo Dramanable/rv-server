@@ -23,10 +23,21 @@ import {
   Min,
   ValidateNested,
 } from 'class-validator';
-import {
-  CalendarStatus,
-  CalendarType,
-} from '../../../domain/entities/calendar.entity';
+// Enums copiés depuis domain pour éviter les dépendances circulaires
+export enum CalendarType {
+  BUSINESS = 'BUSINESS',
+  STAFF = 'STAFF',
+  RESOURCE = 'RESOURCE',
+  SERVICE = 'SERVICE',
+}
+
+export enum CalendarStatus {
+  ACTIVE = 'ACTIVE',
+  INACTIVE = 'INACTIVE',
+  SUSPENDED = 'SUSPENDED',
+  ARCHIVED = 'ARCHIVED',
+  MAINTENANCE = 'MAINTENANCE',
+}
 
 // === WORKING HOURS DTO ===
 export class WorkingHoursDto {

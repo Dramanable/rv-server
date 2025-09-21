@@ -70,9 +70,23 @@ export class CookieService implements ICookieService {
     const isProduction =
       this.configService.get<string>('NODE_ENV') === 'production';
 
+    // Récupérer les noms et chemins depuis les variables d'environnement
+    const accessTokenCookieName = this.configService.get<string>(
+      'ACCESS_TOKEN_COOKIE_NAME',
+      'accessToken',
+    );
+    const refreshTokenCookieName = this.configService.get<string>(
+      'REFRESH_TOKEN_COOKIE_NAME',
+      'refreshToken',
+    );
+    const refreshTokenCookiePath = this.configService.get<string>(
+      'REFRESH_TOKEN_COOKIE_PATH',
+      '/api/v1/auth/refresh',
+    );
+
     // 🔑 Access Token Cookie - Même durée que le JWT
     const accessTokenMaxAge = tokens.expiresIn * 1000; // seconds to milliseconds
-    this.setCookie(response, 'accessToken', tokens.accessToken, {
+    this.setCookie(response, accessTokenCookieName, tokens.accessToken, {
       maxAge: accessTokenMaxAge,
       httpOnly: true,
       secure: isProduction,
@@ -85,12 +99,12 @@ export class CookieService implements ICookieService {
       ? 7 * 24 * 60 * 60 * 1000 // 7 days in milliseconds
       : undefined; // Session cookie si pas rememberMe
 
-    this.setCookie(response, 'refreshToken', tokens.refreshToken, {
+    this.setCookie(response, refreshTokenCookieName, tokens.refreshToken, {
       maxAge: refreshTokenMaxAge,
       httpOnly: true,
       secure: isProduction,
       sameSite: 'strict',
-      path: '/auth/refresh', // Restreint aux endpoints de refresh
+      path: refreshTokenCookiePath, // Restreint aux endpoints de refresh
     });
 
     this.logger.debug('Authentication cookies configured', {
@@ -105,8 +119,23 @@ export class CookieService implements ICookieService {
    * 🧹 Supprime tous les cookies d'authentification (logout)
    */
   clearAuthenticationCookies(response: Response): void {
-    this.clearCookie(response, 'accessToken', { path: '/' });
-    this.clearCookie(response, 'refreshToken', { path: '/auth/refresh' });
+    const accessTokenCookieName = this.configService.get<string>(
+      'ACCESS_TOKEN_COOKIE_NAME',
+      'accessToken',
+    );
+    const refreshTokenCookieName = this.configService.get<string>(
+      'REFRESH_TOKEN_COOKIE_NAME',
+      'refreshToken',
+    );
+    const refreshTokenCookiePath = this.configService.get<string>(
+      'REFRESH_TOKEN_COOKIE_PATH',
+      '/api/v1/auth/refresh',
+    );
+
+    this.clearCookie(response, accessTokenCookieName, { path: '/' });
+    this.clearCookie(response, refreshTokenCookieName, {
+      path: refreshTokenCookiePath,
+    });
 
     this.logger.debug('Authentication cookies cleared');
   }

@@ -8,6 +8,7 @@ import {
 } from '@nestjs/terminus';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
+import { Public } from '../../presentation/security/decorators/public.decorator';
 
 /**
  * 🏥 Health Check Controller
@@ -35,6 +36,7 @@ export class HealthController {
    * 🔍 Health Check Global
    * Vérification rapide de tous les services critiques
    */
+  @Public() // 🔓 Route publique - monitoring sans authentification
   @Get()
   @ApiOperation({ summary: 'Global health check' })
   @ApiResponse({ status: 200, description: 'Service healthy' })

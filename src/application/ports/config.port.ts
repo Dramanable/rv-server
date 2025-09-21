@@ -126,6 +126,13 @@ export interface IConfigService {
   getBodyParserConfig(): Record<string, unknown>;
 
   /**
+   * Cookie Configuration
+   */
+  getAccessTokenCookieName(): string;
+  getRefreshTokenCookieName(): string;
+  getRefreshTokenCookiePath(): string;
+
+  /**
    * Environment Flags
    */
   isProduction(): boolean;

@@ -4,15 +4,14 @@
  * ✅ Clean Architecture - Application Layer Only
  */
 
-import type { IUserCache } from '../../ports/user-cache.port';
-import type { Logger } from '../../ports/logger.port';
-import type { I18nService } from '../../ports/i18n.port';
-import type { IConfigService } from '../../ports/config.port';
-import { UserCacheService } from './user-cache.service';
-import type { StoreUserRequest } from './user-cache.service';
 import { User } from '../../domain/entities/user.entity';
-import { Email } from '../../domain/value-objects/email.vo';
+import type { IConfigService } from '../../ports/config.port';
+import type { I18nService } from '../../ports/i18n.port';
+import type { Logger } from '../../ports/logger.port';
+import type { IUserCache } from '../../ports/user-cache.port';
 import { UserRole } from '../../shared/enums/user-role.enum';
+import type { StoreUserRequest } from './user-cache.service';
+import { UserCacheService } from './user-cache.service';
 
 describe('UserCacheService - TDD Clean Architecture', () => {
   let storeUserService: UserCacheService;
@@ -103,7 +102,7 @@ describe('UserCacheService - TDD Clean Architecture', () => {
         id: 'admin-123',
         email: { value: 'admin@example.com' },
         name: 'Admin User',
-        role: UserRole.ADMIN,
+        role: UserRole.PLATFORM_ADMIN,
       } as User;
 
       const customTTL = 120;

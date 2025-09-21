@@ -11,9 +11,10 @@
 import { AppConfigService } from '@infrastructure/config/app-config.service';
 import { I18nValidationPipe } from '@infrastructure/validation/i18n-validation.pipe';
 import { Logger } from '@nestjs/common';
-import { NestFactory } from '@nestjs/core';
+import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { setupSwagger } from '@presentation/config/swagger.config';
+import { GlobalExceptionFilter } from '@presentation/filters/global-exception.filter';
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
@@ -82,6 +83,10 @@ async function bootstrap() {
 
   // 🎯 Global Configuration
   logger.log('Configuring global settings...');
+
+  // Global exception filter with detailed error logging
+  const httpAdapterHost = app.get(HttpAdapterHost);
+  app.useGlobalFilters(new GlobalExceptionFilter(httpAdapterHost));
 
   // Global validation pipe with i18n
   app.useGlobalPipes(new I18nValidationPipe());

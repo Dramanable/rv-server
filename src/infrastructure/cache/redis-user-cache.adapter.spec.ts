@@ -4,9 +4,9 @@
  * ✅ Clean Architecture - Infrastructure Implementation
  */
 
-import { RedisUserCacheAdapter } from './redis-user-cache.adapter';
 import type { User } from '../../domain/entities/user.entity';
 import { UserRole } from '../../shared/enums/user-role.enum';
+import { RedisUserCacheAdapter } from './redis-user-cache.adapter';
 
 // Mock Redis
 const mockRedisClient = {
@@ -61,7 +61,7 @@ describe('RedisUserCacheAdapter - TDD Infrastructure', () => {
         id: 'user-456',
         email: { value: 'admin@example.com' },
         name: 'Admin',
-        role: UserRole.ADMIN,
+        role: UserRole.PLATFORM_ADMIN,
       } as User;
 
       mockRedisClient.setex.mockResolvedValue('OK');

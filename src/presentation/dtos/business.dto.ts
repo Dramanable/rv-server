@@ -26,10 +26,26 @@ import {
   Min,
   ValidateNested,
 } from 'class-validator';
-import {
-  BusinessSector,
-  BusinessStatus,
-} from '../../../domain/entities/business.entity';
+// Enums copiés depuis domain pour éviter les dépendances circulaires
+export enum BusinessSector {
+  LEGAL = 'LEGAL',
+  MEDICAL = 'MEDICAL',
+  HEALTH = 'HEALTH',
+  BEAUTY = 'BEAUTY',
+  CONSULTING = 'CONSULTING',
+  FINANCE = 'FINANCE',
+  EDUCATION = 'EDUCATION',
+  WELLNESS = 'WELLNESS',
+  AUTOMOTIVE = 'AUTOMOTIVE',
+  OTHER = 'OTHER',
+}
+
+export enum BusinessStatus {
+  ACTIVE = 'ACTIVE',
+  INACTIVE = 'INACTIVE',
+  SUSPENDED = 'SUSPENDED',
+  PENDING_VERIFICATION = 'PENDING_VERIFICATION',
+}
 
 // === ADDRESS DTO ===
 export class AddressDto {

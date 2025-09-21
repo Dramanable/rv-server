@@ -52,11 +52,12 @@ import { AuthController } from './controllers/auth.controller';
 import { BusinessSectorController } from './controllers/business-sector.controller';
 import { BusinessController } from './controllers/business.controller';
 import { CalendarController } from './controllers/calendar.controller';
-import { HealthController } from './controllers/health.controller';
+// import { HealthController } from './controllers/health.controller';
 import { UserController } from './controllers/user.controller';
 
 // 🛡️ Security
 import { JwtAuthGuard } from './security/auth.guard';
+import { JwtStrategy } from './security/strategies/jwt.strategy';
 import { SecurityValidationPipe } from './security/validation.pipe';
 
 // 🔧 Services
@@ -76,11 +77,12 @@ import { PresentationCookieService } from './services/cookie.service';
     BusinessController,
     BusinessSectorController,
     CalendarController,
-    HealthController,
+    // HealthController,
   ],
   providers: [
     // 🛡️ Security providers
     JwtAuthGuard,
+    JwtStrategy,
     SecurityValidationPipe,
 
     // 🍪 Cookie Service

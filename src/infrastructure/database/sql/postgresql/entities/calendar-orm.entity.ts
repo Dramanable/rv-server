@@ -118,50 +118,7 @@ export class CalendarOrmEntity {
   @JoinColumn({ name: 'business_id' })
   business!: BusinessOrmEntity;
 
-  /**
-   * 🔄 Calendar Entity Mapper
-   * Convertit l'entité ORM vers l'entité Domain
-   */
-  toDomainEntity(): any {
-    // TODO: Implémenter la conversion vers Calendar domain entity
-    return {
-      id: this.id,
-      businessId: this.business_id,
-      type: this.type,
-      name: this.name,
-      description: this.description,
-      ownerId: this.owner_id,
-      status: this.status,
-      timezone: this.timezone,
-      isDefault: this.is_default,
-      color: this.color,
-      settings: this.settings,
-      availability: this.availability,
-      createdAt: this.created_at,
-      updatedAt: this.updated_at,
-    };
-  }
-
-  /**
-   * 🔄 Domain Entity Mapper
-   * Convertit l'entité Domain vers l'entité ORM
-   */
-  static fromDomainEntity(calendar: any): CalendarOrmEntity {
-    const ormEntity = new CalendarOrmEntity();
-
-    if (calendar.id) ormEntity.id = calendar.id;
-    ormEntity.business_id = calendar.businessId;
-    ormEntity.type = calendar.type;
-    ormEntity.name = calendar.name;
-    ormEntity.description = calendar.description;
-    ormEntity.owner_id = calendar.ownerId || null;
-    ormEntity.status = calendar.status;
-    ormEntity.timezone = calendar.timezone || 'Europe/Paris';
-    ormEntity.is_default = calendar.isDefault || false;
-    ormEntity.color = calendar.color || '#007bff';
-    ormEntity.settings = calendar.settings;
-    ormEntity.availability = calendar.availability;
-
-    return ormEntity;
-  }
+  // ✅ NO MAPPING LOGIC HERE
+  // Use dedicated mappers in /infrastructure/mappers/ instead
+  // This follows Clean Architecture principles
 }

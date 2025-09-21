@@ -18,6 +18,7 @@ import { BusinessId } from '../../../../../domain/value-objects/business-id.valu
 import { CalendarId } from '../../../../../domain/value-objects/calendar-id.value-object';
 import { TimeSlot } from '../../../../../domain/value-objects/time-slot.value-object';
 import { UserId } from '../../../../../domain/value-objects/user-id.value-object';
+import { CalendarOrmMapper } from '../../../../mappers/calendar-orm.mapper';
 import { CalendarOrmEntity } from '../entities/calendar-orm.entity';
 
 @Injectable()
@@ -34,7 +35,9 @@ export class TypeOrmCalendarRepository implements CalendarRepository {
         where: { id: calendarId },
       });
 
-      return ormEntity ? ormEntity.toDomainEntity() : null;
+      return ormEntity
+        ? CalendarOrmMapper.toDomainPlainObject(ormEntity)
+        : null;
     } catch (error) {
       throw new Error(
         `Failed to find calendar by id: ${error instanceof Error ? error.message : 'Unknown error'}`,
@@ -49,7 +52,7 @@ export class TypeOrmCalendarRepository implements CalendarRepository {
         where: { business_id: businessIdValue },
       });
 
-      return ormEntities.map((entity) => entity.toDomainEntity());
+      return CalendarOrmMapper.toDomainPlainObjects(ormEntities);
     } catch (error) {
       throw new Error(
         `Failed to find calendars by business id: ${error instanceof Error ? error.message : 'Unknown error'}`,
@@ -64,7 +67,7 @@ export class TypeOrmCalendarRepository implements CalendarRepository {
         where: { owner_id: ownerIdValue },
       });
 
-      return ormEntities.map((entity) => entity.toDomainEntity());
+      return CalendarOrmMapper.toDomainPlainObjects(ormEntities);
     } catch (error) {
       throw new Error(
         `Failed to find calendars by owner id: ${error instanceof Error ? error.message : 'Unknown error'}`,
@@ -82,7 +85,7 @@ export class TypeOrmCalendarRepository implements CalendarRepository {
         },
       });
 
-      return ormEntities.map((entity) => entity.toDomainEntity());
+      return CalendarOrmMapper.toDomainPlainObjects(ormEntities);
     } catch (error) {
       throw new Error(
         `Failed to find calendars by type: ${error instanceof Error ? error.message : 'Unknown error'}`,
@@ -92,8 +95,8 @@ export class TypeOrmCalendarRepository implements CalendarRepository {
 
   async save(calendar: Calendar): Promise<void> {
     try {
-      // Convertir l'entité domain vers ORM
-      const ormEntity = CalendarOrmEntity.fromDomainEntity(calendar);
+      // Convertir l'entité domain vers ORM via mapper
+      const ormEntity = CalendarOrmMapper.toOrmEntity(calendar);
 
       // Sauvegarder dans la base
       await this.ormRepository.save(ormEntity);
@@ -169,9 +172,9 @@ export class TypeOrmCalendarRepository implements CalendarRepository {
   }
 
   async getBookedSlots(
-    calendarId: CalendarId,
-    startDate: Date,
-    endDate: Date,
+    _calendarId: CalendarId,
+    _startDate: Date,
+    _endDate: Date,
   ): Promise<TimeSlot[]> {
     try {
       // Pour l'instant, retourner un tableau vide
@@ -186,7 +189,7 @@ export class TypeOrmCalendarRepository implements CalendarRepository {
 
   async isSlotAvailable(
     calendarId: CalendarId,
-    timeSlot: TimeSlot,
+    _timeSlot: TimeSlot,
   ): Promise<boolean> {
     try {
       // Logique simplifiée - vérifier seulement que le calendrier existe
@@ -201,7 +204,7 @@ export class TypeOrmCalendarRepository implements CalendarRepository {
 
   async findOverlappingCalendars(
     businessId: BusinessId,
-    timeSlot: TimeSlot,
+    _timeSlot: TimeSlot,
     excludeCalendarIds?: CalendarId[],
   ): Promise<Calendar[]> {
     try {
@@ -220,7 +223,7 @@ export class TypeOrmCalendarRepository implements CalendarRepository {
       }
 
       const ormEntities = await query.getMany();
-      return ormEntities.map((entity) => entity.toDomainEntity());
+      return CalendarOrmMapper.toDomainPlainObjects(ormEntities);
     } catch (error) {
       throw new Error(
         `Failed to find overlapping calendars: ${error instanceof Error ? error.message : 'Unknown error'}`,
@@ -229,9 +232,9 @@ export class TypeOrmCalendarRepository implements CalendarRepository {
   }
 
   async getUtilizationStats(
-    calendarId: CalendarId,
-    startDate: Date,
-    endDate: Date,
+    _calendarId: CalendarId,
+    _startDate: Date,
+    _endDate: Date,
   ): Promise<{
     totalSlots: number;
     bookedSlots: number;
@@ -257,9 +260,9 @@ export class TypeOrmCalendarRepository implements CalendarRepository {
 
   async findCalendarsWithAvailability(
     businessId: BusinessId,
-    startDate: Date,
-    endDate: Date,
-    duration: number,
+    _startDate: Date,
+    _endDate: Date,
+    _duration: number,
   ): Promise<Calendar[]> {
     try {
       const businessIdValue = businessId.getValue();
@@ -269,7 +272,7 @@ export class TypeOrmCalendarRepository implements CalendarRepository {
 
       // Pour l'instant, retourner tous les calendriers du business
       // À améliorer avec la vérification réelle de disponibilité
-      return ormEntities.map((entity) => entity.toDomainEntity());
+      return CalendarOrmMapper.toDomainPlainObjects(ormEntities);
     } catch (error) {
       throw new Error(
         `Failed to find calendars with availability: ${error instanceof Error ? error.message : 'Unknown error'}`,
@@ -278,9 +281,9 @@ export class TypeOrmCalendarRepository implements CalendarRepository {
   }
 
   async getRecurringPatterns(
-    calendarId: CalendarId,
-    startDate: Date,
-    endDate: Date,
+    _calendarId: CalendarId,
+    _startDate: Date,
+    _endDate: Date,
   ): Promise<
     {
       pattern: string;
@@ -303,7 +306,7 @@ export class TypeOrmCalendarRepository implements CalendarRepository {
    * Logique simplifiée - à améliorer selon les besoins métier
    */
   private isWithinWorkingHours(
-    calendar: Calendar,
+    _calendar: Calendar,
     start: Date,
     end: Date,
   ): boolean {

@@ -22,8 +22,8 @@ import { BusinessId } from '../../../../../domain/value-objects/business-id.valu
 import { Email } from '../../../../../domain/value-objects/email.value-object';
 import { UserId } from '../../../../../domain/value-objects/user-id.value-object';
 import { StaffRole } from '../../../../../shared/enums/staff-role.enum';
-import { StaffOrmEntity } from '../entities/staff-orm.entity';
 import { StaffMapper } from '../../../../mappers/domain-mappers';
+import { StaffOrmEntity } from '../entities/staff-orm.entity';
 
 @Injectable()
 export class TypeOrmStaffRepository implements StaffRepository {
@@ -74,8 +74,8 @@ export class TypeOrmStaffRepository implements StaffRepository {
 
   async findAvailableStaff(
     businessId: BusinessId,
-    dateTime: Date,
-    duration: number,
+    _dateTime: Date,
+    _duration: number,
   ): Promise<Staff[]> {
     // Pour le moment, on retourne tous les staff actifs
     // Dans une implémentation future, on intégrera la logique de disponibilité basée sur les calendriers

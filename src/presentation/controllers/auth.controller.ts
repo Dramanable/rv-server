@@ -8,6 +8,7 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
   Inject,
@@ -371,6 +372,61 @@ export class AuthController {
       this.controllerLogger.error('Refresh token failed', error);
       throw error;
     }
+  }
+
+  @Get('me')
+  @UseGuards(JwtAuthGuard) // 🔐 Authentification requise pour accéder au profil
+  @Throttle({ default: { limit: 60, ttl: 60000 } }) // 🛡️ 60 requêtes par minute
+  @ApiSecurity('JWT') // 📄 Indique que l'endpoint nécessite JWT
+  @ApiOperation({
+    summary: '👤 Get Current User Profile',
+    description:
+      'Retrieve current authenticated user information from cache or database',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '✅ User profile retrieved successfully',
+    schema: {
+      properties: {
+        id: { type: 'string', example: '123e4567-e89b-12d3-a456-426614174000' },
+        email: { type: 'string', example: 'admin@rvproject.dev' },
+        name: { type: 'string', example: 'Admin User' },
+        role: { type: 'string', example: 'SUPER_ADMIN' },
+        isActive: { type: 'boolean', example: true },
+        isVerified: { type: 'boolean', example: true },
+        createdAt: { type: 'string', example: '2025-09-21T20:00:00.000Z' },
+        updatedAt: { type: 'string', example: '2025-09-21T20:00:00.000Z' },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 401,
+    description: '🔒 Authentication required - Valid JWT token needed',
+  })
+  async getMe(@Req() req: Request): Promise<any> {
+    // L'utilisateur est automatiquement injecté par le JwtAuthGuard dans req.user
+    const user = (req as any).user;
+
+    if (!user || !user.id) {
+      this.controllerLogger.warn('No user information found in JWT token', {
+        user,
+      });
+      throw new UnauthorizedException('User information not found in token');
+    }
+
+    this.controllerLogger.log(`Getting user profile for userId: ${user.id}`);
+
+    // Retourner les informations de l'utilisateur depuis l'entité Domain
+    return {
+      id: user.id,
+      email: user.email?.value || user.email,
+      name: user.name,
+      role: user.role,
+      isActive: user.isActive || true,
+      isVerified: user.isVerified || true,
+      createdAt: user.createdAt?.toISOString() || new Date().toISOString(),
+      updatedAt: user.updatedAt?.toISOString(),
+    };
   }
 
   @Post('logout')

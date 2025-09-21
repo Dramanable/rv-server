@@ -369,4 +369,26 @@ export class AppConfigService implements IConfigService {
   getFrontendUrl(): string | undefined {
     return this.configService.get<string>('FRONTEND_URL');
   }
+
+  // 🍪 Cookie Configuration
+  getAccessTokenCookieName(): string {
+    return this.configService.get<string>(
+      'ACCESS_TOKEN_COOKIE_NAME',
+      'accessToken',
+    );
+  }
+
+  getRefreshTokenCookieName(): string {
+    return this.configService.get<string>(
+      'REFRESH_TOKEN_COOKIE_NAME',
+      'refreshToken',
+    );
+  }
+
+  getRefreshTokenCookiePath(): string {
+    return this.configService.get<string>(
+      'REFRESH_TOKEN_COOKIE_PATH',
+      '/api/v1/auth/refresh',
+    );
+  }
 }

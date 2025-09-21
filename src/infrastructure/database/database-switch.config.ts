@@ -73,6 +73,7 @@ export class DatabaseSwitchConfig {
         'DATABASE_NAME',
         'cleanarchi_dev',
       ),
+      schema: this.configService.get<string>('DB_SCHEMA', 'rvproject_app'),
       synchronize: !isProduction, // ⚠️ Seulement en développement
       logging: env === 'development',
       entities: [UserOrmEntity, RefreshTokenOrmEntity],

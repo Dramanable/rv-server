@@ -11,40 +11,37 @@
  */
 
 // Domain Entities
-import { User } from '../../domain/entities/user.entity';
-import { Service } from '../../domain/entities/service.entity';
-import { Staff } from '../../domain/entities/staff.entity';
 import {
   Business,
   BusinessBranding,
-  BusinessContactInfo,
-  BusinessSettings,
 } from '../../domain/entities/business.entity';
+import { Service } from '../../domain/entities/service.entity';
+import { Staff } from '../../domain/entities/staff.entity';
+import { User } from '../../domain/entities/user.entity';
 
 // Domain Value Objects
-import { Email } from '../../domain/value-objects/email.vo';
-import { Email as EmailVO } from '../../domain/value-objects/email.value-object';
-import { ServiceId } from '../../domain/value-objects/service-id.value-object';
+import { Address } from '../../domain/value-objects/address.value-object';
 import { BusinessId } from '../../domain/value-objects/business-id.value-object';
 import { BusinessName } from '../../domain/value-objects/business-name.value-object';
-import { Address } from '../../domain/value-objects/address.value-object';
-import { UserId } from '../../domain/value-objects/user-id.value-object';
-import { Money } from '../../domain/value-objects/money.value-object';
+import { Email as EmailVO } from '../../domain/value-objects/email.value-object';
+import { Email } from '../../domain/value-objects/email.vo';
 import {
-  FileUrl,
   CloudProvider,
+  FileUrl,
 } from '../../domain/value-objects/file-url.value-object';
+import { Money } from '../../domain/value-objects/money.value-object';
 import { Phone } from '../../domain/value-objects/phone.value-object';
+import { ServiceId } from '../../domain/value-objects/service-id.value-object';
+import { UserId } from '../../domain/value-objects/user-id.value-object';
 
 // Shared Enums
 import { UserRole } from '../../shared/enums/user-role.enum';
-import { StaffRole } from '../../shared/enums/staff-role.enum';
 
 // Infrastructure Entities
-import { UserOrmEntity } from '../database/sql/postgresql/entities/user-orm.entity';
+import { BusinessOrmEntity } from '../database/sql/postgresql/entities/business-orm.entity';
 import { ServiceOrmEntity } from '../database/sql/postgresql/entities/service-orm.entity';
 import { StaffOrmEntity } from '../database/sql/postgresql/entities/staff-orm.entity';
-import { BusinessOrmEntity } from '../database/sql/postgresql/entities/business-orm.entity';
+import { UserOrmEntity } from '../database/sql/postgresql/entities/user-orm.entity';
 
 // Presentation DTOs
 import {
