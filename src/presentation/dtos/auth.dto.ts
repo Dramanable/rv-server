@@ -15,6 +15,7 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
+import { UserResponseDto } from './user.dto';
 
 export class LoginDto {
   @ApiProperty({
@@ -166,62 +167,6 @@ export class LogoutDto {
 // ═══════════════════════════════════════════════════════════════
 // 📄 RESPONSE DTOS - DOCUMENTATION SWAGGER DÉTAILLÉE
 // ═══════════════════════════════════════════════════════════════
-
-export class UserResponseDto {
-  @ApiProperty({
-    description: '🆔 Unique user identifier (UUID v4)',
-    example: '123e4567-e89b-12d3-a456-426614174000',
-    type: 'string',
-    format: 'uuid',
-    title: 'User ID',
-  })
-  id!: string;
-
-  @ApiProperty({
-    description: '📧 User email address (verified and unique)',
-    example: 'user@example.com',
-    type: 'string',
-    format: 'email',
-    title: 'Email Address',
-  })
-  email!: string;
-
-  @ApiProperty({
-    description: '👤 User full name for display',
-    example: 'John Doe',
-    type: 'string',
-    minLength: 2,
-    maxLength: 100,
-    title: 'Full Name',
-  })
-  name!: string;
-
-  @ApiProperty({
-    description: '🎭 User role in the system',
-    example: 'REGULAR_CLIENT',
-    enum: [
-      'PLATFORM_ADMIN',
-      'BUSINESS_OWNER',
-      'BUSINESS_ADMIN',
-      'LOCATION_MANAGER',
-      'PRACTITIONER',
-      'ASSISTANT',
-      'REGULAR_CLIENT',
-      'VIP_CLIENT',
-    ],
-    title: 'User Role',
-  })
-  role!: string;
-
-  @ApiProperty({
-    description: '📅 Account creation timestamp',
-    example: '2024-01-15T10:30:00.000Z',
-    type: 'string',
-    format: 'date-time',
-    title: 'Created At',
-  })
-  createdAt!: string;
-}
 
 export class LoginResponseDto {
   @ApiProperty({

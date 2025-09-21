@@ -1,9 +1,9 @@
-import { UserId } from '../value-objects/user-id.value-object';
+import { StaffRole } from '../../shared/enums/staff-role.enum';
 import { BusinessId } from '../value-objects/business-id.value-object';
 import { Email } from '../value-objects/email.value-object';
-import { Phone } from '../value-objects/phone.value-object';
 import { FileUrl } from '../value-objects/file-url.value-object';
-import { StaffRole } from '../../shared/enums/staff-role.enum';
+import { Phone } from '../value-objects/phone.value-object';
+import { UserId } from '../value-objects/user-id.value-object';
 
 export enum StaffStatus {
   ACTIVE = 'ACTIVE',

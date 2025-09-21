@@ -12,15 +12,22 @@ import { TOKENS } from '../../shared/constants/injection-tokens';
 import { PinoLoggerModule } from '../logging/pino-logger.module';
 
 // Entities TypeORM
-import { UserOrmEntity } from './sql/postgresql/entities/user-orm.entity';
 import { RefreshTokenOrmEntity } from './sql/postgresql/entities/refresh-token-orm.entity';
+import { UserOrmEntity } from './sql/postgresql/entities/user-orm.entity';
+import { BusinessOrmEntity } from './sql/postgresql/entities/business-orm.entity';
+import { ServiceOrmEntity } from './sql/postgresql/entities/service-orm.entity';
+import { StaffOrmEntity } from './sql/postgresql/entities/staff-orm.entity';
+import { CalendarOrmEntity } from './sql/postgresql/entities/calendar-orm.entity';
 
 // Temporairement commenté jusqu'à résolution des problèmes de décorateurs TypeScript 5.7
 // import { BusinessSectorOrmEntity } from './sql/postgresql/entities/business-sector-orm.entity';
 
 // Repository Implementations
-import { TypeOrmBusinessSectorRepository } from './sql/postgresql/repositories/business-sector.repository';
 import { RefreshTokenOrmRepository } from './sql/postgresql/repositories/refresh-token-orm.repository';
+import { TypeOrmBusinessRepository } from './sql/postgresql/repositories/typeorm-business.repository';
+import { TypeOrmServiceRepository } from './sql/postgresql/repositories/typeorm-service.repository';
+import { TypeOrmStaffRepository } from './sql/postgresql/repositories/typeorm-staff.repository';
+import { TypeOrmCalendarRepository } from './sql/postgresql/repositories/typeorm-calendar.repository';
 
 // Services nécessaires
 import type { Logger } from '../../application/ports/logger.port';
@@ -91,6 +98,10 @@ class SimplePermissionService {
     TypeOrmModule.forFeature([
       UserOrmEntity,
       RefreshTokenOrmEntity,
+      BusinessOrmEntity,
+      ServiceOrmEntity,
+      StaffOrmEntity,
+      CalendarOrmEntity,
       // BusinessSectorOrmEntity, // Temporairement commenté
     ]),
     // Import du PinoLoggerModule pour avoir accès au Logger
@@ -111,6 +122,30 @@ class SimplePermissionService {
       inject: [getRepositoryToken(RefreshTokenOrmEntity), TOKENS.LOGGER],
     },
 
+    // Business Repository
+    {
+      provide: TOKENS.BUSINESS_REPOSITORY,
+      useClass: TypeOrmBusinessRepository,
+    },
+
+    // Service Repository
+    {
+      provide: TOKENS.SERVICE_REPOSITORY,
+      useClass: TypeOrmServiceRepository,
+    },
+
+    // Staff Repository
+    {
+      provide: TOKENS.STAFF_REPOSITORY,
+      useClass: TypeOrmStaffRepository,
+    },
+
+    // Calendar Repository
+    {
+      provide: TOKENS.CALENDAR_REPOSITORY,
+      useClass: TypeOrmCalendarRepository,
+    },
+
     // Permission Service (simple mais réel)
     {
       provide: TOKENS.PERMISSION_SERVICE,
@@ -122,6 +157,10 @@ class SimplePermissionService {
     // TOKENS.BUSINESS_SECTOR_REPOSITORY, // Temporairement commenté
     TOKENS.REFRESH_TOKEN_REPOSITORY,
     TOKENS.PERMISSION_SERVICE,
+    TOKENS.BUSINESS_REPOSITORY,
+    TOKENS.SERVICE_REPOSITORY,
+    TOKENS.STAFF_REPOSITORY,
+    TOKENS.CALENDAR_REPOSITORY,
   ],
 })
 export class TypeOrmRepositoriesModule {}

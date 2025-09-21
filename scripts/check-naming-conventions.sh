@@ -18,14 +18,14 @@ NC='\033[0m' # No Color
 check_violations() {
     local file=$1
     local violations=()
-    
+
     # Chercher les @Column() sans name explicite (sauf pour les colonnes simples)
     while IFS= read -r line; do
         if [[ $line =~ @Column\(\)$ ]] && [[ $line =~ [A-Z] ]]; then
             violations+=("$line")
         fi
     done < "$file"
-    
+
     # Chercher les propriétés camelCase sans name explicite
     while IFS= read -r line; do
         if [[ $line =~ @Column\(\{[^}]*\}\) ]] && [[ ! $line =~ name: ]]; then
@@ -35,7 +35,7 @@ check_violations() {
             fi
         fi
     done < "$file"
-    
+
     return ${#violations[@]}
 }
 
@@ -44,11 +44,11 @@ if [ -d "$ENTITIES_DIR" ]; then
     for entity_file in "$ENTITIES_DIR"/*.entity.ts; do
         if [ -f "$entity_file" ]; then
             echo "Vérification: $(basename "$entity_file")"
-            
+
             # Vérifier les violations de convention
             check_violations "$entity_file"
             violations_count=$?
-            
+
             if [ $violations_count -gt 0 ]; then
                 echo -e "${RED}❌ Violations trouvées dans $(basename "$entity_file")${NC}"
                 VIOLATIONS_FOUND=$((VIOLATIONS_FOUND + violations_count))

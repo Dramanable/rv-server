@@ -4,19 +4,19 @@
  * ✅ Gestion des erreurs d'authentification
  */
 
+import type { IConfigService } from '@application/ports/config.port';
 import {
-  Injectable,
   CanActivate,
   ExecutionContext,
-  UnauthorizedException,
   ForbiddenException,
   Inject,
+  Injectable,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
-import { Request } from 'express';
-import type { IConfigService } from '@application/ports/config.port';
 import { TOKENS } from '@shared/constants/injection-tokens';
+import { Request } from 'express';
 
 export const IS_PUBLIC_KEY = 'isPublic';
 export const Public = () => SetMetadata(IS_PUBLIC_KEY, true);

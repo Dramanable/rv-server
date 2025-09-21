@@ -4,9 +4,9 @@
  * Service de configuration basé sur @nestjs/config
  */
 
+import { IConfigService } from '@application/ports/config.port';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { IConfigService } from '@application/ports/config.port';
 
 @Injectable()
 export class AppConfigService implements IConfigService {

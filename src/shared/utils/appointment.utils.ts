@@ -14,22 +14,22 @@
  */
 
 import {
-  AppointmentStatus,
-  AppointmentRecurrenceType,
-  AppointmentReminderType,
-  AppointmentReminderTiming,
+  APPOINTMENT_PRIORITY_COLORS,
+  APPOINTMENT_STATUS_COLORS,
   AppointmentPaymentStatus,
-  AppointmentPriority,
-  AppointmentSource,
-  AppointmentType,
-  AppointmentRecurrenceConfig,
-  AppointmentReminderConfig,
   AppointmentPricing,
+  AppointmentPriority,
+  AppointmentRecurrenceConfig,
+  AppointmentRecurrenceType,
+  AppointmentReminderConfig,
+  AppointmentReminderTiming,
+  AppointmentReminderType,
+  AppointmentSource,
+  AppointmentStatus,
+  AppointmentType,
+  DEFAULT_REMINDER_CONFIGS,
   isModifiableStatus,
   isValidStatusTransition,
-  DEFAULT_REMINDER_CONFIGS,
-  APPOINTMENT_STATUS_COLORS,
-  APPOINTMENT_PRIORITY_COLORS,
 } from '../enums/appointment.enums';
 
 /**
@@ -640,38 +640,38 @@ export class AppointmentNotificationUtils {
       fr: {
         [AppointmentReminderType.EMAIL]: `
           Bonjour ${appointmentData.clientName},
-          
-          Nous vous rappelons votre rendez-vous pour ${appointmentData.serviceName} 
-          prévu le ${formatTime(appointmentData.appointmentTime)} 
+
+          Nous vous rappelons votre rendez-vous pour ${appointmentData.serviceName}
+          prévu le ${formatTime(appointmentData.appointmentTime)}
           chez ${appointmentData.businessName}.
-          
+
           ${appointmentData.location ? `Adresse: ${appointmentData.location}` : ''}
-          
+
           Cordialement,
           L'équipe ${appointmentData.businessName}
         `,
         [AppointmentReminderType.SMS]: `
-          Rappel RDV: ${appointmentData.serviceName} 
-          le ${formatTime(appointmentData.appointmentTime)} 
+          Rappel RDV: ${appointmentData.serviceName}
+          le ${formatTime(appointmentData.appointmentTime)}
           chez ${appointmentData.businessName}
         `,
       },
       en: {
         [AppointmentReminderType.EMAIL]: `
           Hello ${appointmentData.clientName},
-          
-          This is a reminder of your appointment for ${appointmentData.serviceName} 
-          scheduled on ${formatTime(appointmentData.appointmentTime)} 
+
+          This is a reminder of your appointment for ${appointmentData.serviceName}
+          scheduled on ${formatTime(appointmentData.appointmentTime)}
           at ${appointmentData.businessName}.
-          
+
           ${appointmentData.location ? `Location: ${appointmentData.location}` : ''}
-          
+
           Best regards,
           ${appointmentData.businessName} Team
         `,
         [AppointmentReminderType.SMS]: `
-          Appointment reminder: ${appointmentData.serviceName} 
-          on ${formatTime(appointmentData.appointmentTime)} 
+          Appointment reminder: ${appointmentData.serviceName}
+          on ${formatTime(appointmentData.appointmentTime)}
           at ${appointmentData.businessName}
         `,
       },

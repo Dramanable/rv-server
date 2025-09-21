@@ -143,8 +143,8 @@ export class InitialMigration1695825600000 implements MigrationInterface {
     if (hasBusinessSectorCreatedByFK) {
       try {
         await queryRunner.query(`
-          ALTER TABLE "business_sectors" 
-          ADD CONSTRAINT "FK_business_sectors_created_by" 
+          ALTER TABLE "business_sectors"
+          ADD CONSTRAINT "FK_business_sectors_created_by"
           FOREIGN KEY ("created_by") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE
         `);
       } catch (error) {
@@ -160,8 +160,8 @@ export class InitialMigration1695825600000 implements MigrationInterface {
     if (hasBusinessSectorUpdatedByFK) {
       try {
         await queryRunner.query(`
-          ALTER TABLE "business_sectors" 
-          ADD CONSTRAINT "FK_business_sectors_updated_by" 
+          ALTER TABLE "business_sectors"
+          ADD CONSTRAINT "FK_business_sectors_updated_by"
           FOREIGN KEY ("updated_by") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE
         `);
       } catch (error) {
@@ -177,8 +177,8 @@ export class InitialMigration1695825600000 implements MigrationInterface {
     if (hasRefreshTokenUserFK) {
       try {
         await queryRunner.query(`
-          ALTER TABLE "refresh_tokens" 
-          ADD CONSTRAINT "FK_refresh_tokens_user_id" 
+          ALTER TABLE "refresh_tokens"
+          ADD CONSTRAINT "FK_refresh_tokens_user_id"
           FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE
         `);
       } catch (error) {

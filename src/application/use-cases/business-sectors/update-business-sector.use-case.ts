@@ -5,16 +5,16 @@
  * Seuls les super-admins peuvent modifier les secteurs d'activité
  */
 
-import type { IBusinessSectorRepository } from '@application/ports/business-sector.repository.interface';
-import type { Logger } from '@application/ports/logger.port';
-import type { I18nService } from '@application/ports/i18n.port';
-import type { IPermissionService } from '@application/ports/permission.service.interface';
-import { BusinessSector } from '@domain/entities/business-sector.entity';
+import { InsufficientPermissionsError } from '@application/exceptions/auth.exceptions';
 import {
   BusinessSectorNotFoundError,
   InvalidBusinessSectorDataError,
 } from '@application/exceptions/business-sector.exceptions';
-import { InsufficientPermissionsError } from '@application/exceptions/auth.exceptions';
+import type { IBusinessSectorRepository } from '@application/ports/business-sector.repository.interface';
+import type { I18nService } from '@application/ports/i18n.port';
+import type { Logger } from '@application/ports/logger.port';
+import type { IPermissionService } from '@application/ports/permission.service.interface';
+import { BusinessSector } from '@domain/entities/business-sector.entity';
 
 // Types pour les requêtes et réponses
 export interface UpdateBusinessSectorRequest {

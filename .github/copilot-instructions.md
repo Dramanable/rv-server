@@ -237,18 +237,82 @@ export class ComputeService {
 
 ### 🎯 **ORDRE OBLIGATOIRE DE DÉVELOPPEMENT - TDD STRICT**
 
+**⚠️ RÈGLE FONDAMENTALE : Le workflow part TOUJOURS de la couche Domain, puis Application, puis Infrastructure et à la fin Presentation en mode Test Driven Development.**
+
 **Pour éviter les erreurs de dépendances et garantir une architecture cohérente, TOUJOURS développer dans cet ordre strict avec TDD :**
 
-### 🔄 **Processus TDD par Couche** :
-1. **Red** : Écrire le test qui échoue
-2. **Green** : Écrire le code minimal qui fait passer le test
-3. **Refactor** : Améliorer le code en gardant les tests verts
+### 🔄 **Processus TDD par Couche - OBLIGATOIRE** :
+1. **🔴 RED** : Écrire le test qui échoue pour la fonctionnalité
+2. **🟢 GREEN** : Écrire le code minimal qui fait passer le test
+3. **🔵 REFACTOR** : Améliorer le code en gardant les tests verts
+4. **✅ VALIDATE** : Vérifier que la couche compile et tous ses tests passent
+5. **➡️ NEXT LAYER** : Passer à la couche suivante UNIQUEMENT si la précédente est terminée
 
-### ⚠️ **RÈGLE CRITIQUE : DÉVELOPPEMENT ÉTAPE PAR ÉTAPE**
+### ⚠️ **RÈGLES CRITIQUES NON-NÉGOCIABLES**
 - ❌ **JAMAIS** développer plusieurs fonctionnalités simultanément
-- ✅ **TOUJOURS** une seule fonctionnalité à la fois (ex: Login → Register → Password Reset)
+- ❌ **JAMAIS** passer à la couche suivante si la précédente a des tests qui échouent
+- ❌ **JAMAIS** écrire du code sans test préalable (TDD strict)
+- ❌ **JAMAIS** ignorer les erreurs de compilation d'une couche
+- ✅ **TOUJOURS** une seule fonctionnalité à la fois (ex: CreateUser → UpdateUser → DeleteUser)
 - ✅ **TOUJOURS** finir complètement une couche avant de passer à la suivante
 - ✅ **TOUJOURS** écrire les tests AVANT le code (TDD strict)
+- ✅ **TOUJOURS** valider la compilation après chaque modification
+
+### 📋 **WORKFLOW DÉTAILLÉ PAR COUCHE**
+
+#### **🏗️ Exemple Concret : Fonctionnalité "Create Business"**
+
+**Étape 1️⃣ : DOMAIN** (Obligatoire en premier)
+```bash
+# 1. Créer les tests d'entité Business
+touch src/domain/entities/business.entity.spec.ts
+# 2. Écrire les tests qui échouent (RED)
+# 3. Créer l'entité Business (GREEN)
+# 4. Refactorer si nécessaire (REFACTOR)
+# 5. Valider : npm test -- business.entity.spec.ts
+```
+
+**Étape 2️⃣ : APPLICATION** (Seulement après Domain terminé)
+```bash
+# 1. Créer les tests de use case
+touch src/application/use-cases/business/create-business.use-case.spec.ts
+# 2. Écrire les tests qui échouent (RED)
+# 3. Créer le use case CreateBusinessUseCase (GREEN)
+# 4. Créer l'interface BusinessRepository dans domain/repositories/
+# 5. Refactorer si nécessaire (REFACTOR)
+# 6. Valider : npm test -- create-business.use-case.spec.ts
+```
+
+**Étape 3️⃣ : INFRASTRUCTURE** (Seulement après Application terminé)
+```bash
+# 1. Créer les tests de repository
+touch src/infrastructure/database/repositories/typeorm-business.repository.spec.ts
+# 2. Écrire les tests qui échouent (RED)
+# 3. Créer l'entité ORM BusinessOrmEntity (GREEN)
+# 4. Créer TypeOrmBusinessRepository qui implémente BusinessRepository (GREEN)
+# 5. Configurer l'injection de dépendances (GREEN)
+# 6. Refactorer si nécessaire (REFACTOR)
+# 7. Valider : npm test -- typeorm-business.repository.spec.ts
+```
+
+**Étape 4️⃣ : PRESENTATION** (Seulement après Infrastructure terminé)
+```bash
+# 1. Créer les tests de controller
+touch src/presentation/controllers/business.controller.spec.ts
+# 2. Écrire les tests qui échouent (RED)
+# 3. Créer les DTOs de validation (GREEN)
+# 4. Créer BusinessController (GREEN)
+# 5. Configurer la validation et la documentation Swagger (GREEN)
+# 6. Refactorer si nécessaire (REFACTOR)
+# 7. Valider : npm test -- business.controller.spec.ts
+# 8. Test d'intégration E2E : npm run test:e2e -- business
+```
+
+### 🚨 **VIOLATIONS COURANTES À ÉVITER**
+- **Commencer par le controller** → ❌ Violation de Clean Architecture
+- **Créer l'entité ORM avant l'entité Domain** → ❌ Violation de dépendance
+- **Écrire du code sans test** → ❌ Violation de TDD
+- **Passer à Infrastructure avec des tests Application qui échouent** → ❌ Violation de workflow
 
 #### **1️⃣ DOMAIN (Couche Métier) - EN PREMIER**
 ```
@@ -334,10 +398,52 @@ src/presentation/
 - **Séparation claire** des responsabilités
 - **Évolutivité** et maintenabilité garanties
 
-### 📋 **WORKFLOW PRATIQUE**
+### ✅ **CHECKPOINTS DE VALIDATION OBLIGATOIRES**
+
+**À chaque fin de couche, vérifier OBLIGATOIREMENT :**
+
+#### **🔍 Checkpoint Domain**
+```bash
+# Tests unitaires Domain
+npm test -- --testPathPattern=domain/ --coverage
+# Compilation TypeScript
+npm run build
+# Linting sans erreur
+npm run lint
+# RÉSULTAT ATTENDU : 100% tests passants, 0 erreur compilation, 0 erreur lint
+```
+
+#### **🔍 Checkpoint Application**
+```bash
+# Tests unitaires Application + Domain
+npm test -- --testPathPattern="(domain|application)/" --coverage
+# Vérification des interfaces (ports)
+# RÉSULTAT ATTENDU : Coverage > 80%, toutes les interfaces définies, 0 erreur
+```
+
+#### **� Checkpoint Infrastructure**
+```bash
+# Tests unitaires Infrastructure + couches précédentes
+npm test -- --testPathPattern="(domain|application|infrastructure)/" --coverage
+# Tests d'intégration base de données
+npm run test:integration
+# RÉSULTAT ATTENDU : Connexion DB OK, repositories fonctionnels, DI configuré
+```
+
+#### **🔍 Checkpoint Presentation**
+```bash
+# Tests complets + E2E
+npm test
+npm run test:e2e
+# Test de démarrage application
+npm run start:dev
+# RÉSULTAT ATTENDU : Application démarre, endpoints répondent, documentation Swagger
+```
+
+### �📋 **WORKFLOW PRATIQUE - EXEMPLE CONCRET**
 
 ```typescript
-// 1️⃣ DOMAIN - Créer d'abord l'entité
+// 1️⃣ DOMAIN - Créer d'abord l'entité (avec test RED-GREEN-REFACTOR)
 export class User {
   private constructor(
     private readonly _id: string,
@@ -379,19 +485,174 @@ export class UserController {
 }
 ```
 
-### ⚠️ **INTERDICTIONS ABSOLUES**
+### ⚠️ **INTERDICTIONS ABSOLUES - WORKFLOW TDD**
 
 #### **❌ Ne JAMAIS faire** :
-- Commencer par les contrôleurs (Presentation)
-- Écrire de la logique métier dans Infrastructure
-- Utiliser NestJS dans Domain/Application
-- Créer des dépendances vers les couches supérieures
+- **Commencer par les contrôleurs** (Presentation) → ❌ Violation Clean Architecture
+- **Développer plusieurs couches simultanément** → ❌ Violation TDD
+- **Écrire du code sans test** → ❌ Violation TDD strict
+- **Passer à la couche suivante avec des tests qui échouent** → ❌ Violation workflow
+- **Écrire de la logique métier dans Infrastructure** → ❌ Violation séparation
+- **Utiliser NestJS dans Domain/Application** → ❌ Violation indépendance framework
+- **Créer des dépendances vers les couches supérieures** → ❌ Violation Dependency Rule
+- **Ignorer les erreurs de compilation/lint** → ❌ Violation qualité code
 
-#### **✅ TOUJOURS faire** :
-- Respecter l'ordre Domain → Application → Infrastructure → Presentation
-- Tester chaque couche avant de passer à la suivante
-- Valider la compilation à chaque étape
-- Documenter les interfaces (ports) dans Application
+#### **✅ TOUJOURS faire - WORKFLOW OBLIGATOIRE** :
+- **Respecter l'ordre strict** : Domain → Application → Infrastructure → Presentation
+- **TDD à chaque étape** : RED → GREEN → REFACTOR → VALIDATE
+- **Tester chaque couche complètement** avant de passer à la suivante
+- **Valider compilation + lint** à chaque modification
+- **Documenter les interfaces (ports)** dans Application
+- **Une fonctionnalité à la fois** jusqu'à completion E2E
+- **Checkpoints de validation** obligatoires entre couches
+
+#### **🚨 DÉTECTION PRÉCOCE DES VIOLATIONS**
+
+```bash
+# Vérifier les imports interdits dans Domain/Application
+grep -r "@nestjs\|typeorm\|express" src/domain/ src/application/
+# RÉSULTAT ATTENDU : Aucun résultat (0 ligne)
+
+# Vérifier les dépendances circulaires
+npx madge --circular src/
+# RÉSULTAT ATTENDU : No circular dependencies found
+
+# Vérifier la structure des tests par couche
+find src/ -name "*.spec.ts" | head -20
+# RÉSULTAT ATTENDU : Tests présents dans chaque couche
+```
+
+#### **🔄 CORRECTION DES VIOLATIONS**
+
+Si une violation est détectée :
+1. **STOP** le développement immédiatement
+2. **ROLLBACK** aux derniers tests passants
+3. **ANALYSER** la cause de la violation
+4. **REPRENDRE** depuis la dernière couche validée
+5. **APPLIQUER** le workflow TDD strict
+
+### 🧪 **TEST-DRIVEN DEVELOPMENT (TDD) - PRATIQUES OBLIGATOIRES**
+
+#### **🎯 Cycle TDD Red-Green-Refactor**
+
+**Pour CHAQUE fonctionnalité, suivre ce cycle dans CHAQUE couche :**
+
+1. **🔴 RED Phase** :
+   ```bash
+   # Écrire le test qui échoue AVANT le code
+   npm test -- some.spec.ts
+   # RÉSULTAT ATTENDU : Test fails (RED)
+   ```
+
+2. **🟢 GREEN Phase** :
+   ```bash
+   # Écrire le code minimal qui fait passer le test
+   npm test -- some.spec.ts
+   # RÉSULTAT ATTENDU : Test passes (GREEN)
+   ```
+
+3. **🔵 REFACTOR Phase** :
+   ```bash
+   # Améliorer le code en gardant les tests verts
+   npm test -- some.spec.ts
+   npm run lint
+   # RÉSULTAT ATTENDU : Tests pass + code quality
+   ```
+
+#### **📋 Structure de Tests par Couche**
+
+**Domain Layer Tests** :
+```typescript
+// ✅ Tests d'entités avec règles métier
+describe('User Entity', () => {
+  it('should create user with valid data', () => {
+    // Test de création valide
+  });
+
+  it('should throw error with invalid email', () => {
+    // Test de validation métier
+  });
+});
+
+// ✅ Tests de Value Objects
+describe('Email Value Object', () => {
+  it('should validate email format', () => {
+    // Test de validation format
+  });
+});
+```
+
+**Application Layer Tests** :
+```typescript
+// ✅ Tests de Use Cases avec mocks
+describe('CreateUserUseCase', () => {
+  let useCase: CreateUserUseCase;
+  let mockUserRepo: jest.Mocked<IUserRepository>;
+
+  beforeEach(() => {
+    mockUserRepo = createMockUserRepository();
+    useCase = new CreateUserUseCase(mockUserRepo);
+  });
+
+  it('should create user successfully', async () => {
+    // Test du cas nominal
+  });
+});
+```
+
+**Infrastructure Layer Tests** :
+```typescript
+// ✅ Tests d'intégration avec base de données
+describe('TypeOrmUserRepository', () => {
+  let repository: TypeOrmUserRepository;
+  let connection: Connection;
+
+  beforeAll(async () => {
+    connection = await createTestConnection();
+    repository = new TypeOrmUserRepository(connection);
+  });
+
+  it('should save user to database', async () => {
+    // Test de persistence réelle
+  });
+});
+```
+
+**Presentation Layer Tests** :
+```typescript
+// ✅ Tests E2E complets
+describe('UserController (e2e)', () => {
+  let app: INestApplication;
+
+  beforeAll(async () => {
+    app = await createTestApp();
+  });
+
+  it('/users (POST)', () => {
+    return request(app.getHttpServer())
+      .post('/users')
+      .send(validUserDto)
+      .expect(201);
+  });
+});
+```
+
+#### **🎯 Couverture de Tests Minimale**
+
+- **Domain** : 95%+ coverage obligatoire
+- **Application** : 90%+ coverage obligatoire
+- **Infrastructure** : 80%+ coverage acceptable
+- **Presentation** : 85%+ coverage avec E2E
+
+#### **⚠️ RÈGLES TDD NON-NÉGOCIABLES**
+
+- ❌ **ZÉRO code sans test préalable**
+- ❌ **ZÉRO test ignoré (.skip ou .todo)**
+- ❌ **ZÉRO commit avec tests qui échouent**
+- ✅ **Tests AVANT le code (RED-GREEN-REFACTOR)**
+- ✅ **Un test = une responsabilité**
+- ✅ **Tests lisibles et maintenables**
+- ✅ **Mocks pour les dépendances externes**
 
 ## 🏛️ **Clean Architecture - Principes Fondamentaux d'Uncle Bob**
 
@@ -483,6 +744,390 @@ export class UserController {
 ```
 
 **Cette règle est NON-NÉGOCIABLE pour maintenir les principes de Clean Architecture !**
+
+## 🗺️ **MAPPERS - PATTERN OBLIGATOIRE POUR CONVERSION DE DONNÉES**
+
+### 🎯 **RÈGLE CRITIQUE : ZÉRO LOGIQUE DE MAPPING DANS LES ENTITÉS ORM**
+
+**❌ VIOLATION ARCHITECTURALE MAJEURE :**
+Les entités ORM (TypeORM, Prisma, etc.) NE DOIVENT JAMAIS contenir de logique de conversion vers les entités Domain. Cette responsabilité appartient exclusivement aux Mappers dédiés dans `/infrastructure/mappers/`.
+
+### 🚫 **INTERDICTIONS ABSOLUES**
+
+```typescript
+// ❌ STRICTEMENT INTERDIT - Logique métier dans l'entité ORM
+@Entity('users')
+export class UserOrmEntity {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+
+  // ❌ JAMAIS de méthode toDomainEntity() dans l'entité ORM
+  toDomainEntity(): User {
+    const email = Email.create(this.email);
+    return User.create(email, this.name); // VIOLATION !
+  }
+
+  // ❌ JAMAIS d'imports domaine dans les entités ORM
+  // import { User } from '../../../domain/entities/user.entity';
+}
+```
+
+### ✅ **PATTERN CORRECT : MAPPERS DÉDIÉS**
+
+```typescript
+// ✅ EXCELLENT - Mapper dédié dans /infrastructure/mappers/
+export class UserOrmMapper {
+  /**
+   * Convertit une entité Domain vers ORM pour persistence
+   */
+  static toOrmEntity(domain: User): UserOrmEntity {
+    const ormEntity = new UserOrmEntity();
+    ormEntity.id = domain.getId().getValue();
+    ormEntity.email = domain.getEmail().getValue();
+    ormEntity.name = domain.getName();
+    ormEntity.role = domain.getRole();
+    ormEntity.created_at = domain.getCreatedAt();
+    ormEntity.updated_at = domain.getUpdatedAt();
+    return ormEntity;
+  }
+
+  /**
+   * Convertit une entité ORM vers Domain depuis persistence
+   */
+  static toDomainEntity(orm: UserOrmEntity): User {
+    const email = Email.create(orm.email);
+    const userId = UserId.fromString(orm.id);
+    
+    return User.reconstruct({
+      id: userId,
+      email: email,
+      name: orm.name,
+      role: orm.role,
+      createdAt: orm.created_at,
+      updatedAt: orm.updated_at,
+    });
+  }
+
+  /**
+   * Convertit liste ORM vers Domain
+   */
+  static toDomainEntities(ormEntities: UserOrmEntity[]): User[] {
+    return ormEntities.map(orm => this.toDomainEntity(orm));
+  }
+}
+```
+
+### 📁 **STRUCTURE OBLIGATOIRE DES MAPPERS**
+
+```
+src/infrastructure/mappers/
+├── orm-mappers.ts           # Export centralisé de tous les mappers
+├── user-orm.mapper.ts       # Mapper User : Domain ↔ ORM
+├── business-orm.mapper.ts   # Mapper Business : Domain ↔ ORM
+├── service-orm.mapper.ts    # Mapper Service : Domain ↔ ORM
+└── staff-orm.mapper.ts      # Mapper Staff : Domain ↔ ORM
+```
+
+### 🔄 **RESPONSABILITÉS DES MAPPERS**
+
+#### **1️⃣ Conversion Domain → ORM (Persistence)**
+```typescript
+// Pour les opérations CREATE et UPDATE
+static toOrmEntity(domain: DomainEntity): OrmEntity {
+  // Conversion des Value Objects vers types primitifs
+  // Gestion des relations et foreign keys
+  // Préparation pour persistence en base
+}
+```
+
+#### **2️⃣ Conversion ORM → Domain (Reconstruction)**
+```typescript
+// Pour les opérations READ et hydratation
+static toDomainEntity(orm: OrmEntity): DomainEntity {
+  // Reconstruction des Value Objects depuis primitifs
+  // Validation et création des entités Domain
+  // Préservation de l'intégrité métier
+}
+```
+
+#### **3️⃣ Conversion Batch (Collections)**
+```typescript
+// Pour les opérations sur collections
+static toDomainEntities(ormList: OrmEntity[]): DomainEntity[] {
+  return ormList.map(orm => this.toDomainEntity(orm));
+}
+
+static toOrmEntities(domainList: DomainEntity[]): OrmEntity[] {
+  return domainList.map(domain => this.toOrmEntity(domain));
+}
+```
+
+### 🏗️ **UTILISATION DANS LES REPOSITORIES**
+
+```typescript
+// ✅ EXCELLENT - Usage correct des mappers dans Repository
+@Injectable()
+export class TypeOrmUserRepository implements IUserRepository {
+  constructor(
+    @InjectRepository(UserOrmEntity)
+    private readonly repository: Repository<UserOrmEntity>,
+  ) {}
+
+  async save(user: User): Promise<User> {
+    // 1. Conversion Domain → ORM via Mapper
+    const ormEntity = UserOrmMapper.toOrmEntity(user);
+    
+    // 2. Persistence en base
+    const savedOrm = await this.repository.save(ormEntity);
+    
+    // 3. Conversion ORM → Domain via Mapper
+    return UserOrmMapper.toDomainEntity(savedOrm);
+  }
+
+  async findById(id: UserId): Promise<User | null> {
+    // 1. Requête ORM
+    const ormEntity = await this.repository.findOne({
+      where: { id: id.getValue() }
+    });
+    
+    if (!ormEntity) return null;
+    
+    // 2. Conversion ORM → Domain via Mapper
+    return UserOrmMapper.toDomainEntity(ormEntity);
+  }
+
+  async findAll(criteria: UserCriteria): Promise<User[]> {
+    // 1. Requête ORM avec critères
+    const ormEntities = await this.repository.find(/* critères */);
+    
+    // 2. Conversion batch via Mapper
+    return UserOrmMapper.toDomainEntities(ormEntities);
+  }
+}
+```
+
+### 🚨 **ERREURS COURANTES À ÉVITER**
+
+#### **❌ Import Domain dans Entité ORM**
+```typescript
+// VIOLATION - Ne jamais importer Domain dans ORM
+import { User } from '../../../domain/entities/user.entity'; // INTERDIT !
+
+@Entity('users')
+export class UserOrmEntity {
+  // Cette entité ne doit connaître QUE TypeORM
+}
+```
+
+#### **❌ Logique Métier dans Mapper**
+```typescript
+// VIOLATION - Mapper ne doit contenir QUE de la conversion
+static toDomainEntity(orm: UserOrmEntity): User {
+  const email = Email.create(orm.email);
+  
+  // ❌ INTERDIT - Pas de logique métier dans mapper
+  if (email.getValue().includes('admin')) {
+    user.grantAdminRights(); // VIOLATION !
+  }
+  
+  return user;
+}
+```
+
+#### **❌ Conversion Directe sans Mapper**
+```typescript
+// VIOLATION - Toujours passer par le mapper
+async save(user: User): Promise<User> {
+  // ❌ INTERDIT - Conversion manuelle
+  const ormEntity = new UserOrmEntity();
+  ormEntity.email = user.getEmail().getValue(); // VIOLATION !
+  
+  // ✅ CORRECT - Utiliser le mapper
+  const ormEntity = UserOrmMapper.toOrmEntity(user);
+}
+```
+
+### 📋 **CHECKLIST MAPPERS OBLIGATOIRE**
+
+- [ ] ✅ **Zéro méthode de mapping dans entités ORM**
+- [ ] ✅ **Mappers dédiés dans `/infrastructure/mappers/`**
+- [ ] ✅ **Méthodes statiques `toOrmEntity()` et `toDomainEntity()`**
+- [ ] ✅ **Support des collections avec `toDomainEntities()`**
+- [ ] ✅ **Aucun import Domain dans entités ORM**
+- [ ] ✅ **Aucune logique métier dans mappers**
+- [ ] ✅ **Validation par les tests unitaires des mappers**
+- [ ] ✅ **Export centralisé dans `orm-mappers.ts`**
+
+### 🎯 **TESTS UNITAIRES MAPPERS OBLIGATOIRES**
+
+```typescript
+// ✅ Tests complets pour chaque mapper
+describe('UserOrmMapper', () => {
+  describe('toDomainEntity', () => {
+    it('should convert ORM entity to Domain entity', () => {
+      // Given
+      const ormEntity = createValidUserOrmEntity();
+      
+      // When
+      const domainEntity = UserOrmMapper.toDomainEntity(ormEntity);
+      
+      // Then
+      expect(domainEntity).toBeInstanceOf(User);
+      expect(domainEntity.getEmail().getValue()).toBe(ormEntity.email);
+    });
+
+    it('should handle null values correctly', () => {
+      // Test des cas limites et valeurs nulles
+    });
+  });
+
+  describe('toOrmEntity', () => {
+    it('should convert Domain entity to ORM entity', () => {
+      // Test de la conversion inverse
+    });
+  });
+
+  describe('toDomainEntities', () => {
+    it('should convert array of ORM entities', () => {
+      // Test des collections
+    });
+  });
+});
+```
+
+**Cette séparation stricte garantit une architecture propre, maintenable et respectueuse des principes de Clean Architecture !**
+
+### 💎 **VALUE OBJECTS - BONNES PRATIQUES DANS LES MAPPERS**
+
+#### **🎯 RÈGLE IMPORTANTE : RECONSTRUCTION CORRECTE DES VALUE OBJECTS**
+
+Les Value Objects doivent être correctement reconstruits dans les mappers en utilisant les bonnes méthodes factory :
+
+```typescript
+// ✅ EXCELLENT - Reconstruction correcte des Value Objects
+export class UserOrmMapper {
+  static toDomainEntity(orm: UserOrmEntity): User {
+    // ✅ Utilisation des méthodes factory appropriées
+    const userId = UserId.fromString(orm.id);
+    const email = Email.create(orm.email); // Pour validation
+    const phone = orm.phone ? Phone.create(orm.phone) : undefined;
+    
+    return User.reconstruct({
+      id: userId,
+      email: email,
+      name: orm.name,
+      phone: phone,
+      createdAt: orm.created_at,
+      updatedAt: orm.updated_at,
+    });
+  }
+
+  static toOrmEntity(domain: User): UserOrmEntity {
+    const orm = new UserOrmEntity();
+    
+    // ✅ Extraction des valeurs primitives
+    orm.id = domain.getId().getValue();
+    orm.email = domain.getEmail().getValue();
+    orm.name = domain.getName();
+    orm.phone = domain.getPhone()?.getValue();
+    orm.created_at = domain.getCreatedAt();
+    orm.updated_at = domain.getUpdatedAt();
+    
+    return orm;
+  }
+}
+```
+
+#### **🚨 ERREURS COURANTES AVEC VALUE OBJECTS**
+
+```typescript
+// ❌ INTERDIT - Construction directe sans validation
+const email = new Email(orm.email); // VIOLATION !
+
+// ✅ CORRECT - Utilisation de la méthode factory
+const email = Email.create(orm.email); // Validation automatique
+
+// ❌ INTERDIT - Reconstruction incorrecte d'ID
+const userId = new UserId(orm.id); // VIOLATION !
+
+// ✅ CORRECT - Méthode factory appropriée
+const userId = UserId.fromString(orm.id); // Type-safe
+
+// ❌ INTERDIT - Gestion incorrecte des nullable
+const phone = Phone.create(orm.phone); // Peut planter si null !
+
+// ✅ CORRECT - Gestion sécurisée des nullable
+const phone = orm.phone ? Phone.create(orm.phone) : undefined;
+```
+
+#### **📋 MAPPING PATTERNS PAR TYPE DE VALUE OBJECT**
+
+```typescript
+// 🆔 ID Value Objects
+const userId = UserId.fromString(orm.user_id);
+const businessId = BusinessId.fromString(orm.business_id);
+const serviceId = ServiceId.fromString(orm.service_id);
+
+// 📧 Email (avec validation)
+const email = Email.create(orm.email);
+
+// 📱 Phone (nullable)
+const phone = orm.phone ? Phone.create(orm.phone) : undefined;
+
+// 💰 Money (complexe)
+const price = Money.create(orm.price_amount, orm.price_currency);
+
+// 🌐 URL (avec validation)
+const profileImage = orm.profile_image_url 
+  ? FileUrl.create(orm.profile_image_url) 
+  : undefined;
+
+// 📅 Dates (primitives)
+const createdAt = orm.created_at; // Date directe
+const updatedAt = orm.updated_at; // Date directe
+```
+
+#### **✅ TEMPLATE MAPPER STANDARD**
+
+```typescript
+export class {Entity}OrmMapper {
+  static toDomainEntity(orm: {Entity}OrmEntity): {Entity} {
+    // 1. Reconstruction des Value Objects avec validation
+    const id = {Entity}Id.fromString(orm.id);
+    const email = Email.create(orm.email);
+    const phone = orm.phone ? Phone.create(orm.phone) : undefined;
+    
+    // 2. Reconstruction de l'entité Domain
+    return {Entity}.reconstruct({
+      id,
+      email,
+      phone,
+      // Autres propriétés...
+      createdAt: orm.created_at,
+      updatedAt: orm.updated_at,
+    });
+  }
+
+  static toOrmEntity(domain: {Entity}): {Entity}OrmEntity {
+    const orm = new {Entity}OrmEntity();
+    
+    // 1. Extraction des valeurs primitives
+    orm.id = domain.getId().getValue();
+    orm.email = domain.getEmail().getValue();
+    orm.phone = domain.getPhone()?.getValue();
+    
+    // 2. Dates et primitives directes
+    orm.created_at = domain.getCreatedAt();
+    orm.updated_at = domain.getUpdatedAt();
+    
+    return orm;
+  }
+
+  static toDomainEntities(ormList: {Entity}OrmEntity[]): {Entity}[] {
+    return ormList.map(orm => this.toDomainEntity(orm));
+  }
+}
+```
 
 ### 🏗️ **Les 4 Couches Principales**
 
@@ -850,7 +1495,7 @@ export interface CreateUserRequest {
 export interface CreateUserResponse {
   readonly id: string;
   readonly email: string;
-  readonly name: string;  
+  readonly name: string;
   readonly role: UserRole;
   readonly createdAt: Date;
 }
@@ -905,7 +1550,7 @@ export function parseUserFromRequest(req: unknown): User {
   return req; // TypeScript sait maintenant que c'est un User
 }
 
-// ✅ PATTERN RECOMMANDÉ - API Responses typées  
+// ✅ PATTERN RECOMMANDÉ - API Responses typées
 export interface SafeApiResponse<T = unknown> {
   readonly success: boolean;
   readonly data: T;
@@ -928,7 +1573,7 @@ export interface SafeApiResponse<T = unknown> {
 
 - **`any`** : Usage strictement interdit sauf cas exceptionnels documentés
 - **`as any`** : Casting dangereux interdit
-- **`any[]`** : Tableaux non typés interdits  
+- **`any[]`** : Tableaux non typés interdits
 - **`Record<string, any>`** : Objets non typés interdits
 - **`function(param: any)`** : Paramètres non typés interdits
 
@@ -1210,7 +1855,7 @@ npm test
 ```typescript
 // ✅ CORRECT - Pattern standardisé pour TOUTES les ressources
 @Post('list')
-@ApiOperation({ 
+@ApiOperation({
   summary: 'List {ResourceName}s with advanced search and pagination',
   description: 'Provides comprehensive search, filtering, and pagination for {ResourceName}s'
 })
@@ -1346,7 +1991,7 @@ export class List{ResourceName}sUseCase {
 
 - [ ] **Endpoint POST /api/v1/{resource}/list** implémenté
 - [ ] **DTO de requête** avec pagination, tri, recherche, filtres
-- [ ] **DTO de réponse** avec metadata pagination cohérente  
+- [ ] **DTO de réponse** avec metadata pagination cohérente
 - [ ] **Use Case dédié** pour la logique de recherche
 - [ ] **Repository method findAll()** avec support filtres avancés
 - [ ] **Mapper** pour conversion DTO ↔ Domain ↔ Response
@@ -1385,7 +2030,7 @@ export class List{ResourceName}sUseCase {
 // ✅ STRUCTURE ENDPOINT STANDARDISÉE
 @Controller('api/v1/{resources}') // Toujours au pluriel
 export class {Resource}Controller {
-  
+
   // 🔍 RECHERCHE & LISTE (POST pour filtres complexes)
   @Post('list') // ✅ OBLIGATOIRE pour toutes les ressources
   async list(@Body() dto: List{Resource}sDto): Promise<List{Resource}ResponseDto>
@@ -1507,11 +2152,11 @@ export enum {Resource}ErrorCodes {
   INVALID_DATA = '{RESOURCE}_INVALID_DATA',
   DUPLICATE_ENTRY = '{RESOURCE}_DUPLICATE_ENTRY',
   PERMISSION_DENIED = '{RESOURCE}_PERMISSION_DENIED',
-  
+
   // Erreurs métier spécifiques
   CANNOT_DELETE_REFERENCED = '{RESOURCE}_CANNOT_DELETE_REFERENCED',
   STATUS_TRANSITION_INVALID = '{RESOURCE}_STATUS_TRANSITION_INVALID',
-  
+
   // Erreurs système (5xx)
   REPOSITORY_ERROR = '{RESOURCE}_REPOSITORY_ERROR',
   EXTERNAL_SERVICE_ERROR = '{RESOURCE}_EXTERNAL_SERVICE_ERROR',
@@ -1537,29 +2182,29 @@ export const ERROR_HTTP_STATUS_MAP = {
   INVALID_DATA: 400,
   VALIDATION_ERROR: 400,
   BUSINESS_RULE_VIOLATION: 400,
-  
+
   // 401 - Unauthorized
   AUTHENTICATION_REQUIRED: 401,
   INVALID_CREDENTIALS: 401,
   TOKEN_EXPIRED: 401,
-  
+
   // 403 - Forbidden
   PERMISSION_DENIED: 403,
   INSUFFICIENT_PERMISSIONS: 403,
-  
+
   // 404 - Not Found
   NOT_FOUND: 404,
   RESOURCE_NOT_FOUND: 404,
-  
+
   // 409 - Conflict
   DUPLICATE_ENTRY: 409,
   RESOURCE_ALREADY_EXISTS: 409,
   CONCURRENT_MODIFICATION: 409,
-  
+
   // 422 - Unprocessable Entity
   CANNOT_DELETE_REFERENCED: 422,
   STATUS_TRANSITION_INVALID: 422,
-  
+
   // 500 - Internal Server Error
   REPOSITORY_ERROR: 500,
   EXTERNAL_SERVICE_ERROR: 500,
@@ -1577,7 +2222,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
-    
+
     const errorResponse: ApiErrorResponse = {
       success: false,
       error: {
@@ -1590,7 +2235,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         correlationId: this.getCorrelationId(request),
       },
     };
-    
+
     const statusCode = this.getHttpStatus(exception);
     response.status(statusCode).json(errorResponse);
   }
@@ -1637,11 +2282,11 @@ export class GlobalExceptionFilter implements ExceptionFilter {
 describe('{Resource}Controller (e2e)', () => {
   let app: INestApplication;
   let authToken: string;
-  
+
   beforeAll(async () => {
     // Setup application et authentification
   });
-  
+
   describe('POST /api/v1/{resources}/list', () => {
     it('should return paginated list with default parameters', async () => {
       const response = await request(app.getHttpServer())
@@ -1649,7 +2294,7 @@ describe('{Resource}Controller (e2e)', () => {
         .set('Authorization', `Bearer ${authToken}`)
         .send({})
         .expect(200);
-        
+
       expect(response.body).toMatchObject({
         success: true,
         data: expect.any(Array),
@@ -1663,7 +2308,7 @@ describe('{Resource}Controller (e2e)', () => {
         },
       });
     });
-    
+
     it('should apply search filters correctly', async () => {
       const response = await request(app.getHttpServer())
         .post('/api/v1/{resources}/list')
@@ -1675,11 +2320,11 @@ describe('{Resource}Controller (e2e)', () => {
           limit: 5,
         })
         .expect(200);
-        
+
       expect(response.body.meta.itemsPerPage).toBe(5);
       // Vérifier que les résultats correspondent au filtre
     });
-    
+
     it('should enforce pagination limits', async () => {
       await request(app.getHttpServer())
         .post('/api/v1/{resources}/list')
@@ -1687,7 +2332,7 @@ describe('{Resource}Controller (e2e)', () => {
         .send({ limit: 150 }) // > 100
         .expect(400);
     });
-    
+
     it('should require authentication', async () => {
       await request(app.getHttpServer())
         .post('/api/v1/{resources}/list')
@@ -1695,14 +2340,14 @@ describe('{Resource}Controller (e2e)', () => {
         .expect(401);
     });
   });
-  
+
   describe('GET /api/v1/{resources}/:id', () => {
     it('should return resource by ID', async () => {
       const response = await request(app.getHttpServer())
         .get('/api/v1/{resources}/valid-uuid')
         .set('Authorization', `Bearer ${authToken}`)
         .expect(200);
-        
+
       expect(response.body).toMatchObject({
         success: true,
         data: {
@@ -1711,13 +2356,13 @@ describe('{Resource}Controller (e2e)', () => {
         },
       });
     });
-    
+
     it('should return 404 for non-existent resource', async () => {
       const response = await request(app.getHttpServer())
         .get('/api/v1/{resources}/non-existent-uuid')
         .set('Authorization', `Bearer ${authToken}`)
         .expect(404);
-        
+
       expect(response.body).toMatchObject({
         success: false,
         error: {
@@ -1727,19 +2372,19 @@ describe('{Resource}Controller (e2e)', () => {
       });
     });
   });
-  
+
   describe('POST /api/v1/{resources}', () => {
     it('should create resource with valid data', async () => {
       const createDto = {
         // Données valides pour création
       };
-      
+
       const response = await request(app.getHttpServer())
         .post('/api/v1/{resources}')
         .set('Authorization', `Bearer ${authToken}`)
         .send(createDto)
         .expect(201);
-        
+
       expect(response.body).toMatchObject({
         success: true,
         data: {
@@ -1750,41 +2395,41 @@ describe('{Resource}Controller (e2e)', () => {
         },
       });
     });
-    
+
     it('should validate required fields', async () => {
       const response = await request(app.getHttpServer())
         .post('/api/v1/{resources}')
         .set('Authorization', `Bearer ${authToken}`)
         .send({}) // Données manquantes
         .expect(400);
-        
+
       expect(response.body.error.code).toBe('{RESOURCE}_INVALID_DATA');
     });
   });
-  
+
   describe('PUT /api/v1/{resources}/:id', () => {
     it('should update resource with valid data', async () => {
       const updateDto = {
         // Données de mise à jour
       };
-      
+
       const response = await request(app.getHttpServer())
         .put('/api/v1/{resources}/valid-uuid')
         .set('Authorization', `Bearer ${authToken}`)
         .send(updateDto)
         .expect(200);
-        
+
       expect(response.body.data).toMatchObject(updateDto);
     });
   });
-  
+
   describe('DELETE /api/v1/{resources}/:id', () => {
     it('should delete resource successfully', async () => {
       await request(app.getHttpServer())
         .delete('/api/v1/{resources}/valid-uuid')
         .set('Authorization', `Bearer ${authToken}`)
         .expect(200);
-        
+
       // Vérifier que la ressource est supprimée
       await request(app.getHttpServer())
         .get('/api/v1/{resources}/valid-uuid')
@@ -1805,19 +2450,19 @@ export class {Resource}TestDataFactory {
       // Données valides minimales
     };
   }
-  
+
   static createInvalid{Resource}Data(): Partial<Create{Resource}Dto> {
     return {
       // Données invalides pour tests de validation
     };
   }
-  
+
   static createUpdate{Resource}Data(): Update{Resource}Dto {
     return {
       // Données de mise à jour
     };
   }
-  
+
   static createList{Resource}Filters(): List{Resource}sDto {
     return {
       search: 'test',
@@ -1842,13 +2487,13 @@ const API_TEST_COVERAGE_CHECKLIST = {
   'POST /': ['success', 'validation', 'auth', 'permissions', 'duplicates'],
   'PUT /:id': ['success', 'validation', 'not_found', 'auth', 'permissions'],
   'DELETE /:id': ['success', 'not_found', 'auth', 'permissions', 'constraints'],
-  
+
   // Cas d'erreur obligatoires
   error_handling: ['400', '401', '403', '404', '409', '422', '500'],
-  
+
   // Validations métier
   business_rules: ['required_fields', 'format_validation', 'constraints'],
-  
+
   // Sécurité
   security: ['authentication', 'authorization', 'input_sanitization'],
 } as const;

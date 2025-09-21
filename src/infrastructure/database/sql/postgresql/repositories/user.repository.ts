@@ -6,7 +6,7 @@
 
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository as TypeOrmRepository, DataSource } from 'typeorm';
+import { DataSource, Repository as TypeOrmRepository } from 'typeorm';
 
 // Domain interfaces
 import { UserRepository } from '@domain/repositories/user.repository.interface';
@@ -17,12 +17,9 @@ import { UserRole } from '@shared/enums/user-role.enum';
 import { UserOrmEntity } from '../entities/user-orm.entity';
 
 // Types
-import {
-  PaginatedResult,
-  PaginationMeta,
-} from '@shared/types/pagination.types';
-import { UserQueryParams } from '@shared/types/user-query.types';
 import { User } from '@domain/entities/user.entity';
+import { PaginatedResult } from '@shared/types/pagination.types';
+import { UserQueryParams } from '@shared/types/user-query.types';
 
 /**
  * 🗄️ TypeORM User Repository Implementation

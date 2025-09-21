@@ -4,20 +4,20 @@
  * Implémentation concrète du repository BusinessSector avec TypeORM
  */
 
-import { Repository } from 'typeorm';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Injectable, Inject } from '@nestjs/common';
+import { Repository } from 'typeorm';
 
 import type {
-  IBusinessSectorRepository,
-  BusinessSectorQueryOptions,
-  BusinessSectorListResult,
   BusinessSectorFilters,
+  BusinessSectorListResult,
+  BusinessSectorQueryOptions,
+  IBusinessSectorRepository,
 } from '../../../../../application/ports/business-sector.repository.interface';
-import { BusinessSector } from '../../../../../domain/entities/business-sector.entity';
-import { BusinessSectorOrmEntity } from '../entities/business-sector-orm.entity';
 import type { Logger } from '../../../../../application/ports/logger.port';
+import { BusinessSector } from '../../../../../domain/entities/business-sector.entity';
 import { TOKENS } from '../../../../../shared/constants/injection-tokens';
+import { BusinessSectorOrmEntity } from '../entities/business-sector-orm.entity';
 
 @Injectable()
 export class TypeOrmBusinessSectorRepository

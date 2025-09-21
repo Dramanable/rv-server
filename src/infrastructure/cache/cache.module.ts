@@ -2,17 +2,17 @@
  * 🗄️ CACHE MODULE - Module Redis pour le cache
  */
 
+import { AppConfigService } from '@infrastructure/config/app-config.service';
+import { SimpleCacheService } from '@infrastructure/services/simple-cache.service';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import Redis from 'ioredis';
-import { SimpleCacheService } from '@infrastructure/services/simple-cache.service';
 import { RedisUserCacheAdapter } from './redis-user-cache.adapter';
-import { AppConfigService } from '@infrastructure/config/app-config.service';
 
-import { PinoLoggerModule } from '@infrastructure/logging/pino-logger.module';
-import { AuthInfrastructureModule } from '../modules/auth-infrastructure.module';
-import { TOKENS } from '@shared/constants/injection-tokens';
 import type { I18nService } from '@application/ports/i18n.port';
+import { PinoLoggerModule } from '@infrastructure/logging/pino-logger.module';
+import { TOKENS } from '@shared/constants/injection-tokens';
+import { AuthInfrastructureModule } from '../modules/auth-infrastructure.module';
 
 // Application Services
 import { UserCacheService } from '@application/services/user-cache.service';

@@ -17,7 +17,6 @@ import { AuthInfrastructureModule } from './modules/auth-infrastructure.module';
 import { UseCasesModule } from './modules/use-cases.module';
 
 // Shared constants
-import { TOKENS } from '@shared/constants/injection-tokens';
 
 @Module({
   imports: [

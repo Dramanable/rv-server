@@ -1,6 +1,6 @@
 import { Service } from '../entities/service.entity';
-import { ServiceId } from '../value-objects/service-id.value-object';
 import { BusinessId } from '../value-objects/business-id.value-object';
+import { ServiceId } from '../value-objects/service-id.value-object';
 import { UserId } from '../value-objects/user-id.value-object';
 
 export const SERVICE_REPOSITORY = 'SERVICE_REPOSITORY';
@@ -59,6 +59,11 @@ export interface ServiceRepository {
    * Delete service
    */
   delete(id: ServiceId): Promise<void>;
+
+  /**
+   * Find service by name in a business
+   */
+  findByName(businessId: BusinessId, name: string): Promise<Service | null>;
 
   /**
    * Check if service name exists for business

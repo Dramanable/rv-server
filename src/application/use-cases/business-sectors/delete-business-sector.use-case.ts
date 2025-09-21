@@ -5,15 +5,15 @@
  * avec validation des permissions et des règles métier.
  */
 
-import { BusinessSector } from '@domain/entities/business-sector.entity';
-import { IBusinessSectorRepository } from '@application/ports/business-sector.repository.interface';
-import { IPermissionService } from '@application/ports/permission.service.interface';
-import { Logger } from '@application/ports/logger.port';
-import {
-  BusinessSectorNotFoundError,
-  BusinessSectorInUseError,
-} from '@application/exceptions/business-sector.exceptions';
 import { InsufficientPermissionsError } from '@application/exceptions/auth.exceptions';
+import {
+  BusinessSectorInUseError,
+  BusinessSectorNotFoundError,
+} from '@application/exceptions/business-sector.exceptions';
+import { IBusinessSectorRepository } from '@application/ports/business-sector.repository.interface';
+import { Logger } from '@application/ports/logger.port';
+import { IPermissionService } from '@application/ports/permission.service.interface';
+import { BusinessSector } from '@domain/entities/business-sector.entity';
 import { Permission } from '@shared/enums/permission.enum';
 
 /**

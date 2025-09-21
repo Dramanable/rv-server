@@ -6,19 +6,21 @@
  */
 
 import {
-  ListUsersUseCase,
-  type ListUsersRequest,
-} from '../../../../../application/use-cases/users/list-users.use-case';
-import { UserRole } from '../../../../../shared/enums/user-role.enum';
-import { User } from '../../../../../domain/entities/user.entity';
-import { Email } from '../../../../../domain/value-objects/email.vo';
-import {
   ForbiddenError,
   UserNotFoundError,
 } from '../../../../../application/exceptions/auth.exceptions';
-import { createMockUserRepository } from '../../../../../application/mocks/typed-mocks';
-import { createMockLogger } from '../../../../../application/mocks/typed-mocks';
-import { createMockI18nService } from '../../../../../application/mocks/typed-mocks';
+import {
+  createMockI18nService,
+  createMockLogger,
+  createMockUserRepository,
+} from '../../../../../application/mocks/typed-mocks';
+import {
+  ListUsersUseCase,
+  type ListUsersRequest,
+} from '../../../../../application/use-cases/users/list-users.use-case';
+import { User } from '../../../../../domain/entities/user.entity';
+import { Email } from '../../../../../domain/value-objects/email.vo';
+import { UserRole } from '../../../../../shared/enums/user-role.enum';
 
 describe('ListUsersUseCase', () => {
   let listUsersUseCase: ListUsersUseCase;

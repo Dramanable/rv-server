@@ -7,17 +7,17 @@
  * @since 2024
  */
 
-import { ListBusinessSectorsUseCase } from '@application/use-cases/business-sectors/list-business-sectors.use-case';
-import {
-  IBusinessSectorRepository,
-  BusinessSectorListResult,
-} from '@application/ports/business-sector.repository.interface';
-import { IPermissionService } from '@application/ports/permission.service.interface';
-import { Logger } from '@application/ports/logger.port';
-import { I18nService } from '@application/ports/i18n.port';
-import { BusinessSector } from '@domain/entities/business-sector.entity';
-import { BusinessSectorOperationError } from '@application/exceptions/business-sector.exceptions';
 import { ForbiddenError } from '@application/exceptions/auth.exceptions';
+import { BusinessSectorOperationError } from '@application/exceptions/business-sector.exceptions';
+import {
+  BusinessSectorListResult,
+  IBusinessSectorRepository,
+} from '@application/ports/business-sector.repository.interface';
+import { I18nService } from '@application/ports/i18n.port';
+import { Logger } from '@application/ports/logger.port';
+import { IPermissionService } from '@application/ports/permission.service.interface';
+import { ListBusinessSectorsUseCase } from '@application/use-cases/business-sectors/list-business-sectors.use-case';
+import { BusinessSector } from '@domain/entities/business-sector.entity';
 
 describe('ListBusinessSectorsUseCase', () => {
   let useCase: ListBusinessSectorsUseCase;

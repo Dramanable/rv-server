@@ -36,6 +36,20 @@ export const APPLICATION_TOKENS = {
   UPDATE_BUSINESS_SECTOR_USE_CASE: 'UpdateBusinessSectorUseCase',
   DELETE_BUSINESS_SECTOR_USE_CASE: 'DeleteBusinessSectorUseCase',
 
+  // Business Use Cases
+  CREATE_BUSINESS_USE_CASE: 'CreateBusinessUseCase',
+  GET_BUSINESS_USE_CASE: 'GetBusinessUseCase',
+  LIST_BUSINESS_USE_CASE: 'ListBusinessUseCase',
+  UPDATE_BUSINESS_USE_CASE: 'UpdateBusinessUseCase',
+  DELETE_BUSINESS_USE_CASE: 'DeleteBusinessUseCase',
+
+  // Calendar Use Cases
+  CREATE_CALENDAR_USE_CASE: 'CreateCalendarUseCase',
+  GET_CALENDAR_USE_CASE: 'GetCalendarUseCase',
+  LIST_CALENDARS_USE_CASE: 'ListCalendarsUseCase',
+  UPDATE_CALENDAR_USE_CASE: 'UpdateCalendarUseCase',
+  DELETE_CALENDAR_USE_CASE: 'DeleteCalendarUseCase',
+
   // Application Services
   USER_ONBOARDING_SERVICE: 'UserOnboardingApplicationService',
   USER_CACHE_SERVICE: 'UserCacheService',
@@ -59,6 +73,10 @@ export const DOMAIN_TOKENS = {
   USER_REPOSITORY: 'UserRepository',
   REFRESH_TOKEN_REPOSITORY: 'RefreshTokenRepository',
   BUSINESS_SECTOR_REPOSITORY: 'BusinessSectorRepository',
+  BUSINESS_REPOSITORY: 'BusinessRepository',
+  CALENDAR_REPOSITORY: 'CalendarRepository',
+  SERVICE_REPOSITORY: 'ServiceRepository',
+  STAFF_REPOSITORY: 'StaffRepository',
 
   // Domain Services
   USER_DOMAIN_SERVICE: 'UserDomainService',

@@ -5,18 +5,18 @@
  * Aucune dépendance vers les frameworks (NestJS, TypeORM, etc.)
  */
 
-import { StaffRepository } from '../../../domain/repositories/staff.repository.interface';
-import { Logger } from '../../ports/logger.port';
-import { I18nService } from '../../ports/i18n.port';
 import {
   Staff,
-  StaffStatus,
   StaffProfile,
+  StaffStatus,
 } from '../../../domain/entities/staff.entity';
-import { ApplicationValidationError } from '../../exceptions/application.exceptions';
 import { StaffNotFoundError } from '../../../domain/exceptions/staff.exceptions';
-import { UserId } from '../../../domain/value-objects/user-id.value-object';
+import { StaffRepository } from '../../../domain/repositories/staff.repository.interface';
 import { Email } from '../../../domain/value-objects/email.value-object';
+import { UserId } from '../../../domain/value-objects/user-id.value-object';
+import { ApplicationValidationError } from '../../exceptions/application.exceptions';
+import { I18nService } from '../../ports/i18n.port';
+import { Logger } from '../../ports/logger.port';
 
 export interface UpdateStaffRequest {
   readonly staffId: string;

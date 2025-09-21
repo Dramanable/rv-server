@@ -17,18 +17,18 @@ import { RefreshTokenUseCase } from '@application/use-cases/auth/refresh-token.u
 import { RegisterUseCase } from '@application/use-cases/auth/register.use-case';
 
 // User Use Cases
-import { GetMeUseCase } from '@application/use-cases/users/get-me.use-case';
-import { ListUsersUseCase } from '@application/use-cases/users/list-users.use-case';
 import { CreateUserUseCase } from '@application/use-cases/users/create-user.use-case';
-import { GetUserByIdUseCase } from '@application/use-cases/users/get-user-by-id.use-case';
-import { UpdateUserUseCase } from '@application/use-cases/users/update-user.use-case';
 import { DeleteUserUseCase } from '@application/use-cases/users/delete-user.use-case';
+import { GetMeUseCase } from '@application/use-cases/users/get-me.use-case';
+import { GetUserByIdUseCase } from '@application/use-cases/users/get-user-by-id.use-case';
+import { ListUsersUseCase } from '@application/use-cases/users/list-users.use-case';
+import { UpdateUserUseCase } from '@application/use-cases/users/update-user.use-case';
 
 // Business Sector Use Cases
 import { CreateBusinessSectorUseCase } from '@application/use-cases/business-sectors/create-business-sector.use-case';
+import { DeleteBusinessSectorUseCase } from '@application/use-cases/business-sectors/delete-business-sector.use-case';
 import { ListBusinessSectorsUseCase } from '@application/use-cases/business-sectors/list-business-sectors.use-case';
 import { UpdateBusinessSectorUseCase } from '@application/use-cases/business-sectors/update-business-sector.use-case';
-import { DeleteBusinessSectorUseCase } from '@application/use-cases/business-sectors/delete-business-sector.use-case';
 
 /**
  * 🏗️ USE CASES MODULE

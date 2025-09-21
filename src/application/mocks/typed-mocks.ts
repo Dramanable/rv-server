@@ -5,10 +5,11 @@
  * Respect des principes SOLID + Type Safety à 100%
  */
 
-import { UserRepository } from '../../domain/repositories/user.repository.interface';
-import { Logger } from '../ports/logger.port';
-import { I18nService } from '../ports/i18n.port';
 import type { RefreshTokenRepository } from '../../domain/repositories/refresh-token.repository.interface';
+import { ServiceRepository } from '../../domain/repositories/service.repository.interface';
+import { UserRepository } from '../../domain/repositories/user.repository.interface';
+import { I18nService } from '../ports/i18n.port';
+import { Logger } from '../ports/logger.port';
 
 export interface TokenService {
   generateAccessToken(
@@ -195,12 +196,34 @@ export function createMockAppConfig(): AppConfig {
 }
 
 /**
+ * 🎯 Service Repository Mock Factory
+ */
+export function createMockServiceRepository(): jest.Mocked<ServiceRepository> {
+  return {
+    findById: jest.fn(),
+    findByBusinessId: jest.fn(),
+    findActiveByBusinessId: jest.fn(),
+    findByCategory: jest.fn(),
+    findByStaffId: jest.fn(),
+    search: jest.fn(),
+    save: jest.fn(),
+    delete: jest.fn(),
+    findByName: jest.fn(),
+    existsByName: jest.fn(),
+    findPopularServices: jest.fn(),
+    getServiceStatistics: jest.fn(),
+    getBusinessServiceStatistics: jest.fn(),
+  } as jest.Mocked<ServiceRepository>;
+}
+
+/**
  * 🎯 Complete Mock Setup Factory
  * Retourne tous les mocks typés pour setup rapide
  */
 export interface MockSetup {
   mockUserRepository: jest.Mocked<UserRepository>;
   mockRefreshTokenRepository: jest.Mocked<RefreshTokenRepository>;
+  mockServiceRepository: jest.Mocked<ServiceRepository>;
   mockTokenService: jest.Mocked<TokenService>;
   mockPasswordService: jest.Mocked<PasswordService>;
   mockCacheService: jest.Mocked<CacheService>;
@@ -213,6 +236,7 @@ export function createCompleteMockSetup(): MockSetup {
   return {
     mockUserRepository: createMockUserRepository(),
     mockRefreshTokenRepository: createMockRefreshTokenRepository(),
+    mockServiceRepository: createMockServiceRepository(),
     mockTokenService: createMockTokenService(),
     mockPasswordService: createMockPasswordService(),
     mockCacheService: createMockCacheService(),

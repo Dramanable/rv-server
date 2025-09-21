@@ -4,7 +4,7 @@
  * Service de cache simple pour remplacer temporairement RedisCacheService
  */
 
-import { Injectable, Inject } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import type { ICacheService } from '../../application/ports/cache.port';
 import type { Logger } from '../../application/ports/logger.port';
 import { TOKENS } from '../../shared/constants/injection-tokens';

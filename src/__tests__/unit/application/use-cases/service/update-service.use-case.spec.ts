@@ -5,21 +5,17 @@
  * Couche Application - Tests d'orchestration métier
  */
 
-import { UpdateServiceUseCase } from '../../../../../application/use-cases/service/update-service.use-case';
-import { ServiceRepository } from '../../../../../domain/repositories/service.repository.interface';
-import { Logger } from '../../../../../application/ports/logger.port';
+import { ApplicationValidationError } from '../../../../../application/exceptions/application.exceptions';
 import { I18nService } from '../../../../../application/ports/i18n.port';
+import { Logger } from '../../../../../application/ports/logger.port';
+import { UpdateServiceUseCase } from '../../../../../application/use-cases/service/update-service.use-case';
 import {
   Service,
-  ServiceStatus,
   ServiceCategory,
 } from '../../../../../domain/entities/service.entity';
-import { ServiceId } from '../../../../../domain/value-objects/service-id.value-object';
-import { BusinessId } from '../../../../../domain/value-objects/business-id.value-object';
-import { UserId } from '../../../../../domain/value-objects/user-id.value-object';
-import { Money } from '../../../../../domain/value-objects/money.value-object';
-import { ApplicationValidationError } from '../../../../../application/exceptions/application.exceptions';
 import { ServiceNotFoundError } from '../../../../../domain/exceptions/service.exceptions';
+import { ServiceRepository } from '../../../../../domain/repositories/service.repository.interface';
+import { BusinessId } from '../../../../../domain/value-objects/business-id.value-object';
 
 describe('UpdateServiceUseCase', () => {
   let useCase: UpdateServiceUseCase;

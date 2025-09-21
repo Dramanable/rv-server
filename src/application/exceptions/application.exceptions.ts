@@ -282,6 +282,24 @@ export class ServiceValidationError extends ApplicationException {
 }
 
 /**
+ * 🛎️ Exception : Service not found
+ */
+export class ServiceNotFoundError extends ApplicationException {
+  constructor(
+    identifier: string,
+    identifierType: 'id' | 'name' | 'other' = 'id',
+    context?: Record<string, any>,
+  ) {
+    super(
+      `Service not found with ${identifierType}: ${identifier}`,
+      'SERVICE_NOT_FOUND',
+      'errors.application.service_not_found',
+      { identifier, identifierType, ...context },
+    );
+  }
+}
+
+/**
  * 📅 Exception : Calendar validation error
  */
 export class CalendarValidationError extends ApplicationException {

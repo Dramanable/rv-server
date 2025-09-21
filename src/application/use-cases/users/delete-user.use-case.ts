@@ -25,17 +25,17 @@
       }la logique métier sans dépendance framework
  */
 
-import { UserRole } from '../../../shared/enums/user-role.enum';
 import { User } from '../../../domain/entities/user.entity';
 import { UserRepository } from '../../../domain/repositories/user.repository.interface';
-import { Logger } from '../../ports/logger.port';
-import { I18nService } from '../../ports/i18n.port';
 import { AppContextFactory } from '../../../shared/context/app-context';
+import { UserRole } from '../../../shared/enums/user-role.enum';
 import {
-  UserNotFoundError,
   ForbiddenError,
+  UserNotFoundError,
   ValidationError,
 } from '../../exceptions/auth.exceptions';
+import { I18nService } from '../../ports/i18n.port';
+import { Logger } from '../../ports/logger.port';
 
 // ═══════════════════════════════════════════════════════════════
 // 📋 REQUEST & RESPONSE TYPES

@@ -26,12 +26,10 @@ import {
   ApiSecurity,
   ApiTags,
 } from '@nestjs/swagger';
-import { getUserIdFromRequestSafe } from '../../shared/types/request.types';
 import { Throttle } from '@nestjs/throttler';
 import type { Request, Response } from 'express';
 import type { I18nService } from '../../application/ports/i18n.port';
 import { LoginUseCase } from '../../application/use-cases/auth/login.use-case';
-import { LogoutUseCase } from '../../application/use-cases/auth/logout.use-case';
 import { RefreshTokenUseCase } from '../../application/use-cases/auth/refresh-token.use-case';
 import { RegisterUseCase } from '../../application/use-cases/auth/register.use-case';
 import { TOKENS } from '../../shared/constants/injection-tokens';

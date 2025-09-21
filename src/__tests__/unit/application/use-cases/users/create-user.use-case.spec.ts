@@ -6,21 +6,23 @@
  */
 
 import {
-  CreateUserUseCase,
-  type CreateUserRequest,
-} from '../../../../../application/use-cases/users/create-user.use-case';
-import { UserRole } from '../../../../../shared/enums/user-role.enum';
-import { User } from '../../../../../domain/entities/user.entity';
-import { Email } from '../../../../../domain/value-objects/email.vo';
-import {
+  DuplicationError,
   ForbiddenError,
   UserNotFoundError,
   ValidationError,
-  DuplicationError,
 } from '../../../../../application/exceptions/auth.exceptions';
-import { createMockUserRepository } from '../../../../../application/mocks/typed-mocks';
-import { createMockLogger } from '../../../../../application/mocks/typed-mocks';
-import { createMockI18nService } from '../../../../../application/mocks/typed-mocks';
+import {
+  createMockI18nService,
+  createMockLogger,
+  createMockUserRepository,
+} from '../../../../../application/mocks/typed-mocks';
+import {
+  CreateUserUseCase,
+  type CreateUserRequest,
+} from '../../../../../application/use-cases/users/create-user.use-case';
+import { User } from '../../../../../domain/entities/user.entity';
+import { Email } from '../../../../../domain/value-objects/email.vo';
+import { UserRole } from '../../../../../shared/enums/user-role.enum';
 
 describe('CreateUserUseCase', () => {
   let createUserUseCase: CreateUserUseCase;

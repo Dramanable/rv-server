@@ -12,20 +12,20 @@
  * - Logging et audit trail
  */
 
-import { StaffRepository } from '../../../domain/repositories/staff.repository.interface';
-import { Logger } from '../../ports/logger.port';
-import { I18nService } from '../../ports/i18n.port';
-import { UserId } from '../../../domain/value-objects/user-id.value-object';
-import { StaffRole } from '../../../shared/enums/staff-role.enum';
 import {
   Staff,
-  StaffStatus,
-  StaffProfile,
   StaffAvailability,
   StaffCalendarIntegration,
+  StaffProfile,
+  StaffStatus,
 } from '../../../domain/entities/staff.entity';
-import { ApplicationValidationError } from '../../exceptions/application.exceptions';
 import { StaffNotFoundError } from '../../../domain/exceptions/staff.exceptions';
+import { StaffRepository } from '../../../domain/repositories/staff.repository.interface';
+import { UserId } from '../../../domain/value-objects/user-id.value-object';
+import { StaffRole } from '../../../shared/enums/staff-role.enum';
+import { ApplicationValidationError } from '../../exceptions/application.exceptions';
+import { I18nService } from '../../ports/i18n.port';
+import { Logger } from '../../ports/logger.port';
 
 export interface GetStaffRequest {
   readonly staffId: string;

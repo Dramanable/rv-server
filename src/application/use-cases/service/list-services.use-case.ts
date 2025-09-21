@@ -1,12 +1,12 @@
-import { ServiceRepository } from '../../../domain/repositories/service.repository.interface';
-import { Logger } from '../../ports/logger.port';
-import { I18nService } from '../../ports/i18n.port';
-import { ApplicationValidationError } from '../../exceptions/application.exceptions';
-import { BusinessId } from '../../../domain/value-objects/business-id.value-object';
 import {
   Service,
   ServiceCategory,
 } from '../../../domain/entities/service.entity';
+import { ServiceRepository } from '../../../domain/repositories/service.repository.interface';
+import { BusinessId } from '../../../domain/value-objects/business-id.value-object';
+import { ApplicationValidationError } from '../../exceptions/application.exceptions';
+import { I18nService } from '../../ports/i18n.port';
+import { Logger } from '../../ports/logger.port';
 
 export interface ListServicesRequest {
   readonly requestingUserId: string;
@@ -72,7 +72,6 @@ export class ListServicesUseCase {
   constructor(
     private readonly serviceRepository: ServiceRepository,
     private readonly logger: Logger,
-    private readonly i18n: I18nService,
   ) {}
 
   async execute(request: ListServicesRequest): Promise<ListServicesResponse> {
@@ -80,8 +79,7 @@ export class ListServicesUseCase {
       // Validation des paramètres requis
       this.validateRequest(request);
 
-      const { requestingUserId, businessId, pagination, sorting, filters } =
-        request;
+      const { requestingUserId, businessId, pagination, filters } = request;
 
       this.logger.info('Attempting to list services', {
         businessId,

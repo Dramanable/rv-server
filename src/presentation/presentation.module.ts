@@ -9,8 +9,8 @@
 import { Module } from '@nestjs/common';
 
 // 🏗️ Modules d'infrastructure
-import { InfrastructureModule } from '@infrastructure/infrastructure.module';
 import { DatabaseModule } from '@infrastructure/database/database.module';
+import { InfrastructureModule } from '@infrastructure/infrastructure.module';
 
 // 📝 Tokens pour l'injection de dépendances
 import { TOKENS } from '@shared/constants/injection-tokens';
@@ -23,23 +23,35 @@ import { RefreshTokenUseCase } from '@application/use-cases/auth/refresh-token.u
 import { RegisterUseCase } from '@application/use-cases/auth/register.use-case';
 
 // User Use Cases
-import { GetMeUseCase } from '@application/use-cases/users/get-me.use-case';
-import { ListUsersUseCase } from '@application/use-cases/users/list-users.use-case';
 import { CreateUserUseCase } from '@application/use-cases/users/create-user.use-case';
-import { GetUserByIdUseCase } from '@application/use-cases/users/get-user-by-id.use-case';
-import { UpdateUserUseCase } from '@application/use-cases/users/update-user.use-case';
 import { DeleteUserUseCase } from '@application/use-cases/users/delete-user.use-case';
+import { GetMeUseCase } from '@application/use-cases/users/get-me.use-case';
+import { GetUserByIdUseCase } from '@application/use-cases/users/get-user-by-id.use-case';
+import { ListUsersUseCase } from '@application/use-cases/users/list-users.use-case';
+import { UpdateUserUseCase } from '@application/use-cases/users/update-user.use-case';
 
 // Business Sector Use Cases
 import { CreateBusinessSectorUseCase } from '@application/use-cases/business-sectors/create-business-sector.use-case';
+import { DeleteBusinessSectorUseCase } from '@application/use-cases/business-sectors/delete-business-sector.use-case';
 import { ListBusinessSectorsUseCase } from '@application/use-cases/business-sectors/list-business-sectors.use-case';
 import { UpdateBusinessSectorUseCase } from '@application/use-cases/business-sectors/update-business-sector.use-case';
-import { DeleteBusinessSectorUseCase } from '@application/use-cases/business-sectors/delete-business-sector.use-case';
+
+// Business Use Cases
+import { CreateBusinessUseCase } from '@application/use-cases/business/create-business.use-case';
+import { GetBusinessUseCase } from '@application/use-cases/business/get-business.use-case';
+import { ListBusinessUseCase } from '@application/use-cases/business/list-business.use-case';
+import { UpdateBusinessUseCase } from '@application/use-cases/business/update-business.use-case';
+
+// Calendar Use Cases
+import { CreateCalendarUseCase } from '@application/use-cases/calendar/create-calendar.use-case';
+import { GetCalendarByIdUseCase } from '@application/use-cases/calendar/get-calendar-by-id.use-case';
+import { ListCalendarsUseCase } from '@application/use-cases/calendar/list-calendars.use-case';
 
 // 🎮 Controllers
 import { AuthController } from './controllers/auth.controller';
-import { BusinessController } from './controllers/business.controller';
 import { BusinessSectorController } from './controllers/business-sector.controller';
+import { BusinessController } from './controllers/business.controller';
+import { CalendarController } from './controllers/calendar.controller';
 import { HealthController } from './controllers/health.controller';
 import { UserController } from './controllers/user.controller';
 
@@ -63,6 +75,7 @@ import { PresentationCookieService } from './services/cookie.service';
     UserController,
     BusinessController,
     BusinessSectorController,
+    CalendarController,
     HealthController,
   ],
   providers: [
@@ -261,6 +274,94 @@ import { PresentationCookieService } from './services/cookie.service';
         TOKENS.BUSINESS_SECTOR_REPOSITORY,
         TOKENS.PERMISSION_SERVICE,
         TOKENS.LOGGER,
+      ],
+    },
+
+    // 🏢 Business Use Cases
+    {
+      provide: TOKENS.CREATE_BUSINESS_USE_CASE,
+      useFactory: (businessRepo, userRepo, logger, i18n) =>
+        new CreateBusinessUseCase(businessRepo, userRepo, logger, i18n),
+      inject: [
+        TOKENS.BUSINESS_REPOSITORY,
+        TOKENS.USER_REPOSITORY,
+        TOKENS.LOGGER,
+        TOKENS.I18N_SERVICE,
+      ],
+    },
+    {
+      provide: TOKENS.GET_BUSINESS_USE_CASE,
+      useFactory: (businessRepo, userRepo, logger, i18n) =>
+        new GetBusinessUseCase(businessRepo, userRepo, logger, i18n),
+      inject: [
+        TOKENS.BUSINESS_REPOSITORY,
+        TOKENS.USER_REPOSITORY,
+        TOKENS.LOGGER,
+        TOKENS.I18N_SERVICE,
+      ],
+    },
+    {
+      provide: TOKENS.LIST_BUSINESS_USE_CASE,
+      useFactory: (businessRepo, userRepo, logger, i18n) =>
+        new ListBusinessUseCase(businessRepo, userRepo, logger, i18n),
+      inject: [
+        TOKENS.BUSINESS_REPOSITORY,
+        TOKENS.USER_REPOSITORY,
+        TOKENS.LOGGER,
+        TOKENS.I18N_SERVICE,
+      ],
+    },
+    {
+      provide: TOKENS.UPDATE_BUSINESS_USE_CASE,
+      useFactory: (businessRepo, userRepo, logger, i18n) =>
+        new UpdateBusinessUseCase(businessRepo, userRepo, logger, i18n),
+      inject: [
+        TOKENS.BUSINESS_REPOSITORY,
+        TOKENS.USER_REPOSITORY,
+        TOKENS.LOGGER,
+        TOKENS.I18N_SERVICE,
+      ],
+    },
+
+    // 📅 Calendar Use Cases
+    {
+      provide: TOKENS.CREATE_CALENDAR_USE_CASE,
+      useFactory: (calendarRepo, businessRepo, userRepo, logger, i18n) =>
+        new CreateCalendarUseCase(
+          calendarRepo,
+          businessRepo,
+          userRepo,
+          logger,
+          i18n,
+        ),
+      inject: [
+        TOKENS.CALENDAR_REPOSITORY,
+        TOKENS.BUSINESS_REPOSITORY,
+        TOKENS.USER_REPOSITORY,
+        TOKENS.LOGGER,
+        TOKENS.I18N_SERVICE,
+      ],
+    },
+    {
+      provide: TOKENS.GET_CALENDAR_USE_CASE,
+      useFactory: (calendarRepo, userRepo, logger, i18n) =>
+        new GetCalendarByIdUseCase(calendarRepo, userRepo, logger, i18n),
+      inject: [
+        TOKENS.CALENDAR_REPOSITORY,
+        TOKENS.USER_REPOSITORY,
+        TOKENS.LOGGER,
+        TOKENS.I18N_SERVICE,
+      ],
+    },
+    {
+      provide: TOKENS.LIST_CALENDARS_USE_CASE,
+      useFactory: (calendarRepo, userRepo, logger, i18n) =>
+        new ListCalendarsUseCase(calendarRepo, userRepo, logger, i18n),
+      inject: [
+        TOKENS.CALENDAR_REPOSITORY,
+        TOKENS.USER_REPOSITORY,
+        TOKENS.LOGGER,
+        TOKENS.I18N_SERVICE,
       ],
     },
   ],

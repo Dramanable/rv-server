@@ -5,17 +5,17 @@
  * avec validation des permissions super-admin uniquement.
  */
 
-import { CreateBusinessSectorUseCase } from '@application/use-cases/business-sectors/create-business-sector.use-case';
-import { BusinessSector } from '@domain/entities/business-sector.entity';
-import { IBusinessSectorRepository } from '@application/ports/business-sector.repository.interface';
-import { Logger } from '@application/ports/logger.port';
-import { I18nService } from '@application/ports/i18n.port';
-import { IPermissionService } from '@application/ports/permission.service.interface';
 import {
   BusinessSectorAlreadyExistsError,
   InsufficientPermissionsError,
   InvalidBusinessSectorDataError,
 } from '@application/exceptions/business-sector.exceptions';
+import { IBusinessSectorRepository } from '@application/ports/business-sector.repository.interface';
+import { I18nService } from '@application/ports/i18n.port';
+import { Logger } from '@application/ports/logger.port';
+import { IPermissionService } from '@application/ports/permission.service.interface';
+import { CreateBusinessSectorUseCase } from '@application/use-cases/business-sectors/create-business-sector.use-case';
+import { BusinessSector } from '@domain/entities/business-sector.entity';
 
 describe('CreateBusinessSectorUseCase', () => {
   let useCase: CreateBusinessSectorUseCase;

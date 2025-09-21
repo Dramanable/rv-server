@@ -5,17 +5,14 @@
  * Couche Application - Tests d'orchestration métier
  */
 
-import { ListStaffUseCase } from '../../../../../application/use-cases/staff/list-staff.use-case';
-import { StaffRepository } from '../../../../../domain/repositories/staff.repository.interface';
-import { Logger } from '../../../../../application/ports/logger.port';
-import { I18nService } from '../../../../../application/ports/i18n.port';
-import {
-  Staff,
-  StaffStatus,
-} from '../../../../../domain/entities/staff.entity';
-import { StaffRole } from '../../../../../shared/enums/staff-role.enum';
-import { BusinessId } from '../../../../../domain/value-objects/business-id.value-object';
 import { ApplicationValidationError } from '../../../../../application/exceptions/application.exceptions';
+import { I18nService } from '../../../../../application/ports/i18n.port';
+import { Logger } from '../../../../../application/ports/logger.port';
+import { ListStaffUseCase } from '../../../../../application/use-cases/staff/list-staff.use-case';
+import { Staff } from '../../../../../domain/entities/staff.entity';
+import { StaffRepository } from '../../../../../domain/repositories/staff.repository.interface';
+import { BusinessId } from '../../../../../domain/value-objects/business-id.value-object';
+import { StaffRole } from '../../../../../shared/enums/staff-role.enum';
 
 describe('ListStaffUseCase', () => {
   let useCase: ListStaffUseCase;

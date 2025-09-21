@@ -8,12 +8,12 @@
 import { User } from '../../domain/entities/user.entity';
 import { UserOrmEntity } from '../../infrastructure/database/sql/postgresql/entities/user-orm.entity';
 import {
-  UserListItemDto,
-  UserRole,
-  PaginationMetaDto,
   ListUsersResponseDto,
+  PaginationMetaDto,
+  UserListItemDto,
+  UserResponseDto,
+  UserRole,
 } from '../dtos/user.dto';
-import { UserResponseDto } from '../dtos/auth.dto';
 
 // ═══════════════════════════════════════════════════════════════
 // 🏛️ DOMAIN ENTITY → PRESENTATION DTO
@@ -24,12 +24,22 @@ import { UserResponseDto } from '../dtos/auth.dto';
  */
 export class UserToDtoMapper {
   static toUserResponse(user: User): UserResponseDto {
+    // Parse du nom complet en prénom/nom
+    const nameParts = user.name.split(' ');
+    const firstName = nameParts[0] || '';
+    const lastName = nameParts.slice(1).join(' ') || '';
+
     return {
       id: user.id,
       email: user.email.value,
-      name: user.name,
-      role: user.role as string,
+      firstName,
+      lastName,
+      role: user.role as UserRole,
+      phone: undefined, // Optionnel
+      isActive: user.isActive ?? true,
+      isVerified: user.isVerified ?? false,
       createdAt: user.createdAt.toISOString(),
+      updatedAt: user.updatedAt?.toISOString() ?? user.createdAt.toISOString(),
     };
   }
 
@@ -66,9 +76,14 @@ export class UserOrmToDtoMapper {
     return {
       id: userOrm.id,
       email: userOrm.email,
-      name: `${userOrm.firstName} ${userOrm.lastName}`.trim(),
-      role: userOrm.role,
+      firstName: userOrm.firstName,
+      lastName: userOrm.lastName,
+      role: userOrm.role as UserRole,
+      phone: undefined, // UserOrmEntity n'a pas de champ phone
+      isActive: userOrm.isActive,
+      isVerified: userOrm.isVerified,
       createdAt: userOrm.createdAt.toISOString(),
+      updatedAt: userOrm.updatedAt.toISOString(),
     };
   }
 

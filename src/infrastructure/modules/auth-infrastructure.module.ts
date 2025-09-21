@@ -17,12 +17,6 @@ import { BcryptPasswordService } from '../services/bcrypt-password.service';
 import { JwtAuthenticationService } from '../services/jwt-authentication.service';
 
 // Application Ports
-import { AuthenticationService } from '../../application/ports/authentication.port';
-import { IConfigService } from '../../application/ports/config.port';
-import { I18nService } from '../../application/ports/i18n.port';
-import { Logger as AppLogger } from '../../application/ports/logger.port';
-import { IPasswordHasher } from '../../application/ports/password-hasher.port'; // ✅ NOUVEAU: Clean Architecture
-import { UserCacheService } from '../../application/services/user-cache.service'; // ✅ NOUVEAU: Service de cache
 
 // Note: Use Cases are imported and configured in PresentationModule
 

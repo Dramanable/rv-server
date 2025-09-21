@@ -7,19 +7,16 @@
  * @since 2024
  */
 
-import {
-  IBusinessSectorRepository,
-  BusinessSectorListResult,
-  BusinessSectorQueryOptions,
-} from '@application/ports/business-sector.repository.interface';
-import { IPermissionService } from '@application/ports/permission.service.interface';
-import { Logger } from '@application/ports/logger.port';
-import { I18nService } from '@application/ports/i18n.port';
+import { ForbiddenError } from '@application/exceptions/auth.exceptions';
 import { BusinessSectorOperationError } from '@application/exceptions/business-sector.exceptions';
 import {
-  UserNotFoundError,
-  ForbiddenError,
-} from '@application/exceptions/auth.exceptions';
+  BusinessSectorListResult,
+  BusinessSectorQueryOptions,
+  IBusinessSectorRepository,
+} from '@application/ports/business-sector.repository.interface';
+import { I18nService } from '@application/ports/i18n.port';
+import { Logger } from '@application/ports/logger.port';
+import { IPermissionService } from '@application/ports/permission.service.interface';
 
 /**
  * 📋 Requête pour lister les secteurs d'activité

@@ -5,20 +5,20 @@
  * Ces DTOs définissent la structure des requêtes et réponses HTTP.
  */
 
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 import {
-  IsString,
+  IsBoolean,
+  IsIn,
+  IsInt,
   IsNotEmpty,
   IsOptional,
-  IsBoolean,
+  IsString,
   Length,
   Matches,
-  IsInt,
-  Min,
   Max,
-  IsIn,
+  Min,
 } from 'class-validator';
-import { Transform } from 'class-transformer';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 /**
  * 📋 DTO : Création de secteur d'activité

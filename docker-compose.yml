@@ -6,7 +6,7 @@ services:
       dockerfile: Dockerfile
     container_name: nestjs-dev
     restart: unless-stopped
-    
+
     # 🔧 Development resource allocation - Increased for TypeScript compilation
     mem_limit: 4g
     mem_reservation: 2g

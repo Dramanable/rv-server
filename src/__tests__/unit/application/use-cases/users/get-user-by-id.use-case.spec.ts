@@ -6,20 +6,19 @@
  */
 
 import {
-  GetUserByIdUseCase,
+  ForbiddenError,
+  UserNotFoundError,
+} from '../../../../../application/exceptions/auth.exceptions';
+import { I18nService } from '../../../../../application/ports/i18n.port';
+import { Logger } from '../../../../../application/ports/logger.port';
+import {
   GetUserByIdRequest,
-  GetUserByIdResponse,
+  GetUserByIdUseCase,
 } from '../../../../../application/use-cases/users/get-user-by-id.use-case';
-import { UserRepository } from '../../../../../domain/repositories/user.repository.interface';
 import { User } from '../../../../../domain/entities/user.entity';
+import { UserRepository } from '../../../../../domain/repositories/user.repository.interface';
 import { Email } from '../../../../../domain/value-objects/email.vo';
 import { UserRole } from '../../../../../shared/enums/user-role.enum';
-import { Logger } from '../../../../../application/ports/logger.port';
-import { I18nService } from '../../../../../application/ports/i18n.port';
-import {
-  UserNotFoundError,
-  ForbiddenError,
-} from '../../../../../application/exceptions/auth.exceptions';
 
 // ═══════════════════════════════════════════════════════════════
 // 🛠️ TEST SETUP & HELPERS

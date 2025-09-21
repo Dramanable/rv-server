@@ -3,52 +3,51 @@
  * Présentation layer pour la gestion des utilisateurs avec pagination POST
  */
 
+import { CreateUserUseCase } from '@application/use-cases/users/create-user.use-case';
+import { DeleteUserUseCase } from '@application/use-cases/users/delete-user.use-case';
+import { GetMeUseCase } from '@application/use-cases/users/get-me.use-case';
+import { GetUserByIdUseCase } from '@application/use-cases/users/get-user-by-id.use-case';
+import { ListUsersUseCase } from '@application/use-cases/users/list-users.use-case';
+import { UpdateUserUseCase } from '@application/use-cases/users/update-user.use-case';
 import {
-  Controller,
-  Get,
-  Post,
-  Put,
-  Delete,
   Body,
-  Param,
+  Controller,
+  Delete,
+  Get,
   HttpCode,
   HttpStatus,
   Inject,
-  UseGuards,
+  Param,
+  Post,
+  Put,
   Request,
 } from '@nestjs/common';
-import { getUserIdFromRequestSafe } from '../../shared/types/request.types';
 import {
-  ApiBearerAuth,
-  ApiOperation,
-  ApiResponse,
-  ApiTags,
   ApiBadRequestResponse,
-  ApiUnauthorizedResponse,
+  ApiBearerAuth,
   ApiForbiddenResponse,
   ApiNotFoundResponse,
+  ApiOperation,
   ApiParam,
+  ApiResponse,
+  ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import {
+  UnauthorizedErrorDto,
+  ValidationErrorDto,
+} from '@presentation/dtos/auth.dto';
+import { TOKENS } from '@shared/constants/injection-tokens';
+import { getUserIdFromRequestSafe } from '../../shared/types/request.types';
+import {
+  CreateUserRequestDto,
+  DeleteUserResponseDto,
   ListUsersRequestDto,
   ListUsersResponseDto,
-  UserListValidationErrorDto,
-  CreateUserRequestDto,
   UpdateUserRequestDto,
+  UserListValidationErrorDto,
   UserResponseDto,
-  DeleteUserResponseDto,
 } from '../dtos/user.dto';
-import {
-  ValidationErrorDto,
-  UnauthorizedErrorDto,
-} from '@presentation/dtos/auth.dto';
-import { ListUsersUseCase } from '@application/use-cases/users/list-users.use-case';
-import { CreateUserUseCase } from '@application/use-cases/users/create-user.use-case';
-import { GetUserByIdUseCase } from '@application/use-cases/users/get-user-by-id.use-case';
-import { GetMeUseCase } from '@application/use-cases/users/get-me.use-case';
-import { UpdateUserUseCase } from '@application/use-cases/users/update-user.use-case';
-import { DeleteUserUseCase } from '@application/use-cases/users/delete-user.use-case';
-import { TOKENS } from '@shared/constants/injection-tokens';
 
 @ApiTags('👥 User Management')
 @Controller('users')
@@ -105,17 +104,17 @@ export class UserController {
     summary: '📋 List users with advanced pagination and filters',
     description: `
     🎯 **POST Endpoint for Complex User Listing**
-    
+
     This endpoint uses POST method instead of GET to support complex filtering and pagination:
     - 📄 **Pagination**: Page-based pagination with configurable limits
-    - 🔍 **Search**: Full-text search across name, email, and other fields  
+    - 🔍 **Search**: Full-text search across name, email, and other fields
     - 🎭 **Role Filtering**: Filter by multiple user roles simultaneously
     - 📅 **Date Ranges**: Filter users by creation date ranges
     - ✅ **Status Filters**: Filter by active/inactive and verified/unverified status
     - 🔤 **Sorting**: Sort by multiple fields with ASC/DESC directions
-    
+
     **🔐 Authorization**: Only PLATFORM_ADMIN users can access this endpoint.
-    
+
     **📊 Response**: Returns paginated user list with comprehensive metadata including:
     - Total count, current page, total pages
     - Previous/next page availability
@@ -212,14 +211,14 @@ export class UserController {
     summary: '👤 Create a new user',
     description: `
     🎯 **Create User Endpoint**
-    
+
     Creates a new user in the system with the specified role and information.
-    
-    **🔐 Authorization**: 
+
+    **🔐 Authorization**:
     - PLATFORM_ADMIN: Can create any user
     - BUSINESS_OWNER: Can create business-level users (no PLATFORM_ADMIN)
     - BUSINESS_ADMIN: Can create location-level users only
-    
+
     **📋 Business Rules**:
     - Email must be unique in the system
     - Role must be valid and within permissions
@@ -274,10 +273,10 @@ export class UserController {
     summary: '👤 Get user by ID',
     description: `
     🎯 **Get User by ID Endpoint**
-    
+
     Retrieves a specific user by their unique ID.
-    
-    **🔐 Authorization**: 
+
+    **🔐 Authorization**:
     - Users can view their own profile
     - PLATFORM_ADMIN: Can view any user
     - BUSINESS_OWNER: Can view business users
@@ -338,15 +337,15 @@ export class UserController {
     summary: '✏️ Update user',
     description: `
     🎯 **Update User Endpoint**
-    
+
     Updates an existing user's information.
-    
-    **🔐 Authorization**: 
+
+    **🔐 Authorization**:
     - Users can update their own limited profile fields
     - PLATFORM_ADMIN: Can update any user and change roles
     - BUSINESS_OWNER: Can update business users (no role elevation to PLATFORM_ADMIN)
     - BUSINESS_ADMIN: Can update operational users (no management roles)
-    
+
     **📋 Business Rules**:
     - Users cannot change their own role
     - Email must remain unique if changed
@@ -421,15 +420,15 @@ export class UserController {
     summary: '🗑️ Delete user',
     description: `
     🎯 **Delete User Endpoint**
-    
+
     Performs a soft delete of a user account.
-    
-    **🔐 Authorization**: 
+
+    **🔐 Authorization**:
     - PLATFORM_ADMIN: Can delete any user (except themselves)
     - BUSINESS_OWNER: Can delete business users (no PLATFORM_ADMIN or other BUSINESS_OWNER)
     - BUSINESS_ADMIN: Can delete operational users (no management roles)
     - LOCATION_MANAGER: Can delete operational staff (no management roles)
-    
+
     **📋 Business Rules**:
     - Users cannot delete themselves
     - Soft delete preserves data for audit purposes

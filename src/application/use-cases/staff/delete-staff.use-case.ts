@@ -6,13 +6,13 @@
  */
 
 import { StaffRepository } from '../../../domain/repositories/staff.repository.interface';
-import { Logger } from '../../ports/logger.port';
-import { I18nService } from '../../ports/i18n.port';
+import { UserId } from '../../../domain/value-objects/user-id.value-object';
 import {
   ApplicationValidationError,
   ResourceNotFoundError,
 } from '../../exceptions/application.exceptions';
-import { UserId } from '../../../domain/value-objects/user-id.value-object';
+import { I18nService } from '../../ports/i18n.port';
+import { Logger } from '../../ports/logger.port';
 
 export interface DeleteStaffRequest {
   readonly staffId: string;

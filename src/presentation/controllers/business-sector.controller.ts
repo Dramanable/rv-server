@@ -23,24 +23,23 @@ import {
 import {
   ApiBearerAuth,
   ApiOperation,
-  ApiResponse,
-  ApiTags,
   ApiParam,
   ApiQuery,
+  ApiResponse,
+  ApiTags,
 } from '@nestjs/swagger';
-import { getUserIdFromRequestSafe } from '../../shared/types/request.types';
 
 // 🔐 Security & Validation
-import { JwtAuthGuard } from '@presentation/security/guards/jwt-auth.guard';
 import { I18nValidationPipe } from '@infrastructure/validation/i18n-validation.pipe';
+import { JwtAuthGuard } from '@presentation/security/guards/jwt-auth.guard';
 
 // 📝 DTOs
 import {
-  CreateBusinessSectorDto,
-  UpdateBusinessSectorDto,
   BusinessSectorResponseDto,
-  ListBusinessSectorsDto,
+  CreateBusinessSectorDto,
   DeleteBusinessSectorDto,
+  ListBusinessSectorsDto,
+  UpdateBusinessSectorDto,
 } from '@presentation/dtos/business-sector.dto';
 
 // 🔄 Mappers
@@ -48,9 +47,9 @@ import { BusinessSectorMapper } from '@presentation/mappers/business-sector.mapp
 
 // 💼 Use Cases
 import { CreateBusinessSectorUseCase } from '@application/use-cases/business-sectors/create-business-sector.use-case';
+import { DeleteBusinessSectorUseCase } from '@application/use-cases/business-sectors/delete-business-sector.use-case';
 import { ListBusinessSectorsUseCase } from '@application/use-cases/business-sectors/list-business-sectors.use-case';
 import { UpdateBusinessSectorUseCase } from '@application/use-cases/business-sectors/update-business-sector.use-case';
-import { DeleteBusinessSectorUseCase } from '@application/use-cases/business-sectors/delete-business-sector.use-case';
 
 // 🔧 Shared
 import { TOKENS } from '@shared/constants/injection-tokens';

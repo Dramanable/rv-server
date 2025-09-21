@@ -5,17 +5,17 @@
  * avec validation des permissions super-admin uniquement.
  */
 
-import { UpdateBusinessSectorUseCase } from '@application/use-cases/business-sectors/update-business-sector.use-case';
-import { BusinessSector } from '@domain/entities/business-sector.entity';
-import { IBusinessSectorRepository } from '@application/ports/business-sector.repository.interface';
-import { Logger } from '@application/ports/logger.port';
-import { I18nService } from '@application/ports/i18n.port';
-import { IPermissionService } from '@application/ports/permission.service.interface';
+import { InsufficientPermissionsError } from '@application/exceptions/auth.exceptions';
 import {
   BusinessSectorNotFoundError,
   InvalidBusinessSectorDataError,
 } from '@application/exceptions/business-sector.exceptions';
-import { InsufficientPermissionsError } from '@application/exceptions/auth.exceptions';
+import { IBusinessSectorRepository } from '@application/ports/business-sector.repository.interface';
+import { I18nService } from '@application/ports/i18n.port';
+import { Logger } from '@application/ports/logger.port';
+import { IPermissionService } from '@application/ports/permission.service.interface';
+import { UpdateBusinessSectorUseCase } from '@application/use-cases/business-sectors/update-business-sector.use-case';
+import { BusinessSector } from '@domain/entities/business-sector.entity';
 import type { Mocked } from 'jest-mock';
 
 // Types pour les requêtes et réponses

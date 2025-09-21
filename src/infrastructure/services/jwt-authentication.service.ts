@@ -5,9 +5,6 @@
  * Implémentation concrète pour la couche Infrastructure avec NestJS
  */
 
-import { Injectable, Inject } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
 import {
   AuthenticationService,
   AuthTokens,
@@ -15,6 +12,9 @@ import {
 } from '@application/ports/authentication.port';
 import type { Logger } from '@application/ports/logger.port';
 import { User } from '@domain/entities/user.entity';
+import { Inject, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
 import { TOKENS } from '@shared/constants/injection-tokens';
 
 @Injectable()

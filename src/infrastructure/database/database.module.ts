@@ -1,15 +1,19 @@
+import type { I18nService } from '@application/ports/i18n.port';
+import { AppConfigService } from '@infrastructure/config/app-config.service';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import type { I18nService } from '@application/ports/i18n.port';
 import { TOKENS } from '@shared/constants/injection-tokens';
-import { AppConfigService } from '@infrastructure/config/app-config.service';
 import { PinoLoggerModule } from '../logging/pino-logger.module';
 import { TypeOrmRepositoriesModule } from './typeorm-repositories.module';
 
 // Import des entités TypeORM
-import { UserOrmEntity } from './sql/postgresql/entities/user-orm.entity';
+import { BusinessOrmEntity } from './sql/postgresql/entities/business-orm.entity';
+import { CalendarOrmEntity } from './sql/postgresql/entities/calendar-orm.entity';
 import { RefreshTokenOrmEntity } from './sql/postgresql/entities/refresh-token-orm.entity';
+import { ServiceOrmEntity } from './sql/postgresql/entities/service-orm.entity';
+import { StaffOrmEntity } from './sql/postgresql/entities/staff-orm.entity';
+import { UserOrmEntity } from './sql/postgresql/entities/user-orm.entity';
 
 // Temporairement commenté jusqu'à résolution des problèmes de décorateurs TypeScript 5.7
 // import { BusinessSectorOrmEntity } from './sql/postgresql/entities/business-sector-orm.entity';
@@ -83,6 +87,10 @@ class DatabaseI18nService implements I18nService {
         entities: [
           UserOrmEntity,
           RefreshTokenOrmEntity,
+          BusinessOrmEntity,
+          CalendarOrmEntity,
+          ServiceOrmEntity,
+          StaffOrmEntity,
           // BusinessSectorOrmEntity, // Temporairement commenté
         ],
         migrations: [
@@ -113,46 +121,46 @@ class DatabaseI18nService implements I18nService {
         async save(user: any) {
           return user;
         },
-        async findById(id: string) {
+        async findById() {
           return null;
         },
-        async findByEmail(email: any) {
+        async findByEmail() {
           return null;
         },
-        async findByUsername(username: string) {
+        async findByUsername() {
           return null;
         },
-        async delete(id: string) {
+        async delete() {
           return;
         },
-        async findAll(params?: any) {
+        async findAll() {
           return {
             data: [],
             meta: { total: 0, page: 1, limit: 10, totalPages: 0 },
           };
         },
-        async search(params: any) {
+        async search() {
           return {
             data: [],
             meta: { total: 0, page: 1, limit: 10, totalPages: 0 },
           };
         },
-        async findByRole(role: any, params?: any) {
+        async findByRole() {
           return {
             data: [],
             meta: { total: 0, page: 1, limit: 10, totalPages: 0 },
           };
         },
-        async emailExists(email: any) {
+        async emailExists() {
           return false;
         },
-        async existsByUsername(username: string) {
+        async existsByUsername() {
           return false;
         },
-        async updatePassword(id: string, passwordHash: string) {
+        async updatePassword() {
           return;
         },
-        async updateActiveStatus(id: string, isActive: boolean) {
+        async updateActiveStatus() {
           return;
         },
         async countSuperAdmins() {
@@ -161,7 +169,7 @@ class DatabaseI18nService implements I18nService {
         async count() {
           return 0;
         },
-        async countWithFilters(params: any) {
+        async countWithFilters() {
           return 0;
         },
         async update(user: any) {
@@ -170,10 +178,10 @@ class DatabaseI18nService implements I18nService {
         async updateBatch(users: any[]) {
           return users;
         },
-        async deleteBatch(ids: string[]) {
+        async deleteBatch() {
           return;
         },
-        async export(params?: any) {
+        async export() {
           return [];
         },
       },
@@ -186,13 +194,13 @@ class DatabaseI18nService implements I18nService {
         async save(businessSector: any) {
           return businessSector;
         },
-        async findById(id: string) {
+        async findById() {
           return null;
         },
-        async findByCode(code: string) {
+        async findByCode() {
           return null;
         },
-        async findAll(params?: any) {
+        async findAll() {
           return {
             data: [],
             meta: {
@@ -205,19 +213,19 @@ class DatabaseI18nService implements I18nService {
             },
           };
         },
-        async delete(id: string) {
+        async delete() {
           return;
         },
-        async exists(id: string) {
+        async exists() {
           return false;
         },
-        async isCodeUnique(code: string, excludeId?: string) {
+        async isCodeUnique() {
           return true;
         },
-        async count(filters?: any) {
+        async count() {
           return 0;
         },
-        async searchByText(searchTerm: string, options?: any) {
+        async searchByText() {
           return {
             data: [],
             meta: {
@@ -230,7 +238,7 @@ class DatabaseI18nService implements I18nService {
             },
           };
         },
-        async findActiveOnly(options?: any) {
+        async findActiveOnly() {
           return {
             data: [],
             meta: {
@@ -243,13 +251,13 @@ class DatabaseI18nService implements I18nService {
             },
           };
         },
-        async updateStatus(id: string, isActive: boolean) {
+        async updateStatus() {
           return null;
         },
-        async findMostUsed(limit?: number) {
+        async findMostUsed() {
           return [];
         },
-        async countUsageInBusinesses(sectorId: string) {
+        async countUsageInBusinesses() {
           return 0;
         },
       },
@@ -262,19 +270,19 @@ class DatabaseI18nService implements I18nService {
         async save(token: any) {
           return token;
         },
-        async findByToken(tokenHash: string) {
+        async findByToken() {
           return null;
         },
-        async findByUserId(userId: string) {
+        async findByUserId() {
           return [];
         },
-        async deleteByUserId(userId: string) {
+        async deleteByUserId() {
           return;
         },
-        async revokeAllByUserId(userId: string) {
+        async revokeAllByUserId() {
           return;
         },
-        async revokeByToken(tokenHash: string) {
+        async revokeByToken() {
           return;
         },
         async deleteExpiredTokens() {
@@ -282,6 +290,8 @@ class DatabaseI18nService implements I18nService {
         },
       },
     },
+
+    // ✅ Business, Calendar, Service et Staff repositories à ajouter si nécessaires
   ],
   exports: [
     ConfigService, // Export du ConfigService
@@ -290,6 +300,8 @@ class DatabaseI18nService implements I18nService {
     TOKENS.REFRESH_TOKEN_REPOSITORY, // ✅ Export du RefreshTokenRepository
     TOKENS.BUSINESS_SECTOR_REPOSITORY, // ✅ Export du mock BusinessSectorRepository
     TypeOrmRepositoriesModule, // ✅ Export le module qui contient PERMISSION_SERVICE
+    // Les tokens BUSINESS_REPOSITORY, CALENDAR_REPOSITORY, SERVICE_REPOSITORY, STAFF_REPOSITORY
+    // doivent être ajoutés manuellement si nécessaires
   ],
 })
 export class DatabaseModule {}

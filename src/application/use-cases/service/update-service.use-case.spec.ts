@@ -1,21 +1,23 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { UpdateServiceUseCase } from './update-service.use-case';
-import { ServiceRepository } from '../../../domain/repositories/service.repository.interface';
-import { Logger } from '../../ports/logger.port';
-import { I18nService } from '../../ports/i18n.port';
 import {
   Service,
   ServiceCategory,
 } from '../../../domain/entities/service.entity';
-import {
-  ServiceNotFoundError,
-  ApplicationValidationError,
-} from '../../exceptions/application.exceptions';
-import { createMockServiceRepository } from '../../mocks/typed-mocks';
-import { createMockLogger } from '../../mocks/typed-mocks';
-import { createMockI18nService } from '../../mocks/typed-mocks';
+import { ServiceRepository } from '../../../domain/repositories/service.repository.interface';
 import { BusinessId } from '../../../domain/value-objects/business-id.value-object';
 import { ServiceId } from '../../../domain/value-objects/service-id.value-object';
+import {
+  ApplicationValidationError,
+  ServiceNotFoundError,
+} from '../../exceptions/application.exceptions';
+import {
+  createMockI18nService,
+  createMockLogger,
+  createMockServiceRepository,
+} from '../../mocks/typed-mocks';
+import { I18nService } from '../../ports/i18n.port';
+import { Logger } from '../../ports/logger.port';
+import { UpdateServiceUseCase } from './update-service.use-case';
 
 describe('UpdateServiceUseCase', () => {
   let useCase: UpdateServiceUseCase;

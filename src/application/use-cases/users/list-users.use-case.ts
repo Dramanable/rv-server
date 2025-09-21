@@ -9,16 +9,12 @@ import type { I18nService } from '../../../application/ports/i18n.port';
 import type { Logger } from '../../../application/ports/logger.port';
 import type { UserRepository } from '../../../domain/repositories/user.repository.interface';
 import { UserRole } from '../../../shared/enums/user-role.enum';
+import { type UserSortField } from '../../../shared/types/user-query.types';
 import { AppContextFactory } from '../../../shared/utils/app-context.factory';
 import {
   ForbiddenError,
   UserNotFoundError,
 } from '../../exceptions/auth.exceptions';
-import {
-  UserQueryParams,
-  UserQueryBuilder,
-  type UserSortField,
-} from '../../../shared/types/user-query.types';
 
 // ═══════════════════════════════════════════════════════════════
 // 📋 REQUEST & RESPONSE INTERFACES

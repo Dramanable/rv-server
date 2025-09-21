@@ -4,9 +4,9 @@
  * Service de permissions simplifié pour les tests et développement
  */
 
-import type { IPermissionService } from '../../application/ports/permission.service.interface';
 import type { Logger } from '../../application/ports/logger.port';
-import { UserRole, Permission } from '../../shared/enums/user-role.enum';
+import type { IPermissionService } from '../../application/ports/permission.service.interface';
+import { Permission, UserRole } from '../../shared/enums/user-role.enum';
 
 export class MockPermissionService implements IPermissionService {
   constructor(private readonly logger: Logger) {}

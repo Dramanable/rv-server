@@ -4,20 +4,19 @@
  * Tests unitaires pour les mappers de conversion entre DTOs et Use Cases
  */
 
-import { BusinessSectorMapper } from '@presentation/mappers/business-sector.mapper';
+import {
+  CreateBusinessSectorResponse,
+  DeleteBusinessSectorResponse,
+  UpdateBusinessSectorResponse,
+} from '@application/use-cases/business-sectors/business-sector.types';
 import { BusinessSector } from '@domain/entities/business-sector.entity';
 import {
   CreateBusinessSectorDto,
-  UpdateBusinessSectorDto,
-  ListBusinessSectorsDto,
   DeleteBusinessSectorDto,
+  ListBusinessSectorsDto,
+  UpdateBusinessSectorDto,
 } from '@presentation/dtos/business-sector.dto';
-import {
-  CreateBusinessSectorResponse,
-  UpdateBusinessSectorResponse,
-  ListBusinessSectorsResponse,
-  DeleteBusinessSectorResponse,
-} from '@application/use-cases/business-sectors/business-sector.types';
+import { BusinessSectorMapper } from '@presentation/mappers/business-sector.mapper';
 
 describe('BusinessSectorMapper', () => {
   const mockUserId = 'user-123';

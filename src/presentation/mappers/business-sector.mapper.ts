@@ -5,11 +5,14 @@
  * Assure la transformation bidirectionnelle entre HTTP et Use Cases.
  */
 
-import { BusinessSector } from '@domain/entities/business-sector.entity';
 import {
   CreateBusinessSectorRequest,
   CreateBusinessSectorResponse,
 } from '@application/use-cases/business-sectors/create-business-sector.use-case';
+import {
+  DeleteBusinessSectorRequest,
+  DeleteBusinessSectorResponse,
+} from '@application/use-cases/business-sectors/delete-business-sector.use-case';
 import {
   ListBusinessSectorsRequest,
   ListBusinessSectorsResponse,
@@ -18,24 +21,21 @@ import {
   UpdateBusinessSectorRequest,
   UpdateBusinessSectorResponse,
 } from '@application/use-cases/business-sectors/update-business-sector.use-case';
+import { BusinessSector } from '@domain/entities/business-sector.entity';
 import {
-  DeleteBusinessSectorRequest,
-  DeleteBusinessSectorResponse,
-} from '@application/use-cases/business-sectors/delete-business-sector.use-case';
-import {
-  CreateBusinessSectorDto,
-  UpdateBusinessSectorDto,
-  ListBusinessSectorsDto,
-  DeleteBusinessSectorDto,
-  BusinessSectorResponseDto,
-  ListBusinessSectorsResponseDto,
-  CreateBusinessSectorResponseDto,
-  UpdateBusinessSectorResponseDto,
-  DeleteBusinessSectorResponseDto,
-  BusinessSectorPaginationMetaDto,
   BusinessSectorFiltersDto,
-  BusinessSectorSortDto,
   BusinessSectorPaginationDto,
+  BusinessSectorPaginationMetaDto,
+  BusinessSectorResponseDto,
+  BusinessSectorSortDto,
+  CreateBusinessSectorDto,
+  CreateBusinessSectorResponseDto,
+  DeleteBusinessSectorDto,
+  DeleteBusinessSectorResponseDto,
+  ListBusinessSectorsDto,
+  ListBusinessSectorsResponseDto,
+  UpdateBusinessSectorDto,
+  UpdateBusinessSectorResponseDto,
 } from '@presentation/dtos/business-sector.dto';
 
 /**

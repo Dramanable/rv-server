@@ -5,7 +5,7 @@
  * Définit le contrat pour les adaptateurs d'infrastructure de sécurité.
  */
 
-import { UserRole, Permission } from '@shared/enums/user-role.enum';
+import { Permission, UserRole } from '@shared/enums/user-role.enum';
 
 /**
  * 🔐 Service de Permissions - Interface

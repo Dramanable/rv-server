@@ -1,17 +1,15 @@
 import {
-  Service,
   ServiceCategory,
   ServiceStatus,
 } from '../../../domain/entities/service.entity';
-import { ServiceRepository } from '../../../domain/repositories/service.repository.interface';
 import { ServiceNotFoundError } from '../../../domain/exceptions/service.exceptions';
-import { ApplicationValidationError } from '../../../application/exceptions/application.exceptions';
-import { ServiceId } from '../../../domain/value-objects/service-id.value-object';
-import { BusinessId } from '../../../domain/value-objects/business-id.value-object';
-import { UserId } from '../../../domain/value-objects/user-id.value-object';
+import { ServiceRepository } from '../../../domain/repositories/service.repository.interface';
 import { Money } from '../../../domain/value-objects/money.value-object';
-import { Logger } from '../../ports/logger.port';
+import { ServiceId } from '../../../domain/value-objects/service-id.value-object';
+import { UserId } from '../../../domain/value-objects/user-id.value-object';
+import { ApplicationValidationError } from '../../exceptions/application.exceptions';
 import { I18nService } from '../../ports/i18n.port';
+import { Logger } from '../../ports/logger.port';
 
 export interface UpdateServiceRequest {
   readonly serviceId: string;

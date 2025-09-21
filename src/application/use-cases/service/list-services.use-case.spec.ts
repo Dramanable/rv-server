@@ -1,17 +1,19 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ListServicesUseCase } from './list-services.use-case';
-import { ServiceRepository } from '../../../domain/repositories/service.repository.interface';
-import { Logger } from '../../ports/logger.port';
-import { I18nService } from '../../ports/i18n.port';
 import {
   Service,
   ServiceCategory,
 } from '../../../domain/entities/service.entity';
-import { ApplicationValidationError } from '../../exceptions/application.exceptions';
-import { createMockServiceRepository } from '../../mocks/typed-mocks';
-import { createMockLogger } from '../../mocks/typed-mocks';
-import { createMockI18nService } from '../../mocks/typed-mocks';
+import { ServiceRepository } from '../../../domain/repositories/service.repository.interface';
 import { BusinessId } from '../../../domain/value-objects/business-id.value-object';
+import { ApplicationValidationError } from '../../exceptions/application.exceptions';
+import {
+  createMockI18nService,
+  createMockLogger,
+  createMockServiceRepository,
+} from '../../mocks/typed-mocks';
+import { I18nService } from '../../ports/i18n.port';
+import { Logger } from '../../ports/logger.port';
+import { ListServicesUseCase } from './list-services.use-case';
 
 describe('ListServicesUseCase', () => {
   let useCase: ListServicesUseCase;

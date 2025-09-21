@@ -5,11 +5,11 @@
  * Aucune dépendance vers les frameworks (NestJS, TypeORM, etc.)
  */
 
-import { StaffRepository } from '../../../domain/repositories/staff.repository.interface';
-import { Logger } from '../../ports/logger.port';
-import { I18nService } from '../../ports/i18n.port';
-import { ApplicationValidationError } from '../../exceptions/application.exceptions';
 import { Staff } from '../../../domain/entities/staff.entity';
+import { StaffRepository } from '../../../domain/repositories/staff.repository.interface';
+import { ApplicationValidationError } from '../../exceptions/application.exceptions';
+import { I18nService } from '../../ports/i18n.port';
+import { Logger } from '../../ports/logger.port';
 
 export interface ListStaffRequest {
   readonly requestingUserId: string;
