@@ -297,4 +297,34 @@ export class Service {
   public unpublish(): void {
     this.deactivate();
   }
+
+  public updateBasicInfo(updates: {
+    name?: string;
+    description?: string;
+    category?: ServiceCategory;
+  }): void {
+    if (updates.name !== undefined) {
+      (this as any)._name = updates.name;
+    }
+    if (updates.description !== undefined) {
+      (this as any)._description = updates.description;
+    }
+    if (updates.category !== undefined) {
+      (this as any)._category = updates.category;
+    }
+    this._updatedAt = new Date();
+  }
+
+  /**
+   * Vérifie si le service peut être supprimé
+   * Un service peut être supprimé s'il n'est pas actif
+   */
+  public canBeDeleted(): boolean {
+    return this._status !== ServiceStatus.ACTIVE;
+  }
+
+  // Méthode pour forcer l'ID (utilisé pour les tests)
+  public forceId(id: ServiceId): void {
+    (this as any)._id = id;
+  }
 }

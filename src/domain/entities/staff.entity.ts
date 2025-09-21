@@ -310,6 +310,14 @@ export class Staff {
     return this._calendarIntegration?.overrideBusinessRules || false;
   }
 
+  /**
+   * Vérifie si le membre du personnel peut être supprimé
+   * Un staff peut être supprimé s'il n'est pas actif
+   */
+  public canBeDeleted(): boolean {
+    return this._status !== StaffStatus.ACTIVE;
+  }
+
   public getPersonalBookingRules(): StaffCalendarIntegration['personalBookingRules'] {
     return this._calendarIntegration?.personalBookingRules;
   }
