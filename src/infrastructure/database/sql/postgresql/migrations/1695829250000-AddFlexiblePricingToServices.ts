@@ -80,16 +80,16 @@ export class AddFlexiblePricingToServices1695829250000
       ALTER COLUMN "pricing_config" SET NOT NULL
     `);
 
-    // Ajouter un index sur le type de pricing
+    // Ajouter un index B-tree sur le type de pricing
     await queryRunner.query(`
       CREATE INDEX IF NOT EXISTS "IDX_services_pricing_config_type" 
-      ON "${schema}"."services" USING GIN (("pricing_config"->>'type'))
+      ON "${schema}"."services" USING BTREE (("pricing_config"->>'type'))
     `);
 
-    // Ajouter un index sur la visibilité du pricing
+    // Ajouter un index B-tree sur la visibilité du pricing
     await queryRunner.query(`
       CREATE INDEX IF NOT EXISTS "IDX_services_pricing_config_visibility" 
-      ON "${schema}"."services" USING GIN (("pricing_config"->>'visibility'))
+      ON "${schema}"."services" USING BTREE (("pricing_config"->>'visibility'))
     `);
 
     // Ajouter une contrainte pour valider les types de pricing

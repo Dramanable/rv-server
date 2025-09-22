@@ -66,6 +66,10 @@ import { UpdateStaffUseCase } from '@application/use-cases/staff/update-staff.us
 import { BookAppointmentUseCase } from '@application/use-cases/appointment/book-appointment.use-case';
 import { GetAvailableSlotsUseCase } from '@application/use-cases/appointments/get-available-slots-simple.use-case';
 
+// Notification Use Cases
+import { SendNotificationUseCase } from '@application/use-cases/notification/send-notification.use-case';
+import { SendBulkNotificationUseCase } from '@application/use-cases/notification/send-bulk-notification.use-case';
+
 // 🎮 Controllers
 import { AppointmentController } from './controllers/appointment.controller';
 import { AuthController } from './controllers/auth.controller';
@@ -76,12 +80,14 @@ import { CalendarController } from './controllers/calendar.controller';
 import { ServiceController } from './controllers/service.controller';
 import { StaffController } from './controllers/staff.controller';
 import { UserController } from './controllers/user.controller';
+import { NotificationController } from './controllers/notification.controller';
 
 // 🛡️ Security
 import { JwtAuthGuard } from './security/auth.guard';
 import { RolesGuard } from './security/guards/roles.guard';
 import { JwtStrategy } from './security/strategies/jwt.strategy';
 import { SecurityValidationPipe } from './security/validation.pipe';
+import { NotificationRateLimitGuard } from './security/notification-rate-limit.guard';
 
 // 🔧 Services
 import { MockI18nService } from '@application/mocks/mock-i18n.service';
@@ -104,6 +110,7 @@ import { PresentationCookieService } from './services/cookie.service';
     ServiceController,
     StaffController,
     AppointmentController,
+    NotificationController,
   ],
   providers: [
     // 🛡️ Security providers
@@ -111,6 +118,7 @@ import { PresentationCookieService } from './services/cookie.service';
     JwtStrategy,
     SecurityValidationPipe,
     RolesGuard,
+    NotificationRateLimitGuard,
 
     // 🍪 Cookie Service
     PresentationCookieService,
@@ -533,6 +541,51 @@ import { PresentationCookieService } from './services/cookie.service';
         TOKENS.SERVICE_REPOSITORY,
         TOKENS.APPOINTMENT_REPOSITORY,
         TOKENS.STAFF_REPOSITORY,
+        TOKENS.LOGGER,
+        TOKENS.I18N_SERVICE,
+      ],
+    },
+
+    // 📢 Notification Use Cases
+    {
+      provide: TOKENS.SEND_NOTIFICATION_USE_CASE,
+      useFactory: (notificationRepo, notificationService, logger, i18n) =>
+        new SendNotificationUseCase(
+          notificationRepo,
+          notificationService,
+          logger,
+          i18n,
+        ),
+      inject: [
+        TOKENS.NOTIFICATION_REPOSITORY,
+        TOKENS.NOTIFICATION_SERVICE,
+        TOKENS.LOGGER,
+        TOKENS.I18N_SERVICE,
+      ],
+    },
+    {
+      provide: TOKENS.SEND_BULK_NOTIFICATION_USE_CASE,
+      useFactory: (
+        notificationRepo,
+        notificationService,
+        userSegmentationService,
+        campaignService,
+        logger,
+        i18n,
+      ) =>
+        new SendBulkNotificationUseCase(
+          notificationRepo,
+          notificationService,
+          userSegmentationService,
+          campaignService,
+          logger,
+          i18n,
+        ),
+      inject: [
+        TOKENS.NOTIFICATION_REPOSITORY,
+        TOKENS.NOTIFICATION_SERVICE,
+        TOKENS.USER_SEGMENTATION_SERVICE,
+        TOKENS.CAMPAIGN_SERVICE,
         TOKENS.LOGGER,
         TOKENS.I18N_SERVICE,
       ],

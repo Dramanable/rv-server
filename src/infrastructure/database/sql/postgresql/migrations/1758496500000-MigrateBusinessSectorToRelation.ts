@@ -78,8 +78,24 @@ export class MigrateBusinessSectorToRelation1758496500000
       },
     ];
 
-    // Utiliser l'utilisateur admin existant
-    const systemUserId = '939ff85c-4312-426f-adf4-cf36b4cc443c';
+    // Créer ou récupérer un utilisateur système pour les migrations
+    let systemUserId: string;
+
+    const systemUserQuery = await queryRunner.query(`
+      SELECT id FROM ${schema}.users WHERE email = 'system@migration.local' LIMIT 1
+    `);
+
+    if (systemUserQuery.length === 0) {
+      // Créer un utilisateur système pour les migrations
+      const result = await queryRunner.query(`
+        INSERT INTO ${schema}.users (email, first_name, last_name, username, hashed_password, role, is_active, is_verified)
+        VALUES ('system@migration.local', 'System', 'Migration', 'system_migration', '$2b$10$dummy.hash.for.migration.only', 'ADMIN', true, true)
+        RETURNING id
+      `);
+      systemUserId = result[0].id;
+    } else {
+      systemUserId = systemUserQuery[0].id;
+    }
 
     // Insérer les business sectors par défaut
     for (const sector of defaultSectors) {
@@ -176,12 +192,7 @@ export class MigrateBusinessSectorToRelation1758496500000
       'FK_businesses_business_sector_id',
     );
 
-    // 4. Supprimer l'index
-    await queryRunner.query(
-      `DROP INDEX IF EXISTS ${schema}."IDX_businesses_business_sector_id";`,
-    );
-
-    // 5. Supprimer la colonne business_sector_id
+    // 4. Supprimer la colonne business_sector_id (TypeORM supprime automatiquement l'index)
     await queryRunner.dropColumn(`${schema}.businesses`, 'business_sector_id');
 
     // 6. Recréer l'index sur sector

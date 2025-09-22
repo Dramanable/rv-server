@@ -10,13 +10,22 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 export function setupSwagger(app: INestApplication): void {
   const config = new DocumentBuilder()
-    .setTitle('🚀 Enterprise Authentication API')
+    .setTitle('🚀 Enterprise Business Management API')
     .setDescription(
       `
-# 🎯 Clean Architecture Authentication System
+# 🎯 Clean Architecture Business Management System
+
+## 🏢 Complete Business Solution
+This API provides **enterprise-grade business management** with:
+- **🔐 Security-First Authentication** with JWT & cookies
+- **📢 Multi-Channel Notifications** (Email, SMS, Push, In-App)
+- **👥 User & Staff Management** with role-based permissions
+- **📅 Appointment Scheduling** with availability management
+- **💼 Service Management** with flexible pricing
+- **🏢 Business & Location Management**
 
 ## 🔐 Security-First Approach
-This API implements **enterprise-grade authentication** with:
+Authentication implements **enterprise-grade security** with:
 - **JWT tokens** in secure HttpOnly cookies
 - **Rate limiting** to prevent brute force attacks
 - **Token rotation** for enhanced security
@@ -117,6 +126,63 @@ const logout = async (logoutAllDevices = false) => {
 };
 \`\`\`
 
+## 📢 Notification System
+**Multi-channel notification delivery:**
+
+### Send Notification
+\`\`\`javascript
+const sendNotification = async (notification) => {
+  const response = await fetch('/api/v1/notifications/send', {
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      recipientId: 'user_123',
+      title: 'Appointment Reminder',
+      content: 'Your appointment is tomorrow at 2:30 PM',
+      channel: 'EMAIL', // EMAIL, SMS, PUSH, IN_APP
+      priority: 'HIGH', // LOW, NORMAL, HIGH, URGENT
+      metadata: {
+        appointmentId: 'apt_456',
+        businessId: 'biz_789'
+      }
+    })
+  });
+
+  return response.json();
+};
+\`\`\`
+
+### Scheduled Notifications
+\`\`\`javascript
+const scheduleReminder = async () => {
+  const reminderTime = new Date();
+  reminderTime.setHours(reminderTime.getHours() + 24); // 24h later
+
+  const response = await fetch('/api/v1/notifications/send', {
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      recipientId: 'user_123',
+      title: 'Appointment Tomorrow',
+      content: 'Don\\'t forget your appointment tomorrow!',
+      channel: 'EMAIL',
+      priority: 'NORMAL',
+      scheduledFor: reminderTime.toISOString(),
+      metadata: { type: 'reminder' }
+    })
+  });
+
+  return response.json();
+};
+\`\`\`
+
+### Rate Limiting
+- **100 notifications per hour** per user
+- **Automatic throttling** for high-volume senders
+- **Priority bypass** for URGENT notifications
+
 ## 🔄 Automatic Token Refresh
 - Access tokens expire in **15 minutes**
 - Refresh tokens expire in **7-30 days** (depending on rememberMe)
@@ -140,6 +206,10 @@ All endpoints return standardized error responses:
     .addTag('Users', '👥 User management and profile operations')
     .addTag('Password Reset', '🔄 Password recovery and reset operations')
     .addTag('Business', '🏢 Business and location management')
+    .addTag(
+      '📢 Notifications',
+      '📤 Send notifications via email, SMS, push, in-app',
+    )
     .addTag('Health', '💚 System health and monitoring endpoints')
 
     // 🍪 Cookie-based authentication (production)

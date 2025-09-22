@@ -388,12 +388,16 @@ touch src/infrastructure/database/repositories/typeorm-business.repository.spec.
 # 2. Écrire les tests qui échouent (RED)
 # 3. ⚠️ CRITIQUE : Créer Migration TypeORM OBLIGATOIRE EN PREMIER
 touch src/infrastructure/database/sql/postgresql/migrations/{timestamp}-Create{Entity}Table.ts
-# 4. Créer l'entité ORM BusinessOrmEntity (GREEN)
-# 5. Créer/Mettre à jour les Mappers statiques dans /infrastructure/mappers/ (GREEN)
-# 6. Créer TypeOrmBusinessRepository qui implémente BusinessRepository (GREEN)
-# 7. Configurer l'injection de dépendances dans TypeOrmRepositoriesModule (GREEN)
-# 8. Refactorer si nécessaire (REFACTOR)
-# 9. Valider : npm test -- typeorm-business.repository.spec.ts
+# 4. 🚨 ÉTAPE OBLIGATOIRE : TESTER LA MIGRATION AVANT TOUT CODE
+npm run migration:run
+npm run migration:revert  # Vérifier le rollback
+npm run migration:run     # Re-appliquer
+# 5. Créer l'entité ORM BusinessOrmEntity (GREEN)
+# 6. Créer/Mettre à jour les Mappers statiques dans /infrastructure/mappers/ (GREEN)
+# 7. Créer TypeOrmBusinessRepository qui implémente BusinessRepository (GREEN)
+# 8. Configurer l'injection de dépendances dans TypeOrmRepositoriesModule (GREEN)
+# 9. Refactorer si nécessaire (REFACTOR)
+# 10. Valider : npm test -- typeorm-business.repository.spec.ts
 ```
 
 **Étape 4️⃣ : PRESENTATION** (Seulement après Infrastructure terminé)
@@ -414,7 +418,8 @@ touch src/presentation/controllers/business.controller.spec.ts
 - **Créer l'entité ORM avant l'entité Domain** → ❌ Violation de dépendance
 - **Écrire du code sans test** → ❌ Violation de TDD
 - **Passer à Infrastructure avec des tests Application qui échouent** → ❌ Violation de workflow
-- **⚠️ NOUVEAU : Créer Controller/DTOs sans Migration TypeORM** → ❌ Violation Infrastructure manquante
+- **⚠️ CRITIQUE : Créer Controller/DTOs sans Migration TypeORM testée** → ❌ Violation Infrastructure manquante
+- **🚨 NOUVEAU : Passer à Presentation sans tester migration:run/revert** → ❌ Violation sécurité DB
 
 #### **1️⃣ DOMAIN (Couche Métier) - EN PREMIER**
 ```

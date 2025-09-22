@@ -15,6 +15,7 @@ import { PinoLoggerModule } from './logging/pino-logger.module';
 import { MappersModule } from './mappers/mappers.module';
 import { AuthInfrastructureModule } from './modules/auth-infrastructure.module';
 import { UseCasesModule } from './modules/use-cases.module';
+import { NotificationServicesModule } from './modules/notification-services.module';
 
 // Shared constants
 
@@ -36,6 +37,7 @@ import { UseCasesModule } from './modules/use-cases.module';
     // Business modules
     AuthInfrastructureModule, // ✅ Provides AUTH_SERVICE, PASSWORD_SERVICE, AUTH use cases
     UseCasesModule, // ✅ Provides all business use cases
+    NotificationServicesModule, // ✅ Provides notification services
   ],
   providers: [
     // No direct providers - everything comes from modules
@@ -56,6 +58,7 @@ import { UseCasesModule } from './modules/use-cases.module';
     // Authentication and business logic
     AuthInfrastructureModule,
     UseCasesModule,
+    NotificationServicesModule,
 
     // Health checks
     HealthModule,

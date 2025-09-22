@@ -24,6 +24,13 @@ help:
 	@echo "  redis-cli   - Connexion Redis"
 	@echo "  psql        - Connexion PostgreSQL"
 	@echo ""
+	@echo "Migrations:"
+	@echo "  migration-run      - Executer migrations"
+	@echo "  migration-revert   - Rollback derniere migration"
+	@echo "  migration-test     - Test complet TDD des migrations"
+	@echo "  migration-generate - Generer migration auto"
+	@echo "  migration-create   - Creer migration vide"
+	@echo ""
 	@echo "Maintenance:"
 	@echo "  clean       - Nettoyer Docker"
 	@echo "  reset       - Reset complet"
@@ -75,6 +82,36 @@ redis-cli:
 
 psql:
 	docker exec -it postgres psql -U postgres -d cleanarchi_dev
+
+# 🗄️ Migrations TypeORM depuis le container
+migration-run:
+	@echo "🚀 Exécution des migrations TypeORM depuis le container..."
+	docker compose exec app npm run migration:run
+
+migration-revert:
+	@echo "⏪ Rollback de la dernière migration depuis le container..."
+	docker compose exec app npm run migration:revert
+
+migration-generate:
+	@echo "📝 Génération automatique de migration depuis le container..."
+	@read -p "Nom de la migration: " name; \
+	docker compose exec app npm run migration:generate -- src/infrastructure/database/sql/postgresql/migrations/$$name
+
+migration-create:
+	@echo "✨ Création d'une migration vide depuis le container..."
+	@read -p "Nom de la migration: " name; \
+	docker compose exec app npm run migration:create -- src/infrastructure/database/sql/postgresql/migrations/$$name
+
+# 🧪 Test complet des migrations (TDD obligatoire)
+migration-test:
+	@echo "🧪 Test complet des migrations selon règles TDD..."
+	@echo "1️⃣ Application de la migration..."
+	docker compose exec app npm run migration:run
+	@echo "2️⃣ Vérification du rollback..."
+	docker compose exec app npm run migration:revert
+	@echo "3️⃣ Re-application de la migration..."
+	docker compose exec app npm run migration:run
+	@echo "✅ Test de migration terminé avec succès!"
 
 clean:
 	docker compose down

@@ -15,6 +15,7 @@ import { RefreshTokenOrmEntity } from './sql/postgresql/entities/refresh-token-o
 import { ServiceOrmEntity } from './sql/postgresql/entities/service-orm.entity';
 import { StaffOrmEntity } from './sql/postgresql/entities/staff-orm.entity';
 import { UserOrmEntity } from './sql/postgresql/entities/user-orm.entity';
+import { NotificationOrmEntity } from './entities/notification-orm.entity';
 
 /**
  * 🗄️ Simple Database Module
@@ -48,6 +49,7 @@ import { UserOrmEntity } from './sql/postgresql/entities/user-orm.entity';
           CalendarOrmEntity,
           ServiceOrmEntity,
           StaffOrmEntity,
+          NotificationOrmEntity,
         ],
         migrations: [
           'dist/infrastructure/database/sql/postgresql/migrations/*.js',
@@ -174,12 +176,60 @@ import { UserOrmEntity } from './sql/postgresql/entities/user-orm.entity';
       },
     },
 
+    // ✅ Mock Notification Repository pour démarrer l'app
+    {
+      provide: TOKENS.NOTIFICATION_REPOSITORY,
+      useValue: {
+        async save(notification: any) {
+          return notification;
+        },
+        async findById() {
+          return null;
+        },
+        async findAll() {
+          return [];
+        },
+        async updateStatus() {
+          return null;
+        },
+        async findPendingDeliveries() {
+          return [];
+        },
+      },
+    },
+
+    // ✅ Mock Notification Service pour démarrer l'app
+    {
+      provide: TOKENS.NOTIFICATION_SERVICE,
+      useValue: {
+        async send() {
+          return {
+            messageId: 'mock-message-id',
+            deliveryTime: new Date(),
+            status: 'SENT',
+          };
+        },
+        async schedule() {
+          return {
+            messageId: 'mock-scheduled-id',
+            scheduledFor: new Date(),
+            status: 'PENDING',
+          };
+        },
+        async isDeliveryTimeValid() {
+          return true;
+        },
+      },
+    },
+
     // ✅ Business, Calendar, Service et Staff repositories à ajouter si nécessaires
   ],
   exports: [
     ConfigService, // Export du ConfigService
     TOKENS.I18N_SERVICE,
     TOKENS.BUSINESS_SECTOR_REPOSITORY, // ✅ Export du mock BusinessSectorRepository
+    TOKENS.NOTIFICATION_REPOSITORY, // ✅ Export du mock NotificationRepository
+    TOKENS.NOTIFICATION_SERVICE, // ✅ Export du mock NotificationService
     TypeOrmRepositoriesModule, // ✅ Export le module qui contient USER_REPOSITORY, PERMISSION_SERVICE, etc.
     // Les autres repositories sont exportés via TypeOrmRepositoriesModule
   ],

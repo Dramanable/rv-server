@@ -71,6 +71,15 @@ export const APPLICATION_TOKENS = {
   LIST_APPOINTMENTS_USE_CASE: 'ListAppointmentsUseCase',
   GET_AVAILABLE_SLOTS_USE_CASE: 'GetAvailableSlotsUseCase',
 
+  // Notification Use Cases
+  SEND_NOTIFICATION_USE_CASE: 'SendNotificationUseCase',
+  SEND_BULK_NOTIFICATION_USE_CASE: 'SendBulkNotificationUseCase',
+
+  // Notification Services
+  NOTIFICATION_SERVICE: 'NotificationService',
+  USER_SEGMENTATION_SERVICE: 'UserSegmentationService',
+  CAMPAIGN_SERVICE: 'CampaignService',
+
   // Application Services
   USER_ONBOARDING_SERVICE: 'UserOnboardingApplicationService',
   USER_CACHE_SERVICE: 'UserCacheService',
@@ -99,6 +108,7 @@ export const DOMAIN_TOKENS = {
   SERVICE_REPOSITORY: 'ServiceRepository',
   STAFF_REPOSITORY: 'StaffRepository',
   APPOINTMENT_REPOSITORY: 'AppointmentRepository',
+  NOTIFICATION_REPOSITORY: 'NotificationRepository',
 
   // Domain Services
   USER_DOMAIN_SERVICE: 'UserDomainService',
