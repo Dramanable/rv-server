@@ -3,18 +3,20 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 export function setupSwagger(app: INestApplication): void {
   const config = new DocumentBuilder()
-    .setTitle('🚀 Enterprise Authentication API')
+    .setTitle('🏥 Complete Appointment Management API')
     .setDescription(
       `
-# 🎯 Clean Architecture Authentication System
+# 🎯 Clean Architecture Appointment System
 
-## 🔐 Security-First Approach
-This API implements **enterprise-grade authentication** with:
-- **JWT tokens** in secure HttpOnly cookies
-- **Rate limiting** to prevent brute force attacks
-- **Token rotation** for enhanced security
-- **CORS protection** and security headers
-- **Input validation** and sanitization
+## 🏗️ Complete Business Management Platform
+This comprehensive API provides **enterprise-grade appointment management** with:
+- **🔐 Authentication & Authorization** with JWT tokens in secure HttpOnly cookies  
+- **🏢 Business Management** - Multi-location business operations
+- **👥 Staff Management** - Personnel, roles, and scheduling
+- **💼 Service Management** - Flexible pricing, packages, and booking rules
+- **📅 Appointment Booking** - Advanced scheduling with conflict resolution
+- **📊 Calendar Management** - Personal and business calendars
+- **🛡️ Security** - Rate limiting, CORS protection, input validation
 
 ## 🍪 Cookie-Based Authentication
 **Important for Frontend Developers:**
@@ -25,9 +27,10 @@ This API implements **enterprise-grade authentication** with:
 
 ## 📱 Frontend Integration Guide
 
-### Login Example
+### 🔐 Authentication Flow
 \`\`\`javascript
-const response = await fetch('/auth/login', {
+// Login
+const loginResponse = await fetch('/auth/login', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   credentials: 'include', // ✅ REQUIRED for cookies
@@ -37,28 +40,113 @@ const response = await fetch('/auth/login', {
     rememberMe: false
   })
 });
-\`\`\`
 
-### Making Authenticated Requests
-\`\`\`javascript
-const response = await fetch('/api/protected-endpoint', {
+// Get current user info
+const userResponse = await fetch('/auth/me', {
   credentials: 'include' // ✅ Automatically sends auth cookies
 });
 \`\`\`
 
-### Registration with Auto-Login
+### 🏢 Business Management
 \`\`\`javascript
-const response = await fetch('/auth/register', {
+// Create business
+const businessResponse = await fetch('/api/v1/businesses', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   credentials: 'include',
   body: JSON.stringify({
-    email: 'newuser@example.com',
-    name: 'John Doe',
-    password: 'SecurePass123!'
+    name: 'My Medical Clinic',
+    email: 'contact@clinic.com',
+    phone: '+33123456789',
+    businessSectorId: 'uuid-sector-id',
+    address: {
+      street: '123 Health Street',
+      city: 'Paris',
+      zipCode: '75001',
+      country: 'France'
+    }
   })
 });
-// User is automatically logged in after registration
+\`\`\`
+
+### 💼 Service Management with Flexible Pricing
+\`\`\`javascript
+// Create service with flexible pricing
+const serviceResponse = await fetch('/api/v1/services', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  credentials: 'include',
+  body: JSON.stringify({
+    businessId: 'business-uuid',
+    name: 'Medical Consultation',
+    description: 'General medical consultation',
+    duration: 30, // minutes
+    category: 'MEDICAL',
+    pricingConfig: {
+      type: 'FIXED', // FREE, FIXED, VARIABLE, HIDDEN, ON_DEMAND
+      visibility: 'PUBLIC', // PUBLIC, AUTHENTICATED, PRIVATE, HIDDEN
+      basePrice: { amount: 50.00, currency: 'EUR' },
+      rules: [],
+      description: 'Standard consultation fee'
+    },
+    packages: [
+      {
+        name: '5-Session Package',
+        description: 'Discounted package for regular patients',
+        sessionsIncluded: 5,
+        packagePrice: { amount: 200.00, currency: 'EUR' },
+        validityDays: 90
+      }
+    ]
+  })
+});
+\`\`\`
+
+### 📅 Appointment Booking
+\`\`\`javascript
+// Book appointment
+const appointmentResponse = await fetch('/api/v1/appointments', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  credentials: 'include',
+  body: JSON.stringify({
+    businessId: 'business-uuid',
+    serviceId: 'service-uuid',
+    staffId: 'staff-uuid', // optional
+    startTime: '2024-01-15T14:00:00Z',
+    endTime: '2024-01-15T14:30:00Z',
+    clientInfo: {
+      firstName: 'John',
+      lastName: 'Doe',
+      email: 'john.doe@email.com',
+      phone: '+33123456789'
+    },
+    notes: 'First consultation'
+  })
+});
+\`\`\`
+
+### 🔍 Advanced Search & Filtering
+\`\`\`javascript
+// Search services with advanced filters
+const servicesResponse = await fetch('/api/v1/services/list', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  credentials: 'include',
+  body: JSON.stringify({
+    page: 1,
+    limit: 20,
+    search: 'consultation',
+    sortBy: 'name',
+    sortOrder: 'asc',
+    filters: {
+      businessId: 'business-uuid',
+      category: 'MEDICAL',
+      isActive: true,
+      allowOnlineBooking: true
+    }
+  })
+});
 \`\`\`
 
 ## 🔄 Automatic Token Refresh
@@ -67,18 +155,73 @@ const response = await fetch('/auth/register', {
 - **Automatic rotation** prevents token replay attacks
 - Frontend doesn't need to handle refresh logic
 
-## 🚨 Error Handling
-All endpoints return standardized error responses with:
-- Clear error messages in multiple languages
-- Appropriate HTTP status codes
-- Rate limiting information when applicable
+## 🚨 Standardized Error Handling
+All endpoints return consistent error responses:
+\`\`\`json
+{
+  "success": false,
+  "error": {
+    "code": "BUSINESS_NOT_FOUND",
+    "message": "Business not found",
+    "details": "No business found with ID: uuid",
+    "timestamp": "2024-01-15T10:30:00Z",
+    "path": "/api/v1/businesses/uuid"
+  }
+}
+\`\`\`
+
+## 💡 Business Rules & Features
+
+### 🏢 Multi-Business Support
+- **Business Owners** can manage multiple locations
+- **Staff** can be assigned to specific businesses
+- **Services** are business-specific with flexible pricing
+
+### 💰 Flexible Pricing System
+- **FREE** services (0 cost)
+- **FIXED** pricing independent of duration
+- **VARIABLE** pricing based on duration rules
+- **HIDDEN** pricing not visible to clients
+- **ON_DEMAND** pricing requires quote
+
+### 📦 Package Deals
+- **Multi-session packages** with discounted rates
+- **Validity periods** for package expiration
+- **Automatic calculation** of savings vs individual sessions
+
+### 🔒 Advanced Permissions
+- **Role-based access control** (Platform Admin, Business Owner, Staff, Client)
+- **Business scoping** - users only see their business data
+- **Service booking rules** - only public services can be booked online
     `,
     )
-    .setVersion('2.0.0')
-    .addTag('Authentication', '🔐 Login, Register, Refresh, Logout operations')
-    .addTag('Users', '👥 User management and profile operations')
-    .addTag('Password Reset', '🔄 Password recovery and reset operations')
-    .addTag('Business', '🏢 Business and location management')
+    .setVersion('3.0.0')
+    .addTag('🔐 Authentication', 'Login, Register, Refresh, Logout operations')
+    .addTag('👥 Users', 'User management and profile operations')
+    .addTag('🔄 Password Reset', 'Password recovery and reset operations')
+    .addTag(
+      '🏢 Business Management',
+      'Business creation, updates, and multi-location management',
+    )
+    .addTag(
+      '� Business Sectors',
+      'Industry categories and business classification',
+    )
+    .addTag(
+      '👨‍💼 Staff Management',
+      'Personnel management, roles, and staff scheduling',
+    )
+    .addTag(
+      '💼 Services',
+      'Service management with flexible pricing and packages',
+    )
+    .addTag(
+      '📅 Appointments',
+      'Appointment booking, scheduling, and management',
+    )
+    .addTag('📊 Calendars', 'Personal and business calendar management')
+    .addTag('⏰ Business Hours', 'Working hours and availability management')
+    .addTag('🏥 Health', 'System health checks and monitoring')
     .addCookieAuth('accessToken', {
       type: 'http',
       scheme: 'bearer',

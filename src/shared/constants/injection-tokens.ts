@@ -51,6 +51,26 @@ export const APPLICATION_TOKENS = {
   UPDATE_CALENDAR_USE_CASE: 'UpdateCalendarUseCase',
   DELETE_CALENDAR_USE_CASE: 'DeleteCalendarUseCase',
 
+  // Service Use Cases
+  CREATE_SERVICE_USE_CASE: 'CreateServiceUseCase',
+  GET_SERVICE_USE_CASE: 'GetServiceUseCase',
+  LIST_SERVICES_USE_CASE: 'ListServicesUseCase',
+  UPDATE_SERVICE_USE_CASE: 'UpdateServiceUseCase',
+  DELETE_SERVICE_USE_CASE: 'DeleteServiceUseCase',
+
+  // Staff Use Cases
+  CREATE_STAFF_USE_CASE: 'CreateStaffUseCase',
+  GET_STAFF_USE_CASE: 'GetStaffUseCase',
+  LIST_STAFF_USE_CASE: 'ListStaffUseCase',
+  UPDATE_STAFF_USE_CASE: 'UpdateStaffUseCase',
+  DELETE_STAFF_USE_CASE: 'DeleteStaffUseCase',
+
+  // Appointment Use Cases
+  BOOK_APPOINTMENT_USE_CASE: 'BookAppointmentUseCase',
+  GET_APPOINTMENT_USE_CASE: 'GetAppointmentUseCase',
+  LIST_APPOINTMENTS_USE_CASE: 'ListAppointmentsUseCase',
+  GET_AVAILABLE_SLOTS_USE_CASE: 'GetAvailableSlotsUseCase',
+
   // Application Services
   USER_ONBOARDING_SERVICE: 'UserOnboardingApplicationService',
   USER_CACHE_SERVICE: 'UserCacheService',

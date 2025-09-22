@@ -17,6 +17,7 @@ import {
   Put,
   Query,
   UseGuards,
+  Inject,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -27,6 +28,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 
+import { TOKENS } from '@shared/constants/injection-tokens';
 import { User } from '../../domain/entities/user.entity';
 import { GetUser } from '../security/decorators/get-user.decorator';
 import { JwtAuthGuard } from '../security/guards/jwt-auth.guard';
@@ -49,12 +51,14 @@ import {
 } from '../dtos/appointment.dto';
 
 @ApiTags('📅 Appointments')
-@Controller('api/v1/appointments')
+@Controller('appointments')
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 export class AppointmentController {
   constructor(
+    @Inject(TOKENS.GET_AVAILABLE_SLOTS_USE_CASE)
     private readonly getAvailableSlotsUseCase: GetAvailableSlotsUseCase,
+    @Inject(TOKENS.BOOK_APPOINTMENT_USE_CASE)
     private readonly bookAppointmentUseCase: BookAppointmentUseCase,
   ) {}
 

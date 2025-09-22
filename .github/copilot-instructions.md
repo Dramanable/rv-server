@@ -2935,6 +2935,205 @@ export class GlobalExceptionFilter implements ExceptionFilter {
 
 **Cette standardisation garantit une gestion d'erreurs cohérente et debuggable sur toute l'API !**
 
+## 📚 **DOCUMENTATION SWAGGER - WORKFLOW COMPLET OBLIGATOIRE**
+
+### 🎯 **RÈGLE CRITIQUE : API DOCUMENTATION COMPLÈTE ET FRONTEND-FRIENDLY**
+
+**Après avoir créé les Controllers et DTOs, TOUJOURS créer une documentation Swagger complète pour garantir une API utilisable, cohérente et facilement intégrable par les équipes frontend.**
+
+#### **📋 WORKFLOW DOCUMENTATION OBLIGATOIRE APRÈS PRÉSENTATION**
+
+#### **1️⃣ RÈGLE ROUTE PREFIXING - ÉVITER DOUBLE /v1/v1/**
+
+```typescript
+// ✅ CORRECT - main.ts avec globalPrefix
+app.setGlobalPrefix('api/v1');
+
+// ✅ CORRECT - Controllers SANS préfixe redondant
+@Controller('services')  // → /api/v1/services
+@Controller('staff')     // → /api/v1/staff
+@Controller('appointments') // → /api/v1/appointments
+
+// ❌ INTERDIT - Double préfixage
+@Controller('api/v1/services') // → /api/v1/api/v1/services (ERREUR!)
+```
+
+#### **2️⃣ TAGS SWAGGER OBLIGATOIRES PAR RESSOURCE**
+
+```typescript
+// ✅ OBLIGATOIRE - Tags avec icônes pour clarté
+@ApiTags('💼 Services')           // Services métier
+@ApiTags('👨‍💼 Staff Management')    // Gestion personnel
+@ApiTags('📅 Appointments')       // Rendez-vous
+@ApiTags('🏢 Business Management') // Gestion entreprises
+@ApiTags('👥 User Management')    // Gestion utilisateurs
+@ApiTags('❤️ Health Checks')      // Santé système
+```
+
+#### **3️⃣ DOCUMENTATION SWAGGER ENRICHIE OBLIGATOIRE**
+
+```typescript
+// ✅ TEMPLATE OBLIGATOIRE - Documentation complète avec exemples
+@ApiOperation({
+  summary: '🔍 Search {Resource}s with Advanced Filters',
+  description: `
+    **Recherche avancée paginée** des {resource}s avec système de filtrage complet.
+
+    ## 🎯 Fonctionnalités
+
+    ### 📊 **Filtres disponibles**
+    - **Recherche textuelle** : Nom, description, tags
+    - **Filtres métier** : Statut, catégorie, prix
+    - **Tri multi-critères** : Tous champs avec asc/desc
+    - **Pagination** : Page/limit avec métadonnées complètes
+
+    ### 💰 **Exemple pricing complexe**
+    \`\`\`json
+    {
+      "pricingConfig": {
+        "type": "VARIABLE",
+        "basePrice": { "amount": 80.00, "currency": "EUR" },
+        "variablePricing": {
+          "factors": [
+            {
+              "name": "Durée",
+              "options": [
+                { "label": "30 min", "priceModifier": 0 },
+                { "label": "60 min", "priceModifier": 40 }
+              ]
+            }
+          ]
+        }
+      }
+    }
+    \`\`\`
+
+    ### 📋 **Règles métier**
+    - ✅ **Permissions** : Scoped selon rôle utilisateur
+    - ✅ **Validation** : Tous paramètres validés côté serveur
+    - ✅ **Performance** : Pagination obligatoire, cache Redis
+
+    ### 🔐 **Sécurité**
+    - **JWT** : Token Bearer obligatoire
+    - **RBAC** : Permissions granulaires par ressource
+    - **Rate limiting** : 100 req/min par utilisateur
+
+    ## 🎯 **Guide d'intégration Frontend**
+
+    ### React/Vue.js Example
+    \`\`\`typescript
+    const searchServices = async (filters: ServiceFilters) => {
+      const response = await api.post('/api/v1/services/list', {
+        ...filters,
+        page: 1,
+        limit: 20
+      });
+
+      return {
+        services: response.data.data,
+        pagination: response.data.meta
+      };
+    };
+    \`\`\`
+  `,
+})
+```
+
+#### **4️⃣ CHECKLIST OBLIGATOIRE APRÈS CHAQUE PRÉSENTATION**
+
+- [ ] **Routes** : Aucun double préfixage /v1/v1/
+- [ ] **Tags** : @ApiTags avec icônes sur tous les controllers
+- [ ] **Operations** : @ApiOperation avec description complète et exemples
+- [ ] **Responses** : Tous codes HTTP documentés avec exemples JSON
+- [ ] **DTOs** : Validation et Swagger schemas complets
+- [ ] **Config** : Swagger config central avec guide intégration
+- [ ] **Documentation** : Fichier markdown complet par fonctionnalité
+- [ ] **Frontend** : Exemples TypeScript/React/Vue.js
+- [ ] **Tests** : Validation Swagger UI accessible et complète
+- [ ] **Push** : Code testé et documentation à jour
+
+#### **5️⃣ CONFIGURATION SWAGGER CENTRALE ENRICHIE**
+
+```typescript
+// ✅ OBLIGATOIRE - Configuration Swagger avec guide intégration complet
+const config = new DocumentBuilder()
+  .setTitle('🎯 Appointment System API')
+  .setDescription(`
+    ## 🚀 **API Complète pour Système de Rendez-vous**
+
+    ### 📋 **Fonctionnalités Principales**
+
+    - **🏢 Gestion d'entreprises** : Secteurs, profils, configuration
+    - **👨‍💼 Personnel** : Staff, disponibilités, compétences
+    - **💼 Services** : Pricing flexible, packages, prérequis
+    - **📅 Rendez-vous** : Réservation, notifications, historique
+    - **👥 Utilisateurs** : Authentification, rôles, permissions
+
+    ### 🔐 **Authentification**
+
+    Toutes les APIs nécessitent un **JWT Bearer Token** :
+
+    \`\`\`bash
+    curl -H "Authorization: Bearer YOUR_JWT_TOKEN" \\
+         -X POST http://localhost:3000/api/v1/services/list
+    \`\`\`
+
+    ### 📊 **Standards de Réponse**
+
+    #### ✅ **Succès**
+    \`\`\`json
+    {
+      "success": true,
+      "data": { /* Données métier */ },
+      "meta": { /* Métadonnées pagination */ }
+    }
+    \`\`\`
+
+    #### ❌ **Erreur**
+    \`\`\`json
+    {
+      "success": false,
+      "error": {
+        "code": "BUSINESS_ERROR_CODE",
+        "message": "Message utilisateur localisé",
+        "field": "champEnErreur"
+      }
+    }
+    \`\`\`
+
+    ### 🎯 **Guides d'Intégration**
+
+    - **React/Vue.js** : Exemples TypeScript fournis
+    - **Pagination** : Système uniforme avec métadonnées
+    - **Filtrage** : POST /list pour requêtes complexes
+    - **Pricing** : Système flexible pour tous cas d'usage
+
+    ### 📞 **Support**
+
+    - **Documentation** : Exemples complets dans chaque endpoint
+    - **Types TypeScript** : Interfaces générées automatiquement
+    - **Postman Collection** : Import direct depuis Swagger JSON
+  `)
+  .setVersion('2.0')
+  .addBearerAuth()
+  .addTag('💼 Services', 'Gestion des services et tarification flexible')
+  .addTag('👨‍💼 Staff Management', 'Personnel et disponibilités')
+  .addTag('📅 Appointments', 'Système de rendez-vous complet')
+  .addTag('🏢 Business Management', 'Entreprises et secteurs d\'activité')
+  .addTag('👥 User Management', 'Utilisateurs et authentification')
+  .addTag('❤️ Health Checks', 'Monitoring et santé système');
+```
+
+#### **🚫 INTERDICTIONS - Documentation Swagger**
+
+- ❌ **JAMAIS** de controller sans @ApiTags
+- ❌ **JAMAIS** d'endpoint sans @ApiOperation détaillée
+- ❌ **JAMAIS** de double préfixage de routes
+- ❌ **JAMAIS** d'exemples JSON incomplets ou faux
+- ❌ **JAMAIS** oublier les guides d'intégration frontend
+
+**Cette règle garantit des APIs professionnelles, documentées et facilement intégrables !**
+
 ### 🧪 **TESTS D'INTÉGRATION API STANDARDISÉS**
 
 #### **📋 Pattern de Tests Obligatoire pour Chaque Ressource**

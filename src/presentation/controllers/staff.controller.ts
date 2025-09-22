@@ -16,6 +16,7 @@ import {
   Post,
   Put,
   UseGuards,
+  Inject,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -25,6 +26,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 
+import { TOKENS } from '@shared/constants/injection-tokens';
 import { User } from '../../domain/entities/user.entity';
 import { GetUser } from '../security/decorators/get-user.decorator';
 import { JwtAuthGuard } from '../security/guards/jwt-auth.guard';
@@ -51,16 +53,21 @@ import {
   CloudProvider,
 } from '../../domain/value-objects/file-url.value-object';
 
-@ApiTags('👥 Staff Management')
-@Controller('api/v1/staff')
+@ApiTags('�‍💼 Staff Management')
+@Controller('staff')
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 export class StaffController {
   constructor(
+    @Inject(TOKENS.CREATE_STAFF_USE_CASE)
     private readonly createStaffUseCase: CreateStaffUseCase,
+    @Inject(TOKENS.GET_STAFF_USE_CASE)
     private readonly getStaffUseCase: GetStaffUseCase,
+    @Inject(TOKENS.LIST_STAFF_USE_CASE)
     private readonly listStaffUseCase: ListStaffUseCase,
+    @Inject(TOKENS.UPDATE_STAFF_USE_CASE)
     private readonly updateStaffUseCase: UpdateStaffUseCase,
+    @Inject(TOKENS.DELETE_STAFF_USE_CASE)
     private readonly deleteStaffUseCase: DeleteStaffUseCase,
   ) {}
 

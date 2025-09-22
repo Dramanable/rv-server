@@ -17,6 +17,7 @@ import {
   HttpStatus,
   UseGuards,
   ParseUUIDPipe,
+  Inject,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -28,6 +29,9 @@ import {
 import { JwtAuthGuard } from '@presentation/security/guards/jwt-auth.guard';
 import { GetUser } from '@presentation/security/decorators/get-user.decorator';
 import { User } from '@domain/entities/user.entity';
+
+// Injection Tokens
+import { TOKENS } from '@shared/constants/injection-tokens';
 
 // Use Cases Imports
 import { CreateServiceUseCase } from '@application/use-cases/service/create-service.use-case';
@@ -48,16 +52,21 @@ import {
   DeleteServiceResponseDto,
 } from '@presentation/dtos/service.dto';
 
-@ApiTags('Services')
+@ApiTags('💼 Services')
 @ApiBearerAuth()
-@Controller('api/v1/services')
+@Controller('services')
 @UseGuards(JwtAuthGuard)
 export class ServiceController {
   constructor(
+    @Inject(TOKENS.CREATE_SERVICE_USE_CASE)
     private readonly createServiceUseCase: CreateServiceUseCase,
+    @Inject(TOKENS.GET_SERVICE_USE_CASE)
     private readonly getServiceUseCase: GetServiceUseCase,
+    @Inject(TOKENS.LIST_SERVICES_USE_CASE)
     private readonly listServicesUseCase: ListServicesUseCase,
+    @Inject(TOKENS.UPDATE_SERVICE_USE_CASE)
     private readonly updateServiceUseCase: UpdateServiceUseCase,
+    @Inject(TOKENS.DELETE_SERVICE_USE_CASE)
     private readonly deleteServiceUseCase: DeleteServiceUseCase,
   ) {}
 
@@ -66,22 +75,32 @@ export class ServiceController {
    */
   @Post('list')
   @ApiOperation({
-    summary: 'List Services with Advanced Search and Pagination',
+    summary: '🔍 List Services with Advanced Search and Pagination',
     description: `
-      Provides comprehensive search, filtering, and pagination for services.
+      **Recherche avancée paginée** avec système de tarification flexible.
       
-      **Features:**
-      - ✅ Search by name or description
-      - ✅ Filter by business, category, price range, duration
-      - ✅ Sort by multiple fields (name, category, duration, price, createdAt)
-      - ✅ Pagination with metadata
-      - ✅ Permission-based access control
+      ## ✨ Fonctionnalités
+      - 🔍 **Recherche textuelle** par nom ou description
+      - 🏷️ **Filtres avancés** : entreprise, catégorie, prix, durée
+      - 🔀 **Tri multi-critères** : nom, catégorie, durée, prix, date création
+      - 📄 **Pagination optimisée** avec métadonnées complètes
+      - 🛡️ **Contrôle d'accès** basé sur les rôles utilisateur
+      - 💰 **Pricing flexible** : gratuit, fixe, variable, masqué, sur demande
       
-      **Permissions Required:**
-      - PLATFORM_ADMIN: Can list all services
-      - BUSINESS_OWNER: Can list services in their businesses
-      - BUSINESS_ADMIN: Can list services in their business
-      - LOCATION_MANAGER: Can list services in their location
+      ## 🔐 Permissions requises
+      | Rôle | Accès |
+      |------|-------|
+      | PLATFORM_ADMIN | Tous les services système |
+      | BUSINESS_OWNER | Services de ses entreprises |
+      | BUSINESS_ADMIN | Services de son entreprise |
+      | LOCATION_MANAGER | Services de sa localisation |
+      | PRACTITIONER | Services qu'il/elle fournit |
+      
+      ## 💡 Exemples d'utilisation
+      - **Recherche simple** : \`{ "search": "massage" }\`
+      - **Filtrage par prix** : \`{ "filters": { "priceRange": { "min": 50, "max": 200 } } }\`
+      - **Services gratuits** : \`{ "filters": { "pricingType": "FREE" } }\`
+      - **Réservation en ligne** : \`{ "filters": { "allowOnlineBooking": true } }\`
     `,
   })
   @ApiResponse({
@@ -140,16 +159,30 @@ export class ServiceController {
    */
   @Get(':id')
   @ApiOperation({
-    summary: 'Get Service by ID',
+    summary: '📄 Get Service by ID',
     description: `
-      Retrieves a specific service by its unique identifier.
+      **Récupération détaillée** d'un service avec sa configuration complète.
       
-      **Permissions Required:**
-      - PLATFORM_ADMIN: Can view any service
-      - BUSINESS_OWNER: Can view services in their businesses
-      - BUSINESS_ADMIN: Can view services in their business
-      - LOCATION_MANAGER: Can view services in their location
-      - PRACTITIONER: Can view services they provide
+      ## 📋 Informations retournées
+      - 🏷️ **Détails du service** : nom, description, catégorie
+      - 💰 **Configuration pricing** : type, prix, remises, forfaits
+      - ⏰ **Planification** : durée, créneaux, réservation en ligne
+      - 📋 **Prérequis** : âge, documents, préparation
+      - 👥 **Personnel assigné** : praticiens disponibles
+      - 🔄 **Historique** : dates de création et modification
+      
+      ## 🔐 Contrôle d'accès
+      - ✅ **PLATFORM_ADMIN** : Accès à tous les services
+      - ✅ **BUSINESS_OWNER** : Services de ses entreprises
+      - ✅ **BUSINESS_ADMIN** : Services de son entreprise  
+      - ✅ **LOCATION_MANAGER** : Services de sa localisation
+      - ✅ **PRACTITIONER** : Services qu'il/elle fournit
+      
+      ## 💡 Cas d'usage typiques
+      - 🖥️ **Interface cliente** : Affichage détails avant réservation
+      - 📱 **App mobile** : Fiche service complète
+      - 🛠️ **Administration** : Gestion et modification
+      - 📊 **Reporting** : Analyse des configurations pricing
     `,
   })
   @ApiParam({
@@ -194,20 +227,86 @@ export class ServiceController {
    */
   @Post()
   @ApiOperation({
-    summary: 'Create New Service',
+    summary: '➕ Create New Service with Flexible Pricing',
     description: `
-      Creates a new service for a business.
+      **Création complète** d'un service avec système de tarification avancé.
       
-      **Business Rules:**
-      - Service name must be unique within the business
-      - Duration must be between 15 minutes and 8 hours
-      - Price must be positive
-      - Category is optional but recommended
+      ## 🎯 Types de pricing supportés
       
-      **Permissions Required:**
-      - PLATFORM_ADMIN: Can create services for any business
-      - BUSINESS_OWNER: Can create services for their businesses
-      - BUSINESS_ADMIN: Can create services for their business
+      ### 🆓 **Service GRATUIT**
+      \`\`\`json
+      {
+        "pricingConfig": {
+          "type": "FREE",
+          "visibility": "PUBLIC"
+        }
+      }
+      \`\`\`
+      
+      ### 💰 **Prix FIXE avec remises**
+      \`\`\`json
+      {
+        "pricingConfig": {
+          "type": "FIXED",
+          "visibility": "PUBLIC",
+          "basePrice": { "amount": 85.00, "currency": "EUR" },
+          "discountRules": [
+            {
+              "type": "FIRST_TIME_CLIENT",
+              "discountType": "PERCENTAGE",
+              "value": 20
+            }
+          ]
+        }
+      }
+      \`\`\`
+      
+      ### 🔧 **Prix VARIABLE**
+      \`\`\`json
+      {
+        "pricingConfig": {
+          "type": "VARIABLE",
+          "basePrice": { "amount": 80.00, "currency": "EUR" },
+          "variablePricing": {
+            "factors": [
+              {
+                "name": "Durée",
+                "options": [
+                  { "label": "30 min", "priceModifier": 0 },
+                  { "label": "60 min", "priceModifier": 40 }
+                ]
+              }
+            ]
+          }
+        }
+      }
+      \`\`\`
+      
+      ### 🔒 **Prix MASQUÉ** (devis sur demande)
+      \`\`\`json
+      {
+        "pricingConfig": {
+          "type": "ON_DEMAND",
+          "visibility": "HIDDEN",
+          "onDemandPricing": {
+            "requiresQuote": true,
+            "estimationProcess": "Consultation préalable"
+          }
+        }
+      }
+      \`\`\`
+      
+      ## 📋 Règles métier
+      - ✅ **Nom unique** par entreprise
+      - ✅ **Durée** : 15 minutes à 8 heures
+      - ✅ **Catégorie** recommandée pour le filtrage
+      - ✅ **Personnel assigné** optionnel
+      - ✅ **Prérequis** configurables (âge, documents)
+      
+      ## 🔐 Permissions
+      - **PLATFORM_ADMIN** : Création pour toute entreprise
+      - **BUSINESS_OWNER** : Ses entreprises uniquement
+      - **BUSINESS_ADMIN** : Son entreprise uniquement
     `,
   })
   @ApiResponse({
@@ -292,19 +391,81 @@ export class ServiceController {
    */
   @Put(':id')
   @ApiOperation({
-    summary: 'Update Service',
+    summary: '✏️ Update Service with Flexible Pricing',
     description: `
-      Updates an existing service with new information.
+      **Mise à jour complète** d'un service existant avec gestion avancée des prix.
       
-      **Business Rules:**
-      - Only provided fields will be updated (partial update)
-      - Service name must remain unique within the business
-      - Cannot update businessId (services cannot be transferred)
+      ## 🔄 Modification du pricing
       
-      **Permissions Required:**
-      - PLATFORM_ADMIN: Can update any service
-      - BUSINESS_OWNER: Can update services in their businesses
-      - BUSINESS_ADMIN: Can update services in their business
+      ### Passage de GRATUIT → PAYANT
+      \`\`\`json
+      {
+        "pricingConfig": {
+          "type": "FIXED",
+          "visibility": "PUBLIC", 
+          "basePrice": { "amount": 50.00, "currency": "EUR" }
+        }
+      }
+      \`\`\`
+      
+      ### Ajout de règles de remise
+      \`\`\`json
+      {
+        "pricingConfig": {
+          "type": "FIXED",
+          "discountRules": [
+            {
+              "type": "LOYALTY_PROGRAM",
+              "discountType": "FIXED_AMOUNT",
+              "value": 10,
+              "conditions": { "minimumVisits": 5 }
+            },
+            {
+              "type": "BULK_BOOKING",
+              "discountType": "PERCENTAGE", 
+              "value": 15,
+              "conditions": { "minimumSessions": 3 }
+            }
+          ]
+        }
+      }
+      \`\`\`
+      
+      ### Configuration pricing variable
+      \`\`\`json
+      {
+        "pricingConfig": {
+          "type": "VARIABLE",
+          "basePrice": { "amount": 60.00, "currency": "EUR" },
+          "variablePricing": {
+            "factors": [
+              {
+                "name": "Complexité",
+                "options": [
+                  { "label": "Standard", "priceModifier": 0 },
+                  { "label": "Avancé", "priceModifier": 25 },
+                  { "label": "Expert", "priceModifier": 50 }
+                ]
+              }
+            ]
+          }
+        }
+      }
+      \`\`\`
+      
+      ## 📋 Champs modifiables
+      - ✅ **Nom** et description
+      - ✅ **Durée** et catégorie
+      - ✅ **Statut** (actif/inactif)
+      - ✅ **Visibilité** (public/privé)
+      - ✅ **Réservation en ligne** activée
+      - ✅ **Configuration pricing** complète
+      - ✅ **Personnel assigné**
+      - ✅ **Prérequis** et tags
+      
+      ## 🔐 Permissions
+      - **PLATFORM_ADMIN** : Modification de tout service
+      - **BUSINESS_OWNER/ADMIN** : Services de leur entreprise uniquement
     `,
   })
   @ApiParam({
@@ -402,19 +563,55 @@ export class ServiceController {
    */
   @Delete(':id')
   @ApiOperation({
-    summary: 'Delete Service',
+    summary: '🗑️ Delete Service (Soft Delete)',
     description: `
-      Deletes a service (soft delete - marks as inactive).
+      **Suppression sécurisée** d'un service avec préservation des données historiques.
       
-      **Business Rules:**
-      - Cannot delete services with active/future appointments
-      - Service is marked as inactive, not physically deleted
-      - Historical data and completed appointments are preserved
+      ## 🛡️ Règles de protection
       
-      **Permissions Required:**
-      - PLATFORM_ADMIN: Can delete any service
-      - BUSINESS_OWNER: Can delete services in their businesses
-      - BUSINESS_ADMIN: Can delete services in their business
+      ### ❌ **Suppression BLOQUÉE si :**
+      - ✋ Rendez-vous **actifs** ou **futurs** liés au service
+      - ✋ Commandes ou **paiements en cours**
+      - ✋ Service référencé dans des **packages actifs**
+      
+      ### ✅ **Suppression AUTORISÉE :**
+      - 🕒 Aucun rendez-vous futur programmé
+      - 💰 Tous les paiements soldés
+      - 📋 Service non utilisé dans des offres groupées
+      
+      ## 🔄 Processus de suppression
+      
+      1. **Vérification** des contraintes métier
+      2. **Soft delete** → Service marqué inactif
+      3. **Préservation** données historiques complètes
+      4. **Notification** aux administrateurs
+      
+      ### ⚠️ Impact de la suppression
+      
+      \`\`\`json
+      {
+        "service": {
+          "id": "uuid",
+          "isActive": false,
+          "deletedAt": "2024-01-15T10:30:00Z",
+          "deletedBy": "admin-user-id"
+        },
+        "impact": {
+          "futureAppointments": 0,
+          "historicalAppointments": 42,
+          "linkedStaff": 3,
+          "dataPreserved": true
+        }
+      }
+      \`\`\`
+      
+      ## 🔐 Permissions
+      - **PLATFORM_ADMIN** : Suppression de tout service
+      - **BUSINESS_OWNER** : Services de ses entreprises
+      - **BUSINESS_ADMIN** : Services de son entreprise
+      
+      ## 🔄 Restauration possible
+      Les services supprimés peuvent être **réactivés** par les administrateurs.
     `,
   })
   @ApiParam({

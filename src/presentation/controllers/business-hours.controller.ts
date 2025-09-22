@@ -53,7 +53,7 @@ import {
 
 // Import exceptions
 
-@ApiTags('Business Hours')
+@ApiTags('⏰ Business Hours')
 @ApiBearerAuth()
 @Controller('businesses')
 @UseGuards(JwtAuthGuard, RolesGuard)

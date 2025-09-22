@@ -6,7 +6,7 @@ import { Controller, Get } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Public } from '../security/decorators/public.decorator';
 
-@ApiTags('Health')
+@ApiTags('🏥 Health')
 @Controller('health')
 export class HealthController {
   @Public() // 🔓 Route publique - pas d'authentification requise

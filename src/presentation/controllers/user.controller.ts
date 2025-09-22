@@ -49,7 +49,7 @@ import {
   UserResponseDto,
 } from '../dtos/user.dto';
 
-@ApiTags('👥 User Management')
+@ApiTags('👥 Users')
 @Controller('users')
 @ApiBearerAuth()
 export class UserController {

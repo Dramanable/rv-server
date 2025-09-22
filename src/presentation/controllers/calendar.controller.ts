@@ -51,7 +51,7 @@ import { CalendarRequestMapper } from '../mappers/calendar-request.mapper';
 import { GetUser } from '../security/decorators/get-user.decorator';
 import { JwtAuthGuard } from '../security/guards/jwt-auth.guard';
 
-@ApiTags('📅 Calendar Management')
+@ApiTags('� Calendars')
 @Controller('calendars')
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()

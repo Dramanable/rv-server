@@ -48,13 +48,33 @@ import { CreateCalendarUseCase } from '@application/use-cases/calendar/create-ca
 import { GetCalendarByIdUseCase } from '@application/use-cases/calendar/get-calendar-by-id.use-case';
 import { ListCalendarsUseCase } from '@application/use-cases/calendar/list-calendars.use-case';
 
+// Service Use Cases
+import { CreateServiceUseCase } from '@application/use-cases/service/create-service.use-case';
+import { GetServiceUseCase } from '@application/use-cases/service/get-service.use-case';
+import { ListServicesUseCase } from '@application/use-cases/service/list-services.use-case';
+import { UpdateServiceUseCase } from '@application/use-cases/service/update-service.use-case';
+import { DeleteServiceUseCase } from '@application/use-cases/service/delete-service.use-case';
+
+// Staff Use Cases
+import { CreateStaffUseCase } from '@application/use-cases/staff/create-staff.use-case';
+import { GetStaffUseCase } from '@application/use-cases/staff/get-staff.use-case';
+import { ListStaffUseCase } from '@application/use-cases/staff/list-staff.use-case';
+import { UpdateStaffUseCase } from '@application/use-cases/staff/update-staff.use-case';
+import { DeleteStaffUseCase } from '@application/use-cases/staff/delete-staff.use-case';
+
+// Appointment Use Cases
+import { BookAppointmentUseCase } from '@application/use-cases/appointment/book-appointment.use-case';
+import { GetAvailableSlotsUseCase } from '@application/use-cases/appointments/get-available-slots-simple.use-case';
+
 // 🎮 Controllers
 import { AuthController } from './controllers/auth.controller';
 import { BusinessHoursController } from './controllers/business-hours.controller';
 import { BusinessSectorController } from './controllers/business-sector.controller';
 import { BusinessController } from './controllers/business.controller';
 import { CalendarController } from './controllers/calendar.controller';
-// import { HealthController } from './controllers/health.controller';
+import { ServiceController } from './controllers/service.controller';
+import { StaffController } from './controllers/staff.controller';
+import { AppointmentController } from './controllers/appointment.controller';
 import { UserController } from './controllers/user.controller';
 
 // 🛡️ Security
@@ -81,7 +101,9 @@ import { PresentationCookieService } from './services/cookie.service';
     BusinessHoursController,
     BusinessSectorController,
     CalendarController,
-    // HealthController,
+    ServiceController,
+    StaffController,
+    AppointmentController,
   ],
   providers: [
     // 🛡️ Security providers
@@ -373,6 +395,144 @@ import { PresentationCookieService } from './services/cookie.service';
       inject: [
         TOKENS.CALENDAR_REPOSITORY,
         TOKENS.USER_REPOSITORY,
+        TOKENS.LOGGER,
+        TOKENS.I18N_SERVICE,
+      ],
+    },
+
+    // 💼 Service Use Cases
+    {
+      provide: TOKENS.CREATE_SERVICE_USE_CASE,
+      useFactory: (serviceRepo, businessRepo, userRepo, logger, i18n) =>
+        new CreateServiceUseCase(
+          serviceRepo,
+          businessRepo,
+          userRepo,
+          logger,
+          i18n,
+        ),
+      inject: [
+        TOKENS.SERVICE_REPOSITORY,
+        TOKENS.BUSINESS_REPOSITORY,
+        TOKENS.USER_REPOSITORY,
+        TOKENS.LOGGER,
+        TOKENS.I18N_SERVICE,
+      ],
+    },
+    {
+      provide: TOKENS.GET_SERVICE_USE_CASE,
+      useFactory: (serviceRepo, logger, i18n) =>
+        new GetServiceUseCase(serviceRepo, logger, i18n),
+      inject: [TOKENS.SERVICE_REPOSITORY, TOKENS.LOGGER, TOKENS.I18N_SERVICE],
+    },
+    {
+      provide: TOKENS.LIST_SERVICES_USE_CASE,
+      useFactory: (serviceRepo, logger) =>
+        new ListServicesUseCase(serviceRepo, logger),
+      inject: [TOKENS.SERVICE_REPOSITORY, TOKENS.LOGGER],
+    },
+    {
+      provide: TOKENS.UPDATE_SERVICE_USE_CASE,
+      useFactory: (serviceRepo, logger, i18n) =>
+        new UpdateServiceUseCase(serviceRepo, logger, i18n),
+      inject: [TOKENS.SERVICE_REPOSITORY, TOKENS.LOGGER, TOKENS.I18N_SERVICE],
+    },
+    {
+      provide: TOKENS.DELETE_SERVICE_USE_CASE,
+      useFactory: (serviceRepo, logger, i18n) =>
+        new DeleteServiceUseCase(serviceRepo, logger, i18n),
+      inject: [TOKENS.SERVICE_REPOSITORY, TOKENS.LOGGER, TOKENS.I18N_SERVICE],
+    },
+
+    // 👨‍💼 Staff Use Cases
+    {
+      provide: TOKENS.CREATE_STAFF_USE_CASE,
+      useFactory: (staffRepo, userRepo, businessRepo, logger, i18n) =>
+        new CreateStaffUseCase(staffRepo, userRepo, businessRepo, logger, i18n),
+      inject: [
+        TOKENS.STAFF_REPOSITORY,
+        TOKENS.USER_REPOSITORY,
+        TOKENS.BUSINESS_REPOSITORY,
+        TOKENS.LOGGER,
+        TOKENS.I18N_SERVICE,
+      ],
+    },
+    {
+      provide: TOKENS.GET_STAFF_USE_CASE,
+      useFactory: (staffRepo, logger, i18n) =>
+        new GetStaffUseCase(staffRepo, logger, i18n),
+      inject: [TOKENS.STAFF_REPOSITORY, TOKENS.LOGGER, TOKENS.I18N_SERVICE],
+    },
+    {
+      provide: TOKENS.LIST_STAFF_USE_CASE,
+      useFactory: (staffRepo, logger, i18n) =>
+        new ListStaffUseCase(staffRepo, logger, i18n),
+      inject: [TOKENS.STAFF_REPOSITORY, TOKENS.LOGGER, TOKENS.I18N_SERVICE],
+    },
+    {
+      provide: TOKENS.UPDATE_STAFF_USE_CASE,
+      useFactory: (staffRepo, logger, i18n) =>
+        new UpdateStaffUseCase(staffRepo, logger, i18n),
+      inject: [TOKENS.STAFF_REPOSITORY, TOKENS.LOGGER, TOKENS.I18N_SERVICE],
+    },
+    {
+      provide: TOKENS.DELETE_STAFF_USE_CASE,
+      useFactory: (staffRepo, logger, i18n) =>
+        new DeleteStaffUseCase(staffRepo, logger, i18n),
+      inject: [TOKENS.STAFF_REPOSITORY, TOKENS.LOGGER, TOKENS.I18N_SERVICE],
+    },
+
+    // 📅 Appointment Use Cases
+    {
+      provide: TOKENS.BOOK_APPOINTMENT_USE_CASE,
+      useFactory: (
+        appointmentRepo,
+        businessRepo,
+        serviceRepo,
+        calendarRepo,
+        logger,
+        i18n,
+      ) =>
+        new BookAppointmentUseCase(
+          appointmentRepo,
+          businessRepo,
+          serviceRepo,
+          calendarRepo,
+          logger,
+          i18n,
+        ),
+      inject: [
+        TOKENS.APPOINTMENT_REPOSITORY,
+        TOKENS.BUSINESS_REPOSITORY,
+        TOKENS.SERVICE_REPOSITORY,
+        TOKENS.CALENDAR_REPOSITORY,
+        TOKENS.LOGGER,
+        TOKENS.I18N_SERVICE,
+      ],
+    },
+    {
+      provide: TOKENS.GET_AVAILABLE_SLOTS_USE_CASE,
+      useFactory: (
+        calendarRepo,
+        serviceRepo,
+        appointmentRepo,
+        staffRepo,
+        logger,
+        i18n,
+      ) =>
+        new GetAvailableSlotsUseCase(
+          calendarRepo,
+          serviceRepo,
+          appointmentRepo,
+          staffRepo,
+          logger,
+          i18n,
+        ),
+      inject: [
+        TOKENS.CALENDAR_REPOSITORY,
+        TOKENS.SERVICE_REPOSITORY,
+        TOKENS.APPOINTMENT_REPOSITORY,
+        TOKENS.STAFF_REPOSITORY,
         TOKENS.LOGGER,
         TOKENS.I18N_SERVICE,
       ],

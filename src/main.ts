@@ -10,7 +10,7 @@
 
 import { AppConfigService } from '@infrastructure/config/app-config.service';
 import { I18nValidationPipe } from '@infrastructure/validation/i18n-validation.pipe';
-import { Logger, VersioningType } from '@nestjs/common';
+import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import {
   FastifyAdapter,
@@ -109,11 +109,7 @@ async function bootstrap(): Promise<void> {
   logger.log('Configuring global settings...');
   app.useGlobalPipes(new I18nValidationPipe());
 
-  app.enableVersioning({
-    type: VersioningType.URI,
-    defaultVersion: '1',
-  });
-
+  // ✅ CORRECT - Utiliser seulement globalPrefix pour éviter double /v1/v1/
   app.setGlobalPrefix('api/v1', {
     exclude: ['/health', '/docs', '/api/docs'],
   });
