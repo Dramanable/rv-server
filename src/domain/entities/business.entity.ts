@@ -1,10 +1,10 @@
+import { Address } from '../value-objects/address.value-object';
+import { BusinessHours } from '../value-objects/business-hours.value-object';
 import { BusinessId } from '../value-objects/business-id.value-object';
 import { BusinessName } from '../value-objects/business-name.value-object';
 import { Email } from '../value-objects/email.value-object';
-import { Phone } from '../value-objects/phone.value-object';
-import { Address } from '../value-objects/address.value-object';
 import { FileUrl } from '../value-objects/file-url.value-object';
-import { BusinessHours } from '../value-objects/business-hours.value-object';
+import { Phone } from '../value-objects/phone.value-object';
 import { BusinessSector } from './business-sector.entity';
 
 // Réexporter BusinessSector pour compatibilité

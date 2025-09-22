@@ -6,7 +6,7 @@
 
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository as TypeOrmRepository } from 'typeorm';
+import { Repository } from 'typeorm';
 
 // Domain interfaces
 import { UserRepository } from '@domain/repositories/user.repository.interface';
@@ -30,7 +30,7 @@ import { UserQueryParams } from '@shared/types/user-query.types';
 export class TypeOrmUserRepository implements UserRepository {
   constructor(
     @InjectRepository(UserOrmEntity)
-    private readonly repository: TypeOrmRepository<UserOrmEntity>,
+    private readonly repository: Repository<UserOrmEntity>,
   ) {}
 
   /**
@@ -136,7 +136,7 @@ export class TypeOrmUserRepository implements UserRepository {
     const totalPages = Math.ceil(totalItems / limit);
 
     return {
-      data: users.map((user) => this.toDomainUser(user)),
+      data: users.map((user: UserOrmEntity) => this.toDomainUser(user)),
       meta: {
         currentPage: page,
         totalPages,
@@ -178,7 +178,7 @@ export class TypeOrmUserRepository implements UserRepository {
     const totalPages = Math.ceil(totalItems / limit);
 
     return {
-      data: users.map((user) => this.toDomainUser(user)),
+      data: users.map((user: UserOrmEntity) => this.toDomainUser(user)),
       meta: {
         currentPage: page,
         totalPages,
@@ -292,7 +292,7 @@ export class TypeOrmUserRepository implements UserRepository {
       order: { createdAt: 'DESC' },
       take: params?.limit || 1000,
     });
-    return users.map((user) => this.toDomainUser(user));
+    return users.map((user: UserOrmEntity) => this.toDomainUser(user));
   }
 
   /**

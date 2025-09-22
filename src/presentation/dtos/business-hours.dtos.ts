@@ -9,19 +9,19 @@
  */
 
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Transform, Type } from 'class-transformer';
 import {
-  IsString,
-  IsNotEmpty,
-  IsBoolean,
   IsArray,
-  IsOptional,
+  IsBoolean,
   IsDateString,
-  ValidateNested,
   IsIn,
-  Matches,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
   IsUUID,
+  Matches,
+  ValidateNested,
 } from 'class-validator';
-import { Type, Transform } from 'class-transformer';
 
 // ===== Base DTOs =====
 

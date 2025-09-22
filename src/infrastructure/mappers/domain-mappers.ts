@@ -11,11 +11,11 @@
  */
 
 // Domain Entities
+import { BusinessSector as BusinessSectorEntity } from '../../domain/entities/business-sector.entity';
 import {
   Business,
   BusinessBranding,
 } from '../../domain/entities/business.entity';
-import { BusinessSector as BusinessSectorEntity } from '../../domain/entities/business-sector.entity';
 import { Service } from '../../domain/entities/service.entity';
 import { Staff } from '../../domain/entities/staff.entity';
 import { User } from '../../domain/entities/user.entity';

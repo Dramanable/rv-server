@@ -5,13 +5,13 @@
  */
 
 import {
-  Injectable,
-  PipeTransform,
   ArgumentMetadata,
   BadRequestException,
+  Injectable,
+  PipeTransform,
 } from '@nestjs/common';
-import { validate } from 'class-validator';
 import { plainToInstance } from 'class-transformer';
+import { validate } from 'class-validator';
 import DOMPurify from 'isomorphic-dompurify';
 
 @Injectable()

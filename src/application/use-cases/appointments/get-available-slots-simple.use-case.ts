@@ -325,9 +325,9 @@ export class GetAvailableSlotsUseCase {
   private async generateSlotsForDay(
     date: Date,
     service: any,
-    calendar: any,
+    _calendar: any,
     staff: any,
-    duration: number,
+    _duration: number,
     existingAppointments: any[],
     includeUnavailable = false,
   ): Promise<DaySlots> {
@@ -452,7 +452,7 @@ export class GetAvailableSlotsUseCase {
 
   private canNavigatePrevious(
     period: { startDate: Date; endDate: Date },
-    viewMode: ViewMode,
+    _viewMode: ViewMode,
   ): boolean {
     // Ne pas permettre de naviguer vers le passé
     const now = new Date();
@@ -461,7 +461,7 @@ export class GetAvailableSlotsUseCase {
 
   private canNavigateNext(
     period: { startDate: Date; endDate: Date },
-    viewMode: ViewMode,
+    _viewMode: ViewMode,
   ): boolean {
     // Permettre de naviguer jusqu'à 3 mois dans le futur
     const maxFutureDate = new Date();

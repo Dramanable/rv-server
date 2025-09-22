@@ -8,11 +8,11 @@
  * et fonctionne avec le décorateur @Roles()
  */
 
-import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import { User } from '../../../domain/entities/user.entity';
 import { UserRole } from '../../../shared/enums/user-role.enum';
 import { ROLES_KEY } from '../decorators/roles.decorator';
-import { User } from '../../../domain/entities/user.entity';
 
 @Injectable()
 export class RolesGuard implements CanActivate {

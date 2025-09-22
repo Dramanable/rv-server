@@ -16,8 +16,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { TOKENS } from '@shared/constants/injection-tokens';
-import { ValidationError } from 'class-validator';
-import { Request, Response } from 'express';
+import type { FastifyRequest, FastifyReply } from 'fastify';
 
 @Catch(BadRequestException)
 export class ValidationExceptionFilter implements ExceptionFilter {
@@ -30,8 +29,8 @@ export class ValidationExceptionFilter implements ExceptionFilter {
 
   catch(exception: BadRequestException, host: ArgumentsHost): void {
     const ctx = host.switchToHttp();
-    const request = ctx.getRequest<Request>();
-    const response = ctx.getResponse<Response>();
+    const request = ctx.getRequest<FastifyRequest>();
+    const response = ctx.getResponse<FastifyReply>();
 
     const exceptionResponse = exception.getResponse();
 
@@ -55,8 +54,8 @@ export class ValidationExceptionFilter implements ExceptionFilter {
 
   private handleValidationError(
     exceptionResponse: any,
-    request: Request,
-    response: Response,
+    request: FastifyRequest,
+    response: FastifyReply,
   ): void {
     const validationErrors = this.parseValidationErrors(
       exceptionResponse.message,
@@ -76,13 +75,13 @@ export class ValidationExceptionFilter implements ExceptionFilter {
       },
     };
 
-    response.status(HttpStatus.BAD_REQUEST).json(errorResponse);
+    response.status(HttpStatus.BAD_REQUEST).send(errorResponse);
   }
 
   private handleGenericBadRequest(
     exception: BadRequestException,
-    request: Request,
-    response: Response,
+    request: FastifyRequest,
+    response: FastifyReply,
   ): void {
     const message = this.extractMessage(exception.getResponse());
 
@@ -103,7 +102,7 @@ export class ValidationExceptionFilter implements ExceptionFilter {
       },
     };
 
-    response.status(HttpStatus.BAD_REQUEST).json(errorResponse);
+    response.status(HttpStatus.BAD_REQUEST).send(errorResponse);
   }
 
   private parseValidationErrors(validationMessages: string[]): Array<{
@@ -167,10 +166,10 @@ export class ValidationExceptionFilter implements ExceptionFilter {
     return 'Bad Request';
   }
 
-  private getCorrelationId(request: Request): string {
+  private getCorrelationId(request: FastifyRequest): string {
     return (
-      (request.headers['x-correlation-id'] as string) ||
-      (request.headers['x-request-id'] as string) ||
+      (request.headers['x-correlation-id'] as string | undefined) ||
+      (request.headers['x-request-id'] as string | undefined) ||
       `validation-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
     );
   }
@@ -180,7 +179,7 @@ export class ValidationExceptionFilter implements ExceptionFilter {
       field: string;
       constraints: Record<string, string>;
     }>,
-    request: Request,
+    request: FastifyRequest,
   ): void {
     const fields = validationErrors.map((err) => err.field).join(', ');
 

@@ -38,7 +38,6 @@ describe('BookAppointmentUseCase', () => {
   let mockBusinessRepo: jest.Mocked<BusinessRepository>;
   let mockServiceRepo: jest.Mocked<ServiceRepository>;
   let mockCalendarRepo: jest.Mocked<CalendarRepository>;
-  let mockStaffRepo: jest.Mocked<StaffRepository>;
   let mockLogger: jest.Mocked<ILogger>;
   let mockI18n: jest.Mocked<I18nService>;
 
@@ -144,24 +143,6 @@ describe('BookAppointmentUseCase', () => {
       findAll: jest.fn(),
       getRecurringPatterns: jest.fn(),
     } as unknown as jest.Mocked<CalendarRepository>;
-
-    mockStaffRepo = {
-      findById: jest.fn(),
-      save: jest.fn(),
-      findByEmail: jest.fn(),
-      findByRole: jest.fn(),
-      findByBusinessId: jest.fn(),
-      findByLocationId: jest.fn(),
-      findByDepartmentId: jest.fn(),
-      findBySkills: jest.fn(),
-      findAvailable: jest.fn(),
-      findByWorkingHours: jest.fn(),
-      update: jest.fn(),
-      delete: jest.fn(),
-      findAll: jest.fn(),
-      isActive: jest.fn(),
-      findWithAppointments: jest.fn(),
-    } as unknown as jest.Mocked<StaffRepository>;
 
     mockLogger = {
       log: jest.fn(),

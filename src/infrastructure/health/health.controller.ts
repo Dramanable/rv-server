@@ -1,12 +1,12 @@
 import { Controller, Get, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import {
   HealthCheck,
   HealthCheckService,
-  TypeOrmHealthIndicator,
   MemoryHealthIndicator,
+  TypeOrmHealthIndicator,
 } from '@nestjs/terminus';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { ConfigService } from '@nestjs/config';
 import { Public } from '../../presentation/security/decorators/public.decorator';
 
 /**

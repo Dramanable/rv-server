@@ -132,7 +132,7 @@ export class MigrateBusinessSectorToRelation1758496500000
 
     // 7. Créer un index sur la nouvelle colonne
     await queryRunner.query(`
-      CREATE INDEX "IDX_businesses_business_sector_id" 
+      CREATE INDEX "IDX_businesses_business_sector_id"
       ON ${schema}.businesses (business_sector_id);
     `);
   }

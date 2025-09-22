@@ -17,9 +17,9 @@ import {
 import { TOKENS } from '@shared/constants/injection-tokens';
 import { Request, Response } from 'express';
 import {
-  QueryFailedError,
-  EntityNotFoundError,
   CannotCreateEntityIdMapError,
+  EntityNotFoundError,
+  QueryFailedError,
 } from 'typeorm';
 
 // Exception personnalisée pour les erreurs d'infrastructure

@@ -1,44 +1,74 @@
 /**
- * 🚀 Application Bootstrap
+ * 🚀 Application Bootstrap - Fastify Edition
  *
- * Point d'entrée principal avec configuration complète:
- * - Middlewares de sécurité (CORS, Helmet)
- * - Middlewares de performance (Compression)
+ * Point d'entrée principal avec configuration complète Fastify:
+ * - Plugins de sécurité (CORS, Helmet)
+ * - Plugins de performance (Rate Limiting)
  * - Configuration adaptée à l'environnement
  * - Documentation Swagger (développement uniquement)
  */
 
 import { AppConfigService } from '@infrastructure/config/app-config.service';
 import { I18nValidationPipe } from '@infrastructure/validation/i18n-validation.pipe';
-import { Logger } from '@nestjs/common';
+import { Logger, VersioningType } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { NestExpressApplication } from '@nestjs/platform-express';
+import {
+  FastifyAdapter,
+  NestFastifyApplication,
+} from '@nestjs/platform-fastify';
 import { setupSwagger } from '@presentation/config/swagger.config';
-import compression from 'compression';
-import cookieParser from 'cookie-parser';
-import helmet from 'helmet';
 import { AppModule } from './app.module';
-// 🛡️ Security imports
 
-async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+// 🚀 Fastify imports
+import fastify from 'fastify';
+import fastifyCookie from '@fastify/cookie';
+import fastifyCors from '@fastify/cors';
+import fastifyHelmet from '@fastify/helmet';
+import fastifyRateLimit from '@fastify/rate-limit';
+
+async function bootstrap(): Promise<void> {
+  // 🚀 Create Fastify application with optimized configuration
+  const fastifyInstance = fastify({
+    logger: false,
+    bodyLimit: 50 * 1024 * 1024,
+    maxParamLength: 500,
+    caseSensitive: true,
+    ignoreTrailingSlash: false,
+    // 🔧 Use process.env for initial Fastify setup, configService will be used later
+    trustProxy: process.env.NODE_ENV === 'production',
+  });
+
+  const app = await NestFactory.create<NestFastifyApplication>(
+    AppModule,
+    new FastifyAdapter(fastifyInstance),
+    {
+      bufferLogs: false,
+      abortOnError: false,
+    },
+  );
+
   const logger = new Logger('Bootstrap');
-
-  // 🔧 Configuration Service
   const configService = app.get(AppConfigService);
 
-  // �️ Security Middlewares - Couche Présentation
-  logger.log('🛡️ Configuring enhanced security middlewares...');
+  logger.log('🛡️ Configuring enhanced security plugins...');
 
-  // 🛡️ Custom Security Headers Middleware (PREMIER)
-  // Security middleware configuré via app module
-  // app.use(new SecurityHeadersMiddleware().use);
+  await app.register(fastifyHelmet, {
+    contentSecurityPolicy: configService.isProduction() ? undefined : false,
+    hsts: configService.isProduction()
+      ? {
+          maxAge: 31536000,
+          includeSubDomains: true,
+          preload: true,
+        }
+      : false,
+    crossOriginEmbedderPolicy: false,
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
+  });
 
-  // CORS Configuration (sécurisé)
-  app.enableCors({
+  await app.register(fastifyCors, {
     origin: configService.getCorsOrigins(),
     credentials: configService.getCorsCredentials(),
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
     allowedHeaders: [
       'Content-Type',
       'Authorization',
@@ -49,56 +79,45 @@ async function bootstrap() {
       'X-CSRF-Token',
     ],
     exposedHeaders: ['X-Total-Count', 'X-Pagination', 'X-RateLimit-Remaining'],
-    maxAge: 86400, // 24 hours
+    maxAge: 86400,
     optionsSuccessStatus: 204,
   });
 
-  // Helmet for additional security headers (complément)
-  app.use(
-    helmet({
-      contentSecurityPolicy: configService.isProduction() ? undefined : false, // CSP en prod seulement
-      hsts: configService.isProduction(), // HSTS en prod seulement
-      crossOriginEmbedderPolicy: false, // Compatible avec Swagger
-    }),
-  );
-
-  // 🍪 Cookie Parser - CRITICAL pour JWT authentication via cookies
   logger.log('🍪 Configuring secure cookie parser...');
-  app.use(cookieParser(configService.getJwtSecret())); // Signer les cookies avec JWT secret
+  await app.register(fastifyCookie, {
+    secret: configService.getJwtSecret(),
+    parseOptions: {
+      httpOnly: true,
+      secure: configService.isProduction(),
+      sameSite: configService.isProduction() ? 'strict' : 'lax',
+      path: '/',
+    },
+  });
 
-  // ⚡ Performance Middlewares
-  logger.log('Configuring performance middlewares...');
+  logger.log('🚦 Configuring rate limiting...');
+  await app.register(fastifyRateLimit, {
+    max: configService.getRateLimitMax(),
+    timeWindow: configService.getRateLimitWindowMs(),
+    skipOnError: true,
+    errorResponseBuilder: (_request: unknown, _context: unknown) => ({
+      statusCode: 429,
+      error: 'Too Many Requests',
+      message: 'Rate limit exceeded, please try again later.',
+    }),
+  });
 
-  // Compression
-  app.use(compression(configService.getCompressionConfig()));
-
-  // Body parser limits
-  const bodyConfig = configService.getBodyParserConfig() as {
-    json?: Record<string, unknown>;
-    urlencoded?: Record<string, unknown>;
-  };
-  app.useBodyParser('json', bodyConfig.json || {});
-  app.useBodyParser('urlencoded', bodyConfig.urlencoded || {});
-
-  // 🎯 Global Configuration
   logger.log('Configuring global settings...');
-
-  // Exception filters are configured in ExceptionFiltersModule via APP_FILTER tokens
-
-  // Global validation pipe with i18n
   app.useGlobalPipes(new I18nValidationPipe());
 
-  // Trust proxy (pour les déploiements derrière un proxy)
-  if (configService.isProduction()) {
-    app.set('trust proxy', 1);
-  }
+  app.enableVersioning({
+    type: VersioningType.URI,
+    defaultVersion: '1',
+  });
 
-  // Global prefix pour l'API
   app.setGlobalPrefix('api/v1', {
     exclude: ['/health', '/docs', '/api/docs'],
   });
 
-  // 📖 Swagger Documentation (Development Only)
   if (configService.isDevelopment()) {
     logger.log('Setting up Swagger documentation...');
     setupSwagger(app);
@@ -107,12 +126,12 @@ async function bootstrap() {
     );
   }
 
-  // 🎯 Environment-specific configuration
   const environment = configService.getEnvironment();
   const port = configService.getPort();
   const host = configService.getHost();
 
   logger.log(`🌍 Environment: ${environment}`);
+  logger.log(`🚀 Platform: Fastify (High Performance)`);
   logger.log(`🔧 Configuration loaded successfully`);
 
   if (configService.isDevelopment()) {
@@ -123,9 +142,9 @@ async function bootstrap() {
   if (configService.isProduction()) {
     logger.log('🔒 Production mode: Security hardened');
     logger.log('⚡ Production mode: Performance optimized');
+    logger.log('🚀 Production mode: Fastify performance boost enabled');
   }
 
-  // 🚀 Start Server
   await app.listen(port, host);
 
   logger.log(`🚀 Application running on http://${host}:${port}`);
@@ -136,7 +155,7 @@ async function bootstrap() {
     logger.log(`📚 API Documentation: http://${host}:${port}/api/docs`);
   }
 
-  logger.log('✅ Application started successfully');
+  logger.log('✅ Fastify application started successfully');
 }
 
 void bootstrap().catch((error) => {

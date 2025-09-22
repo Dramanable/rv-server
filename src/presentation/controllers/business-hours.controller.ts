@@ -10,64 +10,48 @@
  */
 
 import {
+  Body,
   Controller,
   Get,
-  Post,
-  Put,
-  Delete,
-  Body,
-  Param,
-  Query,
   HttpCode,
   HttpStatus,
-  UseGuards,
-  ParseUUIDPipe,
   Inject,
+  Param,
+  ParseUUIDPipe,
+  Post,
+  Put,
+  UseGuards,
 } from '@nestjs/common';
 import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
   ApiBearerAuth,
+  ApiOperation,
   ApiParam,
-  ApiQuery,
+  ApiResponse,
+  ApiTags,
 } from '@nestjs/swagger';
 
-import { JwtAuthGuard } from '../security/auth.guard';
-import { RolesGuard } from '../security/guards/roles.guard';
-import { Roles } from '../security/decorators/roles.decorator';
-import { GetUser } from '../security/decorators/get-user.decorator';
-import { UserRole } from '../../shared/enums/user-role.enum';
 import { User } from '../../domain/entities/user.entity';
 import { TOKENS } from '../../shared/constants/injection-tokens';
+import { UserRole } from '../../shared/enums/user-role.enum';
+import { JwtAuthGuard } from '../security/auth.guard';
+import { GetUser } from '../security/decorators/get-user.decorator';
+import { Roles } from '../security/decorators/roles.decorator';
+import { RolesGuard } from '../security/guards/roles.guard';
 
-import {
-  ManageBusinessHoursUseCase,
-  GetBusinessHoursRequest,
-  GetBusinessHoursResponse,
-  UpdateBusinessHoursRequest,
-  UpdateBusinessHoursResponse,
-  AddSpecialDateRequest,
-  AddSpecialDateResponse,
-  CheckBusinessAvailabilityRequest,
-  CheckBusinessAvailabilityResponse,
-} from '../../application/use-cases/business/manage-business-hours.use-case';
+import { ManageBusinessHoursUseCase } from '../../application/use-cases/business/manage-business-hours.use-case';
 
 // Import DTOs
 import {
-  GetBusinessHoursDto,
-  UpdateBusinessHoursDto,
   AddSpecialDateDto,
-  CheckAvailabilityDto,
-  BusinessHoursQuickSetupDto,
-  BusinessHoursResponseDto,
-  UpsertBusinessHoursResponseDto,
   AddSpecialDateResponseDto,
   AvailabilityResponseDto,
+  BusinessHoursResponseDto,
+  CheckAvailabilityDto,
+  UpdateBusinessHoursDto,
+  UpsertBusinessHoursResponseDto,
 } from '../dtos/business-hours.dtos';
 
 // Import exceptions
-import { BusinessNotFoundError } from '../../application/exceptions/application.exceptions';
 
 @ApiTags('Business Hours')
 @ApiBearerAuth()

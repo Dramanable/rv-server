@@ -1,21 +1,20 @@
-import type { I18nService } from '@application/ports/i18n.port';
-import { AppConfigService } from '@infrastructure/config/app-config.service';
 import { ProductionI18nService } from '@infrastructure/i18n/production-i18n.service';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TOKENS } from '@shared/constants/injection-tokens';
+import { AppConfigService } from '../config/app-config.service';
 import { PinoLoggerModule } from '../logging/pino-logger.module';
 import { TypeOrmRepositoriesModule } from './typeorm-repositories.module';
 
 // Import des entités TypeORM
 import { BusinessOrmEntity } from './sql/postgresql/entities/business-orm.entity';
+import { BusinessSectorOrmEntity } from './sql/postgresql/entities/business-sector-orm.entity';
 import { CalendarOrmEntity } from './sql/postgresql/entities/calendar-orm.entity';
 import { RefreshTokenOrmEntity } from './sql/postgresql/entities/refresh-token-orm.entity';
 import { ServiceOrmEntity } from './sql/postgresql/entities/service-orm.entity';
 import { StaffOrmEntity } from './sql/postgresql/entities/staff-orm.entity';
 import { UserOrmEntity } from './sql/postgresql/entities/user-orm.entity';
-import { BusinessSectorOrmEntity } from './sql/postgresql/entities/business-sector-orm.entity';
 
 /**
  * 🗄️ Simple Database Module

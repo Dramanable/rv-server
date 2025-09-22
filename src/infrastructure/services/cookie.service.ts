@@ -2,12 +2,12 @@
  * 🍪 COOKIE SERVICE - Service pour la gestion des cookies
  */
 
-import { Injectable, Inject } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Response, Request } from 'express';
+import { Request, Response } from 'express';
 import {
-  ICookieService,
   CookieOptions,
+  ICookieService,
 } from '../../application/ports/cookie.port';
 import type { Logger } from '../../application/ports/logger.port';
 import { TOKENS } from '../../shared/constants/injection-tokens';

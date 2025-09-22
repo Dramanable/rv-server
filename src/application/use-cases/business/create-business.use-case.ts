@@ -6,29 +6,28 @@
  * ✅ Interface-driven design
  */
 import {
+  BusinessAlreadyExistsError,
+  BusinessValidationError,
+  InsufficientPermissionsError,
+} from '../../../application/exceptions/application.exceptions';
+import type { I18nService } from '../../../application/ports/i18n.port';
+import type { Logger } from '../../../application/ports/logger.port';
+import type { UserRepository } from '../../../domain/repositories/user.repository.interface';
+import {
   Business,
   BusinessSector,
   BusinessStatus,
 } from '../../../domain/entities/business.entity';
-import { BusinessName } from '../../../domain/value-objects/business-name.value-object';
 import type { BusinessRepository } from '../../../domain/repositories/business.repository.interface';
-import type { Logger } from '../../../application/ports/logger.port';
-import type { I18nService } from '../../../application/ports/i18n.port';
+import { Address } from '../../../domain/value-objects/address.value-object';
+import { BusinessName } from '../../../domain/value-objects/business-name.value-object';
+import { Email } from '../../../domain/value-objects/email.value-object';
+import { Phone } from '../../../domain/value-objects/phone.value-object';
 import {
   AppContext,
   AppContextFactory,
 } from '../../../shared/context/app-context';
-import { UserRole, Permission } from '../../../shared/enums/user-role.enum';
-import { User } from '../../../domain/entities/user.entity';
-import type { UserRepository } from '../../../domain/repositories/user.repository.interface';
-import {
-  InsufficientPermissionsError,
-  BusinessValidationError,
-  BusinessAlreadyExistsError,
-} from '../../../application/exceptions/application.exceptions';
-import { Email } from '../../../domain/value-objects/email.value-object';
-import { Phone } from '../../../domain/value-objects/phone.value-object';
-import { Address } from '../../../domain/value-objects/address.value-object';
+import { UserRole } from '../../../shared/enums/user-role.enum';
 
 export interface CreateBusinessRequest {
   readonly requestingUserId: string;

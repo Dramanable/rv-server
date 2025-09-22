@@ -8,13 +8,13 @@
  * - Vérifier la disponibilité
  */
 
+import { BusinessRepository } from '../../../domain/repositories/business.repository.interface';
 import {
   BusinessHours,
   DaySchedule,
   SpecialDate,
 } from '../../../domain/value-objects/business-hours.value-object';
 import { BusinessId } from '../../../domain/value-objects/business-id.value-object';
-import { BusinessRepository } from '../../../domain/repositories/business.repository.interface';
 import {
   BusinessNotFoundError,
   BusinessValidationError,

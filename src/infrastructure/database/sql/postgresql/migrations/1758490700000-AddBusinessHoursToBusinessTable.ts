@@ -10,7 +10,7 @@ export class AddBusinessHoursToBusinessTable1758490700000
 
     // Ajouter la colonne business_hours avec une structure JSON par défaut
     await queryRunner.query(`
-      ALTER TABLE "${schema}"."businesses" 
+      ALTER TABLE "${schema}"."businesses"
       ADD COLUMN "business_hours" jsonb NOT NULL DEFAULT '{
         "weekly_schedule": {
           "1": {"is_open": true, "time_slots": [{"start_time": "09:00", "end_time": "17:00"}]},
@@ -28,13 +28,13 @@ export class AddBusinessHoursToBusinessTable1758490700000
 
     // Créer un index sur business_hours pour les requêtes de recherche
     await queryRunner.query(`
-      CREATE INDEX "IDX_business_hours_timezone" 
+      CREATE INDEX "IDX_business_hours_timezone"
       ON "${schema}"."businesses" USING BTREE (("business_hours"->>'timezone'))
     `);
 
     // Index pour rechercher les businesses ouverts un jour donné
     await queryRunner.query(`
-      CREATE INDEX "IDX_business_hours_weekly_schedule" 
+      CREATE INDEX "IDX_business_hours_weekly_schedule"
       ON "${schema}"."businesses" USING GIN ("business_hours")
     `);
   }

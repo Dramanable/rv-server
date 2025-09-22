@@ -40,8 +40,8 @@ import { UpdateBusinessSectorUseCase } from '@application/use-cases/business-sec
 import { CreateBusinessUseCase } from '@application/use-cases/business/create-business.use-case';
 import { GetBusinessUseCase } from '@application/use-cases/business/get-business.use-case';
 import { ListBusinessUseCase } from '@application/use-cases/business/list-business.use-case';
-import { UpdateBusinessUseCase } from '@application/use-cases/business/update-business.use-case';
 import { ManageBusinessHoursUseCase } from '@application/use-cases/business/manage-business-hours.use-case';
+import { UpdateBusinessUseCase } from '@application/use-cases/business/update-business.use-case';
 
 // Calendar Use Cases
 import { CreateCalendarUseCase } from '@application/use-cases/calendar/create-calendar.use-case';
@@ -50,18 +50,18 @@ import { ListCalendarsUseCase } from '@application/use-cases/calendar/list-calen
 
 // 🎮 Controllers
 import { AuthController } from './controllers/auth.controller';
+import { BusinessHoursController } from './controllers/business-hours.controller';
 import { BusinessSectorController } from './controllers/business-sector.controller';
 import { BusinessController } from './controllers/business.controller';
-import { BusinessHoursController } from './controllers/business-hours.controller';
 import { CalendarController } from './controllers/calendar.controller';
 // import { HealthController } from './controllers/health.controller';
 import { UserController } from './controllers/user.controller';
 
 // 🛡️ Security
 import { JwtAuthGuard } from './security/auth.guard';
+import { RolesGuard } from './security/guards/roles.guard';
 import { JwtStrategy } from './security/strategies/jwt.strategy';
 import { SecurityValidationPipe } from './security/validation.pipe';
-import { RolesGuard } from './security/guards/roles.guard';
 
 // 🔧 Services
 import { MockI18nService } from '@application/mocks/mock-i18n.service';

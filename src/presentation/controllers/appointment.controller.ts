@@ -293,7 +293,7 @@ export class AppointmentController {
     status: HttpStatus.NOT_FOUND,
     description: '❌ Appointment not found',
   })
-  async getById(@Param('id') id: string): Promise<AppointmentDto> {
+  async getById(): Promise<AppointmentDto> {
     // TODO: Implémenter GetAppointmentByIdUseCase
     throw new Error('Not implemented yet');
   }
@@ -315,10 +315,7 @@ export class AppointmentController {
     description: '✅ Appointment updated successfully',
     type: UpdateAppointmentResponseDto,
   })
-  async updateAppointment(
-    @Param('id') id: string,
-    @Body() dto: UpdateAppointmentDto,
-  ): Promise<UpdateAppointmentResponseDto> {
+  async updateAppointment(): Promise<UpdateAppointmentResponseDto> {
     // TODO: Implémenter UpdateAppointmentUseCase
     throw new Error('Not implemented yet');
   }
@@ -340,10 +337,7 @@ export class AppointmentController {
     description: '✅ Appointment cancelled successfully',
     type: CancelAppointmentResponseDto,
   })
-  async cancelAppointment(
-    @Param('id') id: string,
-    @Body() dto?: CancelAppointmentDto,
-  ): Promise<CancelAppointmentResponseDto> {
+  async cancelAppointment(): Promise<CancelAppointmentResponseDto> {
     // TODO: Implémenter CancelAppointmentUseCase
     throw new Error('Not implemented yet');
   }
