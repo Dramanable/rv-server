@@ -16,14 +16,12 @@ import {
   Param,
   Post,
   Put,
-  Query,
   UseGuards,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiOperation,
   ApiParam,
-  ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
@@ -34,11 +32,11 @@ import { GetUser } from '../security/decorators/get-user.decorator';
 import { JwtAuthGuard } from '../security/guards/jwt-auth.guard';
 
 import { BookAppointmentUseCase } from '../../application/use-cases/appointments/book-appointment.use-case';
+import { CancelAppointmentUseCase } from '../../application/use-cases/appointments/cancel-appointment.use-case';
+import { GetAppointmentByIdUseCase } from '../../application/use-cases/appointments/get-appointment-by-id.use-case';
 import { GetAvailableSlotsUseCase } from '../../application/use-cases/appointments/get-available-slots-simple.use-case';
 import { ListAppointmentsUseCase } from '../../application/use-cases/appointments/list-appointments.use-case';
-import { GetAppointmentByIdUseCase } from '../../application/use-cases/appointments/get-appointment-by-id.use-case';
 import { UpdateAppointmentUseCase } from '../../application/use-cases/appointments/update-appointment.use-case';
-import { CancelAppointmentUseCase } from '../../application/use-cases/appointments/cancel-appointment.use-case';
 
 import {
   AppointmentDto,
@@ -48,7 +46,6 @@ import {
   BookAppointmentResponseDto,
   CancelAppointmentDto,
   CancelAppointmentResponseDto,
-  GetAppointmentResponseDto,
   GetAvailableSlotsDto,
   ListAppointmentsDto,
   ListAppointmentsResponseDto,

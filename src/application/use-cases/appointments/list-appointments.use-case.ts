@@ -5,11 +5,11 @@
  * Clean Architecture - Application Layer
  */
 
-import { AppointmentRepository } from '../../../domain/repositories/appointment.repository.interface';
 import {
   Appointment,
   AppointmentStatus,
 } from '../../../domain/entities/appointment.entity';
+import { AppointmentRepository } from '../../../domain/repositories/appointment.repository.interface';
 import { BusinessId } from '../../../domain/value-objects/business-id.value-object';
 
 export interface ListAppointmentsRequest {

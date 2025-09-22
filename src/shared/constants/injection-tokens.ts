@@ -49,6 +49,11 @@ export const APPLICATION_TOKENS = {
   GET_CALENDAR_USE_CASE: 'GetCalendarUseCase',
   LIST_CALENDARS_USE_CASE: 'ListCalendarsUseCase',
   UPDATE_CALENDAR_USE_CASE: 'UpdateCalendarUseCase',
+
+  // 🌩️ AWS S3 Image Management Use Cases
+  UPLOAD_BUSINESS_IMAGE_USE_CASE: 'UploadBusinessImageUseCase',
+  ADD_IMAGE_TO_GALLERY_USE_CASE: 'AddImageToGalleryUseCase',
+  UPDATE_BUSINESS_SEO_USE_CASE: 'UpdateBusinessSeoUseCase',
   DELETE_CALENDAR_USE_CASE: 'DeleteCalendarUseCase',
 
   // Service Use Cases
@@ -141,6 +146,10 @@ export const INFRASTRUCTURE_TOKENS = {
   BCRYPT_PASSWORD_HASHER: 'BcryptPasswordHasher', // ✅ NOUVEAU: Adapter bcrypt
   JWT_TOKEN_SERVICE: 'JwtTokenService',
   COOKIE_SERVICE: 'CookieService',
+
+  // 🌩️ AWS S3 Services
+  AWS_S3_CONFIG: 'AwsS3Config',
+  AWS_S3_IMAGE_SERVICE: 'AwsS3ImageService',
 
   // Mappers (obsolète - les mappers sont maintenant statiques)
   DATABASE_MAPPER_FACTORY: 'DatabaseMapperFactory',

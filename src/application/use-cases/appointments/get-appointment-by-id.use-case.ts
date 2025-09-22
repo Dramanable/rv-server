@@ -5,11 +5,11 @@
  * Clean Architecture - Application Layer
  */
 
-import { AppointmentRepository } from '../../../domain/repositories/appointment.repository.interface';
 import {
   Appointment,
   AppointmentId,
 } from '../../../domain/entities/appointment.entity';
+import { AppointmentRepository } from '../../../domain/repositories/appointment.repository.interface';
 import { AppointmentNotFoundError } from '../../exceptions/appointment.exceptions';
 
 export interface GetAppointmentByIdRequest {

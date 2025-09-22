@@ -5,22 +5,21 @@
  * Clean Architecture - Application Layer
  */
 
-import { AppointmentRepository } from '../../../domain/repositories/appointment.repository.interface';
 import {
   Appointment,
   AppointmentId,
 } from '../../../domain/entities/appointment.entity';
+import { AppointmentRepository } from '../../../domain/repositories/appointment.repository.interface';
 import { AppointmentNotFoundError } from '../../exceptions/appointment.exceptions';
-import { TimeSlot } from '../../../domain/value-objects/time-slot.value-object';
 
 export interface UpdateAppointmentRequest {
   readonly appointmentId: string;
+  readonly requestingUserId: string;
   readonly startTime?: Date;
   readonly endTime?: Date;
   readonly title?: string;
   readonly description?: string;
   readonly modificationReason?: string;
-  readonly requestingUserId: string;
 }
 
 export interface UpdateAppointmentResponse {

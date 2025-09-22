@@ -30,6 +30,11 @@ import { DeleteBusinessSectorUseCase } from '@application/use-cases/business-sec
 import { ListBusinessSectorsUseCase } from '@application/use-cases/business-sectors/list-business-sectors.use-case';
 import { UpdateBusinessSectorUseCase } from '@application/use-cases/business-sectors/update-business-sector.use-case';
 
+// 🌩️ AWS S3 Image Management Use Cases
+import { AddImageToBusinessGalleryUseCase } from '@application/use-cases/business/add-image-to-gallery.use-case';
+import { UpdateBusinessSeoProfileUseCase } from '@application/use-cases/business/update-business-seo.use-case';
+import { UploadBusinessImageUseCase } from '@application/use-cases/business/upload-business-image.use-case';
+
 /**
  * 🏗️ USE CASES MODULE
  *
@@ -57,6 +62,11 @@ import { UpdateBusinessSectorUseCase } from '@application/use-cases/business-sec
     ListBusinessSectorsUseCase,
     UpdateBusinessSectorUseCase,
     DeleteBusinessSectorUseCase,
+
+    // 🌩️ AWS S3 Image Management Use Cases
+    AddImageToBusinessGalleryUseCase,
+    UpdateBusinessSeoProfileUseCase,
+    UploadBusinessImageUseCase,
   ],
   exports: [
     // Auth Use Cases
@@ -78,6 +88,11 @@ import { UpdateBusinessSectorUseCase } from '@application/use-cases/business-sec
     ListBusinessSectorsUseCase,
     UpdateBusinessSectorUseCase,
     DeleteBusinessSectorUseCase,
+
+    // 🌩️ AWS S3 Image Management Use Cases
+    AddImageToBusinessGalleryUseCase,
+    UpdateBusinessSeoProfileUseCase,
+    UploadBusinessImageUseCase,
   ],
 })
 export class UseCasesModule {}

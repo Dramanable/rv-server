@@ -48,6 +48,11 @@ import { CreateCalendarUseCase } from '@application/use-cases/calendar/create-ca
 import { GetCalendarByIdUseCase } from '@application/use-cases/calendar/get-calendar-by-id.use-case';
 import { ListCalendarsUseCase } from '@application/use-cases/calendar/list-calendars.use-case';
 
+// 🌩️ AWS S3 Image Management Use Cases
+import { AddImageToBusinessGalleryUseCase } from '@application/use-cases/business/add-image-to-gallery.use-case';
+import { UpdateBusinessSeoProfileUseCase } from '@application/use-cases/business/update-business-seo.use-case';
+import { UploadBusinessImageUseCase } from '@application/use-cases/business/upload-business-image.use-case';
+
 // Service Use Cases
 import { CreateServiceUseCase } from '@application/use-cases/service/create-service.use-case';
 import { DeleteServiceUseCase } from '@application/use-cases/service/delete-service.use-case';
@@ -64,11 +69,11 @@ import { UpdateStaffUseCase } from '@application/use-cases/staff/update-staff.us
 
 // Appointment Use Cases
 import { BookAppointmentUseCase } from '@application/use-cases/appointment/book-appointment.use-case';
+import { CancelAppointmentUseCase } from '@application/use-cases/appointments/cancel-appointment.use-case';
+import { GetAppointmentByIdUseCase } from '@application/use-cases/appointments/get-appointment-by-id.use-case';
 import { GetAvailableSlotsUseCase } from '@application/use-cases/appointments/get-available-slots-simple.use-case';
 import { ListAppointmentsUseCase } from '@application/use-cases/appointments/list-appointments.use-case';
-import { GetAppointmentByIdUseCase } from '@application/use-cases/appointments/get-appointment-by-id.use-case';
 import { UpdateAppointmentUseCase } from '@application/use-cases/appointments/update-appointment.use-case';
-import { CancelAppointmentUseCase } from '@application/use-cases/appointments/cancel-appointment.use-case';
 
 // Notification Use Cases
 import { SendBulkNotificationUseCase } from '@application/use-cases/notification/send-bulk-notification.use-case';
@@ -85,6 +90,7 @@ import { NotificationController } from './controllers/notification.controller';
 import { ServiceController } from './controllers/service.controller';
 import { StaffController } from './controllers/staff.controller';
 import { UserController } from './controllers/user.controller';
+import { BusinessImageController } from './controllers/business-image.controller';
 
 // 🛡️ Security
 import { JwtAuthGuard } from './security/auth.guard';
@@ -113,6 +119,7 @@ import { PresentationCookieService } from './services/cookie.service';
     CalendarController,
     ServiceController,
     StaffController,
+    BusinessImageController,
     AppointmentController,
     NotificationController,
   ],
@@ -609,6 +616,26 @@ import { PresentationCookieService } from './services/cookie.service';
         TOKENS.LOGGER,
         TOKENS.I18N_SERVICE,
       ],
+    },
+
+    // 🌩️ AWS S3 Image Management Use Cases
+    {
+      provide: TOKENS.UPLOAD_BUSINESS_IMAGE_USE_CASE,
+      useFactory: (businessRepo, s3Service) =>
+        new UploadBusinessImageUseCase(businessRepo, s3Service),
+      inject: [TOKENS.BUSINESS_REPOSITORY, TOKENS.AWS_S3_IMAGE_SERVICE],
+    },
+    {
+      provide: TOKENS.ADD_IMAGE_TO_GALLERY_USE_CASE,
+      useFactory: (businessRepo) =>
+        new AddImageToBusinessGalleryUseCase(businessRepo),
+      inject: [TOKENS.BUSINESS_REPOSITORY],
+    },
+    {
+      provide: TOKENS.UPDATE_BUSINESS_SEO_USE_CASE,
+      useFactory: (businessRepo) =>
+        new UpdateBusinessSeoProfileUseCase(businessRepo),
+      inject: [TOKENS.BUSINESS_REPOSITORY],
     },
   ],
   exports: [JwtAuthGuard, SecurityValidationPipe],

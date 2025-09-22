@@ -16,6 +16,7 @@ import {
   Index,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -148,6 +149,13 @@ export class BusinessOrmEntity {
 
   @UpdateDateColumn({ type: 'timestamptz' })
   updated_at!: Date;
+
+  // 🖼️ Relations for image management
+  @OneToMany('BusinessImageOrmEntity', 'business', { lazy: true })
+  images?: any[]; // Lazy loaded to avoid circular imports
+
+  @OneToMany('BusinessGalleryOrmEntity', 'business', { lazy: true })
+  galleries?: any[]; // Lazy loaded to avoid circular imports
 
   // ✅ NO MAPPING LOGIC HERE
   // Use dedicated mappers in /infrastructure/mappers/ instead

@@ -2,6 +2,8 @@ import { Address } from '../value-objects/address.value-object';
 import { BusinessHours } from '../value-objects/business-hours.value-object';
 import { BusinessId } from '../value-objects/business-id.value-object';
 import { BusinessName } from '../value-objects/business-name.value-object';
+import { BusinessGallery } from '../value-objects/business-gallery.value-object';
+import { BusinessSeoProfile } from '../value-objects/business-seo-profile.value-object';
 import { Email } from '../value-objects/email.value-object';
 import { FileUrl } from '../value-objects/file-url.value-object';
 import { Phone } from '../value-objects/phone.value-object';
@@ -67,6 +69,8 @@ export class Business {
     private readonly _slogan: string,
     private readonly _sector: BusinessSector | null,
     private readonly _branding: BusinessBranding,
+    private readonly _gallery: BusinessGallery,
+    private readonly _seoProfile: BusinessSeoProfile | null,
     private readonly _address: Address,
     private readonly _contactInfo: BusinessContactInfo,
     private readonly _settings: BusinessSettings,
@@ -99,6 +103,24 @@ export class Business {
 
   get branding(): BusinessBranding {
     return this._branding;
+  }
+
+  get gallery(): BusinessGallery {
+    return this._gallery;
+  }
+
+  getGallery(): BusinessGallery {
+    return this._gallery;
+  }
+
+  getOwnerId(): string {
+    // For now, return business ID as owner ID
+    // TODO: Implement proper owner relationship
+    return this._id.getValue();
+  }
+
+  get seoProfile(): BusinessSeoProfile | null {
+    return this._seoProfile;
   }
 
   get address(): Address {
@@ -164,6 +186,8 @@ export class Business {
       data.slogan || '',
       data.sector,
       {},
+      BusinessGallery.empty(),
+      null, // seoProfile starts as null, can be added later
       data.address,
       data.contactInfo,
       { ...defaultSettings, ...data.settings },
@@ -224,6 +248,97 @@ export class Business {
   public updateSettings(settings: Partial<BusinessSettings>): void {
     Object.assign(this._settings, settings);
     this._updatedAt = new Date();
+  }
+
+  // Gallery management
+  public updateGallery(gallery: BusinessGallery): Business {
+    return new Business(
+      this._id,
+      this._name,
+      this._description,
+      this._slogan,
+      this._sector,
+      this._branding,
+      gallery,
+      this._seoProfile,
+      this._address,
+      this._contactInfo,
+      this._settings,
+      this._businessHours,
+      this._status,
+      this._createdAt,
+      new Date(),
+    );
+  }
+
+  public hasLogo(): boolean {
+    return this._gallery.getLogo() !== undefined;
+  }
+
+  public hasCoverImage(): boolean {
+    return this._gallery.getCoverImage() !== undefined;
+  }
+
+  public getGalleryImageCount(): number {
+    return this._gallery.count;
+  }
+
+  // SEO management
+  public updateSeoProfile(seoProfile: BusinessSeoProfile): Business {
+    return new Business(
+      this._id,
+      this._name,
+      this._description,
+      this._slogan,
+      this._sector,
+      this._branding,
+      this._gallery,
+      seoProfile,
+      this._address,
+      this._contactInfo,
+      this._settings,
+      this._businessHours,
+      this._status,
+      this._createdAt,
+      new Date(),
+    );
+  }
+
+  public hasSeoOptimization(): boolean {
+    return this._seoProfile !== null;
+  }
+
+  public generateBasicSeoProfile(): BusinessSeoProfile {
+    const cityName = this._address.getCity() || 'France';
+    const businessType = this._sector?.name || 'Service';
+
+    return BusinessSeoProfile.create({
+      metaTitle: `${this._name.getValue()} - ${businessType} à ${cityName}`,
+      metaDescription: `${this._description}. ${businessType} professionnel situé à ${cityName}.`,
+      keywords: [
+        this._name.getValue().toLowerCase(),
+        businessType.toLowerCase(),
+        cityName.toLowerCase(),
+        `${businessType.toLowerCase()} ${cityName.toLowerCase()}`,
+      ],
+      canonicalUrl: this._contactInfo.website,
+      structuredData: {
+        '@context': 'https://schema.org',
+        '@type': 'LocalBusiness',
+        name: this._name.getValue(),
+        description: this._description,
+        url: this._contactInfo.website,
+        telephone: this._contactInfo.primaryPhone.getValue(),
+        email: this._contactInfo.primaryEmail.getValue(),
+        address: {
+          '@type': 'PostalAddress',
+          streetAddress: this._address.getStreet(),
+          addressLocality: this._address.getCity(),
+          postalCode: this._address.getPostalCode(),
+          addressCountry: this._address.getCountry(),
+        },
+      },
+    });
   }
 
   // Domain events

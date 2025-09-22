@@ -16,6 +16,7 @@ import { MappersModule } from './mappers/mappers.module';
 import { AuthInfrastructureModule } from './modules/auth-infrastructure.module';
 import { NotificationServicesModule } from './modules/notification-services.module';
 import { UseCasesModule } from './modules/use-cases.module';
+import { AwsS3Module } from './modules/aws-s3.module';
 
 // Shared constants
 
@@ -29,6 +30,7 @@ import { UseCasesModule } from './modules/use-cases.module';
 
     // Infrastructure modules
     DatabaseModule, // ✅ Provides USER_REPOSITORY, BUSINESS_SECTOR_REPOSITORY
+    AwsS3Module, // ✅ Provides AWS_S3_CONFIG, AWS_S3_IMAGE_SERVICE
     CacheModule, // ✅ Provides CACHE_SERVICE, USER_CACHE_SERVICE
     PinoLoggerModule, // ✅ Provides LOGGER
     MappersModule, // ✅ Provides domain mappers
@@ -45,6 +47,9 @@ import { UseCasesModule } from './modules/use-cases.module';
   exports: [
     // Database and repositories
     DatabaseModule,
+
+    // AWS S3 Services
+    AwsS3Module,
 
     // Cache services
     CacheModule,

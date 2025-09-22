@@ -22,6 +22,7 @@ import { User } from '../../domain/entities/user.entity';
 
 // Domain Value Objects
 import { BusinessHours } from '../../domain/value-objects/business-hours.value-object';
+import { BusinessGallery } from '../../domain/value-objects/business-gallery.value-object';
 
 // Domain Value Objects
 import { Address } from '../../domain/value-objects/address.value-object';
@@ -778,6 +779,10 @@ export class BusinessMapper {
       ? BusinessSectorMapper.fromTypeOrmEntity(entity.businessSector)
       : null; // null si relation non chargée
 
+    // Create default gallery and SEO profile for now
+    const gallery = BusinessGallery.empty();
+    const seoProfile = null; // Will be loaded separately if needed
+
     return new Business(
       businessId,
       businessName,
@@ -785,13 +790,15 @@ export class BusinessMapper {
       entity.slogan || '',
       businessSector,
       branding,
-      address,
-      contactInfo,
-      settings,
-      businessHours, // BusinessHours en position 10
-      entity.status as any, // Status en position 11
-      entity.created_at,
-      entity.updated_at,
+      gallery, // Position 7
+      seoProfile, // Position 8
+      address, // Position 9
+      contactInfo, // Position 10
+      settings, // Position 11
+      businessHours, // Position 12
+      entity.status as any, // Position 13
+      entity.created_at, // Position 14
+      entity.updated_at, // Position 15
     );
   }
 

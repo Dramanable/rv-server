@@ -17,6 +17,10 @@ import { ServiceOrmEntity } from './sql/postgresql/entities/service-orm.entity';
 import { StaffOrmEntity } from './sql/postgresql/entities/staff-orm.entity';
 import { UserOrmEntity } from './sql/postgresql/entities/user-orm.entity';
 
+// 🖼️ Business Image & Gallery Entities
+import { BusinessImageOrmEntity } from './sql/postgresql/entities/business-image-orm.entity';
+import { BusinessGalleryOrmEntity } from './sql/postgresql/entities/business-gallery-orm.entity';
+
 /**
  * 🗄️ Simple Database Module
  * ✅ Clean Architecture compliant
@@ -50,6 +54,9 @@ import { UserOrmEntity } from './sql/postgresql/entities/user-orm.entity';
           ServiceOrmEntity,
           StaffOrmEntity,
           NotificationOrmEntity,
+          // 🖼️ Business Image & Gallery Entities
+          BusinessImageOrmEntity,
+          BusinessGalleryOrmEntity,
         ],
         migrations: [
           'dist/infrastructure/database/sql/postgresql/migrations/*.js',

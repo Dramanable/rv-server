@@ -158,20 +158,4 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 
     return null;
   }
-
-  /**
-   * 🔍 Extraire le message d'info de Passport de façon sécurisée
-   */
-  private extractInfoMessage(info: unknown): string {
-    if (typeof info === 'string') {
-      return info;
-    }
-
-    if (typeof info === 'object' && info !== null && 'message' in info) {
-      const message = (info as { message: unknown }).message;
-      return typeof message === 'string' ? message : 'Unknown info';
-    }
-
-    return 'No info available';
-  }
 }
