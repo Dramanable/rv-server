@@ -3,7 +3,6 @@ import {
   HealthCheck,
   HealthCheckService,
   TypeOrmHealthIndicator,
-  MongooseHealthIndicator,
   MemoryHealthIndicator,
 } from '@nestjs/terminus';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
@@ -27,7 +26,6 @@ export class HealthController {
   constructor(
     private readonly health: HealthCheckService,
     private readonly db: TypeOrmHealthIndicator,
-    private readonly mongo: MongooseHealthIndicator,
     private readonly memory: MemoryHealthIndicator,
     private readonly configService: ConfigService,
   ) {}
@@ -47,9 +45,6 @@ export class HealthController {
       // PostgreSQL Database
       () => this.db.pingCheck('database'),
 
-      // MongoDB Database
-      () => this.mongo.pingCheck('mongodb'),
-
       // Memory usage (max 512MB)
       () => this.memory.checkHeap('memory_heap', 512 * 1024 * 1024),
 
@@ -65,10 +60,7 @@ export class HealthController {
   @ApiOperation({ summary: 'Database health check' })
   @HealthCheck()
   checkDatabase() {
-    return this.health.check([
-      () => this.db.pingCheck('postgresql'),
-      () => this.mongo.pingCheck('mongodb'),
-    ]);
+    return this.health.check([() => this.db.pingCheck('postgresql')]);
   }
 
   /**
@@ -139,10 +131,7 @@ export class HealthController {
   @ApiOperation({ summary: 'Readiness probe for Kubernetes' })
   @HealthCheck()
   checkReadiness() {
-    return this.health.check([
-      () => this.db.pingCheck('database'),
-      () => this.mongo.pingCheck('mongodb'),
-    ]);
+    return this.health.check([() => this.db.pingCheck('database')]);
   }
 
   /**
@@ -166,13 +155,11 @@ export class HealthController {
       // Ici vous pouvez ajouter des vérifications spécifiques à votre DB
       return Promise.resolve({
         postgresql: { status: 'up', connections: 'active' },
-        mongodb: { status: 'up', connections: 'active' },
       });
     } catch (error) {
       this.logger.error('Database status check failed', error);
       return Promise.resolve({
         postgresql: { status: 'down', error: (error as Error).message },
-        mongodb: { status: 'down', error: (error as Error).message },
       });
     }
   }

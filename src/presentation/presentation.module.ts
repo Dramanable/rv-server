@@ -41,6 +41,7 @@ import { CreateBusinessUseCase } from '@application/use-cases/business/create-bu
 import { GetBusinessUseCase } from '@application/use-cases/business/get-business.use-case';
 import { ListBusinessUseCase } from '@application/use-cases/business/list-business.use-case';
 import { UpdateBusinessUseCase } from '@application/use-cases/business/update-business.use-case';
+import { ManageBusinessHoursUseCase } from '@application/use-cases/business/manage-business-hours.use-case';
 
 // Calendar Use Cases
 import { CreateCalendarUseCase } from '@application/use-cases/calendar/create-calendar.use-case';
@@ -51,6 +52,7 @@ import { ListCalendarsUseCase } from '@application/use-cases/calendar/list-calen
 import { AuthController } from './controllers/auth.controller';
 import { BusinessSectorController } from './controllers/business-sector.controller';
 import { BusinessController } from './controllers/business.controller';
+import { BusinessHoursController } from './controllers/business-hours.controller';
 import { CalendarController } from './controllers/calendar.controller';
 // import { HealthController } from './controllers/health.controller';
 import { UserController } from './controllers/user.controller';
@@ -59,6 +61,7 @@ import { UserController } from './controllers/user.controller';
 import { JwtAuthGuard } from './security/auth.guard';
 import { JwtStrategy } from './security/strategies/jwt.strategy';
 import { SecurityValidationPipe } from './security/validation.pipe';
+import { RolesGuard } from './security/guards/roles.guard';
 
 // 🔧 Services
 import { MockI18nService } from '@application/mocks/mock-i18n.service';
@@ -75,6 +78,7 @@ import { PresentationCookieService } from './services/cookie.service';
     AuthController,
     UserController,
     BusinessController,
+    BusinessHoursController,
     BusinessSectorController,
     CalendarController,
     // HealthController,
@@ -84,6 +88,7 @@ import { PresentationCookieService } from './services/cookie.service';
     JwtAuthGuard,
     JwtStrategy,
     SecurityValidationPipe,
+    RolesGuard,
 
     // 🍪 Cookie Service
     PresentationCookieService,
@@ -323,6 +328,12 @@ import { PresentationCookieService } from './services/cookie.service';
         TOKENS.LOGGER,
         TOKENS.I18N_SERVICE,
       ],
+    },
+    {
+      provide: TOKENS.MANAGE_BUSINESS_HOURS_USE_CASE,
+      useFactory: (businessRepo, logger, i18n) =>
+        new ManageBusinessHoursUseCase(businessRepo, logger, i18n),
+      inject: [TOKENS.BUSINESS_REPOSITORY, TOKENS.LOGGER, TOKENS.I18N_SERVICE],
     },
 
     // 📅 Calendar Use Cases

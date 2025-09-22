@@ -26,18 +26,37 @@ import {
   Min,
   ValidateNested,
 } from 'class-validator';
-// Enums copiés depuis domain pour éviter les dépendances circulaires
-export enum BusinessSector {
-  LEGAL = 'LEGAL',
-  MEDICAL = 'MEDICAL',
-  HEALTH = 'HEALTH',
-  BEAUTY = 'BEAUTY',
-  CONSULTING = 'CONSULTING',
-  FINANCE = 'FINANCE',
-  EDUCATION = 'EDUCATION',
-  WELLNESS = 'WELLNESS',
-  AUTOMOTIVE = 'AUTOMOTIVE',
-  OTHER = 'OTHER',
+// DTO pour BusinessSectorDto entity
+export class BusinessSectorDto {
+  @ApiProperty({
+    description: 'Business sector unique identifier',
+    example: 'bs123e4567-e89b-12d3-a456-426614174000',
+  })
+  readonly id!: string;
+
+  @ApiProperty({
+    description: 'Business sector name',
+    example: 'Médical',
+  })
+  readonly name!: string;
+
+  @ApiProperty({
+    description: 'Business sector code',
+    example: 'MEDICAL',
+  })
+  readonly code!: string;
+
+  @ApiPropertyOptional({
+    description: 'Business sector description',
+    example: 'Médecins généralistes et spécialistes, Dentistes',
+  })
+  readonly description?: string;
+
+  @ApiProperty({
+    description: 'Whether the sector is active',
+    example: true,
+  })
+  readonly isActive!: boolean;
 }
 
 export enum BusinessStatus {
@@ -255,13 +274,21 @@ export class CreateBusinessDto {
   @Length(5, 200)
   readonly slogan?: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: 'Business sector',
-    enum: BusinessSector,
-    example: BusinessSector.MEDICAL,
+    type: BusinessSectorDto,
+    example: {
+      id: 'bs123e4567-e89b-12d3-a456-426614174000',
+      name: 'Médical',
+      code: 'MEDICAL',
+      description: 'Médecins généralistes et spécialistes',
+      isActive: true,
+    },
   })
-  @IsEnum(BusinessSector, { message: 'Invalid business sector' })
-  readonly sector!: BusinessSector;
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => BusinessSectorDto)
+  readonly sector?: BusinessSectorDto;
 
   @ApiProperty({
     description: 'Business address',
@@ -327,13 +354,12 @@ export class UpdateBusinessDto {
   readonly slogan?: string;
 
   @ApiPropertyOptional({
-    description: 'Business sector',
-    enum: BusinessSector,
-    example: BusinessSector.MEDICAL,
+    description: 'Business sector ID',
+    example: 'bs123e4567-e89b-12d3-a456-426614174000',
   })
   @IsOptional()
-  @IsEnum(BusinessSector, { message: 'Invalid business sector' })
-  readonly sector?: BusinessSector;
+  @IsString()
+  readonly sectorId?: string;
 
   @ApiPropertyOptional({
     description: 'Business address',
@@ -391,10 +417,10 @@ export class BusinessResponseDto {
 
   @ApiProperty({
     description: 'Business sector',
-    enum: BusinessSector,
-    example: BusinessSector.MEDICAL,
+    type: BusinessSectorDto,
+    example: { id: 'bs123', name: 'Médical', code: 'MEDICAL', isActive: true },
   })
-  readonly sector!: BusinessSector;
+  readonly sector?: BusinessSectorDto | null;
 
   @ApiProperty({
     description: 'Business status',
@@ -559,12 +585,11 @@ export class ListBusinessesDto {
 
   @ApiPropertyOptional({
     description: 'Filter by business sector',
-    enum: BusinessSector,
-    example: BusinessSector.MEDICAL,
+    type: BusinessSectorDto,
+    example: { id: 'bs123', name: 'Médical', code: 'MEDICAL', isActive: true },
   })
   @IsOptional()
-  @IsEnum(BusinessSector, { message: 'Invalid business sector' })
-  readonly sector?: BusinessSector;
+  readonly sector?: BusinessSectorDto;
 
   @ApiPropertyOptional({
     description: 'Filter by business status',
@@ -616,10 +641,10 @@ export class BusinessSummaryDto {
 
   @ApiProperty({
     description: 'Business sector',
-    enum: BusinessSector,
-    example: BusinessSector.MEDICAL,
+    type: BusinessSectorDto,
+    example: { id: 'bs123', name: 'Médical', code: 'MEDICAL', isActive: true },
   })
-  readonly sector!: BusinessSector;
+  readonly sector?: BusinessSectorDto | null;
 
   @ApiProperty({
     description: 'Business status',
@@ -716,10 +741,10 @@ export class CreateBusinessResponseDto {
 
   @ApiProperty({
     description: 'Business sector',
-    enum: BusinessSector,
-    example: BusinessSector.MEDICAL,
+    type: BusinessSectorDto,
+    example: { id: 'bs123', name: 'Médical', code: 'MEDICAL', isActive: true },
   })
-  readonly sector!: BusinessSector;
+  readonly sector?: BusinessSectorDto | null;
 
   @ApiProperty({
     description: 'Initial business status',
@@ -757,10 +782,10 @@ export class UpdateBusinessResponseDto {
 
   @ApiProperty({
     description: 'Business sector',
-    enum: BusinessSector,
-    example: BusinessSector.MEDICAL,
+    type: BusinessSectorDto,
+    example: { id: 'bs123', name: 'Médical', code: 'MEDICAL', isActive: true },
   })
-  readonly sector!: BusinessSector;
+  readonly sector?: BusinessSectorDto | null;
 
   @ApiProperty({
     description: 'Business status',

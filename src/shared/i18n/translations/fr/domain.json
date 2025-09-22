@@ -23,6 +23,13 @@
     "name": {
       "empty": "Le nom ne peut pas être vide",
       "too_long": "Le nom est trop long (max 100 caractères)"
+    },
+    "errors": {
+      "notFound": "Entreprise non trouvée avec l'id {{id}}"
+    },
+    "hours": {
+      "updated": "Horaires d'ouverture mis à jour avec succès",
+      "specialDateAdded": "Date spéciale ajoutée avec succès"
     }
   }
 }

@@ -14,16 +14,19 @@ import {
   CreateDateColumn,
   Entity,
   Index,
+  JoinColumn,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
 // ✅ Only import enums for type constraints - Clean Architecture compliant
+import { BusinessSectorOrmEntity } from './business-sector-orm.entity';
 
 @Entity('businesses')
 @Index(['name'])
 @Index(['status'])
-@Index(['sector'])
+@Index(['business_sector_id'])
 @Index(['created_at'])
 export class BusinessOrmEntity {
   @PrimaryGeneratedColumn('uuid')
@@ -39,23 +42,12 @@ export class BusinessOrmEntity {
   @Column({ type: 'varchar', length: 100, nullable: true })
   slogan!: string | null;
 
-  @Column({
-    type: 'enum',
-    enum: [
-      'LEGAL',
-      'MEDICAL',
-      'HEALTH',
-      'BEAUTY',
-      'CONSULTING',
-      'FINANCE',
-      'EDUCATION',
-      'WELLNESS',
-      'AUTOMOTIVE',
-      'OTHER',
-    ],
-    default: 'OTHER',
-  })
-  sector!: string;
+  @Column({ type: 'uuid', nullable: true })
+  business_sector_id!: string | null;
+
+  @ManyToOne(() => BusinessSectorOrmEntity, { nullable: true })
+  @JoinColumn({ name: 'business_sector_id' })
+  businessSector!: BusinessSectorOrmEntity | null;
 
   @Column({
     type: 'enum',
@@ -122,6 +114,30 @@ export class BusinessOrmEntity {
       sms_notifications: boolean;
       reminder_time: number;
     };
+  };
+
+  // Business Hours as JSON - Flexible schedule management
+  @Column({ type: 'jsonb', nullable: false })
+  business_hours!: {
+    weekly_schedule: {
+      [key: string]: {
+        is_open: boolean;
+        time_slots: Array<{
+          start_time: string;
+          end_time: string;
+        }>;
+      };
+    };
+    special_dates: Array<{
+      date: string;
+      type: 'CLOSED' | 'SPECIAL_HOURS' | 'HOLIDAY' | 'MAINTENANCE';
+      label?: string;
+      time_slots?: Array<{
+        start_time: string;
+        end_time: string;
+      }>;
+    }>;
+    timezone: string;
   };
 
   @Column({ type: 'varchar', length: 500, nullable: true })

@@ -1,0 +1,9 @@
+{
+  "user": {
+    "id": "939ff85c-4312-426f-adf4-cf36b4cc443c",
+    "email": "admin@rvproject.dev",
+    "name": "Admin User",
+    "role": "SUPER_ADMIN"
+  },
+  "message": "auth.login_success"
+}

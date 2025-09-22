@@ -1,5 +1,6 @@
 import type { I18nService } from '@application/ports/i18n.port';
 import { AppConfigService } from '@infrastructure/config/app-config.service';
+import { ProductionI18nService } from '@infrastructure/i18n/production-i18n.service';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -14,52 +15,7 @@ import { RefreshTokenOrmEntity } from './sql/postgresql/entities/refresh-token-o
 import { ServiceOrmEntity } from './sql/postgresql/entities/service-orm.entity';
 import { StaffOrmEntity } from './sql/postgresql/entities/staff-orm.entity';
 import { UserOrmEntity } from './sql/postgresql/entities/user-orm.entity';
-
-// Temporairement commenté jusqu'à résolution des problèmes de décorateurs TypeScript 5.7
-// import { BusinessSectorOrmEntity } from './sql/postgresql/entities/business-sector-orm.entity';
-
-class DatabaseI18nService implements I18nService {
-  t(key: string, params?: Record<string, unknown>): string {
-    const translations: Record<string, string> = {
-      'infrastructure.repository.factory_initialized':
-        'Repository factory initialized',
-      'infrastructure.repository.switching_database_type':
-        'Switching database type',
-      'infrastructure.repository.database_type_switched':
-        'Database type switched',
-      'infrastructure.repository.creating_sql_repository':
-        'Creating SQL repository',
-      'infrastructure.repository.creating_nosql_repository':
-        'Creating NoSQL repository',
-      'infrastructure.repository.sql_connection_failed':
-        'SQL connection failed',
-      'infrastructure.repository.nosql_connection_failed':
-        'NoSQL connection failed',
-      'infrastructure.repository.connectivity_test_results':
-        'Connectivity test results',
-    };
-
-    let result = translations[key] || key;
-    if (params) {
-      Object.entries(params).forEach(([param, value]) => {
-        result = result.replace(`{${param}}`, String(value));
-      });
-    }
-    return result;
-  }
-
-  translate(key: string, params?: Record<string, unknown>): string {
-    return this.t(key, params);
-  }
-
-  setDefaultLanguage(): void {
-    // Mock implementation
-  }
-
-  exists(): boolean {
-    return true;
-  }
-}
+import { BusinessSectorOrmEntity } from './sql/postgresql/entities/business-sector-orm.entity';
 
 /**
  * 🗄️ Simple Database Module
@@ -89,10 +45,10 @@ class DatabaseI18nService implements I18nService {
           UserOrmEntity,
           RefreshTokenOrmEntity,
           BusinessOrmEntity,
+          BusinessSectorOrmEntity,
           CalendarOrmEntity,
           ServiceOrmEntity,
           StaffOrmEntity,
-          // BusinessSectorOrmEntity, // Temporairement commenté
         ],
         migrations: [
           'dist/infrastructure/database/sql/postgresql/migrations/*.js',
@@ -113,7 +69,7 @@ class DatabaseI18nService implements I18nService {
   providers: [
     AppConfigService,
     ConfigService, // Ajout du ConfigService de NestJS
-    { provide: TOKENS.I18N_SERVICE, useClass: DatabaseI18nService },
+    { provide: TOKENS.I18N_SERVICE, useClass: ProductionI18nService },
 
     // ✅ Mock BusinessSector Repository pour démarrer l'app
     {

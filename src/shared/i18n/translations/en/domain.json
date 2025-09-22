@@ -23,6 +23,13 @@
     "name": {
       "empty": "Name cannot be empty",
       "too_long": "Name is too long (max 100 characters)"
+    },
+    "errors": {
+      "notFound": "Business not found with id {{id}}"
+    },
+    "hours": {
+      "updated": "Business hours updated successfully",
+      "specialDateAdded": "Special date added successfully"
     }
   }
 }

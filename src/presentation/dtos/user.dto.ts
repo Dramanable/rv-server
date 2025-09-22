@@ -21,27 +21,11 @@ import {
   ValidateNested,
 } from 'class-validator';
 
+import { UserRole } from '../../shared/enums/user-role.enum';
+
 // ═══════════════════════════════════════════════════════════════
 // 🔍 ENUMS & TYPES
 // ═══════════════════════════════════════════════════════════════
-
-export enum UserRole {
-  PLATFORM_ADMIN = 'PLATFORM_ADMIN',
-  BUSINESS_OWNER = 'BUSINESS_OWNER',
-  BUSINESS_ADMIN = 'BUSINESS_ADMIN',
-  LOCATION_MANAGER = 'LOCATION_MANAGER',
-  DEPARTMENT_HEAD = 'DEPARTMENT_HEAD',
-  SENIOR_PRACTITIONER = 'SENIOR_PRACTITIONER',
-  PRACTITIONER = 'PRACTITIONER',
-  JUNIOR_PRACTITIONER = 'JUNIOR_PRACTITIONER',
-  RECEPTIONIST = 'RECEPTIONIST',
-  ASSISTANT = 'ASSISTANT',
-  SCHEDULER = 'SCHEDULER',
-  CORPORATE_CLIENT = 'CORPORATE_CLIENT',
-  VIP_CLIENT = 'VIP_CLIENT',
-  REGULAR_CLIENT = 'REGULAR_CLIENT',
-  GUEST_CLIENT = 'GUEST_CLIENT',
-}
 
 export enum SortDirection {
   ASC = 'ASC',

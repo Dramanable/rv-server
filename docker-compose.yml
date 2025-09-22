@@ -14,8 +14,6 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      mongodb:
-        condition: service_healthy
       redis:
         condition: service_healthy
 
@@ -99,31 +97,7 @@ services:
     networks:
       - app-network
 
-  mongodb:
-    image: mongo:7-jammy
-    container_name: mongodb
-    restart: unless-stopped
-    # 🎯 Memory optimization
-    mem_limit: 512m
-    mem_reservation: 256m
-    env_file:
-      - .env
-    command: >
-      mongod
-      --wiredTigerCacheSizeGB 0.25
-      --wiredTigerCollectionBlockCompressor snappy
-      --quiet
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongodb_data:/data/db
-    healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.runCommand('ping').ok"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - app-network
+
 
   redis:
     image: redis:7-alpine
@@ -184,8 +158,6 @@ services:
 
 volumes:
   postgres_data:
-    driver: local
-  mongodb_data:
     driver: local
   redis_data:
     driver: local

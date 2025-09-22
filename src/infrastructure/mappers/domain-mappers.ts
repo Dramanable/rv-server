@@ -15,9 +15,13 @@ import {
   Business,
   BusinessBranding,
 } from '../../domain/entities/business.entity';
+import { BusinessSector as BusinessSectorEntity } from '../../domain/entities/business-sector.entity';
 import { Service } from '../../domain/entities/service.entity';
 import { Staff } from '../../domain/entities/staff.entity';
 import { User } from '../../domain/entities/user.entity';
+
+// Domain Value Objects
+import { BusinessHours } from '../../domain/value-objects/business-hours.value-object';
 
 // Domain Value Objects
 import { Address } from '../../domain/value-objects/address.value-object';
@@ -39,6 +43,7 @@ import { UserRole } from '../../shared/enums/user-role.enum';
 
 // Infrastructure Entities
 import { BusinessOrmEntity } from '../database/sql/postgresql/entities/business-orm.entity';
+import { BusinessSectorOrmEntity } from '../database/sql/postgresql/entities/business-sector-orm.entity';
 import { ServiceOrmEntity } from '../database/sql/postgresql/entities/service-orm.entity';
 import { StaffOrmEntity } from '../database/sql/postgresql/entities/staff-orm.entity';
 import { UserOrmEntity } from '../database/sql/postgresql/entities/user-orm.entity';
@@ -81,10 +86,18 @@ export class UserMapper {
    * TypeORM UserOrmEntity → Domain User
    */
   static fromTypeOrmEntity(entity: UserOrmEntity): User {
+    // Construction sécurisée du nom complet
+    const firstName = entity.firstName || '';
+    const lastName = entity.lastName || '';
+    const fullName = `${firstName} ${lastName}`.trim();
+
+    // Assurer qu'il y a au moins un nom valide
+    const safeName = fullName || entity.username || 'Unknown User';
+
     return User.createWithHashedPassword(
       entity.id,
       Email.create(entity.email),
-      `${entity.firstName} ${entity.lastName}`.trim(),
+      safeName,
       entity.role as UserRole,
       entity.hashedPassword,
       entity.createdAt,
@@ -528,7 +541,7 @@ export class BusinessMapper {
     entity.name = domainBusiness.name.getValue();
     entity.description = domainBusiness.description;
     entity.slogan = domainBusiness.slogan || null;
-    entity.sector = domainBusiness.sector;
+    entity.business_sector_id = domainBusiness.sector?.id || null; // ID du secteur ou null
     entity.status = domainBusiness.status;
 
     // Primary fields
@@ -591,6 +604,35 @@ export class BusinessMapper {
       },
     };
 
+    // Business Hours mapping - Converter Domain BusinessHours vers JSON
+    const businessHours = domainBusiness.businessHours;
+    entity.business_hours = {
+      weekly_schedule: businessHours.getWeeklySchedule().reduce(
+        (acc, day) => {
+          acc[day.dayOfWeek.toString()] = {
+            is_open: day.isOpen,
+            time_slots: day.timeSlots.map((slot) => ({
+              start_time: slot.start,
+              end_time: slot.end,
+            })),
+          };
+          return acc;
+        },
+        {} as Record<string, any>,
+      ),
+      special_dates: businessHours.getSpecialDates().map((special) => ({
+        date: special.date.toISOString().split('T')[0], // Format YYYY-MM-DD
+        type: special.isOpen ? 'SPECIAL_HOURS' : 'CLOSED',
+        label: special.reason,
+        time_slots:
+          special.timeSlots?.map((slot) => ({
+            start_time: slot.start,
+            end_time: slot.end,
+          })) || [],
+      })),
+      timezone: businessHours.getTimezone(),
+    };
+
     entity.logo_url = domainBusiness.branding?.logoUrl?.getUrl() || null;
     entity.created_at = domainBusiness.createdAt;
     entity.updated_at = domainBusiness.updatedAt;
@@ -603,29 +645,48 @@ export class BusinessMapper {
    */
   static fromTypeOrmEntity(entity: BusinessOrmEntity): Business {
     const businessId = BusinessId.create(entity.id);
+
+    if (!entity.name) {
+      throw new Error(`Business name is undefined for id: ${entity.id}`);
+    }
+
     const businessName = BusinessName.create(entity.name);
 
     const contactInfo = {
-      primaryEmail: EmailVO.create(entity.contact_info.primary_email),
+      primaryEmail: EmailVO.create(
+        entity.contact_info?.primary_email ||
+          entity.primary_email ||
+          'no-email@example.com',
+      ),
       secondaryEmails:
-        entity.contact_info.secondary_emails?.map((e: string) =>
+        entity.contact_info?.secondary_emails?.map((e: string) =>
           EmailVO.create(e),
         ) || [],
-      primaryPhone: Phone.create(entity.contact_info.primary_phone),
+      primaryPhone: Phone.create(
+        entity.contact_info?.primary_phone ||
+          entity.primary_phone ||
+          '+33000000000',
+      ),
       secondaryPhones:
-        entity.contact_info.secondary_phones?.map((p: string) =>
+        entity.contact_info?.secondary_phones?.map((p: string) =>
           Phone.create(p),
         ) || [],
-      website: entity.contact_info.website,
-      socialMedia: entity.contact_info.social_media,
+      website: entity.contact_info?.website || 'https://example.com',
+      socialMedia:
+        entity.contact_info?.social_media ||
+        (entity.contact_info as any)?.social ||
+        {},
     };
 
     const address = Address.create({
-      street: entity.address.street,
-      city: entity.address.city,
-      postalCode: entity.address.postal_code,
-      country: entity.address.country,
-      region: entity.address.region,
+      street: entity.address?.street || 'Unknown Street',
+      city: entity.address?.city || 'Unknown City',
+      postalCode:
+        entity.address?.postal_code ||
+        (entity.address as any)?.zipCode ||
+        '00000',
+      country: entity.address?.country || 'Unknown Country',
+      region: entity.address?.region || (entity.address as any)?.state || '',
     });
 
     const branding: BusinessBranding = entity.branding
@@ -647,49 +708,86 @@ export class BusinessMapper {
               )
             : undefined,
           brandColors:
-            entity.branding.brand_colors?.primary &&
-            entity.branding.brand_colors?.secondary
+            (entity.branding.brand_colors?.primary ||
+              (entity.branding as any).primaryColor) &&
+            (entity.branding.brand_colors?.secondary ||
+              (entity.branding as any).secondaryColor)
               ? {
-                  primary: entity.branding.brand_colors.primary,
-                  secondary: entity.branding.brand_colors.secondary,
-                  accent: entity.branding.brand_colors.accent,
+                  primary:
+                    entity.branding.brand_colors?.primary ||
+                    (entity.branding as any).primaryColor,
+                  secondary:
+                    entity.branding.brand_colors?.secondary ||
+                    (entity.branding as any).secondaryColor,
+                  accent:
+                    entity.branding.brand_colors?.accent ||
+                    (entity.branding as any).accentColor,
                 }
               : undefined,
         }
       : {};
 
     const settings = {
-      timezone: entity.settings.timezone,
-      currency: entity.settings.currency,
-      language: entity.settings.language,
+      timezone: entity.settings?.timezone || 'Europe/Paris',
+      currency: entity.settings?.currency || 'EUR',
+      language: entity.settings?.language || 'fr',
       appointmentSettings: {
-        defaultDuration: entity.settings.appointment_settings.default_duration,
-        bufferTime: entity.settings.appointment_settings.buffer_time,
+        defaultDuration:
+          entity.settings?.appointment_settings?.default_duration || 30,
+        bufferTime: entity.settings?.appointment_settings?.buffer_time || 15,
         advanceBookingLimit:
-          entity.settings.appointment_settings.advance_booking_limit,
+          entity.settings?.appointment_settings?.advance_booking_limit || 30,
         cancellationPolicy:
-          entity.settings.appointment_settings.cancellation_policy,
+          entity.settings?.appointment_settings?.cancellation_policy ||
+          'Standard policy',
       },
       notificationSettings: {
         emailNotifications:
-          entity.settings.notification_settings.email_notifications,
+          entity.settings?.notification_settings?.email_notifications ?? true,
         smsNotifications:
-          entity.settings.notification_settings.sms_notifications,
-        reminderTime: entity.settings.notification_settings.reminder_time,
+          entity.settings?.notification_settings?.sms_notifications ?? false,
+        reminderTime:
+          entity.settings?.notification_settings?.reminder_time || 24,
       },
     };
+
+    // Créer BusinessHours à partir des données ORM
+    let businessHours;
+    try {
+      businessHours = BusinessHours.fromDatabaseData({
+        weekly_schedule:
+          (entity.business_hours as any)?.weeklySchedule ||
+          entity.business_hours?.weekly_schedule ||
+          [],
+        special_dates:
+          (entity.business_hours as any)?.specialDates ||
+          entity.business_hours?.special_dates ||
+          [],
+        timezone: entity.business_hours?.timezone || 'Europe/Paris',
+      });
+    } catch (error) {
+      // Fallback to default business hours (Monday to Friday, 9-17)
+      businessHours = BusinessHours.create24Hours([1, 2, 3, 4, 5]);
+    }
+
+    // Mapper le secteur d'activité
+    // Conversion de la relation BusinessSector vers l'entité domain
+    const businessSector = entity.businessSector
+      ? BusinessSectorMapper.fromTypeOrmEntity(entity.businessSector)
+      : null; // null si relation non chargée
 
     return new Business(
       businessId,
       businessName,
       entity.description,
       entity.slogan || '',
-      entity.sector as any,
+      businessSector,
       branding,
       address,
       contactInfo,
       settings,
-      entity.status as any,
+      businessHours, // BusinessHours en position 10
+      entity.status as any, // Status en position 11
       entity.created_at,
       entity.updated_at,
     );
@@ -715,6 +813,74 @@ export interface DomainMapper<TDomain, TInfra, TDto> {
 }
 
 /**
+ *  BUSINESS SECTOR MAPPER
+ * Mapping entre BusinessSectorOrmEntity ↔ BusinessSector
+ */
+export class BusinessSectorMapper {
+  /**
+   * Domain BusinessSectorEntity → TypeORM BusinessSectorOrmEntity
+   */
+  static toTypeOrmEntity(
+    domain: BusinessSectorEntity,
+  ): BusinessSectorOrmEntity {
+    const entity = new BusinessSectorOrmEntity();
+    entity.id = domain.id;
+    entity.name = domain.name;
+    entity.description = domain.description;
+    entity.code = domain.code;
+    entity.isActive = domain.isActive;
+    entity.createdBy = domain.createdBy;
+    entity.createdAt = domain.createdAt;
+
+    if (domain.updatedBy) {
+      entity.updatedBy = domain.updatedBy;
+    }
+    if (domain.updatedAt) {
+      entity.updatedAt = domain.updatedAt;
+    }
+
+    return entity;
+  }
+
+  /**
+   * TypeORM BusinessSectorOrmEntity → Domain BusinessSectorEntity
+   */
+  static fromTypeOrmEntity(
+    entity: BusinessSectorOrmEntity,
+  ): BusinessSectorEntity {
+    return BusinessSectorEntity.restore(
+      entity.id,
+      entity.name,
+      entity.description || '',
+      entity.code,
+      entity.isActive,
+      entity.createdAt,
+      entity.createdBy,
+      entity.updatedAt,
+      entity.updatedBy,
+    );
+  }
+
+  /**
+   * Array mapping - Domain BusinessSectorEntities → TypeORM Entities
+   */
+  static toTypeOrmEntities(
+    domains: BusinessSectorEntity[],
+  ): BusinessSectorOrmEntity[] {
+    return domains.map((domain) => this.toTypeOrmEntity(domain));
+  }
+
+  /**
+   * Array mapping - TypeORM Entities → Domain BusinessSectorEntities
+   */
+  static fromTypeOrmEntities(
+    entities: BusinessSectorOrmEntity[],
+  ): BusinessSectorEntity[] {
+    return entities.map((entity) => this.fromTypeOrmEntity(entity));
+  }
+}
+
+/**
  * 🎯 EXPORT CENTRALISÉ
  */
 export const Mappers = {
@@ -723,6 +889,7 @@ export const Mappers = {
   Staff: StaffMapper,
   Business: BusinessMapper,
   AuthResponse: AuthResponseMapper,
+  BusinessSector: BusinessSectorMapper,
 } as const;
 
 /**

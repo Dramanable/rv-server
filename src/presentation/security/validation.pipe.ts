@@ -16,9 +16,22 @@ import DOMPurify from 'isomorphic-dompurify';
 
 @Injectable()
 export class SecurityValidationPipe implements PipeTransform<any> {
-  async transform(value: any, { metatype }: ArgumentMetadata): Promise<any> {
+  async transform(
+    value: any,
+    { metatype, type }: ArgumentMetadata,
+  ): Promise<any> {
+    // ✅ Ne pas valider les paramètres de custom decorators (comme @GetUser())
+    if (type === 'custom') {
+      return value;
+    }
+
     if (!metatype || !this.toValidate(metatype)) {
       return this.sanitizeInput(value);
+    }
+
+    // ✅ Ne pas essayer de valider les entités Domain comme User
+    if (this.isDomainEntity(metatype)) {
+      return value;
     }
 
     // Sanitization AVANT validation
@@ -44,6 +57,21 @@ export class SecurityValidationPipe implements PipeTransform<any> {
   private toValidate(metatype: any): boolean {
     const types: any[] = [String, Boolean, Number, Array, Object];
     return !types.includes(metatype);
+  }
+
+  /**
+   * ✅ Vérifie si c'est une entité Domain (ne doit pas être validée)
+   */
+  private isDomainEntity(metatype: any): boolean {
+    // Entités Domain communes qui ne doivent jamais être validées par ce pipe
+    const domainEntityNames = [
+      'User',
+      'Business',
+      'Service',
+      'Staff',
+      'Appointment',
+    ];
+    return domainEntityNames.includes(metatype.name);
   }
 
   /**

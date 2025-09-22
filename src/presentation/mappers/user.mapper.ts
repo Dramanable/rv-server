@@ -7,12 +7,12 @@
 
 import { User } from '../../domain/entities/user.entity';
 import { UserOrmEntity } from '../../infrastructure/database/sql/postgresql/entities/user-orm.entity';
+import { UserRole } from '../../shared/enums/user-role.enum';
 import {
   ListUsersResponseDto,
   PaginationMetaDto,
   UserListItemDto,
   UserResponseDto,
-  UserRole,
 } from '../dtos/user.dto';
 
 // ═══════════════════════════════════════════════════════════════
@@ -34,7 +34,7 @@ export class UserToDtoMapper {
       email: user.email.value,
       firstName,
       lastName,
-      role: user.role as UserRole,
+      role: user.role,
       phone: undefined, // Optionnel
       isActive: user.isActive ?? true,
       isVerified: user.isVerified ?? false,
@@ -55,7 +55,7 @@ export class UserToDtoMapper {
       username: undefined, // User entity n'a pas de username
       firstName,
       lastName,
-      role: user.role as UserRole,
+      role: user.role,
       isActive: true, // User entity n'a pas de isActive, défaut à true
       isVerified: false, // User entity n'a pas de isVerified, défaut à false
       createdAt: user.createdAt.toISOString(),

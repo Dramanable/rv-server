@@ -6,6 +6,57 @@
 
 Vous travaillez sur une **application enterprise NestJS** implémentant la **Clean Architecture de Robert C. Martin (Uncle Bob)** avec une approche **TDD rigoureuse**, les **principes SOLID**, et les **meilleures pratiques TypeScript** strictes. L'application est **production-ready** avec sécurité, i18n, et patterns enterprise.
 
+## 🐳 **ENVIRONNEMENT DOCKER PRINCIPAL**
+
+### 📋 **RÈGLE CRITIQUE : APPLICATION TOUJOURS SUR DOCKER**
+
+L'application **TOURNE EXCLUSIVEMENT SUR DOCKER** avec Docker Compose pour assurer :
+
+- **🎯 Consistance d'environnement** : Même stack partout (dev, staging, prod)
+- **🗄️ Base de données intégrée** : PostgreSQL + Redis dans containers
+- **🔧 Hot reload activé** : Développement fluide avec volumes montés
+- **⚙️ Configuration simplifiée** : Variables d'environnement centralisées
+- **🚀 Déploiement reproductible** : Infrastructure as Code
+
+### **🔧 Commandes Docker Obligatoires**
+
+```bash
+# 🐳 Démarrer TOUS les services (App + DB + Redis)
+make start
+# OU
+docker-compose up -d
+
+# 📊 Démarrer SEULEMENT les bases de données
+make start-db
+
+# 🛑 Arrêter tous les services
+make stop
+
+# 🔄 Redémarrer les services
+make restart
+
+# 📝 Voir les logs
+make logs
+
+# 🧹 Nettoyer volumes et images
+make clean
+```
+
+### **📦 Services Docker Configurés**
+
+- **🎨 NestJS App** : Port 3000, hot reload, debugging
+- **🐘 PostgreSQL 15** : Port 5432, volume persistant, health checks
+- **🍃 MongoDB 7** : Port 27017, réplication configurée
+- **🔴 Redis** : Port 6379, cache utilisateur et sessions
+- **🔧 pgAdmin 4** : Port 5050, interface web DB management
+
+### **⚠️ INTERDICTIONS DÉVELOPPEMENT LOCAL**
+
+- ❌ **JAMAIS** `npm run start:dev` directement sur la machine host
+- ❌ **JAMAIS** installer PostgreSQL/Redis localement
+- ❌ **JAMAIS** modifier les ports sans mettre à jour docker-compose.yml
+- ✅ **TOUJOURS** utiliser Docker pour développement, tests, débogage
+
 ## 🚀 **NODE.JS 24 - NOUVELLES FONCTIONNALITÉS À EXPLOITER**
 
 ### 📋 **Environnement Technique Requis**

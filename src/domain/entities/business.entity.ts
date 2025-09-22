@@ -4,19 +4,11 @@ import { Email } from '../value-objects/email.value-object';
 import { Phone } from '../value-objects/phone.value-object';
 import { Address } from '../value-objects/address.value-object';
 import { FileUrl } from '../value-objects/file-url.value-object';
+import { BusinessHours } from '../value-objects/business-hours.value-object';
+import { BusinessSector } from './business-sector.entity';
 
-export enum BusinessSector {
-  LEGAL = 'LEGAL', // Avocats, Notaires
-  MEDICAL = 'MEDICAL', // Médecins, Dentistes
-  HEALTH = 'HEALTH', // Cliniques, Physiothérapie
-  BEAUTY = 'BEAUTY', // Coiffeurs, Esthétique
-  CONSULTING = 'CONSULTING', // Consultants
-  FINANCE = 'FINANCE', // Comptables, Conseillers
-  EDUCATION = 'EDUCATION', // Formations, Cours
-  WELLNESS = 'WELLNESS', // Massage, Bien-être
-  AUTOMOTIVE = 'AUTOMOTIVE', // Garages, Contrôle technique
-  OTHER = 'OTHER',
-}
+// Réexporter BusinessSector pour compatibilité
+export { BusinessSector } from './business-sector.entity';
 
 export enum BusinessStatus {
   ACTIVE = 'ACTIVE',
@@ -73,11 +65,12 @@ export class Business {
     private readonly _name: BusinessName,
     private readonly _description: string,
     private readonly _slogan: string,
-    private readonly _sector: BusinessSector,
+    private readonly _sector: BusinessSector | null,
     private readonly _branding: BusinessBranding,
     private readonly _address: Address,
     private readonly _contactInfo: BusinessContactInfo,
     private readonly _settings: BusinessSettings,
+    private _businessHours: BusinessHours,
     private _status: BusinessStatus,
     private readonly _createdAt: Date,
     private _updatedAt: Date,
@@ -100,7 +93,7 @@ export class Business {
     return this._slogan;
   }
 
-  get sector(): BusinessSector {
+  get sector(): BusinessSector | null {
     return this._sector;
   }
 
@@ -132,15 +125,20 @@ export class Business {
     return this._updatedAt;
   }
 
+  get businessHours(): BusinessHours {
+    return this._businessHours;
+  }
+
   // Factory method
   static create(data: {
     name: string;
     description: string;
     slogan?: string;
-    sector: BusinessSector;
+    sector: BusinessSector | null;
     address: Address;
     contactInfo: BusinessContactInfo;
     settings?: Partial<BusinessSettings>;
+    businessHours?: BusinessHours;
   }): Business {
     const defaultSettings: BusinessSettings = {
       timezone: 'Europe/Paris',
@@ -169,6 +167,8 @@ export class Business {
       data.address,
       data.contactInfo,
       { ...defaultSettings, ...data.settings },
+      data.businessHours ||
+        BusinessHours.createStandardWeek([1, 2, 3, 4, 5], '09:00', '17:00'),
       BusinessStatus.PENDING_VERIFICATION,
       new Date(),
       new Date(),
@@ -182,6 +182,35 @@ export class Business {
 
   public canAcceptAppointments(): boolean {
     return this.isActive();
+  }
+
+  // Business hours management
+  public isOpenOnDay(dayOfWeek: number): boolean {
+    return this._businessHours.isOpenOnDay(dayOfWeek);
+  }
+
+  public isOpenOnDate(date: Date): boolean {
+    return this._businessHours.isOpenOnDate(date);
+  }
+
+  public isOpenAt(date: Date, time: string): boolean {
+    if (!this.isActive()) {
+      return false; // Business fermé si inactif
+    }
+    return this._businessHours.isOpenAt(date, time);
+  }
+
+  public getTimeSlotsForDay(dayOfWeek: number) {
+    return this._businessHours.getTimeSlotsForDay(dayOfWeek);
+  }
+
+  public getTimeSlotsForDate(date: Date) {
+    return this._businessHours.getTimeSlotsForDate(date);
+  }
+
+  public updateBusinessHours(newHours: BusinessHours): void {
+    this._businessHours = newHours;
+    this._updatedAt = new Date();
   }
 
   public updateBranding(branding: BusinessBranding): void {

@@ -128,6 +128,7 @@ export class User {
    */
   getRoleLevel(): number {
     const hierarchy: Record<UserRole, number> = {
+      [UserRole.SUPER_ADMIN]: 2000,
       [UserRole.PLATFORM_ADMIN]: 1000,
       [UserRole.BUSINESS_OWNER]: 900,
       [UserRole.BUSINESS_ADMIN]: 800,

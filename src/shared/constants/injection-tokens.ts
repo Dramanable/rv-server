@@ -42,6 +42,7 @@ export const APPLICATION_TOKENS = {
   LIST_BUSINESS_USE_CASE: 'ListBusinessUseCase',
   UPDATE_BUSINESS_USE_CASE: 'UpdateBusinessUseCase',
   DELETE_BUSINESS_USE_CASE: 'DeleteBusinessUseCase',
+  MANAGE_BUSINESS_HOURS_USE_CASE: 'ManageBusinessHoursUseCase',
 
   // Calendar Use Cases
   CREATE_CALENDAR_USE_CASE: 'CreateCalendarUseCase',

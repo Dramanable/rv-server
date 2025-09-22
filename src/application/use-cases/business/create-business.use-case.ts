@@ -35,7 +35,7 @@ export interface CreateBusinessRequest {
   readonly name: string;
   readonly description: string;
   readonly slogan?: string;
-  readonly sector: BusinessSector;
+  readonly sectorId?: string;
   readonly address: {
     readonly street: string;
     readonly city: string;
@@ -78,7 +78,7 @@ export interface CreateBusinessResponse {
   readonly id: string;
   readonly name: string;
   readonly description: string;
-  readonly sector: BusinessSector;
+  readonly sector: BusinessSector | null;
   readonly status: BusinessStatus;
   readonly createdAt: Date;
 }
@@ -144,7 +144,7 @@ export class CreateBusinessUseCase {
         name: request.name,
         description: request.description,
         slogan: request.slogan,
-        sector: request.sector,
+        sector: null, // TODO: Load sector from request.sectorId
         address,
         contactInfo,
       });

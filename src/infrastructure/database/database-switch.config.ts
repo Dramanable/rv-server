@@ -11,7 +11,13 @@ import { MongooseModuleOptions } from '@nestjs/mongoose';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 
 // Entities SQL
+import { AppointmentOrmEntity } from './sql/postgresql/entities/appointment-orm.entity';
+import { BusinessOrmEntity } from './sql/postgresql/entities/business-orm.entity';
+import { BusinessSectorOrmEntity } from './sql/postgresql/entities/business-sector-orm.entity';
+import { CalendarOrmEntity } from './sql/postgresql/entities/calendar-orm.entity';
 import { RefreshTokenOrmEntity } from './sql/postgresql/entities/refresh-token-orm.entity';
+import { ServiceOrmEntity } from './sql/postgresql/entities/service-orm.entity';
+import { StaffOrmEntity } from './sql/postgresql/entities/staff-orm.entity';
 import { UserOrmEntity } from './sql/postgresql/entities/user-orm.entity';
 
 export type DatabaseType = 'postgresql' | 'mongodb';
@@ -76,7 +82,16 @@ export class DatabaseSwitchConfig {
       schema: this.configService.get<string>('DB_SCHEMA', 'rvproject_app'),
       synchronize: !isProduction, // ⚠️ Seulement en développement
       logging: env === 'development',
-      entities: [UserOrmEntity, RefreshTokenOrmEntity],
+      entities: [
+        UserOrmEntity,
+        RefreshTokenOrmEntity,
+        BusinessOrmEntity,
+        BusinessSectorOrmEntity,
+        AppointmentOrmEntity,
+        CalendarOrmEntity,
+        ServiceOrmEntity,
+        StaffOrmEntity,
+      ],
       autoLoadEntities: true,
       ssl: isProduction,
       extra: isProduction

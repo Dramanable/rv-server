@@ -31,6 +31,7 @@ export class TypeOrmBusinessRepository implements BusinessRepository {
       const businessId = id.getValue();
       const ormEntity = await this.ormRepository.findOne({
         where: { id: businessId },
+        // TODO: Add relations back when fixed
       });
 
       return ormEntity ? BusinessMapper.fromTypeOrmEntity(ormEntity) : null;
@@ -46,6 +47,7 @@ export class TypeOrmBusinessRepository implements BusinessRepository {
       const businessName = name.getValue();
       const ormEntity = await this.ormRepository.findOne({
         where: { name: businessName },
+        // TODO: Add relations back when fixed
       });
 
       return ormEntity ? BusinessMapper.fromTypeOrmEntity(ormEntity) : null;
@@ -58,8 +60,9 @@ export class TypeOrmBusinessRepository implements BusinessRepository {
 
   async findBySector(sector: string): Promise<Business[]> {
     try {
+      // TODO: Fix this query to use proper relation or direct business_sector_id
       const ormEntities = await this.ormRepository.find({
-        where: { sector },
+        where: { business_sector_id: sector }, // Temporary workaround
       });
 
       return ormEntities.map((entity) =>

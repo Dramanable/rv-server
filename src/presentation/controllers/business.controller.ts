@@ -34,10 +34,7 @@ import { CreateBusinessUseCase } from '../../application/use-cases/business/crea
 import { GetBusinessUseCase } from '../../application/use-cases/business/get-business.use-case';
 import { ListBusinessUseCase } from '../../application/use-cases/business/list-business.use-case';
 import { UpdateBusinessUseCase } from '../../application/use-cases/business/update-business.use-case';
-import {
-  BusinessSector,
-  BusinessStatus,
-} from '../../domain/entities/business.entity';
+import { BusinessStatus } from '../../domain/entities/business.entity';
 import { User } from '../../domain/entities/user.entity';
 import { TOKENS } from '../../shared/constants/injection-tokens';
 import {
@@ -143,7 +140,7 @@ export class BusinessController {
           business.description.length > 100
             ? business.description.substring(0, 100) + '...'
             : business.description,
-        sector: BusinessSector.OTHER, // TODO: Add sector to use case response
+        sector: null, // TODO: Add sector to use case response
         status: business.status as any,
         primaryEmail: business.primaryEmail,
         primaryPhone: business.primaryPhone,
@@ -220,7 +217,7 @@ export class BusinessController {
       name: business.name,
       description: business.description,
       slogan: '', // TODO: Add to use case response
-      sector: BusinessSector.OTHER, // TODO: Add to use case response
+      sector: null, // TODO: Add to use case response
       status: business.status as BusinessStatus,
       address: {
         street: '',
@@ -390,7 +387,7 @@ export class BusinessController {
         name: dto.name,
         description: dto.description,
         slogan: dto.slogan,
-        sector: dto.sector,
+        sectorId: dto.sectorId,
         address: dto.address
           ? {
               street: dto.address.street,
@@ -420,7 +417,7 @@ export class BusinessController {
       id: result.id,
       name: result.name,
       description: result.description,
-      sector: BusinessSector.OTHER, // TODO: Add to use case response
+      sector: null, // TODO: Add to use case response
       status: result.status,
       updatedAt: result.updatedAt,
     };

@@ -14,14 +14,12 @@ import { PinoLoggerModule } from '../logging/pino-logger.module';
 // Entities TypeORM
 import { AppointmentOrmEntity } from './sql/postgresql/entities/appointment-orm.entity';
 import { BusinessOrmEntity } from './sql/postgresql/entities/business-orm.entity';
+import { BusinessSectorOrmEntity } from './sql/postgresql/entities/business-sector-orm.entity';
 import { CalendarOrmEntity } from './sql/postgresql/entities/calendar-orm.entity';
 import { RefreshTokenOrmEntity } from './sql/postgresql/entities/refresh-token-orm.entity';
 import { ServiceOrmEntity } from './sql/postgresql/entities/service-orm.entity';
 import { StaffOrmEntity } from './sql/postgresql/entities/staff-orm.entity';
 import { UserOrmEntity } from './sql/postgresql/entities/user-orm.entity';
-
-// Temporairement commenté jusqu'à résolution des problèmes de décorateurs TypeScript 5.7
-// import { BusinessSectorOrmEntity } from './sql/postgresql/entities/business-sector-orm.entity';
 
 // Repository Implementations
 import { RefreshTokenOrmRepository } from './sql/postgresql/repositories/refresh-token-orm.repository';
@@ -103,10 +101,10 @@ class SimplePermissionService {
       RefreshTokenOrmEntity,
       AppointmentOrmEntity,
       BusinessOrmEntity,
+      BusinessSectorOrmEntity, // Décommenté pour activer la relation
       ServiceOrmEntity,
       StaffOrmEntity,
       CalendarOrmEntity,
-      // BusinessSectorOrmEntity, // Temporairement commenté
     ]),
     // Import du PinoLoggerModule pour avoir accès au Logger
     PinoLoggerModule,

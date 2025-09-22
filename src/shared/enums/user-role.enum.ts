@@ -10,6 +10,7 @@
  */
 export enum UserRole {
   // 🔴 Niveau Enterprise (Plateforme)
+  SUPER_ADMIN = 'SUPER_ADMIN', // Super administrateur système
   PLATFORM_ADMIN = 'PLATFORM_ADMIN', // Admin plateforme multi-tenant
 
   // 🟠 Niveau Business (Entreprise)
@@ -156,6 +157,12 @@ export enum BusinessType {
  * 🔑 Principe: Plus le rôle est élevé hiérarchiquement, plus il hérite des permissions inférieures
  */
 export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
+  // 🔴 === SUPER ADMIN === (Super-utilisateur absolu)
+  [UserRole.SUPER_ADMIN]: [
+    // Toutes les permissions - accès complet à tous les tenants et au système
+    ...Object.values(Permission),
+  ],
+
   // 🔴 === PLATFORM ADMIN === (Super-utilisateur système)
   [UserRole.PLATFORM_ADMIN]: [
     // Toutes les permissions - accès complet à tous les tenants
@@ -565,6 +572,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
  * 🏗️ Hiérarchie des Rôles - Ordre d'autorité décroissante
  */
 export const ROLE_HIERARCHY: Record<UserRole, number> = {
+  [UserRole.SUPER_ADMIN]: 1100,
   [UserRole.PLATFORM_ADMIN]: 1000,
   [UserRole.BUSINESS_OWNER]: 900,
   [UserRole.BUSINESS_ADMIN]: 800,
@@ -587,6 +595,7 @@ export const ROLE_HIERARCHY: Record<UserRole, number> = {
  */
 export const ROLE_GROUPS = {
   MANAGEMENT: [
+    UserRole.SUPER_ADMIN,
     UserRole.PLATFORM_ADMIN,
     UserRole.BUSINESS_OWNER,
     UserRole.BUSINESS_ADMIN,
@@ -789,6 +798,8 @@ export class RoleUtils {
    */
   static getRoleDescription(role: UserRole): string {
     const descriptions: Record<UserRole, string> = {
+      [UserRole.SUPER_ADMIN]:
+        'Super Administrateur - Accès absolu à tous les systèmes',
       [UserRole.PLATFORM_ADMIN]:
         'Administrateur Plateforme - Accès complet multi-tenant',
       [UserRole.BUSINESS_OWNER]:
