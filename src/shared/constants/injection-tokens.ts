@@ -54,6 +54,13 @@ export const APPLICATION_TOKENS = {
   UPLOAD_BUSINESS_IMAGE_USE_CASE: 'UploadBusinessImageUseCase',
   ADD_IMAGE_TO_GALLERY_USE_CASE: 'AddImageToGalleryUseCase',
   UPDATE_BUSINESS_SEO_USE_CASE: 'UpdateBusinessSeoUseCase',
+
+  // 🖼️ Business Gallery Use Cases
+  CREATE_BUSINESS_GALLERY_USE_CASE: 'CreateBusinessGalleryUseCase',
+  GET_BUSINESS_GALLERY_USE_CASE: 'GetBusinessGalleryUseCase',
+  UPDATE_BUSINESS_GALLERY_USE_CASE: 'UpdateBusinessGalleryUseCase',
+  DELETE_BUSINESS_GALLERY_USE_CASE: 'DeleteBusinessGalleryUseCase',
+
   DELETE_CALENDAR_USE_CASE: 'DeleteCalendarUseCase',
 
   // Service Use Cases

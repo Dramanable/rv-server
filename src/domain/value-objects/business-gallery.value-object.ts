@@ -105,6 +105,55 @@ export class BusinessGallery {
     return new BusinessGallery(Array.from(newImages.values()));
   }
 
+  updateImageVisibility(imageId: string, isPublic: boolean): BusinessGallery {
+    const image = this._images.get(imageId);
+    if (!image) {
+      throw new Error(`Image with ID ${imageId} not found in gallery`);
+    }
+
+    // Create new image with updated visibility
+    const updatedImage = BusinessImage.create({
+      url: image.url,
+      alt: image.alt,
+      caption: image.caption,
+      category: image.category,
+      metadata: image.metadata,
+      isPublic: isPublic,
+      order: image.order,
+    });
+
+    const newImages = new Map(this._images);
+    newImages.set(imageId, updatedImage);
+
+    return new BusinessGallery(Array.from(newImages.values()));
+  }
+
+  updateImageMetadata(
+    imageId: string,
+    updates: { caption?: string; alt?: string },
+  ): BusinessGallery {
+    const image = this._images.get(imageId);
+    if (!image) {
+      throw new Error(`Image with ID ${imageId} not found in gallery`);
+    }
+
+    // Create new image with updated metadata
+    const updatedImage = BusinessImage.create({
+      url: image.url,
+      alt: updates.alt !== undefined ? updates.alt : image.alt,
+      caption: updates.caption !== undefined ? updates.caption : image.caption,
+      category: image.category,
+      metadata: image.metadata,
+      isPublic: image.isPublic,
+      order: image.order,
+    });
+
+    const newImages = new Map(this._images);
+    newImages.set(imageId, updatedImage);
+
+    return new BusinessGallery(Array.from(newImages.values()));
+  }
+
   // Query methods
   findById(imageId: string): BusinessImage | undefined {
     return this._images.get(imageId);

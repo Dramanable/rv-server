@@ -53,6 +53,12 @@ import { AddImageToBusinessGalleryUseCase } from '@application/use-cases/busines
 import { UpdateBusinessSeoProfileUseCase } from '@application/use-cases/business/update-business-seo.use-case';
 import { UploadBusinessImageUseCase } from '@application/use-cases/business/upload-business-image.use-case';
 
+// 🖼️ Business Gallery Use Cases
+import { CreateBusinessGalleryUseCase } from '@application/use-cases/business/create-business-gallery.use-case';
+import { GetBusinessGalleryUseCase } from '@application/use-cases/business/get-business-gallery.use-case';
+import { UpdateBusinessGalleryUseCase } from '@application/use-cases/business/update-business-gallery.use-case';
+import { DeleteBusinessGalleryUseCase } from '@application/use-cases/business/delete-business-gallery.use-case';
+
 // Service Use Cases
 import { CreateServiceUseCase } from '@application/use-cases/service/create-service.use-case';
 import { DeleteServiceUseCase } from '@application/use-cases/service/delete-service.use-case';
@@ -91,6 +97,7 @@ import { ServiceController } from './controllers/service.controller';
 import { StaffController } from './controllers/staff.controller';
 import { UserController } from './controllers/user.controller';
 import { BusinessImageController } from './controllers/business-image.controller';
+import { BusinessGalleryController } from './controllers/business-gallery.controller';
 
 // 🛡️ Security
 import { JwtAuthGuard } from './security/auth.guard';
@@ -120,6 +127,7 @@ import { PresentationCookieService } from './services/cookie.service';
     ServiceController,
     StaffController,
     BusinessImageController,
+    BusinessGalleryController,
     AppointmentController,
     NotificationController,
   ],
@@ -636,6 +644,32 @@ import { PresentationCookieService } from './services/cookie.service';
       useFactory: (businessRepo) =>
         new UpdateBusinessSeoProfileUseCase(businessRepo),
       inject: [TOKENS.BUSINESS_REPOSITORY],
+    },
+
+    // 🖼️ Business Gallery Use Cases
+    {
+      provide: TOKENS.CREATE_BUSINESS_GALLERY_USE_CASE,
+      useFactory: (businessRepo, logger, i18n) =>
+        new CreateBusinessGalleryUseCase(businessRepo, logger, i18n),
+      inject: [TOKENS.BUSINESS_REPOSITORY, TOKENS.LOGGER, TOKENS.I18N_SERVICE],
+    },
+    {
+      provide: TOKENS.GET_BUSINESS_GALLERY_USE_CASE,
+      useFactory: (businessRepo, logger, i18n) =>
+        new GetBusinessGalleryUseCase(businessRepo, logger, i18n),
+      inject: [TOKENS.BUSINESS_REPOSITORY, TOKENS.LOGGER, TOKENS.I18N_SERVICE],
+    },
+    {
+      provide: TOKENS.UPDATE_BUSINESS_GALLERY_USE_CASE,
+      useFactory: (businessRepo, logger, i18n) =>
+        new UpdateBusinessGalleryUseCase(businessRepo, logger, i18n),
+      inject: [TOKENS.BUSINESS_REPOSITORY, TOKENS.LOGGER, TOKENS.I18N_SERVICE],
+    },
+    {
+      provide: TOKENS.DELETE_BUSINESS_GALLERY_USE_CASE,
+      useFactory: (businessRepo, logger, i18n) =>
+        new DeleteBusinessGalleryUseCase(businessRepo, logger, i18n),
+      inject: [TOKENS.BUSINESS_REPOSITORY, TOKENS.LOGGER, TOKENS.I18N_SERVICE],
     },
   ],
   exports: [JwtAuthGuard, SecurityValidationPipe],
