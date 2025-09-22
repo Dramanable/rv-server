@@ -115,17 +115,49 @@
 - **💰 Valeur** : Très élevée pour équipes frontend
 - **📋 Détails** : Client TypeScript auto-généré, gestion JWT, intercepteurs HTTP
 
-#### **🔍 PRIORITÉ MOYENNE : Use Cases Appointments Avancés**
+#### **� PRIORITÉ MOYENNE : Système de Notifications (Actions Utilisateurs)**
+
+- **🎯 Impact Business** : Communication automatique avec les utilisateurs
+- **📱 Canaux supportés** : Email, SMS, Push notifications, In-app
+- **🔧 Effort** : 4-5 jours (architecture complète avec TDD)
+- **💰 Valeur** : Élevée (engagement utilisateur, expérience client)
+
+**📋 Notifications à implémenter :**
+
+```typescript
+// Notifications Appointment-related
+├── AppointmentBookedNotification          // Confirmation de réservation
+├── AppointmentConfirmedNotification       // Confirmation par le staff
+├── AppointmentRescheduledNotification     // Reprogrammation
+├── AppointmentCancelledNotification       // Annulation (client/staff)
+├── AppointmentReminderNotification        // Rappel 24h/2h avant
+├── AppointmentCompletedNotification       // RDV terminé
+
+// Notifications Business-related
+├── StaffAssignedNotification              // Assignment staff à service
+├── ServiceUpdatedNotification             // Modification service
+├── BusinessHoursChangedNotification       // Changement horaires
+├── PricingUpdatedNotification             // Changement tarifs
+
+// Notifications Account-related
+├── AccountCreatedNotification             // Bienvenue nouvel utilisateur
+├── PasswordResetNotification              // Reset mot de passe
+├── ProfileUpdatedNotification             // Modification profil
+└── PermissionChangedNotification          // Changement de rôle
+```
+
+#### **�🔍 PRIORITÉ MOYENNE : Use Cases Appointments Avancés**
 
 - **📅 Use Cases manquants** (optionnels mais utiles) :
-  - `RescheduleAppointmentUseCase` - Reprogrammation
-  - `CancelAppointmentUseCase` - Annulation avec raisons
-  - `ConfirmAppointmentUseCase` - Confirmation manuelle
+  - `RescheduleAppointmentUseCase` - Reprogrammation + notification auto
+  - `CancelAppointmentUseCase` - Annulation avec raisons + notification
+  - `ConfirmAppointmentUseCase` - Confirmation manuelle + notification
   - `ListAppointmentsUseCase` - Liste paginée avec filtres
   - `GetAppointmentByIdUseCase` - Détail d'un RDV
-  - `UpdateAppointmentStatusUseCase` - Changement de statut
+  - `UpdateAppointmentStatusUseCase` - Changement de statut + notification
 - **💰 Valeur** : Moyenne (fonctionnalités de gestion avancées)
 - **🔧 Effort** : 3-4 jours (avec TDD complet)
+- **🔗 Synergie** : Se combine parfaitement avec le système de notifications
 
 #### **📊 PRIORITÉ MOYENNE : Business Features Avancées**
 
@@ -233,10 +265,61 @@ src/application/use-cases/appointments/
 └── ⚪ update-appointment-status.use-case.ts     // OPTIONNEL
 ```
 
+#### **🔔 ARCHITECTURE SYSTÈME NOTIFICATIONS (Design préliminaire)**
+
+```typescript
+// 🏗️ Domain Layer
+src/domain/entities/
+├── notification.entity.ts                  // Entité métier notification
+└── notification-template.entity.ts         // Templates personnalisables
+
+src/domain/value-objects/
+├── notification-channel.vo.ts              // EMAIL | SMS | PUSH | IN_APP
+├── notification-priority.vo.ts             // LOW | MEDIUM | HIGH | URGENT
+└── notification-status.vo.ts               // PENDING | SENT | DELIVERED | FAILED
+
+// 💼 Application Layer
+src/application/use-cases/notifications/
+├── send-notification.use-case.ts           // Envoi notification unique
+├── send-bulk-notifications.use-case.ts     // Envoi en masse
+├── schedule-notification.use-case.ts       // Planification (rappels)
+├── get-user-notifications.use-case.ts      // Récupérer notifications utilisateur
+└── mark-notification-read.use-case.ts      // Marquer comme lu
+
+src/application/ports/
+├── email-service.port.ts                   // Interface service email
+├── sms-service.port.ts                     // Interface service SMS
+├── push-service.port.ts                    // Interface service push
+└── notification-queue.port.ts              // Interface file d'attente
+
+// 🔧 Infrastructure Layer
+src/infrastructure/services/notifications/
+├── sendgrid-email.adapter.ts               // Implémentation SendGrid
+├── twilio-sms.adapter.ts                   // Implémentation Twilio
+├── firebase-push.adapter.ts                // Implémentation Firebase
+└── redis-notification-queue.adapter.ts     // File d'attente Redis
+
+// 🎨 Presentation Layer
+src/presentation/controllers/
+└── notification.controller.ts              // APIs notifications utilisateur
+```
+
+**🔥 Events Integration avec Appointments :**
+
+```typescript
+// Événements automatiques déclenchés par les use cases existants
+BookAppointmentUseCase → AppointmentBookedEvent → NotificationService
+RescheduleAppointmentUseCase → AppointmentRescheduledEvent → NotificationService
+CancelAppointmentUseCase → AppointmentCancelledEvent → NotificationService
+```
+
 #### **🎯 VERDICT TECHNIQUE**
 
 **Le système est 100% fonctionnel pour la production.**
 Les features manquantes sont des **améliorations de confort** et ne bloquent pas le déploiement.
+
+**🔥 Synergie Notifications + Appointments :**
+Le système de notifications s'intègre naturellement avec les use cases appointments avancés, créant une expérience utilisateur complète et engageante.
 
 ---
 
