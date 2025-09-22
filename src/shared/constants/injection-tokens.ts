@@ -68,7 +68,10 @@ export const APPLICATION_TOKENS = {
   // Appointment Use Cases
   BOOK_APPOINTMENT_USE_CASE: 'BookAppointmentUseCase',
   GET_APPOINTMENT_USE_CASE: 'GetAppointmentUseCase',
+  GET_APPOINTMENT_BY_ID_USE_CASE: 'GetAppointmentByIdUseCase',
   LIST_APPOINTMENTS_USE_CASE: 'ListAppointmentsUseCase',
+  UPDATE_APPOINTMENT_USE_CASE: 'UpdateAppointmentUseCase',
+  CANCEL_APPOINTMENT_USE_CASE: 'CancelAppointmentUseCase',
   GET_AVAILABLE_SLOTS_USE_CASE: 'GetAvailableSlotsUseCase',
 
   // Notification Use Cases

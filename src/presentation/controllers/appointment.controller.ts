@@ -13,6 +13,7 @@ import {
   HttpCode,
   HttpStatus,
   Inject,
+  Param,
   Post,
   Put,
   Query,
@@ -34,16 +35,24 @@ import { JwtAuthGuard } from '../security/guards/jwt-auth.guard';
 
 import { BookAppointmentUseCase } from '../../application/use-cases/appointments/book-appointment.use-case';
 import { GetAvailableSlotsUseCase } from '../../application/use-cases/appointments/get-available-slots-simple.use-case';
+import { ListAppointmentsUseCase } from '../../application/use-cases/appointments/list-appointments.use-case';
+import { GetAppointmentByIdUseCase } from '../../application/use-cases/appointments/get-appointment-by-id.use-case';
+import { UpdateAppointmentUseCase } from '../../application/use-cases/appointments/update-appointment.use-case';
+import { CancelAppointmentUseCase } from '../../application/use-cases/appointments/cancel-appointment.use-case';
 
 import {
   AppointmentDto,
+  AppointmentStatsResponseDto,
   AvailableSlotsResponseDto,
   BookAppointmentDto,
   BookAppointmentResponseDto,
+  CancelAppointmentDto,
   CancelAppointmentResponseDto,
+  GetAppointmentResponseDto,
   GetAvailableSlotsDto,
   ListAppointmentsDto,
   ListAppointmentsResponseDto,
+  UpdateAppointmentDto,
   UpdateAppointmentResponseDto,
 } from '../dtos/appointment.dto';
 
@@ -57,6 +66,14 @@ export class AppointmentController {
     private readonly getAvailableSlotsUseCase: GetAvailableSlotsUseCase,
     @Inject(TOKENS.BOOK_APPOINTMENT_USE_CASE)
     private readonly bookAppointmentUseCase: BookAppointmentUseCase,
+    @Inject(TOKENS.LIST_APPOINTMENTS_USE_CASE)
+    private readonly listAppointmentsUseCase: ListAppointmentsUseCase,
+    @Inject(TOKENS.GET_APPOINTMENT_BY_ID_USE_CASE)
+    private readonly getAppointmentByIdUseCase: GetAppointmentByIdUseCase,
+    @Inject(TOKENS.UPDATE_APPOINTMENT_USE_CASE)
+    private readonly updateAppointmentUseCase: UpdateAppointmentUseCase,
+    @Inject(TOKENS.CANCEL_APPOINTMENT_USE_CASE)
+    private readonly cancelAppointmentUseCase: CancelAppointmentUseCase,
   ) {}
 
   /**
@@ -254,21 +271,46 @@ export class AppointmentController {
   })
   async listAppointments(
     @Body() dto: ListAppointmentsDto,
+    @GetUser() user: User,
   ): Promise<ListAppointmentsResponseDto> {
-    // TODO: Implémenter le use case ListAppointmentsUseCase
+    const response = await this.listAppointmentsUseCase.execute({
+      requestingUserId: user.id,
+      pagination: {
+        page: dto.page || 1,
+        limit: dto.limit || 10,
+      },
+      sorting: {
+        sortBy: dto.sortBy || 'startTime',
+        sortOrder: dto.sortOrder || 'asc',
+      },
+      filters: {
+        search: dto.search,
+        businessId: dto.businessId,
+        status: dto.status,
+        fromDate: dto.fromDate,
+        toDate: dto.toDate,
+      },
+    });
 
-    // Mock response pour l'instant
     return {
       success: true,
-      data: [],
-      meta: {
-        currentPage: dto.page || 1,
-        totalPages: 0,
-        totalItems: 0,
-        itemsPerPage: dto.limit || 10,
-        hasNextPage: false,
-        hasPrevPage: false,
-      },
+      data: response.appointments.map((appointment) => ({
+        id: appointment.id.getValue(),
+        confirmationNumber: 'RV-' + appointment.id.getValue().substring(0, 8),
+        status: appointment.status,
+        type: appointment.type,
+        startTime: appointment.timeSlot.getStartTime(),
+        endTime: appointment.timeSlot.getEndTime(),
+        clientName: `${appointment.clientInfo.firstName} ${appointment.clientInfo.lastName}`,
+        clientEmail: appointment.clientInfo.email.getValue(),
+        businessName: 'Business Name', // TODO: Récupérer depuis business
+        serviceName: 'Service Name', // TODO: Récupérer depuis service
+        staffName: undefined, // TODO: Récupérer depuis staff
+        price: 0, // TODO: Récupérer le prix du service
+        createdAt: appointment.createdAt || new Date(),
+        updatedAt: appointment.updatedAt || new Date(),
+      })),
+      meta: response.meta,
     };
   }
 
@@ -294,9 +336,33 @@ export class AppointmentController {
     status: HttpStatus.NOT_FOUND,
     description: '❌ Appointment not found',
   })
-  async getById(): Promise<AppointmentDto> {
-    // TODO: Implémenter GetAppointmentByIdUseCase
-    throw new Error('Not implemented yet');
+  async getById(
+    @Param('id') id: string,
+    @GetUser() user: User,
+  ): Promise<AppointmentDto> {
+    const response = await this.getAppointmentByIdUseCase.execute({
+      appointmentId: id,
+      requestingUserId: user.id,
+    });
+
+    const appointment = response.appointment;
+
+    return {
+      id: appointment.id.getValue(),
+      confirmationNumber: 'RV-' + appointment.id.getValue().substring(0, 8),
+      status: appointment.status,
+      type: appointment.type,
+      startTime: appointment.timeSlot.getStartTime(),
+      endTime: appointment.timeSlot.getEndTime(),
+      clientName: `${appointment.clientInfo.firstName} ${appointment.clientInfo.lastName}`,
+      clientEmail: appointment.clientInfo.email.getValue(),
+      businessName: 'Business Name', // TODO: Récupérer depuis business
+      serviceName: 'Service Name', // TODO: Récupérer depuis service
+      staffName: undefined, // TODO: Récupérer depuis staff
+      price: 0, // TODO: Récupérer le prix du service
+      createdAt: appointment.createdAt || new Date(),
+      updatedAt: appointment.updatedAt || new Date(),
+    };
   }
 
   /**
@@ -316,9 +382,43 @@ export class AppointmentController {
     description: '✅ Appointment updated successfully',
     type: UpdateAppointmentResponseDto,
   })
-  async updateAppointment(): Promise<UpdateAppointmentResponseDto> {
-    // TODO: Implémenter UpdateAppointmentUseCase
-    throw new Error('Not implemented yet');
+  async updateAppointment(
+    @Param('id') id: string,
+    @Body() dto: UpdateAppointmentDto,
+    @GetUser() user: User,
+  ): Promise<UpdateAppointmentResponseDto> {
+    const response = await this.updateAppointmentUseCase.execute({
+      appointmentId: id,
+      startTime: dto.startTime,
+      endTime: dto.endTime,
+      title: dto.title,
+      description: dto.description,
+      modificationReason: dto.modificationReason,
+      requestingUserId: user.id,
+    });
+
+    const appointment = response.appointment;
+
+    return {
+      success: true,
+      data: {
+        id: appointment.id.getValue(),
+        confirmationNumber: 'RV-' + appointment.id.getValue().substring(0, 8),
+        status: appointment.status,
+        type: appointment.type,
+        startTime: appointment.timeSlot.getStartTime(),
+        endTime: appointment.timeSlot.getEndTime(),
+        clientName: `${appointment.clientInfo.firstName} ${appointment.clientInfo.lastName}`,
+        clientEmail: appointment.clientInfo.email.getValue(),
+        businessName: 'Business Name', // TODO: Récupérer depuis business
+        serviceName: 'Service Name', // TODO: Récupérer depuis service
+        staffName: undefined, // TODO: Récupérer depuis staff
+        price: 0, // TODO: Récupérer le prix du service
+        createdAt: appointment.createdAt || new Date(),
+        updatedAt: appointment.updatedAt || new Date(),
+      },
+      message: response.message,
+    };
   }
 
   /**
@@ -327,7 +427,7 @@ export class AppointmentController {
   @Delete(':id')
   @ApiOperation({
     summary: '❌ Cancel appointment',
-    description: 'Cancel an appointment with optional reason',
+    description: 'Cancel an appointment with reason',
   })
   @ApiParam({
     name: 'id',
@@ -338,43 +438,65 @@ export class AppointmentController {
     description: '✅ Appointment cancelled successfully',
     type: CancelAppointmentResponseDto,
   })
-  async cancelAppointment(): Promise<CancelAppointmentResponseDto> {
-    // TODO: Implémenter CancelAppointmentUseCase
-    throw new Error('Not implemented yet');
-  }
+  async cancelAppointment(
+    @Param('id') id: string,
+    @Body() dto: CancelAppointmentDto,
+    @GetUser() user: User,
+  ): Promise<CancelAppointmentResponseDto> {
+    const response = await this.cancelAppointmentUseCase.execute({
+      appointmentId: id,
+      reason: dto.reason,
+      notifyClient: dto.notifyClient || false,
+      requestingUserId: user.id,
+    });
 
-  /**
-   * 📊 GET APPOINTMENT STATS - Optionnel
+    return {
+      success: response.success,
+      message: response.message,
+      refundAmount: response.refundAmount,
+    };
+  } /**
+   * 📊 APPOINTMENT STATISTICS
    */
   @Get('stats')
   @ApiOperation({
     summary: '📊 Get appointment statistics',
-    description: 'Retrieve appointment metrics and analytics',
+    description: 'Retrieve comprehensive appointment statistics and metrics',
   })
-  @ApiQuery({
-    name: 'businessId',
-    required: false,
-    description: 'Filter by business',
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: '✅ Statistics retrieved successfully',
+    type: AppointmentStatsResponseDto,
   })
-  @ApiQuery({
-    name: 'period',
-    required: false,
-    enum: ['day', 'week', 'month', 'year'],
-    description: 'Statistics period',
-  })
-  async getStats(
-    @Query('period') period: 'day' | 'week' | 'month' | 'year' = 'month',
-  ) {
-    // TODO: Implémenter GetAppointmentStatsUseCase
+  async getStats(@GetUser() user: User): Promise<AppointmentStatsResponseDto> {
+    // TODO: Implémenter GetAppointmentStatsUseCase une fois créé
+    // Pour l'instant, retournons des statistiques temporaires
     return {
       success: true,
       data: {
-        totalAppointments: 0,
-        confirmedAppointments: 0,
-        cancelledAppointments: 0,
-        utilizationRate: 0,
-        revenue: 0,
+        total: 0,
+        byStatus: {
+          CONFIRMED: 0,
+          PENDING: 0,
+          CANCELLED: 0,
+          COMPLETED: 0,
+          NO_SHOW: 0,
+        },
+        byPeriod: {
+          today: 0,
+          thisWeek: 0,
+          thisMonth: 0,
+          thisYear: 0,
+        },
+        revenue: {
+          total: 0,
+          thisMonth: 0,
+          averagePerAppointment: 0,
+        },
+        topServices: [],
+        recentActivity: [],
       },
+      message: 'Statistics retrieved successfully',
     };
   }
 }

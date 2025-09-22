@@ -65,6 +65,10 @@ import { UpdateStaffUseCase } from '@application/use-cases/staff/update-staff.us
 // Appointment Use Cases
 import { BookAppointmentUseCase } from '@application/use-cases/appointment/book-appointment.use-case';
 import { GetAvailableSlotsUseCase } from '@application/use-cases/appointments/get-available-slots-simple.use-case';
+import { ListAppointmentsUseCase } from '@application/use-cases/appointments/list-appointments.use-case';
+import { GetAppointmentByIdUseCase } from '@application/use-cases/appointments/get-appointment-by-id.use-case';
+import { UpdateAppointmentUseCase } from '@application/use-cases/appointments/update-appointment.use-case';
+import { CancelAppointmentUseCase } from '@application/use-cases/appointments/cancel-appointment.use-case';
 
 // Notification Use Cases
 import { SendBulkNotificationUseCase } from '@application/use-cases/notification/send-bulk-notification.use-case';
@@ -544,6 +548,22 @@ import { PresentationCookieService } from './services/cookie.service';
         TOKENS.LOGGER,
         TOKENS.I18N_SERVICE,
       ],
+    },
+    {
+      provide: TOKENS.LIST_APPOINTMENTS_USE_CASE,
+      useClass: ListAppointmentsUseCase,
+    },
+    {
+      provide: TOKENS.GET_APPOINTMENT_BY_ID_USE_CASE,
+      useClass: GetAppointmentByIdUseCase,
+    },
+    {
+      provide: TOKENS.UPDATE_APPOINTMENT_USE_CASE,
+      useClass: UpdateAppointmentUseCase,
+    },
+    {
+      provide: TOKENS.CANCEL_APPOINTMENT_USE_CASE,
+      useClass: CancelAppointmentUseCase,
     },
 
     // 📢 Notification Use Cases

@@ -949,6 +949,17 @@ export class CancelAppointmentDto {
   readonly notifyClient?: boolean;
 }
 
+export class GetAppointmentResponseDto {
+  @ApiProperty()
+  success!: boolean;
+
+  @ApiProperty({ type: AppointmentDto })
+  data!: AppointmentDto;
+
+  @ApiProperty()
+  message!: string;
+}
+
 export class CancelAppointmentResponseDto {
   @ApiProperty()
   success!: boolean;
@@ -958,4 +969,59 @@ export class CancelAppointmentResponseDto {
 
   @ApiProperty()
   readonly refundAmount?: number;
+}
+
+export class AppointmentStatsDto {
+  @ApiProperty()
+  total!: number;
+
+  @ApiProperty()
+  byStatus!: {
+    CONFIRMED: number;
+    PENDING: number;
+    CANCELLED: number;
+    COMPLETED: number;
+    NO_SHOW: number;
+  };
+
+  @ApiProperty()
+  byPeriod!: {
+    today: number;
+    thisWeek: number;
+    thisMonth: number;
+    thisYear: number;
+  };
+
+  @ApiProperty()
+  revenue!: {
+    total: number;
+    thisMonth: number;
+    averagePerAppointment: number;
+  };
+
+  @ApiProperty()
+  topServices!: Array<{
+    serviceName: string;
+    count: number;
+    revenue: number;
+  }>;
+
+  @ApiProperty()
+  recentActivity!: Array<{
+    id: string;
+    action: string;
+    timestamp: Date;
+    details: string;
+  }>;
+}
+
+export class AppointmentStatsResponseDto {
+  @ApiProperty()
+  success!: boolean;
+
+  @ApiProperty({ type: AppointmentStatsDto })
+  data!: AppointmentStatsDto;
+
+  @ApiProperty()
+  message!: string;
 }

@@ -51,6 +51,17 @@ export class AppointmentNotFoundError extends AppointmentException {
   }
 }
 
+export class AppointmentAlreadyCancelledError extends AppointmentException {
+  constructor(appointmentId: string) {
+    super(
+      `Appointment with ID ${appointmentId} is already cancelled`,
+      'APPOINTMENT_ALREADY_CANCELLED',
+      { appointmentId },
+    );
+    this.name = 'AppointmentAlreadyCancelledError';
+  }
+}
+
 export class AppointmentConflictError extends AppointmentException {
   constructor(
     timeSlot: { startTime: Date; endTime: Date },

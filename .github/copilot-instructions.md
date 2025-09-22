@@ -3884,3 +3884,95 @@ Le non-respect de cette règle entraîne :
 
 **Cette règle est CRITIQUE pour la stabilité et la sécurité de la base de données !**
 `````
+
+## 🚨 **ERREURS COURANTES NestJS - INJECTION DE DÉPENDANCES**
+
+### 🎯 **ERREUR CRITIQUE : UnknownDependenciesException**
+
+**❌ ERREUR FRÉQUENTE** : Après création de nouveaux Use Cases, l'application ne démarre plus avec :
+
+```
+[Nest] ERROR [Bootstrap] UnknownDependenciesException [Error]:
+Nest can't resolve dependencies of the AppointmentController
+(GetAvailableSlotsUseCase, BookAppointmentUseCase, ?, GetAppointmentByIdUseCase, UpdateAppointmentUseCase, CancelAppointmentUseCase).
+Please make sure that the argument "ListAppointmentsUseCase" at index [2] is available in the PresentationModule context.
+```
+
+#### **🔍 DIAGNOSTIC RAPIDE**
+
+1. **Identifier le Use Case manquant** : Dans l'erreur ci-dessus, c'est `ListAppointmentsUseCase`
+2. **Vérifier le constructeur du Controller** : Le Use Case est injecté mais pas enregistré
+3. **Vérifier le PresentationModule** : Le provider manque dans la configuration
+
+#### **✅ SOLUTION OBLIGATOIRE**
+
+**Étape 1 : Vérifier les imports dans PresentationModule**
+
+```typescript
+// ❌ MANQUANT - Import du Use Case
+import { ListAppointmentsUseCase } from '../../application/use-cases/appointments/list-appointments.use-case';
+import { GetAppointmentByIdUseCase } from '../../application/use-cases/appointments/get-appointment-by-id.use-case';
+import { UpdateAppointmentUseCase } from '../../application/use-cases/appointments/update-appointment.use-case';
+import { CancelAppointmentUseCase } from '../../application/use-cases/appointments/cancel-appointment.use-case';
+```
+
+**Étape 2 : Ajouter les providers dans PresentationModule**
+
+```typescript
+// ✅ CORRECT - Providers obligatoires pour nouveaux Use Cases
+{
+  provide: TOKENS.LIST_APPOINTMENTS_USE_CASE,
+  useFactory: (appointmentRepository: AppointmentRepository) =>
+    new ListAppointmentsUseCase(appointmentRepository),
+  inject: [TOKENS.APPOINTMENT_REPOSITORY],
+},
+{
+  provide: TOKENS.GET_APPOINTMENT_BY_ID_USE_CASE,
+  useFactory: (appointmentRepository: AppointmentRepository) =>
+    new GetAppointmentByIdUseCase(appointmentRepository),
+  inject: [TOKENS.APPOINTMENT_REPOSITORY],
+},
+{
+  provide: TOKENS.UPDATE_APPOINTMENT_USE_CASE,
+  useFactory: (appointmentRepository: AppointmentRepository) =>
+    new UpdateAppointmentUseCase(appointmentRepository),
+  inject: [TOKENS.APPOINTMENT_REPOSITORY],
+},
+{
+  provide: TOKENS.CANCEL_APPOINTMENT_USE_CASE,
+  useFactory: (appointmentRepository: AppointmentRepository) =>
+    new CancelAppointmentUseCase(appointmentRepository),
+  inject: [TOKENS.APPOINTMENT_REPOSITORY],
+},
+```
+
+#### **📋 PATTERN STANDARDISÉ POUR NOUVEAUX USE CASES**
+
+**Workflow obligatoire à CHAQUE création de Use Case :**
+
+1. **Créer le Use Case** dans `/application/use-cases/{domain}/`
+2. **Ajouter le token** dans `injection-tokens.ts`
+3. **Importer le Use Case** dans `PresentationModule`
+4. **Ajouter le provider** avec `useFactory` et `inject`
+5. **Injecter dans le Controller** avec `@Inject(TOKENS.XXX_USE_CASE)`
+6. **Tester le démarrage** : `npm run start:dev`
+
+#### **🚫 ERREURS À ÉVITER**
+
+- ❌ **Oublier d'ajouter le provider** après création du Use Case
+- ❌ **Token manquant** dans injection-tokens.ts
+- ❌ **Import manquant** du Use Case dans le module
+- ❌ **Mauvaise configuration** du useFactory/inject
+- ❌ **Typo dans le nom** du token ou du Use Case
+
+#### **✅ CHECKLIST OBLIGATOIRE**
+
+- [ ] ✅ **Use Case créé** dans le bon dossier
+- [ ] ✅ **Token ajouté** dans injection-tokens.ts
+- [ ] ✅ **Import ajouté** dans PresentationModule
+- [ ] ✅ **Provider configuré** avec useFactory
+- [ ] ✅ **Injection dans Controller** avec @Inject
+- [ ] ✅ **Application démarre** sans erreur
+- [ ] ✅ **Tests passent** après ajout
+
+\*_Cette documentation évitera 90% des erreurs d'injection de dépendances lors de l'ajout de nouveaux Use Cases run lint src/presentation/controllers/ 2>&1 | grep -E .controller.ts | head -10_
