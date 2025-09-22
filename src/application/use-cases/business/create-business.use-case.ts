@@ -12,13 +12,13 @@ import {
 } from '../../../application/exceptions/application.exceptions';
 import type { I18nService } from '../../../application/ports/i18n.port';
 import type { Logger } from '../../../application/ports/logger.port';
-import type { UserRepository } from '../../../domain/repositories/user.repository.interface';
 import {
   Business,
   BusinessSector,
   BusinessStatus,
 } from '../../../domain/entities/business.entity';
 import type { BusinessRepository } from '../../../domain/repositories/business.repository.interface';
+import type { UserRepository } from '../../../domain/repositories/user.repository.interface';
 import { Address } from '../../../domain/value-objects/address.value-object';
 import { BusinessName } from '../../../domain/value-objects/business-name.value-object';
 import { Email } from '../../../domain/value-objects/email.value-object';

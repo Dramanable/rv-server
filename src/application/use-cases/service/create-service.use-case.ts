@@ -4,19 +4,19 @@
  * Création d'un service avec validation métier et permissions
  * ✅ AUCUNE dépendance NestJS - Respect de la Clean Architecture
  */
-import { Service, ServiceStatus } from '@domain/entities/service.entity';
-import { ServiceRepository } from '@domain/repositories/service.repository.interface';
-import { BusinessRepository } from '@domain/repositories/business.repository.interface';
-import { Logger } from '@application/ports/logger.port';
-import { I18nService } from '@application/ports/i18n.port';
-import { AppContext, AppContextFactory } from '@shared/context/app-context';
-import { UserRole } from '@shared/enums/user-role.enum';
-import { UserRepository } from '@domain/repositories/user.repository.interface';
 import {
+  BusinessNotFoundError,
   InsufficientPermissionsError,
   ServiceValidationError,
-  BusinessNotFoundError,
 } from '@application/exceptions/application.exceptions';
+import { I18nService } from '@application/ports/i18n.port';
+import { Logger } from '@application/ports/logger.port';
+import { Service, ServiceStatus } from '@domain/entities/service.entity';
+import { BusinessRepository } from '@domain/repositories/business.repository.interface';
+import { ServiceRepository } from '@domain/repositories/service.repository.interface';
+import { UserRepository } from '@domain/repositories/user.repository.interface';
+import { AppContext, AppContextFactory } from '@shared/context/app-context';
+import { UserRole } from '@shared/enums/user-role.enum';
 
 import { BusinessId } from '@domain/value-objects/business-id.value-object';
 

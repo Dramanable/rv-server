@@ -5,22 +5,22 @@
  * ✅ Validation class-validator + documentation Swagger complète
  * ✅ Alignement parfait avec les interfaces Use Case
  */
-import {
-  IsString,
-  IsOptional,
-  IsNumber,
-  IsBoolean,
-  IsArray,
-  IsUUID,
-  Length,
-  Min,
-  Max,
-  ArrayMaxSize,
-  ValidateNested,
-  IsIn,
-} from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
+import {
+  ArrayMaxSize,
+  IsArray,
+  IsBoolean,
+  IsIn,
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsUUID,
+  Length,
+  Max,
+  Min,
+  ValidateNested,
+} from 'class-validator';
 import {
   PricingConfigDto,
   ServicePackageDto,

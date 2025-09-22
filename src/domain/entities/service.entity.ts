@@ -1,9 +1,9 @@
 import { BusinessId } from '../value-objects/business-id.value-object';
 import { FileUrl } from '../value-objects/file-url.value-object';
 import { Money } from '../value-objects/money.value-object';
+import { PricingConfig } from '../value-objects/pricing-config.value-object';
 import { ServiceId } from '../value-objects/service-id.value-object';
 import { UserId } from '../value-objects/user-id.value-object';
-import { PricingConfig } from '../value-objects/pricing-config.value-object';
 
 export enum ServiceCategory {
   CONSULTATION = 'CONSULTATION',

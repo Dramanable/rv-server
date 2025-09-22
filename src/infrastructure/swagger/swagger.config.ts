@@ -10,7 +10,7 @@ export function setupSwagger(app: INestApplication): void {
 
 ## 🏗️ Complete Business Management Platform
 This comprehensive API provides **enterprise-grade appointment management** with:
-- **🔐 Authentication & Authorization** with JWT tokens in secure HttpOnly cookies  
+- **🔐 Authentication & Authorization** with JWT tokens in secure HttpOnly cookies
 - **🏢 Business Management** - Multi-location business operations
 - **👥 Staff Management** - Personnel, roles, and scheduling
 - **💼 Service Management** - Flexible pricing, packages, and booking rules

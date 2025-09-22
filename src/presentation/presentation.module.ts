@@ -50,23 +50,24 @@ import { ListCalendarsUseCase } from '@application/use-cases/calendar/list-calen
 
 // Service Use Cases
 import { CreateServiceUseCase } from '@application/use-cases/service/create-service.use-case';
+import { DeleteServiceUseCase } from '@application/use-cases/service/delete-service.use-case';
 import { GetServiceUseCase } from '@application/use-cases/service/get-service.use-case';
 import { ListServicesUseCase } from '@application/use-cases/service/list-services.use-case';
 import { UpdateServiceUseCase } from '@application/use-cases/service/update-service.use-case';
-import { DeleteServiceUseCase } from '@application/use-cases/service/delete-service.use-case';
 
 // Staff Use Cases
 import { CreateStaffUseCase } from '@application/use-cases/staff/create-staff.use-case';
+import { DeleteStaffUseCase } from '@application/use-cases/staff/delete-staff.use-case';
 import { GetStaffUseCase } from '@application/use-cases/staff/get-staff.use-case';
 import { ListStaffUseCase } from '@application/use-cases/staff/list-staff.use-case';
 import { UpdateStaffUseCase } from '@application/use-cases/staff/update-staff.use-case';
-import { DeleteStaffUseCase } from '@application/use-cases/staff/delete-staff.use-case';
 
 // Appointment Use Cases
 import { BookAppointmentUseCase } from '@application/use-cases/appointment/book-appointment.use-case';
 import { GetAvailableSlotsUseCase } from '@application/use-cases/appointments/get-available-slots-simple.use-case';
 
 // 🎮 Controllers
+import { AppointmentController } from './controllers/appointment.controller';
 import { AuthController } from './controllers/auth.controller';
 import { BusinessHoursController } from './controllers/business-hours.controller';
 import { BusinessSectorController } from './controllers/business-sector.controller';
@@ -74,7 +75,6 @@ import { BusinessController } from './controllers/business.controller';
 import { CalendarController } from './controllers/calendar.controller';
 import { ServiceController } from './controllers/service.controller';
 import { StaffController } from './controllers/staff.controller';
-import { AppointmentController } from './controllers/appointment.controller';
 import { UserController } from './controllers/user.controller';
 
 // 🛡️ Security

@@ -6,50 +6,50 @@
  * ✅ Alignement parfait avec les Use Cases
  * ✅ Validation, permissions, et documentation Swagger complètes
  */
+import { User } from '@domain/entities/user.entity';
 import {
+  Body,
   Controller,
+  Delete,
   Get,
+  HttpStatus,
+  Inject,
+  Param,
+  ParseUUIDPipe,
   Post,
   Put,
-  Delete,
-  Body,
-  Param,
-  HttpStatus,
   UseGuards,
-  ParseUUIDPipe,
-  Inject,
 } from '@nestjs/common';
 import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
   ApiBearerAuth,
+  ApiOperation,
   ApiParam,
+  ApiResponse,
+  ApiTags,
 } from '@nestjs/swagger';
-import { JwtAuthGuard } from '@presentation/security/guards/jwt-auth.guard';
 import { GetUser } from '@presentation/security/decorators/get-user.decorator';
-import { User } from '@domain/entities/user.entity';
+import { JwtAuthGuard } from '@presentation/security/guards/jwt-auth.guard';
 
 // Injection Tokens
 import { TOKENS } from '@shared/constants/injection-tokens';
 
 // Use Cases Imports
 import { CreateServiceUseCase } from '@application/use-cases/service/create-service.use-case';
+import { DeleteServiceUseCase } from '@application/use-cases/service/delete-service.use-case';
 import { GetServiceUseCase } from '@application/use-cases/service/get-service.use-case';
 import { ListServicesUseCase } from '@application/use-cases/service/list-services.use-case';
 import { UpdateServiceUseCase } from '@application/use-cases/service/update-service.use-case';
-import { DeleteServiceUseCase } from '@application/use-cases/service/delete-service.use-case';
 
 // DTOs Imports
 import {
   CreateServiceDto,
-  UpdateServiceDto,
-  ListServicesDto,
-  ServiceDto,
-  ListServicesResponseDto,
   CreateServiceResponseDto,
-  UpdateServiceResponseDto,
   DeleteServiceResponseDto,
+  ListServicesDto,
+  ListServicesResponseDto,
+  ServiceDto,
+  UpdateServiceDto,
+  UpdateServiceResponseDto,
 } from '@presentation/dtos/service.dto';
 
 @ApiTags('💼 Services')
@@ -78,7 +78,7 @@ export class ServiceController {
     summary: '🔍 List Services with Advanced Search and Pagination',
     description: `
       **Recherche avancée paginée** avec système de tarification flexible.
-      
+
       ## ✨ Fonctionnalités
       - 🔍 **Recherche textuelle** par nom ou description
       - 🏷️ **Filtres avancés** : entreprise, catégorie, prix, durée
@@ -86,7 +86,7 @@ export class ServiceController {
       - 📄 **Pagination optimisée** avec métadonnées complètes
       - 🛡️ **Contrôle d'accès** basé sur les rôles utilisateur
       - 💰 **Pricing flexible** : gratuit, fixe, variable, masqué, sur demande
-      
+
       ## 🔐 Permissions requises
       | Rôle | Accès |
       |------|-------|
@@ -95,7 +95,7 @@ export class ServiceController {
       | BUSINESS_ADMIN | Services de son entreprise |
       | LOCATION_MANAGER | Services de sa localisation |
       | PRACTITIONER | Services qu'il/elle fournit |
-      
+
       ## 💡 Exemples d'utilisation
       - **Recherche simple** : \`{ "search": "massage" }\`
       - **Filtrage par prix** : \`{ "filters": { "priceRange": { "min": 50, "max": 200 } } }\`
@@ -162,7 +162,7 @@ export class ServiceController {
     summary: '📄 Get Service by ID',
     description: `
       **Récupération détaillée** d'un service avec sa configuration complète.
-      
+
       ## 📋 Informations retournées
       - 🏷️ **Détails du service** : nom, description, catégorie
       - 💰 **Configuration pricing** : type, prix, remises, forfaits
@@ -170,14 +170,14 @@ export class ServiceController {
       - 📋 **Prérequis** : âge, documents, préparation
       - 👥 **Personnel assigné** : praticiens disponibles
       - 🔄 **Historique** : dates de création et modification
-      
+
       ## 🔐 Contrôle d'accès
       - ✅ **PLATFORM_ADMIN** : Accès à tous les services
       - ✅ **BUSINESS_OWNER** : Services de ses entreprises
-      - ✅ **BUSINESS_ADMIN** : Services de son entreprise  
+      - ✅ **BUSINESS_ADMIN** : Services de son entreprise
       - ✅ **LOCATION_MANAGER** : Services de sa localisation
       - ✅ **PRACTITIONER** : Services qu'il/elle fournit
-      
+
       ## 💡 Cas d'usage typiques
       - 🖥️ **Interface cliente** : Affichage détails avant réservation
       - 📱 **App mobile** : Fiche service complète
@@ -230,9 +230,9 @@ export class ServiceController {
     summary: '➕ Create New Service with Flexible Pricing',
     description: `
       **Création complète** d'un service avec système de tarification avancé.
-      
+
       ## 🎯 Types de pricing supportés
-      
+
       ### 🆓 **Service GRATUIT**
       \`\`\`json
       {
@@ -242,7 +242,7 @@ export class ServiceController {
         }
       }
       \`\`\`
-      
+
       ### 💰 **Prix FIXE avec remises**
       \`\`\`json
       {
@@ -260,7 +260,7 @@ export class ServiceController {
         }
       }
       \`\`\`
-      
+
       ### 🔧 **Prix VARIABLE**
       \`\`\`json
       {
@@ -281,7 +281,7 @@ export class ServiceController {
         }
       }
       \`\`\`
-      
+
       ### 🔒 **Prix MASQUÉ** (devis sur demande)
       \`\`\`json
       {
@@ -295,14 +295,14 @@ export class ServiceController {
         }
       }
       \`\`\`
-      
+
       ## 📋 Règles métier
       - ✅ **Nom unique** par entreprise
       - ✅ **Durée** : 15 minutes à 8 heures
       - ✅ **Catégorie** recommandée pour le filtrage
       - ✅ **Personnel assigné** optionnel
       - ✅ **Prérequis** configurables (âge, documents)
-      
+
       ## 🔐 Permissions
       - **PLATFORM_ADMIN** : Création pour toute entreprise
       - **BUSINESS_OWNER** : Ses entreprises uniquement
@@ -394,20 +394,20 @@ export class ServiceController {
     summary: '✏️ Update Service with Flexible Pricing',
     description: `
       **Mise à jour complète** d'un service existant avec gestion avancée des prix.
-      
+
       ## 🔄 Modification du pricing
-      
+
       ### Passage de GRATUIT → PAYANT
       \`\`\`json
       {
         "pricingConfig": {
           "type": "FIXED",
-          "visibility": "PUBLIC", 
+          "visibility": "PUBLIC",
           "basePrice": { "amount": 50.00, "currency": "EUR" }
         }
       }
       \`\`\`
-      
+
       ### Ajout de règles de remise
       \`\`\`json
       {
@@ -422,7 +422,7 @@ export class ServiceController {
             },
             {
               "type": "BULK_BOOKING",
-              "discountType": "PERCENTAGE", 
+              "discountType": "PERCENTAGE",
               "value": 15,
               "conditions": { "minimumSessions": 3 }
             }
@@ -430,7 +430,7 @@ export class ServiceController {
         }
       }
       \`\`\`
-      
+
       ### Configuration pricing variable
       \`\`\`json
       {
@@ -452,7 +452,7 @@ export class ServiceController {
         }
       }
       \`\`\`
-      
+
       ## 📋 Champs modifiables
       - ✅ **Nom** et description
       - ✅ **Durée** et catégorie
@@ -462,7 +462,7 @@ export class ServiceController {
       - ✅ **Configuration pricing** complète
       - ✅ **Personnel assigné**
       - ✅ **Prérequis** et tags
-      
+
       ## 🔐 Permissions
       - **PLATFORM_ADMIN** : Modification de tout service
       - **BUSINESS_OWNER/ADMIN** : Services de leur entreprise uniquement
@@ -566,28 +566,28 @@ export class ServiceController {
     summary: '🗑️ Delete Service (Soft Delete)',
     description: `
       **Suppression sécurisée** d'un service avec préservation des données historiques.
-      
+
       ## 🛡️ Règles de protection
-      
+
       ### ❌ **Suppression BLOQUÉE si :**
       - ✋ Rendez-vous **actifs** ou **futurs** liés au service
       - ✋ Commandes ou **paiements en cours**
       - ✋ Service référencé dans des **packages actifs**
-      
+
       ### ✅ **Suppression AUTORISÉE :**
       - 🕒 Aucun rendez-vous futur programmé
       - 💰 Tous les paiements soldés
       - 📋 Service non utilisé dans des offres groupées
-      
+
       ## 🔄 Processus de suppression
-      
+
       1. **Vérification** des contraintes métier
       2. **Soft delete** → Service marqué inactif
       3. **Préservation** données historiques complètes
       4. **Notification** aux administrateurs
-      
+
       ### ⚠️ Impact de la suppression
-      
+
       \`\`\`json
       {
         "service": {
@@ -604,12 +604,12 @@ export class ServiceController {
         }
       }
       \`\`\`
-      
+
       ## 🔐 Permissions
       - **PLATFORM_ADMIN** : Suppression de tout service
       - **BUSINESS_OWNER** : Services de ses entreprises
       - **BUSINESS_ADMIN** : Services de son entreprise
-      
+
       ## 🔄 Restauration possible
       Les services supprimés peuvent être **réactivés** par les administrateurs.
     `,

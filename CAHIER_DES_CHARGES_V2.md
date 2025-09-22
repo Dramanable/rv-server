@@ -325,6 +325,6 @@ Le focus sur les **tests unitaires uniquement** et l'**optimisation des performa
 
 ---
 
-**Document généré le :** $(date)  
-**Version :** 2.0  
+**Document généré le :** $(date)
+**Version :** 2.0
 **Statut :** ✅ Architecture optimisée et nettoyée

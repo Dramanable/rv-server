@@ -1,11 +1,11 @@
 import { BusinessId } from '../value-objects/business-id.value-object';
 import { CalendarId } from '../value-objects/calendar-id.value-object';
-import { ServiceId } from '../value-objects/service-id.value-object';
-import { UserId } from '../value-objects/user-id.value-object';
 import { Email } from '../value-objects/email.value-object';
-import { Phone } from '../value-objects/phone.value-object';
 import { Money } from '../value-objects/money.value-object';
+import { Phone } from '../value-objects/phone.value-object';
+import { ServiceId } from '../value-objects/service-id.value-object';
 import { TimeSlot } from '../value-objects/time-slot.value-object';
+import { UserId } from '../value-objects/user-id.value-object';
 
 /**
  * 📅 DOMAIN ENTITY - Appointment

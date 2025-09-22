@@ -12,12 +12,11 @@ import {
   Get,
   HttpCode,
   HttpStatus,
-  Param,
+  Inject,
   Post,
   Put,
   Query,
   UseGuards,
-  Inject,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -41,12 +40,10 @@ import {
   AvailableSlotsResponseDto,
   BookAppointmentDto,
   BookAppointmentResponseDto,
-  CancelAppointmentDto,
   CancelAppointmentResponseDto,
   GetAvailableSlotsDto,
   ListAppointmentsDto,
   ListAppointmentsResponseDto,
-  UpdateAppointmentDto,
   UpdateAppointmentResponseDto,
 } from '../dtos/appointment.dto';
 

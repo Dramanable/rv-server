@@ -12,11 +12,11 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Inject,
   Param,
   Post,
   Put,
   UseGuards,
-  Inject,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -32,26 +32,26 @@ import { GetUser } from '../security/decorators/get-user.decorator';
 import { JwtAuthGuard } from '../security/guards/jwt-auth.guard';
 
 import { CreateStaffUseCase } from '../../application/use-cases/staff/create-staff.use-case';
+import { DeleteStaffUseCase } from '../../application/use-cases/staff/delete-staff.use-case';
 import { GetStaffUseCase } from '../../application/use-cases/staff/get-staff.use-case';
 import { ListStaffUseCase } from '../../application/use-cases/staff/list-staff.use-case';
 import { UpdateStaffUseCase } from '../../application/use-cases/staff/update-staff.use-case';
-import { DeleteStaffUseCase } from '../../application/use-cases/staff/delete-staff.use-case';
 
+import { StaffStatus } from '../../domain/entities/staff.entity';
+import {
+  CloudProvider,
+  FileUrl,
+} from '../../domain/value-objects/file-url.value-object';
 import {
   CreateStaffDto,
   CreateStaffResponseDto,
+  DeleteStaffResponseDto,
   GetStaffResponseDto,
   ListStaffDto,
   ListStaffResponseDto,
   UpdateStaffDto,
   UpdateStaffResponseDto,
-  DeleteStaffResponseDto,
 } from '../dtos/staff.dto';
-import { StaffStatus } from '../../domain/entities/staff.entity';
-import {
-  FileUrl,
-  CloudProvider,
-} from '../../domain/value-objects/file-url.value-object';
 
 @ApiTags('�‍💼 Staff Management')
 @Controller('staff')

@@ -16,7 +16,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { TOKENS } from '@shared/constants/injection-tokens';
-import type { FastifyRequest, FastifyReply } from 'fastify';
+import type { FastifyReply, FastifyRequest } from 'fastify';
 
 @Catch(BadRequestException)
 export class ValidationExceptionFilter implements ExceptionFilter {

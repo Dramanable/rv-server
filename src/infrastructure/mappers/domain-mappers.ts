@@ -34,8 +34,8 @@ import {
   FileUrl,
 } from '../../domain/value-objects/file-url.value-object';
 import { Money } from '../../domain/value-objects/money.value-object';
-import { PricingConfig } from '../../domain/value-objects/pricing-config.value-object';
 import { Phone } from '../../domain/value-objects/phone.value-object';
+import { PricingConfig } from '../../domain/value-objects/pricing-config.value-object';
 import { ServiceId } from '../../domain/value-objects/service-id.value-object';
 import { UserId } from '../../domain/value-objects/user-id.value-object';
 

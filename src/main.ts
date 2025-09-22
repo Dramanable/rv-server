@@ -20,11 +20,11 @@ import { setupSwagger } from '@presentation/config/swagger.config';
 import { AppModule } from './app.module';
 
 // 🚀 Fastify imports
-import fastify from 'fastify';
 import fastifyCookie from '@fastify/cookie';
 import fastifyCors from '@fastify/cors';
 import fastifyHelmet from '@fastify/helmet';
 import fastifyRateLimit from '@fastify/rate-limit';
+import fastify from 'fastify';
 
 async function bootstrap(): Promise<void> {
   // 🚀 Create Fastify application with optimized configuration

@@ -1,3 +1,5 @@
+import type { I18nService } from '@application/ports/i18n.port';
+import type { Logger } from '@application/ports/logger.port';
 import {
   BookAppointmentRequest,
   BookAppointmentUseCase,
@@ -7,8 +9,6 @@ import type { BusinessRepository } from '@domain/repositories/business.repositor
 import type { CalendarRepository } from '@domain/repositories/calendar.repository.interface';
 import type { ServiceRepository } from '@domain/repositories/service.repository.interface';
 import type { StaffRepository } from '@domain/repositories/staff.repository.interface';
-import type { I18nService } from '@application/ports/i18n.port';
-import type { Logger } from '@application/ports/logger.port';
 
 // Test mocks créés inline pour éviter les problèmes de compatibilité d'interface
 

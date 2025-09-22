@@ -1,10 +1,4 @@
-import {
-  MigrationInterface,
-  QueryRunner,
-  Table,
-  Index,
-  ForeignKey,
-} from 'typeorm';
+import { MigrationInterface, QueryRunner, Table } from 'typeorm';
 
 export class CreateBusinessTable1695826000000 implements MigrationInterface {
   name = 'CreateBusinessTable1695826000000';
