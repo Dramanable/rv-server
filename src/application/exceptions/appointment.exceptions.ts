@@ -120,6 +120,17 @@ export class ServiceInactiveError extends AppointmentException {
   }
 }
 
+export class ServiceNotBookableOnlineError extends AppointmentException {
+  constructor(serviceId: string) {
+    super(
+      `Service ${serviceId} does not allow online booking`,
+      'SERVICE_NOT_BOOKABLE_ONLINE',
+      { serviceId },
+    );
+    this.name = 'ServiceNotBookableOnlineError';
+  }
+}
+
 export class CalendarInactiveError extends AppointmentException {
   constructor(calendarId: string) {
     super(

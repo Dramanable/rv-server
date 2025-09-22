@@ -390,6 +390,190 @@ describe('Appointment Entity', () => {
     });
   });
 
+  describe('👨‍👩‍👧‍👦 Family Member Booking', () => {
+    it('should identify appointment NOT booked for family member', () => {
+      // GIVEN - mockClientInfo n'a pas de bookedBy
+      const appointment = Appointment.create({
+        businessId: mockBusinessId,
+        calendarId: mockCalendarId,
+        serviceId: mockServiceId,
+        timeSlot: mockTimeSlot,
+        clientInfo: mockClientInfo,
+        type: AppointmentType.CONSULTATION,
+        pricing: mockPricing,
+      });
+
+      // WHEN & THEN
+      expect(appointment.isBookedForFamilyMember()).toBe(false);
+      expect(appointment.getBookedByInfo()).toBeUndefined();
+      expect(appointment.hasValidFamilyRelationship()).toBe(true); // Valide car pas de contrainte
+    });
+
+    it('should identify appointment booked for family member', () => {
+      // GIVEN
+      const clientInfoWithBookedBy: ClientInfo = {
+        ...mockClientInfo,
+        bookedBy: {
+          firstName: 'Marie',
+          lastName: 'Dupont',
+          email: Email.create('marie.dupont@example.com'),
+          phone: Phone.create('+33987654321'),
+          relationship: 'SPOUSE',
+        },
+      };
+
+      const appointment = Appointment.create({
+        businessId: mockBusinessId,
+        calendarId: mockCalendarId,
+        serviceId: mockServiceId,
+        timeSlot: mockTimeSlot,
+        clientInfo: clientInfoWithBookedBy,
+        type: AppointmentType.CONSULTATION,
+        pricing: mockPricing,
+      });
+
+      // WHEN & THEN
+      expect(appointment.isBookedForFamilyMember()).toBe(true);
+      expect(appointment.getBookedByInfo()).toEqual(
+        clientInfoWithBookedBy.bookedBy,
+      );
+      expect(appointment.hasValidFamilyRelationship()).toBe(true);
+    });
+
+    it('should validate all family relationship types', () => {
+      // GIVEN
+      const validRelationships = [
+        'PARENT',
+        'SPOUSE',
+        'SIBLING',
+        'CHILD',
+        'GUARDIAN',
+        'FAMILY_MEMBER',
+      ];
+
+      validRelationships.forEach((relationship) => {
+        const clientInfoWithRelationship: ClientInfo = {
+          ...mockClientInfo,
+          bookedBy: {
+            firstName: 'Marie',
+            lastName: 'Test',
+            email: Email.create('marie.test@example.com'),
+            relationship: relationship as any,
+          },
+        };
+
+        const appointment = Appointment.create({
+          businessId: mockBusinessId,
+          calendarId: mockCalendarId,
+          serviceId: mockServiceId,
+          timeSlot: mockTimeSlot,
+          clientInfo: clientInfoWithRelationship,
+          type: AppointmentType.CONSULTATION,
+          pricing: mockPricing,
+        });
+
+        // WHEN & THEN
+        expect(appointment.hasValidFamilyRelationship()).toBe(true);
+        expect(appointment.isBookedForFamilyMember()).toBe(true);
+      });
+    });
+
+    it('should require description for OTHER relationship', () => {
+      // GIVEN
+      const clientInfoWithOtherAndDescription: ClientInfo = {
+        ...mockClientInfo,
+        bookedBy: {
+          firstName: 'Pierre',
+          lastName: 'Voisin',
+          email: Email.create('pierre.voisin@example.com'),
+          relationship: 'OTHER',
+          relationshipDescription: 'Voisin proche qui aide',
+        },
+      };
+
+      const appointment = Appointment.create({
+        businessId: mockBusinessId,
+        calendarId: mockCalendarId,
+        serviceId: mockServiceId,
+        timeSlot: mockTimeSlot,
+        clientInfo: clientInfoWithOtherAndDescription,
+        type: AppointmentType.CONSULTATION,
+        pricing: mockPricing,
+      });
+
+      // WHEN & THEN
+      expect(appointment.hasValidFamilyRelationship()).toBe(true);
+      expect(appointment.isBookedForFamilyMember()).toBe(true);
+    });
+
+    it('should reject OTHER relationship without description', () => {
+      // GIVEN
+      const clientInfoWithInvalidOther: ClientInfo = {
+        ...mockClientInfo,
+        bookedBy: {
+          firstName: 'Pierre',
+          lastName: 'Voisin',
+          email: Email.create('pierre.voisin@example.com'),
+          relationship: 'OTHER',
+          // relationshipDescription manquant
+        },
+      };
+
+      const appointment = Appointment.create({
+        businessId: mockBusinessId,
+        calendarId: mockCalendarId,
+        serviceId: mockServiceId,
+        timeSlot: mockTimeSlot,
+        clientInfo: clientInfoWithInvalidOther,
+        type: AppointmentType.CONSULTATION,
+        pricing: mockPricing,
+      });
+
+      // WHEN & THEN
+      expect(appointment.hasValidFamilyRelationship()).toBe(false);
+      expect(appointment.isBookedForFamilyMember()).toBe(true); // Est pour famille mais relation invalide
+    });
+
+    it('should handle complete bookedBy information', () => {
+      // GIVEN
+      const completeBookedByInfo: ClientInfo = {
+        ...mockClientInfo,
+        bookedBy: {
+          firstName: 'Emma',
+          lastName: 'Martin',
+          email: Email.create('emma.martin@example.com'),
+          phone: Phone.create('+33665554433'),
+          relationship: 'PARENT',
+          relationshipDescription: 'Maman de Julien (mineur)',
+        },
+      };
+
+      const appointment = Appointment.create({
+        businessId: mockBusinessId,
+        calendarId: mockCalendarId,
+        serviceId: mockServiceId,
+        timeSlot: mockTimeSlot,
+        clientInfo: completeBookedByInfo,
+        type: AppointmentType.CONSULTATION,
+        pricing: mockPricing,
+      });
+
+      // WHEN & THEN
+      expect(appointment.isBookedForFamilyMember()).toBe(true);
+      expect(appointment.hasValidFamilyRelationship()).toBe(true);
+
+      const bookedByInfo = appointment.getBookedByInfo();
+      expect(bookedByInfo?.firstName).toBe('Emma');
+      expect(bookedByInfo?.lastName).toBe('Martin');
+      expect(bookedByInfo?.email.getValue()).toBe('emma.martin@example.com');
+      expect(bookedByInfo?.phone?.getValue()).toBe('+33665554433');
+      expect(bookedByInfo?.relationship).toBe('PARENT');
+      expect(bookedByInfo?.relationshipDescription).toBe(
+        'Maman de Julien (mineur)',
+      );
+    });
+  });
+
   describe('Appointment Immutability', () => {
     it('should create new instance when confirming', () => {
       // GIVEN

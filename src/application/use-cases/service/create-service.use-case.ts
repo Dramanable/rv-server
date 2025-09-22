@@ -10,15 +10,14 @@ import { BusinessRepository } from '@domain/repositories/business.repository.int
 import { Logger } from '@application/ports/logger.port';
 import { I18nService } from '@application/ports/i18n.port';
 import { AppContext, AppContextFactory } from '@shared/context/app-context';
-import { UserRole, Permission } from '@shared/enums/user-role.enum';
-import { User } from '@domain/entities/user.entity';
+import { UserRole } from '@shared/enums/user-role.enum';
 import { UserRepository } from '@domain/repositories/user.repository.interface';
 import {
   InsufficientPermissionsError,
   ServiceValidationError,
   BusinessNotFoundError,
 } from '@application/exceptions/application.exceptions';
-import { Money } from '@domain/value-objects/money.value-object';
+
 import { BusinessId } from '@domain/value-objects/business-id.value-object';
 
 export interface CreateServiceRequest {
@@ -60,7 +59,7 @@ export interface CreateServiceResponse {
   readonly price: {
     readonly amount: number;
     readonly currency: string;
-  };
+  } | null;
   readonly businessId: string;
   readonly isActive: boolean;
   readonly createdAt: Date;
@@ -123,10 +122,12 @@ export class CreateServiceUseCase {
         description: service.description,
         category: service.category,
         duration: service.scheduling.duration,
-        price: {
-          amount: service.pricing.basePrice.getAmount(),
-          currency: service.pricing.basePrice.getCurrency(),
-        },
+        price: service.getBasePrice()
+          ? {
+              amount: service.getBasePrice()!.getAmount(),
+              currency: service.getBasePrice()!.getCurrency(),
+            }
+          : null,
         businessId: service.businessId.getValue(),
         isActive: service.status === ServiceStatus.ACTIVE,
         createdAt: service.createdAt,
@@ -136,7 +137,7 @@ export class CreateServiceUseCase {
         ...context,
         serviceId: service.id.getValue(),
         serviceName: service.name,
-        servicePrice: service.pricing.basePrice.getAmount(),
+        servicePrice: service.getBasePrice()?.getAmount() || 0,
       } as Record<string, unknown>);
 
       return response;
@@ -153,7 +154,7 @@ export class CreateServiceUseCase {
   private async validatePermissions(
     requestingUserId: string,
     businessId: string,
-    context: AppContext,
+    _context: AppContext,
   ): Promise<void> {
     const requestingUser = await this.userRepository.findById(requestingUserId);
     if (!requestingUser) {
@@ -198,7 +199,7 @@ export class CreateServiceUseCase {
 
   private async validateBusinessRules(
     request: CreateServiceRequest,
-    context: AppContext,
+    _context: AppContext,
   ): Promise<void> {
     // Validation du nom
     if (!request.name || request.name.trim().length < 3) {

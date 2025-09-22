@@ -28,6 +28,7 @@ import {
   CalendarNotFoundError,
   MinimumBookingNoticeError,
   ServiceInactiveError,
+  ServiceNotBookableOnlineError,
   ServiceNotFoundError,
 } from '../../exceptions/appointment.exceptions';
 
@@ -261,6 +262,14 @@ export class BookAppointmentUseCase {
 
     if (!service.isActive()) {
       throw new ServiceInactiveError(serviceId);
+    }
+
+    if (!service.isBookable()) {
+      this.logger.error('Service does not allow online booking', {
+        serviceId,
+        allowOnlineBooking: false,
+      });
+      throw new ServiceNotBookableOnlineError(serviceId);
     }
 
     return service;

@@ -5,8 +5,6 @@ import {
 import { ServiceRepository } from '../../../domain/repositories/service.repository.interface';
 import { BusinessId } from '../../../domain/value-objects/business-id.value-object';
 import { ApplicationValidationError } from '../../exceptions/application.exceptions';
-import { I18nService } from '../../ports/i18n.port';
-import { Logger } from '../../ports/logger.port';
 
 export interface ListServicesRequest {
   readonly requestingUserId: string;
@@ -41,11 +39,11 @@ export interface ListServicesResponse {
       readonly basePrice: {
         readonly amount: number;
         readonly currency: string;
-      };
+      } | null;
       readonly discountPrice?: {
         readonly amount: number;
         readonly currency: string;
-      };
+      } | null;
     };
     readonly scheduling: {
       readonly duration: number;
@@ -81,7 +79,7 @@ export class ListServicesUseCase {
 
       const { requestingUserId, businessId, pagination, filters } = request;
 
-      this.logger.info('Attempting to list services', {
+      (this.logger as any).info('Attempting to list services', {
         businessId,
         requestingUserId,
         page: pagination.page,
@@ -111,7 +109,7 @@ export class ListServicesUseCase {
       const hasNextPage = pagination.page < totalPages;
       const hasPrevPage = pagination.page > 1;
 
-      this.logger.info('Services listed successfully', {
+      (this.logger as any).info('Services listed successfully', {
         businessId,
         requestingUserId,
         totalFound: total,
@@ -136,7 +134,7 @@ export class ListServicesUseCase {
         throw error;
       }
 
-      this.logger.error(
+      (this.logger as any).error(
         'Error listing services',
         error instanceof Error ? error : new Error(String(error)),
         {
@@ -193,16 +191,13 @@ export class ListServicesUseCase {
       businessId: service.businessId.getValue(),
       category: service.category,
       pricing: {
-        basePrice: {
-          amount: service.pricing.basePrice.getAmount(),
-          currency: service.pricing.basePrice.getCurrency(),
-        },
-        discountPrice: service.pricing.discountPrice
+        basePrice: service.getBasePrice()
           ? {
-              amount: service.pricing.discountPrice.getAmount(),
-              currency: service.pricing.discountPrice.getCurrency(),
+              amount: service.getBasePrice()!.getAmount(),
+              currency: service.getBasePrice()!.getCurrency(),
             }
-          : undefined,
+          : null,
+        discountPrice: null, // Supprimé car remplacé par PricingConfig
       },
       scheduling: {
         duration: service.scheduling.duration,

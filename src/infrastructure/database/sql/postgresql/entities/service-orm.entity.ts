@@ -67,17 +67,17 @@ export class ServiceOrmEntity {
   @Index()
   status!: string;
 
-  // Pricing as JSON
+  // Pricing as JSON - Support des pricing flexibles
   @Column({ type: 'jsonb', nullable: false })
   pricing!: {
     base_price: {
       amount: number;
       currency: string;
-    };
+    } | null;
     discount_price?: {
       amount: number;
       currency: string;
-    };
+    } | null;
     packages?: Array<{
       name: string;
       sessions: number;
@@ -87,6 +87,36 @@ export class ServiceOrmEntity {
       };
       validity_days: number;
     }>;
+  };
+
+  // Configuration de pricing flexible
+  @Column({ type: 'jsonb', nullable: false })
+  @Index('IDX_services_pricing_config_type', {
+    where: "(pricing_config->>'type') IS NOT NULL",
+  })
+  @Index('IDX_services_pricing_config_visibility', {
+    where: "(pricing_config->>'visibility') IS NOT NULL",
+  })
+  pricing_config!: {
+    type: 'FREE' | 'FIXED' | 'VARIABLE' | 'HIDDEN' | 'ON_DEMAND';
+    visibility: 'PUBLIC' | 'AUTHENTICATED' | 'PRIVATE' | 'HIDDEN';
+    basePrice?: {
+      amount: number;
+      currency: string;
+    } | null;
+    rules?: Array<{
+      minDuration?: number;
+      maxDuration?: number;
+      basePrice: {
+        amount: number;
+        currency: string;
+      };
+      pricePerMinute?: {
+        amount: number;
+        currency: string;
+      } | null;
+    }>;
+    description?: string | null;
   };
 
   // Scheduling as JSON

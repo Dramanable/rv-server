@@ -131,4 +131,16 @@ export class Money {
   static fromCents(cents: number, currency: string): Money {
     return new Money(cents / 100, currency);
   }
+
+  // Serialization
+  toJSON(): { amount: number; currency: string } {
+    return {
+      amount: this.amount,
+      currency: this.currency,
+    };
+  }
+
+  static fromJSON(data: { amount: number; currency: string }): Money {
+    return new Money(data.amount, data.currency);
+  }
 }

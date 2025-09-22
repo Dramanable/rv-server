@@ -23,11 +23,11 @@ export interface GetServiceResponse {
     readonly basePrice: {
       readonly amount: number;
       readonly currency: string;
-    };
+    } | null;
     readonly discountPrice?: {
       readonly amount: number;
       readonly currency: string;
-    };
+    } | null;
     readonly packages?: ReadonlyArray<{
       readonly name: string;
       readonly sessions: number;
@@ -152,17 +152,14 @@ export class GetServiceUseCase {
       businessId: service.businessId.getValue(),
       category: service.category,
       pricing: {
-        basePrice: {
-          amount: service.pricing.basePrice.getAmount(),
-          currency: service.pricing.basePrice.getCurrency(),
-        },
-        discountPrice: service.pricing.discountPrice
+        basePrice: service.getBasePrice()
           ? {
-              amount: service.pricing.discountPrice.getAmount(),
-              currency: service.pricing.discountPrice.getCurrency(),
+              amount: service.getBasePrice()!.getAmount(),
+              currency: service.getBasePrice()!.getCurrency(),
             }
-          : undefined,
-        packages: service.pricing.packages?.map((pkg) => ({
+          : null,
+        discountPrice: null, // Supprimé car remplacé par PricingConfig
+        packages: service.packages.map((pkg: any) => ({
           name: pkg.name,
           sessions: pkg.sessions,
           price: {

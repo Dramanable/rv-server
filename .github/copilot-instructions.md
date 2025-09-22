@@ -284,11 +284,58 @@ export class ComputeService {
 5. **Performance Monitoring** : Exploiter les nouveaux outils de diagnostic
 6. **Worker Threads** : Pour les calculs intensifs
 
-## 🏗️ **MÉTHODOLOGIE DE DÉVELOPPEMENT EN COUCHES ORDONNÉES**
+## 📊 **ÉTAT ACTUEL DU PROJET - BUSINESS FEATURES**
+
+### ✅ **FONCTIONNALITÉS COMPLÈTEMENT IMPLÉMENTÉES**
+
+#### **Staff Management (Personnel) - ✅ 100% TERMINÉ AVEC SUCCÈS**
+- ✅ **Domain** : Staff Entity + Value Objects + Repository Interface
+- ✅ **Application** : CreateStaff, GetStaff, ListStaff, UpdateStaff, DeleteStaff Use Cases
+- ✅ **Infrastructure** : StaffOrmEntity + TypeOrmStaffRepository + StaffMapper + Migration
+- ✅ **Presentation** : StaffController + StaffDTO + Documentation Swagger **COMPLET**
+- ✅ **Documentation** : ✅ docs/SWAGGER_STAFF_SERVICE_API.md créé avec exemples complets
+
+#### **Service Management - ✅ 100% TERMINÉ AVEC SUCCÈS**
+- ✅ **Domain** : Service Entity + Value Objects + Repository Interface
+- ✅ **Application** : CreateService, GetService, ListService, UpdateService, DeleteService Use Cases
+- ✅ **Infrastructure** : ServiceOrmEntity + TypeOrmServiceRepository + ServiceMapper + Migration
+- ✅ **Presentation** : ServiceController + ServiceDTO + Documentation Swagger **COMPLET**
+- ✅ **Documentation** : ✅ docs/SWAGGER_STAFF_SERVICE_API.md créé avec exemples complets
+
+#### **Appointment System - 100% COMPLET AVEC RÈGLES MÉTIER**
+- ✅ **Domain** : Appointment Entity + Value Objects + Repository Interface
+- ✅ **Application** : BookAppointment + GetAvailableSlots Use Cases avec règles métier
+- ✅ **Infrastructure** : AppointmentOrmEntity + TypeOrmAppointmentRepository + Mappers + Migration
+- ✅ **Business Rules** : **SEULS les services avec `allowOnlineBooking: true` peuvent être réservés**
+- ✅ **Exception Handling** : ServiceNotBookableOnlineError pour services non-publics
+- ⚠️ **Presentation** : AppointmentController (PARTIEL - À COMPLÉTER)
+- ❌ **Documentation** : Documentation Swagger Appointment à créer après présentation
+
+### ✅ **FONCTIONNALITÉS DÉJÀ TERMINÉES (AVEC PRESENTATION)**
+- **User Management** - Controllers + DTOs complets
+- **Business Management** - Controllers + DTOs complets
+- **Business Sector Management** - Controllers + DTOs complets
+- **Calendar Management** - Controllers + DTOs complets
+- **Health Checks** - Controller complet
+
+### 🎯 **PROCHAINE ÉTAPE : PRESENTATION UNIQUEMENT**
+
+**⚠️ IMPORTANT** : Pour Staff et Service, nous avons Domain + Application + Infrastructure COMPLETS.
+Il ne manque QUE la couche Presentation (Controllers + DTOs).
+
+**WORKFLOW SIMPLIFIÉ POUR CES CAS** :
+1. Créer les DTOs typés (validation + Swagger)
+2. Créer le Controller complet (CRUD + list)
+3. Tests E2E
+4. Documentation mise à jour
+
+## 🏗️ **MÉTHODOLOGIE DE DÉVELOPPEMENT EN COUCHES ORDONNÉES - MISE À JOUR CRITIQUE**
 
 ### 🎯 **ORDRE OBLIGATOIRE DE DÉVELOPPEMENT - TDD STRICT**
 
-**⚠️ RÈGLE FONDAMENTALE : Le workflow part TOUJOURS de la couche Domain, puis Application, puis Infrastructure et à la fin Presentation en mode Test Driven Development.**
+**⚠️ RÈGLE FONDAMENTALE : Le workflow part TOUJOURS de la couche Domain, puis Application, puis Infrastructure (avec migrations TypeORM) et à la fin Presentation en mode Test Driven Development.**
+
+**🚨 ERREUR COURANTE DÉTECTÉE : Ne JAMAIS commencer par la couche Presentation (Controllers/DTOs) sans avoir terminé Infrastructure !**
 
 **Pour éviter les erreurs de dépendances et garantir une architecture cohérente, TOUJOURS développer dans cet ordre strict avec TDD :**
 
@@ -334,16 +381,19 @@ touch src/application/use-cases/business/create-business.use-case.spec.ts
 # 6. Valider : npm test -- create-business.use-case.spec.ts
 ```
 
-**Étape 3️⃣ : INFRASTRUCTURE** (Seulement après Application terminé)
+**Étape 3️⃣ : INFRASTRUCTURE** (Seulement après Application terminé - ⚠️ OBLIGATOIRE AVANT PRESENTATION)
 ```bash
 # 1. Créer les tests de repository
 touch src/infrastructure/database/repositories/typeorm-business.repository.spec.ts
 # 2. Écrire les tests qui échouent (RED)
-# 3. Créer l'entité ORM BusinessOrmEntity (GREEN)
-# 4. Créer TypeOrmBusinessRepository qui implémente BusinessRepository (GREEN)
-# 5. Configurer l'injection de dépendances (GREEN)
-# 6. Refactorer si nécessaire (REFACTOR)
-# 7. Valider : npm test -- typeorm-business.repository.spec.ts
+# 3. ⚠️ CRITIQUE : Créer Migration TypeORM OBLIGATOIRE EN PREMIER
+touch src/infrastructure/database/sql/postgresql/migrations/{timestamp}-Create{Entity}Table.ts
+# 4. Créer l'entité ORM BusinessOrmEntity (GREEN)
+# 5. Créer/Mettre à jour les Mappers statiques dans /infrastructure/mappers/ (GREEN)
+# 6. Créer TypeOrmBusinessRepository qui implémente BusinessRepository (GREEN)
+# 7. Configurer l'injection de dépendances dans TypeOrmRepositoriesModule (GREEN)
+# 8. Refactorer si nécessaire (REFACTOR)
+# 9. Valider : npm test -- typeorm-business.repository.spec.ts
 ```
 
 **Étape 4️⃣ : PRESENTATION** (Seulement après Infrastructure terminé)
@@ -364,6 +414,7 @@ touch src/presentation/controllers/business.controller.spec.ts
 - **Créer l'entité ORM avant l'entité Domain** → ❌ Violation de dépendance
 - **Écrire du code sans test** → ❌ Violation de TDD
 - **Passer à Infrastructure avec des tests Application qui échouent** → ❌ Violation de workflow
+- **⚠️ NOUVEAU : Créer Controller/DTOs sans Migration TypeORM** → ❌ Violation Infrastructure manquante
 
 #### **1️⃣ DOMAIN (Couche Métier) - EN PREMIER**
 ```
@@ -1119,6 +1170,216 @@ describe('UserOrmMapper', () => {
 
 **Cette séparation stricte garantit une architecture propre, maintenable et respectueuse des principes de Clean Architecture !**
 
+## 📚 **DOCUMENTATION SWAGGER - BONNES PRATIQUES OBLIGATOIRES**
+
+### 🎯 **RÈGLE CRITIQUE : DOCUMENTATION SWAGGER COMPLÈTE APRÈS PRÉSENTATION**
+
+**Après avoir créé les Controllers et DTOs, TOUJOURS créer une documentation Swagger complète pour garantir une API utilisable et professionnelle.**
+
+#### **📋 Template de Documentation Swagger Obligatoire**
+
+```markdown
+# 🎯 {FeatureName} APIs - Swagger Documentation
+
+## 📋 Overview
+Description claire de la fonctionnalité et de ses APIs
+
+## 🏗️ Architecture Implementation Status
+### ✅ **{FeatureName} - 100% Complete**
+- **Domain** : ✅ {Entity} Entity + Value Objects + Repository Interface
+- **Application** : ✅ All CRUD Use Cases (Create, Get, Update, Delete, List)
+- **Infrastructure** : ✅ {Entity}OrmEntity + TypeOrm{Entity}Repository + Mappers + Migration
+- **Presentation** : ✅ {Entity}Controller + All DTOs with Swagger documentation
+
+## 🎯 {FeatureName} APIs
+
+### **POST /api/v1/{resources}/list**
+**Description** : Recherche avancée paginée
+**Security** : Requires JWT authentication
+**Request Body** : [Example with all fields]
+**Response** : [Complete response with pagination metadata]
+
+### **GET /api/v1/{resources}/:id**
+**Description** : Récupérer par ID
+**Response** : [Complete entity response]
+
+### **POST /api/v1/{resources}**
+**Description** : Créer nouveau
+**Request Body** : [All required and optional fields with validation rules]
+
+### **PUT /api/v1/{resources}/:id**
+**Description** : Mettre à jour
+**Request Body** : [Partial update examples]
+
+### **DELETE /api/v1/{resources}/:id**
+**Description** : Supprimer
+**Response** : [Deletion confirmation]
+
+## 🚨 Error Responses
+Format d'erreur standardisé avec tous les codes HTTP possibles
+
+## 🔐 Authentication & Authorization
+JWT + permissions requises
+
+## 📊 Validation Rules
+Toutes les règles de validation expliquées
+
+## 🎯 Business Rules
+Règles métier spécifiques à la fonctionnalité
+
+## 📈 Performance & Scalability
+Pagination, cache, performance
+
+## 🔧 Swagger Integration
+URLs et fonctionnalités Swagger disponibles
+```
+
+#### **🔧 Configuration Swagger Correcte dans les DTOs**
+
+```typescript
+// ✅ OBLIGATOIRE - Schema objects avec additionalProperties
+@ApiPropertyOptional({
+  description: 'Configuration object',
+  type: 'object',
+  additionalProperties: true, // ⚠️ REQUIS pour éviter erreurs TypeScript
+})
+readonly configObject?: any;
+
+// ✅ OBLIGATOIRE - Response DTOs avec définite assignment
+export class ResponseDto {
+  @ApiProperty()
+  readonly success!: boolean; // ⚠️ ! REQUIS pour éviter erreurs TypeScript
+
+  @ApiProperty({ type: 'array', items: { type: 'object' } })
+  readonly data!: any[]; // ⚠️ ! REQUIS
+}
+
+// ✅ OBLIGATOIRE - Enum documentation complète
+@ApiPropertyOptional({
+  description: 'Status filter',
+  enum: ['ACTIVE', 'INACTIVE', 'ON_LEAVE', 'SUSPENDED'],
+  example: 'ACTIVE'
+})
+@IsOptional()
+@IsString()
+readonly status?: string;
+```
+
+#### **🎯 Controllers avec Documentation Swagger Optimale**
+
+```typescript
+// ✅ OBLIGATOIRE - Tags et descriptions complètes
+@ApiTags('👥 {FeatureName} Management')
+@Controller('api/v1/{resources}')
+@ApiBearerAuth()
+export class {Feature}Controller {
+
+  // ✅ OBLIGATOIRE - Documentation complète avec exemples
+  @Post('list')
+  @ApiOperation({
+    summary: '🔍 Search {resources} with advanced filters',
+    description: `
+    Recherche avancée paginée des {resources}.
+
+    ✅ Fonctionnalités :
+    - Pagination (page, limit)
+    - Tri multi-critères (sortBy, sortOrder)
+    - Recherche textuelle (search)
+    - Filtres spécialisés ({specific filters})
+
+    🔐 Permissions requises :
+    - MANAGE_{RESOURCES} ou READ_{RESOURCES}
+    - Scoping automatique selon rôle utilisateur
+    `,
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: '✅ {Resources} found successfully',
+    type: List{Resource}ResponseDto,
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: '❌ Invalid search parameters',
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: '🔐 Authentication required',
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: '🚫 Insufficient permissions',
+  })
+  async list(@Body() dto: List{Resource}sDto, @GetUser() user: User) {
+    // Implementation
+  }
+}
+```
+
+#### **🚨 Erreurs Swagger Courantes à Éviter**
+
+1. **❌ Schema objects sans additionalProperties**
+```typescript
+// INTERDIT - Cause des erreurs TypeScript
+@ApiPropertyOptional({
+  type: 'object', // Manque additionalProperties: true
+})
+```
+
+2. **❌ Response DTOs sans definite assignment**
+```typescript
+// INTERDIT - Cause des erreurs TypeScript strictes
+export class ResponseDto {
+  readonly success: boolean; // Manque !
+}
+```
+
+3. **❌ Documentation API incomplète**
+```typescript
+// INTERDIT - Documentation minimale
+@ApiOperation({ summary: 'Get data' }) // Trop vague
+```
+
+4. **❌ Enums non documentés**
+```typescript
+// INTERDIT - Valeurs enum non exposées
+@IsEnum(StaffRole) // Manque documentation Swagger
+```
+
+#### **📁 Structure Documentation Obligatoire**
+
+```
+docs/
+├── SWAGGER_{FEATURE}_API.md     # Documentation complète par fonctionnalité
+├── SWAGGER_ENHANCEMENT_REPORT.md # Rapport d'amélioration Swagger
+└── API_STANDARDS.md             # Standards généraux API
+```
+
+#### **✅ Checklist Swagger Obligatoire**
+
+- [ ] **Documentation markdown** complète créée dans `/docs/`
+- [ ] **Tous les endpoints** documentés avec exemples
+- [ ] **Request/Response** schemas complets avec validation
+- [ ] **Error responses** avec codes HTTP appropriés
+- [ ] **Authentication** et permissions documentées
+- [ ] **Business rules** expliquées clairement
+- [ ] **Swagger UI** accessible sur `/api/docs`
+- [ ] **DTOs** avec `additionalProperties: true` pour objects
+- [ ] **Response DTOs** avec definite assignment (`!`)
+- [ ] **Enums** documentés avec toutes les valeurs possibles
+- [ ] **Controllers** avec `@ApiOperation` détaillées
+
+### 🎯 **Workflow Complet : Présentation + Swagger**
+
+1. **Créer Controllers + DTOs** (couche Presentation)
+2. **Tester et corriger** erreurs TypeScript/lint
+3. **Créer documentation Swagger** markdown complète
+4. **Vérifier Swagger UI** fonctionnel
+5. **Tester APIs** via Swagger interface
+6. **Valider examples** et schémas complets
+7. **Mettre à jour** architecture status
+
+**Cette approche garantit des APIs professionnelles, documentées et facilement utilisables !**
+
 ### 💎 **VALUE OBJECTS - BONNES PRATIQUES DANS LES MAPPERS**
 
 #### **🎯 RÈGLE IMPORTANTE : RECONSTRUCTION CORRECTE DES VALUE OBJECTS**
@@ -1792,7 +2053,194 @@ export default [
 }
 ```
 
-## 🚨 **ERREURS ESLINT COURANTES À ÉVITER**
+## 🚨 **ERREURS ESLINT CRITIQUES IDENTIFIÉES - MISE À JOUR POST-MIGRATION**
+
+### 🎯 **PROBLÈMES URGENTS À CORRIGER DANS L'ORDRE DE PRIORITÉ**
+
+#### **1️⃣ PRIORITÉ MAXIMALE : @typescript-eslint/no-unsafe-*** (1437 warnings)**
+
+**❌ PROBLÈME CRITIQUE** : Usage intensif de `any` à travers le codebase causant des violations de type safety.
+
+**🏗️ LOCALISATION PRINCIPALE :**
+
+```typescript
+// ❌ VIOLATIONS MAJEURES DÉTECTÉES dans :
+// - src/presentation/controllers/*.controller.ts
+// - src/presentation/dtos/*.dto.ts
+// - src/presentation/filters/*.filter.ts
+// - src/presentation/security/*.ts
+// - src/shared/utils/*.ts
+
+// Exemple de violation courante dans controllers :
+// ❌ INTERDIT - Accès non typé aux propriétés de requête
+const requestingUser = req.user; // any type !
+const userId = requestingUser.id; // Unsafe member access
+
+// ✅ CORRECT - Typage strict obligatoire
+const requestingUser = req.user as AuthenticatedUser;
+const userId: string = requestingUser.id;
+
+// OU MIEUX - Interface typée
+interface AuthenticatedRequest extends Request {
+  user: AuthenticatedUser;
+}
+```
+
+#### **2️⃣ PRIORITÉ ÉLEVÉE : @typescript-eslint/require-await (8 violations)**
+
+**❌ PROBLÈME** : Méthodes marquées `async` sans utilisation d'`await`.
+
+```typescript
+// ❌ VIOLATIONS DÉTECTÉES dans :
+// - business.controller.ts:468 - async delete() sans await
+// - calendar.controller.ts:330 - async update() sans await
+// - calendar.controller.ts:379 - async delete() sans await
+
+// ❌ INTERDIT - async sans await
+async delete(id: string): Promise<void> {
+  // Pas d'await dans cette méthode
+  this.businessService.delete(id);
+}
+
+// ✅ CORRECT - Ajouter await OU enlever async
+async delete(id: string): Promise<void> {
+  await this.businessService.delete(id);
+}
+
+// OU
+delete(id: string): Promise<void> {
+  return this.businessService.delete(id);
+}
+```
+
+#### **3️⃣ PRIORITÉ ÉLEVÉE : @typescript-eslint/no-unused-vars (4 violations)**
+
+**❌ PROBLÈME** : Variables déclarées mais jamais utilisées.
+
+```typescript
+// ❌ VIOLATIONS DÉTECTÉES dans :
+// - business-hours.controller.ts:323 - 'user' défini mais inutilisé
+// - calendar.controller.ts:331 - 'id' défini mais inutilisé
+// - calendar.controller.ts:332 - 'dto' défini mais inutilisé
+// - calendar.controller.ts:379 - 'id' défini mais inutilisé
+
+// ❌ INTERDIT - Variables inutilisées
+async method(@GetUser() user: User, @Param('id') id: string) {
+  // user et id jamais utilisés dans la méthode
+  return { success: true };
+}
+
+// ✅ CORRECT - Préfixer avec underscore si requis par interface
+async method(@GetUser() _user: User, @Param('id') _id: string) {
+  // Indique explicitement que les paramètres ne sont pas utilisés
+  return { success: true };
+}
+
+// OU supprimer les paramètres inutilisés
+async method() {
+  return { success: true };
+}
+```
+
+#### **4️⃣ PRIORITÉ ÉLEVÉE : @typescript-eslint/unbound-method (2 violations)**
+
+**❌ PROBLÈME** : Références de méthodes sans liaison `this`.
+
+```typescript
+// ❌ VIOLATIONS DÉTECTÉES dans :
+// - business-sector.mapper.ts:168 - référence méthode non liée
+// - business-sector.mapper.ts:216 - référence méthode non liée
+
+// ❌ INTERDIT - Référence méthode sans this
+const transformedData = data.map(this.transform); // Problème de scoping
+
+// ✅ CORRECT - Arrow function
+const transformedData = data.map(item => this.transform(item));
+
+// OU liaison explicite
+const transformedData = data.map(this.transform.bind(this));
+```
+
+### 🔧 **SOLUTIONS TECHNIQUES PRIORITAIRES**
+
+#### **🎯 Solution 1 : Interfaces TypeScript Strictes**
+
+```typescript
+// ✅ OBLIGATOIRE - Créer des interfaces typées pour les requêtes
+export interface AuthenticatedRequest extends Request {
+  user: AuthenticatedUser;
+}
+
+export interface AuthenticatedUser {
+  id: string;
+  email: string;
+  role: UserRole;
+  isActive: boolean;
+  isVerified: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// ✅ UTILISATION dans les controllers
+@Controller('users')
+export class UserController {
+  @Get('profile')
+  async getProfile(@Req() req: AuthenticatedRequest): Promise<UserDto> {
+    const user = req.user; // Maintenant typé !
+    const userId: string = user.id; // Type-safe
+    return this.userService.getProfile(userId);
+  }
+}
+```
+
+#### **🎯 Solution 2 : Décorateurs Typés**
+
+```typescript
+// ✅ OBLIGATOIRE - Décorateur @GetUser typé
+export const GetUser = createParamDecorator(
+  (data: keyof AuthenticatedUser | undefined, ctx: ExecutionContext): AuthenticatedUser => {
+    const request = ctx.switchToHttp().getRequest<AuthenticatedRequest>();
+    const user = request.user;
+
+    if (!data) return user;
+    return user[data] as any; // Type guard nécessaire ici
+  },
+);
+
+// ✅ UTILISATION typée
+@Get('profile')
+async getProfile(@GetUser() user: AuthenticatedUser): Promise<UserDto> {
+  const userId: string = user.id; // Type-safe !
+  return this.userService.getProfile(userId);
+}
+```
+
+#### **🎯 Solution 3 : Transformers DTO Typés**
+
+```typescript
+// ✅ OBLIGATOIRE - Transformers avec typage strict
+export class CreateBusinessSectorDto {
+  @Transform(({ value }: { value: unknown }) => {
+    if (typeof value !== 'string') {
+      throw new ValidationError('Name must be a string');
+    }
+    return value.trim();
+  })
+  @IsString()
+  @Length(2, 100)
+  readonly name!: string;
+
+  @Transform(({ value }: { value: unknown }) => {
+    if (typeof value !== 'string') {
+      throw new ValidationError('Code must be a string');
+    }
+    return value.trim().toUpperCase();
+  })
+  @IsString()
+  @Length(2, 10)
+  readonly code!: string;
+}
+```
 
 ### ❌ **Erreurs Promise.all avec méthodes synchrones**
 
@@ -1898,36 +2346,128 @@ export class CreateUserUseCase {
 }
 ```
 
-### 🎯 **Règles de Correction ESLint**
+### 🎯 **Règles de Correction ESLint - MISE À JOUR POST-MIGRATION**
 
-#### **1. @typescript-eslint/await-thenable**
-- **Problème** : Promise.all utilisé avec des valeurs non-Promise
-- **Solution** : Convertir les méthodes synchrones pour retourner des Promises avec `Promise.resolve()`
+#### **🚨 PLAN D'ACTION CRITIQUE : Éliminer les 1437 warnings en 3 phases**
 
-#### **2. no-useless-escape**
-- **Problème** : Échappements inutiles dans les regex (\\-, \\(, \\))
-- **Solution** : Enlever les backslashes inutiles : `[\d\s-()]` au lieu de `[\d\s\-\(\)]`
+#### **PHASE 1 - CRITIQUE (1-2 jours) : Type Safety**
 
-#### **3. @typescript-eslint/require-await**
+**1. @typescript-eslint/no-unsafe-assignment (PRIORITÉ MAX)**
+- **Problème** : `any` types causant des assignments non sécurisés
+- **Solution** : Créer des interfaces strictes pour Request, User, DTO
+- **Impact** : ~400+ warnings éliminés
+
+**2. @typescript-eslint/no-unsafe-member-access (PRIORITÉ MAX)**
+- **Problème** : Accès aux propriétés d'objets `any`
+- **Solution** : Type guards et interfaces typées
+- **Impact** : ~300+ warnings éliminés
+
+**3. @typescript-eslint/no-unsafe-argument (PRIORITÉ MAX)**
+- **Problème** : Passage d'arguments `any` à des fonctions typées
+- **Solution** : Validation et casting explicite avec type guards
+- **Impact** : ~200+ warnings éliminés
+
+#### **PHASE 2 - ÉLEVÉE (1 jour) : Code Quality**
+
+**4. @typescript-eslint/require-await**
 - **Problème** : Méthodes marquées `async` sans utilisation d'`await`
 - **Solution** : Enlever `async` et utiliser `Promise.resolve()` OU ajouter de vrais appels `await`
+- **Impact** : 8 warnings éliminés
 
-#### **4. @typescript-eslint/no-unused-vars**
+**5. @typescript-eslint/no-unused-vars**
 - **Problème** : Variables, imports ou paramètres déclarés mais jamais utilisés
 - **Solution** : Supprimer ou préfixer avec `_` (ex: `_context`, `_error`)
+- **Impact** : 4 warnings éliminés
 
-#### **5. @typescript-eslint/unbound-method**
-- **Problème** : Référencer des méthodes sans lier `this` dans les tests
+**6. @typescript-eslint/unbound-method**
+- **Problème** : Référencer des méthodes sans lier `this`
 - **Solution** : Utiliser des arrow functions ou lier explicitement `this`
+- **Impact** : 2 warnings éliminés
+
+#### **PHASE 3 - NORMALE (1 jour) : Cleanup Final**
+
+**7. @typescript-eslint/no-unsafe-return**
+- **Problème** : Retour de valeurs `any` depuis des fonctions
+- **Solution** : Typage explicite des valeurs de retour
+- **Impact** : ~100+ warnings éliminés
+
+**8. @typescript-eslint/no-unsafe-call**
+- **Problème** : Appel de fonctions `any`
+- **Solution** : Validation des types avant appel
+- **Impact** : ~50+ warnings éliminés
+
+#### **🔧 TEMPLATES DE CORRECTION OBLIGATOIRES**
 
 ```typescript
-// ❌ VIOLATION dans les tests
-expect(mockRepository.save).toHaveBeenCalledWith(expectedUser);
+// ✅ TEMPLATE - Interface Request typée
+export interface AuthenticatedRequest extends FastifyRequest {
+  user: AuthenticatedUser;
+}
 
-// ✅ CORRECT dans les tests
-expect(mockRepository.save).toHaveBeenCalledWith(expectedUser);
-// Utiliser jest.Mocked<T> pour éviter ce problème
+// ✅ TEMPLATE - Type guard pour validation
+function isValidUser(data: unknown): data is AuthenticatedUser {
+  return (
+    typeof data === 'object' &&
+    data !== null &&
+    'id' in data &&
+    'email' in data &&
+    typeof (data as { id: unknown }).id === 'string' &&
+    typeof (data as { email: unknown }).email === 'string'
+  );
+}
+
+// ✅ TEMPLATE - Controller typé correct
+@Controller('users')
+export class UserController {
+  @Get('profile')
+  async getProfile(@GetUser() user: AuthenticatedUser): Promise<UserDto> {
+    // user est maintenant complètement typé
+    const userId: string = user.id; // Type-safe
+    return this.userService.getProfile(userId);
+  }
+}
+
+// ✅ TEMPLATE - Transformer DTO typé
+@Transform(({ value }: { value: unknown }) => {
+  if (typeof value !== 'string') {
+    throw new ValidationError('Value must be a string');
+  }
+  return value.trim();
+})
+readonly name!: string;
+
+// ✅ TEMPLATE - Méthode async correcte
+async delete(id: string): Promise<void> {
+  await this.businessService.delete(id); // Avec await
+}
+
+// OU
+delete(id: string): Promise<void> {
+  return this.businessService.delete(id); // Sans async
+}
+
+// ✅ TEMPLATE - Variables inutilisées
+async method(@GetUser() _user: User, @Param('id') _id: string) {
+  // Préfixe _ indique explicitement non utilisé
+  return { success: true };
+}
 ```
+
+#### **📊 MÉTRIQUES DE SUCCÈS ATTENDUES**
+
+- **Avant correction** : 1437 warnings
+- **Après Phase 1** : ~500 warnings (-900 warnings)
+- **Après Phase 2** : ~50 warnings (-450 warnings)
+- **Après Phase 3** : 0 warnings (-50 warnings)
+- **OBJECTIF** : 🎯 **ZÉRO WARNING ESLINT**
+
+#### **🚨 RÈGLES D'URGENCE**
+
+1. **JAMAIS commiter** avec plus de 100 warnings ESLint
+2. **PRIORITÉ ABSOLUE** aux violations `no-unsafe-*`
+3. **Validation obligatoire** : `npm run lint` avant chaque commit
+4. **Type safety** : Préférer `unknown` à `any` TOUJOURS
+5. **Interfaces strictes** : Créer des types pour chaque structure de données
 
 ### 📋 **Checklist de Vérification ESLint**
 
@@ -2824,6 +3364,52 @@ Husky empêchera les commits si :
 
 Cela garantit **100% de qualité du code** et **un historique de commits cohérent** !
 
+## 🚨 **RÈGLE MÉTIER CRITIQUE : PRISE DE RENDEZ-VOUS PUBLIQUE UNIQUEMENT**
+
+### 🎯 **NOUVELLE RÈGLE IMPLÉMENTÉE**
+
+**⚠️ RÈGLE BUSINESS CRITIQUE** : Seuls les services avec `allowOnlineBooking: true` peuvent être réservés directement par les clients.
+
+#### **🔧 Implémentation Technique**
+
+```typescript
+// ✅ OBLIGATOIRE - Validation dans tous les use cases de réservation
+if (!service.isBookable()) {
+  this.logger.error('Service does not allow online booking', {
+    serviceId,
+    allowOnlineBooking: false,
+  });
+  throw new ServiceNotBookableOnlineError(serviceId);
+}
+```
+
+#### **📋 Entité Service - Méthodes Critiques**
+
+```typescript
+// ✅ Méthodes à utiliser pour validation
+service.isActive()    // Service doit être actif
+service.isBookable()  // Service doit autoriser prise de rendez-vous en ligne
+service.canBeBookedBy(clientAge) // Validation des restrictions d'âge
+```
+
+#### **🚨 Exception Standardisée**
+
+```typescript
+export class ServiceNotBookableOnlineError extends AppointmentException {
+  constructor(serviceId: string) {
+    super(
+      `Service ${serviceId} does not allow online booking`,
+      'SERVICE_NOT_BOOKABLE_ONLINE',
+      { serviceId },
+    );
+  }
+}
+```
+
+#### **✅ Cahier des Charges Mis à Jour**
+
+Cette règle est maintenant documentée dans `CAHIER_DES_CHARGES_V2.md` section **Système de Rendez-vous**.
+
 ## 🚨 **RÈGLE CRITIQUE : JAMAIS COMMITER AVEC DES ERREURS ESLINT**
 
 ### ❌ **INTERDICTION ABSOLUE**
@@ -2935,4 +3521,162 @@ Le non-respect de ces règles entraîne :
 ```
 
 **Cette règle garantit un code de qualité professionnelle et une collaboration d'équipe fluide !**
+
+## 🗄️ **RÈGLE CRITIQUE : MIGRATIONS TYPEORM ET SCHÉMAS**
+
+### 🎯 **RÈGLE OBLIGATOIRE : RÉCUPÉRATION DU SCHÉMA DEPUIS LES VARIABLES D'ENVIRONNEMENT**
+
+**⚠️ RÈGLE NON-NÉGOCIABLE** : Dans toutes les migrations TypeORM, le nom du schéma DOIT être récupéré depuis les variables d'environnement pour garantir la portabilité entre environnements (development, staging, production).
+
+#### **✅ PATTERN OBLIGATOIRE POUR MIGRATIONS TYPEORM**
+
+```typescript
+import { MigrationInterface, QueryRunner } from 'typeorm';
+
+export class AddFlexiblePricingToServices{Timestamp} implements MigrationInterface {
+  name = 'AddFlexiblePricingToServices{Timestamp}';
+
+  // 🎯 OBLIGATOIRE : Récupérer le schéma depuis l'environnement
+  private getSchemaName(): string {
+    return process.env.DB_SCHEMA || 'public';
+  }
+
+  public async up(queryRunner: QueryRunner): Promise<void> {
+    const schema = this.getSchemaName();
+
+    // ✅ CORRECT : Utiliser le schéma dynamique
+    await queryRunner.query(`
+      ALTER TABLE "${schema}"."services"
+      ADD COLUMN "pricing_config" jsonb DEFAULT '{"type":"FIXED","visibility":"PUBLIC","basePrice":{"amount":0,"currency":"EUR"},"rules":[]}'::jsonb
+    `);
+
+    // ✅ CORRECT : Index avec schéma dynamique
+    await queryRunner.query(`
+      CREATE INDEX "IDX_services_pricing_type"
+      ON "${schema}"."services" USING GIN (("pricing_config"->>'type'))
+    `);
+  }
+
+  public async down(queryRunner: QueryRunner): Promise<void> {
+    const schema = this.getSchemaName();
+
+    // ✅ CORRECT : Rollback avec schéma dynamique
+    await queryRunner.query(`DROP INDEX IF EXISTS "${schema}"."IDX_services_pricing_type"`);
+    await queryRunner.query(`ALTER TABLE "${schema}"."services" DROP COLUMN IF EXISTS "pricing_config"`);
+  }
+}
+```
+
+#### **❌ ANTI-PATTERNS STRICTEMENT INTERDITS**
+
+```typescript
+// ❌ INTERDIT : Schéma hardcodé
+await queryRunner.query(`ALTER TABLE "public"."services" ADD COLUMN...`);
+
+// ❌ INTERDIT : Pas de gestion d'environnement
+await queryRunner.query(`ALTER TABLE services ADD COLUMN...`); // Pas de schéma du tout
+
+// ❌ INTERDIT : Schéma non configurable
+const schema = 'public'; // Valeur fixe
+```
+
+#### **🔧 PATTERNS AVANCÉS OBLIGATOIRES**
+
+```typescript
+// ✅ EXCELLENT : Gestion complète avec validation
+export class ExampleMigration implements MigrationInterface {
+  private getSchemaName(): string {
+    const schema = process.env.DB_SCHEMA || 'public';
+
+    // Validation du nom de schéma (sécurité)
+    if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(schema)) {
+      throw new Error(`Invalid schema name: ${schema}`);
+    }
+
+    return schema;
+  }
+
+  private async schemaExists(queryRunner: QueryRunner, schemaName: string): Promise<boolean> {
+    const result = await queryRunner.query(`
+      SELECT EXISTS(
+        SELECT 1 FROM information_schema.schemata
+        WHERE schema_name = $1
+      ) as exists
+    `, [schemaName]);
+
+    return result[0]?.exists || false;
+  }
+
+  public async up(queryRunner: QueryRunner): Promise<void> {
+    const schema = this.getSchemaName();
+
+    // Vérifier que le schéma existe
+    const exists = await this.schemaExists(queryRunner, schema);
+    if (!exists) {
+      throw new Error(`Schema "${schema}" does not exist`);
+    }
+
+    // Migration avec schéma validé
+    await queryRunner.query(`
+      ALTER TABLE "${schema}"."table_name"
+      ADD COLUMN "new_column" VARCHAR(255)
+    `);
+  }
+}
+```
+
+#### **📋 VARIABLES D'ENVIRONNEMENT REQUISES**
+
+```bash
+# .env files obligatoires
+DB_SCHEMA=public                    # Development
+DB_SCHEMA=appointment_system_dev    # Development avec schéma dédié
+DB_SCHEMA=appointment_system_staging # Staging
+DB_SCHEMA=appointment_system_prod   # Production
+```
+
+#### **🚨 DÉTECTION DES VIOLATIONS**
+
+```bash
+# Vérifier les migrations avec schémas hardcodés
+grep -r '"public"' src/infrastructure/database/sql/postgresql/migrations/
+# RÉSULTAT ATTENDU : Aucun résultat (0 ligne)
+
+# Vérifier l'utilisation des variables d'environnement
+grep -r "process.env.DB_SCHEMA" src/infrastructure/database/sql/postgresql/migrations/
+# RÉSULTAT ATTENDU : Toutes les migrations utilisent cette variable
+
+# Vérifier les requêtes sans schéma
+grep -r "ALTER TABLE [^\"']" src/infrastructure/database/sql/postgresql/migrations/
+# RÉSULTAT ATTENDU : Aucune requête sans guillemets et schéma
+```
+
+#### **✅ CHECKLIST MIGRATION TYPEORM OBLIGATOIRE**
+
+- [ ] ✅ **Méthode `getSchemaName()`** présente dans chaque migration
+- [ ] ✅ **Variable `DB_SCHEMA`** utilisée dans toutes les requêtes
+- [ ] ✅ **Validation du nom de schéma** pour la sécurité
+- [ ] ✅ **Schémas quoted** dans toutes les requêtes SQL (`"${schema}"`)
+- [ ] ✅ **Méthode `up()` et `down()`** utilisent le schéma dynamique
+- [ ] ✅ **Index et contraintes** créés avec le bon schéma
+- [ ] ✅ **Tests de migration** sur différents schémas
+- [ ] ✅ **Documentation** des variables d'environnement requises
+
+#### **🎯 AVANTAGES DE CETTE APPROCHE**
+
+1. **Portabilité** : Même migration fonctionne sur tous les environnements
+2. **Sécurité** : Isolation des données par schéma
+3. **Flexibilité** : Support de déploiements multi-tenants
+4. **Maintenance** : Pas de duplication de code selon l'environnement
+5. **CI/CD** : Automatisation complète sans intervention manuelle
+
+### 🚨 **SANCTIONS POUR NON-RESPECT**
+
+Le non-respect de cette règle entraîne :
+- **Blocage de la migration** en environnement de production
+- **Erreurs de déploiement** et corruption potentielle de données
+- **Review obligatoire** et refactoring immédiat
+- **Formation supplémentaire** sur les bonnes pratiques PostgreSQL
+
+**Cette règle est CRITIQUE pour la stabilité et la sécurité de la base de données !**
 `````

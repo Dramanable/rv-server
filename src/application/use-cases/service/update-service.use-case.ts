@@ -5,6 +5,7 @@ import {
 import { ServiceNotFoundError } from '../../../domain/exceptions/service.exceptions';
 import { ServiceRepository } from '../../../domain/repositories/service.repository.interface';
 import { Money } from '../../../domain/value-objects/money.value-object';
+import { PricingConfig } from '../../../domain/value-objects/pricing-config.value-object';
 import { ServiceId } from '../../../domain/value-objects/service-id.value-object';
 import { UserId } from '../../../domain/value-objects/user-id.value-object';
 import { ApplicationValidationError } from '../../exceptions/application.exceptions';
@@ -42,7 +43,7 @@ export interface UpdateServiceResponse {
     readonly basePrice: {
       readonly amount: number;
       readonly currency: string;
-    };
+    } | null;
   };
   readonly scheduling: {
     readonly duration: number;
@@ -169,15 +170,18 @@ export class UpdateServiceUseCase {
         request.updates.pricing &&
         (request.updates.pricing.basePrice || request.updates.pricing.currency)
       ) {
-        existingService.updatePricing({
-          basePrice: request.updates.pricing.basePrice
-            ? Money.create(
-                request.updates.pricing.basePrice,
-                request.updates.pricing.currency ??
-                  existingService.pricing.basePrice.getCurrency(),
-              )
-            : existingService.pricing.basePrice,
-        });
+        // Mise à jour du pricing avec PricingConfig
+        const currentBasePrice = existingService.getBasePrice();
+        const newPrice = Money.create(
+          request.updates.pricing.basePrice ||
+            currentBasePrice?.getAmount() ||
+            0,
+          request.updates.pricing.currency ||
+            currentBasePrice?.getCurrency() ||
+            'EUR',
+        );
+        const newPricingConfig = PricingConfig.createFixed(newPrice);
+        existingService.updatePricingConfig(newPricingConfig);
       }
 
       if (request.updates.scheduling) {
@@ -241,10 +245,12 @@ export class UpdateServiceUseCase {
         description: existingService.description,
         category: existingService.category,
         pricing: {
-          basePrice: {
-            amount: existingService.pricing.basePrice.getAmount(),
-            currency: existingService.pricing.basePrice.getCurrency(),
-          },
+          basePrice: existingService.getBasePrice()
+            ? {
+                amount: existingService.getBasePrice()!.getAmount(),
+                currency: existingService.getBasePrice()!.getCurrency(),
+              }
+            : null,
         },
         scheduling: {
           duration: existingService.scheduling.duration,

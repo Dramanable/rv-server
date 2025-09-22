@@ -34,6 +34,7 @@ import {
   FileUrl,
 } from '../../domain/value-objects/file-url.value-object';
 import { Money } from '../../domain/value-objects/money.value-object';
+import { PricingConfig } from '../../domain/value-objects/pricing-config.value-object';
 import { Phone } from '../../domain/value-objects/phone.value-object';
 import { ServiceId } from '../../domain/value-objects/service-id.value-object';
 import { UserId } from '../../domain/value-objects/user-id.value-object';
@@ -200,20 +201,17 @@ export class ServiceMapper {
     entity.category = domainService.category;
     entity.status = domainService.status;
 
-    // Mapper le pricing
-    const pricing = domainService.pricing;
+    // Mapper le pricing avec PricingConfig
+    const basePrice = domainService.getBasePrice();
     entity.pricing = {
-      base_price: {
-        amount: pricing.basePrice.getAmount(),
-        currency: pricing.basePrice.getCurrency(),
-      },
-      discount_price: pricing.discountPrice
+      base_price: basePrice
         ? {
-            amount: pricing.discountPrice.getAmount(),
-            currency: pricing.discountPrice.getCurrency(),
+            amount: basePrice.getAmount(),
+            currency: basePrice.getCurrency(),
           }
-        : undefined,
-      packages: pricing.packages?.map((pkg) => ({
+        : null,
+      discount_price: null, // Supprimé car remplacé par PricingConfig
+      packages: domainService.packages.map((pkg: any) => ({
         name: pkg.name,
         sessions: pkg.sessions,
         price: {
@@ -222,6 +220,16 @@ export class ServiceMapper {
         },
         validity_days: pkg.validityDays,
       })),
+    };
+
+    // Mapper la configuration de pricing flexible
+    const pricingConfigJson = domainService.pricingConfig.toJSON();
+    entity.pricing_config = {
+      type: pricingConfigJson.type,
+      visibility: pricingConfigJson.visibility,
+      basePrice: pricingConfigJson.basePrice,
+      rules: pricingConfigJson.rules,
+      description: pricingConfigJson.description,
     };
 
     // Mapper le scheduling
@@ -266,24 +274,17 @@ export class ServiceMapper {
     const serviceId = ServiceId.create(entity.id);
     const businessId = BusinessId.create(entity.business_id);
 
-    const pricing = {
-      basePrice: Money.create(
-        entity.pricing.base_price.amount,
-        entity.pricing.base_price.currency,
-      ),
-      discountPrice: entity.pricing.discount_price
-        ? Money.create(
-            entity.pricing.discount_price.amount,
-            entity.pricing.discount_price.currency,
-          )
-        : undefined,
-      packages: entity.pricing.packages?.map((pkg) => ({
+    // Reconstruire PricingConfig depuis les données persistées
+    const pricingConfig = PricingConfig.fromJSON(entity.pricing_config);
+
+    // Reconstruire les packages séparément
+    const packages =
+      entity.pricing.packages?.map((pkg) => ({
         name: pkg.name,
         sessions: pkg.sessions,
         price: Money.create(pkg.price.amount, pkg.price.currency),
         validityDays: pkg.validity_days,
-      })),
-    };
+      })) || [];
 
     const scheduling = {
       duration: entity.scheduling.duration,
@@ -325,11 +326,12 @@ export class ServiceMapper {
       entity.name,
       entity.description,
       entity.category as any, // Cast temporaire
-      pricing,
+      pricingConfig,
       scheduling,
       requirements,
       imageUrl,
       assignedStaffIds,
+      packages,
       entity.status as any,
       entity.created_at,
       entity.updated_at,

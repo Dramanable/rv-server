@@ -26,6 +26,14 @@ import { ServiceId } from '../../../domain/value-objects/service-id.value-object
 import { TimeSlot } from '../../../domain/value-objects/time-slot.value-object';
 import { UserId } from '../../../domain/value-objects/user-id.value-object';
 
+import { ServiceNotBookableOnlineError } from '../../exceptions/appointment.exceptions';
+import {
+  BusinessNotFoundError,
+  ServiceNotFoundError,
+  CalendarNotFoundError,
+  AppointmentConflictError,
+} from '../../exceptions/appointment.exceptions';
+
 export interface BookAppointmentRequest {
   // Informations du créneau
   readonly businessId: string;
@@ -44,6 +52,22 @@ export interface BookAppointmentRequest {
     readonly dateOfBirth?: Date;
     readonly isNewClient: boolean;
     readonly notes?: string;
+    // 👨‍👩‍👧‍👦 Support pour rendez-vous pris pour un proche/famille
+    readonly bookedBy?: {
+      readonly firstName: string;
+      readonly lastName: string;
+      readonly email: string;
+      readonly phone?: string;
+      readonly relationship:
+        | 'PARENT'
+        | 'SPOUSE'
+        | 'SIBLING'
+        | 'CHILD'
+        | 'GUARDIAN'
+        | 'FAMILY_MEMBER'
+        | 'OTHER';
+      readonly relationshipDescription?: string; // Pour 'OTHER'
+    };
   };
 
   // Détails du rendez-vous
@@ -281,16 +305,17 @@ export class BookAppointmentUseCase {
           );
         }
       } else {
-        throw new Error(
-          this.i18n.translate('errors.booking.slot_not_available'),
-        );
+        throw new AppointmentConflictError({
+          startTime: request.startTime,
+          endTime: request.endTime,
+        });
       }
     }
 
     // Vérifier que le calendrier accepte les réservations à cette heure
     const calendar = await this.calendarRepository.findById(calendarId);
     if (!calendar) {
-      throw new Error(this.i18n.translate('errors.calendar.not_found'));
+      throw new CalendarNotFoundError(calendarId.getValue());
     }
 
     // TODO: Vérifier les horaires d'ouverture du calendrier
@@ -315,11 +340,11 @@ export class BookAppointmentUseCase {
     ]);
 
     if (!business) {
-      throw new Error(this.i18n.translate('errors.business.not_found'));
+      throw new BusinessNotFoundError(businessId.getValue());
     }
 
     if (!service) {
-      throw new Error(this.i18n.translate('errors.service.not_found'));
+      throw new ServiceNotFoundError(serviceId.getValue());
     }
 
     if (!calendar) {
@@ -328,6 +353,34 @@ export class BookAppointmentUseCase {
 
     if (request.staffId && !staff) {
       throw new Error(this.i18n.translate('errors.staff.not_found'));
+    }
+
+    // ✅ Validations d'état métier
+    if (!business.isActive()) {
+      throw new Error(this.i18n.translate('errors.business.inactive'));
+    }
+
+    if (!service.isActive()) {
+      throw new Error(this.i18n.translate('errors.service.inactive'));
+    }
+
+    // ✅ RÈGLE MÉTIER CRITIQUE : Seuls les services avec réservation en ligne publique
+    if (!service.isBookable()) {
+      throw new ServiceNotBookableOnlineError(serviceId.getValue());
+    }
+
+    // ✅ Validations temporelles
+    const now = new Date();
+    if (request.startTime <= now) {
+      throw new Error(this.i18n.translate('errors.booking.past_time'));
+    }
+
+    // ✅ Préavis minimum de 2 heures
+    const twoHoursFromNow = new Date(now.getTime() + 2 * 60 * 60 * 1000);
+    if (request.startTime < twoHoursFromNow) {
+      throw new Error(
+        this.i18n.translate('errors.booking.insufficient_notice'),
+      );
     }
 
     return { business, service, calendar, staff };
@@ -350,6 +403,20 @@ export class BookAppointmentUseCase {
       dateOfBirth: request.clientInfo.dateOfBirth,
       notes: request.clientInfo.notes?.trim(),
       isNewClient: request.clientInfo.isNewClient,
+      // 👨‍👩‍👧‍👦 Support pour rendez-vous pris pour un proche/famille
+      bookedBy: request.clientInfo.bookedBy
+        ? {
+            firstName: request.clientInfo.bookedBy.firstName.trim(),
+            lastName: request.clientInfo.bookedBy.lastName.trim(),
+            email: Email.create(request.clientInfo.bookedBy.email),
+            phone: request.clientInfo.bookedBy.phone
+              ? Phone.create(request.clientInfo.bookedBy.phone)
+              : undefined,
+            relationship: request.clientInfo.bookedBy.relationship,
+            relationshipDescription:
+              request.clientInfo.bookedBy.relationshipDescription?.trim(),
+          }
+        : undefined,
     };
 
     // Création du créneau horaire
@@ -374,7 +441,7 @@ export class BookAppointmentUseCase {
     };
 
     // Création de l'appointment
-    return Appointment.create({
+    const appointment = Appointment.create({
       businessId: business.getId(),
       calendarId: CalendarId.create(request.calendarId),
       serviceId: service.getId(),
@@ -387,6 +454,33 @@ export class BookAppointmentUseCase {
       description: request.description,
       metadata,
     });
+
+    // 👨‍👩‍👧‍👦 Validation des relations familiales
+    if (!appointment.hasValidFamilyRelationship()) {
+      const error = new Error(
+        'Invalid family relationship. OTHER relationship requires description.',
+      );
+      this.logger.error(
+        'Invalid family relationship for appointment booking',
+        error,
+        {
+          clientName: `${clientInfo.firstName} ${clientInfo.lastName}`,
+          relationship: clientInfo.bookedBy?.relationship,
+          hasDescription: !!clientInfo.bookedBy?.relationshipDescription,
+        },
+      );
+      throw error;
+    }
+
+    if (appointment.isBookedForFamilyMember()) {
+      this.logger.info('Appointment booked for family member', {
+        clientName: `${clientInfo.firstName} ${clientInfo.lastName}`,
+        bookedByName: `${clientInfo.bookedBy?.firstName} ${clientInfo.bookedBy?.lastName}`,
+        relationship: clientInfo.bookedBy?.relationship,
+      });
+    }
+
+    return appointment;
   }
 
   private async sendNotifications(

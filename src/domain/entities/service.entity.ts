@@ -3,6 +3,7 @@ import { FileUrl } from '../value-objects/file-url.value-object';
 import { Money } from '../value-objects/money.value-object';
 import { ServiceId } from '../value-objects/service-id.value-object';
 import { UserId } from '../value-objects/user-id.value-object';
+import { PricingConfig } from '../value-objects/pricing-config.value-object';
 
 export enum ServiceCategory {
   CONSULTATION = 'CONSULTATION',
@@ -22,15 +23,12 @@ export enum ServiceStatus {
   DRAFT = 'DRAFT',
 }
 
-export interface ServicePricing {
-  basePrice: Money;
-  discountPrice?: Money;
-  packages?: {
-    name: string;
-    sessions: number;
-    price: Money;
-    validityDays: number;
-  }[];
+// ServicePricing remplacé par PricingConfig pour plus de flexibilité
+export interface ServicePackage {
+  name: string;
+  sessions: number;
+  price: Money;
+  validityDays: number;
 }
 
 export interface ServiceRequirements {
@@ -59,11 +57,12 @@ export class Service {
     private readonly _name: string,
     private readonly _description: string,
     private readonly _category: ServiceCategory,
-    private readonly _pricing: ServicePricing,
+    private readonly _pricingConfig: PricingConfig,
     private readonly _scheduling: ServiceScheduling,
     private _requirements?: ServiceRequirements,
     private readonly _imageUrl?: FileUrl,
     private _assignedStaffIds: UserId[] = [],
+    private _packages: ServicePackage[] = [],
     private _status: ServiceStatus = ServiceStatus.DRAFT,
     private readonly _createdAt: Date = new Date(),
     private _updatedAt: Date = new Date(),
@@ -90,8 +89,12 @@ export class Service {
     return this._category;
   }
 
-  get pricing(): ServicePricing {
-    return this._pricing;
+  get pricingConfig(): PricingConfig {
+    return this._pricingConfig;
+  }
+
+  get packages(): readonly ServicePackage[] {
+    return this._packages;
   }
 
   get scheduling(): ServiceScheduling {
@@ -135,9 +138,9 @@ export class Service {
     requiresApproval?: boolean;
     assignedStaffIds?: UserId[];
   }): Service {
-    const pricing: ServicePricing = {
-      basePrice: Money.create(data.basePrice, data.currency),
-    };
+    const pricingConfig = PricingConfig.createFixed(
+      Money.create(data.basePrice, data.currency),
+    );
 
     const scheduling: ServiceScheduling = {
       duration: data.duration,
@@ -151,7 +154,7 @@ export class Service {
       data.name,
       data.description,
       data.category,
-      pricing,
+      pricingConfig,
       scheduling,
       undefined,
       undefined,
@@ -200,9 +203,14 @@ export class Service {
     return this._scheduling.duration + bufferBefore + bufferAfter;
   }
 
-  public getEffectivePrice(packageName?: string): Money {
-    if (packageName && this._pricing.packages) {
-      const pkg = this._pricing.packages.find((p) => p.name === packageName);
+  public getEffectivePrice(
+    packageName?: string,
+    durationMinutes?: number,
+  ): Money {
+    if (packageName) {
+      const pkg = this._packages.find(
+        (p: ServicePackage) => p.name === packageName,
+      );
       if (pkg) {
         // Prix par session du package
         return Money.create(
@@ -212,7 +220,9 @@ export class Service {
       }
     }
 
-    return this._pricing.discountPrice || this._pricing.basePrice;
+    // Utiliser la configuration de pricing flexible
+    const duration = durationMinutes || this._scheduling.duration;
+    return this._pricingConfig.calculatePrice(duration);
   }
 
   // Domain methods
@@ -231,8 +241,8 @@ export class Service {
     }
   }
 
-  public updatePricing(pricing: Partial<ServicePricing>): void {
-    Object.assign(this._pricing, pricing);
+  public updatePricingConfig(pricingConfig: PricingConfig): void {
+    (this as any)._pricingConfig = pricingConfig;
     this._updatedAt = new Date();
   }
 
@@ -246,35 +256,45 @@ export class Service {
     this._updatedAt = new Date();
   }
 
-  public addPackage(packageData: {
-    name: string;
-    sessions: number;
-    price: Money;
-    validityDays: number;
-  }): void {
-    if (!this._pricing.packages) {
-      this._pricing.packages = [];
-    }
-
-    // Vérifier que le nom du package n'existe pas déjà
-    const existingPackage = this._pricing.packages.find(
-      (p) => p.name === packageData.name,
+  public addPackage(packageData: ServicePackage): void {
+    // Vérifier si le package existe déjà
+    const existingPackage = this._packages.find(
+      (p: ServicePackage) => p.name === packageData.name,
     );
+
     if (existingPackage) {
-      throw new Error(`Package with name ${packageData.name} already exists`);
+      throw new Error(`Package '${packageData.name}' already exists`);
     }
 
-    this._pricing.packages.push(packageData);
+    this._packages.push(packageData);
     this._updatedAt = new Date();
   }
 
   public removePackage(packageName: string): void {
-    if (this._pricing.packages) {
-      this._pricing.packages = this._pricing.packages.filter(
-        (p) => p.name !== packageName,
-      );
-      this._updatedAt = new Date();
-    }
+    this._packages = this._packages.filter(
+      (p: ServicePackage) => p.name !== packageName,
+    );
+    this._updatedAt = new Date();
+  }
+
+  // Nouvelles méthodes de pricing flexibles
+  public getBasePrice(): Money | null {
+    return this._pricingConfig.getBasePrice();
+  }
+
+  public isFree(): boolean {
+    return this._pricingConfig.isFree();
+  }
+
+  public isPriceVisibleToUser(
+    isAuthenticated: boolean,
+    isStaff: boolean = false,
+  ): boolean {
+    return this._pricingConfig.isVisibleToUser(isAuthenticated, isStaff);
+  }
+
+  public isPriceVisibleToPublic(): boolean {
+    return this._pricingConfig.isVisibleToPublic();
   }
 
   public activate(): void {

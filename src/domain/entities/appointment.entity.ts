@@ -76,6 +76,22 @@ export interface ClientInfo {
   dateOfBirth?: Date;
   notes?: string;
   isNewClient: boolean;
+  // 👨‍👩‍👧‍👦 Support pour rendez-vous pris pour un proche/famille
+  bookedBy?: {
+    firstName: string;
+    lastName: string;
+    email: Email;
+    phone?: Phone;
+    relationship:
+      | 'PARENT'
+      | 'SPOUSE'
+      | 'SIBLING'
+      | 'CHILD'
+      | 'GUARDIAN'
+      | 'FAMILY_MEMBER'
+      | 'OTHER';
+    relationshipDescription?: string; // Pour 'OTHER'
+  };
 }
 
 export interface AppointmentPricing {
@@ -360,5 +376,53 @@ export class Appointment {
         this.timeSlot.getStartTime().getTime()) /
         (1000 * 60),
     );
+  }
+
+  /**
+   * Vérifie si le rendez-vous est pris pour un proche/famille
+   */
+  isBookedForFamilyMember(): boolean {
+    return this.clientInfo.bookedBy !== undefined;
+  }
+
+  /**
+   * Obtient les informations de la personne qui a pris le rendez-vous
+   */
+  getBookedByInfo(): ClientInfo['bookedBy'] | undefined {
+    return this.clientInfo.bookedBy;
+  }
+
+  /**
+   * Vérifie si la relation familiale est valide
+   */
+  hasValidFamilyRelationship(): boolean {
+    if (!this.isBookedForFamilyMember()) {
+      return true; // Pas de contrainte si pas pour un proche
+    }
+
+    const bookedBy = this.clientInfo.bookedBy!;
+    const validRelationships = [
+      'PARENT',
+      'SPOUSE',
+      'SIBLING',
+      'CHILD',
+      'GUARDIAN',
+      'FAMILY_MEMBER',
+      'OTHER',
+    ];
+
+    if (!validRelationships.includes(bookedBy.relationship)) {
+      return false;
+    }
+
+    // Si relationship est 'OTHER', doit avoir une description
+    if (
+      bookedBy.relationship === 'OTHER' &&
+      !bookedBy.relationshipDescription
+    ) {
+      return false;
+    }
+
+    return true;
   }
 }
