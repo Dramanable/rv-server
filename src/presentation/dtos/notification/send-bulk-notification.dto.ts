@@ -1,19 +1,19 @@
-import {
-  IsString,
-  IsEnum,
-  IsOptional,
-  IsArray,
-  ValidateNested,
-  IsUUID,
-  IsObject,
-  IsInt,
-  Min,
-  Max,
-  IsDateString,
-  Length,
-} from 'class-validator';
-import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import {
+  IsArray,
+  IsDateString,
+  IsEnum,
+  IsInt,
+  IsObject,
+  IsOptional,
+  IsString,
+  IsUUID,
+  Length,
+  Max,
+  Min,
+  ValidateNested,
+} from 'class-validator';
 
 /**
  * Critères de segmentation pour cibler les destinataires
@@ -119,7 +119,10 @@ export class BulkRecipientDto {
   })
   @IsOptional()
   @IsObject()
-  readonly variables?: Record<string, any>;
+  readonly variables?: Record<
+    string,
+    string | number | boolean | Date | undefined
+  >;
 
   @ApiPropertyOptional({
     description: 'Canal de communication spécifique pour ce destinataire',
@@ -229,7 +232,10 @@ export class SendBulkNotificationDto {
   })
   @IsOptional()
   @IsObject()
-  readonly commonVariables?: Record<string, any>;
+  readonly commonVariables?: Record<
+    string,
+    string | number | boolean | Date | undefined
+  >;
 
   @ApiPropertyOptional({
     description: 'Template personnalisé (requis si templateType = CUSTOM)',

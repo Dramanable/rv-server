@@ -199,7 +199,9 @@ export class CreateServiceDto {
   })
   @IsString()
   @Length(2, 100)
-  @Transform(({ value }) => value?.trim())
+  @Transform(({ value }: { value: unknown }) =>
+    typeof value === 'string' ? value.trim() : value,
+  )
   readonly name!: string;
 
   @ApiPropertyOptional({
@@ -210,7 +212,9 @@ export class CreateServiceDto {
   @IsOptional()
   @IsString()
   @Length(0, 1000)
-  @Transform(({ value }) => value?.trim())
+  @Transform(({ value }: { value: unknown }) =>
+    typeof value === 'string' ? value.trim() : value,
+  )
   readonly description?: string;
 
   @ApiPropertyOptional({
@@ -221,7 +225,9 @@ export class CreateServiceDto {
   @IsOptional()
   @IsString()
   @Length(1, 50)
-  @Transform(({ value }) => value?.trim())
+  @Transform(({ value }: { value: unknown }) =>
+    typeof value === 'string' ? value.trim() : value,
+  )
   readonly category?: string;
 
   @ApiProperty({
@@ -299,7 +305,9 @@ export class UpdateServiceDto {
   @IsOptional()
   @IsString()
   @Length(2, 100)
-  @Transform(({ value }) => value?.trim())
+  @Transform(({ value }: { value: unknown }) =>
+    typeof value === 'string' ? value.trim() : value,
+  )
   readonly name?: string;
 
   @ApiPropertyOptional({
@@ -310,7 +318,9 @@ export class UpdateServiceDto {
   @IsOptional()
   @IsString()
   @Length(0, 1000)
-  @Transform(({ value }) => value?.trim())
+  @Transform(({ value }: { value: unknown }) =>
+    typeof value === 'string' ? value.trim() : value,
+  )
   readonly description?: string;
 
   @ApiPropertyOptional({
@@ -321,7 +331,9 @@ export class UpdateServiceDto {
   @IsOptional()
   @IsString()
   @Length(1, 50)
-  @Transform(({ value }) => value?.trim())
+  @Transform(({ value }: { value: unknown }) =>
+    typeof value === 'string' ? value.trim() : value,
+  )
   readonly category?: string;
 
   @ApiPropertyOptional({
@@ -443,7 +455,9 @@ export class ListServicesDto {
   @IsOptional()
   @IsString()
   @Length(1, 100)
-  @Transform(({ value }) => value?.trim())
+  @Transform(({ value }: { value: unknown }) =>
+    typeof value === 'string' ? value.trim() : value,
+  )
   readonly search?: string;
 
   @ApiPropertyOptional({

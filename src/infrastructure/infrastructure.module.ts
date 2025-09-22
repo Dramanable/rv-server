@@ -14,8 +14,8 @@ import { HealthModule } from './health/health.module';
 import { PinoLoggerModule } from './logging/pino-logger.module';
 import { MappersModule } from './mappers/mappers.module';
 import { AuthInfrastructureModule } from './modules/auth-infrastructure.module';
-import { UseCasesModule } from './modules/use-cases.module';
 import { NotificationServicesModule } from './modules/notification-services.module';
+import { UseCasesModule } from './modules/use-cases.module';
 
 // Shared constants
 

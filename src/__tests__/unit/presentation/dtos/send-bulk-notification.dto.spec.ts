@@ -4,13 +4,13 @@
  * @version 1.0.0
  */
 
-import { validate } from 'class-validator';
 import { plainToClass } from 'class-transformer';
+import { validate } from 'class-validator';
 
 import {
-  SendBulkNotificationDto,
   BulkRecipientDto,
   SegmentationCriteriaDto,
+  SendBulkNotificationDto,
 } from '../../../../presentation/dtos/notification/send-bulk-notification.dto';
 
 describe('SendBulkNotificationDto', () => {

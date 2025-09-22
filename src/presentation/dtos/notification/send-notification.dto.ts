@@ -7,12 +7,12 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import {
-  IsString,
-  IsNotEmpty,
-  IsEnum,
-  IsOptional,
-  IsObject,
   IsDateString,
+  IsEnum,
+  IsNotEmpty,
+  IsObject,
+  IsOptional,
+  IsString,
   Length,
   ValidateNested,
 } from 'class-validator';
@@ -88,7 +88,9 @@ export class SendNotificationDto {
   })
   @IsString()
   @IsNotEmpty()
-  @Transform(({ value }) => value?.trim())
+  @Transform(({ value }: { value: unknown }) =>
+    typeof value === 'string' ? value.trim() : value,
+  )
   readonly recipientId!: string;
 
   @ApiProperty({
@@ -100,7 +102,9 @@ export class SendNotificationDto {
   @IsString()
   @IsNotEmpty()
   @Length(1, 200)
-  @Transform(({ value }) => value?.trim())
+  @Transform(({ value }: { value: unknown }) =>
+    typeof value === 'string' ? value.trim() : value,
+  )
   readonly title!: string;
 
   @ApiProperty({
@@ -112,7 +116,9 @@ export class SendNotificationDto {
   @IsString()
   @IsNotEmpty()
   @Length(1, 5000)
-  @Transform(({ value }) => value?.trim())
+  @Transform(({ value }: { value: unknown }) =>
+    typeof value === 'string' ? value.trim() : value,
+  )
   readonly content!: string;
 
   @ApiProperty({

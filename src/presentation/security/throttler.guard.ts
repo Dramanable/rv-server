@@ -10,9 +10,7 @@ import { ExecutionContext } from '@nestjs/common';
 
 @Injectable()
 export class CustomThrottlerGuard extends ThrottlerGuard {
-  protected async throwThrottlingException(
-    context: ExecutionContext,
-  ): Promise<void> {
+  protected throwThrottlingException(context: ExecutionContext): Promise<void> {
     const request = context.switchToHttp().getRequest();
     const ip = request.ip || request.connection.remoteAddress;
 

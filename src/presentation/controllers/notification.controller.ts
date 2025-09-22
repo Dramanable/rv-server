@@ -5,40 +5,38 @@
  */
 
 import {
-  Controller,
-  Post,
-  Get,
-  Delete,
   Body,
-  Param,
-  Query,
-  HttpStatus,
-  UseGuards,
+  Controller,
+  Delete,
+  Get,
   HttpCode,
+  HttpStatus,
   Inject,
+  Post,
+  UseGuards,
 } from '@nestjs/common';
 import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
   ApiBearerAuth,
   ApiBody,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
 } from '@nestjs/swagger';
 
-import { SendNotificationDto } from '../dtos/notification/send-notification.dto';
-import { SendNotificationResponseDto } from '../dtos/notification/notification-response.dto';
-import { SendBulkNotificationDto } from '../dtos/notification/send-bulk-notification.dto';
-import { SendBulkNotificationResponseDto } from '../dtos/notification/send-bulk-notification-response.dto';
-import { SendNotificationUseCase } from '../../application/use-cases/notification/send-notification.use-case';
 import { SendBulkNotificationUseCase } from '../../application/use-cases/notification/send-bulk-notification.use-case';
+import { SendNotificationUseCase } from '../../application/use-cases/notification/send-notification.use-case';
 import { NotificationChannel } from '../../domain/value-objects/notification-channel.value-object';
 import { NotificationPriority } from '../../domain/value-objects/notification-priority.value-object';
 import { NotificationTemplateType } from '../../domain/value-objects/notification-template.value-object';
+import { TOKENS } from '../../shared/constants/injection-tokens';
+import { SendNotificationResponseDto } from '../dtos/notification/notification-response.dto';
+import { SendBulkNotificationResponseDto } from '../dtos/notification/send-bulk-notification-response.dto';
+import { SendBulkNotificationDto } from '../dtos/notification/send-bulk-notification.dto';
+import { SendNotificationDto } from '../dtos/notification/send-notification.dto';
 import {
   NotificationRateLimitGuard,
   RateLimit,
 } from '../security/notification-rate-limit.guard';
-import { TOKENS } from '../../shared/constants/injection-tokens';
 // TODO: Import correct decorators when available
 // import { GetUser } from '../security/get-user.decorator';
 // import { JwtAuthGuard } from '../security/jwt-auth.guard';

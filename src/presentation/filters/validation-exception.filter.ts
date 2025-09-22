@@ -36,24 +36,30 @@ export class ValidationExceptionFilter implements ExceptionFilter {
 
     // Vérifier si c'est une erreur de validation
     if (this.isValidationError(exceptionResponse)) {
-      this.handleValidationError(exceptionResponse, request, response);
+      this.handleValidationError(
+        exceptionResponse as { message: string[] },
+        request,
+        response,
+      );
     } else {
       this.handleGenericBadRequest(exception, request, response);
     }
   }
 
-  private isValidationError(response: any): boolean {
+  private isValidationError(response: unknown): boolean {
     return (
       typeof response === 'object' &&
       response !== null &&
-      Array.isArray(response.message) &&
-      typeof response.error === 'string' &&
-      response.error === 'Bad Request'
+      'message' in response &&
+      'error' in response &&
+      Array.isArray((response as { message: unknown }).message) &&
+      typeof (response as { error: unknown }).error === 'string' &&
+      (response as { error: string }).error === 'Bad Request'
     );
   }
 
   private handleValidationError(
-    exceptionResponse: any,
+    exceptionResponse: { message: string[] },
     request: FastifyRequest,
     response: FastifyReply,
   ): void {
@@ -160,7 +166,10 @@ export class ValidationExceptionFilter implements ExceptionFilter {
     }
 
     if (typeof response === 'object' && response !== null) {
-      return response.message || response.error || 'Bad Request';
+      const obj = response as { message?: unknown; error?: unknown };
+      const message = typeof obj.message === 'string' ? obj.message : '';
+      const error = typeof obj.error === 'string' ? obj.error : '';
+      return message || error || 'Bad Request';
     }
 
     return 'Bad Request';

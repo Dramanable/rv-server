@@ -30,17 +30,17 @@ export class AddFlexiblePricingToServices1695829250000
     const schema = this.getSchemaName();
     // Ajouter des colonnes pour stocker la configuration de pricing
     await queryRunner.query(`
-      ALTER TABLE "${schema}"."services" 
+      ALTER TABLE "${schema}"."services"
       ADD COLUMN IF NOT EXISTS "pricing_config" jsonb
     `);
 
     // Migrer les données existantes vers le nouveau format
     await queryRunner.query(`
-      UPDATE "${schema}"."services" 
+      UPDATE "${schema}"."services"
       SET "pricing_config" = jsonb_build_object(
         'type', 'FIXED',
         'visibility', 'PUBLIC',
-        'basePrice', CASE 
+        'basePrice', CASE
           WHEN pricing->'base_price' IS NOT NULL THEN pricing->'base_price'
           ELSE NULL
         END,
@@ -52,11 +52,11 @@ export class AddFlexiblePricingToServices1695829250000
 
     // Mettre à jour le champ pricing pour supporter les valeurs null
     await queryRunner.query(`
-      UPDATE "${schema}"."services" 
+      UPDATE "${schema}"."services"
       SET "pricing" = jsonb_set(
         "pricing",
         '{base_price}',
-        CASE 
+        CASE
           WHEN (pricing->'base_price'->>'amount')::numeric = 0 THEN 'null'::jsonb
           ELSE pricing->'base_price'
         END
@@ -65,7 +65,7 @@ export class AddFlexiblePricingToServices1695829250000
 
     // Supprimer les discount_price qui ne sont plus utilisés
     await queryRunner.query(`
-      UPDATE "${schema}"."services" 
+      UPDATE "${schema}"."services"
       SET "pricing" = jsonb_set(
         "pricing",
         '{discount_price}',
@@ -76,33 +76,33 @@ export class AddFlexiblePricingToServices1695829250000
 
     // Rendre pricing_config obligatoire maintenant qu'elle est migrée
     await queryRunner.query(`
-      ALTER TABLE "${schema}"."services" 
+      ALTER TABLE "${schema}"."services"
       ALTER COLUMN "pricing_config" SET NOT NULL
     `);
 
     // Ajouter un index B-tree sur le type de pricing
     await queryRunner.query(`
-      CREATE INDEX IF NOT EXISTS "IDX_services_pricing_config_type" 
+      CREATE INDEX IF NOT EXISTS "IDX_services_pricing_config_type"
       ON "${schema}"."services" USING BTREE (("pricing_config"->>'type'))
     `);
 
     // Ajouter un index B-tree sur la visibilité du pricing
     await queryRunner.query(`
-      CREATE INDEX IF NOT EXISTS "IDX_services_pricing_config_visibility" 
+      CREATE INDEX IF NOT EXISTS "IDX_services_pricing_config_visibility"
       ON "${schema}"."services" USING BTREE (("pricing_config"->>'visibility'))
     `);
 
     // Ajouter une contrainte pour valider les types de pricing
     await queryRunner.query(`
-      ALTER TABLE "${schema}"."services" 
-      ADD CONSTRAINT "CHK_services_pricing_config_type" 
+      ALTER TABLE "${schema}"."services"
+      ADD CONSTRAINT "CHK_services_pricing_config_type"
       CHECK (("pricing_config"->>'type') IN ('FREE', 'FIXED', 'VARIABLE', 'HIDDEN', 'ON_DEMAND'))
     `);
 
     // Ajouter une contrainte pour valider la visibilité
     await queryRunner.query(`
-      ALTER TABLE "${schema}"."services" 
-      ADD CONSTRAINT "CHK_services_pricing_config_visibility" 
+      ALTER TABLE "${schema}"."services"
+      ADD CONSTRAINT "CHK_services_pricing_config_visibility"
       CHECK (("pricing_config"->>'visibility') IN ('PUBLIC', 'AUTHENTICATED', 'PRIVATE', 'HIDDEN'))
     `);
   }
@@ -112,12 +112,12 @@ export class AddFlexiblePricingToServices1695829250000
 
     // Supprimer les contraintes
     await queryRunner.query(`
-      ALTER TABLE "${schema}"."services" 
+      ALTER TABLE "${schema}"."services"
       DROP CONSTRAINT IF EXISTS "CHK_services_pricing_config_visibility"
     `);
 
     await queryRunner.query(`
-      ALTER TABLE "${schema}"."services" 
+      ALTER TABLE "${schema}"."services"
       DROP CONSTRAINT IF EXISTS "CHK_services_pricing_config_type"
     `);
 
@@ -135,13 +135,13 @@ export class AddFlexiblePricingToServices1695829250000
 
     // Supprimer la colonne pricing_config
     await queryRunner.query(`
-      ALTER TABLE "${schema}"."services" 
+      ALTER TABLE "${schema}"."services"
       DROP COLUMN IF EXISTS "pricing_config"
     `);
 
     // Restaurer le format original du pricing (optionnel)
     await queryRunner.query(`
-      UPDATE "${schema}"."services" 
+      UPDATE "${schema}"."services"
       SET "pricing" = jsonb_set(
         "pricing",
         '{base_price}',

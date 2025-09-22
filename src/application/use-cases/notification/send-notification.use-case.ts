@@ -4,10 +4,10 @@
  * @version 1.0.0
  */
 
+import { Notification } from '../../../domain/entities/notification.entity';
 import { NotificationChannel } from '../../../domain/value-objects/notification-channel.value-object';
 import { NotificationPriority } from '../../../domain/value-objects/notification-priority.value-object';
 import { NotificationStatus } from '../../../domain/value-objects/notification-status.value-object';
-import { Notification } from '../../../domain/entities/notification.entity';
 import { NotificationException } from '../../exceptions/notification.exceptions';
 
 /**

@@ -1,8 +1,7 @@
 import { Repository } from 'typeorm';
 
-import { TypeOrmNotificationRepository } from '../../../../../infrastructure/database/sql/postgresql/repositories/typeorm-notification.repository';
 import { NotificationOrmEntity } from '../../../../../infrastructure/database/entities/notification-orm.entity';
-import { NotificationOrmMapper } from '../../../../../infrastructure/mappers/notification-orm.mapper';
+import { TypeOrmNotificationRepository } from '../../../../../infrastructure/database/sql/postgresql/repositories/typeorm-notification.repository';
 
 import { Notification } from '../../../../../domain/entities/notification.entity';
 import { NotificationChannel } from '../../../../../domain/value-objects/notification-channel.value-object';

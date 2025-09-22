@@ -4,9 +4,6 @@
  * @version 1.0.0
  */
 
-import { NotificationChannel } from './notification-channel.value-object';
-import { NotificationStatus } from './notification-status.value-object';
-
 /**
  * Métriques de performance des notifications
  */

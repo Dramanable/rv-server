@@ -5,8 +5,8 @@
  */
 
 import {
-  NotificationTemplate,
   NotificationEventType,
+  NotificationTemplate,
 } from '../entities/notification-template.entity';
 import { NotificationChannel } from '../value-objects/notification-channel.value-object';
 

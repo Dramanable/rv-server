@@ -115,7 +115,9 @@ export class UserFiltersDto {
   })
   @IsOptional()
   @IsString({ message: 'Search must be a string' })
-  @Transform(({ value }) => value?.trim())
+  @Transform(({ value }: { value: unknown }) =>
+    typeof value === 'string' ? value.trim() : value,
+  )
   search?: string;
 
   @ApiPropertyOptional({
@@ -419,7 +421,9 @@ export class CreateUserRequestDto {
     title: 'First Name',
   })
   @IsString({ message: 'First name must be a string' })
-  @Transform(({ value }) => value?.trim())
+  @Transform(({ value }: { value: unknown }) =>
+    typeof value === 'string' ? value.trim() : value,
+  )
   firstName!: string;
 
   @ApiProperty({
@@ -431,7 +435,9 @@ export class CreateUserRequestDto {
     title: 'Last Name',
   })
   @IsString({ message: 'Last name must be a string' })
-  @Transform(({ value }) => value?.trim())
+  @Transform(({ value }: { value: unknown }) =>
+    typeof value === 'string' ? value.trim() : value,
+  )
   lastName!: string;
 
   @ApiProperty({
@@ -465,7 +471,9 @@ export class UpdateUserRequestDto {
   })
   @IsOptional()
   @IsString({ message: 'First name must be a string' })
-  @Transform(({ value }) => value?.trim())
+  @Transform(({ value }: { value: unknown }) =>
+    typeof value === 'string' ? value.trim() : value,
+  )
   firstName?: string;
 
   @ApiPropertyOptional({
@@ -478,7 +486,9 @@ export class UpdateUserRequestDto {
   })
   @IsOptional()
   @IsString({ message: 'Last name must be a string' })
-  @Transform(({ value }) => value?.trim())
+  @Transform(({ value }: { value: unknown }) =>
+    typeof value === 'string' ? value.trim() : value,
+  )
   lastName?: string;
 
   @ApiPropertyOptional({

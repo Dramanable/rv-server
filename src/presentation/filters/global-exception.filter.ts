@@ -18,6 +18,12 @@ import {
 } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
 
+interface SafeRequest {
+  headers?: Record<string, string | string[] | undefined>;
+  ip?: string;
+  connection?: { remoteAddress?: string };
+}
+
 @Injectable()
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
@@ -31,7 +37,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     const { httpAdapter } = this.httpAdapterHost;
 
     const ctx = host.switchToHttp();
-    const request = ctx.getRequest();
+    const request: SafeRequest = ctx.getRequest();
     const response = ctx.getResponse();
 
     // Déterminer le status HTTP
@@ -78,8 +84,15 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         return response;
       }
       if (typeof response === 'object' && response !== null) {
-        return (response as any).message || exception.message;
+        // Type guard for message property
+        if (
+          'message' in response &&
+          typeof (response as { message?: unknown }).message === 'string'
+        ) {
+          return (response as { message?: string }).message as string;
+        }
       }
+      return exception.message;
     }
 
     if (exception instanceof Error) {
@@ -89,36 +102,53 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     return 'Internal server error';
   }
 
-  private getErrorDetails(exception: unknown): any {
+  private getErrorDetails(
+    exception: unknown,
+  ): string | Record<string, unknown> {
     if (exception instanceof HttpException) {
-      return exception.getResponse();
+      const response = exception.getResponse();
+      if (typeof response === 'string') {
+        return response;
+      }
+      if (typeof response === 'object' && response !== null) {
+        return response as Record<string, unknown>;
+      }
     }
-
     if (exception instanceof Error) {
       return {
         name: exception.name,
         message: exception.message,
       };
     }
-
     return { type: typeof exception, value: String(exception) };
   }
 
   private logError(
     exception: unknown,
-    request: any,
+    request: SafeRequest,
     status: number,
     message: string,
   ): void {
     const { httpAdapter } = this.httpAdapterHost;
+
+    const userAgent =
+      request.headers && typeof request.headers['user-agent'] === 'string'
+        ? request.headers['user-agent']
+        : Array.isArray(request.headers?.['user-agent'])
+          ? request.headers?.['user-agent'][0]
+          : 'Unknown';
+    const ip =
+      request.ip ||
+      (request.connection && request.connection.remoteAddress) ||
+      'Unknown';
 
     const errorContext = {
       method: httpAdapter.getRequestMethod
         ? httpAdapter.getRequestMethod(request)
         : 'UNKNOWN',
       url: httpAdapter.getRequestUrl(request),
-      userAgent: request.headers ? request.headers['user-agent'] : 'Unknown',
-      ip: request.ip || request.connection?.remoteAddress || 'Unknown',
+      userAgent,
+      ip,
       status,
       message,
     };

@@ -67,8 +67,8 @@ import { BookAppointmentUseCase } from '@application/use-cases/appointment/book-
 import { GetAvailableSlotsUseCase } from '@application/use-cases/appointments/get-available-slots-simple.use-case';
 
 // Notification Use Cases
-import { SendNotificationUseCase } from '@application/use-cases/notification/send-notification.use-case';
 import { SendBulkNotificationUseCase } from '@application/use-cases/notification/send-bulk-notification.use-case';
+import { SendNotificationUseCase } from '@application/use-cases/notification/send-notification.use-case';
 
 // 🎮 Controllers
 import { AppointmentController } from './controllers/appointment.controller';
@@ -77,17 +77,17 @@ import { BusinessHoursController } from './controllers/business-hours.controller
 import { BusinessSectorController } from './controllers/business-sector.controller';
 import { BusinessController } from './controllers/business.controller';
 import { CalendarController } from './controllers/calendar.controller';
+import { NotificationController } from './controllers/notification.controller';
 import { ServiceController } from './controllers/service.controller';
 import { StaffController } from './controllers/staff.controller';
 import { UserController } from './controllers/user.controller';
-import { NotificationController } from './controllers/notification.controller';
 
 // 🛡️ Security
 import { JwtAuthGuard } from './security/auth.guard';
 import { RolesGuard } from './security/guards/roles.guard';
+import { NotificationRateLimitGuard } from './security/notification-rate-limit.guard';
 import { JwtStrategy } from './security/strategies/jwt.strategy';
 import { SecurityValidationPipe } from './security/validation.pipe';
-import { NotificationRateLimitGuard } from './security/notification-rate-limit.guard';
 
 // 🔧 Services
 import { MockI18nService } from '@application/mocks/mock-i18n.service';

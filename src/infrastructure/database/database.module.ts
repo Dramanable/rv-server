@@ -8,6 +8,7 @@ import { PinoLoggerModule } from '../logging/pino-logger.module';
 import { TypeOrmRepositoriesModule } from './typeorm-repositories.module';
 
 // Import des entités TypeORM
+import { NotificationOrmEntity } from './entities/notification-orm.entity';
 import { BusinessOrmEntity } from './sql/postgresql/entities/business-orm.entity';
 import { BusinessSectorOrmEntity } from './sql/postgresql/entities/business-sector-orm.entity';
 import { CalendarOrmEntity } from './sql/postgresql/entities/calendar-orm.entity';
@@ -15,7 +16,6 @@ import { RefreshTokenOrmEntity } from './sql/postgresql/entities/refresh-token-o
 import { ServiceOrmEntity } from './sql/postgresql/entities/service-orm.entity';
 import { StaffOrmEntity } from './sql/postgresql/entities/staff-orm.entity';
 import { UserOrmEntity } from './sql/postgresql/entities/user-orm.entity';
-import { NotificationOrmEntity } from './entities/notification-orm.entity';
 
 /**
  * 🗄️ Simple Database Module

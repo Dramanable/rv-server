@@ -36,7 +36,9 @@ export class CreateBusinessSectorDto {
   @Matches(/^[a-zA-ZÀ-ÿ0-9\s\-'&.()]+$/, {
     message: 'Le nom contient des caractères non autorisés',
   })
-  @Transform(({ value }) => value?.trim())
+  @Transform(({ value }: { value: unknown }) =>
+    typeof value === 'string' ? value.trim() : value,
+  )
   readonly name!: string;
 
   @ApiProperty({
@@ -51,7 +53,9 @@ export class CreateBusinessSectorDto {
   @Length(10, 500, {
     message: 'La description doit contenir entre 10 et 500 caractères',
   })
-  @Transform(({ value }) => value?.trim())
+  @Transform(({ value }: { value: unknown }) =>
+    typeof value === 'string' ? value.trim() : value,
+  )
   readonly description!: string;
 
   @ApiProperty({
@@ -68,7 +72,9 @@ export class CreateBusinessSectorDto {
     message:
       'Le code doit commencer par une majuscule et ne contenir que des majuscules, chiffres et underscores',
   })
-  @Transform(({ value }) => value?.trim().toUpperCase())
+  @Transform(({ value }: { value: unknown }) =>
+    typeof value === 'string' ? value.trim().toUpperCase() : value,
+  )
   readonly code!: string;
 }
 
@@ -88,7 +94,9 @@ export class UpdateBusinessSectorDto {
   @Matches(/^[a-zA-ZÀ-ÿ0-9\s\-'&.()]+$/, {
     message: 'Le nom contient des caractères non autorisés',
   })
-  @Transform(({ value }) => value?.trim())
+  @Transform(({ value }: { value: unknown }) =>
+    typeof value === 'string' ? value.trim() : value,
+  )
   readonly name?: string;
 
   @ApiPropertyOptional({
@@ -103,7 +111,9 @@ export class UpdateBusinessSectorDto {
   @Length(10, 500, {
     message: 'La description doit contenir entre 10 et 500 caractères',
   })
-  @Transform(({ value }) => value?.trim())
+  @Transform(({ value }: { value: unknown }) =>
+    typeof value === 'string' ? value.trim() : value,
+  )
   readonly description?: string;
 }
 
@@ -120,7 +130,9 @@ export class BusinessSectorFiltersDto {
   @Length(1, 100, {
     message: 'La recherche doit contenir entre 1 et 100 caractères',
   })
-  @Transform(({ value }) => value?.trim())
+  @Transform(({ value }: { value: unknown }) =>
+    typeof value === 'string' ? value.trim() : value,
+  )
   readonly search?: string;
 
   @ApiPropertyOptional({

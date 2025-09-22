@@ -17,8 +17,8 @@ Le **système de notifications** permet l'envoi de messages multi-canaux avec su
 
 ### **POST /api/v1/notifications/send**
 
-**Description** : Envoie une notification via le canal spécifié avec support de planification  
-**Security** : Requires JWT authentication  
+**Description** : Envoie une notification via le canal spécifié avec support de planification
+**Security** : Requires JWT authentication
 **Content-Type** : `application/json`
 
 #### **Request Body Examples**

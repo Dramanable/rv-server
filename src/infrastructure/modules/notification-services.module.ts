@@ -8,8 +8,8 @@ import { Module } from '@nestjs/common';
 import { TOKENS } from '@shared/constants/injection-tokens';
 
 // Imports des services de notification
-import { MockUserSegmentationService } from '../services/user-segmentation.service';
 import { MockCampaignService } from '../services/campaign.service';
+import { MockUserSegmentationService } from '../services/user-segmentation.service';
 
 @Module({
   providers: [

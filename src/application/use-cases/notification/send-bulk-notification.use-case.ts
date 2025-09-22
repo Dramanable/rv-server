@@ -6,10 +6,11 @@
     private readonly notificationService: any, // TODO: Define interface
     private readonly userSegmentationService: IUserSegmentationService,
     private readonly templateService: ITemplateService,
-    private readonly logger: any, // TODO: Define interface  
+    private readonly logger: any, // TODO: Define interface
     private readonly i18n: any, // TODO: Define interface
   ) {} */
 
+import { INotificationRepository } from '../../../domain/repositories/notification.repository.interface';
 import { NotificationChannel } from '../../../domain/value-objects/notification-channel.value-object';
 import { NotificationPriority } from '../../../domain/value-objects/notification-priority.value-object';
 import {
@@ -18,7 +19,6 @@ import {
   TemplateVariables,
 } from '../../../domain/value-objects/notification-template.value-object';
 import { NotificationException } from '../../exceptions/notification.exceptions';
-import { INotificationRepository } from '../../../domain/repositories/notification.repository.interface';
 // import { INotificationService } from '../../ports/notification-service.interface';
 // import { ILogger } from '../../ports/logger.interface';
 // import { II18nService } from '../../ports/i18n-service.interface';

@@ -68,38 +68,38 @@ export class CreateNotificationsTable1727033400000
 
     // 3. Créer les index pour performance
     await queryRunner.query(`
-      CREATE INDEX "IDX_notifications_recipient_id" 
+      CREATE INDEX "IDX_notifications_recipient_id"
       ON "${schema}"."notifications" ("recipient_id")
     `);
 
     await queryRunner.query(`
-      CREATE INDEX "IDX_notifications_channel" 
+      CREATE INDEX "IDX_notifications_channel"
       ON "${schema}"."notifications" ("channel")
     `);
 
     await queryRunner.query(`
-      CREATE INDEX "IDX_notifications_status" 
+      CREATE INDEX "IDX_notifications_status"
       ON "${schema}"."notifications" ("status")
     `);
 
     await queryRunner.query(`
-      CREATE INDEX "IDX_notifications_priority" 
+      CREATE INDEX "IDX_notifications_priority"
       ON "${schema}"."notifications" ("priority")
     `);
 
     await queryRunner.query(`
-      CREATE INDEX "IDX_notifications_scheduled_at" 
+      CREATE INDEX "IDX_notifications_scheduled_at"
       ON "${schema}"."notifications" ("scheduled_at")
     `);
 
     await queryRunner.query(`
-      CREATE INDEX "IDX_notifications_created_at" 
+      CREATE INDEX "IDX_notifications_created_at"
       ON "${schema}"."notifications" ("created_at")
     `);
 
     // 4. Index composé pour les notifications en attente
     await queryRunner.query(`
-      CREATE INDEX "IDX_notifications_pending_schedule" 
+      CREATE INDEX "IDX_notifications_pending_schedule"
       ON "${schema}"."notifications" ("status", "scheduled_at")
       WHERE "status" = 'PENDING'
     `);

@@ -15,6 +15,11 @@ import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
 import type { Request } from 'express';
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
+import {
+  AuthenticatedUser,
+  isAuthenticatedUser,
+  isAuthenticationError,
+} from '../types/guard.types';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
@@ -24,117 +29,107 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     super();
   }
 
-  canActivate(context: ExecutionContext) {
-    // 🔓 Vérifier si l'endpoint est public
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
       context.getHandler(),
       context.getClass(),
     ]);
 
     if (isPublic) {
-      this.logger.debug('Public endpoint accessed', {
-        handler: context.getHandler().name,
-        class: context.getClass().name,
-      });
       return true;
     }
 
-    // 🍪 Vérification de la présence du token dans les cookies
     const request = context.switchToHttp().getRequest<Request>();
-    const accessToken = request.cookies?.accessToken;
 
-    if (!accessToken) {
-      this.logger.warn('JWT Auth Guard - No access token in cookies', {
+    // Log de la tentative d'authentification
+    this.logger.debug('JWT authentication attempt', {
+      method: request.method,
+      path: request.path,
+      ip: request.ip,
+      hasAuthHeader: !!request.headers.authorization,
+      hasCookie: !!(request.cookies as Record<string, unknown> | undefined)
+        ?.token,
+    });
+
+    // Extraire le token du header Authorization ou des cookies
+    const token = this.extractTokenFromRequest(request);
+
+    if (!token) {
+      this.logger.warn('No authentication token found', {
+        method: request.method,
         path: request.path,
         ip: request.ip,
-        userAgent: request.headers['user-agent'],
       });
-      throw new UnauthorizedException({
-        message: 'Access token not found in cookies',
-        error: 'NO_TOKEN',
-        statusCode: 401,
-      });
+      return false;
     }
 
-    // ✅ Utiliser l'authentification JWT standard de Passport
-    return super.canActivate(context);
+    try {
+      return (await super.canActivate(context)) as boolean;
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown authentication error';
+
+      this.logger.error('JWT authentication failed', {
+        method: request.method,
+        path: request.path,
+        ip: request.ip,
+        error: errorMessage,
+      });
+      return false;
+    }
   }
 
-  handleRequest<TUser = any>(
-    err: any,
-    user: any,
-    info: any,
+  handleRequest<TUser = AuthenticatedUser>(
+    err: unknown,
+    user: unknown,
+    info: unknown,
     context: ExecutionContext,
   ): TUser {
     const request = context.switchToHttp().getRequest<Request>();
+
+    // Contexte de logging pour la requête
     const requestContext = {
-      path: request.path,
       method: request.method,
+      path: request.path,
       ip: request.ip,
-      userAgent: request.headers['user-agent'],
+      userAgent: request.get('User-Agent'),
     };
 
-    // 🔍 Gestion des erreurs d'authentification
-    if (err || !user) {
-      const infoMessage = this.extractInfoMessage(info);
+    // ❌ Gestion des erreurs d'authentification
+    if (err) {
+      const errorMessage = isAuthenticationError(err)
+        ? err.message
+        : 'Authentication failed';
 
-      this.logger.warn('JWT authentication failed', {
+      this.logger.warn('JWT authentication error', {
         ...requestContext,
-        error: err?.message || 'Unknown error',
-        hasUser: !!user,
-        info: infoMessage,
+        error: errorMessage,
+        errorName: isAuthenticationError(err) ? err.name : 'Unknown',
       });
 
-      // 🔄 Token expiré - suggérer le refresh
-      if (infoMessage === 'jwt expired') {
-        throw new UnauthorizedException({
-          message: 'Access token has expired. Please refresh your token.',
-          error: 'TOKEN_EXPIRED',
-          statusCode: 401,
-          action: 'REFRESH_TOKEN',
-        });
-      }
+      throw new UnauthorizedException(errorMessage);
+    }
 
-      // 🔑 Token invalide/malformé
-      if (
-        infoMessage.includes('invalid') ||
-        infoMessage.includes('malformed')
-      ) {
-        throw new UnauthorizedException({
-          message: 'Invalid access token format.',
-          error: 'INVALID_TOKEN',
-          statusCode: 401,
-          action: 'LOGIN_REQUIRED',
-        });
-      }
+    // ❌ Utilisateur non trouvé ou invalide
+    if (!user || !isAuthenticatedUser(user)) {
+      const infoMessage =
+        typeof info === 'object' && info !== null && 'message' in info
+          ? String((info as { message: unknown }).message)
+          : 'No user in JWT payload';
 
-      // 🚫 Token manquant
-      if (infoMessage.includes('No auth token')) {
-        throw new UnauthorizedException({
-          message: 'Authentication required.',
-          error: 'NO_TOKEN',
-          statusCode: 401,
-          action: 'LOGIN_REQUIRED',
-        });
-      }
+      this.logger.warn('JWT authentication failed - no user found', {
+        ...requestContext,
+        reason: infoMessage,
+      });
 
-      // ❌ Autres erreurs d'authentification
-      throw (
-        err ||
-        new UnauthorizedException({
-          message: 'Authentication failed. Please login again.',
-          error: 'AUTHENTICATION_FAILED',
-          statusCode: 401,
-          action: 'LOGIN_REQUIRED',
-        })
-      );
+      throw new UnauthorizedException('Invalid authentication token');
     }
 
     // ✅ Authentification réussie
     this.logger.debug('JWT authentication successful', {
       ...requestContext,
       userId: user.id,
-      userEmail: user.email?.value || user.email,
+      userEmail: typeof user.email === 'string' ? user.email : user.email.value,
       userRole: user.role,
     });
 
@@ -142,15 +137,39 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
   }
 
   /**
+   * 🔍 Extraire le token JWT de la requête (header Authorization ou cookies)
+   */
+  private extractTokenFromRequest(request: Request): string | null {
+    // Vérifier le header Authorization
+    const authHeader = request.headers.authorization;
+    if (
+      authHeader &&
+      typeof authHeader === 'string' &&
+      authHeader.startsWith('Bearer ')
+    ) {
+      return authHeader.substring(7);
+    }
+
+    // Vérifier les cookies
+    const cookies = request.cookies as Record<string, unknown> | undefined;
+    if (cookies && typeof cookies.token === 'string') {
+      return cookies.token;
+    }
+
+    return null;
+  }
+
+  /**
    * 🔍 Extraire le message d'info de Passport de façon sécurisée
    */
-  private extractInfoMessage(info: any): string {
+  private extractInfoMessage(info: unknown): string {
     if (typeof info === 'string') {
       return info;
     }
 
     if (typeof info === 'object' && info !== null && 'message' in info) {
-      return typeof info.message === 'string' ? info.message : 'Unknown info';
+      const message = (info as { message: unknown }).message;
+      return typeof message === 'string' ? message : 'Unknown info';
     }
 
     return 'No info available';
