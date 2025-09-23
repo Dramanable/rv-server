@@ -1,17 +1,563 @@
-# 🖼️ **BUSINESS GALLERY APIS - SWAGGER DOCUMENTATION**
+# 🖼️ Business Gallery APIs - Documentation Swagger Complète
 
-## 📋 **Overview**
+## 📋 Overview
 
-Complete API documentation for Business Gallery management system with AWS S3 integration, image variants, and SEO optimization.
+La **Business Gallery API** fournit un système complet de gestion d'images pour les entreprises avec :
 
-## 🏗️ **Architecture Implementation Status**
+- **🔐 Upload sécurisé AWS S3** avec URLs signées
+- **🖼️ Génération automatique de variants** (thumbnail, medium, large)
+- **📊 Gestion avancée des galeries** avec métadonnées complètes
+- **🛡️ Validation stricte** des formats et tailles
+- **⚡ Performance optimisée** avec cache et CDN ready
 
-### ✅ **Business Gallery System - 100% Complete**
+## 🏗️ Architecture Implementation Status
 
-- **Domain** : ✅ BusinessImage + BusinessGallery Value Objects + ImageCategory enum
-- **Application** : ✅ All CRUD Use Cases (Create, Get, Update, Delete, Add Image, Upload)
-- **Infrastructure** : ✅ ORM Entities + AWS S3 Service + Mappers + Migrations
-- **Presentation** : ✅ BusinessGalleryController + All DTOs with Swagger documentation
+### ✅ **Business Gallery - 100% Complete**
+
+- **Domain** : ✅ BusinessImage + BusinessGallery Value Objects + Repository Interface
+- **Application** : ✅ All CRUD Use Cases (Create, Get, Update, Delete, Upload, AddImage)
+- **Infrastructure** : ✅ BusinessImageOrmEntity + BusinessGalleryOrmEntity + TypeOrmRepository + Mappers + Migrations + AWS S3 Service
+- **Presentation** : ✅ BusinessGalleryController + All DTOs with complete Swagger documentation
+
+---
+
+## 🎯 Business Gallery APIs
+
+### **POST /api/v1/business-galleries/:businessId/create**
+
+**Description** : Créer une nouvelle galerie pour une entreprise avec configuration avancée
+**Security** : Requires JWT authentication (BUSINESS_OWNER/BUSINESS_ADMIN)
+**Parameters** :
+
+- `businessId` (path) : UUID de l'entreprise
+
+**Request Body** :
+
+```json
+{
+  "name": "Portfolio Principal",
+  "description": "Notre collection de réalisations et projets récents",
+  "displayOrder": 1,
+  "isPrimary": true,
+  "galleryConfig": {
+    "maxImages": 50,
+    "allowedFormats": ["JPEG", "PNG", "WEBP"],
+    "thumbnailSize": { "width": 200, "height": 200 }
+  }
+}
+```
+
+**Response 201** :
+
+```json
+{
+  "success": true,
+  "data": {
+    "images": [],
+    "count": 0,
+    "statistics": {
+      "total": 0,
+      "public": 0,
+      "private": 0,
+      "byCategory": {},
+      "optimized": 0,
+      "totalSize": 0
+    }
+  },
+  "message": "Gallery created successfully"
+}
+```
+
+### **GET /api/v1/business-galleries/:businessId/galleries**
+
+**Description** : Récupérer toutes les galeries d'une entreprise avec métadonnées
+**Security** : Requires JWT authentication
+**Parameters** :
+
+- `businessId` (path) : UUID de l'entreprise
+
+**Response 200** :
+
+```json
+[
+  {
+    "images": [
+      {
+        "id": "img_123e4567-e89b-12d3-a456-426614174000",
+        "url": "https://s3.amazonaws.com/business-images/original/image.jpg",
+        "alt": "Logo de l'entreprise",
+        "caption": "Notre nouveau logo 2024",
+        "category": "LOGO",
+        "metadata": {
+          "size": 1048576,
+          "format": "JPEG",
+          "dimensions": { "width": 1920, "height": 1080 },
+          "uploadedAt": "2024-01-15T10:30:00Z"
+        },
+        "isPublic": true,
+        "order": 0
+      }
+    ],
+    "count": 8,
+    "statistics": {
+      "total": 8,
+      "public": 6,
+      "private": 2,
+      "byCategory": {
+        "LOGO": 1,
+        "COVER": 1,
+        "GALLERY": 6
+      },
+      "optimized": 8,
+      "totalSize": 15728640
+    }
+  }
+]
+```
+
+### **GET /api/v1/business-galleries/:galleryId**
+
+**Description** : Récupérer une galerie spécifique avec toutes ses images
+**Security** : Requires JWT authentication
+**Parameters** :
+
+- `galleryId` (path) : UUID de la galerie
+
+**Response 200** :
+
+```json
+{
+  "images": [
+    {
+      "id": "img_123e4567-e89b-12d3-a456-426614174000",
+      "url": "https://s3.amazonaws.com/business-images/original/image.jpg",
+      "alt": "Salle d'attente moderne",
+      "caption": "Notre espace rénové pour votre confort",
+      "category": "INTERIOR",
+      "metadata": {
+        "size": 2048576,
+        "format": "JPEG",
+        "dimensions": { "width": 1920, "height": 1080 },
+        "uploadedAt": "2024-01-15T10:30:00Z"
+      },
+      "isPublic": true,
+      "order": 1
+    }
+  ],
+  "count": 8,
+  "statistics": {
+    "total": 8,
+    "public": 6,
+    "private": 2,
+    "byCategory": {
+      "INTERIOR": 3,
+      "EXTERIOR": 2,
+      "STAFF": 2,
+      "GALLERY": 1
+    },
+    "optimized": 8,
+    "totalSize": 15728640
+  }
+}
+```
+
+### **PUT /api/v1/business-galleries/:galleryId**
+
+**Description** : Mettre à jour les informations d'une galerie existante
+**Security** : Requires JWT authentication (BUSINESS_OWNER/BUSINESS_ADMIN)
+**Parameters** :
+
+- `galleryId` (path) : UUID de la galerie
+
+**Request Body** :
+
+```json
+{
+  "name": "Portfolio Mis à Jour",
+  "description": "Collection mise à jour de nos réalisations",
+  "displayOrder": 2,
+  "isPrimary": false,
+  "isActive": true,
+  "galleryConfig": {
+    "maxImages": 100,
+    "allowedFormats": ["JPEG", "PNG", "WEBP", "GIF"],
+    "thumbnailSize": { "width": 300, "height": 300 }
+  }
+}
+```
+
+**Response 200** :
+
+```json
+{
+  "success": true,
+  "data": {
+    "images": [],
+    "count": 0,
+    "statistics": {
+      "total": 0,
+      "public": 0,
+      "private": 0,
+      "byCategory": {},
+      "optimized": 0,
+      "totalSize": 0
+    }
+  },
+  "message": "Gallery updated successfully"
+}
+```
+
+### **DELETE /api/v1/business-galleries/:galleryId**
+
+**Description** : Supprimer une galerie et gérer les images associées
+**Security** : Requires JWT authentication (BUSINESS_OWNER only)
+**Parameters** :
+
+- `galleryId` (path) : UUID de la galerie
+
+**Response 200** :
+
+```json
+{
+  "success": true,
+  "message": "Gallery deleted successfully",
+  "deletedId": "gallery_123e4567-e89b-12d3-a456-426614174000"
+}
+```
+
+### **POST /api/v1/business-galleries/:galleryId/images/upload**
+
+**Description** : Upload d'image avec traitement AWS S3 complet et génération de variants
+**Security** : Requires JWT authentication (BUSINESS_OWNER/BUSINESS_ADMIN)
+**Content-Type** : `multipart/form-data`
+**Parameters** :
+
+- `galleryId` (path) : UUID de la galerie destination
+
+**Request Body (multipart/form-data)** :
+
+```
+image: [Binary file data] (JPEG, PNG, WEBP - max 10MB)
+alt: "Photo de notre nouveau local" (optionnel)
+caption: "Notre espace de réception rénové en 2024" (optionnel)
+category: "GALLERY" (optionnel: GALLERY, COVER, PROFILE, LOGO)
+isPublic: true (optionnel: boolean)
+```
+
+**Response 201** :
+
+```json
+{
+  "success": true,
+  "data": {
+    "imageId": "987fcdeb-51a2-43d7-8f6e-123456789abc",
+    "originalUrl": "https://s3.amazonaws.com/business-images/original/image.jpg",
+    "variants": {
+      "thumbnail": "https://s3.amazonaws.com/business-images/thumb_200x200.jpg",
+      "medium": "https://s3.amazonaws.com/business-images/medium_800x600.jpg",
+      "large": "https://s3.amazonaws.com/business-images/large_1200x900.jpg"
+    },
+    "signedUrls": {
+      "view": "https://s3.amazonaws.com/business-images/signed-url?expires=900",
+      "download": "https://s3.amazonaws.com/business-images/download?expires=3600"
+    },
+    "metadata": {
+      "size": 2048576,
+      "width": 1920,
+      "height": 1080,
+      "format": "JPEG",
+      "uploadedAt": "2024-01-15T10:30:00Z"
+    },
+    "galleryInfo": {
+      "totalImages": 12,
+      "displayOrder": 13,
+      "category": "GALLERY"
+    }
+  },
+  "message": "Image uploaded successfully to gallery. Processing gallery image with variants generation."
+}
+```
+
+---
+
+## 🚨 Error Responses
+
+### **400 Bad Request - Invalid File**
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "INVALID_FILE_FORMAT",
+    "message": "Only JPEG, PNG, and WEBP formats are allowed",
+    "details": {
+      "allowedFormats": ["JPEG", "PNG", "WEBP"],
+      "receivedFormat": "GIF",
+      "maxSize": "10MB"
+    },
+    "timestamp": "2024-01-15T10:30:00Z",
+    "path": "/api/v1/business-galleries/uuid/images/upload"
+  }
+}
+```
+
+### **401 Unauthorized**
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "AUTHENTICATION_REQUIRED",
+    "message": "JWT authentication required",
+    "timestamp": "2024-01-15T10:30:00Z",
+    "path": "/api/v1/business-galleries"
+  }
+}
+```
+
+### **403 Forbidden**
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "INSUFFICIENT_PERMISSIONS",
+    "message": "BUSINESS_OWNER or BUSINESS_ADMIN role required",
+    "timestamp": "2024-01-15T10:30:00Z",
+    "path": "/api/v1/business-galleries/uuid/create"
+  }
+}
+```
+
+### **404 Not Found**
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "GALLERY_NOT_FOUND",
+    "message": "Gallery not found",
+    "details": "No gallery found with ID: uuid",
+    "timestamp": "2024-01-15T10:30:00Z",
+    "path": "/api/v1/business-galleries/uuid"
+  }
+}
+```
+
+### **422 Unprocessable Entity - Limit Exceeded**
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "GALLERY_LIMIT_EXCEEDED",
+    "message": "Maximum 50 images per gallery allowed",
+    "details": {
+      "currentCount": 50,
+      "maxAllowed": 50,
+      "upgradeRequired": true
+    },
+    "timestamp": "2024-01-15T10:30:00Z",
+    "path": "/api/v1/business-galleries/uuid/images/upload"
+  }
+}
+```
+
+---
+
+## 🔐 Authentication & Authorization
+
+### **JWT Bearer Token**
+
+Toutes les APIs nécessitent un token JWT valide :
+
+```bash
+curl -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+     -X GET http://localhost:3000/api/v1/business-galleries/uuid/galleries
+```
+
+### **Permissions Required**
+
+- **Gallery CRUD** : `BUSINESS_OWNER` ou `BUSINESS_ADMIN`
+- **Image Upload** : `BUSINESS_OWNER` ou `BUSINESS_ADMIN`
+- **Gallery View** : Tous les utilisateurs authentifiés
+
+---
+
+## 📊 Validation Rules
+
+### **Image File Validation**
+
+- **Formats supportés** : JPEG, PNG, WEBP uniquement
+- **Taille maximum** : 10MB par image
+- **Dimensions recommandées** : 1920x1080 maximum pour performance
+- **Alt text** : 10-200 caractères (obligatoire pour accessibilité)
+- **Caption** : 0-300 caractères (optionnel)
+
+### **Gallery Configuration**
+
+- **Nom** : 2-100 caractères (obligatoire)
+- **Description** : 0-500 caractères (optionnel)
+- **Max images** : 1-100 par galerie (configurable admin)
+- **Display order** : Entier positif (tri des galeries)
+
+### **Business Rules**
+
+- **Galerie principale** : Une seule par business autorisée
+- **Suppression sécurisée** : Confirmation requise si images présentes
+- **Réassignation images** : Automatique vers galerie principale lors suppression
+- **Cache invalidation** : Automatique lors modifications
+
+---
+
+## 📈 Performance & Scalability
+
+### **AWS S3 Integration**
+
+- **Bucket privé** : `business-images-{environment}`
+- **URLs signées** : Accès temporaire sécurisé (15 min par défaut)
+- **Variants automatiques** : Thumbnail (200x200), Medium (800x600), Large (1200x900)
+- **CDN Ready** : Structure optimisée pour CloudFront
+
+### **Cache Strategy**
+
+- **Gallery metadata** : Cache Redis 15 minutes
+- **Image URLs** : Cache navigateur 24h avec ETags
+- **S3 signed URLs** : Cache local 10 minutes
+
+### **Database Optimization**
+
+- **Index composite** : (business_id, display_order) pour tri rapide
+- **Index catégorie** : Filtrage rapide par type d'image
+- **Pagination** : Limit 50 images par requête maximum
+
+---
+
+## 🔧 Swagger Integration
+
+### **Swagger UI Access**
+
+- **Development** : http://localhost:3000/api/docs
+- **Staging** : https://staging-api.yourdomain.com/api/docs
+- **Production** : https://api.yourdomain.com/api/docs
+
+### **Try It Out Features**
+
+- **File upload** : Interface drag & drop directe
+- **Authentication** : Bouton "Authorize" pour JWT
+- **Response examples** : Exemples complets pour chaque endpoint
+- **Schema validation** : Validation en temps réel des requêtes
+
+### **Integration Examples**
+
+#### **React/Vue.js Upload**
+
+```typescript
+const uploadImageToGallery = async (
+  galleryId: string,
+  file: File,
+  metadata: ImageMetadata,
+) => {
+  const formData = new FormData();
+  formData.append('image', file);
+  formData.append('alt', metadata.alt || file.name);
+  formData.append('caption', metadata.caption || '');
+  formData.append('category', metadata.category || 'GALLERY');
+  formData.append('isPublic', metadata.isPublic ? 'true' : 'false');
+
+  const response = await api.post(
+    `/api/v1/business-galleries/${galleryId}/images/upload`,
+    formData,
+    {
+      headers: { 'Content-Type': 'multipart/form-data' },
+      onUploadProgress: (progress) => {
+        const percentage = Math.round((progress.loaded * 100) / progress.total);
+        updateUploadProgress(percentage);
+      },
+    },
+  );
+
+  return {
+    image: response.data.data,
+    variants: response.data.data.variants,
+    signedUrls: response.data.data.signedUrls,
+  };
+};
+```
+
+#### **Gallery Management**
+
+```typescript
+const createGallery = async (businessId: string, galleryData: GalleryData) => {
+  const response = await api.post(
+    `/api/v1/business-galleries/${businessId}/create`,
+    {
+      name: galleryData.name,
+      description: galleryData.description,
+      displayOrder: galleryData.displayOrder,
+      isPrimary: galleryData.isPrimary,
+      galleryConfig: {
+        maxImages: 50,
+        allowedFormats: ['JPEG', 'PNG', 'WEBP'],
+        thumbnailSize: { width: 200, height: 200 },
+      },
+    },
+  );
+
+  return response.data.data;
+};
+```
+
+---
+
+## 🎯 Frontend Development Guide
+
+### **Image Display with Variants**
+
+```javascript
+// Affichage responsive avec variants
+const ImageComponent = ({ image }) => (
+  <picture>
+    <source media="(max-width: 480px)" srcSet={image.variants.thumbnail} />
+    <source media="(max-width: 1024px)" srcSet={image.variants.medium} />
+    <img src={image.variants.large} alt={image.alt} loading="lazy" />
+  </picture>
+);
+```
+
+### **Error Handling**
+
+```javascript
+const handleUploadError = (error) => {
+  switch (error.code) {
+    case 'INVALID_FILE_FORMAT':
+      showError('Format non supporté. Utilisez JPEG, PNG ou WEBP.');
+      break;
+    case 'GALLERY_LIMIT_EXCEEDED':
+      showError(`Limite de ${error.details.maxAllowed} images atteinte.`);
+      break;
+    case 'INSUFFICIENT_PERMISSIONS':
+      showError('Permissions insuffisantes pour cette opération.');
+      break;
+    default:
+      showError("Erreur lors de l'upload. Veuillez réessayer.");
+  }
+};
+```
+
+---
+
+## 📞 Support & Resources
+
+- **API Documentation** : Exemples complets dans chaque endpoint
+- **TypeScript Types** : Interfaces générées automatiquement depuis DTOs
+- **Postman Collection** : Import direct depuis Swagger JSON
+- **Rate Limiting** : 100 requêtes/minute par utilisateur
+- **Support** : dev-support@yourdomain.com
+
+---
+
+**Business Gallery API v3.0 - Production Ready avec AWS S3, validation stricte, et performance optimisée**
 
 ## 🎯 **Business Gallery APIs**
 
