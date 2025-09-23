@@ -31,5 +31,30 @@
       "updated": "Business hours updated successfully",
       "specialDateAdded": "Special date added successfully"
     }
+  },
+  "skill": {
+    "validation": {
+      "correlationIdRequired": "Correlation ID is required for traceability",
+      "requestingUserIdRequired": "Requesting user ID is required for audit",
+      "timestampRequired": "Valid timestamp is required",
+      "requestTooOld": "Request is too old and cannot be processed",
+      "businessIdRequired": "Business ID is required",
+      "nameRequired": "Skill name must be at least 2 characters long",
+      "categoryRequired": "Skill category must be at least 2 characters long",
+      "nameTooLong": "Skill name cannot exceed 100 characters",
+      "descriptionTooLong": "Skill description cannot exceed 500 characters"
+    },
+    "errors": {
+      "notFound": "Skill not found with id {{id}}",
+      "nameConflict": "Skill name '{{name}}' already exists in this business",
+      "inUse": "Skill cannot be deleted as it is currently assigned to {{staffCount}} staff members",
+      "criticalSkillRestricted": "Critical skill operations are restricted: {{operation}}",
+      "operationNotAllowed": "Operation '{{operation}}' not allowed: {{reason}}"
+    },
+    "success": {
+      "created": "Skill created successfully",
+      "updated": "Skill updated successfully",
+      "deleted": "Skill deleted successfully"
+    }
   }
 }

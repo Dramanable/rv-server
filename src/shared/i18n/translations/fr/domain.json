@@ -25,11 +25,36 @@
       "too_long": "Le nom est trop long (max 100 caractères)"
     },
     "errors": {
-      "notFound": "Entreprise non trouvée avec l'id {{id}}"
+      "notFound": "Entreprise introuvable avec l'id {{id}}"
     },
     "hours": {
-      "updated": "Horaires d'ouverture mis à jour avec succès",
+      "updated": "Horaires d'entreprise mis à jour avec succès",
       "specialDateAdded": "Date spéciale ajoutée avec succès"
+    }
+  },
+  "skill": {
+    "validation": {
+      "correlationIdRequired": "L'identifiant de corrélation est requis pour la traçabilité",
+      "requestingUserIdRequired": "L'identifiant de l'utilisateur demandeur est requis pour l'audit",
+      "timestampRequired": "Un horodatage valide est requis",
+      "requestTooOld": "La demande est trop ancienne et ne peut être traitée",
+      "businessIdRequired": "L'identifiant d'entreprise est requis",
+      "nameRequired": "Le nom de la compétence doit faire au moins 2 caractères",
+      "categoryRequired": "La catégorie de compétence doit faire au moins 2 caractères",
+      "nameTooLong": "Le nom de la compétence ne peut dépasser 100 caractères",
+      "descriptionTooLong": "La description de la compétence ne peut dépasser 500 caractères"
+    },
+    "errors": {
+      "notFound": "Compétence introuvable avec l'id {{id}}",
+      "nameConflict": "Le nom de compétence '{{name}}' existe déjà dans cette entreprise",
+      "inUse": "La compétence ne peut être supprimée car elle est actuellement assignée à {{staffCount}} membres du personnel",
+      "criticalSkillRestricted": "Les opérations sur les compétences critiques sont restreintes : {{operation}}",
+      "operationNotAllowed": "Opération '{{operation}}' non autorisée : {{reason}}"
+    },
+    "success": {
+      "created": "Compétence créée avec succès",
+      "updated": "Compétence mise à jour avec succès",
+      "deleted": "Compétence supprimée avec succès"
     }
   }
 }

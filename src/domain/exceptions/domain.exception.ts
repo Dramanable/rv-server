@@ -8,15 +8,31 @@
 export abstract class DomainException extends Error {
   public readonly code: string;
   public readonly timestamp: Date;
+  public readonly context?: Record<string, any>;
 
-  constructor(message: string, code: string) {
+  constructor(message: string, code: string, context?: Record<string, any>) {
     super(message);
     this.name = this.constructor.name;
     this.code = code;
     this.timestamp = new Date();
+    this.context = context;
 
     // Maintient la stack trace pour le debugging
     Error.captureStackTrace(this, this.constructor);
+  }
+
+  /**
+   * Sérialisation pour logging et debugging
+   */
+  toJSON(): object {
+    return {
+      name: this.name,
+      message: this.message,
+      code: this.code,
+      timestamp: this.timestamp.toISOString(),
+      context: this.context,
+      stack: this.stack,
+    };
   }
 }
 

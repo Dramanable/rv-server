@@ -6,6 +6,258 @@
 
 Vous travaillez sur une **application enterprise NestJS** implémentant la **Clean Architecture de Robert C. Martin (Uncle Bob)** avec une approche **TDD rigoureuse**, les **principes SOLID**, et les **meilleures pratiques TypeScript** strictes. L'application est **production-ready** avec sécurité, i18n, et patterns enterprise.
 
+## 🚨 **RÈGLE CRITIQUE : APPLICATION PROFESSIONNELLE D'ENTREPRISE**
+
+**⚠️ RÈGLE NON-NÉGOCIABLE** : Cette application est une **solution d'entreprise professionnelle**, pas un blog ou prototype. CHAQUE ligne de code DOIT respecter les standards d'entreprise :
+
+### 📊 **LOGGING OBLIGATOIRE PARTOUT**
+
+**TOUJOURS inclure le logging dans CHAQUE couche :**
+
+```typescript
+// ✅ OBLIGATOIRE - Use Case avec logging complet
+export class CreateSkillUseCase {
+  constructor(
+    private readonly skillRepository: ISkillRepository,
+    private readonly logger: ILogger, // ⚠️ OBLIGATOIRE
+    private readonly i18n: I18nService, // ⚠️ OBLIGATOIRE
+  ) {}
+
+  async execute(request: CreateSkillRequest): Promise<CreateSkillResponse> {
+    this.logger.info('Creating new skill', {
+      businessId: request.businessId,
+      skillName: request.name,
+      requestingUserId: request.requestingUserId,
+      correlationId: request.correlationId, // ⚠️ OBLIGATOIRE
+    });
+
+    try {
+      const skill = Skill.create(/* ... */);
+      const savedSkill = await this.skillRepository.save(skill);
+
+      this.logger.info('Skill created successfully', {
+        skillId: savedSkill.getId(),
+        businessId: request.businessId,
+        correlationId: request.correlationId,
+      });
+
+      return CreateSkillResponse.fromSkill(savedSkill);
+    } catch (error) {
+      this.logger.error('Failed to create skill', {
+        error: error.message,
+        businessId: request.businessId,
+        correlationId: request.correlationId,
+      });
+      throw error;
+    }
+  }
+}
+```
+
+### 🌐 **I18N OBLIGATOIRE POUR TOUS LES MESSAGES**
+
+**JAMAIS de texte hardcodé :**
+
+```typescript
+// ❌ INTERDIT - Messages hardcodés
+throw new Error('Skill name is required');
+
+// ✅ OBLIGATOIRE - Messages i18n
+throw new SkillValidationError(
+  this.i18n.translate('skill.validation.nameRequired'),
+  'SKILL_NAME_REQUIRED'
+);
+```
+
+### 🔍 **CONTEXTE ET TRAÇABILITÉ OBLIGATOIRES**
+
+**Chaque requête DOIT avoir :**
+- **correlationId** : UUID unique pour tracer la requête
+- **requestingUserId** : Qui fait l'action
+- **businessContext** : Dans quel contexte business
+- **operationMetadata** : Métadonnées de l'opération
+
+```typescript
+// ✅ OBLIGATOIRE - Interface de requête avec contexte
+export interface CreateSkillRequest {
+  // Business data
+  readonly businessId: string;
+  readonly name: string;
+  readonly category: string;
+  readonly description: string;
+  readonly isCritical: boolean;
+
+  // ⚠️ CONTEXTE OBLIGATOIRE
+  readonly requestingUserId: string; // Qui fait l'action
+  readonly correlationId: string;    // Traçabilité unique
+  readonly clientIp?: string;        // IP client (sécurité)
+  readonly userAgent?: string;       // User agent
+  readonly timestamp: Date;          // Horodatage précis
+}
+```
+
+### 👤 **TRAÇABILITÉ UTILISATEUR OBLIGATOIRE**
+
+**⚠️ RÈGLE CRITIQUE : Il faut TOUJOURS savoir qui a créé quoi et qui a mis à jour quoi**
+
+**CHAQUE entité DOIT avoir :**
+- **createdBy** : UUID de l'utilisateur qui a créé l'entité
+- **updatedBy** : UUID de l'utilisateur qui a fait la dernière modification
+- **createdAt** : Timestamp de création
+- **updatedAt** : Timestamp de dernière modification
+
+```typescript
+// ✅ OBLIGATOIRE - Pattern d'entité avec traçabilité complète
+export class Skill {
+  private constructor(
+    private readonly _id: string,
+    private readonly _businessId: BusinessId,
+    private _name: string,
+    private _category: string,
+    private _description: string,
+    private _isActive: boolean,
+    private _isCritical: boolean,
+    private readonly _createdBy: string,    // ⚠️ OBLIGATOIRE
+    private _updatedBy: string,             // ⚠️ OBLIGATOIRE
+    private readonly _createdAt: Date,      // ⚠️ OBLIGATOIRE
+    private _updatedAt: Date,               // ⚠️ OBLIGATOIRE
+  ) {}
+
+  static create(params: {
+    businessId: BusinessId;
+    name: string;
+    category: string;
+    description: string;
+    isCritical: boolean;
+    createdBy: string; // ⚠️ OBLIGATOIRE - UUID de l'utilisateur
+  }): Skill {
+    const now = new Date();
+    return new Skill(
+      generateId(),
+      params.businessId,
+      params.name,
+      params.category,
+      params.description,
+      true, // Actif par défaut
+      params.isCritical,
+      params.createdBy,    // ⚠️ OBLIGATOIRE
+      params.createdBy,    // updatedBy = createdBy initialement
+      now,                 // createdAt
+      now,                 // updatedAt
+    );
+  }
+
+  update(params: {
+    name?: string;
+    category?: string;
+    description?: string;
+    isCritical?: boolean;
+    isActive?: boolean;
+    updatedBy: string; // ⚠️ OBLIGATOIRE - UUID de l'utilisateur
+  }): void {
+    if (params.name) this._name = params.name;
+    if (params.category) this._category = params.category;
+    if (params.description !== undefined) this._description = params.description;
+    if (params.isCritical !== undefined) this._isCritical = params.isCritical;
+    if (params.isActive !== undefined) this._isActive = params.isActive;
+
+    this._updatedBy = params.updatedBy; // ⚠️ OBLIGATOIRE
+    this._updatedAt = new Date();       // ⚠️ OBLIGATOIRE
+  }
+
+  // Getters pour traçabilité
+  getCreatedBy(): string { return this._createdBy; }
+  getUpdatedBy(): string { return this._updatedBy; }
+  getCreatedAt(): Date { return this._createdAt; }
+  getUpdatedAt(): Date { return this._updatedAt; }
+}
+```
+
+**MIGRATIONS ORM - Pattern obligatoire :**
+```typescript
+// ✅ OBLIGATOIRE - Colonnes de traçabilité dans TOUTES les tables
+export class CreateSkillsTable implements MigrationInterface {
+  public async up(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.createTable(
+      new Table({
+        name: 'skills',
+        columns: [
+          // Colonnes métier...
+
+          // ⚠️ TRAÇABILITÉ OBLIGATOIRE
+          {
+            name: 'created_by',
+            type: 'uuid',
+            isNullable: false,
+            comment: 'UUID of user who created this skill',
+          },
+          {
+            name: 'updated_by',
+            type: 'uuid',
+            isNullable: false,
+            comment: 'UUID of user who last updated this skill',
+          },
+          {
+            name: 'created_at',
+            type: 'timestamp',
+            default: 'CURRENT_TIMESTAMP',
+            comment: 'Creation timestamp',
+          },
+          {
+            name: 'updated_at',
+            type: 'timestamp',
+            default: 'CURRENT_TIMESTAMP',
+            onUpdate: 'CURRENT_TIMESTAMP',
+            comment: 'Last update timestamp',
+          },
+        ],
+      }),
+      true,
+    );
+  }
+}
+```
+
+### 🔐 **AUDIT TRAIL OBLIGATOIRE**
+
+**Toutes les opérations CRUD doivent être auditées :**
+
+```typescript
+// ✅ OBLIGATOIRE - Audit dans les Use Cases
+await this.auditService.logOperation({
+  operation: 'CREATE_SKILL',
+  entityType: 'SKILL',
+  entityId: savedSkill.getId(),
+  businessId: request.businessId,
+  userId: request.requestingUserId,
+  correlationId: request.correlationId,
+  changes: {
+    created: savedSkill.toJSON(),
+  },
+  timestamp: new Date(),
+});
+```
+
+### 📋 **CHECKLIST OBLIGATOIRE POUR CHAQUE FICHIER**
+
+- [ ] ✅ **Logging** : ILogger injecté et utilisé
+- [ ] ✅ **I18n** : I18nService injecté, messages traduits
+- [ ] ✅ **Contexte** : correlationId, requestingUserId présents
+- [ ] ✅ **Error Handling** : Erreurs loggées avec contexte
+- [ ] ✅ **Audit** : Opérations critiques auditées
+- [ ] ✅ **Métadonnées** : Timestamp, IP, UserAgent capturés
+- [ ] ✅ **Types stricts** : Aucun `any`, interfaces complètes
+- [ ] ✅ **Validation** : Données validées avec messages i18n
+
+### 🚫 **INTERDICTIONS ABSOLUES**
+
+- ❌ **JAMAIS** de `console.log()` en production
+- ❌ **JAMAIS** de messages d'erreur hardcodés
+- ❌ **JAMAIS** d'opération sans logging
+- ❌ **JAMAIS** de Use Case sans correlationId
+- ❌ **JAMAIS** d'exception sans contexte de traçabilité
+- ❌ **JAMAIS** de CRUD sans audit trail
+
 ## 🐳 **ENVIRONNEMENT DOCKER PRINCIPAL**
 
 ### 📋 **RÈGLE CRITIQUE : APPLICATION TOUJOURS SUR DOCKER**
@@ -432,16 +684,49 @@ touch src/infrastructure/database/repositories/typeorm-business.repository.spec.
 # 3. ⚠️ CRITIQUE : Créer Migration TypeORM OBLIGATOIRE EN PREMIER
 touch src/infrastructure/database/sql/postgresql/migrations/{timestamp}-Create{Entity}Table.ts
 # 4. 🚨 ÉTAPE OBLIGATOIRE : TESTER LA MIGRATION AVANT TOUT CODE
-npm run migration:run
-npm run migration:revert  # Vérifier le rollback
-npm run migration:run     # Re-appliquer
-# 5. Créer l'entité ORM BusinessOrmEntity (GREEN)
-# 6. Créer/Mettre à jour les Mappers statiques dans /infrastructure/mappers/ (GREEN)
-# 7. Créer TypeOrmBusinessRepository qui implémente BusinessRepository (GREEN)
-# 8. Configurer l'injection de dépendances dans TypeOrmRepositoriesModule (GREEN)
-# 9. Refactorer si nécessaire (REFACTOR)
-# 10. Valider : npm test -- typeorm-business.repository.spec.ts
+docker-compose exec nestjs-dev npm run migration:run
+docker-compose exec nestjs-dev npm run migration:revert  # Vérifier le rollback
+docker-compose exec nestjs-dev npm run migration:run     # Re-appliquer
+# 5. ⚠️ CRITIQUE : VALIDER QUE LA MIGRATION FONCTIONNE SANS ERREUR
+# Si erreurs → STOP et corriger la migration avant de continuer
+# 6. Créer l'entité ORM BusinessOrmEntity (GREEN)
+# 7. Créer/Mettre à jour les Mappers statiques dans /infrastructure/mappers/ (GREEN)
+# 8. Créer TypeOrmBusinessRepository qui implémente BusinessRepository (GREEN)
+# 9. Configurer l'injection de dépendances dans TypeOrmRepositoriesModule (GREEN)
+# 10. Refactorer si nécessaire (REFACTOR)
+# 11. Valider : npm test -- typeorm-business.repository.spec.ts
 ```
+
+### 🚨 **RÈGLE CRITIQUE : MIGRATION VALIDÉE AVANT PRÉSENTATION**
+
+**⚠️ RÈGLE NON-NÉGOCIABLE** : **JAMAIS** passer à la couche Presentation sans avoir validé que les migrations fonctionnent parfaitement.
+
+**WORKFLOW OBLIGATOIRE MIGRATIONS :**
+
+```bash
+# 1️⃣ CRÉER la migration
+touch src/infrastructure/database/sql/postgresql/migrations/{timestamp}-Create{Entity}Table.ts
+
+# 2️⃣ TESTER dans Docker (OBLIGATOIRE)
+docker-compose exec nestjs-dev npm run migration:run
+
+# 3️⃣ VÉRIFIER le rollback
+docker-compose exec nestjs-dev npm run migration:revert
+
+# 4️⃣ RE-APPLIQUER pour validation finale
+docker-compose exec nestjs-dev npm run migration:run
+
+# 5️⃣ VÉRIFIER les tables créées
+docker-compose exec postgres-dev psql -U postgres -d appointment_system -c "\dt"
+
+# 6️⃣ SEULEMENT SI SUCCÈS → Continuer vers ORM Entity et Repository
+```
+
+**🚨 SI ERREURS DE MIGRATION :**
+- **STOP** immédiatement le développement
+- **CORRIGER** la migration avant toute autre action
+- **RE-TESTER** jusqu'à succès complet
+- **JAMAIS** ignorer les erreurs de migration
 
 **Étape 4️⃣ : PRESENTATION** (Seulement après Infrastructure terminé)
 ```bash
