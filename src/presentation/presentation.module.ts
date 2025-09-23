@@ -47,6 +47,8 @@ import { UpdateBusinessUseCase } from '@application/use-cases/business/update-bu
 import { CreateCalendarUseCase } from '@application/use-cases/calendar/create-calendar.use-case';
 import { GetCalendarByIdUseCase } from '@application/use-cases/calendar/get-calendar-by-id.use-case';
 import { ListCalendarsUseCase } from '@application/use-cases/calendar/list-calendars.use-case';
+import { UpdateCalendarUseCase } from '@application/use-cases/calendar/update-calendar.use-case';
+import { DeleteCalendarUseCase } from '@application/use-cases/calendar/delete-calendar.use-case';
 
 // 🌩️ AWS S3 Image Management Use Cases
 import { AddImageToBusinessGalleryUseCase } from '@application/use-cases/business/add-image-to-gallery.use-case';
@@ -422,6 +424,35 @@ import { PresentationCookieService } from './services/cookie.service';
       inject: [
         TOKENS.CALENDAR_REPOSITORY,
         TOKENS.USER_REPOSITORY,
+        TOKENS.LOGGER,
+        TOKENS.I18N_SERVICE,
+      ],
+    },
+    {
+      provide: TOKENS.UPDATE_CALENDAR_USE_CASE,
+      useFactory: (calendarRepo, businessRepo, logger, i18n) =>
+        new UpdateCalendarUseCase(calendarRepo, businessRepo, logger, i18n),
+      inject: [
+        TOKENS.CALENDAR_REPOSITORY,
+        TOKENS.BUSINESS_REPOSITORY,
+        TOKENS.LOGGER,
+        TOKENS.I18N_SERVICE,
+      ],
+    },
+    {
+      provide: TOKENS.DELETE_CALENDAR_USE_CASE,
+      useFactory: (calendarRepo, businessRepo, appointmentRepo, logger, i18n) =>
+        new DeleteCalendarUseCase(
+          calendarRepo,
+          businessRepo,
+          appointmentRepo,
+          logger,
+          i18n,
+        ),
+      inject: [
+        TOKENS.CALENDAR_REPOSITORY,
+        TOKENS.BUSINESS_REPOSITORY,
+        TOKENS.APPOINTMENT_REPOSITORY,
         TOKENS.LOGGER,
         TOKENS.I18N_SERVICE,
       ],

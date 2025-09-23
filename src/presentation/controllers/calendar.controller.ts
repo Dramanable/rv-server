@@ -33,9 +33,13 @@ import {
 import { CreateCalendarUseCase } from '../../application/use-cases/calendar/create-calendar.use-case';
 import { GetCalendarByIdUseCase } from '../../application/use-cases/calendar/get-calendar-by-id.use-case';
 import { ListCalendarsUseCase } from '../../application/use-cases/calendar/list-calendars.use-case';
+import { UpdateCalendarUseCase } from '../../application/use-cases/calendar/update-calendar.use-case';
+import { DeleteCalendarUseCase } from '../../application/use-cases/calendar/delete-calendar.use-case';
 import { CalendarStatus as DomainCalendarStatus } from '../../domain/entities/calendar.entity';
 import { User } from '../../domain/entities/user.entity';
 import { TOKENS } from '../../shared/constants/injection-tokens';
+import { UpdateCalendarRequest } from '../../application/use-cases/calendar/update-calendar.use-case';
+import { DeleteCalendarRequest } from '../../application/use-cases/calendar/delete-calendar.use-case';
 import {
   CalendarResponseDto,
   CalendarStatus,
@@ -46,6 +50,7 @@ import {
   ListCalendarsResponseDto,
   UpdateCalendarDto,
   UpdateCalendarResponseDto,
+  WorkingHoursDto,
 } from '../dtos/calendar.dto';
 import { CalendarRequestMapper } from '../mappers/calendar-request.mapper';
 import { GetUser } from '../security/decorators/get-user.decorator';
@@ -65,6 +70,12 @@ export class CalendarController {
 
     @Inject(TOKENS.LIST_CALENDARS_USE_CASE)
     private readonly listCalendarsUseCase: ListCalendarsUseCase,
+
+    @Inject(TOKENS.UPDATE_CALENDAR_USE_CASE)
+    private readonly updateCalendarUseCase: UpdateCalendarUseCase,
+
+    @Inject(TOKENS.DELETE_CALENDAR_USE_CASE)
+    private readonly deleteCalendarUseCase: DeleteCalendarUseCase,
   ) {}
 
   /**
@@ -124,7 +135,7 @@ export class CalendarController {
             : calendar.description || '',
         businessId: calendar.businessId,
         type: calendar.type,
-        status: this.mapCalendarStatusToDto(calendar.status),
+        status: this.mapDomainStatusToDto(calendar.status),
         timeZone: 'Europe/Paris', // TODO: Add to use case response
         isDefault: false, // TODO: Add to use case response
         color: '#007bff', // TODO: Add to use case response
@@ -200,7 +211,7 @@ export class CalendarController {
       description: calendar.description,
       businessId: calendar.businessId,
       type: calendar.type,
-      status: this.mapCalendarStatusToDto(calendar.status),
+      status: this.mapDomainStatusToDto(calendar.status),
       settings: calendar.settings,
       availability: calendar.availability,
       bookingRulesCount: 0, // TODO: Calculate from actual booking rules
@@ -330,9 +341,38 @@ export class CalendarController {
   async update(
     @Param('id') id: string,
     @Body() dto: UpdateCalendarDto,
+    @GetUser() user: User,
   ): Promise<UpdateCalendarResponseDto> {
-    // TODO: Implement UpdateCalendarUseCase
-    throw new Error('Update calendar use case not implemented yet');
+    const request: UpdateCalendarRequest = {
+      requestingUserId: user.id,
+      calendarId: id,
+      name: dto.name,
+      description: dto.description,
+      settings: dto.settings
+        ? {
+            timeZone: dto.settings.timezone,
+            workingHours: dto.workingHours
+              ? this.mapWorkingHoursToRecord(dto.workingHours)
+              : undefined,
+            slotDuration: dto.settings.defaultSlotDuration,
+            bufferTime: dto.settings.bufferTimeBetweenSlots,
+            maxAdvanceBooking: dto.settings.maximumAdvanceBooking,
+            minAdvanceBooking: dto.settings.minimumNotice,
+            allowWeekendBooking: true, // TODO: Add to DTO
+            autoConfirm: dto.settings.autoConfirmBookings,
+          }
+        : undefined,
+    };
+
+    const response = await this.updateCalendarUseCase.execute(request);
+
+    return {
+      id: response.calendar.id.getValue(),
+      name: response.calendar.name,
+      description: response.calendar.description,
+      status: this.mapDomainStatusToDto(response.calendar.status),
+      updatedAt: response.calendar.updatedAt,
+    };
   }
 
   /**
@@ -376,9 +416,23 @@ export class CalendarController {
     description:
       'Cannot delete calendar with active appointments or constraints',
   })
-  async delete(@Param('id') id: string): Promise<DeleteCalendarResponseDto> {
-    // TODO: Implement DeleteCalendarUseCase
-    throw new Error('Delete calendar use case not implemented yet');
+  async delete(
+    @Param('id') id: string,
+    @GetUser() user: User,
+  ): Promise<DeleteCalendarResponseDto> {
+    const request: DeleteCalendarRequest = {
+      requestingUserId: user.id,
+      calendarId: id,
+    };
+
+    const response = await this.deleteCalendarUseCase.execute(request);
+
+    return {
+      success: true,
+      message: response.message,
+      deletedId: id,
+      deletedAt: new Date(),
+    };
   }
 
   /**
@@ -413,7 +467,7 @@ export class CalendarController {
    * 🔄 MAPPER: Convert Domain CalendarStatus to DTO CalendarStatus
    * Pour les réponses API
    */
-  private mapCalendarStatusToDto(status: DomainCalendarStatus): CalendarStatus {
+  private mapDomainStatusToDto(status: DomainCalendarStatus): CalendarStatus {
     switch (status) {
       case DomainCalendarStatus.ACTIVE:
         return CalendarStatus.ACTIVE;
@@ -424,5 +478,43 @@ export class CalendarController {
       default:
         return CalendarStatus.INACTIVE;
     }
+  }
+
+  /**
+   * 🔄 MAPPER: Convert WorkingHoursDto[] to Record format
+   * Pour les use cases
+   */
+  private mapWorkingHoursToRecord(
+    workingHours: WorkingHoursDto[],
+  ): Record<string, { start: string; end: string }> {
+    const record: Record<string, { start: string; end: string }> = {};
+
+    workingHours.forEach((wh) => {
+      if (wh.isWorking) {
+        const dayName = this.getDayName(wh.dayOfWeek);
+        record[dayName] = {
+          start: wh.startTime,
+          end: wh.endTime,
+        };
+      }
+    });
+
+    return record;
+  }
+
+  /**
+   * Helper: Convert day number to name
+   */
+  private getDayName(dayOfWeek: number): string {
+    const days = [
+      'sunday',
+      'monday',
+      'tuesday',
+      'wednesday',
+      'thursday',
+      'friday',
+      'saturday',
+    ];
+    return days[dayOfWeek] || 'monday';
   }
 }

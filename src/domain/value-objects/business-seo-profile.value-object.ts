@@ -208,7 +208,7 @@ Allow: /about`;
     return BusinessSeoProfile.create({
       metaTitle: optimizedTitle.substring(0, 60), // SEO title limit
       metaDescription: optimizedDescription.substring(0, 160), // SEO description limit
-      keywords: [...new Set(localKeywords)], // Remove duplicates
+      keywords: Array.from(new Set(localKeywords)), // Remove duplicates
       canonicalUrl: this._canonicalUrl,
       openGraphTitle: this._openGraphTitle,
       openGraphDescription: this._openGraphDescription,
@@ -220,9 +220,9 @@ Allow: /about`;
 
   addKeywords(newKeywords: string[]): BusinessSeoProfile {
     const allKeywords = [...this._keywords, ...newKeywords];
-    const uniqueKeywords = [
-      ...new Set(allKeywords.map((k) => k.toLowerCase())),
-    ];
+    const uniqueKeywords = Array.from(
+      new Set(allKeywords.map((k) => k.toLowerCase())),
+    );
 
     if (uniqueKeywords.length > 10) {
       throw new Error('Maximum 10 keywords allowed for optimal SEO');

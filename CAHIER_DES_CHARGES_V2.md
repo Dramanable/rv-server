@@ -70,9 +70,24 @@ Ce projet vise à créer un **système de gestion de rendez-vous multi-entrepris
 - **🎯 FLEXIBILITÉ PROFESSIONNELLE MAXIMALE :**
   - **Disponibilités Granulaires :** Par jour, par service, par professionnel
   - **Horaires Variables IA** : Adaptation intelligente selon demande prédite
-  - **Exceptions Temporaires** : Congés, formations, événements spéciaux
+  - **Exceptions Temporelles** : Congés, formations, événements spéciaux
   - **Règles Métier Intelligentes** : Temps préparation/nettoyage adaptatifs
   - **Slots Quantiques** : Créneaux en superposition jusqu'à confirmation
+- **👨‍💼 GESTION AVANCÉE DES DISPONIBILITÉS STAFF :**
+  - **Agendas Personnels Staff** : Calendrier individuel par professionnel avec synchronisation
+  - **Horaires Flexibles Multi-Patterns** : Temps plein, temps partiel, horaires rotatifs, garde
+  - **Disponibilités par Compétence** : Créneaux spécialisés selon expertise (consultation, chirurgie, formation)
+  - **Gestion Absences Intelligente** : Congés payés, maladie, formation continue, événements personnels
+  - **Préférences Personnelles** : Créneaux préférés, jours off, limites journalières/hebdomadaires
+  - **Substitution Automatique** : Remplacement intelligent lors d'indisponibilité imprévue
+  - **Charge de Travail Optimisée** : Répartition équitable avec respect limites légales et bien-être
+  - **Planning Prévisionnel** : Planification à 3-6 mois avec ajustements temps réel
+  - **Notifications Staff** : Alertes changements planning, nouvelles affectations, confirmations
+  - **Validation Hiérarchique** : Système d'approbation pour congés et modifications majeures
+  - **Historique Activité** : Tracking complet pour paie, évaluation performance, conformité légale
+  - **Intégration RH** : Synchronisation avec systèmes paie, gestion talent, formation
+  - **Respect Conventions** : Application automatique codes du travail, conventions collectives
+  - **Gestion Multi-Sites** : Staff nomade entre plusieurs locations avec optimisation déplacements
 
 ### **3. Gestion du Personnel (Staff)**
 
