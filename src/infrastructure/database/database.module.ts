@@ -18,8 +18,8 @@ import { StaffOrmEntity } from './sql/postgresql/entities/staff-orm.entity';
 import { UserOrmEntity } from './sql/postgresql/entities/user-orm.entity';
 
 // 🖼️ Business Image & Gallery Entities
-import { BusinessImageOrmEntity } from './sql/postgresql/entities/business-image-orm.entity';
 import { BusinessGalleryOrmEntity } from './sql/postgresql/entities/business-gallery-orm.entity';
+import { BusinessImageOrmEntity } from './sql/postgresql/entities/business-image-orm.entity';
 
 /**
  * 🗄️ Simple Database Module

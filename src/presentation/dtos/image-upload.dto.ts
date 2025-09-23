@@ -1,12 +1,12 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 import {
+  IsBoolean,
   IsEnum,
   IsOptional,
   IsString,
   Length,
-  IsBoolean,
 } from 'class-validator';
-import { Transform } from 'class-transformer';
 
 /**
  * DTO for image upload with multipart form data

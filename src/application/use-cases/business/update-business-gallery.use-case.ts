@@ -6,8 +6,8 @@
 
 import { BusinessRepository } from '../../../domain/repositories/business.repository';
 import { BusinessId } from '../../../domain/value-objects/business-id.value-object';
-import { ILogger } from '../../../shared/types/logger.interface';
 import { I18nService } from '../../../shared/types/i18n.interface';
+import { ILogger } from '../../../shared/types/logger.interface';
 import { BusinessNotFoundError } from '../../exceptions/business.exceptions';
 
 export interface UpdateBusinessGalleryRequest {

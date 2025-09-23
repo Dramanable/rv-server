@@ -5,8 +5,8 @@
  * ✅ Sécurité et performance optimisées
  */
 
-import { ConfigService } from '@nestjs/config';
 import { S3Client } from '@aws-sdk/client-s3';
+import { ConfigService } from '@nestjs/config';
 
 export interface AwsS3ConfigOptions {
   readonly region: string;

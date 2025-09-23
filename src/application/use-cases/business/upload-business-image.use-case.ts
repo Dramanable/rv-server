@@ -7,13 +7,13 @@
  */
 
 import { BusinessRepository } from '../../../domain/repositories/business.repository';
-import { ImageUploadSettings } from '../../../domain/value-objects/image-upload-settings.value-object';
-import { AwsS3ImageService } from '../../../infrastructure/services/aws-s3-image.service';
 import { BusinessId } from '../../../domain/value-objects/business-id.value-object';
 import {
-  ImageCategory,
   BusinessImage,
+  ImageCategory,
 } from '../../../domain/value-objects/business-image.value-object';
+import { ImageUploadSettings } from '../../../domain/value-objects/image-upload-settings.value-object';
+import { AwsS3ImageService } from '../../../infrastructure/services/aws-s3-image.service';
 
 export interface UploadBusinessImageRequest {
   readonly businessId: string;

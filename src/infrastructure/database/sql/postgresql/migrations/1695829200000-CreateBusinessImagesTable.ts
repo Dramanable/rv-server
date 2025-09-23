@@ -4,13 +4,7 @@
  * ✅ Support variants et métadonnées JSONB
  */
 
-import {
-  MigrationInterface,
-  QueryRunner,
-  Table,
-  TableIndex,
-  TableForeignKey,
-} from 'typeorm';
+import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm';
 
 export class CreateBusinessImagesTable1695829200000
   implements MigrationInterface
@@ -36,7 +30,7 @@ export class CreateBusinessImagesTable1695829200000
     await queryRunner.query(`
       CREATE TYPE "${schema}"."image_category_enum" AS ENUM (
         'PROFILE',
-        'GALLERY', 
+        'GALLERY',
         'COVER'
       )
     `);

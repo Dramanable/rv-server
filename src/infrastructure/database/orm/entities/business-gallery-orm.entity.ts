@@ -5,15 +5,15 @@
  */
 
 import {
-  Entity,
-  PrimaryGeneratedColumn,
   Column,
+  CreateDateColumn,
+  Entity,
+  Index,
+  JoinColumn,
   ManyToOne,
   OneToMany,
-  JoinColumn,
-  CreateDateColumn,
+  PrimaryGeneratedColumn,
   UpdateDateColumn,
-  Index,
 } from 'typeorm';
 import { BusinessOrmEntity } from '../../sql/postgresql/entities/business-orm.entity';
 import { BusinessImageOrmEntity } from './business-image-orm.entity';

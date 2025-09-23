@@ -5,18 +5,18 @@
  */
 
 import {
-  Entity,
-  PrimaryGeneratedColumn,
   Column,
+  CreateDateColumn,
+  Entity,
+  Index,
+  JoinColumn,
   ManyToOne,
   OneToMany,
-  JoinColumn,
-  CreateDateColumn,
+  PrimaryGeneratedColumn,
   UpdateDateColumn,
-  Index,
 } from 'typeorm';
-import { BusinessOrmEntity } from './business-orm.entity';
 import { BusinessImageOrmEntity } from './business-image-orm.entity';
+import { BusinessOrmEntity } from './business-orm.entity';
 
 @Entity('business_galleries')
 @Index('IDX_business_galleries_business_id', ['businessId'])

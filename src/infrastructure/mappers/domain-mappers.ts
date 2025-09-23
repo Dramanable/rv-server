@@ -21,8 +21,8 @@ import { Staff } from '../../domain/entities/staff.entity';
 import { User } from '../../domain/entities/user.entity';
 
 // Domain Value Objects
-import { BusinessHours } from '../../domain/value-objects/business-hours.value-object';
 import { BusinessGallery } from '../../domain/value-objects/business-gallery.value-object';
+import { BusinessHours } from '../../domain/value-objects/business-hours.value-object';
 
 // Domain Value Objects
 import { Address } from '../../domain/value-objects/address.value-object';

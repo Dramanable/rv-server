@@ -1,8 +1,8 @@
 import { Address } from '../value-objects/address.value-object';
+import { BusinessGallery } from '../value-objects/business-gallery.value-object';
 import { BusinessHours } from '../value-objects/business-hours.value-object';
 import { BusinessId } from '../value-objects/business-id.value-object';
 import { BusinessName } from '../value-objects/business-name.value-object';
-import { BusinessGallery } from '../value-objects/business-gallery.value-object';
 import { BusinessSeoProfile } from '../value-objects/business-seo-profile.value-object';
 import { Email } from '../value-objects/email.value-object';
 import { FileUrl } from '../value-objects/file-url.value-object';

@@ -13,7 +13,6 @@ import {
   MigrationInterface,
   QueryRunner,
   Table,
-  TableIndex,
   TableForeignKey,
 } from 'typeorm';
 
@@ -111,17 +110,17 @@ export class CreateBusinessGalleriesTable1695829210000
 
     // Créer les index
     await queryRunner.query(`
-      CREATE INDEX "IDX_business_galleries_business_id" 
+      CREATE INDEX "IDX_business_galleries_business_id"
       ON "${schema}"."business_galleries" ("business_id")
     `);
 
     await queryRunner.query(`
-      CREATE INDEX "IDX_business_galleries_display_order" 
+      CREATE INDEX "IDX_business_galleries_display_order"
       ON "${schema}"."business_galleries" ("display_order")
     `);
 
     await queryRunner.query(`
-      CREATE INDEX "IDX_business_galleries_is_primary" 
+      CREATE INDEX "IDX_business_galleries_is_primary"
       ON "${schema}"."business_galleries" ("is_primary", "is_active")
     `);
 

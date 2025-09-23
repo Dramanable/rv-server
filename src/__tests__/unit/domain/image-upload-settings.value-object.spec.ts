@@ -5,9 +5,9 @@
  */
 
 import {
-  ImageUploadSettings,
   ImageFormat,
   ImagePolicy,
+  ImageUploadSettings,
 } from '../../../domain/value-objects/image-upload-settings.value-object';
 
 describe('ImageUploadSettings Value Object', () => {

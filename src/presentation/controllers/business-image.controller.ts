@@ -39,17 +39,13 @@ import {
   UpdateBusinessSeoDto,
   UpdateBusinessSeoResponseDto,
 } from '../dtos/business-seo.dto';
-import { JwtAuthGuard } from '../security/guards/jwt-auth.guard';
 import { GetUser } from '../security/decorators/get-user.decorator';
+import { JwtAuthGuard } from '../security/guards/jwt-auth.guard';
 
-import { TOKENS } from '../../shared/constants/injection-tokens';
-import {
-  AddImageToBusinessGalleryUseCase,
-  AddImageToBusinessGalleryRequest,
-  AddImageToBusinessGalleryResponse,
-} from '../../application/use-cases/business/add-image-to-business-gallery.use-case';
+import { AddImageToBusinessGalleryUseCase } from '../../application/use-cases/business/add-image-to-business-gallery.use-case';
 import { UpdateBusinessSeoProfileUseCase } from '../../application/use-cases/business/update-business-seo.use-case';
 import { UploadBusinessImageUseCase } from '../../application/use-cases/business/upload-business-image.use-case';
+import { TOKENS } from '../../shared/constants/injection-tokens';
 
 // Types pour les requêtes authentifiées
 interface AuthenticatedUser {
@@ -286,8 +282,8 @@ export class BusinessImageController {
 
     ### Meta Description (150-160 chars)
     \`\`\`
-    "Découvrez notre salon de coiffure moderne à Paris 15e. 
-    Coupe, coloration, soins capillaires par des experts. 
+    "Découvrez notre salon de coiffure moderne à Paris 15e.
+    Coupe, coloration, soins capillaires par des experts.
     Réservez en ligne !"
     \`\`\`
 

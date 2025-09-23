@@ -10,8 +10,8 @@ import {
   BusinessImage,
   ImageCategory,
 } from '../../../domain/value-objects/business-image.value-object';
-import { ILogger } from '../../../shared/types/logger.interface';
 import { I18nService } from '../../../shared/types/i18n.interface';
+import { ILogger } from '../../../shared/types/logger.interface';
 import { BusinessNotFoundError } from '../../exceptions/business.exceptions';
 
 export interface GetBusinessGalleryRequest {

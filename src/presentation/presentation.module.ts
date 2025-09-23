@@ -55,9 +55,9 @@ import { UploadBusinessImageUseCase } from '@application/use-cases/business/uplo
 
 // 🖼️ Business Gallery Use Cases
 import { CreateBusinessGalleryUseCase } from '@application/use-cases/business/create-business-gallery.use-case';
+import { DeleteBusinessGalleryUseCase } from '@application/use-cases/business/delete-business-gallery.use-case';
 import { GetBusinessGalleryUseCase } from '@application/use-cases/business/get-business-gallery.use-case';
 import { UpdateBusinessGalleryUseCase } from '@application/use-cases/business/update-business-gallery.use-case';
-import { DeleteBusinessGalleryUseCase } from '@application/use-cases/business/delete-business-gallery.use-case';
 
 // Service Use Cases
 import { CreateServiceUseCase } from '@application/use-cases/service/create-service.use-case';
@@ -88,7 +88,9 @@ import { SendNotificationUseCase } from '@application/use-cases/notification/sen
 // 🎮 Controllers
 import { AppointmentController } from './controllers/appointment.controller';
 import { AuthController } from './controllers/auth.controller';
+import { BusinessGalleryController } from './controllers/business-gallery.controller';
 import { BusinessHoursController } from './controllers/business-hours.controller';
+import { BusinessImageController } from './controllers/business-image.controller';
 import { BusinessSectorController } from './controllers/business-sector.controller';
 import { BusinessController } from './controllers/business.controller';
 import { CalendarController } from './controllers/calendar.controller';
@@ -96,8 +98,6 @@ import { NotificationController } from './controllers/notification.controller';
 import { ServiceController } from './controllers/service.controller';
 import { StaffController } from './controllers/staff.controller';
 import { UserController } from './controllers/user.controller';
-import { BusinessImageController } from './controllers/business-image.controller';
-import { BusinessGalleryController } from './controllers/business-gallery.controller';
 
 // 🛡️ Security
 import { JwtAuthGuard } from './security/auth.guard';

@@ -42,17 +42,37 @@ Ce projet vise à créer un **système de gestion de rendez-vous multi-entrepris
   - Géolocalisation et recherche par proximité
   - Paramètres personnalisables (réservation en ligne, validation, etc.)
 
-### **2. Système de Calendriers Multi-Sites**
+### **2. Système Calendaire Intelligent avec IA**
 
 - **Architecture:** 1 Business → N Calendriers → N Adresses/Sites
 - **Types de calendriers:**
   - Calendrier principal (siège social)
   - Calendriers de sites distants
   - Calendriers spécialisés par service
-- **Fonctionnalités:**
-  - Synchronisation inter-calendriers
-  - Gestion des disponibilités
-  - Règles de réservation par calendrier
+- **🧠 INTELLIGENCE ARTIFICIELLE CALENDAIRE :**
+  - **Machine Learning** : Apprentissage automatique des patterns de réservation
+  - **Prédiction de Demande** : Anticipation des pics et creux d'activité par IA
+  - **Optimisation Revenus** : Maximisation CA avec satisfaction client optimale
+  - **Détection Conflits IA** : Prévention proactive basée sur météo, trafic, tendances
+  - **Réallocation Automatique** : Réorganisation intelligente lors d'annulations
+  - **Gestion Urgences IA** : Évaluation et insertion automatique selon scoring
+- **🌐 SYNCHRONISATION UNIVERSELLE :**
+  - **Calendriers Personnels** : Google, Outlook, Apple (bidirectionnelle temps réel)
+  - **Systèmes Métier** : HMS hospitaliers, ERP, CRM, systèmes éducatifs/juridiques
+  - **Plateformes Externes** : Doctolib, Calendly, Booking.com
+  - **Résolution Conflits** : IA gère automatiquement les conflits multi-systèmes
+- **🎯 ADAPTATIONS CONTEXTUELLES AUTOMATIQUES :**
+  - **Météo Intelligente** : Ajustement selon prévisions météorologiques
+  - **Événements Locaux** : Adaptation selon festivals, événements, matches
+  - **Trafic & Transport** : Optimisation selon embouteillages prévus
+  - **Saisonnalité** : Adaptation vacances scolaires, jours fériés, tendances
+  - **Veille Sanitaire** : Réaction automatique aux alertes épidémiques
+- **🎯 FLEXIBILITÉ PROFESSIONNELLE MAXIMALE :**
+  - **Disponibilités Granulaires :** Par jour, par service, par professionnel
+  - **Horaires Variables IA** : Adaptation intelligente selon demande prédite
+  - **Exceptions Temporaires** : Congés, formations, événements spéciaux
+  - **Règles Métier Intelligentes** : Temps préparation/nettoyage adaptatifs
+  - **Slots Quantiques** : Créneaux en superposition jusqu'à confirmation
 
 ### **3. Gestion du Personnel (Staff)**
 
@@ -67,20 +87,80 @@ Ce projet vise à créer un **système de gestion de rendez-vous multi-entrepris
 - **Tarification flexible** (fixe, durée, complexe)
 - **Durées variables** et services combinés
 - **Catégorisation** et recherche avancée
+- **🎯 MODES DE PRESTATION FLEXIBLES :**
+  - **Présentiel :** Service sur site (cabinet, domicile client, local entreprise)
+  - **À Distance :** Service sans présence physique (conseil, formation, support)
+  - **Visioconférence :** Interaction vidéo temps réel (consultation, coaching, formation)
+  - **Appel Téléphonique :** Contact vocal uniquement (conseil rapide, suivi)
+  - **Hybride :** Combinaison de plusieurs modes selon les phases du service
+  - **Configuration par Service :** Chaque prestation définit ses modes disponibles
+- **🎯 INFORMATIONS SUPPLÉMENTAIRES CLIENTS :**
+  - **Questionnaire Pré-Rendez-vous :** Questions spécifiques par type de service
+  - **Champs Obligatoires :** Informations critiques requises avant confirmation
+  - **Champs Optionnels :** Données utiles mais non-bloquantes
+  - **Validation Conditionnelle :** Questions dynamiques selon les réponses précédentes
+  - **Formats Supportés :** Texte, choix multiple, numérique, date, fichier joint
+  - **Confidentialité :** Niveau de protection selon la sensibilité des données
+- **🎯 SERVICES MULTI-PROFESSIONNELS :**
+  - **Équipe Requise :** Certains services nécessitent plusieurs professionnels simultanément
+  - **Exemples :** Chirurgie (chirurgien + anesthésiste + infirmier), Formation (formateur + assistant), Massage duo, Intervention technique complexe
+  - **Configuration :** Nombre minimum/maximum de professionnels par service
+  - **Compétences Complémentaires :** Chaque professionnel apporte une expertise spécifique
+  - **Synchronisation :** Disponibilités communes obligatoires pour tous les professionnels requis
+  - **Tarification Partagée :** Répartition automatique des revenus selon contribution
+- **🎯 FLEXIBILITÉ CALENDAIRE AVANCÉE :**
+  - **Par Service :** Chaque service peut définir ses jours de disponibilité (ex: coiffure seulement lundi/mardi)
+  - **Par Professionnel :** Personnel peut avoir des horaires spécifiques par service
+  - **Par Période :** Disponibilités saisonnières ou exceptionnelles
+  - **Règles de Disponibilité :** Conditions métier complexes (âge client, prérequis, durée minimale)
+  - **Créneaux Dynamiques :** Génération automatique selon contraintes multiples
+  - **Override Manuel :** Possibilité d'ajuster ponctuellement les disponibilités
 
-### **5. Système de Rendez-vous**
+### **5. Système de Rendez-vous Prédictif IA**
 
-- **États:** Demandé → Confirmé → En cours → Terminé → Annulé
-- **Types:** Consultation, Suivi, Urgence, Groupe
+- **États Intelligents:** Demandé → Optimisé IA → Confirmé → Anticipé → En cours → Évalué → Terminé → Analysé
+- **Types:** Consultation, Suivi, Urgence, Groupe, Téléconsultation, À domicile, Hybride
 - **🚨 RÈGLE CRITIQUE : Prise de Rendez-vous Publique**
   - **Seuls les services avec `allowOnlineBooking: true` peuvent être réservés directement**
   - **Validation automatique de `service.isBookable()` avant toute réservation**
   - **Refus automatique pour services internes ou non-publics**
-- **Fonctionnalités:**
-  - Réservation en ligne pour services publics uniquement
-  - Validation automatique/manuelle
-  - Notifications multi-canaux
-  - Gestion des annulations
+- **🤖 RÉSERVATION CONVERSATIONNELLE IA :**
+  - **Assistant IA Multilingue :** Dialogue naturel pour prise de RDV
+  - **Traitement Langage Naturel :** "Je voudrais voir Dr. Martin mardi prochain vers 14h"
+  - **Négociation Intelligente :** Propositions alternatives automatiques
+  - **Validation Temps Réel :** Vérification disponibilité instantanée
+  - **Formulaires Adaptatifs :** Questions dynamiques selon contexte
+- **🔮 INTELLIGENCE PRÉDICTIVE CLIENT :**
+  - **Profil Comportemental IA :** Apprentissage automatique des préférences
+  - **Recommandations Personnalisées :** Services et créneaux optimaux
+  - **Prévention Annulations :** Détection précoce + alternatives proactives
+  - **Score Satisfaction Prédite :** Évaluation avant confirmation
+  - **Parcours UX Adaptatif :** Interface selon profil psychologique
+- **🎯 INFORMATIONS SUPPLÉMENTAIRES DYNAMIQUES :**
+  - **Questionnaire Intelligent IA :** Questions adaptées par machine learning
+  - **Validation Pré-Réservation :** Vérification automatique avec IA
+  - **Logique Conditionnelle Avancée :** Arbre de décision complexe
+  - **Pièces Justificatives Intelligentes :** OCR + validation automatique
+  - **Historique Client IA :** Pré-remplissage prédictif ultra-précis
+  - **Notifications Professionnels :** Alertes contextuelles importantes
+- **🎯 ADAPTATION AU MODE DE PRESTATION :**
+  - **Présentiel :** Géolocalisation, trafic temps réel, parking disponible
+  - **Visioconférence :** Tests auto, bande passante, compatibilité
+  - **Téléphone :** Optimisation qualité réseau, rappel automatique
+  - **À Distance :** Logistique IA, tracking livraison temps réel
+  - **Configuration Auto-Adaptative :** Interface selon mode optimal
+- **🎯 GESTION MULTI-PROFESSIONNELS IA :**
+  - **Validation Équipe Intelligente :** Optimisation automatique compétences
+  - **Réservation Quantique :** Créneaux superposés jusqu'à confirmation
+  - **Substitution IA :** Remplacement optimal par algorithme de matching
+  - **Prédiction Conflits :** Anticipation problèmes avec solutions préventives
+  - **Orchestration Automatique :** Coordination parfaite équipe multi-sites
+- **🚀 FONCTIONNALITÉS RÉVOLUTIONNAIRES :**
+  - **Time-Travel Planning :** Simulation impact décisions futures
+  - **Emergency Override IA :** Gestion urgences vitales automatique
+  - **Quantum Scheduling :** Créneaux en superposition probabiliste
+  - **Predictive Overbooking :** Surbooking intelligent anti-no-show
+  - **Calendar Genetics :** Évolution adaptatrice continue
   - Historique complet
   - Support de réservation pour un proche/famille
 

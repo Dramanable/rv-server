@@ -11,7 +11,6 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { FastifyRequest } from 'fastify';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -21,6 +20,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { FastifyRequest } from 'fastify';
 
 import { User } from '../../domain/entities/user.entity';
 import { GetUser } from '../security/decorators/get-user.decorator';
@@ -42,8 +42,8 @@ import { CreateBusinessGalleryUseCase } from '../../application/use-cases/busine
 import { DeleteBusinessGalleryUseCase } from '../../application/use-cases/business/delete-business-gallery.use-case';
 import { GetBusinessGalleryUseCase } from '../../application/use-cases/business/get-business-gallery.use-case';
 import {
-  UpdateBusinessGalleryUseCase,
   UpdateBusinessGalleryRequest,
+  UpdateBusinessGalleryUseCase,
 } from '../../application/use-cases/business/update-business-gallery.use-case';
 import { ImageCategory } from '../../domain/value-objects/business-image.value-object';
 
@@ -557,7 +557,7 @@ export class BusinessGalleryController {
     ### React/Vue.js Upload avec Progress
     \`\`\`typescript
     const uploadImageToGallery = async (
-      galleryId: string, 
+      galleryId: string,
       file: File,
       metadata: ImageMetadata
     ) => {
@@ -591,7 +591,7 @@ export class BusinessGalleryController {
     ### Drag & Drop Multiple Files
     \`\`\`typescript
     const handleMultipleUpload = async (files: FileList, galleryId: string) => {
-      const uploads = Array.from(files).map(file => 
+      const uploads = Array.from(files).map(file =>
         uploadImageToGallery(galleryId, file, {
           alt: file.name.replace(/.[^/]+$/, ""),
           category: 'GALLERY',
@@ -603,7 +603,7 @@ export class BusinessGalleryController {
         const results = await Promise.allSettled(uploads);
         const successful = results.filter(r => r.status === 'fulfilled');
         const failed = results.filter(r => r.status === 'rejected');
-        
+
         showUploadSummary({ successful: successful.length, failed: failed.length });
       } catch (error) {
         handleUploadError(error);
