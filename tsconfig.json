@@ -14,6 +14,7 @@
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
+    "useDefineForClassFields": false,
     "paths": {
       "@domain/*": ["src/domain/*"],
       "@application/*": ["src/application/*"],

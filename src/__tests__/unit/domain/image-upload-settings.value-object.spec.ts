@@ -110,8 +110,9 @@ describe('ImageUploadSettings Value Object', () => {
       const settings = ImageUploadSettings.createDefault();
       const validImage = {
         size: 2 * 1024 * 1024, // 2MB
-        format: 'jpg',
+        format: 'jpeg',
         dimensions: { width: 800, height: 600 },
+        category: 'GALLERY',
       };
 
       // When
@@ -220,7 +221,7 @@ describe('ImageUploadSettings Value Object', () => {
       // Then
       expect(validation.isValid).toBe(false);
       expect(validation.errors).toContain(
-        'Logo images must be exactly 200x200 pixels',
+        'LOGO images must be exactly 200x200 pixels',
       );
     });
 

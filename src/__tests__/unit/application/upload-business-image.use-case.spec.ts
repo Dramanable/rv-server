@@ -85,7 +85,9 @@ describe('UploadBusinessImageUseCase', () => {
 
     it('should replace existing logo when uploading new one', async () => {
       // Given
-      const businessId = BusinessId.fromString('business-123');
+      const businessId = BusinessId.create(
+        '550e8400-e29b-41d4-a716-446655440000',
+      );
       const existingBusiness = {} as Business; // Mock with existing logo
 
       mockBusinessRepository.findById.mockResolvedValue(existingBusiness);

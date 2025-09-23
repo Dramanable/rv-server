@@ -42,7 +42,7 @@ export class ImageMetadataDto {
   @IsNumber()
   @Min(1)
   @Max(5242880)
-  readonly size!: number;
+  size!: number;
 
   @ApiProperty({
     description: 'Image format',
@@ -50,22 +50,22 @@ export class ImageMetadataDto {
     enum: ['jpg', 'jpeg', 'png', 'webp'],
   })
   @IsString()
-  readonly format!: string;
+  format!: string;
 
   @ApiProperty({
     description: 'Image dimensions',
     example: { width: 1920, height: 1080 },
   })
-  readonly dimensions!: {
-    readonly width: number;
-    readonly height: number;
+  dimensions!: {
+    width: number;
+    height: number;
   };
 
   @ApiProperty({
     description: 'Upload timestamp',
     example: '2024-01-15T10:30:00Z',
   })
-  readonly uploadedAt!: Date;
+  uploadedAt!: Date;
 }
 
 // === BUSINESS IMAGE DTO ===
@@ -74,14 +74,14 @@ export class BusinessImageDto {
     description: 'Image unique identifier',
     example: 'img_123e4567-e89b-12d3-a456-426614174000',
   })
-  readonly id!: string;
+  id!: string;
 
   @ApiProperty({
     description: 'Image URL',
     example: 'https://cdn.example.com/images/business/logo.jpg',
   })
   @IsUrl()
-  readonly url!: string;
+  url!: string;
 
   @ApiProperty({
     description: 'Alt text for accessibility',
@@ -91,7 +91,7 @@ export class BusinessImageDto {
   })
   @IsString()
   @Length(10, 200)
-  readonly alt!: string;
+  alt!: string;
 
   @ApiPropertyOptional({
     description: 'Image caption',
@@ -101,7 +101,7 @@ export class BusinessImageDto {
   @IsOptional()
   @IsString()
   @Length(1, 300)
-  readonly caption?: string;
+  caption?: string;
 
   @ApiProperty({
     description: 'Image category',
@@ -109,7 +109,7 @@ export class BusinessImageDto {
     example: ImageCategoryDto.LOGO,
   })
   @IsEnum(ImageCategoryDto)
-  readonly category!: ImageCategoryDto;
+  category!: ImageCategoryDto;
 
   @ApiProperty({
     description: 'Image metadata',
@@ -117,14 +117,14 @@ export class BusinessImageDto {
   })
   @ValidateNested()
   @Type(() => ImageMetadataDto)
-  readonly metadata!: ImageMetadataDto;
+  metadata!: ImageMetadataDto;
 
   @ApiProperty({
     description: 'Whether image is public',
     example: true,
   })
   @IsBoolean()
-  readonly isPublic!: boolean;
+  isPublic!: boolean;
 
   @ApiProperty({
     description: 'Display order',
@@ -133,7 +133,7 @@ export class BusinessImageDto {
   })
   @IsNumber()
   @Min(0)
-  readonly order!: number;
+  order!: number;
 }
 
 // === CREATE IMAGE DTO ===
@@ -143,7 +143,7 @@ export class CreateBusinessImageDto {
     example: 'https://cdn.example.com/images/business/new-photo.jpg',
   })
   @IsUrl({}, { message: 'URL must be valid' })
-  readonly url!: string;
+  url!: string;
 
   @ApiProperty({
     description: 'Alt text for accessibility',
@@ -155,7 +155,7 @@ export class CreateBusinessImageDto {
   @Length(10, 200, {
     message: 'Alt text must be between 10 and 200 characters',
   })
-  readonly alt!: string;
+  alt!: string;
 
   @ApiPropertyOptional({
     description: 'Image caption',
@@ -165,7 +165,7 @@ export class CreateBusinessImageDto {
   @IsOptional()
   @IsString()
   @Length(1, 300, { message: 'Caption must be less than 300 characters' })
-  readonly caption?: string;
+  caption?: string;
 
   @ApiProperty({
     description: 'Image category',
@@ -173,7 +173,7 @@ export class CreateBusinessImageDto {
     example: ImageCategoryDto.INTERIOR,
   })
   @IsEnum(ImageCategoryDto, { message: 'Invalid image category' })
-  readonly category!: ImageCategoryDto;
+  category!: ImageCategoryDto;
 
   @ApiProperty({
     description: 'Image metadata',
@@ -181,7 +181,7 @@ export class CreateBusinessImageDto {
   })
   @ValidateNested()
   @Type(() => ImageMetadataDto)
-  readonly metadata!: ImageMetadataDto;
+  metadata!: ImageMetadataDto;
 
   @ApiPropertyOptional({
     description: 'Whether image is public',
@@ -190,7 +190,7 @@ export class CreateBusinessImageDto {
   })
   @IsOptional()
   @IsBoolean()
-  readonly isPublic?: boolean;
+  isPublic?: boolean;
 
   @ApiPropertyOptional({
     description: 'Display order',
@@ -201,7 +201,7 @@ export class CreateBusinessImageDto {
   @IsOptional()
   @IsNumber()
   @Min(0)
-  readonly order?: number;
+  order?: number;
 }
 
 // === UPDATE IMAGE ORDER DTO ===
@@ -213,7 +213,7 @@ export class UpdateImageOrderDto {
   })
   @IsNumber()
   @Min(0)
-  readonly order!: number;
+  order!: number;
 }
 
 // === BUSINESS GALLERY DTO ===
@@ -235,7 +235,7 @@ export class BusinessGalleryDto {
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => BusinessImageDto)
-  readonly images!: BusinessImageDto[];
+  images!: BusinessImageDto[];
 
   @ApiProperty({
     description: 'Total number of images',
@@ -246,7 +246,7 @@ export class BusinessGalleryDto {
   @IsNumber()
   @Min(0)
   @Max(20)
-  readonly count!: number;
+  count!: number;
 
   @ApiProperty({
     description: 'Gallery statistics',
@@ -263,13 +263,13 @@ export class BusinessGalleryDto {
       totalSize: 15728640,
     },
   })
-  readonly statistics!: {
-    readonly total: number;
-    readonly public: number;
-    readonly private: number;
-    readonly byCategory: Record<string, number>;
-    readonly optimized: number;
-    readonly totalSize: number;
+  statistics!: {
+    total: number;
+    public: number;
+    private: number;
+    byCategory: Record<string, number>;
+    optimized: number;
+    totalSize: number;
   };
 }
 
@@ -279,19 +279,19 @@ export class BusinessGalleryResponseDto {
     description: 'Operation success status',
     example: true,
   })
-  readonly success!: boolean;
+  success!: boolean;
 
   @ApiProperty({
     description: 'Business gallery data',
     type: BusinessGalleryDto,
   })
-  readonly data!: BusinessGalleryDto;
+  data!: BusinessGalleryDto;
 
   @ApiProperty({
     description: 'Response message',
     example: 'Gallery retrieved successfully',
   })
-  readonly message!: string;
+  message!: string;
 }
 
 // === ADD IMAGE RESPONSE DTO ===
@@ -300,19 +300,19 @@ export class AddImageResponseDto {
     description: 'Operation success status',
     example: true,
   })
-  readonly success!: boolean;
+  success!: boolean;
 
   @ApiProperty({
     description: 'Added image data',
     type: BusinessImageDto,
   })
-  readonly data!: BusinessImageDto;
+  data!: BusinessImageDto;
 
   @ApiProperty({
     description: 'Response message',
     example: 'Image added to gallery successfully',
   })
-  readonly message!: string;
+  message!: string;
 }
 
 // === BULK IMAGES DTO ===
@@ -325,7 +325,7 @@ export class BulkImagesDto {
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => CreateBusinessImageDto)
-  readonly images!: CreateBusinessImageDto[];
+  images!: CreateBusinessImageDto[];
 }
 
 // === GALLERY FILTER DTO ===
@@ -337,7 +337,7 @@ export class GalleryFilterDto {
   })
   @IsOptional()
   @IsEnum(ImageCategoryDto)
-  readonly category?: ImageCategoryDto;
+  category?: ImageCategoryDto;
 
   @ApiPropertyOptional({
     description: 'Filter by public visibility',
@@ -345,7 +345,7 @@ export class GalleryFilterDto {
   })
   @IsOptional()
   @IsBoolean()
-  readonly isPublic?: boolean;
+  isPublic?: boolean;
 
   @ApiPropertyOptional({
     description: 'Include image metadata',
@@ -354,7 +354,7 @@ export class GalleryFilterDto {
   })
   @IsOptional()
   @IsBoolean()
-  readonly includeMetadata?: boolean;
+  includeMetadata?: boolean;
 }
 
 // === CREATE GALLERY DTO ===
@@ -367,7 +367,7 @@ export class CreateBusinessGalleryDto {
   })
   @IsString()
   @Length(2, 100)
-  readonly name!: string;
+  name!: string;
 
   @ApiPropertyOptional({
     description: 'Gallery description',
@@ -377,7 +377,7 @@ export class CreateBusinessGalleryDto {
   @IsOptional()
   @IsString()
   @Length(1, 500)
-  readonly description?: string;
+  description?: string;
 
   @ApiPropertyOptional({
     description: 'Display order',
@@ -388,7 +388,7 @@ export class CreateBusinessGalleryDto {
   @IsOptional()
   @IsNumber()
   @Min(0)
-  readonly displayOrder?: number;
+  displayOrder?: number;
 
   @ApiPropertyOptional({
     description: 'Is primary gallery',
@@ -397,7 +397,7 @@ export class CreateBusinessGalleryDto {
   })
   @IsOptional()
   @IsBoolean()
-  readonly isPrimary?: boolean;
+  isPrimary?: boolean;
 
   @ApiPropertyOptional({
     description: 'Gallery configuration',
@@ -410,7 +410,7 @@ export class CreateBusinessGalleryDto {
     additionalProperties: true,
   })
   @IsOptional()
-  readonly galleryConfig?: any;
+  galleryConfig?: any;
 }
 
 // === UPDATE GALLERY DTO ===
@@ -424,7 +424,7 @@ export class UpdateBusinessGalleryDto {
   @IsOptional()
   @IsString()
   @Length(2, 100)
-  readonly name?: string;
+  name?: string;
 
   @ApiPropertyOptional({
     description: 'Gallery description',
@@ -434,7 +434,7 @@ export class UpdateBusinessGalleryDto {
   @IsOptional()
   @IsString()
   @Length(1, 500)
-  readonly description?: string;
+  description?: string;
 
   @ApiPropertyOptional({
     description: 'Display order',
@@ -444,7 +444,7 @@ export class UpdateBusinessGalleryDto {
   @IsOptional()
   @IsNumber()
   @Min(0)
-  readonly displayOrder?: number;
+  displayOrder?: number;
 
   @ApiPropertyOptional({
     description: 'Is primary gallery',
@@ -452,7 +452,7 @@ export class UpdateBusinessGalleryDto {
   })
   @IsOptional()
   @IsBoolean()
-  readonly isPrimary?: boolean;
+  isPrimary?: boolean;
 
   @ApiPropertyOptional({
     description: 'Is active',
@@ -460,7 +460,7 @@ export class UpdateBusinessGalleryDto {
   })
   @IsOptional()
   @IsBoolean()
-  readonly isActive?: boolean;
+  isActive?: boolean;
 
   @ApiPropertyOptional({
     description: 'Gallery configuration',
@@ -473,7 +473,7 @@ export class UpdateBusinessGalleryDto {
     additionalProperties: true,
   })
   @IsOptional()
-  readonly galleryConfig?: any;
+  galleryConfig?: any;
 }
 
 // === CREATE GALLERY RESPONSE DTO ===
@@ -482,19 +482,19 @@ export class CreateBusinessGalleryResponseDto {
     description: 'Operation success status',
     example: true,
   })
-  readonly success!: boolean;
+  success!: boolean;
 
   @ApiProperty({
     description: 'Created gallery data',
     type: BusinessGalleryDto,
   })
-  readonly data!: BusinessGalleryDto;
+  data!: BusinessGalleryDto;
 
   @ApiProperty({
     description: 'Response message',
     example: 'Gallery created successfully',
   })
-  readonly message!: string;
+  message!: string;
 }
 
 // === UPDATE GALLERY RESPONSE DTO ===
@@ -503,19 +503,19 @@ export class UpdateBusinessGalleryResponseDto {
     description: 'Operation success status',
     example: true,
   })
-  readonly success!: boolean;
+  success!: boolean;
 
   @ApiProperty({
     description: 'Updated gallery data',
     type: BusinessGalleryDto,
   })
-  readonly data!: BusinessGalleryDto;
+  data!: BusinessGalleryDto;
 
   @ApiProperty({
     description: 'Response message',
     example: 'Gallery updated successfully',
   })
-  readonly message!: string;
+  message!: string;
 }
 
 // === DELETE GALLERY RESPONSE DTO ===
@@ -524,19 +524,19 @@ export class DeleteBusinessGalleryResponseDto {
     description: 'Operation success status',
     example: true,
   })
-  readonly success!: boolean;
+  success!: boolean;
 
   @ApiProperty({
     description: 'Response message',
     example: 'Gallery deleted successfully',
   })
-  readonly message!: string;
+  message!: string;
 
   @ApiProperty({
     description: 'Deleted gallery ID',
     example: 'gallery_123e4567-e89b-12d3-a456-426614174000',
   })
-  readonly deletedId!: string;
+  deletedId!: string;
 }
 
 // === ADD IMAGE TO GALLERY DTO ===
@@ -546,7 +546,7 @@ export class AddImageToBusinessGalleryDto {
     example: 'img_123e4567-e89b-12d3-a456-426614174000',
   })
   @IsString()
-  readonly imageId!: string;
+  imageId!: string;
 
   @ApiPropertyOptional({
     description: 'Display order of the image',
@@ -556,7 +556,7 @@ export class AddImageToBusinessGalleryDto {
   @IsOptional()
   @IsNumber()
   @Min(0)
-  readonly order?: number;
+  order?: number;
 }
 
 // === ADD IMAGE TO GALLERY RESPONSE DTO ===
@@ -565,29 +565,29 @@ export class AddImageToBusinessGalleryResponseDto {
     description: 'Operation success status',
     example: true,
   })
-  readonly success!: boolean;
+  success!: boolean;
 
   @ApiProperty({
     description: 'Gallery ID where image was added',
     example: 'gallery_123e4567-e89b-12d3-a456-426614174000',
   })
-  readonly galleryId!: string;
+  galleryId!: string;
 
   @ApiProperty({
     description: 'Added image ID',
     example: 'img_123e4567-e89b-12d3-a456-426614174000',
   })
-  readonly imageId!: string;
+  imageId!: string;
 
   @ApiProperty({
     description: 'Updated image count in gallery',
     example: 5,
   })
-  readonly imageCount!: number;
+  imageCount!: number;
 
   @ApiProperty({
     description: 'Response message',
     example: 'Image added to gallery successfully',
   })
-  readonly message!: string;
+  message!: string;
 }
