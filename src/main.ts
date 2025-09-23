@@ -23,6 +23,7 @@ import { AppModule } from './app.module';
 import fastifyCookie from '@fastify/cookie';
 import fastifyCors from '@fastify/cors';
 import fastifyHelmet from '@fastify/helmet';
+import fastifyMultipart from '@fastify/multipart';
 import fastifyRateLimit from '@fastify/rate-limit';
 import fastify from 'fastify';
 
@@ -92,6 +93,18 @@ async function bootstrap(): Promise<void> {
       sameSite: configService.isProduction() ? 'strict' : 'lax',
       path: '/',
     },
+  });
+
+  logger.log('📤 Configuring multipart file upload support...');
+  await app.register(fastifyMultipart, {
+    limits: {
+      fileSize: 10 * 1024 * 1024, // 10MB max file size
+      files: 5, // Maximum 5 files per request
+      fieldSize: 1024 * 1024, // 1MB max field size
+      fields: 10, // Maximum 10 fields per request
+    },
+    attachFieldsToBody: true,
+    sharedSchemaId: 'MultipartFileType',
   });
 
   logger.log('🚦 Configuring rate limiting...');

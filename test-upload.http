@@ -1,0 +1,33 @@
+### Test File Upload to Business Gallery
+POST http://localhost:3000/api/v1/business-galleries/550e8400-e29b-41d4-a716-446655440000/images/upload
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+Authorization: Bearer your-jwt-token-here
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="image"; filename="test-image.jpg"
+Content-Type: image/jpeg
+
+< test-data/sample-image.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="alt"
+
+Test image for gallery
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="caption"
+
+This is a test image uploaded to the business gallery
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="category"
+
+GALLERY
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="isPublic"
+
+true
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### Health Check
+GET http://localhost:3000/health
+
+### List Business Gallery Endpoints in Swagger
+GET http://localhost:3000/api/docs

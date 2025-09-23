@@ -42,6 +42,49 @@ make logs
 make clean
 ```
 
+### **🚨 RÈGLE CRITIQUE : INSTALLATION DÉPENDANCES DANS LE CONTAINER**
+
+**⚠️ WORKFLOW OBLIGATOIRE** : Pour éviter les problèmes de compatibilité et cache Docker, TOUJOURS installer les dépendances depuis le container et supprimer le container avant reconstruction :
+
+```bash
+# ✅ WORKFLOW CORRECT - Installation depuis le container
+# 1️⃣ Entrer dans le container pour installer la dépendance
+docker compose exec app npm install nouvelle-dependance
+
+# 2️⃣ OBLIGATOIRE : Supprimer le container avant reconstruction
+docker compose down app
+
+# 3️⃣ OBLIGATOIRE : Reconstruire l'image Docker sans cache
+docker compose build --no-cache app
+
+# 4️⃣ Redémarrer le container avec la nouvelle image
+docker compose up -d app
+
+# 5️⃣ Vérifier que l'application démarre correctement
+docker compose logs app --tail=20
+```
+
+**❌ ERREURS COURANTES À ÉVITER** :
+- Installer sur l'host puis reconstruire → Problèmes de cache Docker
+- Oublier de supprimer le container → Ancienne image utilisée
+- Reconstruire avec cache → Dépendances pas mises à jour dans le container
+
+**✅ WORKFLOW DÉTAILLÉ OBLIGATOIRE** :
+1. `docker compose exec app npm install package` (DANS le container)
+2. `docker compose down app` (OBLIGATOIRE - supprimer container)
+3. `docker compose build --no-cache app` (OBLIGATOIRE - reconstruction sans cache)
+4. `docker compose up -d app` (redémarrage propre)
+5. `docker compose logs app --tail=20` (vérification démarrage)
+
+**🔧 ALTERNATIVE - Si installation déjà faite sur host** :
+```bash
+npm install nouvelle-dependance
+docker compose down app                    # Supprimer container
+docker compose build --no-cache app       # Reconstruire sans cache
+docker compose up -d app                   # Redémarrer
+docker compose logs app --tail=20          # Vérifier
+```
+
 ### **📦 Services Docker Configurés**
 
 - **🎨 NestJS App** : Port 3000, hot reload, debugging
