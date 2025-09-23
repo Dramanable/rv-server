@@ -262,7 +262,13 @@ export class AppConfigService implements IConfigService {
   getCorsOrigins(): string[] {
     const origins = this.configService.get<string>(
       'CORS_ORIGINS',
-      'http://localhost:3000,http://localhost:5173,http://localhost:4173',
+      // 🎯 Configuration CORS développement frontend étendue
+      'http://localhost:3000,http://localhost:3001,http://localhost:3002,' + // React, Next.js
+        'http://localhost:4000,http://localhost:4173,http://localhost:4200,' + // Angular, Vite preview
+        'http://localhost:5000,http://localhost:5173,http://localhost:5174,' + // Vite dev, Svelte
+        'http://localhost:8000,http://localhost:8080,http://localhost:8081,' + // Vue.js, Webpack dev
+        'http://localhost:9000,http://localhost:9090,' + // Custom dev servers
+        'http://127.0.0.1:3000,http://127.0.0.1:5173,http://127.0.0.1:4173', // IPv4 loopback
     );
     return origins.split(',').map((origin) => origin.trim());
   }

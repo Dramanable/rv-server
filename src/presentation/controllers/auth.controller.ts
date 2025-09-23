@@ -47,6 +47,8 @@ import {
   UnauthorizedErrorDto,
   ValidationErrorDto,
 } from '../dtos/auth.dto';
+import { UserResponseDto } from '../dtos/user.dto';
+import { UserRole } from '../../shared/enums/user-role.enum';
 import { PresentationCookieService } from '../services/cookie.service';
 // 🛡️ Security imports
 import { Public } from '../security/decorators/public.decorator';
@@ -134,15 +136,15 @@ export class AuthController {
   async login(
     @Body() loginDto: LoginDto,
     @Req() req: Request,
-    @Res() res: Response,
-  ): Promise<void> {
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<LoginResponseDto> {
     // 🌍 Log avec i18n
     const loginAttemptMessage = this.i18n.t('operations.auth.login_attempt', {
       email: loginDto.email,
     });
     this.controllerLogger.log(loginAttemptMessage);
     this.logger.log(
-      `${loginAttemptMessage} - IP: ${req.ip} - UserAgent: ${req.get('User-Agent')}`,
+      `${loginAttemptMessage} - IP: ${req.ip} - UserAgent: ${req.headers['user-agent']}`,
     );
 
     try {
@@ -151,7 +153,7 @@ export class AuthController {
         email: loginDto.email,
         password: loginDto.password,
         ip: req.ip || req.connection.remoteAddress,
-        userAgent: req.get('User-Agent'),
+        userAgent: req.headers['user-agent'],
       });
 
       // ✅ Gestion des cookies dans la couche Presentation UNIQUEMENT
@@ -169,10 +171,10 @@ export class AuthController {
       this.logger.log(successMessage);
 
       // Retourner la réponse (sans les tokens sensibles)
-      res.status(200).json({
-        user: result.user,
+      return {
+        user: this.mapToUserResponseDto(result.user),
         message: this.i18n.t('auth.login_success', { email: loginDto.email }),
-      });
+      };
     } catch (error) {
       // 🌍 Message d'erreur avec i18n
       const errorMessage = this.i18n.t('auth.login_failed', {
@@ -238,11 +240,12 @@ export class AuthController {
   async register(
     @Body() registerDto: RegisterDto,
     @Req() req: Request,
-    @Res() res: Response,
-  ): Promise<void> {
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<RegisterResponseDto> {
     // 🌍 Log avec i18n
     const registerAttemptMessage = this.i18n.t(
-      'operations.user.creation_attempt',
+      'operations.auth.register_attempt',
+      { email: registerDto.email },
     );
     this.controllerLogger.log(
       `${registerAttemptMessage} - ${registerDto.email}`,
@@ -258,7 +261,7 @@ export class AuthController {
         name: registerDto.name,
         password: registerDto.password,
         ip: req.ip || req.connection.remoteAddress,
-        userAgent: req.get('User-Agent'),
+        userAgent: req.headers['user-agent'],
       });
 
       // ✅ Gestion des cookies dans la couche Presentation UNIQUEMENT
@@ -276,12 +279,12 @@ export class AuthController {
       this.logger.log(successMessage);
 
       // Retourner la réponse (sans les tokens sensibles)
-      res.status(201).json({
-        user: result.user,
+      return {
+        user: this.mapToUserResponseDto(result.user),
         message: this.i18n.t('auth.register_success', {
           email: registerDto.email,
         }),
-      });
+      };
     } catch (error) {
       // 🌍 Message d'erreur avec i18n
       const errorMessage = this.i18n.t('auth.register_failed', {
@@ -332,7 +335,10 @@ export class AuthController {
     description: '🚫 Rate limit exceeded - Too many refresh attempts',
     type: ThrottleErrorDto,
   })
-  async refreshToken(@Req() req: Request, @Res() res: Response): Promise<void> {
+  async refreshToken(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<RefreshResponseDto> {
     this.controllerLogger.log('Refresh token attempt');
 
     try {
@@ -350,7 +356,7 @@ export class AuthController {
       const result = await this.refreshTokenUseCase.execute({
         refreshToken,
         ip: req.ip || req.connection.remoteAddress,
-        userAgent: req.get('User-Agent'),
+        userAgent: req.headers['user-agent'],
       });
 
       // ✅ Gestion des cookies dans la couche Presentation UNIQUEMENT
@@ -365,9 +371,9 @@ export class AuthController {
       );
 
       // Retourner la réponse (sans les tokens sensibles)
-      res.status(200).json({
+      return {
         message: result.message,
-      });
+      };
     } catch (error) {
       this.controllerLogger.error('Refresh token failed', error);
       throw error;
@@ -466,7 +472,10 @@ export class AuthController {
     description: '🚫 Rate limit exceeded - Too many logout attempts',
     type: ThrottleErrorDto,
   })
-  async logout(@Req() req: Request, @Res() res: Response): Promise<void> {
+  async logout(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<LogoutResponseDto> {
     // Supprimer les cookies d'authentification
     this.cookieService.clearAuthenticationCookies(res);
 
@@ -474,13 +483,37 @@ export class AuthController {
     this.controllerLogger.log('User logged out successfully', {
       userId: (req as any).user?.id,
       ip: req.ip,
-      userAgent: req.get('User-Agent'),
+      userAgent: req.headers['user-agent'],
     });
 
-    res.status(200).json({
+    return {
       message: 'Logout successful',
-    });
+    };
+  }
 
-    return Promise.resolve();
+  /**
+   * 🔄 Mapper pour convertir les données utilisateur du use case vers DTO de présentation
+   */
+  private mapToUserResponseDto(user: {
+    readonly id: string;
+    readonly email: string;
+    readonly name: string;
+    readonly role: string;
+  }): UserResponseDto {
+    // TODO: Récupérer les vraies valeurs depuis la base de données
+    // Pour l'instant, on utilise des valeurs par défaut
+    const [firstName = '', lastName = ''] = user.name.split(' ', 2);
+
+    return {
+      id: user.id,
+      email: user.email,
+      firstName: firstName || user.name,
+      lastName: lastName || '',
+      role: user.role as UserRole,
+      isActive: true, // TODO: Récupérer la vraie valeur
+      isVerified: true, // TODO: Récupérer la vraie valeur
+      createdAt: new Date().toISOString(), // TODO: Récupérer la vraie valeur
+      updatedAt: new Date().toISOString(), // TODO: Récupérer la vraie valeur
+    };
   }
 }
