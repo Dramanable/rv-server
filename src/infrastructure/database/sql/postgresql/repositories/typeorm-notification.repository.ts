@@ -4,7 +4,7 @@ import { Notification } from '../../../../../domain/entities/notification.entity
 import { INotificationRepository } from '../../../../../domain/repositories/notification.repository';
 import { NotificationStatus } from '../../../../../domain/value-objects/notification-status.value-object';
 import { NotificationOrmMapper } from '../../../../mappers/notification-orm.mapper';
-import { NotificationOrmEntity } from '../../../entities/notification-orm.entity';
+import { NotificationOrmEntity } from '../entities/notification-orm.entity';
 
 /**
  * Implémentation TypeORM du repository de notifications

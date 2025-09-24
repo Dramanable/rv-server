@@ -49,12 +49,69 @@
       "nameConflict": "Le nom de compétence '{{name}}' existe déjà dans cette entreprise",
       "inUse": "La compétence ne peut être supprimée car elle est actuellement assignée à {{staffCount}} membres du personnel",
       "criticalSkillRestricted": "Les opérations sur les compétences critiques sont restreintes : {{operation}}",
-      "operationNotAllowed": "Opération '{{operation}}' non autorisée : {{reason}}"
+      "operationNotAllowed": "Opération '{{operation}}' non autorisée : {{reason}}",
+      "creationFailed": "Échec de la création de la compétence"
     },
     "success": {
       "created": "Compétence créée avec succès",
       "updated": "Compétence mise à jour avec succès",
       "deleted": "Compétence supprimée avec succès"
+    }
+  },
+  "serviceCategory": {
+    "validation": {
+      "correlationIdRequired": "L'identifiant de corrélation est requis pour la traçabilité",
+      "requestingUserIdRequired": "L'identifiant de l'utilisateur demandeur est requis pour l'audit",
+      "timestampRequired": "Un horodatage valide est requis",
+      "requestTooOld": "La demande est trop ancienne et ne peut être traitée",
+      "businessIdRequired": "L'identifiant d'entreprise est requis",
+      "nameRequired": "Le nom de la catégorie doit faire au moins 2 caractères",
+      "nameTooLong": "Le nom de la catégorie ne peut dépasser 100 caractères",
+      "descriptionTooLong": "La description de la catégorie ne peut dépasser 500 caractères",
+      "parentCategoryNotFound": "Catégorie parente introuvable",
+      "parentCategoryDifferentBusiness": "La catégorie parente doit appartenir à la même entreprise"
+    },
+    "errors": {
+      "notFound": "Catégorie de service introuvable avec l'id {{id}}",
+      "nameConflict": "Le nom de catégorie '{{name}}' existe déjà dans cette entreprise",
+      "inUse": "La catégorie ne peut être supprimée car elle est utilisée par {{serviceCount}} services",
+      "creationFailed": "Échec de la création de la catégorie de service",
+      "hierarchyError": "Erreur de hiérarchie des catégories",
+      "configurationError": "Erreur de configuration de la catégorie"
+    },
+    "success": {
+      "created": "Catégorie de service créée avec succès",
+      "updated": "Catégorie de service mise à jour avec succès",
+      "deleted": "Catégorie de service supprimée avec succès"
+    }
+  },
+  "serviceType": {
+    "validation": {
+      "correlationIdRequired": "L'identifiant de corrélation est requis pour la traçabilité",
+      "requestingUserIdRequired": "L'identifiant de l'utilisateur demandeur est requis pour l'audit",
+      "timestampRequired": "Un horodatage valide est requis",
+      "requestTooOld": "La demande est trop ancienne et ne peut être traitée",
+      "businessIdRequired": "L'identifiant d'entreprise est requis",
+      "nameRequired": "Le nom du type de service doit faire au moins 2 caractères",
+      "codeTooShort": "Le code du type de service doit faire au moins 2 caractères",
+      "codeRequired": "Le code du type de service est requis",
+      "nameTooLong": "Le nom du type de service ne peut dépasser 100 caractères",
+      "codeTooLong": "Le code du type de service ne peut dépasser 20 caractères",
+      "descriptionTooLong": "La description du type de service ne peut dépasser 500 caractères",
+      "invalidCode": "Le code du type de service doit contenir uniquement des majuscules, chiffres et underscores"
+    },
+    "errors": {
+      "notFound": "Type de service introuvable avec l'id {{id}}",
+      "nameConflict": "Le nom de type de service '{{name}}' existe déjà dans cette entreprise",
+      "codeConflict": "Le code de type de service '{{code}}' existe déjà dans cette entreprise",
+      "inUse": "Le type de service ne peut être supprimé car il est utilisé par {{serviceCount}} services",
+      "creationFailed": "Échec de la création du type de service",
+      "operationNotAllowed": "Opération '{{operation}}' non autorisée : {{reason}}"
+    },
+    "success": {
+      "created": "Type de service créé avec succès",
+      "updated": "Type de service mis à jour avec succès",
+      "deleted": "Type de service supprimé avec succès"
     }
   }
 }

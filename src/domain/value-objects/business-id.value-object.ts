@@ -25,6 +25,10 @@ export class BusinessId {
     return new BusinessId(value);
   }
 
+  static fromString(value: string): BusinessId {
+    return new BusinessId(value);
+  }
+
   getValue(): string {
     return this.value;
   }

@@ -96,6 +96,392 @@ export interface CreateSkillRequest {
 }
 ```
 
+## 🐳 **ENVIRONNEMENT DOCKER EXCLUSIF - RÈGLE ABSOLUE**
+
+### 🛠️ **RÈGLE CRITIQUE NON-NÉGOCIABLE : TOUT TOURNE SUR DOCKER**
+
+**⚠️ INTERDICTION ABSOLUE D'EXÉCUTER DES COMMANDES SUR L'HOST**
+
+L'application **TOURNE EXCLUSIVEMENT SUR DOCKER** avec Docker Compose. **AUCUNE** commande ne doit être exécutée directement sur la machine host.
+
+**🚨 NOUVELLE RÈGLE CRITIQUE** : Toute commande npm, node, tsc, lint, test, ou migration DOIT s'exécuter dans le container Docker.
+
+#### **✅ COMMANDES OBLIGATOIRES - TOUJOURS DOCKER**
+
+```bash
+# ✅ OBLIGATOIRE - Tous les tests
+docker compose exec app npm test
+docker compose exec app npm run test:unit
+docker compose exec app npm run test:cov
+
+# ✅ OBLIGATOIRE - Lint et formatage
+docker compose exec app npm run lint
+docker compose exec app npm run lint -- --fix
+docker compose exec app npm run format
+
+# ✅ OBLIGATOIRE - Build et compilation
+docker compose exec app npm run build
+docker compose exec app npx tsc --noEmit
+
+# ✅ OBLIGATOIRE - Migrations (CRITIQUE !)
+docker compose exec app npm run migration:run
+docker compose exec app npm run migration:revert
+docker compose exec app npm run migration:generate -- -n NameOfMigration
+
+# ✅ OBLIGATOIRE - Installation dépendances
+docker compose exec app npm install package-name
+docker compose exec app npm ci
+
+# ✅ OBLIGATOIRE - Développement
+docker compose exec app npm run start:dev
+```
+
+#### **🚨 WORKFLOW INSTALLATION DÉPENDANCES OBLIGATOIRE**
+
+**⚠️ RÈGLE CRITIQUE** : Pour éviter les problèmes de cache Docker et compatibilité :
+
+```bash
+# 1️⃣ Installer dans le container
+docker compose exec app npm install nouvelle-dependance
+
+# 2️⃣ OBLIGATOIRE : Supprimer le container
+docker compose down app
+
+# 3️⃣ OBLIGATOIRE : Reconstruire sans cache
+docker compose build --no-cache app
+
+# 4️⃣ Redémarrer avec nouvelle image
+docker compose up -d app
+
+# 5️⃣ Vérifier démarrage
+docker compose logs app --tail=20
+```
+
+#### **❌ INTERDICTIONS ABSOLUES - COMMANDES HOST**
+
+- ❌ **JAMAIS** `npm run start:dev` directement
+- ❌ **JAMAIS** `npm test` sur l'host
+- ❌ **JAMAIS** `npm run lint` sur l'host
+- ❌ **JAMAIS** `npm run build` sur l'host
+- ❌ **JAMAIS** `npm run migration:run` sur l'host
+- ❌ **JAMAIS** `npx tsc` sur l'host
+- ❌ **JAMAIS** installer PostgreSQL/Redis/MongoDB localement
+
+## 🗄️ **RÈGLE CRITIQUE : MIGRATIONS TYPEORM ET DONNÉES EXISTANTES**
+
+### 🎯 **RÈGLE FONDAMENTALE NON-NÉGOCIABLE : PRÉSERVER LES DONNÉES EXISTANTES**
+
+**⚠️ RÈGLE CRITIQUE** : Toute migration TypeORM DOIT impérativement tenir compte des données déjà présentes en base de données. Cette règle est **NON-NÉGOCIABLE** pour éviter la corruption de données et les pannes en production.
+
+#### **📋 PRINCIPE FONDAMENTAL : SAFETY-FIRST MIGRATIONS**
+
+**TOUJOURS se demander avant chaque migration :**
+1. **Y a-t-il déjà des données** dans cette table ?
+2. **Comment préserver** l'intégrité des données existantes ?
+3. **Les contraintes ajoutées** sont-elles compatibles avec les données actuelles ?
+4. **Les colonnes supprimées** contiennent-elles des données critiques ?
+
+#### **✅ PATTERNS OBLIGATOIRES SELON LE TYPE DE MIGRATION**
+
+##### **🆕 AJOUT DE COLONNE - Gestion des Valeurs par Défaut**
+
+```typescript
+// ✅ OBLIGATOIRE - Colonne nullable ou avec valeur par défaut
+export class AddPricingConfigToServices implements MigrationInterface {
+  public async up(queryRunner: QueryRunner): Promise<void> {
+    const schema = this.getSchemaName();
+
+    // ✅ CORRECT - Vérifier l'existence avant ajout
+    const columnExists = await queryRunner.hasColumn(`${schema}.services`, 'pricing_config');
+
+    if (!columnExists) {
+      // ✅ CORRECT - Colonne avec DEFAULT pour données existantes
+      await queryRunner.query(`
+        ALTER TABLE "${schema}"."services"
+        ADD COLUMN "pricing_config" jsonb
+        DEFAULT '{"type":"FIXED","basePrice":{"amount":0,"currency":"EUR"}}'::jsonb
+      `);
+
+      // ✅ CORRECT - Mettre à jour les données existantes si nécessaire
+      await queryRunner.query(`
+        UPDATE "${schema}"."services"
+        SET "pricing_config" = '{"type":"FIXED","basePrice":{"amount":50,"currency":"EUR"}}'::jsonb
+        WHERE "pricing_config" IS NULL AND "is_active" = true
+      `);
+    }
+  }
+
+  public async down(queryRunner: QueryRunner): Promise<void> {
+    const schema = this.getSchemaName();
+
+    // ✅ CORRECT - Vérifier avant suppression
+    const columnExists = await queryRunner.hasColumn(`${schema}.services`, 'pricing_config');
+
+    if (columnExists) {
+      // ⚠️ ATTENTION - Sauvegarder les données critiques avant suppression
+      await queryRunner.query(`
+        -- Optionnel : Sauvegarder les données dans une table temporaire
+        CREATE TABLE IF NOT EXISTS "${schema}"."services_pricing_backup" AS
+        SELECT id, pricing_config FROM "${schema}"."services"
+        WHERE pricing_config IS NOT NULL
+      `);
+
+      await queryRunner.query(`
+        ALTER TABLE "${schema}"."services" DROP COLUMN IF EXISTS "pricing_config"
+      `);
+    }
+  }
+}
+```
+
+##### **🔧 MODIFICATION DE COLONNE - Gestion des Types et Contraintes**
+
+```typescript
+// ✅ OBLIGATOIRE - Transformation sécurisée des données
+export class UpdateStatusEnumInServices implements MigrationInterface {
+  public async up(queryRunner: QueryRunner): Promise<void> {
+    const schema = this.getSchemaName();
+
+    // ✅ ÉTAPE 1 - Vérifier les données existantes
+    const existingData = await queryRunner.query(`
+      SELECT DISTINCT status FROM "${schema}"."services"
+    `);
+
+    console.log('Statuts existants avant migration:', existingData);
+
+    // ✅ ÉTAPE 2 - Ajouter une colonne temporaire avec nouveau type
+    await queryRunner.query(`
+      ALTER TABLE "${schema}"."services"
+      ADD COLUMN "status_new" VARCHAR(20)
+    `);
+
+    // ✅ ÉTAPE 3 - Migrer les données avec mapping approprié
+    await queryRunner.query(`
+      UPDATE "${schema}"."services"
+      SET "status_new" = CASE
+        WHEN status = 'active' THEN 'ACTIVE'
+        WHEN status = 'inactive' THEN 'INACTIVE'
+        WHEN status = 'draft' THEN 'DRAFT'
+        ELSE 'DRAFT' -- Valeur par défaut pour données inconnues
+      END
+    `);
+
+    // ✅ ÉTAPE 4 - Supprimer ancienne colonne et renommer
+    await queryRunner.query(`
+      ALTER TABLE "${schema}"."services" DROP COLUMN "status"
+    `);
+
+    await queryRunner.query(`
+      ALTER TABLE "${schema}"."services"
+      RENAME COLUMN "status_new" TO "status"
+    `);
+
+    // ✅ ÉTAPE 5 - Ajouter contraintes après transformation
+    await queryRunner.query(`
+      ALTER TABLE "${schema}"."services"
+      ALTER COLUMN "status" SET NOT NULL
+    `);
+  }
+}
+```
+
+##### **🗑️ SUPPRESSION DE COLONNE - Sauvegarde Obligatoire**
+
+```typescript
+// ✅ OBLIGATOIRE - Sauvegarde avant suppression
+export class RemoveDeprecatedColumnsFromServices implements MigrationInterface {
+  public async up(queryRunner: QueryRunner): Promise<void> {
+    const schema = this.getSchemaName();
+
+    // ✅ ÉTAPE 1 - Vérifier s'il y a des données dans la colonne
+    const dataCount = await queryRunner.query(`
+      SELECT COUNT(*) as count FROM "${schema}"."services"
+      WHERE "deprecated_field" IS NOT NULL
+    `);
+
+    if (dataCount[0]?.count > 0) {
+      // ✅ ÉTAPE 2 - Créer table de sauvegarde
+      await queryRunner.query(`
+        CREATE TABLE "${schema}"."services_deprecated_backup" AS
+        SELECT id, deprecated_field, created_at
+        FROM "${schema}"."services"
+        WHERE deprecated_field IS NOT NULL
+      `);
+
+      console.log(`Sauvegarde de ${dataCount[0].count} enregistrements dans services_deprecated_backup`);
+    }
+
+    // ✅ ÉTAPE 3 - Supprimer la colonne
+    await queryRunner.query(`
+      ALTER TABLE "${schema}"."services" DROP COLUMN IF EXISTS "deprecated_field"
+    `);
+  }
+
+  public async down(queryRunner: QueryRunner): Promise<void> {
+    const schema = this.getSchemaName();
+
+    // ✅ ÉTAPE 1 - Recréer la colonne
+    await queryRunner.query(`
+      ALTER TABLE "${schema}"."services"
+      ADD COLUMN "deprecated_field" VARCHAR(255)
+    `);
+
+    // ✅ ÉTAPE 2 - Restaurer les données depuis la sauvegarde
+    const backupExists = await queryRunner.hasTable(`${schema}.services_deprecated_backup`);
+
+    if (backupExists) {
+      await queryRunner.query(`
+        UPDATE "${schema}"."services"
+        SET "deprecated_field" = backup."deprecated_field"
+        FROM "${schema}"."services_deprecated_backup" backup
+        WHERE "${schema}"."services".id = backup.id
+      `);
+    }
+  }
+}
+```
+
+#### **🚨 WORKFLOW OBLIGATOIRE AVANT CHAQUE MIGRATION**
+
+##### **1️⃣ AUDIT DES DONNÉES EXISTANTES (OBLIGATOIRE)**
+
+```bash
+# ✅ OBLIGATOIRE - Se connecter à la base et analyser les données
+docker compose exec postgres-dev psql -U postgres -d appointment_system
+
+-- Vérifier la structure actuelle
+\dt+ schema_name.*
+
+-- Analyser les données dans la table concernée
+SELECT COUNT(*), column_name FROM table_name GROUP BY column_name;
+SELECT DISTINCT column_name FROM table_name;
+SELECT * FROM table_name LIMIT 10;
+```
+
+##### **2️⃣ PLAN DE MIGRATION SÉCURISÉ**
+
+```typescript
+// ✅ OBLIGATOIRE - Documenter le plan dans la migration
+export class ExampleMigration implements MigrationInterface {
+  name = 'ExampleMigration';
+
+  /**
+   * PLAN DE MIGRATION SÉCURISÉ
+   *
+   * 🎯 OBJECTIF : [Décrire l'objectif de la migration]
+   *
+   * 📊 DONNÉES EXISTANTES :
+   * - Table "services" contient 150 enregistrements
+   * - Colonne "status" : 120 'active', 25 'inactive', 5 'draft'
+   * - Aucune valeur NULL dans "status"
+   *
+   * 🛡️ MESURES DE SÉCURITÉ :
+   * - Vérification existence colonne avant modification
+   * - Sauvegarde données critiques dans table temporaire
+   * - Transformation progressive avec mapping explicite
+   * - Rollback complet possible via méthode down()
+   *
+   * ⚠️ RISQUES IDENTIFIÉS :
+   * - Perte de données si mapping incorrect
+   * - Contraintes NOT NULL sur données existantes
+   * - Temps d'exécution sur tables volumineuses
+   *
+   * ✅ TESTS EFFECTUÉS :
+   * - Migration testée sur copie de base de développement
+   * - Rollback vérifié et fonctionnel
+   * - Performances acceptables (<5 secondes)
+   */
+}
+```
+
+##### **3️⃣ TESTS OBLIGATOIRES EN DÉVELOPPEMENT**
+
+```bash
+# ✅ WORKFLOW OBLIGATOIRE - Tester la migration
+# 1. Sauvegarder la base actuelle
+docker compose exec postgres-dev pg_dump -U postgres appointment_system > backup_pre_migration.sql
+
+# 2. Appliquer la migration
+docker compose exec app npm run migration:run
+
+# 3. Vérifier les données après migration
+docker compose exec postgres-dev psql -U postgres -d appointment_system -c "SELECT COUNT(*) FROM services;"
+
+# 4. Tester le rollback
+docker compose exec app npm run migration:revert
+
+# 5. Vérifier que les données sont restaurées
+docker compose exec postgres-dev psql -U postgres -d appointment_system -c "SELECT COUNT(*) FROM services;"
+
+# 6. Re-appliquer si le test de rollback réussit
+docker compose exec app npm run migration:run
+```
+
+#### **❌ INTERDICTIONS ABSOLUES - MIGRATIONS DESTRUCTRICES**
+
+- ❌ **JAMAIS** `DROP COLUMN` sans sauvegarde des données
+- ❌ **JAMAIS** `ALTER COLUMN ... NOT NULL` sans vérifier les données existantes
+- ❌ **JAMAIS** `DROP TABLE` sans export complet des données
+- ❌ **JAMAIS** de migration sans plan de rollback testé
+- ❌ **JAMAIS** de transformation de type destructrice
+- ❌ **JAMAIS** de migration sans vérification préalable des données
+- ❌ **JAMAIS** ignorer les warnings sur les contraintes
+
+#### **🎯 CHECKLIST OBLIGATOIRE POUR CHAQUE MIGRATION**
+
+- [ ] ✅ **Analyse des données existantes** effectuée
+- [ ] ✅ **Plan de migration** documenté dans le fichier
+- [ ] ✅ **Vérifications d'existence** avant modifications
+- [ ] ✅ **Valeurs par défaut** appropriées pour nouvelles colonnes
+- [ ] ✅ **Sauvegarde automatique** des données critiques
+- [ ] ✅ **Transformation progressive** pour modifications de type
+- [ ] ✅ **Méthode down()** complète et testée
+- [ ] ✅ **Tests de migration/rollback** en développement
+- [ ] ✅ **Performance acceptable** sur données volumineuses
+- [ ] ✅ **Documentation des risques** identifiés et mitigés
+
+#### **📊 EXEMPLES CONCRETS PAR CAS D'USAGE**
+
+##### **Cas 1 : Ajout de colonne obligatoire sur table peuplée**
+```sql
+-- ❌ INTERDIT - Causera des erreurs sur données existantes
+ALTER TABLE services ADD COLUMN required_field VARCHAR(50) NOT NULL;
+
+-- ✅ CORRECT - Progression en 3 étapes
+-- Étape 1 : Ajouter colonne nullable avec défaut
+ALTER TABLE services ADD COLUMN required_field VARCHAR(50) DEFAULT 'DEFAULT_VALUE';
+
+-- Étape 2 : Mettre à jour les données existantes
+UPDATE services SET required_field = 'APPROPRIATE_VALUE' WHERE required_field IS NULL;
+
+-- Étape 3 : Ajouter contrainte NOT NULL
+ALTER TABLE services ALTER COLUMN required_field SET NOT NULL;
+```
+
+##### **Cas 2 : Changement de type avec données existantes**
+```sql
+-- ❌ INTERDIT - Perte de données garantie
+ALTER TABLE services ALTER COLUMN price TYPE INTEGER;
+
+-- ✅ CORRECT - Colonne temporaire et migration
+ALTER TABLE services ADD COLUMN price_new INTEGER;
+UPDATE services SET price_new = CAST(price AS INTEGER) WHERE price ~ '^[0-9]+$';
+UPDATE services SET price_new = 0 WHERE price_new IS NULL; -- Défaut sécurisé
+ALTER TABLE services DROP COLUMN price;
+ALTER TABLE services RENAME COLUMN price_new TO price;
+```
+
+#### **🚨 SANCTIONS POUR NON-RESPECT**
+
+Le non-respect de cette règle entraîne :
+- **Blocage immédiat** de la migration en production
+- **Corruption potentielle** des données critiques
+- **Rollback d'urgence** et investigation complète
+- **Review obligatoire** de toutes les migrations futures
+- **Formation supplémentaire** sur les bonnes pratiques
+
+**Cette règle est CRITIQUE pour la sécurité et l'intégrité des données !**
+
 ### 👤 **TRAÇABILITÉ UTILISATEUR OBLIGATOIRE**
 
 **⚠️ RÈGLE CRITIQUE : Il faut TOUJOURS savoir qui a créé quoi et qui a mis à jour quoi**
@@ -258,25 +644,30 @@ await this.auditService.logOperation({
 - ❌ **JAMAIS** d'exception sans contexte de traçabilité
 - ❌ **JAMAIS** de CRUD sans audit trail
 
-## 🐳 **ENVIRONNEMENT DOCKER PRINCIPAL**
+## 🐳 **ENVIRONNEMENT DOCKER EXCLUSIF - RÈGLE ABSOLUE**
 
-### 📋 **RÈGLE CRITIQUE : APPLICATION TOUJOURS SUR DOCKER**
+### � **RÈGLE CRITIQUE NON-NÉGOCIABLE : TOUT TOURNE SUR DOCKER**
 
-L'application **TOURNE EXCLUSIVEMENT SUR DOCKER** avec Docker Compose pour assurer :
+**⚠️ INTERDICTION ABSOLUE D'EXÉCUTER DES COMMANDES SUR L'HOST**
 
+L'application **TOURNE EXCLUSIVEMENT SUR DOCKER** avec Docker Compose. **AUCUNE** commande ne doit être exécutée directement sur la machine host.
+
+**🎯 POURQUOI DOCKER EXCLUSIF :**
 - **🎯 Consistance d'environnement** : Même stack partout (dev, staging, prod)
 - **🗄️ Base de données intégrée** : PostgreSQL + Redis dans containers
 - **🔧 Hot reload activé** : Développement fluide avec volumes montés
 - **⚙️ Configuration simplifiée** : Variables d'environnement centralisées
 - **🚀 Déploiement reproductible** : Infrastructure as Code
+- **🔒 Isolation complète** : Pas de pollution de l'environnement host
+- **📦 Dépendances maîtrisées** : Versions exactes dans containers
 
-### **🔧 Commandes Docker Obligatoires**
+### **🔧 Commandes Docker OBLIGATOIRES - REMPLACEMENTS HOST**
 
 ```bash
 # 🐳 Démarrer TOUS les services (App + DB + Redis)
 make start
 # OU
-docker-compose up -d
+docker compose up -d
 
 # 📊 Démarrer SEULEMENT les bases de données
 make start-db
@@ -292,6 +683,14 @@ make logs
 
 # 🧹 Nettoyer volumes et images
 make clean
+
+# ⚠️ NOUVEAU - Commandes dans container OBLIGATOIRES
+docker compose exec app npm run lint
+docker compose exec app npm run test
+docker compose exec app npm run build
+docker compose exec app npx tsc --noEmit
+docker compose exec app npm run migration:run
+docker compose exec app npm run migration:revert
 ```
 
 ### **🚨 RÈGLE CRITIQUE : INSTALLATION DÉPENDANCES DANS LE CONTAINER**
@@ -328,13 +727,59 @@ docker compose logs app --tail=20
 4. `docker compose up -d app` (redémarrage propre)
 5. `docker compose logs app --tail=20` (vérification démarrage)
 
-**🔧 ALTERNATIVE - Si installation déjà faite sur host** :
+### **� RÈGLE CRITIQUE : MIGRATIONS EXCLUSIVEMENT DANS DOCKER**
+
+**⚠️ WORKFLOW OBLIGATOIRE** : Toutes les migrations doivent être exécutées dans le container Docker pour éviter les problèmes de compatibilité et d'environnement :
+
 ```bash
-npm install nouvelle-dependance
-docker compose down app                    # Supprimer container
-docker compose build --no-cache app       # Reconstruire sans cache
-docker compose up -d app                   # Redémarrer
-docker compose logs app --tail=20          # Vérifier
+# ✅ OBLIGATOIRE - Exécuter migrations dans container
+docker compose exec app npm run migration:run
+
+# ✅ OBLIGATOIRE - Rollback migrations dans container
+docker compose exec app npm run migration:revert
+
+# ✅ OBLIGATOIRE - Génération de migration dans container
+docker compose exec app npm run migration:generate -- -n NameOfMigration
+
+# ✅ OBLIGATOIRE - Création manuelle de migration dans container
+docker compose exec app npm run migration:create -- -n NameOfMigration
+
+# ✅ OBLIGATOIRE - Vérifier status migrations dans container
+docker compose exec app npm run migration:show
+```
+
+### **🔧 COMMANDES COURANTES DOCKER - RÉFÉRENCE RAPIDE**
+
+```bash
+# 🧪 TESTS
+docker compose exec app npm test                    # Tous les tests
+docker compose exec app npm run test:unit          # Tests unitaires
+docker compose exec app npm run test:integration   # Tests d'intégration
+docker compose exec app npm run test:e2e          # Tests end-to-end
+docker compose exec app npm run test:cov          # Coverage
+
+# 🔍 QUALITÉ CODE
+docker compose exec app npm run lint              # ESLint
+docker compose exec app npm run lint -- --fix    # Auto-fix
+docker compose exec app npm run format            # Prettier
+docker compose exec app npx tsc --noEmit         # Vérification TypeScript
+
+# 🏗️ BUILD
+docker compose exec app npm run build             # Build production
+docker compose exec app npm run start:dev         # Dev mode (dans container)
+
+# 📦 DÉPENDANCES
+docker compose exec app npm install package-name  # Installer dépendance
+docker compose exec app npm uninstall package-name # Désinstaller
+docker compose exec app npm ci                    # Clean install
+docker compose exec app npm audit                 # Audit sécurité
+docker compose exec app npm outdated              # Dépendances obsolètes
+
+# 🗄️ BASE DE DONNÉES
+docker compose exec app npm run migration:run     # Exécuter migrations
+docker compose exec app npm run migration:revert  # Rollback migration
+docker compose exec app npm run seed:run          # Exécuter seeds
+docker compose exec postgres-dev psql -U postgres -d appointment_system  # Accès direct DB
 ```
 
 ### **📦 Services Docker Configurés**
@@ -345,14 +790,162 @@ docker compose logs app --tail=20          # Vérifier
 - **🔴 Redis** : Port 6379, cache utilisateur et sessions
 - **🔧 pgAdmin 4** : Port 5050, interface web DB management
 
-### **⚠️ INTERDICTIONS DÉVELOPPEMENT LOCAL**
+### **🚨 INTERDICTIONS ABSOLUES - COMMANDES HOST**
 
+**❌ JAMAIS EXÉCUTER SUR L'HOST :**
 - ❌ **JAMAIS** `npm run start:dev` directement sur la machine host
-- ❌ **JAMAIS** installer PostgreSQL/Redis localement
+- ❌ **JAMAIS** `npm install` ou `npm ci` sur l'host
+- ❌ **JAMAIS** `npm run test` sur l'host
+- ❌ **JAMAIS** `npm run lint` sur l'host
+- ❌ **JAMAIS** `npm run build` sur l'host
+- ❌ **JAMAIS** `npx tsc` sur l'host
+- ❌ **JAMAIS** `npm run migration:run` sur l'host
+- ❌ **JAMAIS** installer PostgreSQL/Redis/MongoDB localement
 - ❌ **JAMAIS** modifier les ports sans mettre à jour docker-compose.yml
-- ✅ **TOUJOURS** utiliser Docker pour développement, tests, débogage
+- ❌ **JAMAIS** utiliser node/npm directement sur l'host
 
-## 🚀 **NODE.JS 24 - NOUVELLES FONCTIONNALITÉS À EXPLOITER**
+**✅ TOUJOURS OBLIGATOIRE - COMMANDES DOCKER :**
+- ✅ **TOUJOURS** `docker compose exec app npm run [command]`
+- ✅ **TOUJOURS** `docker compose exec app npm install [package]`
+- ✅ **TOUJOURS** `docker compose exec app npm run test`
+- ✅ **TOUJOURS** `docker compose exec app npm run lint`
+- ✅ **TOUJOURS** `docker compose exec app npm run build`
+- ✅ **TOUJOURS** `docker compose exec app npm run migration:run`
+- ✅ **TOUJOURS** utiliser Docker pour développement, tests, débogage, migrations
+
+## �️ **ARCHITECTURE DE BASE DE DONNÉES - CLEAN ARCHITECTURE OBLIGATOIRE**
+
+### 🎯 **RÈGLE CRITIQUE : ORGANISATION PAR TYPE DE BASE DE DONNÉES**
+
+**⚠️ RÈGLE NON-NÉGOCIABLE** : Pour respecter la Clean Architecture et permettre de changer facilement de base de données (SQL/NoSQL), nous devons organiser les fichiers par type de driver spécifique.
+
+#### **📁 STRUCTURE OBLIGATOIRE DES COUCHES DONNÉES**
+
+```
+src/infrastructure/database/
+├── database.module.ts                 # Module principal avec switch DB
+├── typeorm.config.ts                  # Configuration générale TypeORM
+├── typeorm-repositories.module.ts     # Module repositories TypeORM
+├── sql/                              # ✅ Bases de données SQL
+│   └── postgresql/                   # ✅ Driver PostgreSQL spécifique
+│       ├── entities/                 # ✅ Entités ORM PostgreSQL
+│       │   ├── user-orm.entity.ts
+│       │   ├── skill-orm.entity.ts
+│       │   ├── service-category-orm.entity.ts
+│       │   ├── service-type-orm.entity.ts
+│       │   └── index.ts             # Export centralisé
+│       ├── repositories/             # ✅ Repositories PostgreSQL
+│       │   ├── typeorm-user.repository.ts
+│       │   ├── typeorm-skill.repository.ts
+│       │   ├── typeorm-service-category.repository.ts
+│       │   ├── typeorm-service-type.repository.ts
+│       │   └── index.ts             # Export centralisé
+│       ├── migrations/               # ✅ Migrations PostgreSQL
+│       │   ├── 1703701200000-CreateSkillsTable.ts
+│       │   ├── 1703702000000-CreateServiceCategoriesTable.ts
+│       │   ├── 1703703000000-CreateServiceTypesTable.ts
+│       │   └── index.ts
+│       └── utils/                    # ✅ Utilitaires PostgreSQL
+├── nosql/                           # ✅ Bases de données NoSQL
+│   ├── mongodb/                     # ✅ Driver MongoDB spécifique
+│   │   ├── schemas/                 # Schémas MongoDB
+│   │   ├── repositories/            # Repositories MongoDB
+│   │   └── migrations/              # Migrations MongoDB
+│   └── redis/                       # ✅ Driver Redis spécifique
+│       ├── schemas/
+│       └── repositories/
+└── orm/                             # ✅ Mappers ORM génériques
+    └── mappers/                     # ✅ Conversion Domain ↔ Persistence
+        ├── user-orm.mapper.ts
+        ├── skill-orm.mapper.ts
+        ├── service-category-orm.mapper.ts
+        ├── service-type-orm.mapper.ts
+        └── index.ts
+```
+
+#### **🚨 RÈGLES DE DÉPLACEMENT OBLIGATOIRES**
+
+**⚠️ TOUS les fichiers doivent être organisés selon cette hiérarchie :**
+
+```bash
+# ❌ INTERDIT - Fichiers dans mauvais répertoire
+src/infrastructure/database/entities/           # Trop générique
+src/infrastructure/database/repositories/       # Trop générique
+
+# ✅ CORRECT - Fichiers dans structure spécifique
+src/infrastructure/database/sql/postgresql/entities/
+src/infrastructure/database/sql/postgresql/repositories/
+```
+
+#### **📋 AVANTAGES DE CETTE ARCHITECTURE**
+
+1. **🔄 Swappable Database** : Changer facilement entre PostgreSQL, MySQL, MongoDB
+2. **🎯 Isolation par Driver** : Chaque driver a sa propre implémentation
+3. **📦 Modulaire** : Ajouter/supprimer des drivers sans impact
+4. **🧪 Tests Isolés** : Tests spécifiques par type de base
+5. **⚡ Performance** : Optimisations spécifiques par driver
+6. **🔧 Maintenance** : Code organisé par responsabilité technique
+
+#### **🛠️ WORKFLOW DE MIGRATION OBLIGATOIRE**
+
+**Étape 1 : Identifier les fichiers mal placés**
+```bash
+# Trouver tous les fichiers ORM/repositories mal placés
+find src/infrastructure/database -name "*-orm.entity.ts" -not -path "*/sql/postgresql/entities/*"
+find src/infrastructure/database -name "typeorm-*.repository.ts" -not -path "*/sql/postgresql/repositories/*"
+```
+
+**Étape 2 : Déplacer vers la structure correcte**
+```bash
+# Déplacer entités ORM vers PostgreSQL
+mv src/infrastructure/database/entities/*.ts src/infrastructure/database/sql/postgresql/entities/
+
+# Déplacer repositories TypeORM vers PostgreSQL
+mv src/infrastructure/database/repositories/typeorm-*.ts src/infrastructure/database/sql/postgresql/repositories/
+```
+
+**Étape 3 : Mettre à jour les imports**
+```bash
+# Corriger automatiquement les imports après déplacement
+npx ts-node scripts/fix-imports-after-db-migration.ts
+```
+
+#### **✅ CHECKLIST ARCHITECTURE DATABASE OBLIGATOIRE**
+
+- [ ] ✅ **Entités ORM** dans `sql/postgresql/entities/`
+- [ ] ✅ **Repositories TypeORM** dans `sql/postgresql/repositories/`
+- [ ] ✅ **Migrations** dans `sql/postgresql/migrations/`
+- [ ] ✅ **Mappers** dans `infrastructure/mappers/` (génériques)
+- [ ] ✅ **Index exports** dans chaque sous-dossier
+- [ ] ✅ **Imports corrigés** après migration
+- [ ] ✅ **Tests** organisés selon même structure
+- [ ] ✅ **Documentation** mise à jour
+
+#### **🚫 INTERDICTIONS ABSOLUES - ARCHITECTURE DB**
+
+- ❌ **JAMAIS** de fichier ORM dans `database/entities/` (trop générique)
+- ❌ **JAMAIS** de repository dans `database/repositories/` (trop générique)
+- ❌ **JAMAIS** mélanger drivers différents dans même dossier
+- ❌ **JAMAIS** d'import direct entre drivers (PostgreSQL ↔ MongoDB)
+- ❌ **JAMAIS** de logique métier dans couche infrastructure
+- ❌ **JAMAIS** de couplage fort avec un driver spécifique
+
+### 🔗 **INTÉGRATION AVEC DOCKER ET MIGRATIONS**
+
+```bash
+# ✅ OBLIGATOIRE - Migrations PostgreSQL dans Docker
+docker compose exec app npm run migration:run
+
+# ✅ OBLIGATOIRE - Tests avec base PostgreSQL
+docker compose exec app npm run test:integration
+
+# ✅ OBLIGATOIRE - Seed data PostgreSQL
+docker compose exec app npm run seed:postgresql
+```
+
+**Cette organisation garantit une architecture flexible, maintenable et évolutive !**
+
+## �🚀 **NODE.JS 24 - NOUVELLES FONCTIONNALITÉS À EXPLOITER**
 
 ### 📋 **Environnement Technique Requis**
 
@@ -4304,3 +4897,488 @@ import { CancelAppointmentUseCase } from '../../application/use-cases/appointmen
 - [ ] ✅ **Tests passent** après ajout
 
 \*_Cette documentation évitera 90% des erreurs d'injection de dépendances lors de l'ajout de nouveaux Use Cases run lint src/presentation/controllers/ 2>&1 | grep -E .controller.ts | head -10_
+
+## 🎯 **RÈGLES IMPORTS OBLIGATOIRES - ALIAS TYPESCRIPT**
+
+### 🚨 **RÈGLE CRITIQUE NON-NÉGOCIABLE : UTILISER EXCLUSIVEMENT LES ALIAS D'IMPORT**
+
+**⚠️ INTERDICTION ABSOLUE** : Utiliser des chemins relatifs dans les imports. TOUJOURS utiliser les alias TypeScript configurés dans `tsconfig.json`.
+
+#### **✅ ALIAS CONFIGURÉS OBLIGATOIRES**
+
+```typescript
+// ✅ OBLIGATOIRE - Utiliser TOUJOURS les alias définis
+import { User } from '@domain/entities/user.entity';
+import { CreateUserUseCase } from '@application/use-cases/users/create-user.use-case';
+import { TypeOrmUserRepository } from '@infrastructure/database/sql/postgresql/repositories/typeorm-user.repository';
+import { UserController } from '@presentation/controllers/user.controller';
+import { Logger } from '@application/ports/logger.port';
+import { validateId } from '@shared/utils/validation.utils';
+
+// ❌ STRICTEMENT INTERDIT - Chemins relatifs
+import { User } from '../../../domain/entities/user.entity';
+import { CreateUserUseCase } from '../../application/use-cases/users/create-user.use-case';
+import { TypeOrmUserRepository } from './repositories/typeorm-user.repository';
+import { Logger } from '../ports/logger.port';
+import { validateId } from '../../../../shared/utils/validation.utils';
+```
+
+#### **📋 MAPPING D'ALIAS COMPLET**
+
+```typescript
+// Configuration tsconfig.json - RÉFÉRENCE
+"paths": {
+  "@domain/*": ["src/domain/*"],
+  "@application/*": ["src/application/*"],
+  "@infrastructure/*": ["src/infrastructure/*"],
+  "@presentation/*": ["src/presentation/*"],
+  "@shared/*": ["src/shared/*"]
+}
+```
+
+#### **🎯 EXEMPLES CONCRETS PAR COUCHE**
+
+```typescript
+// 🏛️ DOMAIN LAYER
+import { User } from '@domain/entities/user.entity';
+import { Email } from '@domain/value-objects/email.value-object';
+import { IUserRepository } from '@domain/repositories/user.repository';
+import { UserValidationError } from '@domain/exceptions/user.exceptions';
+import { UserService } from '@domain/services/user.service';
+
+// 🏗️ APPLICATION LAYER
+import { CreateUserUseCase } from '@application/use-cases/users/create-user.use-case';
+import { Logger } from '@application/ports/logger.port';
+import { I18nService } from '@application/ports/i18n.port';
+import { IAuditService } from '@application/ports/audit.port';
+import { UserCacheService } from '@application/services/user-cache.service';
+
+// 🔧 INFRASTRUCTURE LAYER
+import { TypeOrmUserRepository } from '@infrastructure/database/sql/postgresql/repositories/typeorm-user.repository';
+import { UserOrmEntity } from '@infrastructure/database/sql/postgresql/entities/user-orm.entity';
+import { UserOrmMapper } from '@infrastructure/mappers/user-orm.mapper';
+import { DatabaseModule } from '@infrastructure/database/database.module';
+import { RedisService } from '@infrastructure/cache/redis.service';
+
+// 🎨 PRESENTATION LAYER
+import { UserController } from '@presentation/controllers/user.controller';
+import { CreateUserDto } from '@presentation/dtos/users/create-user.dto';
+import { UserMapper } from '@presentation/mappers/user.mapper';
+import { JwtAuthGuard } from '@presentation/security/auth.guard';
+import { GetUser } from '@presentation/security/decorators/get-user.decorator';
+
+// 🔗 SHARED LAYER
+import { UserRole } from '@shared/enums/user-role.enum';
+import { generateId } from '@shared/utils/id.utils';
+import { validateEmail } from '@shared/utils/validation.utils';
+import { BusinessConstants } from '@shared/constants/business.constants';
+import { ApiResponse } from '@shared/types/api.types';
+```
+
+#### **🚫 VIOLATIONS STRICTEMENT INTERDITES**
+
+- ❌ **JAMAIS** de `../../../domain/entities/user.entity`
+- ❌ **JAMAIS** de `../../application/use-cases/users/create-user.use-case`
+- ❌ **JAMAIS** de `./repositories/typeorm-user.repository`
+- ❌ **JAMAIS** de chemins relatifs dans AUCUN import
+- ❌ **JAMAIS** mélanger alias et chemins relatifs dans le même fichier
+
+#### **✅ AVANTAGES DES ALIAS**
+
+1. **🧹 Lisibilité** : Code plus propre et compréhensible
+2. **🔧 Maintenabilité** : Refactoring facilité
+3. **🚀 Performance** : Résolution d'imports optimisée
+4. **📁 Organisation** : Structure claire du projet
+5. **🧪 Testabilité** : Mocking et stubbing simplifiés
+6. **👥 Collaboration** : Standards équipe respectés
+
+#### **🔍 DÉTECTION DES VIOLATIONS**
+
+```bash
+# Vérifier les imports relatifs interdits
+grep -r "\.\./\.\./\.\." src/
+# RÉSULTAT ATTENDU : Aucun résultat (0 ligne)
+
+# Vérifier les imports relatifs courts interdits
+grep -r "import.*\.\./" src/
+# RÉSULTAT ATTENDU : Aucun résultat (0 ligne)
+
+# Vérifier l'utilisation correcte des alias
+grep -r "import.*@domain\|@application\|@infrastructure\|@presentation\|@shared" src/ | head -10
+# RÉSULTAT ATTENDU : Nombreux imports avec alias
+```
+
+#### **📋 CHECKLIST OBLIGATOIRE AVANT COMMIT**
+
+- [ ] ✅ **Tous les imports utilisent les alias** `@domain/*`, `@application/*`, etc.
+- [ ] ✅ **Aucun chemin relatif** `../` dans les imports
+- [ ] ✅ **Tests passent** avec les nouveaux imports
+- [ ] ✅ **Build compile** sans erreur de résolution de modules
+- [ ] ✅ **ESLint/TypeScript** ne signalent aucune erreur d'import
+- [ ] ✅ **IDE reconnaît** correctement tous les imports
+- [ ] ✅ **Auto-complete** fonctionne avec les alias
+- [ ] ✅ **Refactoring safe** : renommage préservé
+
+#### **🛠️ CONFIGURATION IDE RECOMMANDÉE**
+
+```json
+// .vscode/settings.json
+{
+  "typescript.preferences.includePackageJsonAutoImports": "on",
+  "typescript.suggest.autoImports": true,
+  "typescript.preferences.importModuleSpecifier": "shortest",
+  "typescript.suggest.includeAutomaticOptionalChainCompletions": true
+}
+```
+
+#### **🚨 SANCTIONS POUR NON-RESPECT**
+
+Le non-respect de cette règle entraîne :
+
+- **Rejet automatique** du commit par Husky
+- **Blocage de la CI/CD**
+- **Review obligatoire** et refactoring immédiat
+- **Formation supplémentaire** sur les bonnes pratiques TypeScript
+
+**Cette règle garantit un code professionnel, maintenable et respectueux des standards TypeScript !**
+
+## 🗄️ **RÈGLE CRITIQUE : MIGRATIONS TYPEORM ET DONNÉES EXISTANTES**
+
+### 🎯 **RÈGLE FONDAMENTALE NON-NÉGOCIABLE : PRÉSERVER LES DONNÉES EXISTANTES**
+
+**⚠️ RÈGLE CRITIQUE** : Toute migration TypeORM DOIT impérativement tenir compte des données déjà présentes en base de données. Cette règle est **NON-NÉGOCIABLE** pour éviter la corruption de données et les pannes en production.
+
+#### **📋 PRINCIPE FONDAMENTAL : SAFETY-FIRST MIGRATIONS**
+
+**TOUJOURS se demander avant chaque migration :**
+
+1. **Y a-t-il déjà des données** dans cette table ?
+2. **Comment préserver** l'intégrité des données existantes ?
+3. **Les contraintes ajoutées** sont-elles compatibles avec les données actuelles ?
+4. **Les colonnes supprimées** contiennent-elles des données critiques ?
+
+#### **✅ PATTERNS OBLIGATOIRES SELON LE TYPE DE MIGRATION**
+
+##### **🆕 AJOUT DE COLONNE - Gestion des Valeurs par Défaut**
+
+```typescript
+// ✅ OBLIGATOIRE - Colonne nullable ou avec valeur par défaut
+export class AddPricingConfigToServices implements MigrationInterface {
+  public async up(queryRunner: QueryRunner): Promise<void> {
+    const schema = this.getSchemaName();
+
+    // ✅ CORRECT - Vérifier l'existence avant ajout
+    const columnExists = await queryRunner.hasColumn(
+      `${schema}.services`,
+      'pricing_config',
+    );
+
+    if (!columnExists) {
+      // ✅ CORRECT - Colonne avec DEFAULT pour données existantes
+      await queryRunner.query(`
+        ALTER TABLE "${schema}"."services"
+        ADD COLUMN "pricing_config" jsonb 
+        DEFAULT '{"type":"FIXED","basePrice":{"amount":0,"currency":"EUR"}}'::jsonb
+      `);
+
+      // ✅ CORRECT - Mettre à jour les données existantes si nécessaire
+      await queryRunner.query(`
+        UPDATE "${schema}"."services"
+        SET "pricing_config" = '{"type":"FIXED","basePrice":{"amount":50,"currency":"EUR"}}'::jsonb
+        WHERE "pricing_config" IS NULL AND "is_active" = true
+      `);
+    }
+  }
+
+  public async down(queryRunner: QueryRunner): Promise<void> {
+    const schema = this.getSchemaName();
+
+    // ✅ CORRECT - Vérifier avant suppression
+    const columnExists = await queryRunner.hasColumn(
+      `${schema}.services`,
+      'pricing_config',
+    );
+
+    if (columnExists) {
+      // ⚠️ ATTENTION - Sauvegarder les données critiques avant suppression
+      await queryRunner.query(`
+        -- Optionnel : Sauvegarder les données dans une table temporaire
+        CREATE TABLE IF NOT EXISTS "${schema}"."services_pricing_backup" AS
+        SELECT id, pricing_config FROM "${schema}"."services" 
+        WHERE pricing_config IS NOT NULL
+      `);
+
+      await queryRunner.query(`
+        ALTER TABLE "${schema}"."services" DROP COLUMN IF EXISTS "pricing_config"
+      `);
+    }
+  }
+
+  private getSchemaName(): string {
+    return process.env.DB_SCHEMA || 'public';
+  }
+}
+```
+
+##### **🔧 MODIFICATION DE COLONNE - Gestion des Types et Contraintes**
+
+```typescript
+// ✅ OBLIGATOIRE - Transformation sécurisée des données
+export class UpdateStatusEnumInServices implements MigrationInterface {
+  public async up(queryRunner: QueryRunner): Promise<void> {
+    const schema = this.getSchemaName();
+
+    // ✅ ÉTAPE 1 - Vérifier les données existantes
+    const existingData = await queryRunner.query(`
+      SELECT DISTINCT status FROM "${schema}"."services"
+    `);
+
+    console.log('Statuts existants avant migration:', existingData);
+
+    // ✅ ÉTAPE 2 - Ajouter une colonne temporaire avec nouveau type
+    await queryRunner.query(`
+      ALTER TABLE "${schema}"."services"
+      ADD COLUMN "status_new" VARCHAR(20)
+    `);
+
+    // ✅ ÉTAPE 3 - Migrer les données avec mapping approprié
+    await queryRunner.query(`
+      UPDATE "${schema}"."services"
+      SET "status_new" = CASE
+        WHEN status = 'active' THEN 'ACTIVE'
+        WHEN status = 'inactive' THEN 'INACTIVE'
+        WHEN status = 'draft' THEN 'DRAFT'
+        ELSE 'DRAFT' -- Valeur par défaut pour données inconnues
+      END
+    `);
+
+    // ✅ ÉTAPE 4 - Supprimer ancienne colonne et renommer
+    await queryRunner.query(`
+      ALTER TABLE "${schema}"."services" DROP COLUMN "status"
+    `);
+
+    await queryRunner.query(`
+      ALTER TABLE "${schema}"."services" 
+      RENAME COLUMN "status_new" TO "status"
+    `);
+
+    // ✅ ÉTAPE 5 - Ajouter contraintes après transformation
+    await queryRunner.query(`
+      ALTER TABLE "${schema}"."services"
+      ALTER COLUMN "status" SET NOT NULL
+    `);
+  }
+
+  private getSchemaName(): string {
+    return process.env.DB_SCHEMA || 'public';
+  }
+}
+```
+
+##### **🗑️ SUPPRESSION DE COLONNE - Sauvegarde Obligatoire**
+
+```typescript
+// ✅ OBLIGATOIRE - Sauvegarde avant suppression
+export class RemoveDeprecatedColumnsFromServices implements MigrationInterface {
+  public async up(queryRunner: QueryRunner): Promise<void> {
+    const schema = this.getSchemaName();
+
+    // ✅ ÉTAPE 1 - Vérifier s'il y a des données dans la colonne
+    const dataCount = await queryRunner.query(`
+      SELECT COUNT(*) as count FROM "${schema}"."services" 
+      WHERE "deprecated_field" IS NOT NULL
+    `);
+
+    if (dataCount[0]?.count > 0) {
+      // ✅ ÉTAPE 2 - Créer table de sauvegarde
+      await queryRunner.query(`
+        CREATE TABLE "${schema}"."services_deprecated_backup" AS
+        SELECT id, deprecated_field, created_at
+        FROM "${schema}"."services"
+        WHERE deprecated_field IS NOT NULL
+      `);
+
+      console.log(
+        `Sauvegarde de ${dataCount[0].count} enregistrements dans services_deprecated_backup`,
+      );
+    }
+
+    // ✅ ÉTAPE 3 - Supprimer la colonne
+    await queryRunner.query(`
+      ALTER TABLE "${schema}"."services" DROP COLUMN IF EXISTS "deprecated_field"
+    `);
+  }
+
+  public async down(queryRunner: QueryRunner): Promise<void> {
+    const schema = this.getSchemaName();
+
+    // ✅ ÉTAPE 1 - Recréer la colonne
+    await queryRunner.query(`
+      ALTER TABLE "${schema}"."services"
+      ADD COLUMN "deprecated_field" VARCHAR(255)
+    `);
+
+    // ✅ ÉTAPE 2 - Restaurer les données depuis la sauvegarde
+    const backupExists = await queryRunner.hasTable(
+      `${schema}.services_deprecated_backup`,
+    );
+
+    if (backupExists) {
+      await queryRunner.query(`
+        UPDATE "${schema}"."services" 
+        SET "deprecated_field" = backup."deprecated_field"
+        FROM "${schema}"."services_deprecated_backup" backup
+        WHERE "${schema}"."services".id = backup.id
+      `);
+    }
+  }
+
+  private getSchemaName(): string {
+    return process.env.DB_SCHEMA || 'public';
+  }
+}
+```
+
+#### **🚨 WORKFLOW OBLIGATOIRE AVANT CHAQUE MIGRATION**
+
+##### **1️⃣ AUDIT DES DONNÉES EXISTANTES (OBLIGATOIRE)**
+
+```bash
+# ✅ OBLIGATOIRE - Se connecter à la base et analyser les données
+docker compose exec postgres-dev psql -U postgres -d appointment_system
+
+-- Vérifier la structure actuelle
+\dt+ schema_name.*
+
+-- Analyser les données dans la table concernée
+SELECT COUNT(*), column_name FROM table_name GROUP BY column_name;
+SELECT DISTINCT column_name FROM table_name;
+SELECT * FROM table_name LIMIT 10;
+```
+
+##### **2️⃣ PLAN DE MIGRATION SÉCURISÉ**
+
+```typescript
+// ✅ OBLIGATOIRE - Documenter le plan dans la migration
+export class ExampleMigration implements MigrationInterface {
+  name = 'ExampleMigration';
+
+  /**
+   * PLAN DE MIGRATION SÉCURISÉ
+   *
+   * 🎯 OBJECTIF : [Décrire l'objectif de la migration]
+   *
+   * 📊 DONNÉES EXISTANTES :
+   * - Table "services" contient 150 enregistrements
+   * - Colonne "status" : 120 'active', 25 'inactive', 5 'draft'
+   * - Aucune valeur NULL dans "status"
+   *
+   * 🛡️ MESURES DE SÉCURITÉ :
+   * - Vérification existence colonne avant modification
+   * - Sauvegarde données critiques dans table temporaire
+   * - Transformation progressive avec mapping explicite
+   * - Rollback complet possible via méthode down()
+   *
+   * ⚠️ RISQUES IDENTIFIÉS :
+   * - Perte de données si mapping incorrect
+   * - Contraintes NOT NULL sur données existantes
+   * - Temps d'exécution sur tables volumineuses
+   *
+   * ✅ TESTS EFFECTUÉS :
+   * - Migration testée sur copie de base de développement
+   * - Rollback vérifié et fonctionnel
+   * - Performances acceptables (<5 secondes)
+   */
+}
+```
+
+##### **3️⃣ TESTS OBLIGATOIRES EN DÉVELOPPEMENT**
+
+```bash
+# ✅ WORKFLOW OBLIGATOIRE - Tester la migration
+# 1. Sauvegarder la base actuelle
+docker compose exec postgres-dev pg_dump -U postgres appointment_system > backup_pre_migration.sql
+
+# 2. Appliquer la migration
+docker compose exec app npm run migration:run
+
+# 3. Vérifier les données après migration
+docker compose exec postgres-dev psql -U postgres -d appointment_system -c "SELECT COUNT(*) FROM services;"
+
+# 4. Tester le rollback
+docker compose exec app npm run migration:revert
+
+# 5. Vérifier que les données sont restaurées
+docker compose exec postgres-dev psql -U postgres -d appointment_system -c "SELECT COUNT(*) FROM services;"
+
+# 6. Re-appliquer si le test de rollback réussit
+docker compose exec app npm run migration:run
+```
+
+#### **❌ INTERDICTIONS ABSOLUES - MIGRATIONS DESTRUCTRICES**
+
+- ❌ **JAMAIS** `DROP COLUMN` sans sauvegarde des données
+- ❌ **JAMAIS** `ALTER COLUMN ... NOT NULL` sans vérifier les données existantes
+- ❌ **JAMAIS** `DROP TABLE` sans export complet des données
+- ❌ **JAMAIS** de migration sans plan de rollback testé
+- ❌ **JAMAIS** de transformation de type destructrice
+- ❌ **JAMAIS** de migration sans vérification préalable des données
+- ❌ **JAMAIS** ignorer les warnings sur les contraintes
+
+#### **🎯 CHECKLIST OBLIGATOIRE POUR CHAQUE MIGRATION**
+
+- [ ] ✅ **Analyse des données existantes** effectuée
+- [ ] ✅ **Plan de migration** documenté dans le fichier
+- [ ] ✅ **Vérifications d'existence** avant modifications
+- [ ] ✅ **Valeurs par défaut** appropriées pour nouvelles colonnes
+- [ ] ✅ **Sauvegarde automatique** des données critiques
+- [ ] ✅ **Transformation progressive** pour modifications de type
+- [ ] ✅ **Méthode down()** complète et testée
+- [ ] ✅ **Tests de migration/rollback** en développement
+- [ ] ✅ **Performance acceptable** sur données volumineuses
+- [ ] ✅ **Documentation des risques** identifiés et mitigés
+
+#### **📊 EXEMPLES CONCRETS PAR CAS D'USAGE**
+
+##### **Cas 1 : Ajout de colonne obligatoire sur table peuplée**
+
+```sql
+-- ❌ INTERDIT - Causera des erreurs sur données existantes
+ALTER TABLE services ADD COLUMN required_field VARCHAR(50) NOT NULL;
+
+-- ✅ CORRECT - Progression en 3 étapes
+-- Étape 1 : Ajouter colonne nullable avec défaut
+ALTER TABLE services ADD COLUMN required_field VARCHAR(50) DEFAULT 'DEFAULT_VALUE';
+
+-- Étape 2 : Mettre à jour les données existantes
+UPDATE services SET required_field = 'APPROPRIATE_VALUE' WHERE required_field IS NULL;
+
+-- Étape 3 : Ajouter contrainte NOT NULL
+ALTER TABLE services ALTER COLUMN required_field SET NOT NULL;
+```
+
+##### **Cas 2 : Changement de type avec données existantes**
+
+```sql
+-- ❌ INTERDIT - Perte de données garantie
+ALTER TABLE services ALTER COLUMN price TYPE INTEGER;
+
+-- ✅ CORRECT - Colonne temporaire et migration
+ALTER TABLE services ADD COLUMN price_new INTEGER;
+UPDATE services SET price_new = CAST(price AS INTEGER) WHERE price ~ '^[0-9]+$';
+UPDATE services SET price_new = 0 WHERE price_new IS NULL; -- Défaut sécurisé
+ALTER TABLE services DROP COLUMN price;
+ALTER TABLE services RENAME COLUMN price_new TO price;
+```
+
+#### **🚨 SANCTIONS POUR NON-RESPECT**
+
+Le non-respect de cette règle entraîne :
+
+- **Blocage immédiat** de la migration en production
+- **Corruption potentielle** des données critiques
+- **Rollback d'urgence** et investigation complète
+- **Review obligatoire** de toutes les migrations futures
+- **Formation supplémentaire** sur les bonnes pratiques
+
+**Cette règle est CRITIQUE pour la sécurité et l'intégrité des données !**

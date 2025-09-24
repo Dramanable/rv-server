@@ -98,6 +98,28 @@ export const APPLICATION_TOKENS = {
   // Application Services
   USER_ONBOARDING_SERVICE: 'UserOnboardingApplicationService',
   USER_CACHE_SERVICE: 'UserCacheService',
+  STORE_USER_AFTER_LOGIN_SERVICE: 'StoreUserAfterLoginService',
+
+  // ✅ NEW: Skills Use Cases
+  CREATE_SKILL_USE_CASE: 'CreateSkillUseCase',
+  GET_SKILL_BY_ID_USE_CASE: 'GetSkillByIdUseCase',
+  LIST_SKILLS_USE_CASE: 'ListSkillsUseCase',
+  UPDATE_SKILL_USE_CASE: 'UpdateSkillUseCase',
+  DELETE_SKILL_USE_CASE: 'DeleteSkillUseCase',
+
+  // ✅ NEW: Service Categories Use Cases
+  CREATE_SERVICE_CATEGORY_USE_CASE: 'CreateServiceCategoryUseCase',
+  GET_SERVICE_CATEGORY_BY_ID_USE_CASE: 'GetServiceCategoryByIdUseCase',
+  LIST_SERVICE_CATEGORIES_USE_CASE: 'ListServiceCategoriesUseCase',
+  UPDATE_SERVICE_CATEGORY_USE_CASE: 'UpdateServiceCategoryUseCase',
+  DELETE_SERVICE_CATEGORY_USE_CASE: 'DeleteServiceCategoryUseCase',
+
+  // ✅ NEW: Service Types Use Cases
+  CREATE_SERVICE_TYPE_USE_CASE: 'CreateServiceTypeUseCase',
+  GET_SERVICE_TYPE_BY_ID_USE_CASE: 'GetServiceTypeByIdUseCase',
+  LIST_SERVICE_TYPES_USE_CASE: 'ListServiceTypesUseCase',
+  UPDATE_SERVICE_TYPE_USE_CASE: 'UpdateServiceTypeUseCase',
+  DELETE_SERVICE_TYPE_USE_CASE: 'DeleteServiceTypeUseCase',
 
   // Authentication Services
   AUTH_TOKEN_SERVICE: 'AuthTokenService',

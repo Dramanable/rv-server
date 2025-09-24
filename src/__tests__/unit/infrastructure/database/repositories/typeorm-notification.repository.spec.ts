@@ -1,6 +1,6 @@
 import { Repository } from 'typeorm';
 
-import { NotificationOrmEntity } from '../../../../../infrastructure/database/entities/notification-orm.entity';
+import { NotificationOrmEntity } from '../../../../../infrastructure/database/sql/postgresql/entities/notification-orm.entity';
 import { TypeOrmNotificationRepository } from '../../../../../infrastructure/database/sql/postgresql/repositories/typeorm-notification.repository';
 
 import { Notification } from '../../../../../domain/entities/notification.entity';

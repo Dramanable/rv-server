@@ -1,0 +1,29 @@
+{
+  "validation": {
+    "nameRequired": "Service type name is required",
+    "nameMinLength": "Service type name must be at least 2 characters long",
+    "nameMaxLength": "Service type name cannot exceed 100 characters",
+    "descriptionMaxLength": "Service type description cannot exceed 500 characters",
+    "categoryIdRequired": "Service category ID is required",
+    "categoryIdInvalid": "Service category ID must be a valid UUID"
+  },
+  "errors": {
+    "notFound": "Service type not found",
+    "duplicateName": "A service type with this name already exists in the category",
+    "permissionDenied": "You don't have permission to manage service types",
+    "repositoryError": "Database error occurred while processing service type",
+    "categoryNotFound": "The specified service category does not exist",
+    "cannotDeleteReferenced": "Cannot delete service type: it is referenced by existing services"
+  },
+  "messages": {
+    "createSuccess": "Service type created successfully",
+    "updateSuccess": "Service type updated successfully",
+    "deleteSuccess": "Service type deleted successfully",
+    "listRetrieved": "Service types retrieved successfully"
+  },
+  "businessRules": {
+    "nameUniquePerCategory": "Service type name must be unique within its category",
+    "activeCategoryRequired": "Service type can only belong to an active service category",
+    "deleteConstraint": "Active service type with associated services cannot be deleted"
+  }
+}

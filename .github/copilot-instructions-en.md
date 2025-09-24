@@ -2,7 +2,697 @@
 
 ## 🎯 **Project Context**
 
-You are working on an **enterprise NestJS application** implementing **Robert C. Martin's Clean Architecture (Uncle Bob)** with a **rigorous TDD approach**, **SOLID principles**, and strict **TypeScript best practices**. The application is **production-ready** with security, i18n, and enterprise patterns.
+You are working on an **enterprise NestJS application** implementing **Robert C. Martin's (Uncle Bob) Clean Architecture** with a **rigorous TDD approach**, **SOLID principles**, and strict **TypeScript best practices**. The application is **production-ready** with security, i18n, and enterprise patterns.
+
+## 🚨 **CRITICAL RULE: PROFESSIONAL ENTERPRISE APPLICATION**
+
+**⚠️ NON-NEGOTIABLE RULE**: This application is a **professional enterprise solution**, not a blog or prototype. EVERY line of code MUST comply with enterprise standards:
+
+### 📊 **MANDATORY LOGGING EVERYWHERE**
+
+**ALWAYS include logging in EVERY layer:**
+
+```typescript
+// ✅ MANDATORY - Use Case with complete logging
+export class CreateSkillUseCase {
+  constructor(
+    private readonly skillRepository: ISkillRepository,
+    private readonly logger: ILogger, // ⚠️ MANDATORY
+    private readonly i18n: I18nService, // ⚠️ MANDATORY
+  ) {}
+
+  async execute(request: CreateSkillRequest): Promise<CreateSkillResponse> {
+    this.logger.info('Creating new skill', {
+      businessId: request.businessId,
+      skillName: request.name,
+      requestingUserId: request.requestingUserId,
+      correlationId: request.correlationId, // ⚠️ MANDATORY
+    });
+
+    try {
+      const skill = Skill.create(/* ... */);
+      const savedSkill = await this.skillRepository.save(skill);
+
+      this.logger.info('Skill created successfully', {
+        skillId: savedSkill.getId(),
+        businessId: request.businessId,
+        correlationId: request.correlationId,
+      });
+
+      return CreateSkillResponse.fromSkill(savedSkill);
+    } catch (error) {
+      this.logger.error('Failed to create skill', {
+        error: error.message,
+        businessId: request.businessId,
+        correlationId: request.correlationId,
+      });
+      throw error;
+    }
+  }
+}
+```
+
+### 🌐 **MANDATORY I18N FOR ALL MESSAGES**
+
+**NEVER hardcode text:**
+
+```typescript
+// ❌ FORBIDDEN - Hardcoded messages
+throw new Error('Skill name is required');
+
+// ✅ MANDATORY - I18n messages
+throw new SkillValidationError(
+  this.i18n.translate('skill.validation.nameRequired'),
+  'SKILL_NAME_REQUIRED',
+);
+```
+
+### 🔍 **MANDATORY CONTEXT AND TRACEABILITY**
+
+**Each request MUST have:**
+
+- **correlationId**: Unique UUID to trace the request
+- **requestingUserId**: Who is performing the action
+- **businessContext**: In what business context
+- **operationMetadata**: Operation metadata
+
+```typescript
+// ✅ MANDATORY - Request interface with context
+export interface CreateSkillRequest {
+  // Business data
+  readonly businessId: string;
+  readonly name: string;
+  readonly category: string;
+  readonly description: string;
+  readonly isCritical: boolean;
+
+  // ⚠️ MANDATORY CONTEXT
+  readonly requestingUserId: string; // Who performs the action
+  readonly correlationId: string; // Unique traceability
+  readonly clientIp?: string; // Client IP (security)
+  readonly userAgent?: string; // User agent
+  readonly timestamp: Date; // Precise timestamp
+}
+```
+
+## 🐳 **DOCKER EXCLUSIVE ENVIRONMENT - ABSOLUTE RULE**
+
+### 🛠️ **CRITICAL NON-NEGOTIABLE RULE: EVERYTHING RUNS ON DOCKER**
+
+**⚠️ ABSOLUTE PROHIBITION OF EXECUTING COMMANDS ON HOST**
+
+The application **RUNS EXCLUSIVELY ON DOCKER** with Docker Compose. **NO** command should be executed directly on the host machine.
+
+**🚨 NEW CRITICAL RULE**: Any npm, node, tsc, lint, test, or migration command MUST be executed in the Docker container.
+
+#### **✅ MANDATORY COMMANDS - ALWAYS DOCKER**
+
+```bash
+# ✅ MANDATORY - All tests
+docker compose exec app npm test
+docker compose exec app npm run test:unit
+docker compose exec app npm run test:cov
+
+# ✅ MANDATORY - Lint and formatting
+docker compose exec app npm run lint
+docker compose exec app npm run lint -- --fix
+docker compose exec app npm run format
+
+# ✅ MANDATORY - Build and compilation
+docker compose exec app npm run build
+docker compose exec app npx tsc --noEmit
+
+# ✅ MANDATORY - Migrations (CRITICAL!)
+docker compose exec app npm run migration:run
+docker compose exec app npm run migration:revert
+docker compose exec app npm run migration:generate -- -n NameOfMigration
+
+# ✅ MANDATORY - Dependency installation
+docker compose exec app npm install package-name
+docker compose exec app npm ci
+
+# ✅ MANDATORY - Development
+docker compose exec app npm run start:dev
+```
+
+#### **🚨 MANDATORY DEPENDENCY INSTALLATION WORKFLOW**
+
+**⚠️ CRITICAL RULE**: To avoid Docker cache and compatibility issues:
+
+```bash
+# 1️⃣ Install in container
+docker compose exec app npm install new-dependency
+
+# 2️⃣ MANDATORY: Remove container
+docker compose down app
+
+# 3️⃣ MANDATORY: Rebuild without cache
+docker compose build --no-cache app
+
+# 4️⃣ Restart with new image
+docker compose up -d app
+
+# 5️⃣ Verify startup
+docker compose logs app --tail=20
+```
+
+#### **❌ ABSOLUTE PROHIBITIONS - HOST COMMANDS**
+
+- ❌ **NEVER** `npm run start:dev` directly
+- ❌ **NEVER** `npm test` on host
+- ❌ **NEVER** `npm run lint` on host
+- ❌ **NEVER** `npm run build` on host
+- ❌ **NEVER** `npm run migration:run` on host
+- ❌ **NEVER** `npx tsc` on host
+- ❌ **NEVER** install PostgreSQL/Redis/MongoDB locally
+
+### 👤 **MANDATORY USER TRACEABILITY**
+
+**⚠️ CRITICAL RULE: You must ALWAYS know who created what and who updated what**
+
+**EVERY entity MUST have:**
+
+- **createdBy**: UUID of the user who created the entity
+- **updatedBy**: UUID of the user who made the last modification
+- **createdAt**: Creation timestamp
+- **updatedAt**: Last modification timestamp
+
+```typescript
+// ✅ MANDATORY - Entity pattern with complete traceability
+export class Skill {
+  private constructor(
+    private readonly _id: string,
+    private readonly _businessId: BusinessId,
+    private _name: string,
+    private _category: string,
+    private _description: string,
+    private _isActive: boolean,
+    private _isCritical: boolean,
+    private readonly _createdBy: string, // ⚠️ MANDATORY
+    private _updatedBy: string, // ⚠️ MANDATORY
+    private readonly _createdAt: Date, // ⚠️ MANDATORY
+    private _updatedAt: Date, // ⚠️ MANDATORY
+  ) {}
+
+  static create(params: {
+    businessId: BusinessId;
+    name: string;
+    category: string;
+    description: string;
+    isCritical: boolean;
+    createdBy: string; // ⚠️ MANDATORY - User UUID
+  }): Skill {
+    const now = new Date();
+    return new Skill(
+      generateId(),
+      params.businessId,
+      params.name,
+      params.category,
+      params.description,
+      true, // Active by default
+      params.isCritical,
+      params.createdBy, // ⚠️ MANDATORY
+      params.createdBy, // updatedBy = createdBy initially
+      now, // createdAt
+      now, // updatedAt
+    );
+  }
+
+  update(params: {
+    name?: string;
+    category?: string;
+    description?: string;
+    isCritical?: boolean;
+    isActive?: boolean;
+    updatedBy: string; // ⚠️ MANDATORY - User UUID
+  }): void {
+    if (params.name) this._name = params.name;
+    if (params.category) this._category = params.category;
+    if (params.description !== undefined)
+      this._description = params.description;
+    if (params.isCritical !== undefined) this._isCritical = params.isCritical;
+    if (params.isActive !== undefined) this._isActive = params.isActive;
+
+    this._updatedBy = params.updatedBy; // ⚠️ MANDATORY
+    this._updatedAt = new Date(); // ⚠️ MANDATORY
+  }
+
+  // Getters for traceability
+  getCreatedBy(): string {
+    return this._createdBy;
+  }
+  getUpdatedBy(): string {
+    return this._updatedBy;
+  }
+  getCreatedAt(): Date {
+    return this._createdAt;
+  }
+  getUpdatedAt(): Date {
+    return this._updatedAt;
+  }
+}
+```
+
+**ORM MIGRATIONS - Mandatory pattern:**
+
+```typescript
+// ✅ MANDATORY - Traceability columns in ALL tables
+export class CreateSkillsTable implements MigrationInterface {
+  public async up(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.createTable(
+      new Table({
+        name: 'skills',
+        columns: [
+          // Business columns...
+
+          // ⚠️ MANDATORY TRACEABILITY
+          {
+            name: 'created_by',
+            type: 'uuid',
+            isNullable: false,
+            comment: 'UUID of user who created this skill',
+          },
+          {
+            name: 'updated_by',
+            type: 'uuid',
+            isNullable: false,
+            comment: 'UUID of user who last updated this skill',
+          },
+          {
+            name: 'created_at',
+            type: 'timestamp',
+            default: 'CURRENT_TIMESTAMP',
+            comment: 'Creation timestamp',
+          },
+          {
+            name: 'updated_at',
+            type: 'timestamp',
+            default: 'CURRENT_TIMESTAMP',
+            onUpdate: 'CURRENT_TIMESTAMP',
+            comment: 'Last update timestamp',
+          },
+        ],
+      }),
+      true,
+    );
+  }
+}
+```
+
+### 🔐 **MANDATORY AUDIT TRAIL**
+
+**All CRUD operations must be audited:**
+
+```typescript
+// ✅ MANDATORY - Audit in Use Cases
+await this.auditService.logOperation({
+  operation: 'CREATE_SKILL',
+  entityType: 'SKILL',
+  entityId: savedSkill.getId(),
+  businessId: request.businessId,
+  userId: request.requestingUserId,
+  correlationId: request.correlationId,
+  changes: {
+    created: savedSkill.toJSON(),
+  },
+  timestamp: new Date(),
+});
+```
+
+### 📋 **MANDATORY CHECKLIST FOR EACH FILE**
+
+- [ ] ✅ **Logging**: ILogger injected and used
+- [ ] ✅ **I18n**: I18nService injected, translated messages
+- [ ] ✅ **Context**: correlationId, requestingUserId present
+- [ ] ✅ **Error Handling**: Errors logged with context
+- [ ] ✅ **Audit**: Critical operations audited
+- [ ] ✅ **Metadata**: Timestamp, IP, UserAgent captured
+- [ ] ✅ **Strict Types**: No `any`, complete interfaces
+- [ ] ✅ **Validation**: Data validated with i18n messages
+
+### 🚫 **ABSOLUTE PROHIBITIONS**
+
+- ❌ **NEVER** `console.log()` in production
+- ❌ **NEVER** hardcoded error messages
+- ❌ **NEVER** operation without logging
+- ❌ **NEVER** Use Case without correlationId
+- ❌ **NEVER** exception without traceability context
+
+## 🛠️ **DATABASE ARCHITECTURE - MANDATORY CLEAN ARCHITECTURE**
+
+### 🎯 **CRITICAL RULE: ORGANIZATION BY DATABASE TYPE**
+
+**⚠️ NON-NEGOTIABLE RULE**: To respect Clean Architecture and allow easy database switching (SQL/NoSQL), we must organize files by specific driver type.
+
+#### **📁 MANDATORY DATA LAYER STRUCTURE**
+
+```
+src/infrastructure/database/
+├── database.module.ts                 # Main module with DB switch
+├── typeorm.config.ts                  # General TypeORM configuration
+├── typeorm-repositories.module.ts     # TypeORM repositories module
+├── sql/                              # ✅ SQL databases
+│   └── postgresql/                   # ✅ PostgreSQL specific driver
+│       ├── entities/                 # ✅ PostgreSQL ORM entities
+│       │   ├── user-orm.entity.ts
+│       │   ├── skill-orm.entity.ts
+│       │   ├── service-category-orm.entity.ts
+│       │   ├── service-type-orm.entity.ts
+│       │   └── index.ts             # Centralized export
+│       ├── repositories/             # ✅ PostgreSQL repositories
+│       │   ├── typeorm-user.repository.ts
+│       │   ├── typeorm-skill.repository.ts
+│       │   ├── typeorm-service-category.repository.ts
+│       │   ├── typeorm-service-type.repository.ts
+│       │   └── index.ts             # Centralized export
+│       ├── migrations/               # ✅ PostgreSQL migrations
+│       │   ├── 1703701200000-CreateSkillsTable.ts
+│       │   ├── 1703702000000-CreateServiceCategoriesTable.ts
+│       │   ├── 1703703000000-CreateServiceTypesTable.ts
+│       │   └── index.ts
+│       └── utils/                    # ✅ PostgreSQL utilities
+├── nosql/                           # ✅ NoSQL databases
+│   ├── mongodb/                     # ✅ MongoDB specific driver
+│   │   ├── schemas/                 # MongoDB schemas
+│   │   ├── repositories/            # MongoDB repositories
+│   │   └── migrations/              # MongoDB migrations
+│   └── redis/                       # ✅ Redis specific driver
+│       ├── schemas/
+│       └── repositories/
+└── orm/                             # ✅ Generic ORM mappers
+    └── mappers/                     # ✅ Domain ↔ Persistence conversion
+        ├── user-orm.mapper.ts
+        ├── skill-orm.mapper.ts
+        ├── service-category-orm.mapper.ts
+        ├── service-type-orm.mapper.ts
+        └── index.ts
+```
+
+## 📝 **MANDATORY TDD DEVELOPMENT WORKFLOW**
+
+### 🎯 **STRICT LAYER-ORDERED DEVELOPMENT - TDD STRICT**
+
+**⚠️ FUNDAMENTAL RULE: The workflow ALWAYS starts from the Domain layer, then Application, then Infrastructure (with TypeORM migrations) and finally Presentation in Test Driven Development mode.**
+
+**🚨 COMMON ERROR DETECTED: NEVER start with the Presentation layer (Controllers/DTOs) without having finished Infrastructure!**
+
+**To avoid dependency errors and ensure consistent architecture, ALWAYS develop in this strict order with TDD:**
+
+### 🔄 **TDD Process by Layer - MANDATORY**:
+
+1. **🔴 RED**: Write the failing test for the functionality
+2. **🟢 GREEN**: Write minimal code that makes the test pass
+3. **🔵 REFACTOR**: Improve the code while keeping tests green
+4. **✅ VALIDATE**: Verify the layer compiles and all its tests pass
+5. **➡️ NEXT LAYER**: Move to next layer ONLY if previous is complete
+
+### ⚠️ **CRITICAL NON-NEGOTIABLE RULES**
+
+- ❌ **NEVER** develop multiple features simultaneously
+- ❌ **NEVER** move to next layer if previous has failing tests
+- ❌ **NEVER** write code without prior test (strict TDD)
+- ❌ **NEVER** ignore compilation errors in a layer
+- ✅ **ALWAYS** one feature at a time (ex: CreateUser → UpdateUser → DeleteUser)
+- ✅ **ALWAYS** finish a layer completely before moving to the next
+- ✅ **ALWAYS** write tests BEFORE code (strict TDD)
+- ✅ **ALWAYS** validate compilation after each modification
+
+### 🚨 **CRITICAL RULE: VALIDATED MIGRATION BEFORE PRESENTATION**
+
+**⚠️ NON-NEGOTIABLE RULE**: **NEVER** move to Presentation layer without validating that migrations work perfectly.
+
+**MANDATORY MIGRATION WORKFLOW:**
+
+```bash
+# 1️⃣ CREATE migration
+touch src/infrastructure/database/sql/postgresql/migrations/{timestamp}-Create{Entity}Table.ts
+
+# 2️⃣ TEST in Docker (MANDATORY)
+docker-compose exec app npm run migration:run
+
+# 3️⃣ VERIFY rollback
+docker-compose exec app npm run migration:revert
+
+# 4️⃣ RE-APPLY for final validation
+docker-compose exec app npm run migration:run
+
+# 5️⃣ VERIFY tables created
+docker-compose exec postgres-dev psql -U postgres -d appointment_system -c "\dt"
+
+# 6️⃣ ONLY IF SUCCESS → Continue to ORM Entity and Repository
+```
+
+**🚨 IF MIGRATION ERRORS:**
+
+- **STOP** development immediately
+- **CORRECT** migration before any other action
+- **RE-TEST** until complete success
+- **NEVER** ignore migration errors
+
+## 🎯 **MANDATORY IMPORT RULES - TYPESCRIPT ALIASES**
+
+### 🚨 **CRITICAL NON-NEGOTIABLE RULE: USE EXCLUSIVELY IMPORT ALIASES**
+
+**⚠️ ABSOLUTE PROHIBITION**: Using relative paths in imports. ALWAYS use TypeScript aliases configured in `tsconfig.json`.
+
+#### **✅ MANDATORY CONFIGURED ALIASES**
+
+```typescript
+// ✅ MANDATORY - ALWAYS use defined aliases
+import { User } from '@domain/entities/user.entity';
+import { CreateUserUseCase } from '@application/use-cases/users/create-user.use-case';
+import { TypeOrmUserRepository } from '@infrastructure/database/sql/postgresql/repositories/typeorm-user.repository';
+import { UserController } from '@presentation/controllers/user.controller';
+import { Logger } from '@application/ports/logger.port';
+import { validateId } from '@shared/utils/validation.utils';
+
+// ❌ STRICTLY FORBIDDEN - Relative paths
+import { User } from '../../../domain/entities/user.entity';
+import { CreateUserUseCase } from '../../application/use-cases/users/create-user.use-case';
+import { TypeOrmUserRepository } from './repositories/typeorm-user.repository';
+import { Logger } from '../ports/logger.port';
+import { validateId } from '../../../../shared/utils/validation.utils';
+```
+
+## 🚨 **CRITICAL RULE: SCHEMA RETRIEVAL FROM ENVIRONMENT VARIABLES**
+
+### 🎯 **MANDATORY RULE: SCHEMA FROM ENVIRONMENT VARIABLES**
+
+**⚠️ NON-NEGOTIABLE RULE**: In all TypeORM migrations, the schema name MUST be retrieved from environment variables to ensure portability between environments (development, staging, production).
+
+#### **✅ MANDATORY PATTERN FOR TYPEORM MIGRATIONS**
+
+```typescript
+import { MigrationInterface, QueryRunner } from 'typeorm';
+
+export class AddFlexiblePricingToServices{Timestamp} implements MigrationInterface {
+  name = 'AddFlexiblePricingToServices{Timestamp}';
+
+  // 🎯 MANDATORY: Get schema from environment
+  private getSchemaName(): string {
+    return process.env.DB_SCHEMA || 'public';
+  }
+
+  public async up(queryRunner: QueryRunner): Promise<void> {
+    const schema = this.getSchemaName();
+
+    // ✅ CORRECT: Use dynamic schema
+    await queryRunner.query(`
+      ALTER TABLE "${schema}"."services"
+      ADD COLUMN "pricing_config" jsonb DEFAULT '{"type":"FIXED","visibility":"PUBLIC","basePrice":{"amount":0,"currency":"EUR"},"rules":[]}'::jsonb
+    `);
+
+    // ✅ CORRECT: Index with dynamic schema
+    await queryRunner.query(`
+      CREATE INDEX "IDX_services_pricing_type"
+      ON "${schema}"."services" USING GIN (("pricing_config"->>'type'))
+    `);
+  }
+
+  public async down(queryRunner: QueryRunner): Promise<void> {
+    const schema = this.getSchemaName();
+
+    // ✅ CORRECT: Rollback with dynamic schema
+    await queryRunner.query(`DROP INDEX IF EXISTS "${schema}"."IDX_services_pricing_type"`);
+    await queryRunner.query(`ALTER TABLE "${schema}"."services" DROP COLUMN IF EXISTS "pricing_config"`);
+  }
+}
+```
+
+## 🚨 **CRITICAL RULE: NO NESTJS DEPENDENCIES IN DOMAIN/APPLICATION**
+
+### ❌ **ABSOLUTELY FORBIDDEN in Domain/Application**
+
+The **Domain** and **Application** layers MUST NEVER contain:
+
+- `import { Injectable, Inject } from '@nestjs/common'`
+- `@Injectable()` decorator
+- `@Inject()` decorator
+- Any import from `@nestjs/*` packages
+- Any reference to NestJS injection tokens
+
+### ✅ **CORRECT APPROACH**
+
+```typescript
+// ❌ FORBIDDEN - Clean Architecture violation
+import { Injectable, Inject } from '@nestjs/common';
+
+@Injectable()
+export class CreateUserUseCase {
+  constructor(@Inject('USER_REPOSITORY') private userRepo: IUserRepository) {}
+}
+
+// ✅ CORRECT - Clean Architecture respected
+export class CreateUserUseCase {
+  constructor(
+    private readonly userRepository: IUserRepository,
+    private readonly logger: Logger,
+    private readonly i18n: I18nService,
+  ) {}
+}
+```
+
+## 🗺️ **MAPPERS - MANDATORY PATTERN FOR DATA CONVERSION**
+
+### 🎯 **CRITICAL RULE: ZERO MAPPING LOGIC IN ORM ENTITIES**
+
+**❌ MAJOR ARCHITECTURAL VIOLATION:**
+ORM entities (TypeORM, Prisma, etc.) MUST NEVER contain conversion logic to Domain entities. This responsibility exclusively belongs to dedicated Mappers in `/infrastructure/mappers/`.
+
+### ✅ **CORRECT PATTERN: DEDICATED MAPPERS**
+
+```typescript
+// ✅ EXCELLENT - Dedicated mapper in /infrastructure/mappers/
+export class UserOrmMapper {
+  /**
+   * Convert Domain entity to ORM for persistence
+   */
+  static toOrmEntity(domain: User): UserOrmEntity {
+    const ormEntity = new UserOrmEntity();
+    ormEntity.id = domain.getId().getValue();
+    ormEntity.email = domain.getEmail().getValue();
+    ormEntity.name = domain.getName();
+    ormEntity.role = domain.getRole();
+    ormEntity.created_at = domain.getCreatedAt();
+    ormEntity.updated_at = domain.getUpdatedAt();
+    return ormEntity;
+  }
+
+  /**
+   * Convert ORM entity to Domain from persistence
+   */
+  static toDomainEntity(orm: UserOrmEntity): User {
+    const email = Email.create(orm.email);
+    const userId = UserId.fromString(orm.id);
+
+    return User.reconstruct({
+      id: userId,
+      email: email,
+      name: orm.name,
+      role: orm.role,
+      createdAt: orm.created_at,
+      updatedAt: orm.updated_at,
+    });
+  }
+
+  /**
+   * Convert ORM list to Domain
+   */
+  static toDomainEntities(ormEntities: UserOrmEntity[]): User[] {
+    return ormEntities.map((orm) => this.toDomainEntity(orm));
+  }
+}
+```
+
+## 📚 **SWAGGER DOCUMENTATION - COMPLETE WORKFLOW MANDATORY**
+
+### 🎯 **CRITICAL RULE: COMPLETE AND FRONTEND-FRIENDLY API DOCUMENTATION**
+
+**After creating Controllers and DTOs, ALWAYS create complete Swagger documentation to ensure a usable, consistent API easily integrable by frontend teams.**
+
+#### **✅ MANDATORY CONFIGURED TAGS BY RESOURCE**
+
+```typescript
+// ✅ MANDATORY - Tags with icons for clarity
+@ApiTags('💼 Services')           // Business services
+@ApiTags('👨‍💼 Staff Management')    // Staff management
+@ApiTags('📅 Appointments')       // Appointments
+@ApiTags('🏢 Business Management') // Business management
+@ApiTags('👥 User Management')    // User management
+@ApiTags('❤️ Health Checks')      // System health
+```
+
+#### **✅ MANDATORY ENRICHED SWAGGER DOCUMENTATION**
+
+```typescript
+// ✅ MANDATORY TEMPLATE - Complete documentation with examples
+@ApiOperation({
+  summary: '🔍 Search {Resource}s with Advanced Filters',
+  description: `
+    **Advanced paginated search** for {resource}s with complete filtering system.
+
+    ## 🎯 Features
+
+    ### 📊 **Available filters**
+    - **Text search**: Name, description, tags
+    - **Business filters**: Status, category, price
+    - **Multi-criteria sorting**: All fields with asc/desc
+    - **Pagination**: Page/limit with complete metadata
+
+    ### 🔐 **Security**
+    - **JWT**: Bearer token required
+    - **RBAC**: Granular permissions per resource
+    - **Rate limiting**: 100 req/min per user
+
+    ## 🎯 **Frontend Integration Guide**
+
+    ### React/Vue.js Example
+    \`\`\`typescript
+    const searchServices = async (filters: ServiceFilters) => {
+      const response = await api.post('/api/v1/services/list', {
+        ...filters,
+        page: 1,
+        limit: 20
+      });
+
+      return {
+        services: response.data.data,
+        pagination: response.data.meta
+      };
+    };
+    \`\`\`
+  `,
+})
+```
+
+## 📋 **MANDATORY CHECKLIST FOR EACH FEATURE**
+
+- [ ] ✅ **Domain Layer**: Entity + Value Objects + Repository Interface + Tests
+- [ ] ✅ **Application Layer**: Use Cases + Ports + Exception Handling + Tests
+- [ ] ✅ **Infrastructure Layer**: ORM Entity + Repository + Mapper + Migration + Tests
+- [ ] ✅ **Presentation Layer**: Controller + DTOs + Swagger Documentation + Tests
+- [ ] ✅ **Migration**: Created, tested with run/revert, validated in DB
+- [ ] ✅ **Logging**: All operations logged with context and correlation ID
+- [ ] ✅ **I18n**: All messages internationalized, no hardcoded text
+- [ ] ✅ **Audit**: All CRUD operations audited with user traceability
+- [ ] ✅ **Tests**: Unit tests for all layers, integration tests for critical paths
+- [ ] ✅ **TypeScript**: Strict typing, no `any`, import aliases used
+- [ ] ✅ **Docker**: All commands executed in container, no host dependencies
+
+## 🚫 **ABSOLUTE PROHIBITIONS**
+
+- ❌ **NEVER** skip TDD workflow (RED-GREEN-REFACTOR)
+- ❌ **NEVER** develop multiple layers simultaneously
+- ❌ **NEVER** use relative imports instead of aliases
+- ❌ **NEVER** execute commands on host instead of Docker
+- ❌ **NEVER** create migrations without validation
+- ❌ **NEVER** skip audit trail and user traceability
+- ❌ **NEVER** hardcode messages instead of i18n
+- ❌ **NEVER** use `any` type instead of proper typing
+- ❌ **NEVER** skip logging and correlation IDs
+- ❌ **NEVER** commit code with failing tests or lint errors
+
+**This ensures professional, maintainable, and enterprise-grade code quality!**
 
 ## 🚀 **NODE.JS 24 - NEW FEATURES TO LEVERAGE**
 
@@ -1333,3 +2023,135 @@ Husky will prevent commits if:
 - Code is not properly formatted
 
 This ensures **100% code quality** and **consistent commit history**!
+
+## 🎯 **MANDATORY IMPORT ALIAS RULES - TYPESCRIPT ALIASES**
+
+### 🚨 **CRITICAL NON-NEGOTIABLE RULE: USE EXCLUSIVELY TYPESCRIPT IMPORT ALIASES**
+
+**⚠️ ABSOLUTE PROHIBITION**: Using relative paths in imports. ALWAYS use TypeScript aliases configured in `tsconfig.json`.
+
+#### **✅ MANDATORY CONFIGURED ALIASES**
+
+```typescript
+// ✅ MANDATORY - ALWAYS use configured aliases
+import { User } from '@domain/entities/user.entity';
+import { CreateUserUseCase } from '@application/use-cases/users/create-user.use-case';
+import { TypeOrmUserRepository } from '@infrastructure/database/sql/postgresql/repositories/typeorm-user.repository';
+import { UserController } from '@presentation/controllers/user.controller';
+import { Logger } from '@application/ports/logger.port';
+import { validateId } from '@shared/utils/validation.utils';
+
+// ❌ STRICTLY FORBIDDEN - Relative paths
+import { User } from '../../../domain/entities/user.entity';
+import { CreateUserUseCase } from '../../application/use-cases/users/create-user.use-case';
+import { TypeOrmUserRepository } from './repositories/typeorm-user.repository';
+import { Logger } from '../ports/logger.port';
+import { validateId } from '../../../../shared/utils/validation.utils';
+```
+
+#### **📋 COMPLETE ALIAS MAPPING**
+
+```typescript
+// tsconfig.json configuration - REFERENCE
+"paths": {
+  "@domain/*": ["src/domain/*"],
+  "@application/*": ["src/application/*"],
+  "@infrastructure/*": ["src/infrastructure/*"],
+  "@presentation/*": ["src/presentation/*"],
+  "@shared/*": ["src/shared/*"]
+}
+```
+
+#### **🎯 CONCRETE EXAMPLES BY LAYER**
+
+```typescript
+// 🏛️ DOMAIN LAYER
+import { User } from '@domain/entities/user.entity';
+import { Email } from '@domain/value-objects/email.value-object';
+import { IUserRepository } from '@domain/repositories/user.repository';
+import { UserValidationError } from '@domain/exceptions/user.exceptions';
+import { UserService } from '@domain/services/user.service';
+
+// 🏗️ APPLICATION LAYER
+import { CreateUserUseCase } from '@application/use-cases/users/create-user.use-case';
+import { Logger } from '@application/ports/logger.port';
+import { I18nService } from '@application/ports/i18n.port';
+import { IAuditService } from '@application/ports/audit.port';
+import { UserCacheService } from '@application/services/user-cache.service';
+
+// 🔧 INFRASTRUCTURE LAYER
+import { TypeOrmUserRepository } from '@infrastructure/database/sql/postgresql/repositories/typeorm-user.repository';
+import { UserOrmEntity } from '@infrastructure/database/sql/postgresql/entities/user-orm.entity';
+import { UserOrmMapper } from '@infrastructure/mappers/user-orm.mapper';
+import { DatabaseModule } from '@infrastructure/database/database.module';
+import { RedisService } from '@infrastructure/cache/redis.service';
+
+// 🎨 PRESENTATION LAYER
+import { UserController } from '@presentation/controllers/user.controller';
+import { CreateUserDto } from '@presentation/dtos/users/create-user.dto';
+import { UserMapper } from '@presentation/mappers/user.mapper';
+import { JwtAuthGuard } from '@presentation/security/auth.guard';
+import { GetUser } from '@presentation/security/decorators/get-user.decorator';
+
+// 🔗 SHARED LAYER
+import { UserRole } from '@shared/enums/user-role.enum';
+import { generateId } from '@shared/utils/id.utils';
+import { validateEmail } from '@shared/utils/validation.utils';
+import { BusinessConstants } from '@shared/constants/business.constants';
+import { ApiResponse } from '@shared/types/api.types';
+```
+
+#### **🚫 STRICTLY FORBIDDEN VIOLATIONS**
+
+- ❌ **NEVER** use `../../../domain/entities/user.entity`
+- ❌ **NEVER** use `../../application/use-cases/users/create-user.use-case`
+- ❌ **NEVER** use `./repositories/typeorm-user.repository`
+- ❌ **NEVER** use relative paths in ANY import
+- ❌ **NEVER** mix aliases and relative paths in the same file
+
+#### **✅ ADVANTAGES OF ALIASES**
+
+1. **🧹 Readability**: Cleaner and more understandable code
+2. **🔧 Maintainability**: Easier refactoring
+3. **🚀 Performance**: Optimized import resolution
+4. **📁 Organization**: Clear project structure
+5. **🧪 Testability**: Simplified mocking and stubbing
+6. **👥 Collaboration**: Respected team standards
+
+#### **🔍 VIOLATION DETECTION**
+
+```bash
+# Check for forbidden relative imports
+grep -r "\.\./\.\./\.\." src/
+# EXPECTED RESULT: No results (0 lines)
+
+# Check for short relative imports
+grep -r "import.*\.\./" src/
+# EXPECTED RESULT: No results (0 lines)
+
+# Verify correct alias usage
+grep -r "import.*@domain\|@application\|@infrastructure\|@presentation\|@shared" src/ | head -10
+# EXPECTED RESULT: Many imports with aliases
+```
+
+#### **📋 MANDATORY CHECKLIST BEFORE COMMIT**
+
+- [ ] ✅ **All imports use aliases** `@domain/*`, `@application/*`, etc.
+- [ ] ✅ **No relative paths** `../` in imports
+- [ ] ✅ **Tests pass** with new imports
+- [ ] ✅ **Build compiles** without module resolution errors
+- [ ] ✅ **ESLint/TypeScript** report no import errors
+- [ ] ✅ **IDE recognizes** all imports correctly
+- [ ] ✅ **Auto-complete** works with aliases
+- [ ] ✅ **Refactoring safe**: Renaming preserved
+
+#### **🚨 NON-COMPLIANCE SANCTIONS**
+
+Non-compliance with this rule results in:
+
+- **Automatic commit rejection** by Husky
+- **CI/CD blocking**
+- **Mandatory review** and immediate refactoring
+- **Additional training** on TypeScript best practices
+
+**This rule ensures professional, maintainable code that respects TypeScript standards!**

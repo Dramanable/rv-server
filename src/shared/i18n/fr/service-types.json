@@ -1,0 +1,29 @@
+{
+  "validation": {
+    "nameRequired": "Le nom du type de service est requis",
+    "nameMinLength": "Le nom du type de service doit contenir au moins 2 caractères",
+    "nameMaxLength": "Le nom du type de service ne peut pas dépasser 100 caractères",
+    "descriptionMaxLength": "La description du type de service ne peut pas dépasser 500 caractères",
+    "categoryIdRequired": "L'ID de la catégorie de service est requis",
+    "categoryIdInvalid": "L'ID de la catégorie de service doit être un UUID valide"
+  },
+  "errors": {
+    "notFound": "Type de service introuvable",
+    "duplicateName": "Un type de service avec ce nom existe déjà dans cette catégorie",
+    "permissionDenied": "Vous n'avez pas l'autorisation de gérer les types de service",
+    "repositoryError": "Erreur de base de données lors du traitement du type de service",
+    "categoryNotFound": "La catégorie de service spécifiée n'existe pas",
+    "cannotDeleteReferenced": "Impossible de supprimer le type de service : il est référencé par des services existants"
+  },
+  "messages": {
+    "createSuccess": "Type de service créé avec succès",
+    "updateSuccess": "Type de service mis à jour avec succès",
+    "deleteSuccess": "Type de service supprimé avec succès",
+    "listRetrieved": "Types de service récupérés avec succès"
+  },
+  "businessRules": {
+    "nameUniquePerCategory": "Le nom du type de service doit être unique dans sa catégorie",
+    "activeCategoryRequired": "Le type de service ne peut appartenir qu'à une catégorie de service active",
+    "deleteConstraint": "Un type de service actif avec des services associés ne peut pas être supprimé"
+  }
+}
