@@ -1217,32 +1217,78 @@ Il ne manque QUE la couche Presentation (Controllers + DTOs).
 3. Tests E2E
 4. Documentation mise à jour
 
-## 🏗️ **MÉTHODOLOGIE DE DÉVELOPPEMENT EN COUCHES ORDONNÉES - MISE À JOUR CRITIQUE**
+## 🏗️ **MÉTHODOLOGIE DE DÉVELOPPEMENT EN COUCHES ORDONNÉES - RÈGLE CRITIQUE NON-NÉGOCIABLE**
 
 ### 🎯 **ORDRE OBLIGATOIRE DE DÉVELOPPEMENT - TDD STRICT**
 
-**⚠️ RÈGLE FONDAMENTALE : Le workflow part TOUJOURS de la couche Domain, puis Application, puis Infrastructure (avec migrations TypeORM) et à la fin Presentation en mode Test Driven Development.**
+**⚠️ RÈGLE FONDAMENTALE NON-NÉGOCIABLE** : Dans TOUTE création, modification ou suppression de fonctionnalité, il faut OBLIGATOIREMENT partir de la couche Domain, puis Application, puis Infrastructure (y compris modifications et exécution éventuelles des migrations), et ENFIN Presentation.
 
-**🚨 ERREUR COURANTE DÉTECTÉE : Ne JAMAIS commencer par la couche Presentation (Controllers/DTOs) sans avoir terminé Infrastructure !**
+**🚨 VIOLATION ARCHITECTURALE MAJEURE** : Commencer par les Controllers/DTOs (Presentation) sans avoir terminé l'Infrastructure constitue une violation grave de la Clean Architecture et est **STRICTEMENT INTERDIT**.
 
-**Pour éviter les erreurs de dépendances et garantir une architecture cohérente, TOUJOURS développer dans cet ordre strict avec TDD :**
+**🎯 WORKFLOW OBLIGATOIRE - AUCUNE EXCEPTION AUTORISÉE** :
 
-### 🔄 **Processus TDD par Couche - OBLIGATOIRE** :
-1. **🔴 RED** : Écrire le test qui échoue pour la fonctionnalité
+1. **DOMAIN** (Entités, Value Objects, Services métier, Exceptions)
+2. **APPLICATION** (Use Cases, Ports/Interfaces, Services applicatifs)
+3. **INFRASTRUCTURE** (Repositories, ORM, Migrations TypeORM, Services techniques)
+4. **PRESENTATION** (Controllers, DTOs, Mappers, Validation)
+
+**Cette règle s'applique pour :**
+- ✅ **Création** de nouvelles fonctionnalités
+- ✅ **Modification** de fonctionnalités existantes
+- ✅ **Suppression** de fonctionnalités
+- ✅ **Refactoring** architectural
+- ✅ **Ajout de propriétés** aux entités
+- ✅ **Changement de logique métier**
+
+### 🔄 **PROCESSUS TDD PAR COUCHE - OBLIGATOIRE POUR TOUTE MODIFICATION** :
+
+**🚨 RÈGLE CRITIQUE** : Que ce soit pour créer, modifier ou supprimer une fonctionnalité, TOUJOURS respecter cet ordre :
+
+1. **🔴 RED** : Écrire le test qui échoue pour la fonctionnalité dans la couche appropriée
 2. **🟢 GREEN** : Écrire le code minimal qui fait passer le test
 3. **🔵 REFACTOR** : Améliorer le code en gardant les tests verts
 4. **✅ VALIDATE** : Vérifier que la couche compile et tous ses tests passent
 5. **➡️ NEXT LAYER** : Passer à la couche suivante UNIQUEMENT si la précédente est terminée
+
+**⚠️ CAS D'USAGE CONCRETS OBLIGATOIRES** :
+
+### 📝 **CRÉATION D'UNE NOUVELLE FONCTIONNALITÉ**
+```bash
+1️⃣ DOMAIN       : Entité + Value Objects + Exceptions + Repository Interface + Tests
+2️⃣ APPLICATION  : Use Cases + Validation + Ports + Tests
+3️⃣ INFRASTRUCTURE: ORM Entity + Repository + Migration TypeORM + Tests
+4️⃣ PRESENTATION : Controllers + DTOs + Validation + Swagger + Tests
+```
+
+### 🔧 **MODIFICATION D'UNE FONCTIONNALITÉ EXISTANTE**
+```bash
+1️⃣ DOMAIN       : Modification entité + validation métier + tests mis à jour
+2️⃣ APPLICATION  : Modification use cases + nouvelles validations + tests
+3️⃣ INFRASTRUCTURE: Migration TypeORM + modification ORM + repositories + tests
+4️⃣ PRESENTATION : Modification DTOs + controllers + validation + tests
+```
+
+### 🗑️ **SUPPRESSION D'UNE FONCTIONNALITÉ**
+```bash
+1️⃣ DOMAIN       : Marquage deprecated + validation suppression + tests
+2️⃣ APPLICATION  : Use cases suppression + gestion dépendances + tests
+3️⃣ INFRASTRUCTURE: Migration cleanup + suppression ORM + tests
+4️⃣ PRESENTATION : Suppression endpoints + DTOs + documentation
+```
 
 ### ⚠️ **RÈGLES CRITIQUES NON-NÉGOCIABLES**
 - ❌ **JAMAIS** développer plusieurs fonctionnalités simultanément
 - ❌ **JAMAIS** passer à la couche suivante si la précédente a des tests qui échouent
 - ❌ **JAMAIS** écrire du code sans test préalable (TDD strict)
 - ❌ **JAMAIS** ignorer les erreurs de compilation d'une couche
+- ❌ **JAMAIS** commencer par la Presentation sans Infrastructure complète
+- ❌ **JAMAIS** modifier une entité sans migration TypeORM appropriée
+- ❌ **JAMAIS** créer/modifier/supprimer sans suivre l'ordre Domain → Application → Infrastructure → Presentation
 - ✅ **TOUJOURS** une seule fonctionnalité à la fois (ex: CreateUser → UpdateUser → DeleteUser)
 - ✅ **TOUJOURS** finir complètement une couche avant de passer à la suivante
 - ✅ **TOUJOURS** écrire les tests AVANT le code (TDD strict)
 - ✅ **TOUJOURS** valider la compilation après chaque modification
+- ✅ **TOUJOURS** exécuter et tester les migrations avant la couche Presentation
 
 ### 📋 **WORKFLOW DÉTAILLÉ PAR COUCHE**
 

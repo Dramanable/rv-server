@@ -1,0 +1,30 @@
+{
+  "validation": {
+    "businessIdRequired": "Business ID is required",
+    "businessIdInvalid": "Business ID must be a valid UUID",
+    "nameRequired": "Calendar type name is required",
+    "nameLength": "Calendar type name must be between 2 and 100 characters",
+    "nameAlreadyExists": "A calendar type with name '{{name}}' already exists in this business",
+    "codeRequired": "Calendar type code is required",
+    "codeLength": "Calendar type code must be between 2 and 20 characters",
+    "codeAlreadyExists": "A calendar type with code '{{code}}' already exists in this business",
+    "descriptionLength": "Description cannot exceed 500 characters",
+    "iconLength": "Icon name must be between 1 and 50 characters",
+    "requestingUserRequired": "Requesting user ID is required",
+    "requestingUserInvalid": "Requesting user ID must be a valid UUID",
+    "correlationIdRequired": "Correlation ID is required",
+    "sortOrderMinimum": "Sort order must be at least 1",
+    "failed": "Calendar type validation failed"
+  },
+  "created": {
+    "success": "Calendar type created successfully"
+  },
+  "updated": {
+    "success": "Calendar type updated successfully"
+  },
+  "deleted": {
+    "success": "Calendar type deleted successfully"
+  },
+  "notFound": "Calendar type not found",
+  "cannotDelete": "Cannot delete calendar type: it is referenced by existing appointments"
+}

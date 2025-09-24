@@ -16,6 +16,7 @@ export const APPLICATION_TOKENS = {
   PASSWORD_HASHER: 'IPasswordHasher', // ✅ NOUVEAU: Port pour hachage sécurisé
   PASSWORD_GENERATOR: 'PasswordGenerator',
   TOKEN_SERVICE: 'TokenService',
+  AUDIT_SERVICE: 'IAuditService', // ✅ NOUVEAU: Port pour audit trail
 
   // Use Cases
   CREATE_USER_USE_CASE: 'CreateUserUseCase',
@@ -121,6 +122,13 @@ export const APPLICATION_TOKENS = {
   UPDATE_SERVICE_TYPE_USE_CASE: 'UpdateServiceTypeUseCase',
   DELETE_SERVICE_TYPE_USE_CASE: 'DeleteServiceTypeUseCase',
 
+  // ✅ NEW: Calendar Types Use Cases
+  CREATE_CALENDAR_TYPE_USE_CASE: 'CreateCalendarTypeUseCase',
+  GET_CALENDAR_TYPE_BY_ID_USE_CASE: 'GetCalendarTypeByIdUseCase',
+  LIST_CALENDAR_TYPES_USE_CASE: 'ListCalendarTypesUseCase',
+  UPDATE_CALENDAR_TYPE_USE_CASE: 'UpdateCalendarTypeUseCase',
+  DELETE_CALENDAR_TYPE_USE_CASE: 'DeleteCalendarTypeUseCase',
+
   // Authentication Services
   AUTH_TOKEN_SERVICE: 'AuthTokenService',
   AUTH_SERVICE: 'AuthService',
@@ -146,6 +154,12 @@ export const DOMAIN_TOKENS = {
   STAFF_REPOSITORY: 'StaffRepository',
   APPOINTMENT_REPOSITORY: 'AppointmentRepository',
   NOTIFICATION_REPOSITORY: 'NotificationRepository',
+
+  // ✅ NEW: Entity Repositories
+  SKILL_REPOSITORY: 'SkillRepository',
+  SERVICE_CATEGORY_REPOSITORY: 'ServiceCategoryRepository',
+  SERVICE_TYPE_REPOSITORY: 'ServiceTypeRepository',
+  CALENDAR_TYPE_REPOSITORY: 'CalendarTypeRepository',
 
   // Domain Services
   USER_DOMAIN_SERVICE: 'UserDomainService',

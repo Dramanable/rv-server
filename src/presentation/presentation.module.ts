@@ -87,6 +87,10 @@ import { UpdateAppointmentUseCase } from '@application/use-cases/appointments/up
 import { SendBulkNotificationUseCase } from '@application/use-cases/notification/send-bulk-notification.use-case';
 import { SendNotificationUseCase } from '@application/use-cases/notification/send-notification.use-case';
 
+// CalendarType Use Cases
+import { CreateCalendarTypeUseCase } from '@application/use-cases/calendar-types/create-calendar-type.use-case';
+import { GetCalendarTypeByIdUseCase } from '@application/use-cases/calendar-types/get-calendar-type-by-id.use-case';
+
 // 🎮 Controllers
 import { AppointmentController } from './controllers/appointment.controller';
 import { AuthController } from './controllers/auth.controller';
@@ -96,6 +100,7 @@ import { BusinessImageController } from './controllers/business-image.controller
 import { BusinessSectorController } from './controllers/business-sector.controller';
 import { BusinessController } from './controllers/business.controller';
 import { CalendarController } from './controllers/calendar.controller';
+import { CalendarTypesController } from './controllers/calendar-types.controller';
 import { NotificationController } from './controllers/notification.controller';
 import { ServiceController } from './controllers/service.controller';
 import { StaffController } from './controllers/staff.controller';
@@ -110,6 +115,7 @@ import { SecurityValidationPipe } from './security/validation.pipe';
 
 // 🔧 Services
 import { MockI18nService } from '@application/mocks/mock-i18n.service';
+import { AuditService } from '@infrastructure/services/audit.service';
 import { PresentationCookieService } from './services/cookie.service';
 
 @Module({
@@ -126,6 +132,7 @@ import { PresentationCookieService } from './services/cookie.service';
     BusinessHoursController,
     BusinessSectorController,
     CalendarController,
+    CalendarTypesController,
     ServiceController,
     StaffController,
     BusinessImageController,
@@ -148,6 +155,12 @@ import { PresentationCookieService } from './services/cookie.service';
     {
       provide: TOKENS.I18N_SERVICE,
       useClass: MockI18nService,
+    },
+
+    // 🔍 Audit Service avec token d'injection
+    {
+      provide: TOKENS.AUDIT_SERVICE,
+      useClass: AuditService,
     },
 
     // 💼 USE CASES - Inversion de Dépendances (Presentation Layer responsability)
@@ -701,6 +714,34 @@ import { PresentationCookieService } from './services/cookie.service';
       useFactory: (businessRepo, logger, i18n) =>
         new DeleteBusinessGalleryUseCase(businessRepo, logger, i18n),
       inject: [TOKENS.BUSINESS_REPOSITORY, TOKENS.LOGGER, TOKENS.I18N_SERVICE],
+    },
+
+    // 📅 CalendarType Use Cases
+    {
+      provide: TOKENS.CREATE_CALENDAR_TYPE_USE_CASE,
+      useFactory: (calendarTypeRepo, logger, i18n, auditService) =>
+        new CreateCalendarTypeUseCase(
+          calendarTypeRepo,
+          logger,
+          i18n,
+          auditService,
+        ),
+      inject: [
+        TOKENS.CALENDAR_TYPE_REPOSITORY,
+        TOKENS.LOGGER,
+        TOKENS.I18N_SERVICE,
+        TOKENS.AUDIT_SERVICE,
+      ],
+    },
+    {
+      provide: TOKENS.GET_CALENDAR_TYPE_BY_ID_USE_CASE,
+      useFactory: (calendarTypeRepo, logger, i18n) =>
+        new GetCalendarTypeByIdUseCase(calendarTypeRepo, logger, i18n),
+      inject: [
+        TOKENS.CALENDAR_TYPE_REPOSITORY,
+        TOKENS.LOGGER,
+        TOKENS.I18N_SERVICE,
+      ],
     },
   ],
   exports: [JwtAuthGuard, SecurityValidationPipe],

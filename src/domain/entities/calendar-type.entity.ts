@@ -39,7 +39,7 @@ export class CalendarType {
     name: string;
     code: string;
     description: string;
-    icon: string;
+    icon?: string; // ✅ OPTIONNEL - Valeur par défaut 'calendar'
     color: string;
     isBuiltIn?: boolean;
     isActive?: boolean;
@@ -68,10 +68,6 @@ export class CalendarType {
       );
     }
 
-    if (!params.icon?.trim()) {
-      throw new CalendarTypeValidationError('CalendarType icon is required');
-    }
-
     if (!params.color?.trim()) {
       throw new CalendarTypeValidationError('CalendarType color is required');
     }
@@ -92,7 +88,7 @@ export class CalendarType {
       params.name.trim(),
       params.code.trim().toUpperCase(),
       params.description.trim(),
-      params.icon.trim(),
+      (params.icon || 'calendar').trim(), // ✅ Valeur par défaut 'calendar'
       params.color.trim(),
       params.isBuiltIn ?? false,
       params.isActive ?? true,

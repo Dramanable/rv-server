@@ -132,29 +132,6 @@ describe('CalendarType Entity', () => {
       );
     });
 
-    it('should throw error when icon is empty', () => {
-      // Arrange
-      const businessId = BusinessId.fromString(
-        '550e8400-e29b-41d4-a716-446655440006',
-      );
-      const params = {
-        businessId,
-        name: 'Staff Calendar',
-        code: 'STAFF',
-        description: 'Individual staff member calendar',
-        icon: '',
-        color: '#4CAF50',
-        isBuiltIn: false,
-        isActive: true,
-        createdBy: 'user-123',
-      };
-
-      // Act & Assert
-      expect(() => CalendarType.create(params)).toThrow(
-        'CalendarType icon is required',
-      );
-    });
-
     it('should throw error when color is invalid', () => {
       // Arrange
       const businessId = BusinessId.fromString(

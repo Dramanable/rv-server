@@ -1,0 +1,32 @@
+{
+  "validation": {
+    "businessIdRequired": "L'ID de l'entreprise est requis",
+    "businessIdInvalid": "L'ID de l'entreprise doit être un UUID valide",
+    "nameRequired": "Le nom du type de calendrier est requis",
+    "nameLength": "Le nom du type de calendrier doit contenir entre 2 et 100 caractères",
+    "nameAlreadyExists": "Un type de calendrier avec le nom '{{name}}' existe déjà dans cette entreprise",
+    "codeRequired": "Le code du type de calendrier est requis",
+    "codeLength": "Le code du type de calendrier doit contenir entre 2 et 20 caractères",
+    "codeAlreadyExists": "Un type de calendrier avec le code '{{code}}' existe déjà dans cette entreprise",
+    "descriptionRequired": "La description du type de calendrier est requise",
+    "descriptionLength": "La description ne peut pas dépasser 500 caractères",
+    "iconLength": "Le nom de l'icône doit contenir entre 1 et 50 caractères",
+    "colorRequired": "La couleur du type de calendrier est requise",
+    "requestingUserRequired": "L'ID de l'utilisateur demandeur est requis",
+    "requestingUserInvalid": "L'ID de l'utilisateur demandeur doit être un UUID valide",
+    "correlationIdRequired": "L'ID de corrélation est requis",
+    "sortOrderMinimum": "L'ordre de tri doit être d'au moins 1",
+    "failed": "La validation du type de calendrier a échoué"
+  },
+  "created": {
+    "success": "Type de calendrier créé avec succès"
+  },
+  "updated": {
+    "success": "Type de calendrier mis à jour avec succès"
+  },
+  "deleted": {
+    "success": "Type de calendrier supprimé avec succès"
+  },
+  "notFound": "Type de calendrier introuvable",
+  "cannotDelete": "Impossible de supprimer le type de calendrier : il est référencé par des rendez-vous existants"
+}

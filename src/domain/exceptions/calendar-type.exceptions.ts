@@ -31,6 +31,15 @@ export class CalendarTypeNotFoundError extends CalendarTypeException {
 }
 
 /**
+ * ⚔️ CalendarType already exists error
+ */
+export class CalendarTypeAlreadyExistsError extends CalendarTypeException {
+  constructor(value: string, message: string, context?: Record<string, any>) {
+    super(message, 'CALENDAR_TYPE_ALREADY_EXISTS', { ...context, value });
+  }
+}
+
+/**
  * ⚔️ CalendarType code conflict error
  */
 export class CalendarTypeCodeConflictError extends CalendarTypeException {
