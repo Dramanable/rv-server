@@ -92,46 +92,195 @@ Notre plateforme s'articule autour de **3 types d'acteurs distincts** avec des b
 - **Add-ons** : SMS, intégrations spécifiques, stockage supplémentaire
 - **White-label** : Licence pour réseaux de franchises
 
-### **🏛️ ARCHITECTURE TECHNIQUE MULTI-TENANT**
+### **🏛️ ARCHITECTURE TECHNIQUE SIMPLIFIÉE**
 
-#### **Stratégie de Tenant Isolation**
+#### **🔑 Stratégie de Tenant Isolation : BusinessId Pattern**
 
-**Approche Hybride (Recommended) :**
+**Approche Simplifiée (MVP Implementation) :**
 
-- **Shared Database + Row-Level Security (RLS)**
-- **Tenant-specific Schemas** pour gros clients (Enterprise+)
-- **Shared Infrastructure** avec isolation logique stricte
-- **Data Residency** : EU, US, Canada (conformité juridique)
+- **Une seule base de données PostgreSQL** avec `businessId` comme clé de partitioning tenant
+- **Row-Level Security (RLS)** pour isolation automatique des données
+- **Repository pattern tenant-aware** avec injection automatique du contexte business
+- **Shared infrastructure** optimisée pour la simplicité de développement
 
-#### **Stack Technologique SaaS**
+#### **Stack Technologique MVP**
 
-- **Backend:** Node.js 24.x, NestJS, TypeScript
-- **Base de données:** PostgreSQL 16+ (Multi-tenant RLS), Redis Cluster
-- **Queue System:** Bull Queue, BullMQ pour tâches asynchrones
-- **Monitoring:** Prometheus, Grafana, ELK Stack
-- **Infrastructure:** Docker, Kubernetes, AWS/GCP/Azure
-- **CDN & Storage:** Multi-cloud (AWS S3, Azure Blob, Google Cloud)
-- **Security:** OAuth 2.0, JWT, SAML SSO, 2FA obligatoire
-- **Compliance:** RGPD/GDPR, ISO 27001, SOC 2 Type II
+- **Backend:** Node.js 24.x, NestJS 11.x, TypeScript 5.9+
+- **Base de données:** PostgreSQL 15+ avec RLS, Redis 7 pour cache
+- **ORM:** TypeORM avec migrations automatisées
+- **Testing:** Jest, Supertest pour tests unitaires uniquement
+- **Infrastructure:** Docker Compose (dev), Docker Swarm (staging/prod)
+- **Storage:** AWS S3 pour images et documents business
+- **Security:** JWT tokens, bcrypt hashing, validation stricte
+- **Monitoring:** Logs structurés avec Winston, métriques basiques
 
-#### **Tenant Management System**
+#### **🏗️ BusinessId Tenant System**
 
 ```typescript
-// Exemple architecture tenant-aware
-interface TenantContext {
-  tenantId: string;
-  subscriptionTier: 'starter' | 'professional' | 'enterprise' | 'scale';
-  features: FeatureFlag[];
-  limits: TenantLimits;
-  region: 'eu' | 'us' | 'ca';
+// Architecture simplifiée avec businessId comme tenant identifier
+interface BusinessTenantContext {
+  businessId: string; // 🔑 Identifiant unique du tenant
+  businessName: string; // Nom commercial du tenant
+  subscriptionTier: SubscriptionTier;
+  isActive: boolean;
+  limits: BusinessLimits;
 }
 
-interface TenantLimits {
-  maxProfessionals: number;
-  maxAppointmentsPerMonth: number;
-  storageQuotaGB: number;
-  apiCallsPerDay: number;
+interface BusinessLimits {
+  maxStaffMembers: number; // Limite nombre employés
+  maxServicesActive: number; // Limite services proposés
+  maxAppointmentsPerMonth: number; // Quota mensuel rendez-vous
+  storageQuotaMB: number; // Espace stockage images/docs
 }
+
+// Toutes les entités principales sont tenant-scoped
+interface TenantAwareEntity {
+  id: string;
+  businessId: string; // 🔑 Clé étrangère vers Business
+  createdAt: Date;
+  updatedAt: Date;
+  createdBy: string; // Traçabilité utilisateur
+  updatedBy: string;
+}
+
+// Exemples d'entités tenant-aware
+interface Staff extends TenantAwareEntity {
+  businessId: string; // Appartient à quel Business
+  name: string;
+  email: string;
+  role: StaffRole;
+  // ...
+}
+
+interface Service extends TenantAwareEntity {
+  businessId: string; // Proposé par quel Business
+  name: string;
+  pricingConfig: PricingConfig;
+  // ...
+}
+
+interface Appointment extends TenantAwareEntity {
+  businessId: string; // Pris chez quel Business
+  serviceId: string;
+  staffId: string;
+  clientEmail: string;
+  // ...
+}
+```
+
+#### **🛡️ Isolation de Données par BusinessId**
+
+```typescript
+// Repository pattern avec isolation automatique
+@Injectable()
+export class TypeOrmStaffRepository implements IStaffRepository {
+  constructor(
+    @InjectRepository(StaffOrmEntity)
+    private readonly repository: Repository<StaffOrmEntity>,
+  ) {}
+
+  async findAllByBusiness(businessId: string): Promise<Staff[]> {
+    const staffEntities = await this.repository.find({
+      where: { business_id: businessId }, // ← Isolation tenant automatique
+    });
+    return StaffOrmMapper.toDomainEntities(staffEntities);
+  }
+
+  async save(staff: Staff): Promise<Staff> {
+    const ormEntity = StaffOrmMapper.toOrmEntity(staff);
+    // businessId est automatiquement inclus dans l'entité
+    const saved = await this.repository.save(ormEntity);
+    return StaffOrmMapper.toDomainEntity(saved);
+  }
+}
+
+// Use cases avec contexte business obligatoire
+export class ListStaffUseCase {
+  async execute(request: ListStaffRequest): Promise<ListStaffResponse> {
+    // Validation : le requesting user appartient bien au business
+    await this.validateUserBelongsToBusiness(
+      request.requestingUserId,
+      request.businessId, // ← Context tenant requis
+    );
+
+    // Récupération scopée au tenant
+    const staff = await this.staffRepository.findAllByBusiness(
+      request.businessId,
+    );
+
+    return ListStaffResponse.fromStaffList(staff, request.businessId);
+  }
+}
+```
+
+#### **🗄️ Structure Base de Données Simplifiée**
+
+```sql
+-- Table Business : le tenant principal
+CREATE TABLE businesses (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name VARCHAR(255) NOT NULL,
+  sector_id UUID REFERENCES business_sectors(id),
+  email VARCHAR(255) UNIQUE NOT NULL,
+  phone VARCHAR(50),
+  address JSONB,
+  settings JSONB DEFAULT '{}',
+  subscription_tier VARCHAR(20) DEFAULT 'starter',
+  is_active BOOLEAN DEFAULT true,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  created_by UUID NOT NULL,
+  updated_by UUID NOT NULL
+);
+
+-- Toutes les autres tables référencent business_id
+CREATE TABLE staff_members (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  business_id UUID NOT NULL REFERENCES businesses(id) ON DELETE CASCADE, -- 🔑 Tenant key
+  name VARCHAR(255) NOT NULL,
+  email VARCHAR(255) NOT NULL,
+  role VARCHAR(50) NOT NULL,
+  -- ... autres colonnes
+  UNIQUE(business_id, email) -- Email unique par tenant
+);
+
+CREATE TABLE services (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  business_id UUID NOT NULL REFERENCES businesses(id) ON DELETE CASCADE, -- 🔑 Tenant key
+  name VARCHAR(255) NOT NULL,
+  pricing_config JSONB NOT NULL,
+  -- ... autres colonnes
+);
+
+CREATE TABLE appointments (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  business_id UUID NOT NULL REFERENCES businesses(id) ON DELETE CASCADE, -- 🔑 Tenant key
+  service_id UUID NOT NULL REFERENCES services(id),
+  staff_id UUID NOT NULL REFERENCES staff_members(id),
+  -- ... autres colonnes
+  -- Vérification cohérence tenant
+  CONSTRAINT appointments_tenant_consistency
+    CHECK (
+      business_id = (SELECT business_id FROM services WHERE id = service_id) AND
+      business_id = (SELECT business_id FROM staff_members WHERE id = staff_id)
+    )
+);
+
+-- Row-Level Security pour isolation automatique
+ALTER TABLE staff_members ENABLE ROW LEVEL SECURITY;
+CREATE POLICY staff_tenant_isolation ON staff_members
+  FOR ALL TO app_role
+  USING (business_id = current_setting('app.current_business_id')::uuid);
+
+ALTER TABLE services ENABLE ROW LEVEL SECURITY;
+CREATE POLICY services_tenant_isolation ON services
+  FOR ALL TO app_role
+  USING (business_id = current_setting('app.current_business_id')::uuid);
+
+-- Index optimisés pour les requêtes tenant-scoped
+CREATE INDEX idx_staff_business_id ON staff_members(business_id);
+CREATE INDEX idx_services_business_id ON services(business_id);
+CREATE INDEX idx_appointments_business_id ON appointments(business_id);
 ```
 
 ### **Patterns Architecturaux**
