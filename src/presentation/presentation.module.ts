@@ -121,6 +121,7 @@ import { CalendarController } from './controllers/calendar.controller';
 import { NotificationController } from './controllers/notification.controller';
 import { ProfessionalController } from './controllers/professional.controller';
 import { ServiceController } from './controllers/service.controller';
+import { ServiceTypeController } from './controllers/service-type.controller';
 import { StaffController } from './controllers/staff.controller';
 import { UserController } from './controllers/user.controller';
 
@@ -152,6 +153,7 @@ import { PresentationCookieService } from './services/cookie.service';
     CalendarController,
     CalendarTypesController,
     ServiceController,
+    ServiceTypeController,
     StaffController,
     BusinessImageController,
     BusinessGalleryController,
@@ -534,9 +536,7 @@ import { PresentationCookieService } from './services/cookie.service';
       inject: [TOKENS.SERVICE_REPOSITORY, TOKENS.LOGGER, TOKENS.I18N_SERVICE],
     },
 
-    // 🏷️ ServiceType Use Cases - TEMPORARILY DISABLED until repository is implemented
-    // TODO: Re-enable after implementing ServiceType repository and ORM entities
-    /*
+    // 🏷️ ServiceType Use Cases - RE-ENABLED after implementing ServiceType repository
     {
       provide: TOKENS.CREATE_SERVICE_TYPE_USE_CASE,
       useFactory: (serviceTypeRepo, logger, i18n, auditService) =>
@@ -593,7 +593,6 @@ import { PresentationCookieService } from './services/cookie.service';
         TOKENS.I18N_SERVICE,
       ],
     },
-    */
 
     // 👨‍💼 Staff Use Cases
     {

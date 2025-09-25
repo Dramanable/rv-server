@@ -152,8 +152,8 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 
     // Vérifier les cookies
     const cookies = request.cookies as Record<string, unknown> | undefined;
-    if (cookies && typeof cookies.token === 'string') {
-      return cookies.token;
+    if (cookies && typeof cookies.accessToken === 'string') {
+      return cookies.accessToken;
     }
 
     return null;

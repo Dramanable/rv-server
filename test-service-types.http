@@ -1,0 +1,53 @@
+# Test des endpoints ServiceType après migration
+
+### 1. Login pour obtenir un JWT token
+POST http://localhost:3000/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@test.com",
+  "password": "TempPass123!"
+}
+
+### 2. List ServiceTypes (POST /list pour filtrage avancé)
+POST http://localhost:3000/api/v1/service-types/list
+Authorization: Bearer {{jwt_token}}
+Content-Type: application/json
+
+{
+  "page": 1,
+  "limit": 10,
+  "sortBy": "name",
+  "sortOrder": "asc"
+}
+
+### 3. Create ServiceType
+POST http://localhost:3000/api/v1/service-types
+Authorization: Bearer {{jwt_token}}
+Content-Type: application/json
+
+{
+  "businessId": "{{business_id}}",
+  "name": "Consultation Générale",
+  "code": "CONS_GEN",
+  "description": "Consultation médicale générale",
+  "isActive": true
+}
+
+### 4. Get ServiceType by ID
+GET http://localhost:3000/api/v1/service-types/{{service_type_id}}
+Authorization: Bearer {{jwt_token}}
+
+### 5. Update ServiceType
+PUT http://localhost:3000/api/v1/service-types/{{service_type_id}}
+Authorization: Bearer {{jwt_token}}
+Content-Type: application/json
+
+{
+  "name": "Consultation Spécialisée",
+  "description": "Consultation médicale spécialisée mise à jour"
+}
+
+### 6. Delete ServiceType
+DELETE http://localhost:3000/api/v1/service-types/{{service_type_id}}
+Authorization: Bearer {{jwt_token}}

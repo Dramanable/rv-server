@@ -20,6 +20,7 @@ import { CalendarTypeOrmEntity } from './sql/postgresql/entities/calendar-type-o
 import { ProfessionalOrmEntity } from './sql/postgresql/entities/professional-orm.entity';
 import { RefreshTokenOrmEntity } from './sql/postgresql/entities/refresh-token-orm.entity';
 import { ServiceOrmEntity } from './sql/postgresql/entities/service-orm.entity';
+import { ServiceTypeOrmEntity } from './sql/postgresql/entities/service-type-orm.entity';
 import { StaffOrmEntity } from './sql/postgresql/entities/staff-orm.entity';
 import { UserOrmEntity } from './sql/postgresql/entities/user-orm.entity';
 
@@ -31,6 +32,7 @@ import { TypeOrmCalendarTypeRepository } from './sql/postgresql/repositories/typ
 import { TypeOrmCalendarRepository } from './sql/postgresql/repositories/typeorm-calendar.repository';
 import { TypeOrmProfessionalRepository } from './sql/postgresql/repositories/typeorm-professional.repository';
 import { TypeOrmServiceRepository } from './sql/postgresql/repositories/typeorm-service.repository';
+import { TypeOrmServiceTypeRepository } from './sql/postgresql/repositories/typeorm-service-type.repository';
 import { TypeOrmStaffRepository } from './sql/postgresql/repositories/typeorm-staff.repository';
 import { TypeOrmUserRepository } from './sql/postgresql/repositories/user.repository';
 
@@ -107,6 +109,7 @@ class SimplePermissionService {
       BusinessOrmEntity,
       BusinessSectorOrmEntity, // Décommenté pour activer la relation
       ServiceOrmEntity,
+      ServiceTypeOrmEntity, // ✅ ServiceType entity
       StaffOrmEntity,
       CalendarOrmEntity,
       CalendarTypeOrmEntity,
@@ -146,6 +149,12 @@ class SimplePermissionService {
     {
       provide: TOKENS.SERVICE_REPOSITORY,
       useClass: TypeOrmServiceRepository,
+    },
+
+    // ServiceType Repository
+    {
+      provide: TOKENS.SERVICE_TYPE_REPOSITORY,
+      useClass: TypeOrmServiceTypeRepository,
     },
 
     // Staff Repository
@@ -192,6 +201,7 @@ class SimplePermissionService {
     TOKENS.PERMISSION_SERVICE,
     TOKENS.BUSINESS_REPOSITORY,
     TOKENS.SERVICE_REPOSITORY,
+    TOKENS.SERVICE_TYPE_REPOSITORY, // ✅ ServiceType repository
     TOKENS.STAFF_REPOSITORY,
     TOKENS.CALENDAR_REPOSITORY,
     TOKENS.CALENDAR_TYPE_REPOSITORY,
