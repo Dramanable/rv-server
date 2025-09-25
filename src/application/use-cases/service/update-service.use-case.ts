@@ -1,7 +1,4 @@
-import {
-  ServiceCategory,
-  ServiceStatus,
-} from '../../../domain/entities/service.entity';
+import { ServiceStatus } from '../../../domain/entities/service.entity';
 import { ServiceNotFoundError } from '../../../domain/exceptions/service.exceptions';
 import { ServiceRepository } from '../../../domain/repositories/service.repository.interface';
 import { Money } from '../../../domain/value-objects/money.value-object';
@@ -18,7 +15,7 @@ export interface UpdateServiceRequest {
   readonly updates: {
     readonly name?: string;
     readonly description?: string;
-    readonly category?: ServiceCategory;
+    readonly category?: string;
     readonly pricing?: {
       readonly basePrice?: number;
       readonly currency?: string;
@@ -38,7 +35,7 @@ export interface UpdateServiceResponse {
   readonly businessId: string;
   readonly name: string;
   readonly description: string;
-  readonly category: ServiceCategory;
+  readonly serviceTypeIds: string[];
   readonly pricing: {
     readonly basePrice: {
       readonly amount: number;
@@ -243,7 +240,9 @@ export class UpdateServiceUseCase {
         businessId: existingService.businessId.toString(),
         name: existingService.name,
         description: existingService.description,
-        category: existingService.category,
+        serviceTypeIds: existingService
+          .getServiceTypeIds()
+          .map((id) => id.getValue()),
         pricing: {
           basePrice: existingService.getBasePrice()
             ? {

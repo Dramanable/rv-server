@@ -1,8 +1,9 @@
 import { CalendarType } from '@domain/entities/calendar-type.entity';
+import { BusinessId } from '@domain/value-objects/business-id.value-object';
 import { CalendarTypeId } from '@domain/value-objects/calendar-type-id.value-object';
 
 export interface CalendarTypeSearchCriteria {
-  readonly businessId?: string;
+  readonly businessId?: BusinessId;
   readonly name?: string;
   readonly code?: string;
   readonly isActive?: boolean;
@@ -43,13 +44,13 @@ export interface ICalendarTypeRepository {
   /**
    * Find all calendar types by business ID
    */
-  findByBusinessId(businessId: string): Promise<CalendarType[]>;
+  findByBusinessId(businessId: BusinessId): Promise<CalendarType[]>;
 
   /**
    * Find calendar type by business ID and name
    */
   findByBusinessIdAndName(
-    businessId: string,
+    businessId: BusinessId,
     name: string,
   ): Promise<CalendarType | null>;
 
@@ -57,19 +58,25 @@ export interface ICalendarTypeRepository {
    * Find calendar type by business ID and code
    */
   findByBusinessIdAndCode(
-    businessId: string,
+    businessId: BusinessId,
     code: string,
   ): Promise<CalendarType | null>;
 
   /**
    * Check if calendar type exists by business ID and name
    */
-  existsByBusinessIdAndName(businessId: string, name: string): Promise<boolean>;
+  existsByBusinessIdAndName(
+    businessId: BusinessId,
+    name: string,
+  ): Promise<boolean>;
 
   /**
    * Check if calendar type exists by business ID and code
    */
-  existsByBusinessIdAndCode(businessId: string, code: string): Promise<boolean>;
+  existsByBusinessIdAndCode(
+    businessId: BusinessId,
+    code: string,
+  ): Promise<boolean>;
 
   /**
    * Soft delete calendar type
@@ -84,12 +91,12 @@ export interface ICalendarTypeRepository {
   /**
    * Count calendar types by business ID
    */
-  countByBusinessId(businessId: string): Promise<number>;
+  countByBusinessId(businessId: BusinessId): Promise<number>;
 
   /**
    * Count active calendar types by business ID
    */
-  countActiveByBusinessId(businessId: string): Promise<number>;
+  countActiveByBusinessId(businessId: BusinessId): Promise<number>;
 
   /**
    * Update sort orders for calendar types
@@ -102,7 +109,7 @@ export interface ICalendarTypeRepository {
    * Find calendar types by business ID ordered by sort order
    */
   findByBusinessIdOrderedBySortOrder(
-    businessId: string,
+    businessId: BusinessId,
   ): Promise<CalendarType[]>;
 
   /**

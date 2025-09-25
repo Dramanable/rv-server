@@ -1,9 +1,8 @@
-import type { Logger } from '@application/ports/logger.port';
 import type { I18nService } from '@application/ports/i18n.port';
-import type { ICalendarTypeRepository } from '@domain/repositories/calendar-type.repository';
-import { CalendarType } from '@domain/entities/calendar-type.entity';
-import { BusinessId } from '@domain/value-objects/business-id.value-object';
+import type { Logger } from '@application/ports/logger.port';
 import { CalendarTypeValidationError } from '@domain/exceptions/calendar-type.exceptions';
+import type { ICalendarTypeRepository } from '@domain/repositories/calendar-type.repository';
+import { BusinessId } from '@domain/value-objects/business-id.value-object';
 
 import {
   ListCalendarTypesRequest,
@@ -50,7 +49,7 @@ export class ListCalendarTypesUseCase {
 
       // Construire les critères de recherche
       const criteria = {
-        businessId: businessId?.getValue(),
+        businessId: businessId, // Déjà un BusinessId ou undefined
         isActive: request.isActive,
         search: request.search,
         page,

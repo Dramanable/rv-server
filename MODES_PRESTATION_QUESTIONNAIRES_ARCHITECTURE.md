@@ -656,7 +656,7 @@ export class CreateDeliveryModesAndQuestionnaires
         "client_instructions" text,
         "created_at" timestamp DEFAULT CURRENT_TIMESTAMP,
         "updated_at" timestamp DEFAULT CURRENT_TIMESTAMP,
-        CONSTRAINT "FK_service_delivery_modes_service_id" 
+        CONSTRAINT "FK_service_delivery_modes_service_id"
           FOREIGN KEY ("service_id") REFERENCES "${schema}"."services"("id") ON DELETE CASCADE
       )
     `);
@@ -673,7 +673,7 @@ export class CreateDeliveryModesAndQuestionnaires
         "version" integer NOT NULL DEFAULT 1,
         "created_at" timestamp DEFAULT CURRENT_TIMESTAMP,
         "updated_at" timestamp DEFAULT CURRENT_TIMESTAMP,
-        CONSTRAINT "FK_client_questionnaires_service_id" 
+        CONSTRAINT "FK_client_questionnaires_service_id"
           FOREIGN KEY ("service_id") REFERENCES "${schema}"."services"("id") ON DELETE CASCADE
       )
     `);
@@ -691,34 +691,34 @@ export class CreateDeliveryModesAndQuestionnaires
         "validation_errors" jsonb,
         "created_at" timestamp DEFAULT CURRENT_TIMESTAMP,
         "updated_at" timestamp DEFAULT CURRENT_TIMESTAMP,
-        CONSTRAINT "FK_appointment_additional_info_appointment_id" 
+        CONSTRAINT "FK_appointment_additional_info_appointment_id"
           FOREIGN KEY ("appointment_id") REFERENCES "${schema}"."appointments"("id") ON DELETE CASCADE,
-        CONSTRAINT "FK_appointment_additional_info_questionnaire_id" 
+        CONSTRAINT "FK_appointment_additional_info_questionnaire_id"
           FOREIGN KEY ("questionnaire_id") REFERENCES "${schema}"."client_questionnaires"("id") ON DELETE SET NULL,
-        CONSTRAINT "UQ_appointment_additional_info_appointment" 
+        CONSTRAINT "UQ_appointment_additional_info_appointment"
           UNIQUE ("appointment_id")
       )
     `);
 
     // Ajouter colonne delivery_mode à appointments
     await queryRunner.query(`
-      ALTER TABLE "${schema}"."appointments" 
+      ALTER TABLE "${schema}"."appointments"
       ADD COLUMN "delivery_mode_type" varchar(50) DEFAULT 'IN_PERSON'
     `);
 
     // Index pour optimiser les requêtes
     await queryRunner.query(`
-      CREATE INDEX "IDX_service_delivery_modes_service_id" 
+      CREATE INDEX "IDX_service_delivery_modes_service_id"
       ON "${schema}"."service_delivery_modes" ("service_id")
     `);
 
     await queryRunner.query(`
-      CREATE INDEX "IDX_client_questionnaires_service_id" 
+      CREATE INDEX "IDX_client_questionnaires_service_id"
       ON "${schema}"."client_questionnaires" ("service_id")
     `);
 
     await queryRunner.query(`
-      CREATE INDEX "IDX_appointment_additional_info_appointment_id" 
+      CREATE INDEX "IDX_appointment_additional_info_appointment_id"
       ON "${schema}"."appointment_additional_info" ("appointment_id")
     `);
   }

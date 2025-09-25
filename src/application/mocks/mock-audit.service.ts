@@ -1,8 +1,8 @@
 import type {
-  IAuditService,
+  AuditEntry,
   AuditOperation,
   AuditQuery,
-  AuditEntry,
+  IAuditService,
 } from '@application/ports/audit.port';
 
 /**

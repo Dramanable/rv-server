@@ -199,7 +199,6 @@ export class ServiceMapper {
     entity.business_id = domainService.businessId.getValue();
     entity.name = domainService.name;
     entity.description = domainService.description;
-    entity.category = domainService.category;
     entity.status = domainService.status;
 
     // Mapper le pricing avec PricingConfig

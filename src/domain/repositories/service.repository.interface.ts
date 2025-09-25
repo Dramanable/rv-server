@@ -37,7 +37,6 @@ export interface ServiceRepository {
   search(criteria: {
     businessId?: BusinessId;
     name?: string;
-    category?: string;
     minPrice?: number;
     maxPrice?: number;
     duration?: number;
@@ -99,7 +98,6 @@ export interface ServiceRepository {
   getBusinessServiceStatistics(businessId: BusinessId): Promise<{
     totalServices: number;
     activeServices: number;
-    servicesByCategory: Record<string, number>;
     averagePrice: number;
     averageDuration: number;
   }>;

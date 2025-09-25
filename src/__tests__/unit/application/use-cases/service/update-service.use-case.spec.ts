@@ -9,13 +9,11 @@ import { ApplicationValidationError } from '../../../../../application/exception
 import { I18nService } from '../../../../../application/ports/i18n.port';
 import { Logger } from '../../../../../application/ports/logger.port';
 import { UpdateServiceUseCase } from '../../../../../application/use-cases/service/update-service.use-case';
-import {
-  Service,
-  ServiceCategory,
-} from '../../../../../domain/entities/service.entity';
+import { Service } from '../../../../../domain/entities/service.entity';
 import { ServiceNotFoundError } from '../../../../../domain/exceptions/service.exceptions';
 import { ServiceRepository } from '../../../../../domain/repositories/service.repository.interface';
 import { BusinessId } from '../../../../../domain/value-objects/business-id.value-object';
+import { ServiceTypeId } from '../../../../../domain/value-objects/service-type-id.value-object';
 
 describe('UpdateServiceUseCase', () => {
   let useCase: UpdateServiceUseCase;
@@ -27,7 +25,9 @@ describe('UpdateServiceUseCase', () => {
     businessId: BusinessId.create('550e8400-e29b-41d4-a716-446655440000'),
     name: 'Original Service',
     description: 'Original description',
-    category: ServiceCategory.CONSULTATION,
+    serviceTypeIds: [
+      ServiceTypeId.fromString('550e8400-e29b-41d4-a716-446655440001'),
+    ],
     basePrice: 100,
     currency: 'EUR',
     duration: 60,
@@ -152,7 +152,9 @@ describe('UpdateServiceUseCase', () => {
         businessId: BusinessId.create('550e8400-e29b-41d4-a716-446655440000'),
         name: 'Existing Service',
         description: 'description',
-        category: ServiceCategory.TREATMENT,
+        serviceTypeIds: [
+          ServiceTypeId.fromString('550e8400-e29b-41d4-a716-446655440002'),
+        ],
         basePrice: 50,
         currency: 'EUR',
         duration: 30,

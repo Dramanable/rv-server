@@ -131,11 +131,11 @@ export class RefactorServiceTypesToBusinessId1758680000000
 
     // 5. Make audit columns nullable - TOUJOURS NÉCESSAIRE
     const auditColumnsResult = await queryRunner.query(`
-      SELECT 
+      SELECT
         col.column_name,
         col.is_nullable
       FROM information_schema.columns col
-      WHERE col.table_schema = '${schema}' 
+      WHERE col.table_schema = '${schema}'
         AND col.table_name = 'service_types'
         AND col.column_name IN ('created_by', 'updated_by')
     `);

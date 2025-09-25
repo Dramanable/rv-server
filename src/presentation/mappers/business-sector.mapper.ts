@@ -165,7 +165,9 @@ export class BusinessSectorMapper {
     response: ListBusinessSectorsResponse,
   ): ListBusinessSectorsResponseDto {
     return {
-      data: response.businessSectors.data.map(BusinessSectorMapper.toDto),
+      data: response.businessSectors.data.map((sector) =>
+        BusinessSectorMapper.toDto(sector),
+      ),
       meta: BusinessSectorMapper.toPaginationMetaDto(
         response.businessSectors.meta,
       ),
@@ -213,7 +215,7 @@ export class BusinessSectorMapper {
    * 🔄 Convertir liste de BusinessSector en BusinessSectorResponseDto[]
    */
   static toDtos(entities: BusinessSector[]): BusinessSectorResponseDto[] {
-    return entities.map(BusinessSectorMapper.toDto);
+    return entities.map((entity) => BusinessSectorMapper.toDto(entity));
   }
 
   // ═══════════════════════════════════════════════════════════════

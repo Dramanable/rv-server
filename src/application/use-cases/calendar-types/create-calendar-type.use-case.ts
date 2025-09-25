@@ -1,16 +1,14 @@
-import type { Logger } from '@application/ports/logger.port';
-import type { I18nService } from '@application/ports/i18n.port';
 import type { IAuditService } from '@application/ports/audit.port';
-import type { ICalendarTypeRepository } from '@domain/repositories/calendar-type.repository';
+import type { I18nService } from '@application/ports/i18n.port';
+import type { Logger } from '@application/ports/logger.port';
 import { CalendarType } from '@domain/entities/calendar-type.entity';
+import {
+  CalendarTypeAlreadyExistsError,
+  CalendarTypeValidationError,
+} from '@domain/exceptions/calendar-type.exceptions';
+import type { ICalendarTypeRepository } from '@domain/repositories/calendar-type.repository';
 import { BusinessId } from '@domain/value-objects/business-id.value-object';
 import {
-  CalendarTypeValidationError,
-  CalendarTypeAlreadyExistsError,
-} from '@domain/exceptions/calendar-type.exceptions';
-import { ApplicationValidationError } from '@application/exceptions/application.exceptions';
-
-import type {
   CreateCalendarTypeRequest,
   CreateCalendarTypeResponse,
 } from './calendar-type.types';
@@ -91,7 +89,7 @@ export class CreateCalendarTypeUseCase {
       return {
         calendarType: savedCalendarType,
         success: true,
-        message: this.i18n.translate('calendarTypes.created.success'),
+        message: this.i18n.translate('calendarTypes.creation.success'),
       };
     } catch (error) {
       const errorMessage =
@@ -117,6 +115,7 @@ export class CreateCalendarTypeUseCase {
   ): Promise<void> {
     const errors: string[] = [];
 
+    // Required field validation
     if (!request.businessId?.trim()) {
       errors.push(
         this.i18n.translate('calendarTypes.validation.businessIdRequired'),
@@ -131,27 +130,9 @@ export class CreateCalendarTypeUseCase {
       errors.push(this.i18n.translate('calendarTypes.validation.codeRequired'));
     }
 
-    if (!request.description?.trim()) {
-      errors.push(
-        this.i18n.translate('calendarTypes.validation.descriptionRequired'),
-      );
-    }
-
-    if (!request.color?.trim()) {
-      errors.push(
-        this.i18n.translate('calendarTypes.validation.colorRequired'),
-      );
-    }
-
     if (!request.requestingUserId?.trim()) {
       errors.push(
         this.i18n.translate('calendarTypes.validation.requestingUserRequired'),
-      );
-    }
-
-    if (!request.correlationId?.trim()) {
-      errors.push(
-        this.i18n.translate('calendarTypes.validation.correlationIdRequired'),
       );
     }
 
@@ -213,9 +194,10 @@ export class CreateCalendarTypeUseCase {
     }
 
     // Validation de l'unicité du code (uniquement si les données de base sont valides)
+    const businessId = BusinessId.fromString(request.businessId);
     const existsByCode =
       await this.calendarTypeRepository.existsByBusinessIdAndCode(
-        request.businessId,
+        businessId,
         request.code.trim().toUpperCase(),
       );
 
@@ -231,7 +213,7 @@ export class CreateCalendarTypeUseCase {
     // Validation de l'unicité du nom (uniquement si les données de base sont valides)
     const existsByName =
       await this.calendarTypeRepository.existsByBusinessIdAndName(
-        request.businessId,
+        businessId,
         request.name.trim(),
       );
 

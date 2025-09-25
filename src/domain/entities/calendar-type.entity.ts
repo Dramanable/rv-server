@@ -1,10 +1,9 @@
-import { CalendarTypeId } from '@domain/value-objects/calendar-type-id.value-object';
-import { BusinessId } from '@domain/value-objects/business-id.value-object';
 import {
-  CalendarTypeValidationError,
   CalendarTypeBuiltInModificationError,
+  CalendarTypeValidationError,
 } from '@domain/exceptions/calendar-type.exceptions';
-import { generateId } from '@shared/utils/id.utils';
+import { BusinessId } from '@domain/value-objects/business-id.value-object';
+import { CalendarTypeId } from '@domain/value-objects/calendar-type-id.value-object';
 
 /**
  * 📅 CalendarType Entity

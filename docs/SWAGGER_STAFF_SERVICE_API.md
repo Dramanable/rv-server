@@ -24,8 +24,8 @@ Cette documentation détaille les APIs REST pour la gestion du personnel (Staff)
 
 ### **POST /api/v1/staff/list**
 
-**Description** : Recherche avancée paginée du personnel  
-**Security** : Requires JWT authentication  
+**Description** : Recherche avancée paginée du personnel
+**Security** : Requires JWT authentication
 **Request Body** :
 
 ```typescript
@@ -75,8 +75,8 @@ Cette documentation détaille les APIs REST pour la gestion du personnel (Staff)
 
 ### **GET /api/v1/staff/:id**
 
-**Description** : Récupérer un membre du personnel par ID  
-**Security** : Requires JWT authentication  
+**Description** : Récupérer un membre du personnel par ID
+**Security** : Requires JWT authentication
 **Parameters** : `id` (UUID) - Staff member identifier
 
 **Response** :
@@ -116,8 +116,8 @@ Cette documentation détaille les APIs REST pour la gestion du personnel (Staff)
 
 ### **POST /api/v1/staff**
 
-**Description** : Créer un nouveau membre du personnel  
-**Security** : Requires JWT authentication  
+**Description** : Créer un nouveau membre du personnel
+**Security** : Requires JWT authentication
 **Request Body** :
 
 ```typescript
@@ -143,8 +143,8 @@ Cette documentation détaille les APIs REST pour la gestion du personnel (Staff)
 
 ### **PUT /api/v1/staff/:id**
 
-**Description** : Mettre à jour un membre du personnel  
-**Security** : Requires JWT authentication  
+**Description** : Mettre à jour un membre du personnel
+**Security** : Requires JWT authentication
 **Request Body** : Partial update with nested objects
 
 ```typescript
@@ -166,8 +166,8 @@ Cette documentation détaille les APIs REST pour la gestion du personnel (Staff)
 
 ### **DELETE /api/v1/staff/:id**
 
-**Description** : Supprimer un membre du personnel  
-**Security** : Requires JWT authentication  
+**Description** : Supprimer un membre du personnel
+**Security** : Requires JWT authentication
 **Response** :
 
 ```typescript
@@ -188,8 +188,8 @@ Cette documentation détaille les APIs REST pour la gestion du personnel (Staff)
 
 ### **POST /api/v1/services/list**
 
-**Description** : Recherche avancée paginée des services  
-**Security** : Requires JWT authentication  
+**Description** : Recherche avancée paginée des services
+**Security** : Requires JWT authentication
 **Request Body** :
 
 ```typescript
@@ -207,7 +207,7 @@ Cette documentation détaille les APIs REST pour la gestion du personnel (Staff)
 
 ### **GET /api/v1/services/:id**
 
-**Description** : Récupérer un service par ID  
+**Description** : Récupérer un service par ID
 **Response** :
 
 ```typescript
@@ -242,7 +242,7 @@ Cette documentation détaille les APIs REST pour la gestion du personnel (Staff)
 
 ### **POST /api/v1/services**
 
-**Description** : Créer un nouveau service  
+**Description** : Créer un nouveau service
 **Request Body** :
 
 ```typescript
@@ -250,7 +250,7 @@ Cette documentation détaille les APIs REST pour la gestion du personnel (Staff)
   "businessId": "uuid",              // Required
   "name": "Consultation Générale",   // Required, 2-200 chars
   "description": "Consultation...",  // Optional, max 1000 chars
-  "category": "MEDICAL",             // Required, enum ServiceCategory
+  "category": "Medical",             // Required, string type
   "price": {                         // Required
     "amount": 75.50,                 // Required, min: 0, max decimals: 2
     "currency": "EUR"                // Required, enum: ['EUR', 'USD', 'GBP', 'CAD']
@@ -269,7 +269,7 @@ Cette documentation détaille les APIs REST pour la gestion du personnel (Staff)
 
 ### **PUT /api/v1/services/:id**
 
-**Description** : Mettre à jour un service  
+**Description** : Mettre à jour un service
 **Request Body** : Partial update
 
 ```typescript
@@ -286,7 +286,7 @@ Cette documentation détaille les APIs REST pour la gestion du personnel (Staff)
 
 ### **DELETE /api/v1/services/:id**
 
-**Description** : Supprimer un service  
+**Description** : Supprimer un service
 **Response** :
 
 ```typescript

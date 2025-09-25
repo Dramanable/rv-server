@@ -1,44 +1,44 @@
 import {
-  Controller,
-  Post,
-  Get,
-  Put,
-  Delete,
   Body,
-  Param,
-  HttpStatus,
+  Controller,
+  Delete,
+  Get,
   HttpCode,
-  UseGuards,
+  HttpStatus,
   Inject,
+  Param,
+  Post,
+  Put,
+  UseGuards,
 } from '@nestjs/common';
 import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
   ApiBearerAuth,
+  ApiOperation,
   ApiParam,
+  ApiResponse,
+  ApiTags,
 } from '@nestjs/swagger';
 
 import { CreateCalendarTypeUseCase } from '@application/use-cases/calendar-types/create-calendar-type.use-case';
+import { DeleteCalendarTypeUseCase } from '@application/use-cases/calendar-types/delete-calendar-type.use-case';
 import { GetCalendarTypeByIdUseCase } from '@application/use-cases/calendar-types/get-calendar-type-by-id.use-case';
 import { ListCalendarTypesUseCase } from '@application/use-cases/calendar-types/list-calendar-types.use-case';
 import { UpdateCalendarTypeUseCase } from '@application/use-cases/calendar-types/update-calendar-type.use-case';
-import { DeleteCalendarTypeUseCase } from '@application/use-cases/calendar-types/delete-calendar-type.use-case';
-import { TOKENS } from '@shared/constants/injection-tokens';
+import { User } from '@domain/entities/user.entity';
 import { JwtAuthGuard } from '@presentation/security/auth.guard';
 import { GetUser } from '@presentation/security/decorators/get-user.decorator';
-import { User } from '@domain/entities/user.entity';
+import { TOKENS } from '@shared/constants/injection-tokens';
 
 import {
-  CreateCalendarTypeDto,
-  UpdateCalendarTypeDto,
-  ListCalendarTypesDto,
-  DeleteCalendarTypeDto,
   CalendarTypeResponseDto,
+  CreateCalendarTypeDto,
   CreateCalendarTypeResponseDto,
-  ListCalendarTypesResponseDto,
-  UpdateCalendarTypeResponseDto,
+  DeleteCalendarTypeDto,
   DeleteCalendarTypeResponseDto,
+  ListCalendarTypesDto,
+  ListCalendarTypesResponseDto,
+  UpdateCalendarTypeDto,
+  UpdateCalendarTypeResponseDto,
 } from '@presentation/dtos/calendar-types';
 
 /**
@@ -336,20 +336,20 @@ export class CalendarTypesController {
     return {
       success: true,
       data: {
-        id: result.calendarType.getId().getValue(),
-        businessId: result.calendarType.getBusinessId().getValue(),
-        name: result.calendarType.getName(),
-        code: result.calendarType.getCode(),
-        description: result.calendarType.getDescription(),
-        color: result.calendarType.getColor(),
-        icon: result.calendarType.getIcon(),
-        sortOrder: result.calendarType.getSortOrder(),
-        isActive: result.calendarType.isActive(),
-        isBuiltIn: result.calendarType.isBuiltIn(),
-        createdBy: result.calendarType.getCreatedBy(),
-        updatedBy: result.calendarType.getUpdatedBy(),
-        createdAt: result.calendarType.getCreatedAt(),
-        updatedAt: result.calendarType.getUpdatedAt(),
+        id: result.id,
+        businessId: result.businessId,
+        name: result.name,
+        code: result.code,
+        description: result.description || '',
+        color: result.color,
+        icon: result.icon,
+        sortOrder: result.sortOrder || 0,
+        isActive: result.isActive,
+        isBuiltIn: false, // TODO: Add to response interface if needed
+        createdBy: '', // TODO: Add to response interface if needed
+        updatedBy: '', // TODO: Add to response interface if needed
+        createdAt: result.createdAt,
+        updatedAt: result.updatedAt,
       },
       meta: {
         timestamp: new Date().toISOString(),

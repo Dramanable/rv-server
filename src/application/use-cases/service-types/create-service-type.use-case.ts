@@ -1,14 +1,13 @@
-import { IServiceTypeRepository } from '@domain/repositories/service-type.repository';
+import { IAuditService } from '@application/ports/audit.port';
+import { Logger } from '@application/ports/logger.port';
 import { ServiceType } from '@domain/entities/service-type.entity';
-import { BusinessId } from '@domain/value-objects/business-id.value-object';
-import { ServiceTypeId } from '@domain/value-objects/service-type-id.value-object';
 import {
-  ServiceTypeValidationError,
   ServiceTypeCodeConflictError,
   ServiceTypeNameConflictError,
+  ServiceTypeValidationError,
 } from '@domain/exceptions/service-type.exceptions';
-import { Logger } from '@application/ports/logger.port';
-import { IAuditService } from '@application/ports/audit.port';
+import { IServiceTypeRepository } from '@domain/repositories/service-type.repository';
+import { BusinessId } from '@domain/value-objects/business-id.value-object';
 
 interface I18nTranslateFunction {
   translate(

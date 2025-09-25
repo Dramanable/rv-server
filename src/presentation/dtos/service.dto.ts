@@ -9,6 +9,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import {
   ArrayMaxSize,
+  ArrayMinSize,
   IsArray,
   IsBoolean,
   IsIn,
@@ -217,18 +218,19 @@ export class CreateServiceDto {
   )
   readonly description?: string;
 
-  @ApiPropertyOptional({
-    description: 'Service category',
-    example: 'Wellness',
-    maxLength: 50,
+  @ApiProperty({
+    description: 'Service type IDs (at least one required)',
+    example: [
+      '550e8400-e29b-41d4-a716-446655440001',
+      '550e8400-e29b-41d4-a716-446655440002',
+    ],
+    type: [String],
+    format: 'uuid',
   })
-  @IsOptional()
-  @IsString()
-  @Length(1, 50)
-  @Transform(({ value }: { value: unknown }) =>
-    typeof value === 'string' ? value.trim() : value,
-  )
-  readonly category?: string;
+  @IsArray()
+  @IsUUID('4', { each: true })
+  @ArrayMinSize(1, { message: 'At least one service type ID is required' })
+  readonly serviceTypeIds!: string[];
 
   @ApiProperty({
     description: 'Service duration in minutes',
@@ -324,17 +326,19 @@ export class UpdateServiceDto {
   readonly description?: string;
 
   @ApiPropertyOptional({
-    description: 'Service category',
-    example: 'Wellness',
-    maxLength: 50,
+    description: 'Service type IDs (at least one required if provided)',
+    example: [
+      '550e8400-e29b-41d4-a716-446655440001',
+      '550e8400-e29b-41d4-a716-446655440002',
+    ],
+    type: [String],
+    format: 'uuid',
   })
   @IsOptional()
-  @IsString()
-  @Length(1, 50)
-  @Transform(({ value }: { value: unknown }) =>
-    typeof value === 'string' ? value.trim() : value,
-  )
-  readonly category?: string;
+  @IsArray()
+  @IsUUID('4', { each: true })
+  @ArrayMinSize(1, { message: 'At least one service type ID is required' })
+  readonly serviceTypeIds?: string[];
 
   @ApiPropertyOptional({
     description: 'Service duration in minutes',
@@ -430,11 +434,11 @@ export class ListServicesDto {
   @ApiPropertyOptional({
     description: 'Field to sort by',
     example: 'name',
-    enum: ['name', 'category', 'duration', 'price', 'createdAt'],
+    enum: ['name', 'duration', 'price', 'createdAt'],
     default: 'createdAt',
   })
   @IsOptional()
-  @IsIn(['name', 'category', 'duration', 'price', 'createdAt'])
+  @IsIn(['name', 'duration', 'price', 'createdAt'])
   readonly sortBy?: string = 'createdAt';
 
   @ApiPropertyOptional({
@@ -470,14 +474,15 @@ export class ListServicesDto {
   readonly businessId?: string;
 
   @ApiPropertyOptional({
-    description: 'Filter by service category',
-    example: 'Wellness',
-    maxLength: 50,
+    description: 'Filter by service type IDs',
+    example: ['550e8400-e29b-41d4-a716-446655440001'],
+    type: [String],
+    format: 'uuid',
   })
   @IsOptional()
-  @IsString()
-  @Length(1, 50)
-  readonly category?: string;
+  @IsArray()
+  @IsUUID('4', { each: true })
+  readonly serviceTypeIds?: string[];
 
   @ApiPropertyOptional({
     description: 'Filter by active status',
@@ -550,11 +555,16 @@ export class ServiceDto {
   })
   readonly description?: string;
 
-  @ApiPropertyOptional({
-    description: 'Service category',
-    example: 'Wellness',
+  @ApiProperty({
+    description: 'Service type IDs',
+    example: [
+      '550e8400-e29b-41d4-a716-446655440001',
+      '550e8400-e29b-41d4-a716-446655440002',
+    ],
+    type: [String],
+    format: 'uuid',
   })
-  readonly category?: string;
+  readonly serviceTypeIds!: string[];
 
   @ApiProperty({
     description: 'Service duration in minutes',

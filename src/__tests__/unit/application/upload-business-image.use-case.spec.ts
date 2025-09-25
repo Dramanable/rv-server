@@ -4,11 +4,9 @@
  * ✅ Admin settings validation + AWS S3 integration
  */
 
-import { UploadBusinessImageUseCase } from '../../../application/use-cases/business/upload-business-image.use-case';
 import { Business } from '../../../domain/entities/business.entity';
 import { BusinessRepository } from '../../../domain/repositories/business.repository';
 import { BusinessId } from '../../../domain/value-objects/business-id.value-object';
-import { ImageCategory } from '../../../domain/value-objects/business-image.value-object';
 import { ImageUploadSettings } from '../../../domain/value-objects/image-upload-settings.value-object';
 import { AwsS3ImageService } from '../../../infrastructure/services/aws-s3-image.service';
 

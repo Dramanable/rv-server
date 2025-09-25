@@ -1,15 +1,15 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
-  IsString,
-  IsNotEmpty,
-  Length,
-  IsOptional,
-  IsHexColor,
-  Matches,
-  IsInt,
-  Min,
-  Max,
   IsBoolean,
+  IsHexColor,
+  IsInt,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  Length,
+  Matches,
+  Max,
+  Min,
 } from 'class-validator';
 
 /**

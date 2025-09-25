@@ -1,0 +1,36 @@
+{
+  "validation": {
+    "firstNameRequired": "Le prénom est requis",
+    "lastNameRequired": "Le nom de famille est requis",
+    "specialityRequired": "La spécialité est requise",
+    "licenseRequired": "Le numéro de licence est requis",
+    "experienceInvalid": "L'expérience doit être un nombre positif valide",
+    "emailInvalid": "Le format de l'email est invalide",
+    "invalidId": "Le format de l'ID professionnel est invalide",
+    "invalidBusinessId": "Un ID d'entreprise valide est requis",
+    "missingContext": "Champs de contexte requis manquants",
+    "invalidPage": "Le numéro de page doit être supérieur à 0",
+    "invalidLimit": "La limite doit être entre 1 et 100",
+    "emailAlreadyExists": "Un professionnel avec l'email {{email}} existe déjà",
+    "licenseAlreadyExists": "Un professionnel avec le numéro de licence {{licenseNumber}} existe déjà"
+  },
+  "errors": {
+    "notFound": "Professionnel introuvable avec l'ID: {{professionalId}}",
+    "notActive": "Le professionnel n'est pas actif",
+    "notVerified": "Le professionnel n'est pas vérifié",
+    "notInBusiness": "Le professionnel n'appartient pas à cette entreprise",
+    "validationFailed": "Échec de la validation des données du professionnel",
+    "invalidId": "Le format de l'ID du professionnel est invalide",
+    "emailInvalid": "Le format de l'email est invalide",
+    "cannotDeleteWithAppointments": "Impossible de supprimer un professionnel avec des rendez-vous actifs"
+  },
+  "success": {
+    "created": "Professionnel créé avec succès",
+    "retrieved": "Professionnel récupéré avec succès",
+    "updated": "Professionnel mis à jour avec succès",
+    "deleted": "Professionnel supprimé avec succès",
+    "activated": "Professionnel activé avec succès",
+    "deactivated": "Professionnel désactivé avec succès",
+    "verified": "Professionnel vérifié avec succès"
+  }
+}

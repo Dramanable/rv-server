@@ -9,14 +9,12 @@ import { ApplicationValidationError } from '../../../../../application/exception
 import { I18nService } from '../../../../../application/ports/i18n.port';
 import { Logger } from '../../../../../application/ports/logger.port';
 import { DeleteServiceUseCase } from '../../../../../application/use-cases/service/delete-service.use-case';
-import {
-  Service,
-  ServiceCategory,
-} from '../../../../../domain/entities/service.entity';
+import { Service } from '../../../../../domain/entities/service.entity';
 import { ServiceNotFoundError } from '../../../../../domain/exceptions/service.exceptions';
 import { ServiceRepository } from '../../../../../domain/repositories/service.repository.interface';
 import { BusinessId } from '../../../../../domain/value-objects/business-id.value-object';
 import { ServiceId } from '../../../../../domain/value-objects/service-id.value-object';
+import { ServiceTypeId } from '../../../../../domain/value-objects/service-type-id.value-object';
 import { UserId } from '../../../../../domain/value-objects/user-id.value-object';
 
 describe('DeleteServiceUseCase', () => {
@@ -29,7 +27,9 @@ describe('DeleteServiceUseCase', () => {
     businessId: BusinessId.create('550e8400-e29b-41d4-a716-446655440000'),
     name: 'Service to Delete',
     description: 'Service description',
-    category: ServiceCategory.CONSULTATION,
+    serviceTypeIds: [
+      ServiceTypeId.fromString('550e8400-e29b-41d4-a716-446655440001'),
+    ],
     basePrice: 100,
     currency: 'EUR',
     duration: 60,
@@ -128,7 +128,9 @@ describe('DeleteServiceUseCase', () => {
         businessId: BusinessId.create('550e8400-e29b-41d4-a716-446655440003'),
         name: 'Active Service',
         description: 'Service with active appointments',
-        category: ServiceCategory.CONSULTATION,
+        serviceTypeIds: [
+          ServiceTypeId.fromString('550e8400-e29b-41d4-a716-446655440002'),
+        ],
         basePrice: 100,
         currency: 'EUR',
         duration: 60,

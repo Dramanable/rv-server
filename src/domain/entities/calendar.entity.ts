@@ -1,15 +1,12 @@
+import { BusinessId } from '../value-objects/business-id.value-object';
 import { CalendarId } from '../value-objects/calendar-id.value-object';
+import { RecurrencePattern } from '../value-objects/recurrence-pattern.value-object';
+import { TimeSlot } from '../value-objects/time-slot.value-object';
+import { UserId } from '../value-objects/user-id.value-object';
+import { WorkingHours } from '../value-objects/working-hours.value-object';
 
 // Re-export pour faciliter les imports
 export { CalendarId } from '../value-objects/calendar-id.value-object';
-import { BusinessId } from '../value-objects/business-id.value-object';
-import { UserId } from '../value-objects/user-id.value-object';
-import { WorkingHours } from '../value-objects/working-hours.value-object';
-import {
-  TimeSlot,
-  TimeSlotStatus,
-} from '../value-objects/time-slot.value-object';
-import { RecurrencePattern } from '../value-objects/recurrence-pattern.value-object';
 
 export enum CalendarType {
   BUSINESS = 'BUSINESS', // Calendrier principal de l'entreprise
@@ -64,7 +61,7 @@ export interface BookingRule {
     timeRange?: { start: string; end: string };
     dateRange?: { start: Date; end: Date };
     staffRole?: string[];
-    serviceCategory?: string[];
+    serviceTypes?: string[];
   };
   actions: {
     requireApproval?: boolean;

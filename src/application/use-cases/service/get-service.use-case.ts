@@ -18,7 +18,7 @@ export interface GetServiceResponse {
   readonly name: string;
   readonly description: string;
   readonly businessId: string;
-  readonly category: string;
+  readonly serviceTypeIds: string[];
   readonly pricing: {
     readonly basePrice: {
       readonly amount: number;
@@ -150,7 +150,7 @@ export class GetServiceUseCase {
       name: service.name,
       description: service.description,
       businessId: service.businessId.getValue(),
-      category: service.category,
+      serviceTypeIds: service.getServiceTypeIds().map((id) => id.getValue()),
       pricing: {
         basePrice: service.getBasePrice()
           ? {

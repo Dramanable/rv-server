@@ -15,6 +15,7 @@ import { Service, ServiceStatus } from '@domain/entities/service.entity';
 import { BusinessRepository } from '@domain/repositories/business.repository.interface';
 import { ServiceRepository } from '@domain/repositories/service.repository.interface';
 import { UserRepository } from '@domain/repositories/user.repository.interface';
+import { ServiceTypeId } from '@domain/value-objects/service-type-id.value-object';
 import { AppContext, AppContextFactory } from '@shared/context/app-context';
 import { UserRole } from '@shared/enums/user-role.enum';
 
@@ -25,7 +26,7 @@ export interface CreateServiceRequest {
   readonly businessId: string;
   readonly name: string;
   readonly description?: string;
-  readonly category?: string;
+  readonly serviceTypeIds: string[]; // ✅ Many-to-many ServiceType IDs
   readonly duration: number; // en minutes
   readonly price: {
     readonly amount: number;
@@ -54,7 +55,7 @@ export interface CreateServiceResponse {
   readonly id: string;
   readonly name: string;
   readonly description?: string;
-  readonly category?: string;
+  readonly serviceTypeIds: string[];
   readonly duration: number;
   readonly price: {
     readonly amount: number;
@@ -104,7 +105,9 @@ export class CreateServiceUseCase {
         businessId,
         name: request.name.trim(),
         description: request.description?.trim() || '',
-        category: request.category as any, // ServiceCategory sera validé plus tard
+        serviceTypeIds: request.serviceTypeIds.map((id) =>
+          ServiceTypeId.fromString(id),
+        ),
         basePrice: request.price.amount,
         currency: request.price.currency,
         duration: request.duration,
@@ -120,7 +123,7 @@ export class CreateServiceUseCase {
         id: service.id.getValue(),
         name: service.name,
         description: service.description,
-        category: service.category,
+        serviceTypeIds: service.getServiceTypeIds().map((id) => id.getValue()),
         duration: service.scheduling.duration,
         price: service.getBasePrice()
           ? {
@@ -272,15 +275,6 @@ export class CreateServiceUseCase {
         'description',
         request.description,
         'Service description cannot exceed 1000 characters',
-      );
-    }
-
-    // Validation de la catégorie si fournie
-    if (request.category && request.category.trim().length > 50) {
-      throw new ServiceValidationError(
-        'category',
-        request.category,
-        'Service category cannot exceed 50 characters',
       );
     }
 

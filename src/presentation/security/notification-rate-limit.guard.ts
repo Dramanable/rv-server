@@ -73,7 +73,7 @@ export class NotificationRateLimitGuard implements CanActivate {
 
   constructor(private readonly reflector: Reflector) {}
 
-  async canActivate(context: ExecutionContext): Promise<boolean> {
+  canActivate(context: ExecutionContext): boolean {
     const request = context.switchToHttp().getRequest<AuthenticatedRequest>();
 
     // Récupérer la configuration depuis le decorator ou utiliser la default

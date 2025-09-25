@@ -121,12 +121,6 @@ export class TypeOrmServiceRepository implements ServiceRepository {
       });
     }
 
-    if (criteria.category) {
-      qb.andWhere('service.category = :category', {
-        category: criteria.category,
-      });
-    }
-
     if (criteria.isActive !== undefined) {
       qb.andWhere('service.status = :status', {
         status: criteria.isActive
@@ -273,7 +267,6 @@ export class TypeOrmServiceRepository implements ServiceRepository {
   async getBusinessServiceStatistics(businessId: BusinessId): Promise<{
     totalServices: number;
     activeServices: number;
-    servicesByCategory: Record<string, number>;
     averagePrice: number;
     averageDuration: number;
   }> {
@@ -287,25 +280,6 @@ export class TypeOrmServiceRepository implements ServiceRepository {
         status: ServiceStatus.ACTIVE,
       },
     });
-
-    // Statistiques par catégorie
-    const categoryStats = await this.repository
-      .createQueryBuilder('service')
-      .select('service.category', 'category')
-      .addSelect('COUNT(*)', 'count')
-      .where('service.business_id = :businessId', {
-        businessId: businessId.getValue(),
-      })
-      .groupBy('service.category')
-      .getRawMany();
-
-    const servicesByCategory = categoryStats.reduce(
-      (acc: Record<string, number>, stat: any) => {
-        acc[stat.category] = parseInt(stat.count);
-        return acc;
-      },
-      {} as Record<string, number>,
-    );
 
     // Prix moyen
     const avgPriceResult = await this.repository
@@ -331,7 +305,6 @@ export class TypeOrmServiceRepository implements ServiceRepository {
     return {
       totalServices,
       activeServices,
-      servicesByCategory,
       averagePrice: parseFloat(avgPriceResult?.avgPrice || '0'),
       averageDuration: parseFloat(avgDurationResult?.avgDuration || '0'),
     };

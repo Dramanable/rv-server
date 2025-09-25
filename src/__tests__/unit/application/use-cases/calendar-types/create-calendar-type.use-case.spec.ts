@@ -1,15 +1,15 @@
-import { CreateCalendarTypeUseCase } from '@application/use-cases/calendar-types/create-calendar-type.use-case';
-import { ICalendarTypeRepository } from '@domain/repositories/calendar-type.repository';
-import { CalendarType } from '@domain/entities/calendar-type.entity';
-import { BusinessId } from '@domain/value-objects/business-id.value-object';
-import {
-  CalendarTypeValidationError,
-  CalendarTypeAlreadyExistsError,
-} from '@domain/exceptions/calendar-type.exceptions';
-import { Logger } from '@application/ports/logger.port';
-import { I18nService } from '@application/ports/i18n.port';
 import { IAuditService } from '@application/ports/audit.port';
+import { I18nService } from '@application/ports/i18n.port';
+import { Logger } from '@application/ports/logger.port';
 import { CreateCalendarTypeRequest } from '@application/use-cases/calendar-types/calendar-type.types';
+import { CreateCalendarTypeUseCase } from '@application/use-cases/calendar-types/create-calendar-type.use-case';
+import { CalendarType } from '@domain/entities/calendar-type.entity';
+import {
+  CalendarTypeAlreadyExistsError,
+  CalendarTypeValidationError,
+} from '@domain/exceptions/calendar-type.exceptions';
+import { ICalendarTypeRepository } from '@domain/repositories/calendar-type.repository';
+import { BusinessId } from '@domain/value-objects/business-id.value-object';
 
 describe('CreateCalendarTypeUseCase', () => {
   let useCase: CreateCalendarTypeUseCase;
@@ -184,7 +184,7 @@ describe('CreateCalendarTypeUseCase', () => {
         CalendarTypeAlreadyExistsError,
       );
       expect(mockRepository.existsByBusinessIdAndCode).toHaveBeenCalledWith(
-        validBusinessId,
+        expect.objectContaining({ value: validBusinessId }),
         'STANDARD',
       );
     });
@@ -211,7 +211,7 @@ describe('CreateCalendarTypeUseCase', () => {
         CalendarTypeAlreadyExistsError,
       );
       expect(mockRepository.existsByBusinessIdAndName).toHaveBeenCalledWith(
-        validBusinessId,
+        expect.objectContaining({ value: validBusinessId }),
         'Standard Appointment',
       );
     });

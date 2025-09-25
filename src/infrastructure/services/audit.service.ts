@@ -1,11 +1,12 @@
-import { Injectable } from '@nestjs/common';
 import {
-  IAuditService,
+  AuditEntry,
   AuditOperation,
   AuditQuery,
-  AuditEntry,
+  IAuditService,
 } from '@application/ports/audit.port';
 import { Logger } from '@application/ports/logger.port';
+import { Inject, Injectable } from '@nestjs/common';
+import { TOKENS } from '@shared/constants/injection-tokens';
 
 /**
  * Service d'audit pour tracer les opérations critiques
@@ -13,7 +14,7 @@ import { Logger } from '@application/ports/logger.port';
  */
 @Injectable()
 export class AuditService implements IAuditService {
-  constructor(private readonly logger: Logger) {}
+  constructor(@Inject(TOKENS.LOGGER) private readonly logger: Logger) {}
 
   async logOperation(operation: AuditOperation): Promise<void> {
     this.logger.info('Audit operation', {

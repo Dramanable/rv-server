@@ -3,19 +3,8 @@ import { FileUrl } from '../value-objects/file-url.value-object';
 import { Money } from '../value-objects/money.value-object';
 import { PricingConfig } from '../value-objects/pricing-config.value-object';
 import { ServiceId } from '../value-objects/service-id.value-object';
+import { ServiceTypeId } from '../value-objects/service-type-id.value-object';
 import { UserId } from '../value-objects/user-id.value-object';
-
-export enum ServiceCategory {
-  CONSULTATION = 'CONSULTATION',
-  TREATMENT = 'TREATMENT',
-  PROCEDURE = 'PROCEDURE',
-  EXAMINATION = 'EXAMINATION',
-  THERAPY = 'THERAPY',
-  MAINTENANCE = 'MAINTENANCE',
-  EMERGENCY = 'EMERGENCY',
-  FOLLOWUP = 'FOLLOWUP',
-  OTHER = 'OTHER',
-}
 
 export enum ServiceStatus {
   ACTIVE = 'ACTIVE',
@@ -56,7 +45,7 @@ export class Service {
     private readonly _businessId: BusinessId,
     private readonly _name: string,
     private readonly _description: string,
-    private readonly _category: ServiceCategory,
+    private _serviceTypeIds: ServiceTypeId[], // ✅ Many-to-many relation avec ServiceType
     private readonly _pricingConfig: PricingConfig,
     private readonly _scheduling: ServiceScheduling,
     private _requirements?: ServiceRequirements,
@@ -85,8 +74,9 @@ export class Service {
     return this._description;
   }
 
-  get category(): ServiceCategory {
-    return this._category;
+  // ✅ New getter for service type IDs
+  getServiceTypeIds(): readonly ServiceTypeId[] {
+    return this._serviceTypeIds;
   }
 
   get pricingConfig(): PricingConfig {
@@ -130,7 +120,7 @@ export class Service {
     businessId: BusinessId;
     name: string;
     description: string;
-    category: ServiceCategory;
+    serviceTypeIds: ServiceTypeId[]; // ✅ Many-to-many relation with ServiceType
     basePrice: number;
     currency: string;
     duration: number;
@@ -148,12 +138,20 @@ export class Service {
       requiresApproval: data.requiresApproval ?? false,
     };
 
+    // ✅ Handle serviceTypeIds - many-to-many with ServiceType entities
+    const serviceTypeIds = data.serviceTypeIds;
+
+    // ✅ VALIDATION CRITIQUE : Service doit avoir au moins un ServiceType
+    if (serviceTypeIds.length === 0) {
+      throw new Error('Service must have at least one ServiceType');
+    }
+
     return new Service(
       ServiceId.generate(),
       data.businessId,
       data.name,
       data.description,
-      data.category,
+      serviceTypeIds, // ✅ Many-to-many relation avec ServiceType
       pricingConfig,
       scheduling,
       undefined,
@@ -321,7 +319,7 @@ export class Service {
   public updateBasicInfo(updates: {
     name?: string;
     description?: string;
-    category?: ServiceCategory;
+    category?: string;
   }): void {
     if (updates.name !== undefined) {
       (this as any)._name = updates.name;
@@ -346,5 +344,45 @@ export class Service {
   // Méthode pour forcer l'ID (utilisé pour les tests)
   public forceId(id: ServiceId): void {
     (this as any)._id = id;
+  }
+
+  // ✅ NEW - Méthodes pour gestion many-to-many des ServiceTypes
+  public addServiceType(serviceTypeId: ServiceTypeId): void {
+    // Vérifier si le type existe déjà
+    const exists = this._serviceTypeIds.some((id) => id.equals(serviceTypeId));
+
+    if (!exists) {
+      this._serviceTypeIds.push(serviceTypeId);
+      this._updatedAt = new Date();
+    }
+  }
+
+  public removeServiceType(serviceTypeId: ServiceTypeId): void {
+    // Ne pas permettre de supprimer le dernier ServiceType
+    if (this._serviceTypeIds.length <= 1) {
+      throw new Error('Service must have at least one ServiceType');
+    }
+
+    const index = this._serviceTypeIds.findIndex((id) =>
+      id.equals(serviceTypeId),
+    );
+
+    if (index > -1) {
+      this._serviceTypeIds.splice(index, 1);
+      this._updatedAt = new Date();
+    }
+  }
+
+  public updateServiceTypes(newServiceTypeIds: ServiceTypeId[]): void {
+    if (newServiceTypeIds.length === 0) {
+      throw new Error('Service must have at least one ServiceType');
+    }
+
+    this._serviceTypeIds = [...newServiceTypeIds];
+    this._updatedAt = new Date();
+  }
+
+  public hasServiceType(serviceTypeId: ServiceTypeId): boolean {
+    return this._serviceTypeIds.some((id) => id.equals(serviceTypeId));
   }
 }

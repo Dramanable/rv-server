@@ -1,7 +1,4 @@
-import {
-  Service,
-  ServiceCategory,
-} from '../../../domain/entities/service.entity';
+import { Service } from '../../../domain/entities/service.entity';
 import { ServiceRepository } from '../../../domain/repositories/service.repository.interface';
 import { BusinessId } from '../../../domain/value-objects/business-id.value-object';
 import { ApplicationValidationError } from '../../exceptions/application.exceptions';
@@ -19,7 +16,7 @@ export interface ListServicesRequest {
   };
   readonly filters: {
     readonly name?: string;
-    readonly category?: ServiceCategory;
+    readonly category?: string;
     readonly isActive?: boolean;
     readonly minPrice?: number;
     readonly maxPrice?: number;
@@ -34,7 +31,7 @@ export interface ListServicesResponse {
     readonly name: string;
     readonly description: string;
     readonly businessId: string;
-    readonly category: string;
+    readonly serviceTypeIds: string[];
     readonly pricing: {
       readonly basePrice: {
         readonly amount: number;
@@ -189,7 +186,7 @@ export class ListServicesUseCase {
       name: service.name,
       description: service.description,
       businessId: service.businessId.getValue(),
-      category: service.category,
+      serviceTypeIds: service.getServiceTypeIds().map((id) => id.getValue()),
       pricing: {
         basePrice: service.getBasePrice()
           ? {

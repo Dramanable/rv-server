@@ -210,6 +210,10 @@ All endpoints return standardized error responses:
       '📢 Notifications',
       '📤 Send notifications via email, SMS, push, in-app',
     )
+    .addTag(
+      '📅 Calendar Types',
+      '📋 Calendar type configuration and management',
+    )
     .addTag('Health', '💚 System health and monitoring endpoints')
 
     // 🍪 Cookie-based authentication (production)

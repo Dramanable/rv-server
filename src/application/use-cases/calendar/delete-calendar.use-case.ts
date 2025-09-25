@@ -5,15 +5,17 @@
  * ✅ Business logic for calendar deletion with safety checks
  */
 
-import type { CalendarRepository } from '../../../domain/repositories/calendar.repository.interface';
-import type { BusinessRepository } from '../../../domain/repositories/business.repository.interface';
 import type { AppointmentRepository } from '../../../domain/repositories/appointment.repository.interface';
+import type { BusinessRepository } from '../../../domain/repositories/business.repository.interface';
+import type { CalendarRepository } from '../../../domain/repositories/calendar.repository.interface';
 import type { I18nService } from '../../ports/i18n.port';
 import type { Logger } from '../../ports/logger.port';
 
 import { CalendarId } from '../../../domain/value-objects/calendar-id.value-object';
-import { CalendarNotFoundError } from '../../exceptions/calendar.exceptions';
-import { CalendarPermissionError } from '../../exceptions/calendar.exceptions';
+import {
+  CalendarNotFoundError,
+  CalendarPermissionError,
+} from '../../exceptions/calendar.exceptions';
 
 export interface DeleteCalendarRequest {
   readonly requestingUserId: string;

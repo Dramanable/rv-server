@@ -23,6 +23,8 @@ export class CustomThrottlerGuard extends ThrottlerGuard {
     // Tracker par IP + User-Agent pour plus de précision
     const ip = req.ip || req.connection.remoteAddress || 'unknown';
     const userAgent = req.get('User-Agent') || 'unknown';
-    return `${ip}-${Buffer.from(userAgent).toString('base64').slice(0, 10)}`;
+    return Promise.resolve(
+      `${ip}-${Buffer.from(userAgent).toString('base64').slice(0, 10)}`,
+    );
   }
 }

@@ -137,7 +137,7 @@ export class ServiceController {
       },
       filters: {
         name: dto.search,
-        category: dto.category as any, // ServiceCategory enum
+        serviceTypeIds: dto.serviceTypeIds,
         isActive: dto.isActive,
         minPrice: dto.minPrice,
         maxPrice: dto.maxPrice,
@@ -339,7 +339,7 @@ export class ServiceController {
       businessId: dto.businessId,
       name: dto.name,
       description: dto.description,
-      category: dto.category,
+      serviceTypeIds: dto.serviceTypeIds,
       duration: dto.duration,
       // ✅ Legacy price support - utiliser pricingConfig basePrice si price non fourni
       price: dto.price
@@ -510,7 +510,7 @@ export class ServiceController {
       updates: {
         name: dto.name,
         description: dto.description,
-        category: dto.category as any, // ServiceCategory enum
+        serviceTypeIds: dto.serviceTypeIds,
         duration: dto.duration,
         // ✅ Legacy price support - utiliser pricingConfig basePrice si disponible
         price: dto.price
@@ -667,7 +667,10 @@ export class ServiceController {
       id: service.id,
       name: service.name,
       description: service.description,
-      category: service.category,
+      serviceTypeIds:
+        service.serviceTypeIds?.map((st: any) =>
+          st.getValue ? st.getValue() : st,
+        ) || [],
       duration: service.duration,
       // ✅ Legacy price support (null for FREE services)
       price: service.pricing

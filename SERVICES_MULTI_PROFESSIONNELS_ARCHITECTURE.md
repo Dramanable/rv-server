@@ -367,7 +367,7 @@ export class CreateServiceTeamRequirementsTable implements MigrationInterface {
         "substitution_rules" jsonb,
         "created_at" timestamp DEFAULT CURRENT_TIMESTAMP,
         "updated_at" timestamp DEFAULT CURRENT_TIMESTAMP,
-        CONSTRAINT "FK_service_team_requirements_service_id" 
+        CONSTRAINT "FK_service_team_requirements_service_id"
           FOREIGN KEY ("service_id") REFERENCES "${schema}"."services"("id") ON DELETE CASCADE
       )
     `);
@@ -382,28 +382,28 @@ export class CreateServiceTeamRequirementsTable implements MigrationInterface {
         "revenue_share_percentage" decimal(5,2) NOT NULL DEFAULT 100.00,
         "is_lead_professional" boolean NOT NULL DEFAULT false,
         "created_at" timestamp DEFAULT CURRENT_TIMESTAMP,
-        CONSTRAINT "FK_appointment_professionals_appointment_id" 
+        CONSTRAINT "FK_appointment_professionals_appointment_id"
           FOREIGN KEY ("appointment_id") REFERENCES "${schema}"."appointments"("id") ON DELETE CASCADE,
-        CONSTRAINT "FK_appointment_professionals_professional_id" 
+        CONSTRAINT "FK_appointment_professionals_professional_id"
           FOREIGN KEY ("professional_id") REFERENCES "${schema}"."staff"("id") ON DELETE CASCADE,
-        CONSTRAINT "UQ_appointment_professional" 
+        CONSTRAINT "UQ_appointment_professional"
           UNIQUE ("appointment_id", "professional_id")
       )
     `);
 
     // Index pour optimiser les requêtes
     await queryRunner.query(`
-      CREATE INDEX "IDX_service_team_requirements_service_id" 
+      CREATE INDEX "IDX_service_team_requirements_service_id"
       ON "${schema}"."service_team_requirements" ("service_id")
     `);
 
     await queryRunner.query(`
-      CREATE INDEX "IDX_appointment_professionals_appointment_id" 
+      CREATE INDEX "IDX_appointment_professionals_appointment_id"
       ON "${schema}"."appointment_professionals" ("appointment_id")
     `);
 
     await queryRunner.query(`
-      CREATE INDEX "IDX_appointment_professionals_professional_id" 
+      CREATE INDEX "IDX_appointment_professionals_professional_id"
       ON "${schema}"."appointment_professionals" ("professional_id")
     `);
   }

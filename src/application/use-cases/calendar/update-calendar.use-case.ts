@@ -5,17 +5,18 @@
  * ✅ Business logic for calendar updates
  */
 
-import type { CalendarRepository } from '../../../domain/repositories/calendar.repository.interface';
 import type { BusinessRepository } from '../../../domain/repositories/business.repository.interface';
+import type { CalendarRepository } from '../../../domain/repositories/calendar.repository.interface';
 import type { I18nService } from '../../ports/i18n.port';
 import type { Logger } from '../../ports/logger.port';
 
 import { Calendar } from '../../../domain/entities/calendar.entity';
-import { BusinessId } from '../../../domain/value-objects/business-id.value-object';
 import { CalendarId } from '../../../domain/value-objects/calendar-id.value-object';
 import { WorkingHours } from '../../../domain/value-objects/working-hours.value-object';
-import { CalendarNotFoundError } from '../../exceptions/calendar.exceptions';
-import { CalendarPermissionError } from '../../exceptions/calendar.exceptions';
+import {
+  CalendarNotFoundError,
+  CalendarPermissionError,
+} from '../../exceptions/calendar.exceptions';
 
 export interface UpdateCalendarRequest {
   readonly requestingUserId: string;

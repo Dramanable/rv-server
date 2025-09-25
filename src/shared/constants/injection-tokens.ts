@@ -108,13 +108,6 @@ export const APPLICATION_TOKENS = {
   UPDATE_SKILL_USE_CASE: 'UpdateSkillUseCase',
   DELETE_SKILL_USE_CASE: 'DeleteSkillUseCase',
 
-  // ✅ NEW: Service Categories Use Cases
-  CREATE_SERVICE_CATEGORY_USE_CASE: 'CreateServiceCategoryUseCase',
-  GET_SERVICE_CATEGORY_BY_ID_USE_CASE: 'GetServiceCategoryByIdUseCase',
-  LIST_SERVICE_CATEGORIES_USE_CASE: 'ListServiceCategoriesUseCase',
-  UPDATE_SERVICE_CATEGORY_USE_CASE: 'UpdateServiceCategoryUseCase',
-  DELETE_SERVICE_CATEGORY_USE_CASE: 'DeleteServiceCategoryUseCase',
-
   // ✅ NEW: Service Types Use Cases
   CREATE_SERVICE_TYPE_USE_CASE: 'CreateServiceTypeUseCase',
   GET_SERVICE_TYPE_BY_ID_USE_CASE: 'GetServiceTypeByIdUseCase',
@@ -128,6 +121,13 @@ export const APPLICATION_TOKENS = {
   LIST_CALENDAR_TYPES_USE_CASE: 'ListCalendarTypesUseCase',
   UPDATE_CALENDAR_TYPE_USE_CASE: 'UpdateCalendarTypeUseCase',
   DELETE_CALENDAR_TYPE_USE_CASE: 'DeleteCalendarTypeUseCase',
+
+  // ✅ NEW: Professional Use Cases
+  CREATE_PROFESSIONAL_USE_CASE: 'CreateProfessionalUseCase',
+  GET_PROFESSIONAL_BY_ID_USE_CASE: 'GetProfessionalByIdUseCase',
+  LIST_PROFESSIONALS_USE_CASE: 'ListProfessionalsUseCase',
+  UPDATE_PROFESSIONAL_USE_CASE: 'UpdateProfessionalUseCase',
+  DELETE_PROFESSIONAL_USE_CASE: 'DeleteProfessionalUseCase',
 
   // Authentication Services
   AUTH_TOKEN_SERVICE: 'AuthTokenService',
@@ -157,9 +157,9 @@ export const DOMAIN_TOKENS = {
 
   // ✅ NEW: Entity Repositories
   SKILL_REPOSITORY: 'SkillRepository',
-  SERVICE_CATEGORY_REPOSITORY: 'ServiceCategoryRepository',
   SERVICE_TYPE_REPOSITORY: 'ServiceTypeRepository',
   CALENDAR_TYPE_REPOSITORY: 'CalendarTypeRepository',
+  PROFESSIONAL_REPOSITORY: 'ProfessionalRepository',
 
   // Domain Services
   USER_DOMAIN_SERVICE: 'UserDomainService',

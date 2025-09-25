@@ -8,10 +8,11 @@ import { PinoLoggerModule } from '../logging/pino-logger.module';
 import { TypeOrmRepositoriesModule } from './typeorm-repositories.module';
 
 // Import des entités TypeORM
-import { NotificationOrmEntity } from './sql/postgresql/entities/notification-orm.entity';
 import { BusinessOrmEntity } from './sql/postgresql/entities/business-orm.entity';
 import { BusinessSectorOrmEntity } from './sql/postgresql/entities/business-sector-orm.entity';
 import { CalendarOrmEntity } from './sql/postgresql/entities/calendar-orm.entity';
+import { NotificationOrmEntity } from './sql/postgresql/entities/notification-orm.entity';
+import { ProfessionalOrmEntity } from './sql/postgresql/entities/professional-orm.entity';
 import { RefreshTokenOrmEntity } from './sql/postgresql/entities/refresh-token-orm.entity';
 import { ServiceOrmEntity } from './sql/postgresql/entities/service-orm.entity';
 import { StaffOrmEntity } from './sql/postgresql/entities/staff-orm.entity';
@@ -54,6 +55,7 @@ import { BusinessImageOrmEntity } from './sql/postgresql/entities/business-image
           ServiceOrmEntity,
           StaffOrmEntity,
           NotificationOrmEntity,
+          ProfessionalOrmEntity,
           // 🖼️ Business Image & Gallery Entities
           BusinessImageOrmEntity,
           BusinessGalleryOrmEntity,

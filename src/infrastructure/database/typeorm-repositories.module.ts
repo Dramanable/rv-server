@@ -16,6 +16,8 @@ import { AppointmentOrmEntity } from './sql/postgresql/entities/appointment-orm.
 import { BusinessOrmEntity } from './sql/postgresql/entities/business-orm.entity';
 import { BusinessSectorOrmEntity } from './sql/postgresql/entities/business-sector-orm.entity';
 import { CalendarOrmEntity } from './sql/postgresql/entities/calendar-orm.entity';
+import { CalendarTypeOrmEntity } from './sql/postgresql/entities/calendar-type-orm.entity';
+import { ProfessionalOrmEntity } from './sql/postgresql/entities/professional-orm.entity';
 import { RefreshTokenOrmEntity } from './sql/postgresql/entities/refresh-token-orm.entity';
 import { ServiceOrmEntity } from './sql/postgresql/entities/service-orm.entity';
 import { StaffOrmEntity } from './sql/postgresql/entities/staff-orm.entity';
@@ -25,7 +27,9 @@ import { UserOrmEntity } from './sql/postgresql/entities/user-orm.entity';
 import { RefreshTokenOrmRepository } from './sql/postgresql/repositories/refresh-token-orm.repository';
 import { TypeOrmAppointmentRepository } from './sql/postgresql/repositories/typeorm-appointment.repository';
 import { TypeOrmBusinessRepository } from './sql/postgresql/repositories/typeorm-business.repository';
+import { TypeOrmCalendarTypeRepository } from './sql/postgresql/repositories/typeorm-calendar-type.repository';
 import { TypeOrmCalendarRepository } from './sql/postgresql/repositories/typeorm-calendar.repository';
+import { TypeOrmProfessionalRepository } from './sql/postgresql/repositories/typeorm-professional.repository';
 import { TypeOrmServiceRepository } from './sql/postgresql/repositories/typeorm-service.repository';
 import { TypeOrmStaffRepository } from './sql/postgresql/repositories/typeorm-staff.repository';
 import { TypeOrmUserRepository } from './sql/postgresql/repositories/user.repository';
@@ -105,6 +109,8 @@ class SimplePermissionService {
       ServiceOrmEntity,
       StaffOrmEntity,
       CalendarOrmEntity,
+      CalendarTypeOrmEntity,
+      ProfessionalOrmEntity, // ✅ Professional entity for actor separation
     ]),
     // Import du PinoLoggerModule pour avoir accès au Logger
     PinoLoggerModule,
@@ -154,10 +160,22 @@ class SimplePermissionService {
       useClass: TypeOrmCalendarRepository,
     },
 
+    // CalendarType Repository
+    {
+      provide: TOKENS.CALENDAR_TYPE_REPOSITORY,
+      useClass: TypeOrmCalendarTypeRepository,
+    },
+
     // Appointment Repository
     {
       provide: TOKENS.APPOINTMENT_REPOSITORY,
       useClass: TypeOrmAppointmentRepository,
+    },
+
+    // Professional Repository (✅ Professional entity for actor separation)
+    {
+      provide: TOKENS.PROFESSIONAL_REPOSITORY,
+      useClass: TypeOrmProfessionalRepository,
     },
 
     // Permission Service (simple mais réel)
@@ -176,7 +194,9 @@ class SimplePermissionService {
     TOKENS.SERVICE_REPOSITORY,
     TOKENS.STAFF_REPOSITORY,
     TOKENS.CALENDAR_REPOSITORY,
+    TOKENS.CALENDAR_TYPE_REPOSITORY,
     TOKENS.APPOINTMENT_REPOSITORY,
+    TOKENS.PROFESSIONAL_REPOSITORY, // ✅ Professional repository for actor separation
   ],
 })
 export class TypeOrmRepositoriesModule {}

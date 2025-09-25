@@ -4,10 +4,6 @@
  * ✅ Signed URLs and cloud storage integration
  */
 
-import { ImageCategory } from '../../../domain/value-objects/business-image.value-object';
-import { ImageUploadSettings } from '../../../domain/value-objects/image-upload-settings.value-object';
-import { AwsS3ImageService } from '../../../infrastructure/services/aws-s3-image.service';
-
 // Mock AWS S3 SDK
 jest.mock('@aws-sdk/client-s3');
 jest.mock('@aws-sdk/s3-request-presigner');

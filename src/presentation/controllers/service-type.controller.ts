@@ -1,39 +1,44 @@
 import {
-  Controller,
-  Post,
-  Get,
-  Put,
-  Delete,
   Body,
-  Param,
-  Query,
+  Controller,
+  Delete,
+  Get,
   HttpStatus,
-  UseGuards,
   Inject,
+  Param,
+  Post,
+  Put,
+  UseGuards,
 } from '@nestjs/common';
 import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
   ApiBearerAuth,
+  ApiOperation,
   ApiParam,
+  ApiResponse,
+  ApiTags,
 } from '@nestjs/swagger';
+import {
+  CreateServiceTypeDto,
+  CreateServiceTypeResponseDto,
+  DeleteServiceTypeResponseDto,
+  ListServiceTypesDto,
+  ListServiceTypesResponseDto,
+  ServiceTypeDto,
+  UpdateServiceTypeDto,
+  UpdateServiceTypeResponseDto,
+} from '@presentation/dtos/service-types/service-type.dto';
 import { JwtAuthGuard } from '@presentation/security/auth.guard';
 import { GetUser } from '@presentation/security/decorators/get-user.decorator';
 import { TOKENS } from '@shared/constants/injection-tokens';
-import {
-  CreateServiceTypeDto,
-  UpdateServiceTypeDto,
-  ListServiceTypesDto,
-  ServiceTypeDto,
-  CreateServiceTypeResponseDto,
-  UpdateServiceTypeResponseDto,
-  DeleteServiceTypeResponseDto,
-  ListServiceTypesResponseDto,
-} from '@presentation/dtos/service-types/service-type.dto';
 
 // Import Use Cases avec alias TypeScript
 import { CreateServiceTypeUseCase } from '@application/use-cases/service-types/create-service-type.use-case';
+import { DeleteServiceTypeUseCase } from '@application/use-cases/service-types/delete-service-type.use-case';
+import { GetServiceTypeByIdUseCase } from '@application/use-cases/service-types/get-service-type-by-id.use-case';
+import { ListServiceTypesUseCase } from '@application/use-cases/service-types/list-service-types.use-case';
+import { UpdateServiceTypeUseCase } from '@application/use-cases/service-types/update-service-type.use-case';
+import { BusinessId } from '@domain/value-objects/business-id.value-object';
+import { ServiceTypeId } from '@domain/value-objects/service-type-id.value-object';
 
 /**
  * ✅ EXCELLENT - ServiceType Controller avec patterns enterprise
@@ -56,18 +61,17 @@ export class ServiceTypeController {
     @Inject(TOKENS.CREATE_SERVICE_TYPE_USE_CASE)
     private readonly createServiceTypeUseCase: CreateServiceTypeUseCase,
 
-    // TODO: Inject other use cases
-    // @Inject(TOKENS.GET_SERVICE_TYPE_BY_ID_USE_CASE)
-    // private readonly getServiceTypeByIdUseCase: GetServiceTypeByIdUseCase,
+    @Inject(TOKENS.GET_SERVICE_TYPE_BY_ID_USE_CASE)
+    private readonly getServiceTypeByIdUseCase: GetServiceTypeByIdUseCase,
 
-    // @Inject(TOKENS.LIST_SERVICE_TYPES_USE_CASE)
-    // private readonly listServiceTypesUseCase: ListServiceTypesUseCase,
+    @Inject(TOKENS.LIST_SERVICE_TYPES_USE_CASE)
+    private readonly listServiceTypesUseCase: ListServiceTypesUseCase,
 
-    // @Inject(TOKENS.UPDATE_SERVICE_TYPE_USE_CASE)
-    // private readonly updateServiceTypeUseCase: UpdateServiceTypeUseCase,
+    @Inject(TOKENS.UPDATE_SERVICE_TYPE_USE_CASE)
+    private readonly updateServiceTypeUseCase: UpdateServiceTypeUseCase,
 
-    // @Inject(TOKENS.DELETE_SERVICE_TYPE_USE_CASE)
-    // private readonly deleteServiceTypeUseCase: DeleteServiceTypeUseCase,
+    @Inject(TOKENS.DELETE_SERVICE_TYPE_USE_CASE)
+    private readonly deleteServiceTypeUseCase: DeleteServiceTypeUseCase,
   ) {}
 
   /**
@@ -137,8 +141,64 @@ export class ServiceTypeController {
     @Body() dto: ListServiceTypesDto,
     @GetUser() user: any, // TODO: Type with proper User interface
   ): Promise<ListServiceTypesResponseDto> {
-    // TODO: Implement list use case
-    throw new Error('List ServiceTypes use case not yet implemented');
+    // TODO: Get businessId from user context or request parameter
+    const businessId = BusinessId.fromString(
+      user.businessId || '123e4567-e89b-12d3-a456-426614174000',
+    );
+
+    const request = {
+      businessId,
+      requestingUserId: user.id,
+      correlationId: `list_service_types_${Date.now()}`,
+      filters: {
+        isActive: dto.isActive,
+        search: dto.search,
+      },
+      pagination: {
+        page: dto.page || 1,
+        limit: dto.limit || 10,
+      },
+      sorting: {
+        sortBy: dto.sortBy as
+          | 'name'
+          | 'code'
+          | 'createdAt'
+          | 'sortOrder'
+          | undefined,
+        sortOrder: dto.sortOrder,
+      },
+    };
+
+    const response = await this.listServiceTypesUseCase.execute(request);
+
+    // Map ServiceType entities to DTOs
+    const data = response.serviceTypes.map((serviceType) => ({
+      id: serviceType.getId().getValue(),
+      businessId: serviceType.getBusinessId().getValue(),
+      name: serviceType.getName(),
+      code: serviceType.getCode(),
+      description: serviceType.getDescription() || '',
+      sortOrder: serviceType.getSortOrder(),
+      isActive: serviceType.isActive(),
+      createdAt: serviceType.getCreatedAt(),
+      updatedAt: serviceType.getUpdatedAt(),
+    }));
+
+    const totalPages = Math.ceil(
+      response.totalCount / (request.pagination.limit || 10),
+    );
+
+    return {
+      data,
+      meta: {
+        currentPage: request.pagination.page || 1,
+        totalPages,
+        totalItems: response.totalCount,
+        itemsPerPage: request.pagination.limit || 10,
+        hasNextPage: (request.pagination.page || 1) < totalPages,
+        hasPrevPage: (request.pagination.page || 1) > 1,
+      },
+    };
   }
 
   /**
@@ -167,8 +227,26 @@ export class ServiceTypeController {
     @Param('id') id: string,
     @GetUser() user: any,
   ): Promise<ServiceTypeDto> {
-    // TODO: Implement get by ID use case
-    throw new Error('Get ServiceType by ID use case not yet implemented');
+    const request = {
+      serviceTypeId: id,
+      requestingUserId: user.id,
+      correlationId: `get_service_type_${Date.now()}`,
+      timestamp: new Date(),
+    };
+
+    const response = await this.getServiceTypeByIdUseCase.execute(request);
+
+    return {
+      id: response.id,
+      businessId: response.businessId,
+      name: response.name,
+      code: response.code,
+      description: response.description || '',
+      sortOrder: response.sortOrder,
+      isActive: response.isActive,
+      createdAt: response.createdAt,
+      updatedAt: response.updatedAt,
+    };
   }
 
   /**
@@ -282,8 +360,44 @@ export class ServiceTypeController {
     @Body() dto: UpdateServiceTypeDto,
     @GetUser() user: any,
   ): Promise<UpdateServiceTypeResponseDto> {
-    // TODO: Implement update use case
-    throw new Error('Update ServiceType use case not yet implemented');
+    const serviceTypeId = ServiceTypeId.fromString(id);
+    // TODO: Get businessId from user context
+    const businessId = BusinessId.fromString(
+      user.businessId || '123e4567-e89b-12d3-a456-426614174000',
+    );
+
+    const request = {
+      serviceTypeId,
+      businessId,
+      requestingUserId: user.id,
+      correlationId: `update_service_type_${Date.now()}`,
+      name: dto.name,
+      code: dto.code,
+      description: dto.description,
+      isActive: dto.isActive,
+      sortOrder: dto.sortOrder,
+    };
+
+    const response = await this.updateServiceTypeUseCase.execute(request);
+
+    return {
+      success: true,
+      data: {
+        id: response.serviceType.getId().getValue(),
+        businessId: response.serviceType.getBusinessId().getValue(),
+        name: response.serviceType.getName(),
+        code: response.serviceType.getCode(),
+        description: response.serviceType.getDescription() || '',
+        sortOrder: response.serviceType.getSortOrder(),
+        isActive: response.serviceType.isActive(),
+        createdAt: response.serviceType.getCreatedAt(),
+        updatedAt: response.serviceType.getUpdatedAt(),
+      },
+      meta: {
+        timestamp: new Date().toISOString(),
+        correlationId: request.correlationId,
+      },
+    };
   }
 
   /**
@@ -323,8 +437,29 @@ export class ServiceTypeController {
     @Param('id') id: string,
     @GetUser() user: any,
   ): Promise<DeleteServiceTypeResponseDto> {
-    // TODO: Implement delete use case
-    throw new Error('Delete ServiceType use case not yet implemented');
+    const serviceTypeId = ServiceTypeId.fromString(id);
+    // TODO: Get businessId from user context
+    const businessId = BusinessId.fromString(
+      user.businessId || '123e4567-e89b-12d3-a456-426614174000',
+    );
+
+    const request = {
+      serviceTypeId,
+      businessId,
+      requestingUserId: user.id,
+      correlationId: `delete_service_type_${Date.now()}`,
+    };
+
+    const response = await this.deleteServiceTypeUseCase.execute(request);
+
+    return {
+      success: response.success,
+      message: response.message,
+      meta: {
+        timestamp: new Date().toISOString(),
+        correlationId: request.correlationId,
+      },
+    };
   }
 
   /**

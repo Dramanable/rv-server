@@ -34,6 +34,7 @@ import { LoginUseCase } from '../../application/use-cases/auth/login.use-case';
 import { RefreshTokenUseCase } from '../../application/use-cases/auth/refresh-token.use-case';
 import { RegisterUseCase } from '../../application/use-cases/auth/register.use-case';
 import { TOKENS } from '../../shared/constants/injection-tokens';
+import { UserRole } from '../../shared/enums/user-role.enum';
 import {
   LoginDto,
   LoginResponseDto,
@@ -48,7 +49,6 @@ import {
   ValidationErrorDto,
 } from '../dtos/auth.dto';
 import { UserResponseDto } from '../dtos/user.dto';
-import { UserRole } from '../../shared/enums/user-role.enum';
 import { PresentationCookieService } from '../services/cookie.service';
 // 🛡️ Security imports
 import { Public } from '../security/decorators/public.decorator';

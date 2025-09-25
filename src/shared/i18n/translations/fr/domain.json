@@ -58,33 +58,6 @@
       "deleted": "Compétence supprimée avec succès"
     }
   },
-  "serviceCategory": {
-    "validation": {
-      "correlationIdRequired": "L'identifiant de corrélation est requis pour la traçabilité",
-      "requestingUserIdRequired": "L'identifiant de l'utilisateur demandeur est requis pour l'audit",
-      "timestampRequired": "Un horodatage valide est requis",
-      "requestTooOld": "La demande est trop ancienne et ne peut être traitée",
-      "businessIdRequired": "L'identifiant d'entreprise est requis",
-      "nameRequired": "Le nom de la catégorie doit faire au moins 2 caractères",
-      "nameTooLong": "Le nom de la catégorie ne peut dépasser 100 caractères",
-      "descriptionTooLong": "La description de la catégorie ne peut dépasser 500 caractères",
-      "parentCategoryNotFound": "Catégorie parente introuvable",
-      "parentCategoryDifferentBusiness": "La catégorie parente doit appartenir à la même entreprise"
-    },
-    "errors": {
-      "notFound": "Catégorie de service introuvable avec l'id {{id}}",
-      "nameConflict": "Le nom de catégorie '{{name}}' existe déjà dans cette entreprise",
-      "inUse": "La catégorie ne peut être supprimée car elle est utilisée par {{serviceCount}} services",
-      "creationFailed": "Échec de la création de la catégorie de service",
-      "hierarchyError": "Erreur de hiérarchie des catégories",
-      "configurationError": "Erreur de configuration de la catégorie"
-    },
-    "success": {
-      "created": "Catégorie de service créée avec succès",
-      "updated": "Catégorie de service mise à jour avec succès",
-      "deleted": "Catégorie de service supprimée avec succès"
-    }
-  },
   "serviceType": {
     "validation": {
       "correlationIdRequired": "L'identifiant de corrélation est requis pour la traçabilité",

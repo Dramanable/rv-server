@@ -1,0 +1,35 @@
+{
+  "validation": {
+    "firstNameRequired": "First name is required",
+    "lastNameRequired": "Last name is required",
+    "specialityRequired": "Speciality is required",
+    "licenseRequired": "License number is required",
+    "experienceInvalid": "Experience must be a valid positive number",
+    "emailInvalid": "Email format is invalid",
+    "invalidId": "Professional ID format is invalid",
+    "invalidBusinessId": "A valid business ID is required",
+    "missingContext": "Missing required context fields",
+    "invalidPage": "Page number must be greater than 0",
+    "invalidLimit": "Limit must be between 1 and 100",
+    "emailAlreadyExists": "A professional with email {{email}} already exists",
+    "licenseAlreadyExists": "A professional with license number {{licenseNumber}} already exists"
+  },
+  "errors": {
+    "notFound": "Professional not found with ID: {{professionalId}}",
+    "notActive": "Professional is not active",
+    "notVerified": "Professional is not verified",
+    "notInBusiness": "Professional does not belong to this business",
+    "validationFailed": "Professional data validation failed",
+    "invalidId": "Professional ID format is invalid",
+    "emailInvalid": "Email format is invalid",
+    "cannotDeleteWithAppointments": "Cannot delete professional with active appointments"
+  },
+  "success": {
+    "created": "Professional created successfully",
+    "updated": "Professional updated successfully",
+    "deleted": "Professional deleted successfully",
+    "activated": "Professional activated successfully",
+    "deactivated": "Professional deactivated successfully",
+    "verified": "Professional verified successfully"
+  }
+}

@@ -45,10 +45,10 @@ import { UpdateBusinessUseCase } from '@application/use-cases/business/update-bu
 
 // Calendar Use Cases
 import { CreateCalendarUseCase } from '@application/use-cases/calendar/create-calendar.use-case';
+import { DeleteCalendarUseCase } from '@application/use-cases/calendar/delete-calendar.use-case';
 import { GetCalendarByIdUseCase } from '@application/use-cases/calendar/get-calendar-by-id.use-case';
 import { ListCalendarsUseCase } from '@application/use-cases/calendar/list-calendars.use-case';
 import { UpdateCalendarUseCase } from '@application/use-cases/calendar/update-calendar.use-case';
-import { DeleteCalendarUseCase } from '@application/use-cases/calendar/delete-calendar.use-case';
 
 // 🌩️ AWS S3 Image Management Use Cases
 import { AddImageToBusinessGalleryUseCase } from '@application/use-cases/business/add-image-to-gallery.use-case';
@@ -67,6 +67,13 @@ import { DeleteServiceUseCase } from '@application/use-cases/service/delete-serv
 import { GetServiceUseCase } from '@application/use-cases/service/get-service.use-case';
 import { ListServicesUseCase } from '@application/use-cases/service/list-services.use-case';
 import { UpdateServiceUseCase } from '@application/use-cases/service/update-service.use-case';
+
+// ServiceType Use Cases
+import { CreateServiceTypeUseCase } from '@application/use-cases/service-types/create-service-type.use-case';
+import { DeleteServiceTypeUseCase } from '@application/use-cases/service-types/delete-service-type.use-case';
+import { GetServiceTypeByIdUseCase } from '@application/use-cases/service-types/get-service-type-by-id.use-case';
+import { ListServiceTypesUseCase } from '@application/use-cases/service-types/list-service-types.use-case';
+import { UpdateServiceTypeUseCase } from '@application/use-cases/service-types/update-service-type.use-case';
 
 // Staff Use Cases
 import { CreateStaffUseCase } from '@application/use-cases/staff/create-staff.use-case';
@@ -89,7 +96,17 @@ import { SendNotificationUseCase } from '@application/use-cases/notification/sen
 
 // CalendarType Use Cases
 import { CreateCalendarTypeUseCase } from '@application/use-cases/calendar-types/create-calendar-type.use-case';
+import { DeleteCalendarTypeUseCase } from '@application/use-cases/calendar-types/delete-calendar-type.use-case';
 import { GetCalendarTypeByIdUseCase } from '@application/use-cases/calendar-types/get-calendar-type-by-id.use-case';
+import { ListCalendarTypesUseCase } from '@application/use-cases/calendar-types/list-calendar-types.use-case';
+import { UpdateCalendarTypeUseCase } from '@application/use-cases/calendar-types/update-calendar-type.use-case';
+
+// Professional Use Cases
+import { CreateProfessionalUseCase } from '@application/use-cases/professionals/create-professional.use-case';
+import { DeleteProfessionalUseCase } from '@application/use-cases/professionals/delete-professional.use-case';
+import { GetProfessionalByIdUseCase } from '@application/use-cases/professionals/get-professional-by-id.use-case';
+import { ListProfessionalsUseCase } from '@application/use-cases/professionals/list-professionals.use-case';
+import { UpdateProfessionalUseCase } from '@application/use-cases/professionals/update-professional.use-case';
 
 // 🎮 Controllers
 import { AppointmentController } from './controllers/appointment.controller';
@@ -99,9 +116,10 @@ import { BusinessHoursController } from './controllers/business-hours.controller
 import { BusinessImageController } from './controllers/business-image.controller';
 import { BusinessSectorController } from './controllers/business-sector.controller';
 import { BusinessController } from './controllers/business.controller';
-import { CalendarController } from './controllers/calendar.controller';
 import { CalendarTypesController } from './controllers/calendar-types.controller';
+import { CalendarController } from './controllers/calendar.controller';
 import { NotificationController } from './controllers/notification.controller';
+import { ProfessionalController } from './controllers/professional.controller';
 import { ServiceController } from './controllers/service.controller';
 import { StaffController } from './controllers/staff.controller';
 import { UserController } from './controllers/user.controller';
@@ -139,6 +157,7 @@ import { PresentationCookieService } from './services/cookie.service';
     BusinessGalleryController,
     AppointmentController,
     NotificationController,
+    ProfessionalController,
   ],
   providers: [
     // 🛡️ Security providers
@@ -515,6 +534,64 @@ import { PresentationCookieService } from './services/cookie.service';
       inject: [TOKENS.SERVICE_REPOSITORY, TOKENS.LOGGER, TOKENS.I18N_SERVICE],
     },
 
+    // 🏷️ ServiceType Use Cases
+    {
+      provide: TOKENS.CREATE_SERVICE_TYPE_USE_CASE,
+      useFactory: (serviceTypeRepo, logger, i18n, auditService) =>
+        new CreateServiceTypeUseCase(
+          serviceTypeRepo,
+          logger,
+          i18n,
+          auditService,
+        ),
+      inject: [
+        TOKENS.SERVICE_TYPE_REPOSITORY,
+        TOKENS.LOGGER,
+        TOKENS.I18N_SERVICE,
+        TOKENS.AUDIT_SERVICE,
+      ],
+    },
+    {
+      provide: TOKENS.GET_SERVICE_TYPE_BY_ID_USE_CASE,
+      useFactory: (serviceTypeRepo, logger, i18n) =>
+        new GetServiceTypeByIdUseCase(serviceTypeRepo, logger, i18n),
+      inject: [
+        TOKENS.SERVICE_TYPE_REPOSITORY,
+        TOKENS.LOGGER,
+        TOKENS.I18N_SERVICE,
+      ],
+    },
+    {
+      provide: TOKENS.LIST_SERVICE_TYPES_USE_CASE,
+      useFactory: (serviceTypeRepo, logger, i18n) =>
+        new ListServiceTypesUseCase(serviceTypeRepo, logger, i18n),
+      inject: [
+        TOKENS.SERVICE_TYPE_REPOSITORY,
+        TOKENS.LOGGER,
+        TOKENS.I18N_SERVICE,
+      ],
+    },
+    {
+      provide: TOKENS.UPDATE_SERVICE_TYPE_USE_CASE,
+      useFactory: (serviceTypeRepo, logger, i18n) =>
+        new UpdateServiceTypeUseCase(serviceTypeRepo, logger, i18n),
+      inject: [
+        TOKENS.SERVICE_TYPE_REPOSITORY,
+        TOKENS.LOGGER,
+        TOKENS.I18N_SERVICE,
+      ],
+    },
+    {
+      provide: TOKENS.DELETE_SERVICE_TYPE_USE_CASE,
+      useFactory: (serviceTypeRepo, logger, i18n) =>
+        new DeleteServiceTypeUseCase(serviceTypeRepo, logger, i18n),
+      inject: [
+        TOKENS.SERVICE_TYPE_REPOSITORY,
+        TOKENS.LOGGER,
+        TOKENS.I18N_SERVICE,
+      ],
+    },
+
     // 👨‍💼 Staff Use Cases
     {
       provide: TOKENS.CREATE_STAFF_USE_CASE,
@@ -741,6 +818,112 @@ import { PresentationCookieService } from './services/cookie.service';
         TOKENS.CALENDAR_TYPE_REPOSITORY,
         TOKENS.LOGGER,
         TOKENS.I18N_SERVICE,
+      ],
+    },
+    {
+      provide: TOKENS.UPDATE_CALENDAR_TYPE_USE_CASE,
+      useFactory: (calendarTypeRepo, logger, i18n, auditService) =>
+        new UpdateCalendarTypeUseCase(
+          calendarTypeRepo,
+          logger,
+          i18n,
+          auditService,
+        ),
+      inject: [
+        TOKENS.CALENDAR_TYPE_REPOSITORY,
+        TOKENS.LOGGER,
+        TOKENS.I18N_SERVICE,
+        TOKENS.AUDIT_SERVICE,
+      ],
+    },
+    {
+      provide: TOKENS.DELETE_CALENDAR_TYPE_USE_CASE,
+      useFactory: (calendarTypeRepo, logger, i18n, auditService) =>
+        new DeleteCalendarTypeUseCase(
+          calendarTypeRepo,
+          logger,
+          i18n,
+          auditService,
+        ),
+      inject: [
+        TOKENS.CALENDAR_TYPE_REPOSITORY,
+        TOKENS.LOGGER,
+        TOKENS.I18N_SERVICE,
+        TOKENS.AUDIT_SERVICE,
+      ],
+    },
+    {
+      provide: TOKENS.LIST_CALENDAR_TYPES_USE_CASE,
+      useFactory: (calendarTypeRepo, logger, i18n) =>
+        new ListCalendarTypesUseCase(calendarTypeRepo, logger, i18n),
+      inject: [
+        TOKENS.CALENDAR_TYPE_REPOSITORY,
+        TOKENS.LOGGER,
+        TOKENS.I18N_SERVICE,
+      ],
+    },
+
+    // 👨‍💼 Professional Use Cases
+    {
+      provide: TOKENS.CREATE_PROFESSIONAL_USE_CASE,
+      useFactory: (professionalRepo, logger, i18n, auditService) =>
+        new CreateProfessionalUseCase(
+          professionalRepo,
+          logger,
+          i18n,
+          auditService,
+        ),
+      inject: [
+        TOKENS.PROFESSIONAL_REPOSITORY,
+        TOKENS.LOGGER,
+        TOKENS.I18N_SERVICE,
+        TOKENS.AUDIT_SERVICE,
+      ],
+    },
+    {
+      provide: TOKENS.GET_PROFESSIONAL_BY_ID_USE_CASE,
+      useFactory: (professionalRepo, logger, i18n) =>
+        new GetProfessionalByIdUseCase(professionalRepo, logger, i18n),
+      inject: [
+        TOKENS.PROFESSIONAL_REPOSITORY,
+        TOKENS.LOGGER,
+        TOKENS.I18N_SERVICE,
+      ],
+    },
+    {
+      provide: TOKENS.UPDATE_PROFESSIONAL_USE_CASE,
+      useFactory: (professionalRepo, logger, i18n) =>
+        new UpdateProfessionalUseCase(professionalRepo, logger, i18n),
+      inject: [
+        TOKENS.PROFESSIONAL_REPOSITORY,
+        TOKENS.LOGGER,
+        TOKENS.I18N_SERVICE,
+      ],
+    },
+    {
+      provide: TOKENS.DELETE_PROFESSIONAL_USE_CASE,
+      useFactory: (professionalRepo, logger, i18n) =>
+        new DeleteProfessionalUseCase(professionalRepo, logger, i18n),
+      inject: [
+        TOKENS.PROFESSIONAL_REPOSITORY,
+        TOKENS.LOGGER,
+        TOKENS.I18N_SERVICE,
+      ],
+    },
+    {
+      provide: TOKENS.LIST_PROFESSIONALS_USE_CASE,
+      useFactory: (professionalRepo, logger, i18n, auditService) =>
+        new ListProfessionalsUseCase(
+          professionalRepo,
+          logger,
+          i18n,
+          auditService,
+        ),
+      inject: [
+        TOKENS.PROFESSIONAL_REPOSITORY,
+        TOKENS.LOGGER,
+        TOKENS.I18N_SERVICE,
+        TOKENS.AUDIT_SERVICE,
       ],
     },
   ],

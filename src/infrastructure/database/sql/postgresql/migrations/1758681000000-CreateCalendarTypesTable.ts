@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner, Table, ForeignKey } from 'typeorm';
+import { MigrationInterface, QueryRunner, Table } from 'typeorm';
 
 export class CreateCalendarTypesTable1758681000000
   implements MigrationInterface

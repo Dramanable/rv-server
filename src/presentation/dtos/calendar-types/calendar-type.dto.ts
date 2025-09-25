@@ -1,15 +1,15 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import {
+  IsBoolean,
+  IsIn,
+  IsInt,
+  IsOptional,
   IsString,
   IsUUID,
-  IsOptional,
-  IsBoolean,
-  IsInt,
-  Min,
-  Max,
   Length,
-  IsIn,
+  Max,
+  Min,
 } from 'class-validator';
 
 /**

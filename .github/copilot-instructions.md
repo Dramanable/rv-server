@@ -5123,7 +5123,7 @@ export class AddPricingConfigToServices implements MigrationInterface {
       // ✅ CORRECT - Colonne avec DEFAULT pour données existantes
       await queryRunner.query(`
         ALTER TABLE "${schema}"."services"
-        ADD COLUMN "pricing_config" jsonb 
+        ADD COLUMN "pricing_config" jsonb
         DEFAULT '{"type":"FIXED","basePrice":{"amount":0,"currency":"EUR"}}'::jsonb
       `);
 
@@ -5150,7 +5150,7 @@ export class AddPricingConfigToServices implements MigrationInterface {
       await queryRunner.query(`
         -- Optionnel : Sauvegarder les données dans une table temporaire
         CREATE TABLE IF NOT EXISTS "${schema}"."services_pricing_backup" AS
-        SELECT id, pricing_config FROM "${schema}"."services" 
+        SELECT id, pricing_config FROM "${schema}"."services"
         WHERE pricing_config IS NOT NULL
       `);
 
@@ -5204,7 +5204,7 @@ export class UpdateStatusEnumInServices implements MigrationInterface {
     `);
 
     await queryRunner.query(`
-      ALTER TABLE "${schema}"."services" 
+      ALTER TABLE "${schema}"."services"
       RENAME COLUMN "status_new" TO "status"
     `);
 
@@ -5231,7 +5231,7 @@ export class RemoveDeprecatedColumnsFromServices implements MigrationInterface {
 
     // ✅ ÉTAPE 1 - Vérifier s'il y a des données dans la colonne
     const dataCount = await queryRunner.query(`
-      SELECT COUNT(*) as count FROM "${schema}"."services" 
+      SELECT COUNT(*) as count FROM "${schema}"."services"
       WHERE "deprecated_field" IS NOT NULL
     `);
 
@@ -5271,7 +5271,7 @@ export class RemoveDeprecatedColumnsFromServices implements MigrationInterface {
 
     if (backupExists) {
       await queryRunner.query(`
-        UPDATE "${schema}"."services" 
+        UPDATE "${schema}"."services"
         SET "deprecated_field" = backup."deprecated_field"
         FROM "${schema}"."services_deprecated_backup" backup
         WHERE "${schema}"."services".id = backup.id

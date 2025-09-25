@@ -2,14 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
+import { ServiceType } from '@domain/entities/service-type.entity';
 import {
   IServiceTypeRepository,
   ServiceTypeSearchCriteria,
   ServiceTypeSearchResult,
 } from '@domain/repositories/service-type.repository';
-import { ServiceType } from '@domain/entities/service-type.entity';
-import { ServiceTypeId } from '@domain/value-objects/service-type-id.value-object';
 import { BusinessId } from '@domain/value-objects/business-id.value-object';
+import { ServiceTypeId } from '@domain/value-objects/service-type-id.value-object';
 
 import { ServiceTypeOrmEntity } from '@infrastructure/database/sql/postgresql/entities/service-type-orm.entity';
 import { ServiceTypeOrmMapper } from '@infrastructure/mappers/service-type-orm.mapper';
