@@ -1,10 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import {
   Service,
-  ServiceCategory,
 } from '../../../domain/entities/service.entity';
 import { ServiceRepository } from '../../../domain/repositories/service.repository.interface';
 import { BusinessId } from '../../../domain/value-objects/business-id.value-object';
+import { ServiceTypeId } from '../../../domain/value-objects/service-type-id.value-object';
 import { ApplicationValidationError } from '../../exceptions/application.exceptions';
 import {
   createMockI18nService,

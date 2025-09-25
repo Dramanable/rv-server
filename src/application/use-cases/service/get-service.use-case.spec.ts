@@ -1,11 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-  Service,
-  ServiceCategory,
-} from '../../../domain/entities/service.entity';
+import { Service } from '../../../domain/entities/service.entity';
 import { ServiceRepository } from '../../../domain/repositories/service.repository.interface';
 import { BusinessId } from '../../../domain/value-objects/business-id.value-object';
 import { ServiceId } from '../../../domain/value-objects/service-id.value-object';
+import { ServiceTypeId } from '../../../domain/value-objects/service-type-id.value-object';
 import { ServiceNotFoundError } from '../../exceptions/application.exceptions';
 import {
   createMockI18nService,
@@ -52,7 +50,9 @@ describe('GetServiceUseCase', () => {
         businessId: BusinessId.create('11111111-1111-4000-8000-111111111111'),
         name: 'Test Service',
         description: 'Service description',
-        category: ServiceCategory.CONSULTATION,
+        serviceTypeIds: [
+          ServiceTypeId.fromString('22222222-2222-4000-8000-222222222222'),
+        ],
         basePrice: 99.5,
         currency: 'EUR',
         duration: 60,
@@ -75,8 +75,10 @@ describe('GetServiceUseCase', () => {
         name: mockService.name,
         description: mockService.description,
         businessId: mockService.businessId.getValue(),
-        category: mockService.category,
-        pricing: mockService.pricing,
+        serviceTypeIds: mockService
+          .getServiceTypeIds()
+          .map((id) => id.getValue()),
+        pricingConfig: mockService.pricingConfig,
         scheduling: mockService.scheduling,
         requirements: mockService.requirements,
         imageUrl: mockService.imageUrl?.getUrl(),

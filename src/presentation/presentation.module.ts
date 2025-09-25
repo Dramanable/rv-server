@@ -534,7 +534,9 @@ import { PresentationCookieService } from './services/cookie.service';
       inject: [TOKENS.SERVICE_REPOSITORY, TOKENS.LOGGER, TOKENS.I18N_SERVICE],
     },
 
-    // 🏷️ ServiceType Use Cases
+    // 🏷️ ServiceType Use Cases - TEMPORARILY DISABLED until repository is implemented
+    // TODO: Re-enable after implementing ServiceType repository and ORM entities
+    /*
     {
       provide: TOKENS.CREATE_SERVICE_TYPE_USE_CASE,
       useFactory: (serviceTypeRepo, logger, i18n, auditService) =>
@@ -591,6 +593,7 @@ import { PresentationCookieService } from './services/cookie.service';
         TOKENS.I18N_SERVICE,
       ],
     },
+    */
 
     // 👨‍💼 Staff Use Cases
     {
