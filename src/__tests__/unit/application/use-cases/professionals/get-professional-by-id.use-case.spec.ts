@@ -18,7 +18,7 @@ import { ProfessionalId } from '@domain/value-objects/professional-id.value-obje
 import {
   GetProfessionalByIdRequest,
   GetProfessionalByIdUseCase,
-} from '../../../../../application/use-cases/professionals/get-professional-by-id.use-case';
+} from '@application/use-cases/professionals/get-professional-by-id.use-case';
 
 describe('GetProfessionalByIdUseCase - TDD', () => {
   // ✅ Test Data Factory

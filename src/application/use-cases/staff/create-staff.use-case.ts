@@ -4,27 +4,18 @@
  * Création d'un membre du personnel avec validation métier et permissions
  * ✅ AUCUNE dépendance NestJS - Respect de la Clean Architecture
  */
-import { Staff } from '../../../domain/entities/staff.entity';
-import { StaffRepository } from '../../../domain/repositories/staff.repository.interface';
-import { BusinessRepository } from '../../../domain/repositories/business.repository.interface';
-import { UserRepository } from '../../../domain/repositories/user.repository.interface';
-import { Logger } from '../../../application/ports/logger.port';
+import { StaffValidationError } from '../../../application/exceptions/application.exceptions';
 import { I18nService } from '../../../application/ports/i18n.port';
-import {
-  AppContext,
-  AppContextFactory,
-} from '../../../shared/context/app-context';
-import { UserRole, Permission } from '../../../shared/enums/user-role.enum';
-import { StaffRole } from '../../../shared/enums/staff-role.enum';
-import { User } from '../../../domain/entities/user.entity';
-import {
-  InsufficientPermissionsError,
-  StaffValidationError,
-  BusinessNotFoundError,
-} from '../../../application/exceptions/application.exceptions';
+import { Logger } from '../../../application/ports/logger.port';
+import { Staff } from '../../../domain/entities/staff.entity';
+import { BusinessRepository } from '../../../domain/repositories/business.repository.interface';
+import { StaffRepository } from '../../../domain/repositories/staff.repository.interface';
+import { BusinessId } from '../../../domain/value-objects/business-id.value-object';
 import { Email } from '../../../domain/value-objects/email.value-object';
 import { Phone } from '../../../domain/value-objects/phone.value-object';
-import { BusinessId } from '../../../domain/value-objects/business-id.value-object';
+import { Permission } from '../../../shared/enums/permission.enum';
+import { StaffRole } from '../../../shared/enums/staff-role.enum';
+import { IPermissionService } from '../../ports/permission.service.interface';
 
 export interface CreateStaffRequest {
   readonly requestingUserId: string;
@@ -70,36 +61,30 @@ export class CreateStaffUseCase {
   constructor(
     private readonly staffRepository: StaffRepository,
     private readonly businessRepository: BusinessRepository,
-    private readonly userRepository: UserRepository,
+    private readonly permissionService: IPermissionService,
     private readonly logger: Logger,
     private readonly i18n: I18nService,
   ) {}
 
   async execute(request: CreateStaffRequest): Promise<CreateStaffResponse> {
-    // 1. Context pour traçabilité
-    const context: AppContext = AppContextFactory.create()
-      .operation('CreateStaff')
-      .requestingUser(request.requestingUserId)
-      .metadata('businessId', request.businessId)
-      .build();
-
-    this.logger.info(
-      this.i18n.t('operations.staff.creation_attempt'),
-      context as unknown as Record<string, unknown>,
+    // 1. Validation des permissions avec service centralisé
+    await this.permissionService.requirePermission(
+      request.requestingUserId,
+      Permission.MANAGE_STAFF,
+      { businessId: request.businessId },
     );
 
+    this.logger.info(this.i18n.t('operations.staff.creation_attempt'), {
+      operation: 'CreateStaff',
+      requestingUserId: request.requestingUserId,
+      businessId: request.businessId,
+    });
+
     try {
-      // 2. Validation des permissions
-      await this.validatePermissions(
-        request.requestingUserId,
-        request.businessId,
-        context,
-      );
+      // 2. Validation des règles métier
+      await this.validateBusinessRules(request);
 
-      // 3. Validation des règles métier
-      await this.validateBusinessRules(request, context);
-
-      // 4. Création de l'entité Staff
+      // 3. Création de l'entité Staff
       const businessId = BusinessId.create(request.businessId);
       const email = Email.create(request.email);
       const phone = request.phone ? Phone.create(request.phone) : undefined;
@@ -116,10 +101,10 @@ export class CreateStaffUseCase {
         phone: request.phone,
       });
 
-      // 5. Persistance
+      // 4. Persistance
       await this.staffRepository.save(staff);
 
-      // 6. Réponse typée
+      // 5. Réponse typée
       const response: CreateStaffResponse = {
         id: staff.id.getValue(),
         firstName: staff.profile.firstName,
@@ -132,7 +117,8 @@ export class CreateStaffUseCase {
       };
 
       this.logger.info(this.i18n.t('operations.staff.creation_success'), {
-        ...(context as unknown as Record<string, unknown>),
+        operation: 'CreateStaff',
+        requestingUserId: request.requestingUserId,
         staffId: staff.id.getValue(),
         staffRole: staff.role,
       });
@@ -142,63 +128,18 @@ export class CreateStaffUseCase {
       this.logger.error(
         this.i18n.t('operations.staff.creation_failed'),
         error as Error,
-        context as unknown as Record<string, unknown>,
+        {
+          operation: 'CreateStaff',
+          requestingUserId: request.requestingUserId,
+          businessId: request.businessId,
+        },
       );
       throw error;
     }
   }
 
-  private async validatePermissions(
-    requestingUserId: string,
-    businessId: string,
-    context: AppContext,
-  ): Promise<void> {
-    const requestingUser = await this.userRepository.findById(requestingUserId);
-    if (!requestingUser) {
-      throw new InsufficientPermissionsError(
-        'Requesting user not found',
-        UserRole.REGULAR_CLIENT,
-      );
-    }
-
-    // Vérifier que l'entreprise existe
-    const business = await this.businessRepository.findById(
-      BusinessId.create(businessId),
-    );
-    if (!business) {
-      throw new BusinessNotFoundError(
-        `Business with id ${businessId} not found`,
-      );
-    }
-
-    // Platform admins peuvent créer du personnel dans n'importe quelle entreprise
-    if (requestingUser.role === UserRole.PLATFORM_ADMIN) {
-      return;
-    }
-
-    // Business owners et admins peuvent créer du personnel dans leur entreprise
-    const allowedRoles = [UserRole.BUSINESS_OWNER, UserRole.BUSINESS_ADMIN];
-
-    if (!allowedRoles.includes(requestingUser.role)) {
-      this.logger.warn(this.i18n.t('warnings.permission.denied'), {
-        requestingUserId,
-        requestingUserRole: requestingUser.role,
-        requiredPermissions: 'CREATE_STAFF',
-        businessId,
-      });
-      throw new InsufficientPermissionsError(
-        Permission.MANAGE_ALL_STAFF,
-        requestingUser.role,
-      );
-    }
-
-    // Note: Il faudrait aussi vérifier que le requesting user appartient à cette entreprise
-    // Cela nécessiterait une relation staff-user ou business-user
-  }
-
   private async validateBusinessRules(
     request: CreateStaffRequest,
-    context: AppContext,
   ): Promise<void> {
     // Validation du prénom
     if (!request.firstName || request.firstName.trim().length < 2) {
@@ -242,7 +183,6 @@ export class CreateStaffUseCase {
 
     if (existingStaff) {
       this.logger.warn(this.i18n.t('warnings.staff.email_already_exists'), {
-        ...context,
         email: request.email,
         businessId: request.businessId,
       });

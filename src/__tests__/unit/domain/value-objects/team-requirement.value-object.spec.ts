@@ -1,7 +1,7 @@
 // TODO: Implement these modules for TDD GREEN phase
-// import { TeamRequirement } from '../../../domain/value-objects/team-requirement.value-object';
-// import { ProfessionalRole } from '../../../shared/enums/professional-role.enum';
-// import { ProficiencyLevel } from '../../../domain/value-objects/staff-skills.value-object';
+// import { TeamRequirement } from '@domain/value-objects/team-requirement.value-object';
+// import { ProfessionalRole } from '@shared/enums/professional-role.enum';
+// import { ProficiencyLevel } from '@domain/value-objects/staff-skills.value-object';
 
 describe('TeamRequirement Value Object', () => {
   describe('🔴 RED - Creation and Validation', () => {

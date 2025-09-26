@@ -14,11 +14,11 @@ import { Logger } from '../../../../../application/ports/logger.port';
 import {
   GetUserByIdRequest,
   GetUserByIdUseCase,
-} from '../../../../../application/use-cases/users/get-user-by-id.use-case';
-import { User } from '../../../../../domain/entities/user.entity';
+} from '@application/use-cases/users/get-user-by-id.use-case';
+import { User } from '@domain/entities/user.entity';
 import { UserRepository } from '../../../../../domain/repositories/user.repository.interface';
-import { Email } from '../../../../../domain/value-objects/email.vo';
-import { UserRole } from '../../../../../shared/enums/user-role.enum';
+import { Email } from '@domain/value-objects/email.vo';
+import { UserRole } from '@shared/enums/user-role.enum';
 
 // ═══════════════════════════════════════════════════════════════
 // 🛠️ TEST SETUP & HELPERS

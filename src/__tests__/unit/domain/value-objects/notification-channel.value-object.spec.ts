@@ -4,11 +4,11 @@
  * @version 1.0.0
  */
 
-import { DomainError } from '../../../../domain/exceptions/domain.exceptions';
+import { DomainError } from '@domain/exceptions/domain.exceptions';
 import {
   NotificationChannel,
   NotificationChannelType,
-} from '../../../../domain/value-objects/notification-channel.value-object';
+} from '@domain/value-objects/notification-channel.value-object';
 
 describe('NotificationChannel Value Object', () => {
   describe('🔴 RED Phase - Factory Methods', () => {

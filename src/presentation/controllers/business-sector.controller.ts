@@ -17,7 +17,6 @@ import {
   Post,
   Query,
   Request,
-  UseGuards,
   UsePipes,
 } from '@nestjs/common';
 import {
@@ -31,7 +30,6 @@ import {
 
 // 🔐 Security & Validation
 import { I18nValidationPipe } from '@infrastructure/validation/i18n-validation.pipe';
-import { JwtAuthGuard } from '@presentation/security/guards/jwt-auth.guard';
 
 // 📝 DTOs
 import {
@@ -65,7 +63,6 @@ import { TOKENS } from '@shared/constants/injection-tokens';
  */
 @ApiTags('� Business Sectors')
 @Controller('business-sectors')
-@UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 @UsePipes(new I18nValidationPipe())
 export class BusinessSectorController {

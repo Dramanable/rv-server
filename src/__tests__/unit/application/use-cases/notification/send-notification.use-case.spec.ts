@@ -8,10 +8,10 @@ import { NotificationException } from '../../../../../application/exceptions/not
 import {
   SendNotificationRequest,
   SendNotificationUseCase,
-} from '../../../../../application/use-cases/notification/send-notification.use-case';
-import { NotificationChannel } from '../../../../../domain/value-objects/notification-channel.value-object';
-import { NotificationPriority } from '../../../../../domain/value-objects/notification-priority.value-object';
-import { NotificationStatus } from '../../../../../domain/value-objects/notification-status.value-object';
+} from '@application/use-cases/notification/send-notification.use-case';
+import { NotificationChannel } from '@domain/value-objects/notification-channel.value-object';
+import { NotificationPriority } from '@domain/value-objects/notification-priority.value-object';
+import { NotificationStatus } from '@domain/value-objects/notification-status.value-object';
 
 // Mocks for dependencies
 const mockNotificationRepository = {

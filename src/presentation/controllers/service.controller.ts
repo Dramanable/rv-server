@@ -18,7 +18,6 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
-  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -28,7 +27,6 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { GetUser } from '@presentation/security/decorators/get-user.decorator';
-import { JwtAuthGuard } from '@presentation/security/guards/jwt-auth.guard';
 
 // Injection Tokens
 import { TOKENS } from '@shared/constants/injection-tokens';
@@ -55,7 +53,6 @@ import {
 @ApiTags('💼 Services')
 @ApiBearerAuth()
 @Controller('services')
-@UseGuards(JwtAuthGuard)
 export class ServiceController {
   constructor(
     @Inject(TOKENS.CREATE_SERVICE_USE_CASE)

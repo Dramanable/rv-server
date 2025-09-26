@@ -16,9 +16,13 @@ import { Service } from '../../../domain/entities/service.entity';
 import { ServiceNotFoundError } from '../../../domain/exceptions/service.exceptions';
 import { ServiceRepository } from '../../../domain/repositories/service.repository.interface';
 import { ServiceId } from '../../../domain/value-objects/service-id.value-object';
-import { ApplicationValidationError } from '../../exceptions/application.exceptions';
+import {
+  ApplicationValidationError,
+  InsufficientPermissionsError,
+} from '../../exceptions/application.exceptions';
 import { I18nService } from '../../ports/i18n.port';
 import { Logger } from '../../ports/logger.port';
+import { IPermissionService } from '../../ports/permission.service.interface';
 
 export interface DeleteServiceRequest {
   readonly serviceId: string;
@@ -34,6 +38,7 @@ export interface DeleteServiceResponse {
 export class DeleteServiceUseCase {
   constructor(
     private readonly serviceRepository: ServiceRepository,
+    private readonly permissionService: IPermissionService,
     private readonly logger: Logger,
     private readonly i18n: I18nService,
   ) {}
@@ -78,10 +83,43 @@ export class DeleteServiceUseCase {
         );
       }
 
-      // 4. Validation des règles métier
+      // 4. Vérification des permissions AVANT toute opération métier
+      try {
+        await this.permissionService.requirePermission(
+          request.requestingUserId,
+          'MANAGE_SERVICES',
+          {
+            businessId: existingService.businessId.getValue(),
+            resourceId: request.serviceId,
+          },
+        );
+      } catch (error) {
+        this.logger.error(
+          'Permission denied for service deletion',
+          error instanceof Error ? error : new Error(String(error)),
+          {
+            requestingUserId: request.requestingUserId,
+            serviceId: request.serviceId,
+            businessId: existingService.businessId.getValue(),
+            requiredPermission: 'MANAGE_SERVICES',
+          },
+        );
+
+        if (error instanceof InsufficientPermissionsError) {
+          throw error;
+        }
+
+        throw new InsufficientPermissionsError(
+          request.requestingUserId,
+          'MANAGE_SERVICES',
+          request.serviceId,
+        );
+      }
+
+      // 5. Validation des règles métier
       await this.validateBusinessRules(existingService, request.serviceId);
 
-      // 5. Supprimer le service
+      // 6. Supprimer le service
       await this.serviceRepository.delete(serviceId);
 
       this.logger.info('Service deleted successfully', {
@@ -90,7 +128,7 @@ export class DeleteServiceUseCase {
         serviceName: existingService.name,
       });
 
-      // 6. Retourner la réponse
+      // 7. Retourner la réponse
       return {
         success: true,
         serviceId: request.serviceId,
@@ -127,7 +165,9 @@ export class DeleteServiceUseCase {
 
     // Autres règles métier peuvent être ajoutées ici
     // - Vérifier si le service fait partie d'un package
-    // - Vérifier les permissions de l'utilisateur
+    // - Vérifier les rendez-vous existants
     // - Etc.
+    //
+    // NOTE: Les permissions sont maintenant vérifiées via IPermissionService
   }
 }

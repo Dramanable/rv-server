@@ -48,7 +48,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       ip: request.ip,
       hasAuthHeader: !!request.headers.authorization,
       hasCookie: !!(request.cookies as Record<string, unknown> | undefined)
-        ?.token,
+        ?.accessToken,
     });
 
     // Extraire le token du header Authorization ou des cookies
@@ -150,10 +150,11 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       return authHeader.substring(7);
     }
 
-    // Vérifier les cookies
+    // Vérifier les cookies avec nom par défaut (même que dans .env)
     const cookies = request.cookies as Record<string, unknown> | undefined;
-    if (cookies && typeof cookies.accessToken === 'string') {
-      return cookies.accessToken;
+    const cookieName = process.env.ACCESS_TOKEN_COOKIE_NAME || 'accessToken';
+    if (cookies && typeof cookies[cookieName] === 'string') {
+      return cookies[cookieName];
     }
 
     return null;

@@ -7,9 +7,11 @@
 
 import { Staff } from '../../../domain/entities/staff.entity';
 import { StaffRepository } from '../../../domain/repositories/staff.repository.interface';
+import { Permission } from '../../../shared/enums/permission.enum';
 import { ApplicationValidationError } from '../../exceptions/application.exceptions';
 import { I18nService } from '../../ports/i18n.port';
 import { Logger } from '../../ports/logger.port';
+import { IPermissionService } from '../../ports/permission.service.interface';
 
 export interface ListStaffRequest {
   readonly requestingUserId: string;
@@ -68,6 +70,7 @@ export class ListStaffUseCase {
     private readonly staffRepository: StaffRepository,
     private readonly logger: Logger,
     private readonly i18n: I18nService,
+    private readonly permissionService: IPermissionService,
   ) {}
 
   async execute(request: ListStaffRequest): Promise<ListStaffResponse> {
@@ -75,7 +78,18 @@ export class ListStaffUseCase {
       // 1. Validation des paramètres
       this.validateParameters(request);
 
-      // 2. Log de l'opération
+      // 2. Vérifier les permissions avec IPermissionService
+      await this.permissionService.requirePermission(
+        request.requestingUserId,
+        Permission.VIEW_STAFF,
+        {
+          action: 'list',
+          resource: 'staff',
+          businessId: request.filters.businessId,
+        },
+      );
+
+      // 3. Log de l'opération
       this.logger.info('Attempting to list staff', {
         requestingUserId: request.requestingUserId,
         page: request.pagination.page,

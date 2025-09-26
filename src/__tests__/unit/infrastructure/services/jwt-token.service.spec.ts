@@ -6,8 +6,8 @@
 
 import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TOKENS } from '../../../../shared/constants/injection-tokens';
-import { JwtTokenService } from '../../../../infrastructure/services/jwt-token.service';
+import { TOKENS } from '@shared/constants/injection-tokens';
+import { JwtTokenService } from '@infrastructure/services/jwt-token.service';
 
 describe('JwtTokenService (TDD)', () => {
   let service: JwtTokenService;

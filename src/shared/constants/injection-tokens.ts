@@ -77,6 +77,10 @@ export const APPLICATION_TOKENS = {
   LIST_STAFF_USE_CASE: 'ListStaffUseCase',
   UPDATE_STAFF_USE_CASE: 'UpdateStaffUseCase',
   DELETE_STAFF_USE_CASE: 'DeleteStaffUseCase',
+  // 📅 Staff Availability Use Cases - NEW
+  SET_STAFF_AVAILABILITY_USE_CASE: 'SetStaffAvailabilityUseCase',
+  GET_STAFF_AVAILABILITY_USE_CASE: 'GetStaffAvailabilityUseCase',
+  GET_AVAILABLE_STAFF_USE_CASE: 'GetAvailableStaffUseCase',
 
   // Appointment Use Cases
   BOOK_APPOINTMENT_USE_CASE: 'BookAppointmentUseCase',
@@ -129,6 +133,12 @@ export const APPLICATION_TOKENS = {
   UPDATE_PROFESSIONAL_USE_CASE: 'UpdateProfessionalUseCase',
   DELETE_PROFESSIONAL_USE_CASE: 'DeleteProfessionalUseCase',
 
+  // ✅ NEW: RBAC Use Cases
+  ASSIGN_ROLE_USE_CASE: 'AssignRoleUseCase',
+  LIST_ROLE_ASSIGNMENTS_USE_CASE: 'ListRoleAssignmentsUseCase',
+  REVOKE_ROLE_USE_CASE: 'RevokeRoleUseCase',
+  BATCH_REVOKE_ROLES_USE_CASE: 'BatchRevokeRolesUseCase',
+
   // Authentication Services
   AUTH_TOKEN_SERVICE: 'AuthTokenService',
   AUTH_SERVICE: 'AuthService',
@@ -160,6 +170,10 @@ export const DOMAIN_TOKENS = {
   SERVICE_TYPE_REPOSITORY: 'ServiceTypeRepository',
   CALENDAR_TYPE_REPOSITORY: 'CalendarTypeRepository',
   PROFESSIONAL_REPOSITORY: 'ProfessionalRepository',
+
+  // ✅ NEW: RBAC Repositories
+  ROLE_ASSIGNMENT_REPOSITORY: 'RoleAssignmentRepository',
+  RBAC_BUSINESS_CONTEXT_REPOSITORY: 'RbacBusinessContextRepository',
 
   // Domain Services
   USER_DOMAIN_SERVICE: 'UserDomainService',

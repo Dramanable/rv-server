@@ -6,11 +6,12 @@
  */
 
 import {
-  ForbiddenError,
+  InsufficientPermissionsError,
   UserNotFoundError,
 } from '../../../../../application/exceptions/auth.exceptions';
 import { I18nService } from '../../../../../application/ports/i18n.port';
 import { Logger } from '../../../../../application/ports/logger.port';
+import { IPermissionService } from '../../../../../application/ports/permission.service.interface';
 import {
   DeleteUserRequest,
   DeleteUserUseCase,
@@ -54,6 +55,18 @@ const mockLogger = {
   child: jest.fn(),
 } as unknown as jest.Mocked<Logger>;
 
+const mockPermissionService = {
+  requirePermission: jest.fn(),
+  checkPermission: jest.fn(),
+  validatePermissions: jest.fn(),
+  canActOnRole: jest.fn(),
+  canManageUser: jest.fn(),
+  canAccessResource: jest.fn(),
+  getAllowedScopes: jest.fn(),
+  hasAnyPermission: jest.fn(),
+  hasAllPermissions: jest.fn(),
+} as unknown as jest.Mocked<IPermissionService>;
+
 const mockI18n = {
   t: jest.fn().mockImplementation((key: string) => key),
   translate: jest.fn().mockImplementation((key: string) => key),
@@ -82,8 +95,15 @@ describe('DeleteUserUseCase', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+
+    // Configuration par défaut des mocks - permet les opérations sauf tests spécifiques
+    mockPermissionService.canManageUser.mockResolvedValue(true);
+    mockUserRepository.findById.mockResolvedValue(null); // Par défaut, user n'existe pas
+    mockUserRepository.delete.mockResolvedValue(undefined);
+
     deleteUserUseCase = new DeleteUserUseCase(
       mockUserRepository,
+      mockPermissionService,
       mockLogger,
       mockI18n,
     );
@@ -134,7 +154,7 @@ describe('DeleteUserUseCase', () => {
       );
     });
 
-    it('should throw ForbiddenError when user tries to delete themselves', async () => {
+    it('should throw InsufficientPermissionsError when user tries to delete themselves', async () => {
       // Arrange
       const user = createTestUser(
         'user-1',
@@ -149,14 +169,16 @@ describe('DeleteUserUseCase', () => {
       };
 
       mockUserRepository.findById.mockResolvedValue(user);
+      // Mock: un utilisateur ne peut pas se supprimer lui-même
+      mockPermissionService.canManageUser.mockResolvedValue(false);
 
       // Act & Assert
       await expect(deleteUserUseCase.execute(request)).rejects.toThrow(
-        ForbiddenError,
+        InsufficientPermissionsError,
       );
     });
 
-    it('should throw ForbiddenError when REGULAR_CLIENT tries to delete users', async () => {
+    it('should throw InsufficientPermissionsError when REGULAR_CLIENT tries to delete users', async () => {
       // Arrange
       const client = createTestUser(
         'client-1',
@@ -181,10 +203,12 @@ describe('DeleteUserUseCase', () => {
         if (id === 'target-1') return Promise.resolve(targetUser);
         return Promise.resolve(null);
       });
+      // Mock: REGULAR_CLIENT ne peut supprimer personne
+      mockPermissionService.canManageUser.mockResolvedValue(false);
 
       // Act & Assert
       await expect(deleteUserUseCase.execute(request)).rejects.toThrow(
-        ForbiddenError,
+        InsufficientPermissionsError,
       );
     });
   });
@@ -339,9 +363,12 @@ describe('DeleteUserUseCase', () => {
         return Promise.resolve(null);
       });
 
+      // ✅ Mock: BUSINESS_OWNER ne peut pas supprimer PLATFORM_ADMIN
+      mockPermissionService.canManageUser.mockResolvedValue(false);
+
       // Act & Assert
       await expect(deleteUserUseCase.execute(request)).rejects.toThrow(
-        ForbiddenError,
+        InsufficientPermissionsError,
       );
     });
 
@@ -371,9 +398,12 @@ describe('DeleteUserUseCase', () => {
         return Promise.resolve(null);
       });
 
+      // ✅ Mock: BUSINESS_OWNER ne peut pas supprimer autre BUSINESS_OWNER
+      mockPermissionService.canManageUser.mockResolvedValue(false);
+
       // Act & Assert
       await expect(deleteUserUseCase.execute(request)).rejects.toThrow(
-        ForbiddenError,
+        InsufficientPermissionsError,
       );
     });
   });
@@ -445,9 +475,12 @@ describe('DeleteUserUseCase', () => {
         return Promise.resolve(null);
       });
 
+      // ✅ Mock: BUSINESS_ADMIN ne peut pas supprimer les utilisateurs de gestion
+      mockPermissionService.canManageUser.mockResolvedValue(false);
+
       // Act & Assert
       await expect(deleteUserUseCase.execute(request)).rejects.toThrow(
-        ForbiddenError,
+        InsufficientPermissionsError,
       );
     });
   });
@@ -519,9 +552,12 @@ describe('DeleteUserUseCase', () => {
         return Promise.resolve(null);
       });
 
+      // ✅ Mock: LOCATION_MANAGER ne peut pas supprimer les utilisateurs de gestion
+      mockPermissionService.canManageUser.mockResolvedValue(false);
+
       // Act & Assert
       await expect(deleteUserUseCase.execute(request)).rejects.toThrow(
-        ForbiddenError,
+        InsufficientPermissionsError,
       );
     });
   });

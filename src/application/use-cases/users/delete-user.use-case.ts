@@ -28,14 +28,15 @@
 import { User } from '../../../domain/entities/user.entity';
 import { UserRepository } from '../../../domain/repositories/user.repository.interface';
 import { AppContextFactory } from '../../../shared/context/app-context';
-import { UserRole } from '../../../shared/enums/user-role.enum';
 import {
   ForbiddenError,
+  InsufficientPermissionsError,
   UserNotFoundError,
   ValidationError,
 } from '../../exceptions/auth.exceptions';
 import { I18nService } from '../../ports/i18n.port';
 import { Logger } from '../../ports/logger.port';
+import { IPermissionService } from '../../ports/permission.service.interface';
 
 // ═══════════════════════════════════════════════════════════════
 // 📋 REQUEST & RESPONSE TYPES
@@ -60,6 +61,7 @@ export interface DeleteUserResponse {
 export class DeleteUserUseCase {
   constructor(
     private readonly userRepository: UserRepository,
+    private readonly permissionService: IPermissionService,
     private readonly logger: Logger,
     private readonly i18n: I18nService,
   ) {}
@@ -97,8 +99,32 @@ export class DeleteUserUseCase {
         });
       }
 
-      // 3. Vérifier les permissions
-      await this.validatePermissions(requestingUser, targetUser);
+      // 3. 🔐 Vérifier les permissions avec IPermissionService
+      await this.permissionService.requirePermission(
+        request.requestingUserId,
+        'DELETE_USER',
+        {
+          targetUserId: request.targetUserId,
+          targetRole: targetUser.role,
+        },
+      );
+
+      // 4. ✅ Vérifier que l'utilisateur peut gérer l'utilisateur cible
+      const canManageUser = await this.permissionService.canManageUser(
+        request.requestingUserId,
+        request.targetUserId,
+      );
+
+      if (!canManageUser) {
+        throw new InsufficientPermissionsError(
+          `User ${request.requestingUserId} cannot manage user ${request.targetUserId}`,
+        );
+      }
+
+      // 5. ❌ Interdiction d'auto-suppression (même avec permissions)
+      if (request.requestingUserId === request.targetUserId) {
+        throw new ForbiddenError('Users cannot delete themselves');
+      }
 
       // 4. Vérifier que l'utilisateur n'est pas déjà supprimé
       await this.validateNotAlreadyDeleted(request.targetUserId);
@@ -128,83 +154,6 @@ export class DeleteUserUseCase {
   // ═══════════════════════════════════════════════════════════════
   // 🔒 VALIDATION METHODS
   // ═══════════════════════════════════════════════════════════════
-
-  private async validatePermissions(
-    requestingUser: User,
-    targetUser: User,
-  ): Promise<void> {
-    const requestingRole = requestingUser.role;
-    const targetRole = targetUser.role;
-
-    // Interdiction d'auto-suppression
-    if (requestingUser.id === targetUser.id) {
-      throw new ForbiddenError('Users cannot delete themselves');
-    }
-
-    // Règles de permissions par rôle
-    switch (requestingRole) {
-      case UserRole.PLATFORM_ADMIN:
-        // PLATFORM_ADMIN peut supprimer n'importe qui (sauf eux-mêmes)
-        return;
-
-      case UserRole.BUSINESS_OWNER: {
-        // BUSINESS_OWNER ne peut pas supprimer PLATFORM_ADMIN ou autres BUSINESS_OWNER
-        const forbiddenTargetsForOwner = [
-          UserRole.PLATFORM_ADMIN,
-          UserRole.BUSINESS_OWNER,
-        ];
-        if (forbiddenTargetsForOwner.includes(targetRole)) {
-          throw new ForbiddenError(
-            `Business owner cannot delete ${targetRole} users`,
-          );
-        }
-        return;
-      }
-
-      case UserRole.BUSINESS_ADMIN: {
-        // BUSINESS_ADMIN ne peut supprimer que des utilisateurs de niveau inférieur
-        const forbiddenTargetsForAdmin = [
-          UserRole.PLATFORM_ADMIN,
-          UserRole.BUSINESS_OWNER,
-          UserRole.BUSINESS_ADMIN,
-        ];
-        if (forbiddenTargetsForAdmin.includes(targetRole)) {
-          throw new ForbiddenError(
-            `Business admin cannot delete ${targetRole} users`,
-          );
-        }
-        return;
-      }
-
-      case UserRole.LOCATION_MANAGER: {
-        // LOCATION_MANAGER peut supprimer seulement les utilisateurs opérationnels
-        const allowedTargetsForManager = [
-          UserRole.DEPARTMENT_HEAD,
-          UserRole.SENIOR_PRACTITIONER,
-          UserRole.PRACTITIONER,
-          UserRole.JUNIOR_PRACTITIONER,
-          UserRole.RECEPTIONIST,
-          UserRole.ASSISTANT,
-          UserRole.SCHEDULER,
-          UserRole.CORPORATE_CLIENT,
-          UserRole.VIP_CLIENT,
-          UserRole.REGULAR_CLIENT,
-        ];
-        if (!allowedTargetsForManager.includes(targetRole)) {
-          throw new ForbiddenError(
-            `Location manager cannot delete ${targetRole} users`,
-          );
-        }
-        return;
-      }
-
-      default:
-        // Tous les autres rôles ne peuvent pas supprimer d'autres utilisateurs
-        throw new ForbiddenError(
-          `Role ${requestingRole} is not authorized to delete users`,
-        );
-    }
-  }
 
   private async validateNotAlreadyDeleted(userId: string): Promise<void> {
     // Pour l'instant, on considère que si findById retourne null, c'est "supprimé"

@@ -8,17 +8,16 @@
 import {
   BusinessAlreadyExistsError,
   BusinessValidationError,
-  InsufficientPermissionsError,
 } from '../../../application/exceptions/application.exceptions';
 import type { I18nService } from '../../../application/ports/i18n.port';
 import type { Logger } from '../../../application/ports/logger.port';
+import type { IPermissionService } from '../../../application/ports/permission.service.interface';
 import {
   Business,
   BusinessSector,
   BusinessStatus,
 } from '../../../domain/entities/business.entity';
 import type { BusinessRepository } from '../../../domain/repositories/business.repository.interface';
-import type { UserRepository } from '../../../domain/repositories/user.repository.interface';
 import { Address } from '../../../domain/value-objects/address.value-object';
 import { BusinessName } from '../../../domain/value-objects/business-name.value-object';
 import { Email } from '../../../domain/value-objects/email.value-object';
@@ -27,7 +26,6 @@ import {
   AppContext,
   AppContextFactory,
 } from '../../../shared/context/app-context';
-import { UserRole } from '../../../shared/enums/user-role.enum';
 
 export interface CreateBusinessRequest {
   readonly requestingUserId: string;
@@ -86,11 +84,12 @@ export interface CreateBusinessResponse {
  * ✅ PURE APPLICATION USE CASE
  * ❌ No NestJS dependencies
  * ✅ Constructor Injection via interfaces only
+ * 🔐 RBAC avec IPermissionService
  */
 export class CreateBusinessUseCase {
   constructor(
     private readonly businessRepository: BusinessRepository,
-    private readonly userRepository: UserRepository,
+    private readonly permissionService: IPermissionService,
     private readonly logger: Logger,
     private readonly i18n: I18nService,
   ) {}
@@ -182,29 +181,32 @@ export class CreateBusinessUseCase {
     requestingUserId: string,
     context: AppContext,
   ): Promise<void> {
-    const requestingUser = await this.userRepository.findById(requestingUserId);
-    if (!requestingUser) {
-      throw new InsufficientPermissionsError(
+    try {
+      // 🔐 Utiliser le service de permissions RBAC
+      await this.permissionService.requirePermission(
         requestingUserId,
         'CREATE_BUSINESS',
-        'business',
+        {
+          operation: 'CREATE_BUSINESS',
+          resource: 'business',
+          requestingUserId,
+          context,
+        },
       );
-    }
 
-    // Seuls les admins et propriétaires peuvent créer des entreprises
-    const allowedRoles = [UserRole.PLATFORM_ADMIN, UserRole.BUSINESS_OWNER];
-
-    if (!allowedRoles.includes(requestingUser.role)) {
-      this.logger.warn(this.i18n.t('warnings.permission.denied'), {
+      this.logger.info(this.i18n.t('permissions.validation.success'), {
         requestingUserId,
-        requestingUserRole: requestingUser.role,
-        requiredPermissions: 'CREATE_BUSINESS',
+        permission: 'CREATE_BUSINESS',
+        operation: 'CREATE_BUSINESS',
       });
-      throw new InsufficientPermissionsError(
+    } catch (error) {
+      this.logger.warn(this.i18n.t('permissions.validation.denied'), {
         requestingUserId,
-        'CREATE_BUSINESS',
-        'business',
-      );
+        permission: 'CREATE_BUSINESS',
+        operation: 'CREATE_BUSINESS',
+        error: (error as Error).message,
+      });
+      throw error; // Re-throw l'erreur pour que le caller la gère
     }
   }
 

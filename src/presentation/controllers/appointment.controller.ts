@@ -16,7 +16,6 @@ import {
   Param,
   Post,
   Put,
-  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -29,7 +28,6 @@ import {
 import { TOKENS } from '@shared/constants/injection-tokens';
 import { User } from '../../domain/entities/user.entity';
 import { GetUser } from '../security/decorators/get-user.decorator';
-import { JwtAuthGuard } from '../security/guards/jwt-auth.guard';
 
 import { BookAppointmentUseCase } from '../../application/use-cases/appointments/book-appointment.use-case';
 import { CancelAppointmentUseCase } from '../../application/use-cases/appointments/cancel-appointment.use-case';
@@ -55,7 +53,6 @@ import {
 
 @ApiTags('📅 Appointments')
 @Controller('appointments')
-@UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 export class AppointmentController {
   constructor(

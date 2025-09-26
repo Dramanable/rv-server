@@ -6,6 +6,13 @@
  */
 
 import {
+  CreateUserUseCase,
+  type CreateUserRequest,
+} from '@application/use-cases/users/create-user.use-case';
+import { User } from '@domain/entities/user.entity';
+import { Email } from '@domain/value-objects/email.vo';
+import { UserRole } from '@shared/enums/user-role.enum';
+import {
   DuplicationError,
   ForbiddenError,
   UserNotFoundError,
@@ -16,19 +23,14 @@ import {
   createMockLogger,
   createMockUserRepository,
 } from '../../../../../application/mocks/typed-mocks';
-import {
-  CreateUserUseCase,
-  type CreateUserRequest,
-} from '../../../../../application/use-cases/users/create-user.use-case';
-import { User } from '../../../../../domain/entities/user.entity';
-import { Email } from '../../../../../domain/value-objects/email.vo';
-import { UserRole } from '../../../../../shared/enums/user-role.enum';
+import { IPermissionService } from '../../../../../application/ports/permission.service.interface';
 
 describe('CreateUserUseCase', () => {
   let createUserUseCase: CreateUserUseCase;
   let mockUserRepository: ReturnType<typeof createMockUserRepository>;
   let mockLogger: ReturnType<typeof createMockLogger>;
   let mockI18nService: ReturnType<typeof createMockI18nService>;
+  let mockPermissionService: jest.Mocked<IPermissionService>;
 
   // Test Data Factory
   const createTestUser = (
@@ -49,10 +51,26 @@ describe('CreateUserUseCase', () => {
     mockLogger = createMockLogger();
     mockI18nService = createMockI18nService();
 
+    // Mock du service de permissions
+    mockPermissionService = {
+      requirePermission: jest.fn().mockResolvedValue(undefined),
+      hasPermission: jest.fn().mockResolvedValue(true),
+      canActOnRole: jest.fn().mockResolvedValue(true),
+      canManageUser: jest.fn().mockResolvedValue(true),
+      canAccessBusiness: jest.fn().mockResolvedValue(true),
+      getUserPermissions: jest.fn().mockResolvedValue([]),
+      getUserRole: jest.fn().mockResolvedValue('PLATFORM_ADMIN'),
+      hasRole: jest.fn().mockResolvedValue(true),
+      hasBusinessPermission: jest.fn().mockResolvedValue(true),
+      isSuperAdmin: jest.fn().mockResolvedValue(false),
+      requireSuperAdminPermission: jest.fn().mockResolvedValue(undefined),
+    } as jest.Mocked<IPermissionService>;
+
     createUserUseCase = new CreateUserUseCase(
       mockUserRepository,
       mockLogger,
       mockI18nService,
+      mockPermissionService,
     );
   });
 
@@ -100,6 +118,11 @@ describe('CreateUserUseCase', () => {
 
       mockUserRepository.findById.mockResolvedValue(regularClient);
 
+      // Mock permission service pour refuser cette action
+      mockPermissionService.requirePermission.mockRejectedValue(
+        new ForbiddenError('Insufficient permissions'),
+      );
+
       // Act & Assert
       await expect(createUserUseCase.execute(request)).rejects.toThrow(
         ForbiddenError,
@@ -123,6 +146,11 @@ describe('CreateUserUseCase', () => {
       };
 
       mockUserRepository.findById.mockResolvedValue(practitioner);
+
+      // Mock permission service pour refuser cette action
+      mockPermissionService.requirePermission.mockRejectedValue(
+        new ForbiddenError('Insufficient permissions'),
+      );
 
       // Act & Assert
       await expect(createUserUseCase.execute(request)).rejects.toThrow(
@@ -274,6 +302,12 @@ describe('CreateUserUseCase', () => {
 
       mockUserRepository.findById.mockResolvedValue(businessOwner);
 
+      // Mock permission service pour refuser cette action (canActOnRole)
+      mockPermissionService.requirePermission.mockResolvedValue(undefined);
+      mockPermissionService.canActOnRole.mockRejectedValue(
+        new ForbiddenError('Cannot create this role'),
+      );
+
       // Act & Assert
       await expect(createUserUseCase.execute(request)).rejects.toThrow(
         ForbiddenError,
@@ -297,6 +331,12 @@ describe('CreateUserUseCase', () => {
       };
 
       mockUserRepository.findById.mockResolvedValue(businessOwner);
+
+      // Mock permission service pour refuser cette action (canActOnRole)
+      mockPermissionService.requirePermission.mockResolvedValue(undefined);
+      mockPermissionService.canActOnRole.mockRejectedValue(
+        new ForbiddenError('Cannot create this role'),
+      );
 
       // Act & Assert
       await expect(createUserUseCase.execute(request)).rejects.toThrow(
@@ -363,6 +403,12 @@ describe('CreateUserUseCase', () => {
       };
 
       mockUserRepository.findById.mockResolvedValue(businessAdmin);
+
+      // Mock permission service pour refuser cette action (canActOnRole)
+      mockPermissionService.requirePermission.mockResolvedValue(undefined);
+      mockPermissionService.canActOnRole.mockRejectedValue(
+        new ForbiddenError('Cannot create this role'),
+      );
 
       // Act & Assert
       await expect(createUserUseCase.execute(request)).rejects.toThrow(

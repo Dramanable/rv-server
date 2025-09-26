@@ -13,7 +13,7 @@ import {
   BusinessHours,
   DaySchedule,
   SpecialDate,
-} from '../../../domain/value-objects/business-hours.value-object';
+} from '@domain/value-objects/business-hours.value-object';
 
 describe('BusinessHours Value Object', () => {
   describe('Creation and Validation', () => {

@@ -7,12 +7,14 @@
 
 import { StaffRepository } from '../../../domain/repositories/staff.repository.interface';
 import { UserId } from '../../../domain/value-objects/user-id.value-object';
+import { Permission } from '../../../shared/enums/permission.enum';
 import {
   ApplicationValidationError,
   ResourceNotFoundError,
 } from '../../exceptions/application.exceptions';
 import { I18nService } from '../../ports/i18n.port';
 import { Logger } from '../../ports/logger.port';
+import { IPermissionService } from '../../ports/permission.service.interface';
 
 export interface DeleteStaffRequest {
   readonly staffId: string;
@@ -30,6 +32,7 @@ export class DeleteStaffUseCase {
     private readonly staffRepository: StaffRepository,
     private readonly logger: Logger,
     private readonly i18n: I18nService,
+    private readonly permissionService: IPermissionService,
   ) {}
 
   async execute(request: DeleteStaffRequest): Promise<DeleteStaffResponse> {
@@ -43,7 +46,18 @@ export class DeleteStaffUseCase {
       // 1. Validation des paramètres
       await this.validateParameters(request);
 
-      // 2. Récupérer le staff
+      // 2. Vérifier les permissions avec IPermissionService
+      await this.permissionService.requirePermission(
+        request.requestingUserId,
+        Permission.MANAGE_STAFF,
+        {
+          action: 'delete',
+          resource: 'staff',
+          staffId: request.staffId,
+        },
+      );
+
+      // 3. Récupérer le staff
       const staff = await this.staffRepository.findById(
         UserId.create(request.staffId),
       );
@@ -55,13 +69,13 @@ export class DeleteStaffUseCase {
         throw error;
       }
 
-      // 3. Valider les règles métier
+      // 4. Valider les règles métier
       await this.validateBusinessRules(staff, request.staffId);
 
-      // 4. Supprimer le staff
+      // 5. Supprimer le staff
       await this.staffRepository.delete(staff.id);
 
-      // 5. Log du succès
+      // 6. Log du succès
       this.logger.info('Staff deleted successfully', {
         staffId: request.staffId,
         staffName: staff.fullName,

@@ -16,6 +16,13 @@ export enum Permission {
   MANAGE_ROLES = 'manage_roles',
   ASSIGN_ROLES = 'assign_roles',
 
+  // Gestion du personnel
+  MANAGE_STAFF = 'manage_staff',
+  CREATE_STAFF = 'create_staff',
+  UPDATE_STAFF = 'update_staff',
+  DELETE_STAFF = 'delete_staff',
+  VIEW_STAFF = 'view_staff',
+
   // Administration système
   ACCESS_ADMIN_PANEL = 'access_admin_panel',
   MANAGE_SYSTEM = 'manage_system',

@@ -2,9 +2,9 @@
  * 🧪 TDD - Test pour passwordChangeRequired dans User Entity
  */
 
-import { UserRole } from '../../../../shared/enums/user-role.enum';
-import { Email } from '../../../../domain/value-objects/email.vo';
-import { User } from '../../../../domain/entities/user.entity';
+import { UserRole } from '@shared/enums/user-role.enum';
+import { Email } from '@domain/value-objects/email.vo';
+import { User } from '@domain/entities/user.entity';
 
 describe('User Entity - Password Change Required', () => {
   describe('Password Change Requirement', () => {

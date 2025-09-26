@@ -4,7 +4,7 @@
  * Tests complets pour l'entité RefreshToken avec logique métier
  */
 
-import { RefreshToken } from '../../../../domain/entities/refresh-token.entity';
+import { RefreshToken } from '@domain/entities/refresh-token.entity';
 
 describe('RefreshToken Entity', () => {
   const validUserId = 'user-123';

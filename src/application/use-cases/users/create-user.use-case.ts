@@ -12,12 +12,12 @@ import { AppContextFactory } from '../../../shared/context/app-context';
 import { UserRole } from '../../../shared/enums/user-role.enum';
 import {
   DuplicationError,
-  ForbiddenError,
   UserNotFoundError,
   ValidationError,
 } from '../../exceptions/auth.exceptions';
 import { I18nService } from '../../ports/i18n.port';
 import { Logger } from '../../ports/logger.port';
+import { IPermissionService } from '../../ports/permission.service.interface';
 
 // ═══════════════════════════════════════════════════════════════
 // 📋 REQUEST & RESPONSE TYPES
@@ -55,6 +55,7 @@ export class CreateUserUseCase {
     private readonly userRepository: UserRepository,
     private readonly logger: Logger,
     private readonly i18n: I18nService,
+    private readonly permissionService: IPermissionService,
   ) {}
 
   async execute(request: CreateUserRequest): Promise<CreateUserResponse> {
@@ -80,8 +81,19 @@ export class CreateUserUseCase {
         });
       }
 
-      // 2. Vérifier les permissions
-      this.validatePermissions(requestingUser, request);
+      // 2. Vérifier les permissions avec IPermissionService
+      await this.permissionService.requirePermission(
+        request.requestingUserId,
+        'MANAGE_USERS',
+        { businessId: request.businessId },
+      );
+
+      // 2b. Vérifier que l'utilisateur peut créer ce type de rôle
+      await this.permissionService.canActOnRole(
+        request.requestingUserId,
+        request.role,
+        { businessId: request.businessId },
+      );
 
       // 3. Valider les données
       this.validateInput(request);
@@ -117,86 +129,6 @@ export class CreateUserUseCase {
   // ═══════════════════════════════════════════════════════════════
   // 🔒 VALIDATION METHODS
   // ═══════════════════════════════════════════════════════════════
-
-  private validatePermissions(
-    requestingUser: User,
-    request: CreateUserRequest,
-  ): void {
-    const userRole = requestingUser.role;
-    const targetRole = request.role;
-
-    // Règles de permissions par rôle
-    switch (userRole) {
-      case UserRole.PLATFORM_ADMIN:
-        // PLATFORM_ADMIN peut créer n'importe qui
-        return;
-
-      case UserRole.BUSINESS_OWNER: {
-        // BUSINESS_OWNER peut créer des rôles inférieurs seulement
-        const forbiddenForOwner = [
-          UserRole.PLATFORM_ADMIN,
-          UserRole.BUSINESS_OWNER,
-        ];
-        if (forbiddenForOwner.includes(targetRole)) {
-          throw new ForbiddenError(
-            `Business owner cannot create ${targetRole} users`,
-          );
-        }
-        return;
-      }
-
-      case UserRole.BUSINESS_ADMIN: {
-        // BUSINESS_ADMIN peut créer des rôles location/practitioner/client seulement
-        const allowedForAdmin = [
-          UserRole.LOCATION_MANAGER,
-          UserRole.DEPARTMENT_HEAD,
-          UserRole.SENIOR_PRACTITIONER,
-          UserRole.PRACTITIONER,
-          UserRole.JUNIOR_PRACTITIONER,
-          UserRole.RECEPTIONIST,
-          UserRole.ASSISTANT,
-          UserRole.SCHEDULER,
-          UserRole.CORPORATE_CLIENT,
-          UserRole.VIP_CLIENT,
-          UserRole.REGULAR_CLIENT,
-        ];
-        if (!allowedForAdmin.includes(targetRole)) {
-          throw new ForbiddenError(
-            `Business admin cannot create ${targetRole} users`,
-          );
-        }
-        return;
-      }
-
-      case UserRole.LOCATION_MANAGER: {
-        // LOCATION_MANAGER peut créer des rôles practitioner/client seulement
-        const allowedForManager = [
-          UserRole.DEPARTMENT_HEAD,
-          UserRole.SENIOR_PRACTITIONER,
-          UserRole.PRACTITIONER,
-          UserRole.JUNIOR_PRACTITIONER,
-          UserRole.RECEPTIONIST,
-          UserRole.ASSISTANT,
-          UserRole.SCHEDULER,
-          UserRole.CORPORATE_CLIENT,
-          UserRole.VIP_CLIENT,
-          UserRole.REGULAR_CLIENT,
-        ];
-        if (!allowedForManager.includes(targetRole)) {
-          throw new ForbiddenError(
-            `Location manager cannot create ${targetRole} users`,
-          );
-        }
-        return;
-      }
-
-      default:
-        // Tous les autres rôles ne peuvent pas créer d'utilisateurs
-        throw new ForbiddenError(
-          `Role ${userRole} is not authorized to create users`,
-        );
-    }
-  }
 
   private validateInput(request: CreateUserRequest): void {
     // Validation email

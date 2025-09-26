@@ -16,7 +16,6 @@ import {
   Param,
   Post,
   Put,
-  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -28,7 +27,6 @@ import {
 
 import { User } from '@domain/entities/user.entity';
 import { GetUser } from '@presentation/security/decorators/get-user.decorator';
-import { JwtAuthGuard } from '@presentation/security/guards/jwt-auth.guard';
 import { TOKENS } from '@shared/constants/injection-tokens';
 
 // Professional Use Cases
@@ -60,7 +58,6 @@ import { ProfessionalMapper } from '@presentation/mappers/professional.mapper';
 @ApiTags('👨‍💼 Professional Management')
 @Controller('professionals')
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
 export class ProfessionalController {
   constructor(
     @Inject(TOKENS.CREATE_PROFESSIONAL_USE_CASE)

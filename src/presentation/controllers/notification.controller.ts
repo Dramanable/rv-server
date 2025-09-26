@@ -13,7 +13,6 @@ import {
   HttpStatus,
   Inject,
   Post,
-  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -33,13 +32,8 @@ import { SendNotificationResponseDto } from '../dtos/notification/notification-r
 import { SendBulkNotificationResponseDto } from '../dtos/notification/send-bulk-notification-response.dto';
 import { SendBulkNotificationDto } from '../dtos/notification/send-bulk-notification.dto';
 import { SendNotificationDto } from '../dtos/notification/send-notification.dto';
-import {
-  NotificationRateLimitGuard,
-  RateLimit,
-} from '../security/notification-rate-limit.guard';
 // TODO: Import correct decorators when available
 // import { GetUser } from '../security/get-user.decorator';
-// import { JwtAuthGuard } from '../security/jwt-auth.guard';
 
 /**
  * Contrôleur pour la gestion des notifications
@@ -47,9 +41,6 @@ import {
 @ApiTags('📢 Notifications')
 @Controller('notifications')
 @ApiBearerAuth()
-@UseGuards(NotificationRateLimitGuard)
-// TODO: Add JWT guard when available
-// @UseGuards(JwtAuthGuard, NotificationRateLimitGuard)
 export class NotificationController {
   constructor(
     @Inject(TOKENS.SEND_NOTIFICATION_USE_CASE)
@@ -63,7 +54,7 @@ export class NotificationController {
    */
   @Post('send')
   @HttpCode(HttpStatus.OK)
-  @RateLimit({ ttl: 3600, limit: 100 }) // 100 notifications per hour
+  // @RateLimit({ ttl: 3600, limit: 100 }) // 100 notifications per hour - DISABLED
   @ApiOperation({
     summary: '📤 Send notification to recipient',
     description: `
@@ -333,7 +324,7 @@ export class NotificationController {
    */
   @Post('bulk')
   @HttpCode(HttpStatus.OK)
-  @RateLimit({ ttl: 3600, limit: 10 }) // 10 campagnes par heure max
+  // @RateLimit({ ttl: 3600, limit: 10 }) // 10 campagnes par heure max - DISABLED
   @ApiOperation({
     summary: '📬 Send bulk notifications (Campaign)',
     description: `

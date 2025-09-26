@@ -20,7 +20,6 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
-  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -30,15 +29,12 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 
+import { ManageBusinessHoursUseCase } from '../../application/use-cases/business/manage-business-hours.use-case';
 import { User } from '../../domain/entities/user.entity';
 import { TOKENS } from '../../shared/constants/injection-tokens';
 import { UserRole } from '../../shared/enums/user-role.enum';
-import { JwtAuthGuard } from '../security/auth.guard';
 import { GetUser } from '../security/decorators/get-user.decorator';
 import { Roles } from '../security/decorators/roles.decorator';
-import { RolesGuard } from '../security/guards/roles.guard';
-
-import { ManageBusinessHoursUseCase } from '../../application/use-cases/business/manage-business-hours.use-case';
 
 // Import DTOs
 import {
@@ -56,7 +52,6 @@ import {
 @ApiTags('⏰ Business Hours')
 @ApiBearerAuth()
 @Controller('businesses')
-@UseGuards(JwtAuthGuard, RolesGuard)
 export class BusinessHoursController {
   constructor(
     @Inject(TOKENS.MANAGE_BUSINESS_HOURS_USE_CASE)
@@ -108,25 +103,25 @@ export class BusinessHoursController {
     return {
       businessId: result.businessId,
       businessName: result.businessName,
-      weeklySchedule: result.weeklySchedule.map((day) => ({
-        dayOfWeek: day.dayOfWeek,
-        isOpen: day.isOpen,
-        timeSlots: day.timeSlots.map((slot) => ({
-          start: slot.start,
-          end: slot.end,
-          name: slot.name,
+      weeklySchedule: result.weeklySchedule.map((day: unknown) => ({
+        dayOfWeek: (day as any).dayOfWeek,
+        isOpen: (day as any).isOpen,
+        timeSlots: (day as any).timeSlots.map((slot: unknown) => ({
+          start: (slot as any).start,
+          end: (slot as any).end,
+          name: (slot as any).name,
         })),
-        specialNote: day.specialNote,
+        specialNote: (day as any).specialNote,
       })),
-      specialDates: result.specialDates.map((date) => ({
-        date: date.date.toISOString().split('T')[0], // Convert Date to string
-        isOpen: date.isOpen,
-        timeSlots: date.timeSlots?.map((slot) => ({
-          start: slot.start,
-          end: slot.end,
-          name: slot.name,
+      specialDates: result.specialDates.map((date: unknown) => ({
+        date: (date as any).date.toISOString().split('T')[0], // Convert Date to string
+        isOpen: (date as any).isOpen,
+        timeSlots: (date as any).timeSlots?.map((slot: unknown) => ({
+          start: (slot as any).start,
+          end: (slot as any).end,
+          name: (slot as any).name,
         })),
-        reason: date.reason,
+        reason: (date as any).reason,
       })),
       timezone: result.timezone,
       isCurrentlyOpen: result.isCurrentlyOpen,
@@ -178,25 +173,25 @@ export class BusinessHoursController {
   ): Promise<UpsertBusinessHoursResponseDto> {
     const result = await this.manageBusinessHoursUseCase.updateBusinessHours({
       businessId,
-      weeklySchedule: updateDto.weeklySchedule.map((day) => ({
-        dayOfWeek: day.dayOfWeek,
-        isOpen: day.isOpen,
-        timeSlots: day.timeSlots.map((slot) => ({
-          start: slot.start,
-          end: slot.end,
-          name: slot.name,
+      weeklySchedule: updateDto.weeklySchedule.map((day: unknown) => ({
+        dayOfWeek: (day as any).dayOfWeek,
+        isOpen: (day as any).isOpen,
+        timeSlots: (day as any).timeSlots.map((slot: unknown) => ({
+          start: (slot as any).start,
+          end: (slot as any).end,
+          name: (slot as any).name,
         })),
-        specialNote: day.specialNote,
+        specialNote: (day as any).specialNote,
       })),
-      specialDates: updateDto.specialDates?.map((date) => ({
-        date: new Date(date.date),
-        isOpen: date.isOpen,
-        timeSlots: date.timeSlots?.map((slot) => ({
-          start: slot.start,
-          end: slot.end,
-          name: slot.name,
+      specialDates: updateDto.specialDates?.map((date: unknown) => ({
+        date: new Date((date as any).date),
+        isOpen: (date as any).isOpen,
+        timeSlots: (date as any).timeSlots?.map((slot: unknown) => ({
+          start: (slot as any).start,
+          end: (slot as any).end,
+          name: (slot as any).name,
         })),
-        reason: date.reason,
+        reason: (date as any).reason,
       })),
       timezone: updateDto.timezone,
       requestingUserId: user.id,
@@ -257,10 +252,10 @@ export class BusinessHoursController {
       businessId,
       date: addDto.date,
       isOpen: addDto.isOpen,
-      timeSlots: addDto.timeSlots?.map((slot) => ({
-        start: slot.start,
-        end: slot.end,
-        name: slot.name,
+      timeSlots: addDto.timeSlots?.map((slot: unknown) => ({
+        start: (slot as any).start,
+        end: (slot as any).end,
+        name: (slot as any).name,
       })),
       reason: addDto.reason,
       requestingUserId: user.id,
@@ -271,10 +266,10 @@ export class BusinessHoursController {
       specialDate: {
         date: result.specialDate.date.toISOString().split('T')[0],
         isOpen: result.specialDate.isOpen,
-        timeSlots: result.specialDate.timeSlots?.map((slot) => ({
-          start: slot.start,
-          end: slot.end,
-          name: slot.name,
+        timeSlots: result.specialDate.timeSlots?.map((slot: unknown) => ({
+          start: (slot as any).start,
+          end: (slot as any).end,
+          name: (slot as any).name,
         })),
         reason: result.specialDate.reason,
       },
@@ -332,10 +327,10 @@ export class BusinessHoursController {
       businessId: result.businessId,
       date: result.date.toISOString().split('T')[0],
       isOpenOnDate: result.isOpenOnDate,
-      availableTimeSlots: result.availableTimeSlots.map((slot) => ({
-        start: slot.start,
-        end: slot.end,
-        name: slot.name,
+      availableTimeSlots: result.availableTimeSlots.map((slot: unknown) => ({
+        start: (slot as any).start,
+        end: (slot as any).end,
+        name: (slot as any).name,
       })),
       isOpenAtTime: result.isOpenAtTime,
       nextAvailableSlot: result.nextAvailableSlot

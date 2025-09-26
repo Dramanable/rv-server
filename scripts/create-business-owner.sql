@@ -33,5 +33,5 @@ INSERT INTO rvproject_schema.users (
 
 -- Vérifier la création
 SELECT id, email, role, is_active, created_at
-FROM rvproject_schema.users 
+FROM rvproject_schema.users
 WHERE email = 'owner@business.com';

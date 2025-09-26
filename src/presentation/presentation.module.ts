@@ -13,7 +13,7 @@ import { DatabaseModule } from '@infrastructure/database/database.module';
 import { InfrastructureModule } from '@infrastructure/infrastructure.module';
 
 // 📝 Tokens pour l'injection de dépendances
-import { TOKENS } from '@shared/constants/injection-tokens';
+import { APPLICATION_TOKENS, TOKENS } from '@shared/constants/injection-tokens';
 
 // 💼 Use Cases pour l'inversion de dépendances (Presentation Layer responsability)
 // Auth Use Cases
@@ -81,6 +81,10 @@ import { DeleteStaffUseCase } from '@application/use-cases/staff/delete-staff.us
 import { GetStaffUseCase } from '@application/use-cases/staff/get-staff.use-case';
 import { ListStaffUseCase } from '@application/use-cases/staff/list-staff.use-case';
 import { UpdateStaffUseCase } from '@application/use-cases/staff/update-staff.use-case';
+// 📅 Staff Availability Use Cases - NEW
+import { GetAvailableStaffUseCase } from '@application/use-cases/staff/get-available-staff.use-case';
+import { GetStaffAvailabilityUseCase } from '@application/use-cases/staff/get-staff-availability.use-case';
+import { SetStaffAvailabilityUseCase } from '@application/use-cases/staff/set-staff-availability.use-case';
 
 // Appointment Use Cases
 import { BookAppointmentUseCase } from '@application/use-cases/appointment/book-appointment.use-case';
@@ -108,6 +112,9 @@ import { GetProfessionalByIdUseCase } from '@application/use-cases/professionals
 import { ListProfessionalsUseCase } from '@application/use-cases/professionals/list-professionals.use-case';
 import { UpdateProfessionalUseCase } from '@application/use-cases/professionals/update-professional.use-case';
 
+// Role Management Use Cases
+import { AssignRoleUseCase } from '@application/use-cases/role-management/assign-role.use-case';
+
 // 🎮 Controllers
 import { AppointmentController } from './controllers/appointment.controller';
 import { AuthController } from './controllers/auth.controller';
@@ -120,13 +127,15 @@ import { CalendarTypesController } from './controllers/calendar-types.controller
 import { CalendarController } from './controllers/calendar.controller';
 import { NotificationController } from './controllers/notification.controller';
 import { ProfessionalController } from './controllers/professional.controller';
-import { ServiceController } from './controllers/service.controller';
+import { RoleManagementController } from './controllers/role-management.controller';
 import { ServiceTypeController } from './controllers/service-type.controller';
+import { ServiceController } from './controllers/service.controller';
+import { StaffAvailabilityController } from './controllers/staff-availability.controller';
 import { StaffController } from './controllers/staff.controller';
 import { UserController } from './controllers/user.controller';
 
 // 🛡️ Security
-import { JwtAuthGuard } from './security/auth.guard';
+import { JwtAuthGuard } from './security/guards/jwt-auth.guard';
 import { RolesGuard } from './security/guards/roles.guard';
 import { NotificationRateLimitGuard } from './security/notification-rate-limit.guard';
 import { JwtStrategy } from './security/strategies/jwt.strategy';
@@ -155,11 +164,13 @@ import { PresentationCookieService } from './services/cookie.service';
     ServiceController,
     ServiceTypeController,
     StaffController,
+    StaffAvailabilityController,
     BusinessImageController,
     BusinessGalleryController,
     AppointmentController,
     NotificationController,
     ProfessionalController,
+    RoleManagementController,
   ],
   providers: [
     // 🛡️ Security providers
@@ -282,9 +293,14 @@ import { PresentationCookieService } from './services/cookie.service';
     },
     {
       provide: TOKENS.CREATE_USER_USE_CASE,
-      useFactory: (userRepo, logger, i18n) =>
-        new CreateUserUseCase(userRepo, logger, i18n),
-      inject: [TOKENS.USER_REPOSITORY, TOKENS.LOGGER, TOKENS.I18N_SERVICE],
+      useFactory: (userRepo, logger, i18n, permissionService) =>
+        new CreateUserUseCase(userRepo, logger, i18n, permissionService),
+      inject: [
+        TOKENS.USER_REPOSITORY,
+        TOKENS.LOGGER,
+        TOKENS.I18N_SERVICE,
+        TOKENS.PERMISSION_SERVICE,
+      ],
     },
     {
       provide: TOKENS.GET_USER_BY_ID_USE_CASE,
@@ -294,15 +310,25 @@ import { PresentationCookieService } from './services/cookie.service';
     },
     {
       provide: TOKENS.UPDATE_USER_USE_CASE,
-      useFactory: (userRepo, logger, i18n) =>
-        new UpdateUserUseCase(userRepo, logger, i18n),
-      inject: [TOKENS.USER_REPOSITORY, TOKENS.LOGGER, TOKENS.I18N_SERVICE],
+      useFactory: (userRepo, permissionService, logger, i18n) =>
+        new UpdateUserUseCase(userRepo, permissionService, logger, i18n),
+      inject: [
+        TOKENS.USER_REPOSITORY,
+        TOKENS.PERMISSION_SERVICE,
+        TOKENS.LOGGER,
+        TOKENS.I18N_SERVICE,
+      ],
     },
     {
       provide: TOKENS.DELETE_USER_USE_CASE,
-      useFactory: (userRepo, logger, i18n) =>
-        new DeleteUserUseCase(userRepo, logger, i18n),
-      inject: [TOKENS.USER_REPOSITORY, TOKENS.LOGGER, TOKENS.I18N_SERVICE],
+      useFactory: (userRepo, permissionService, logger, i18n) =>
+        new DeleteUserUseCase(userRepo, permissionService, logger, i18n),
+      inject: [
+        TOKENS.USER_REPOSITORY,
+        TOKENS.PERMISSION_SERVICE,
+        TOKENS.LOGGER,
+        TOKENS.I18N_SERVICE,
+      ],
     },
 
     // 🏢 Business Sector Use Cases
@@ -369,47 +395,57 @@ import { PresentationCookieService } from './services/cookie.service';
       ],
     },
 
-    // 🏢 Business Use Cases
+    // 🏢 Business Use Cases - RBAC avec IPermissionService
     {
       provide: TOKENS.CREATE_BUSINESS_USE_CASE,
-      useFactory: (businessRepo, userRepo, logger, i18n) =>
-        new CreateBusinessUseCase(businessRepo, userRepo, logger, i18n),
+      useFactory: (businessRepo, permissionService, logger, i18n) =>
+        new CreateBusinessUseCase(
+          businessRepo,
+          permissionService,
+          logger,
+          i18n,
+        ),
       inject: [
         TOKENS.BUSINESS_REPOSITORY,
-        TOKENS.USER_REPOSITORY,
+        TOKENS.PERMISSION_SERVICE,
         TOKENS.LOGGER,
         TOKENS.I18N_SERVICE,
       ],
     },
     {
       provide: TOKENS.GET_BUSINESS_USE_CASE,
-      useFactory: (businessRepo, userRepo, logger, i18n) =>
-        new GetBusinessUseCase(businessRepo, userRepo, logger, i18n),
+      useFactory: (businessRepo, permissionService, logger, i18n) =>
+        new GetBusinessUseCase(businessRepo, permissionService, logger, i18n),
       inject: [
         TOKENS.BUSINESS_REPOSITORY,
-        TOKENS.USER_REPOSITORY,
+        TOKENS.PERMISSION_SERVICE,
         TOKENS.LOGGER,
         TOKENS.I18N_SERVICE,
       ],
     },
     {
       provide: TOKENS.LIST_BUSINESS_USE_CASE,
-      useFactory: (businessRepo, userRepo, logger, i18n) =>
-        new ListBusinessUseCase(businessRepo, userRepo, logger, i18n),
+      useFactory: (businessRepo, permissionService, logger, i18n) =>
+        new ListBusinessUseCase(businessRepo, permissionService, logger, i18n),
       inject: [
         TOKENS.BUSINESS_REPOSITORY,
-        TOKENS.USER_REPOSITORY,
+        TOKENS.PERMISSION_SERVICE,
         TOKENS.LOGGER,
         TOKENS.I18N_SERVICE,
       ],
     },
     {
       provide: TOKENS.UPDATE_BUSINESS_USE_CASE,
-      useFactory: (businessRepo, userRepo, logger, i18n) =>
-        new UpdateBusinessUseCase(businessRepo, userRepo, logger, i18n),
+      useFactory: (businessRepo, permissionService, logger, i18n) =>
+        new UpdateBusinessUseCase(
+          businessRepo,
+          permissionService,
+          logger,
+          i18n,
+        ),
       inject: [
         TOKENS.BUSINESS_REPOSITORY,
-        TOKENS.USER_REPOSITORY,
+        TOKENS.PERMISSION_SERVICE,
         TOKENS.LOGGER,
         TOKENS.I18N_SERVICE,
       ],
@@ -513,44 +549,72 @@ import { PresentationCookieService } from './services/cookie.service';
     },
     {
       provide: TOKENS.GET_SERVICE_USE_CASE,
-      useFactory: (serviceRepo, logger, i18n) =>
-        new GetServiceUseCase(serviceRepo, logger, i18n),
-      inject: [TOKENS.SERVICE_REPOSITORY, TOKENS.LOGGER, TOKENS.I18N_SERVICE],
+      useFactory: (serviceRepo, permissionService, logger, i18n) =>
+        new GetServiceUseCase(serviceRepo, permissionService, logger, i18n),
+      inject: [
+        TOKENS.SERVICE_REPOSITORY,
+        TOKENS.PERMISSION_SERVICE,
+        TOKENS.LOGGER,
+        TOKENS.I18N_SERVICE,
+      ],
     },
     {
       provide: TOKENS.LIST_SERVICES_USE_CASE,
-      useFactory: (serviceRepo, logger) =>
-        new ListServicesUseCase(serviceRepo, logger),
-      inject: [TOKENS.SERVICE_REPOSITORY, TOKENS.LOGGER],
+      useFactory: (serviceRepo, permissionService, logger, i18n) =>
+        new ListServicesUseCase(serviceRepo, permissionService, logger, i18n),
+      inject: [
+        TOKENS.SERVICE_REPOSITORY,
+        TOKENS.PERMISSION_SERVICE,
+        TOKENS.LOGGER,
+        TOKENS.I18N_SERVICE,
+      ],
     },
     {
       provide: TOKENS.UPDATE_SERVICE_USE_CASE,
-      useFactory: (serviceRepo, logger, i18n) =>
-        new UpdateServiceUseCase(serviceRepo, logger, i18n),
-      inject: [TOKENS.SERVICE_REPOSITORY, TOKENS.LOGGER, TOKENS.I18N_SERVICE],
+      useFactory: (serviceRepo, permissionService, logger, i18n) =>
+        new UpdateServiceUseCase(serviceRepo, permissionService, logger, i18n),
+      inject: [
+        TOKENS.SERVICE_REPOSITORY,
+        TOKENS.PERMISSION_SERVICE,
+        TOKENS.LOGGER,
+        TOKENS.I18N_SERVICE,
+      ],
     },
     {
       provide: TOKENS.DELETE_SERVICE_USE_CASE,
-      useFactory: (serviceRepo, logger, i18n) =>
-        new DeleteServiceUseCase(serviceRepo, logger, i18n),
-      inject: [TOKENS.SERVICE_REPOSITORY, TOKENS.LOGGER, TOKENS.I18N_SERVICE],
+      useFactory: (serviceRepo, permissionService, logger, i18n) =>
+        new DeleteServiceUseCase(serviceRepo, permissionService, logger, i18n),
+      inject: [
+        TOKENS.SERVICE_REPOSITORY,
+        TOKENS.PERMISSION_SERVICE,
+        TOKENS.LOGGER,
+        TOKENS.I18N_SERVICE,
+      ],
     },
 
     // 🏷️ ServiceType Use Cases - RE-ENABLED after implementing ServiceType repository
     {
       provide: TOKENS.CREATE_SERVICE_TYPE_USE_CASE,
-      useFactory: (serviceTypeRepo, logger, i18n, auditService) =>
+      useFactory: (
+        serviceTypeRepo,
+        logger,
+        i18n,
+        auditService,
+        permissionService,
+      ) =>
         new CreateServiceTypeUseCase(
           serviceTypeRepo,
           logger,
           i18n,
           auditService,
+          permissionService,
         ),
       inject: [
         TOKENS.SERVICE_TYPE_REPOSITORY,
         TOKENS.LOGGER,
         TOKENS.I18N_SERVICE,
         TOKENS.AUDIT_SERVICE,
+        TOKENS.PERMISSION_SERVICE,
       ],
     },
     {
@@ -615,21 +679,57 @@ import { PresentationCookieService } from './services/cookie.service';
     },
     {
       provide: TOKENS.LIST_STAFF_USE_CASE,
-      useFactory: (staffRepo, logger, i18n) =>
-        new ListStaffUseCase(staffRepo, logger, i18n),
-      inject: [TOKENS.STAFF_REPOSITORY, TOKENS.LOGGER, TOKENS.I18N_SERVICE],
+      useFactory: (staffRepo, logger, i18n, permissionService) =>
+        new ListStaffUseCase(staffRepo, logger, i18n, permissionService),
+      inject: [
+        TOKENS.STAFF_REPOSITORY,
+        TOKENS.LOGGER,
+        TOKENS.I18N_SERVICE,
+        TOKENS.PERMISSION_SERVICE,
+      ],
     },
     {
       provide: TOKENS.UPDATE_STAFF_USE_CASE,
-      useFactory: (staffRepo, logger, i18n) =>
-        new UpdateStaffUseCase(staffRepo, logger, i18n),
-      inject: [TOKENS.STAFF_REPOSITORY, TOKENS.LOGGER, TOKENS.I18N_SERVICE],
+      useFactory: (staffRepo, logger, i18n, permissionService) =>
+        new UpdateStaffUseCase(staffRepo, logger, i18n, permissionService),
+      inject: [
+        TOKENS.STAFF_REPOSITORY,
+        TOKENS.LOGGER,
+        TOKENS.I18N_SERVICE,
+        TOKENS.PERMISSION_SERVICE,
+      ],
     },
     {
       provide: TOKENS.DELETE_STAFF_USE_CASE,
-      useFactory: (staffRepo, logger, i18n) =>
-        new DeleteStaffUseCase(staffRepo, logger, i18n),
-      inject: [TOKENS.STAFF_REPOSITORY, TOKENS.LOGGER, TOKENS.I18N_SERVICE],
+      useFactory: (staffRepo, logger, i18n, permissionService) =>
+        new DeleteStaffUseCase(staffRepo, logger, i18n, permissionService),
+      inject: [
+        TOKENS.STAFF_REPOSITORY,
+        TOKENS.LOGGER,
+        TOKENS.I18N_SERVICE,
+        TOKENS.PERMISSION_SERVICE,
+      ],
+    },
+
+    // 📅 Staff Availability Use Cases - NEW
+    // ✅ Staff Availability Use Cases
+    {
+      provide: APPLICATION_TOKENS.SET_STAFF_AVAILABILITY_USE_CASE,
+      useFactory: (staffRepository) =>
+        new SetStaffAvailabilityUseCase(staffRepository),
+      inject: [TOKENS.STAFF_REPOSITORY],
+    },
+    {
+      provide: APPLICATION_TOKENS.GET_STAFF_AVAILABILITY_USE_CASE,
+      useFactory: (staffRepository) =>
+        new GetStaffAvailabilityUseCase(staffRepository),
+      inject: [TOKENS.STAFF_REPOSITORY],
+    },
+    {
+      provide: APPLICATION_TOKENS.GET_AVAILABLE_STAFF_USE_CASE,
+      useFactory: (staffRepository) =>
+        new GetAvailableStaffUseCase(staffRepository),
+      inject: [TOKENS.STAFF_REPOSITORY],
     },
 
     // 📅 Appointment Use Cases
@@ -926,6 +1026,26 @@ import { PresentationCookieService } from './services/cookie.service';
         TOKENS.LOGGER,
         TOKENS.I18N_SERVICE,
         TOKENS.AUDIT_SERVICE,
+      ],
+    },
+
+    // 🎭 RBAC Use Cases
+    {
+      provide: TOKENS.ASSIGN_ROLE_USE_CASE,
+      useFactory: (
+        roleAssignmentRepo,
+        businessContextRepo,
+        permissionService,
+      ) =>
+        new AssignRoleUseCase(
+          roleAssignmentRepo,
+          businessContextRepo,
+          permissionService,
+        ),
+      inject: [
+        TOKENS.ROLE_ASSIGNMENT_REPOSITORY,
+        TOKENS.RBAC_BUSINESS_CONTEXT_REPOSITORY,
+        TOKENS.PERMISSION_SERVICE,
       ],
     },
   ],

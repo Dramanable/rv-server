@@ -5,9 +5,13 @@ import { Money } from '../../../domain/value-objects/money.value-object';
 import { PricingConfig } from '../../../domain/value-objects/pricing-config.value-object';
 import { ServiceId } from '../../../domain/value-objects/service-id.value-object';
 import { UserId } from '../../../domain/value-objects/user-id.value-object';
-import { ApplicationValidationError } from '../../exceptions/application.exceptions';
+import {
+  ApplicationValidationError,
+  InsufficientPermissionsError,
+} from '../../exceptions/application.exceptions';
 import { I18nService } from '../../ports/i18n.port';
 import { Logger } from '../../ports/logger.port';
+import { IPermissionService } from '../../ports/permission.service.interface';
 
 export interface UpdateServiceRequest {
   readonly serviceId: string;
@@ -56,6 +60,7 @@ export interface UpdateServiceResponse {
 export class UpdateServiceUseCase {
   constructor(
     private readonly serviceRepository: ServiceRepository,
+    private readonly permissionService: IPermissionService,
     private readonly logger: Logger,
     private readonly i18n: I18nService,
   ) {}
@@ -87,16 +92,46 @@ export class UpdateServiceUseCase {
         );
       }
 
-      // 2. Convertir l'ID string en ServiceId
+      // 2. Convertir l'ID string en ServiceId et récupérer le service
       const serviceId = ServiceId.create(request.serviceId);
-
-      // 3. Récupérer le service existant
       const existingService = await this.serviceRepository.findById(serviceId);
       if (!existingService) {
         throw new ServiceNotFoundError(
           this.i18n.translate('service.errors.not_found', {
             id: request.serviceId,
           }),
+        );
+      }
+
+      // 3. 🔐 VALIDATION DES PERMISSIONS CRITIQUES
+      try {
+        await this.permissionService.requirePermission(
+          request.requestingUserId,
+          'MANAGE_SERVICES',
+          {
+            businessId: existingService.businessId.getValue(),
+            resourceId: request.serviceId,
+          },
+        );
+      } catch (error) {
+        this.logger.error(
+          'Permission denied for service update',
+          error instanceof Error ? error : new Error(String(error)),
+          {
+            requestingUserId: request.requestingUserId,
+            serviceId: request.serviceId,
+            businessId: existingService.businessId.getValue(),
+            requiredPermission: 'MANAGE_SERVICES',
+          },
+        );
+        throw new InsufficientPermissionsError(
+          request.requestingUserId,
+          'MANAGE_SERVICES',
+          request.serviceId,
+          {
+            operation: 'update service',
+            businessId: existingService.businessId.getValue(),
+          },
         );
       }
 

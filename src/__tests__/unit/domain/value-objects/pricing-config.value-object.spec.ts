@@ -8,8 +8,8 @@ import {
   PricingType,
   PricingVisibility,
   PricingRule,
-} from '../../../../domain/value-objects/pricing-config.value-object';
-import { Money } from '../../../../domain/value-objects/money.value-object';
+} from '@domain/value-objects/pricing-config.value-object';
+import { Money } from '@domain/value-objects/money.value-object';
 
 describe('PricingConfig Value Object', () => {
   describe('Free Pricing', () => {

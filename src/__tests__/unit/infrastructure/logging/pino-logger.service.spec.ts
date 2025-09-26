@@ -1,4 +1,4 @@
-import { PinoLoggerService } from '../../../../infrastructure/logging/pino-logger.service';
+import { PinoLoggerService } from '@infrastructure/logging/pino-logger.service';
 
 describe('PinoLoggerService', () => {
   // Tests simplifiés pour éviter les problèmes de configuration complexe

@@ -14,9 +14,11 @@ import { StaffNotFoundError } from '../../../domain/exceptions/staff.exceptions'
 import { StaffRepository } from '../../../domain/repositories/staff.repository.interface';
 import { Email } from '../../../domain/value-objects/email.value-object';
 import { UserId } from '../../../domain/value-objects/user-id.value-object';
+import { Permission } from '../../../shared/enums/permission.enum';
 import { ApplicationValidationError } from '../../exceptions/application.exceptions';
 import { I18nService } from '../../ports/i18n.port';
 import { Logger } from '../../ports/logger.port';
+import { IPermissionService } from '../../ports/permission.service.interface';
 
 export interface UpdateStaffRequest {
   readonly staffId: string;
@@ -48,6 +50,7 @@ export class UpdateStaffUseCase {
     private readonly staffRepository: StaffRepository,
     private readonly logger: Logger,
     private readonly i18n: I18nService,
+    private readonly permissionService: IPermissionService,
   ) {}
 
   async execute(request: UpdateStaffRequest): Promise<UpdateStaffResponse> {
@@ -55,13 +58,24 @@ export class UpdateStaffUseCase {
       // 1. Validation des paramètres
       this.validateParameters(request);
 
-      // 2. Log de l'opération
+      // 2. Vérifier les permissions avec IPermissionService
+      await this.permissionService.requirePermission(
+        request.requestingUserId,
+        Permission.MANAGE_STAFF,
+        {
+          action: 'update',
+          resource: 'staff',
+          staffId: request.staffId,
+        },
+      );
+
+      // 3. Log de l'opération
       this.logger.info('Attempting to update staff', {
         staffId: request.staffId,
         requestingUserId: request.requestingUserId,
       });
 
-      // 3. Récupérer le staff existant
+      // 4. Récupérer le staff existant
       const staffId = UserId.create(request.staffId);
       const staff = await this.staffRepository.findById(staffId);
 
@@ -69,22 +83,22 @@ export class UpdateStaffUseCase {
         throw new StaffNotFoundError(request.staffId);
       }
 
-      // 4. Validation des règles métier
+      // 5. Validation des règles métier
       await this.validateBusinessRules(request, staff);
 
-      // 5. Appliquer les modifications
+      // 6. Appliquer les modifications
       this.applyUpdates(staff, request.updates);
 
-      // 6. Sauvegarder
+      // 7. Sauvegarder
       await this.staffRepository.save(staff);
 
-      // 7. Log du succès
+      // 8. Log du succès
       this.logger.info('Staff updated successfully', {
         staffId: request.staffId,
         requestingUserId: request.requestingUserId,
       });
 
-      // 8. Retourner la réponse
+      // 9. Retourner la réponse
       return this.mapStaffToResponse(staff);
     } catch (error) {
       this.logger.error('Error updating staff', error as Error, {

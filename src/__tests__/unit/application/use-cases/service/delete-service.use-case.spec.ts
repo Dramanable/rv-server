@@ -5,21 +5,23 @@
  * Couche Application - Tests d'orchestration métier
  */
 
+import { DeleteServiceUseCase } from '@application/use-cases/service/delete-service.use-case';
+import { Service } from '@domain/entities/service.entity';
+import { ServiceNotFoundError } from '@domain/exceptions/service.exceptions';
+import { BusinessId } from '@domain/value-objects/business-id.value-object';
+import { ServiceId } from '@domain/value-objects/service-id.value-object';
+import { ServiceTypeId } from '@domain/value-objects/service-type-id.value-object';
+import { UserId } from '@domain/value-objects/user-id.value-object';
 import { ApplicationValidationError } from '../../../../../application/exceptions/application.exceptions';
 import { I18nService } from '../../../../../application/ports/i18n.port';
 import { Logger } from '../../../../../application/ports/logger.port';
-import { DeleteServiceUseCase } from '../../../../../application/use-cases/service/delete-service.use-case';
-import { Service } from '../../../../../domain/entities/service.entity';
-import { ServiceNotFoundError } from '../../../../../domain/exceptions/service.exceptions';
+import { IPermissionService } from '../../../../../application/ports/permission.service.interface';
 import { ServiceRepository } from '../../../../../domain/repositories/service.repository.interface';
-import { BusinessId } from '../../../../../domain/value-objects/business-id.value-object';
-import { ServiceId } from '../../../../../domain/value-objects/service-id.value-object';
-import { ServiceTypeId } from '../../../../../domain/value-objects/service-type-id.value-object';
-import { UserId } from '../../../../../domain/value-objects/user-id.value-object';
 
 describe('DeleteServiceUseCase', () => {
   let useCase: DeleteServiceUseCase;
   let mockServiceRepository: jest.Mocked<ServiceRepository>;
+  let mockPermissionService: jest.Mocked<IPermissionService>;
   let mockLogger: jest.Mocked<Logger>;
   let mockI18n: jest.Mocked<I18nService>;
 
@@ -60,7 +62,14 @@ describe('DeleteServiceUseCase', () => {
       warn: jest.fn(),
       debug: jest.fn(),
       audit: jest.fn(),
-      child: jest.fn(),
+      child: jest.fn().mockReturnValue({
+        info: jest.fn(),
+        error: jest.fn(),
+        warn: jest.fn(),
+        debug: jest.fn(),
+        audit: jest.fn(),
+        child: jest.fn(),
+      }),
     };
 
     mockI18n = {
@@ -70,8 +79,22 @@ describe('DeleteServiceUseCase', () => {
       exists: jest.fn(),
     };
 
+    mockPermissionService = {
+      requirePermission: jest.fn(),
+      hasPermission: jest.fn().mockResolvedValue(true),
+      getUserPermissions: jest.fn().mockResolvedValue([]),
+      canActOnRole: jest.fn().mockResolvedValue(true),
+      canManageUser: jest.fn().mockResolvedValue(true),
+      getUserRole: jest.fn(),
+      hasRole: jest.fn().mockResolvedValue(true),
+      hasBusinessPermission: jest.fn().mockResolvedValue(true),
+      requireSuperAdminPermission: jest.fn(),
+      isSuperAdmin: jest.fn().mockResolvedValue(false),
+    };
+
     useCase = new DeleteServiceUseCase(
       mockServiceRepository,
+      mockPermissionService,
       mockLogger,
       mockI18n,
     );

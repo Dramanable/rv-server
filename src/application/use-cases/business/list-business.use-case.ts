@@ -5,17 +5,14 @@
  * ✅ Dependency Inversion Principle respecté
  * ✅ Interface-driven design
  */
-import { Business } from '../../../domain/entities/business.entity';
-import type { BusinessRepository } from '../../../domain/repositories/business.repository.interface';
-import type { UserRepository } from '../../../domain/repositories/user.repository.interface';
-import type { Logger } from '../../../application/ports/logger.port';
+import type { IPermissionService } from '@application/ports/permission.service.interface';
 import type { I18nService } from '../../../application/ports/i18n.port';
+import type { Logger } from '../../../application/ports/logger.port';
+import type { BusinessRepository } from '../../../domain/repositories/business.repository.interface';
 import {
   AppContext,
   AppContextFactory,
 } from '../../../shared/context/app-context';
-import { UserRole } from '../../../shared/enums/user-role.enum';
-import { InsufficientPermissionsError } from '../../../application/exceptions/application.exceptions';
 
 export interface ListBusinessRequest {
   readonly requestingUserId: string;
@@ -61,7 +58,7 @@ export interface ListBusinessResponse {
 export class ListBusinessUseCase {
   constructor(
     private readonly businessRepository: BusinessRepository,
-    private readonly userRepository: UserRepository,
+    private readonly permissionService: IPermissionService,
     private readonly logger: Logger,
     private readonly i18n: I18nService,
   ) {}
@@ -149,38 +146,36 @@ export class ListBusinessUseCase {
   }
 
   /**
-   * SRP - Validation des permissions utilisateur
+   * SRP - Validation des permissions utilisateur avec IPermissionService
    */
   private async validatePermissions(
     requestingUserId: string,
     context: AppContext,
   ): Promise<void> {
-    const requestingUser = await this.userRepository.findById(requestingUserId);
-    if (!requestingUser) {
-      throw new InsufficientPermissionsError(
-        'Requesting user not found',
-        UserRole.REGULAR_CLIENT,
-      );
-    }
+    this.logger.info('Validating LIST_BUSINESSES permission', {
+      requestingUserId,
+      correlationId: context.correlationId,
+    });
 
-    // Seuls les rôles business et platform peuvent lister les entreprises
-    const allowedRoles = [
-      UserRole.PLATFORM_ADMIN,
-      UserRole.BUSINESS_OWNER,
-      UserRole.BUSINESS_ADMIN,
-      UserRole.LOCATION_MANAGER,
-    ];
-
-    if (!allowedRoles.includes(requestingUser.role)) {
-      this.logger.warn(this.i18n.t('warnings.permission.denied'), {
+    try {
+      await this.permissionService.requirePermission(
         requestingUserId,
-        requestingUserRole: requestingUser.role,
-        operation: 'LIST_BUSINESSES',
-      });
-      throw new InsufficientPermissionsError(
-        'Insufficient permissions to list businesses',
-        requestingUser.role,
+        'LIST_BUSINESSES',
+        {
+          correlationId: context.correlationId,
+        },
       );
+
+      this.logger.info('LIST_BUSINESSES permission validated successfully', {
+        requestingUserId,
+        correlationId: context.correlationId,
+      });
+    } catch (error) {
+      this.logger.error('LIST_BUSINESSES permission denied', error as Error, {
+        requestingUserId,
+        correlationId: context.correlationId,
+      });
+      throw error;
     }
   }
 

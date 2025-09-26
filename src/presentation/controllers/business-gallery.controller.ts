@@ -9,7 +9,6 @@ import {
   Post,
   Put,
   Req,
-  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -24,7 +23,6 @@ import { FastifyRequest } from 'fastify';
 
 import { User } from '../../domain/entities/user.entity';
 import { GetUser } from '../security/decorators/get-user.decorator';
-import { JwtAuthGuard } from '../security/guards/jwt-auth.guard';
 
 import {
   BusinessGalleryDto,
@@ -53,7 +51,6 @@ import { TOKENS } from '../../shared/constants/injection-tokens';
 @ApiTags('🖼️ Business Gallery')
 @Controller('business-galleries')
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
 export class BusinessGalleryController {
   constructor(
     @Inject(TOKENS.CREATE_BUSINESS_GALLERY_USE_CASE)

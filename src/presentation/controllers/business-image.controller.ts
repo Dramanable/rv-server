@@ -16,7 +16,6 @@ import {
   Post,
   Put,
   UploadedFile,
-  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -40,7 +39,6 @@ import {
   UpdateBusinessSeoResponseDto,
 } from '../dtos/business-seo.dto';
 import { GetUser } from '../security/decorators/get-user.decorator';
-import { JwtAuthGuard } from '../security/guards/jwt-auth.guard';
 
 import { AddImageToBusinessGalleryUseCase } from '../../application/use-cases/business/add-image-to-business-gallery.use-case';
 import { UpdateBusinessSeoProfileUseCase } from '../../application/use-cases/business/update-business-seo.use-case';
@@ -57,7 +55,6 @@ interface AuthenticatedUser {
 @ApiTags('🖼️ Business Image Management')
 @Controller('business/images')
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
 export class BusinessImageController {
   private readonly defaultUploadSettings = ImageUploadSettings.createDefault();
 

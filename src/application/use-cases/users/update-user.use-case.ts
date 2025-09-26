@@ -12,12 +12,13 @@ import { AppContextFactory } from '../../../shared/context/app-context';
 import { UserRole } from '../../../shared/enums/user-role.enum';
 import {
   DuplicationError,
-  ForbiddenError,
+  InsufficientPermissionsError,
   UserNotFoundError,
   ValidationError,
 } from '../../exceptions/auth.exceptions';
 import { I18nService } from '../../ports/i18n.port';
 import { Logger } from '../../ports/logger.port';
+import { IPermissionService } from '../../ports/permission.service.interface';
 
 // ═══════════════════════════════════════════════════════════════
 // 📋 REQUEST & RESPONSE TYPES
@@ -56,6 +57,7 @@ export interface UpdateUserResponse {
 export class UpdateUserUseCase {
   constructor(
     private readonly userRepository: UserRepository,
+    private readonly permissionService: IPermissionService,
     private readonly logger: Logger,
     private readonly i18n: I18nService,
   ) {}
@@ -95,7 +97,7 @@ export class UpdateUserUseCase {
       }
 
       // 3. Vérifier les permissions (avant la validation des données)
-      this.validatePermissions(requestingUser, targetUser, request);
+      await this.validatePermissions(request.requestingUserId, request);
 
       // 4. Valider les données
       this.validateInput(request);
@@ -184,122 +186,42 @@ export class UpdateUserUseCase {
     }
   }
 
-  private validatePermissions(
-    requestingUser: User,
-    targetUser: User,
+  private async validatePermissions(
+    requestingUserId: string,
     request: UpdateUserRequest,
-  ): void {
-    const requestingRole = requestingUser.role;
-    const targetRole = targetUser.role;
-    const isSelfUpdate = requestingUser.id === targetUser.id;
+  ): Promise<void> {
+    const isSelfUpdate = requestingUserId === request.targetUserId;
 
-    // Cas spécial : mise à jour de soi-même
+    // Cas spécial : mise à jour de soi-même (permissions plus restrictives)
     if (isSelfUpdate) {
       this.validateSelfUpdatePermissions(request.updates);
       return;
     }
 
-    // Règles de permissions par rôle
-    switch (requestingRole) {
-      case UserRole.PLATFORM_ADMIN:
-        // PLATFORM_ADMIN peut modifier n'importe qui
-        if (request.updates.role) {
-          // Même les PLATFORM_ADMIN peuvent changer les rôles
-        }
-        return;
+    // Vérifier les permissions via le service RBAC
+    const canManageUser = await this.permissionService.canManageUser(
+      requestingUserId,
+      request.targetUserId,
+    );
 
-      case UserRole.BUSINESS_OWNER: {
-        // BUSINESS_OWNER ne peut pas modifier PLATFORM_ADMIN ou autres BUSINESS_OWNER
-        const forbiddenTargetsForOwner = [
-          UserRole.PLATFORM_ADMIN,
-          UserRole.BUSINESS_OWNER,
-        ];
-        if (forbiddenTargetsForOwner.includes(targetRole)) {
-          throw new ForbiddenError(
-            `Business owner cannot modify ${targetRole} users`,
-          );
-        }
+    if (!canManageUser) {
+      throw new InsufficientPermissionsError(
+        'Insufficient permissions to update this user',
+      );
+    }
 
-        // BUSINESS_OWNER ne peut pas élever vers des rôles interdits
-        if (request.updates.role) {
-          const forbiddenRoleElevations = [
-            UserRole.PLATFORM_ADMIN,
-            UserRole.BUSINESS_OWNER,
-          ];
-          if (forbiddenRoleElevations.includes(request.updates.role)) {
-            throw new ForbiddenError(
-              `Business owner cannot elevate user to ${request.updates.role}`,
-            );
-          }
-        }
-        return;
-      }
+    // Vérifications spécifiques pour le changement de rôle
+    if (request.updates.role) {
+      const canActOnRole = await this.permissionService.canActOnRole(
+        requestingUserId,
+        request.updates.role,
+      );
 
-      case UserRole.BUSINESS_ADMIN: {
-        // BUSINESS_ADMIN ne peut modifier que des utilisateurs de niveau inférieur
-        const forbiddenTargetsForAdmin = [
-          UserRole.PLATFORM_ADMIN,
-          UserRole.BUSINESS_OWNER,
-          UserRole.BUSINESS_ADMIN,
-        ];
-        if (forbiddenTargetsForAdmin.includes(targetRole)) {
-          throw new ForbiddenError(
-            `Business admin cannot modify ${targetRole} users`,
-          );
-        }
-
-        // BUSINESS_ADMIN ne peut pas élever vers des rôles management
-        if (request.updates.role) {
-          const forbiddenRoleElevationsForAdmin = [
-            UserRole.PLATFORM_ADMIN,
-            UserRole.BUSINESS_OWNER,
-            UserRole.BUSINESS_ADMIN,
-          ];
-          if (forbiddenRoleElevationsForAdmin.includes(request.updates.role)) {
-            throw new ForbiddenError(
-              `Business admin cannot elevate user to ${request.updates.role}`,
-            );
-          }
-        }
-        return;
-      }
-
-      case UserRole.LOCATION_MANAGER: {
-        // LOCATION_MANAGER peut modifier seulement les utilisateurs opérationnels
-        const allowedTargetsForManager = [
-          UserRole.DEPARTMENT_HEAD,
-          UserRole.SENIOR_PRACTITIONER,
-          UserRole.PRACTITIONER,
-          UserRole.JUNIOR_PRACTITIONER,
-          UserRole.RECEPTIONIST,
-          UserRole.ASSISTANT,
-          UserRole.SCHEDULER,
-          UserRole.CORPORATE_CLIENT,
-          UserRole.VIP_CLIENT,
-          UserRole.REGULAR_CLIENT,
-        ];
-        if (!allowedTargetsForManager.includes(targetRole)) {
-          throw new ForbiddenError(
-            `Location manager cannot modify ${targetRole} users`,
-          );
-        }
-
-        // LOCATION_MANAGER ne peut pas élever au-dessus de son niveau
-        if (request.updates.role) {
-          if (!allowedTargetsForManager.includes(request.updates.role)) {
-            throw new ForbiddenError(
-              `Location manager cannot elevate user to ${request.updates.role}`,
-            );
-          }
-        }
-        return;
-      }
-
-      default:
-        // Tous les autres rôles ne peuvent pas modifier d'autres utilisateurs
-        throw new ForbiddenError(
-          `Role ${requestingRole} is not authorized to update other users`,
+      if (!canActOnRole) {
+        throw new InsufficientPermissionsError(
+          `Insufficient permissions to assign role: ${request.updates.role}`,
         );
+      }
     }
   }
 
@@ -315,14 +237,16 @@ export class UpdateUserUseCase {
     );
 
     if (forbiddenFields.length > 0) {
-      throw new ForbiddenError(
+      throw new InsufficientPermissionsError(
         `Users cannot modify these fields: ${forbiddenFields.join(', ')}`,
       );
     }
 
     // Interdiction spéciale pour le changement de rôle
     if (updates.role) {
-      throw new ForbiddenError('Users cannot change their own role');
+      throw new InsufficientPermissionsError(
+        'Users cannot change their own role',
+      );
     }
   }
 

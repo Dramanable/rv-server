@@ -4,7 +4,7 @@
  * Démontre l'utilisation et les avantages du pattern AppContext
  */
 
-import { AppContextFactory } from '../../../shared/context/app-context';
+import { AppContextFactory } from '@shared/context/app-context';
 
 describe('AppContext Pattern', () => {
   describe('Builder Pattern', () => {

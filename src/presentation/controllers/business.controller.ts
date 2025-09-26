@@ -20,7 +20,6 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
-  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -48,11 +47,9 @@ import {
   UpdateBusinessResponseDto,
 } from '../dtos/business.dto';
 import { GetUser } from '../security/decorators/get-user.decorator';
-import { JwtAuthGuard } from '../security/guards/jwt-auth.guard';
 
 @ApiTags('🏢 Business Management')
 @Controller('businesses')
-@UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 export class BusinessController {
   constructor(

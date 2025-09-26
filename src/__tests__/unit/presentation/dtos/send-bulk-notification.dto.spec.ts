@@ -11,7 +11,7 @@ import {
   BulkRecipientDto,
   SegmentationCriteriaDto,
   SendBulkNotificationDto,
-} from '../../../../presentation/dtos/notification/send-bulk-notification.dto';
+} from '@presentation/dtos/notification/send-bulk-notification.dto';
 
 describe('SendBulkNotificationDto', () => {
   describe('validation', () => {

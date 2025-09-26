@@ -20,7 +20,6 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
-  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -58,11 +57,9 @@ import {
 } from '../dtos/calendar.dto';
 import { CalendarRequestMapper } from '../mappers/calendar-request.mapper';
 import { GetUser } from '../security/decorators/get-user.decorator';
-import { JwtAuthGuard } from '../security/guards/jwt-auth.guard';
 
 @ApiTags('� Calendars')
 @Controller('calendars')
-@UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 export class CalendarController {
   constructor(

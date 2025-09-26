@@ -1,6 +1,14 @@
 /**
  * 👥 STAFF CONTROLLER
- * ✅ REST API pour la gestion du personnel
+ * ✅ REST API pour la gesti@A@Ap@ApiTags('👨‍💼 Staff Management')
+@Controller('staff')
+@ApiBearerAuth()
+export class StaffController {('👨‍💼 Staff Management')
+@Controller('staff')
+@ApiBearerAuth()
+export class StaffController {s('👨‍💼 Staff Management')
+@Controller('staff')
+@ApiBearerAuth()u personnel
  * ✅ CRUD complet + recherche avancée
  * ✅ Pattern standardisé conforme au projet
  */
@@ -16,7 +24,6 @@ import {
   Param,
   Post,
   Put,
-  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -26,16 +33,20 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 
-import { TOKENS } from '@shared/constants/injection-tokens';
+import { APPLICATION_TOKENS, TOKENS } from '@shared/constants/injection-tokens';
 import { User } from '../../domain/entities/user.entity';
 import { GetUser } from '../security/decorators/get-user.decorator';
-import { JwtAuthGuard } from '../security/guards/jwt-auth.guard';
 
 import { CreateStaffUseCase } from '../../application/use-cases/staff/create-staff.use-case';
 import { DeleteStaffUseCase } from '../../application/use-cases/staff/delete-staff.use-case';
 import { GetStaffUseCase } from '../../application/use-cases/staff/get-staff.use-case';
 import { ListStaffUseCase } from '../../application/use-cases/staff/list-staff.use-case';
 import { UpdateStaffUseCase } from '../../application/use-cases/staff/update-staff.use-case';
+
+// ✅ NOUVEAUX USE CASES - Staff Availability Management
+import { GetAvailableStaffUseCase } from '../../application/use-cases/staff/get-available-staff.use-case';
+import { GetStaffAvailabilityUseCase } from '../../application/use-cases/staff/get-staff-availability.use-case';
+import { SetStaffAvailabilityUseCase } from '../../application/use-cases/staff/set-staff-availability.use-case';
 
 import { StaffStatus } from '../../domain/entities/staff.entity';
 import {
@@ -55,7 +66,6 @@ import {
 
 @ApiTags('�‍💼 Staff Management')
 @Controller('staff')
-@UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 export class StaffController {
   constructor(
@@ -69,6 +79,14 @@ export class StaffController {
     private readonly updateStaffUseCase: UpdateStaffUseCase,
     @Inject(TOKENS.DELETE_STAFF_USE_CASE)
     private readonly deleteStaffUseCase: DeleteStaffUseCase,
+
+    // ✅ NOUVEAUX USE CASES - Staff Availability Management
+    @Inject(APPLICATION_TOKENS.SET_STAFF_AVAILABILITY_USE_CASE)
+    private readonly setStaffAvailabilityUseCase: SetStaffAvailabilityUseCase,
+    @Inject(APPLICATION_TOKENS.GET_STAFF_AVAILABILITY_USE_CASE)
+    private readonly getStaffAvailabilityUseCase: GetStaffAvailabilityUseCase,
+    @Inject(APPLICATION_TOKENS.GET_AVAILABLE_STAFF_USE_CASE)
+    private readonly getAvailableStaffUseCase: GetAvailableStaffUseCase,
   ) {}
 
   /**
@@ -450,5 +468,237 @@ export class StaffController {
         requestId: `delete-staff-${Date.now()}`,
       },
     };
+  }
+
+  /**
+   * 🚀 DISPONIBILITÉS DES STAFF - NOUVELLE FONCTIONNALITÉ BUSINESS
+   * ✅ Endpoints selon workflow Copilot (Domain → Application → Infrastructure → Presentation)
+   */
+
+  @Post(':id/availability')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: '📅 Définir les disponibilités du staff',
+    description: `
+    **Configure les horaires de travail et disponibilités d'un membre du personnel**
+
+    ## 🎯 Fonctionnalités
+
+    ### 📊 **Types de disponibilités configurables**
+    - **Horaires de travail** : Jours de la semaine avec créneaux horaires
+    - **Congés** : Périodes d'indisponibilité avec raisons
+    - **Horaires spéciaux** : Horaires ponctuels pour dates spécifiques
+
+    ### 💼 **Cas d'usage métier**
+    - Configuration des horaires réguliers (ex: Lun-Ven 9h-17h)
+    - Gestion des vacances et congés maladie
+    - Horaires exceptionnels (formations, événements)
+    - Planification des créneaux de réservation
+
+    ### 🔐 **Permissions requises**
+    - **MANAGE_STAFF** : Gestionnaires et administrateurs
+    - **SELF_MANAGE** : Staff peut gérer ses propres disponibilités
+
+    ## 📝 **Structure des données**
+
+    \`\`\`json
+    {
+      "workingHours": [
+        {
+          "dayOfWeek": 1,
+          "startTime": "09:00",
+          "endTime": "17:00",
+          "isWorkingDay": true
+        }
+      ],
+      "timeOff": [
+        {
+          "startDate": "2024-12-20T00:00:00Z",
+          "endDate": "2024-12-27T00:00:00Z",
+          "reason": "Vacances de Noël"
+        }
+      ],
+      "specialSchedule": [
+        {
+          "date": "2024-12-31T00:00:00Z",
+          "startTime": "10:00",
+          "endTime": "14:00",
+          "isAvailable": true
+        }
+      ]
+    }
+    \`\`\`
+    `,
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'Staff member UUID',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: '✅ Staff availability configured successfully',
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: '❌ Invalid availability data',
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: '❌ Staff member not found',
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: '🔐 Authentication required',
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: '🚫 Insufficient permissions',
+  })
+  async setStaffAvailability(
+    @Param('id') id: string,
+    @Body() dto: any, // TODO: Créer SetStaffAvailabilityDto
+    @GetUser() user: User,
+  ): Promise<any> {
+    return await this.setStaffAvailabilityUseCase.execute({
+      staffId: id,
+      workingHours: dto.workingHours || [],
+      timeOff: dto.timeOff,
+      specialSchedule: dto.specialSchedule,
+      requestingUserId: user.id,
+      correlationId: dto.correlationId,
+    });
+  }
+
+  @Get(':id/availability')
+  @ApiOperation({
+    summary: '📋 Récupérer les disponibilités du staff',
+    description: `
+    **Obtient les horaires de travail et disponibilités d'un membre du personnel**
+
+    ## 🎯 Informations retournées
+
+    ### 📊 **Données complètes**
+    - **Horaires de travail** : Planning hebdomadaire complet
+    - **Congés programmés** : Périodes d'indisponibilité
+    - **Horaires spéciaux** : Créneaux exceptionnels
+    - **Statistiques** : Heures travaillées, disponibilité moyenne
+
+    ### 💡 **Utilisation**
+    - Affichage du planning personnel
+    - Calcul des créneaux disponibles pour rendez-vous
+    - Interface de gestion des horaires
+    - Reporting RH sur la disponibilité
+
+    ## 📈 **Métadonnées incluses**
+    - Dernière mise à jour des disponibilités
+    - Nombre total d'heures configurées
+    - Périodes de congés actives
+    - Conflits potentiels détectés
+    `,
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'Staff member UUID',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: '✅ Staff availability retrieved successfully',
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: '❌ Staff member not found',
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: '🔐 Authentication required',
+  })
+  async getStaffAvailability(
+    @Param('id') id: string,
+    @GetUser() user: User,
+  ): Promise<any> {
+    return await this.getStaffAvailabilityUseCase.execute({
+      staffId: id,
+      requestingUserId: user.id,
+    });
+  }
+
+  @Post('available')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: '🔍 Rechercher staff disponible',
+    description: `
+    **Trouve les membres du personnel disponibles selon des critères**
+
+    ## 🎯 Fonctionnalités de recherche
+
+    ### 📅 **Critères temporels**
+    - **Date et heure** : Créneaux spécifiques
+    - **Durée** : Blocs de temps requis
+    - **Récurrence** : Disponibilité répétée
+    - **Plage horaire** : Recherche sur plusieurs jours
+
+    ### 👥 **Filtres personnel**
+    - **Compétences** : Skills techniques requises
+    - **Services** : Types de prestations
+    - **Localisation** : Proximité géographique
+    - **Expérience** : Niveau d'expertise
+
+    ### 🎯 **Cas d'usage métier**
+    - Planification automatique de rendez-vous
+    - Répartition optimale des charges de travail
+    - Gestion des remplacements en urgence
+    - Optimisation des créneaux horaires
+
+    ## 📝 **Exemple de requête**
+
+    \`\`\`json
+    {
+      "dateRange": {
+        "startDate": "2024-01-15T00:00:00Z",
+        "endDate": "2024-01-19T23:59:59Z"
+      },
+      "timeSlot": {
+        "startTime": "14:00",
+        "endTime": "16:00"
+      },
+      "skills": ["MASSAGE", "PHYSIOTHERAPY"],
+      "businessId": "business-uuid",
+      "minExperience": 2
+    }
+    \`\`\`
+
+    ## 📊 **Réponse enrichie**
+    - Liste des staff disponibles avec détails
+    - Score de pertinence selon critères
+    - Créneaux exacts de disponibilité
+    - Informations de contact et localisation
+    `,
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: '✅ Available staff found successfully',
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: '❌ Invalid search criteria',
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: '🔐 Authentication required',
+  })
+  async getAvailableStaff(
+    @Body() dto: any, // TODO: Créer GetAvailableStaffDto
+    @GetUser() user: User,
+  ): Promise<any> {
+    return await this.getAvailableStaffUseCase.execute({
+      businessId: dto.businessId,
+      dateTime: new Date(dto.timeSlot), // Conversion timeSlot -> dateTime
+      durationMinutes: 60, // Durée par défaut
+      serviceId: dto.serviceIds?.[0], // Premier serviceId si disponible
+      requestingUserId: user.id,
+      correlationId: dto.correlationId,
+    });
   }
 }

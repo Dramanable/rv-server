@@ -5,17 +5,18 @@
  * Couche Application - Tests d'orchestration métier
  */
 
+import { DeleteStaffUseCase } from '@application/use-cases/staff/delete-staff.use-case';
+import { Staff } from '@domain/entities/staff.entity';
+import { BusinessId } from '@domain/value-objects/business-id.value-object';
+import { StaffRole } from '@shared/enums/staff-role.enum';
 import {
   ApplicationValidationError,
   ResourceNotFoundError,
 } from '../../../../../application/exceptions/application.exceptions';
 import { I18nService } from '../../../../../application/ports/i18n.port';
 import { Logger } from '../../../../../application/ports/logger.port';
-import { DeleteStaffUseCase } from '../../../../../application/use-cases/staff/delete-staff.use-case';
-import { Staff } from '../../../../../domain/entities/staff.entity';
+import { IPermissionService } from '../../../../../application/ports/permission.service.interface';
 import { StaffRepository } from '../../../../../domain/repositories/staff.repository.interface';
-import { BusinessId } from '../../../../../domain/value-objects/business-id.value-object';
-import { StaffRole } from '../../../../../shared/enums/staff-role.enum';
 
 describe('DeleteStaffUseCase', () => {
   let useCase: DeleteStaffUseCase;
@@ -61,8 +62,27 @@ describe('DeleteStaffUseCase', () => {
       exists: jest.fn(),
     } as jest.Mocked<I18nService>;
 
+    // Mock permission service
+    const mockPermissionService = {
+      requirePermission: jest.fn(),
+      hasPermission: jest.fn(),
+      canActOnRole: jest.fn(),
+      getUserPermissions: jest.fn(),
+      getUserRole: jest.fn(),
+      hasRole: jest.fn(),
+      hasBusinessPermission: jest.fn(),
+      canManageUser: jest.fn(),
+      requireSuperAdminPermission: jest.fn(),
+      isSuperAdmin: jest.fn(),
+    } as jest.Mocked<IPermissionService>;
+
     // Instancier le use case avec les mocks
-    useCase = new DeleteStaffUseCase(mockStaffRepository, mockLogger, mockI18n);
+    useCase = new DeleteStaffUseCase(
+      mockStaffRepository,
+      mockLogger,
+      mockI18n,
+      mockPermissionService,
+    );
   });
 
   describe('Parameter validation', () => {

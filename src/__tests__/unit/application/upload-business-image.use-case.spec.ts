@@ -4,11 +4,11 @@
  * ✅ Admin settings validation + AWS S3 integration
  */
 
-import { Business } from '../../../domain/entities/business.entity';
+import { Business } from '@domain/entities/business.entity';
 import { BusinessRepository } from '../../../domain/repositories/business.repository';
-import { BusinessId } from '../../../domain/value-objects/business-id.value-object';
-import { ImageUploadSettings } from '../../../domain/value-objects/image-upload-settings.value-object';
-import { AwsS3ImageService } from '../../../infrastructure/services/aws-s3-image.service';
+import { BusinessId } from '@domain/value-objects/business-id.value-object';
+import { ImageUploadSettings } from '@domain/value-objects/image-upload-settings.value-object';
+import { AwsS3ImageService } from '@infrastructure/services/aws-s3-image.service';
 
 describe('UploadBusinessImageUseCase', () => {
   let mockBusinessRepository: jest.Mocked<BusinessRepository>;

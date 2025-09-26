@@ -8,7 +8,6 @@ import {
   Param,
   Post,
   Put,
-  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -27,7 +26,6 @@ import {
   UpdateServiceTypeDto,
   UpdateServiceTypeResponseDto,
 } from '@presentation/dtos/service-types/service-type.dto';
-import { JwtAuthGuard } from '@presentation/security/auth.guard';
 import { GetUser } from '@presentation/security/decorators/get-user.decorator';
 import { TOKENS } from '@shared/constants/injection-tokens';
 
@@ -55,7 +53,6 @@ import { ServiceTypeId } from '@domain/value-objects/service-type-id.value-objec
 @ApiTags('🏷️ Service Types Management')
 @Controller('api/v1/service-types')
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
 export class ServiceTypeController {
   constructor(
     @Inject(TOKENS.CREATE_SERVICE_TYPE_USE_CASE)

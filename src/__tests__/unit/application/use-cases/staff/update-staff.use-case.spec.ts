@@ -5,18 +5,16 @@
  * Couche Application - Tests d'orchestration métier
  */
 
+import { UpdateStaffUseCase } from '@application/use-cases/staff/update-staff.use-case';
+import { Staff, StaffStatus } from '@domain/entities/staff.entity';
+import { StaffNotFoundError } from '@domain/exceptions/staff.exceptions';
+import { BusinessId } from '@domain/value-objects/business-id.value-object';
+import { StaffRole } from '@shared/enums/staff-role.enum';
 import { ApplicationValidationError } from '../../../../../application/exceptions/application.exceptions';
 import { I18nService } from '../../../../../application/ports/i18n.port';
 import { Logger } from '../../../../../application/ports/logger.port';
-import { UpdateStaffUseCase } from '../../../../../application/use-cases/staff/update-staff.use-case';
-import {
-  Staff,
-  StaffStatus,
-} from '../../../../../domain/entities/staff.entity';
-import { StaffNotFoundError } from '../../../../../domain/exceptions/staff.exceptions';
+import { IPermissionService } from '../../../../../application/ports/permission.service.interface';
 import { StaffRepository } from '../../../../../domain/repositories/staff.repository.interface';
-import { BusinessId } from '../../../../../domain/value-objects/business-id.value-object';
-import { StaffRole } from '../../../../../shared/enums/staff-role.enum';
 
 describe('UpdateStaffUseCase', () => {
   let useCase: UpdateStaffUseCase;
@@ -65,7 +63,26 @@ describe('UpdateStaffUseCase', () => {
       exists: jest.fn(),
     };
 
-    useCase = new UpdateStaffUseCase(mockStaffRepository, mockLogger, mockI18n);
+    // Mock permission service
+    const mockPermissionService = {
+      requirePermission: jest.fn(),
+      hasPermission: jest.fn(),
+      canActOnRole: jest.fn(),
+      getUserPermissions: jest.fn(),
+      getUserRole: jest.fn(),
+      hasRole: jest.fn(),
+      hasBusinessPermission: jest.fn(),
+      canManageUser: jest.fn(),
+      requireSuperAdminPermission: jest.fn(),
+      isSuperAdmin: jest.fn(),
+    } as jest.Mocked<IPermissionService>;
+
+    useCase = new UpdateStaffUseCase(
+      mockStaffRepository,
+      mockLogger,
+      mockI18n,
+      mockPermissionService,
+    );
   });
 
   describe('Parameter validation', () => {

@@ -5,15 +5,16 @@
  * Couche Application - Tests d'orchestration métier
  */
 
+import { UpdateServiceUseCase } from '@application/use-cases/service/update-service.use-case';
+import { Service } from '@domain/entities/service.entity';
+import { ServiceNotFoundError } from '@domain/exceptions/service.exceptions';
+import { BusinessId } from '@domain/value-objects/business-id.value-object';
+import { ServiceTypeId } from '@domain/value-objects/service-type-id.value-object';
 import { ApplicationValidationError } from '../../../../../application/exceptions/application.exceptions';
 import { I18nService } from '../../../../../application/ports/i18n.port';
 import { Logger } from '../../../../../application/ports/logger.port';
-import { UpdateServiceUseCase } from '../../../../../application/use-cases/service/update-service.use-case';
-import { Service } from '../../../../../domain/entities/service.entity';
-import { ServiceNotFoundError } from '../../../../../domain/exceptions/service.exceptions';
+import { IPermissionService } from '../../../../../application/ports/permission.service.interface';
 import { ServiceRepository } from '../../../../../domain/repositories/service.repository.interface';
-import { BusinessId } from '../../../../../domain/value-objects/business-id.value-object';
-import { ServiceTypeId } from '../../../../../domain/value-objects/service-type-id.value-object';
 
 describe('UpdateServiceUseCase', () => {
   let useCase: UpdateServiceUseCase;
@@ -68,8 +69,23 @@ describe('UpdateServiceUseCase', () => {
       exists: jest.fn(),
     };
 
+    // Mock permission service
+    const mockPermissionService = {
+      requirePermission: jest.fn(),
+      hasPermission: jest.fn(),
+      canActOnRole: jest.fn(),
+      getUserPermissions: jest.fn(),
+      getUserRole: jest.fn(),
+      hasRole: jest.fn(),
+      hasBusinessPermission: jest.fn(),
+      canManageUser: jest.fn(),
+      requireSuperAdminPermission: jest.fn(),
+      isSuperAdmin: jest.fn(),
+    } as jest.Mocked<IPermissionService>;
+
     useCase = new UpdateServiceUseCase(
       mockServiceRepository,
+      mockPermissionService,
       mockLogger,
       mockI18n,
     );

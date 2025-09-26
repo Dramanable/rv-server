@@ -1,12 +1,12 @@
 import { Repository } from 'typeorm';
 
-import { NotificationOrmEntity } from '../../../../../infrastructure/database/sql/postgresql/entities/notification-orm.entity';
-import { TypeOrmNotificationRepository } from '../../../../../infrastructure/database/sql/postgresql/repositories/typeorm-notification.repository';
+import { NotificationOrmEntity } from '@infrastructure/database/sql/postgresql/entities/notification-orm.entity';
+import { TypeOrmNotificationRepository } from '@infrastructure/database/sql/postgresql/repositories/typeorm-notification.repository';
 
-import { Notification } from '../../../../../domain/entities/notification.entity';
-import { NotificationChannel } from '../../../../../domain/value-objects/notification-channel.value-object';
-import { NotificationPriority } from '../../../../../domain/value-objects/notification-priority.value-object';
-import { NotificationStatus } from '../../../../../domain/value-objects/notification-status.value-object';
+import { Notification } from '@domain/entities/notification.entity';
+import { NotificationChannel } from '@domain/value-objects/notification-channel.value-object';
+import { NotificationPriority } from '@domain/value-objects/notification-priority.value-object';
+import { NotificationStatus } from '@domain/value-objects/notification-status.value-object';
 
 describe('TypeOrmNotificationRepository - TDD Implementation', () => {
   let repository: TypeOrmNotificationRepository;

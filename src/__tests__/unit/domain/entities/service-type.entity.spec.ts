@@ -1,6 +1,6 @@
-import { ServiceType } from '../../../../domain/entities/service-type.entity';
-import { BusinessId } from '../../../../domain/value-objects/business-id.value-object';
-import { ServiceTypeId } from '../../../../domain/value-objects/service-type-id.value-object';
+import { ServiceType } from '@domain/entities/service-type.entity';
+import { BusinessId } from '@domain/value-objects/business-id.value-object';
+import { ServiceTypeId } from '@domain/value-objects/service-type-id.value-object';
 
 describe('ServiceType Entity', () => {
   const validBusinessId = BusinessId.fromString(

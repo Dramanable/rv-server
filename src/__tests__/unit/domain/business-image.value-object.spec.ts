@@ -7,7 +7,7 @@
 import {
   BusinessImage,
   ImageCategory,
-} from '../../../domain/value-objects/business-image.value-object';
+} from '@domain/value-objects/business-image.value-object';
 
 describe('BusinessImage Value Object', () => {
   describe('🔴 RED - Creation and Validation', () => {

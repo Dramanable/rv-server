@@ -1,5 +1,6 @@
 import { IAuditService } from '@application/ports/audit.port';
 import { Logger } from '@application/ports/logger.port';
+import { IPermissionService } from '@application/ports/permission.service.interface';
 import { ServiceType } from '@domain/entities/service-type.entity';
 import {
   ServiceTypeCodeConflictError,
@@ -62,6 +63,7 @@ export class CreateServiceTypeUseCase {
     private readonly logger: Logger,
     private readonly i18n: I18nTranslateFunction,
     private readonly auditService: IAuditService,
+    private readonly permissionService: IPermissionService,
   ) {}
 
   async execute(
@@ -77,6 +79,13 @@ export class CreateServiceTypeUseCase {
     try {
       // 🔒 VALIDATION - Contexte obligatoire
       this.validateRequest(request);
+
+      // 🛡️ PERMISSIONS - Vérifier les droits utilisateur
+      await this.permissionService.requirePermission(
+        request.requestingUserId,
+        'MANAGE_SERVICES',
+        { businessId: request.businessId },
+      );
 
       // 🏢 BUSINESS ID
       const businessId = BusinessId.fromString(request.businessId);

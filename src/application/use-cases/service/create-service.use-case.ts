@@ -6,18 +6,16 @@
  */
 import {
   BusinessNotFoundError,
-  InsufficientPermissionsError,
   ServiceValidationError,
 } from '@application/exceptions/application.exceptions';
 import { I18nService } from '@application/ports/i18n.port';
 import { Logger } from '@application/ports/logger.port';
+import { IPermissionService } from '@application/ports/permission.service.interface';
 import { Service, ServiceStatus } from '@domain/entities/service.entity';
 import { BusinessRepository } from '@domain/repositories/business.repository.interface';
 import { ServiceRepository } from '@domain/repositories/service.repository.interface';
-import { UserRepository } from '@domain/repositories/user.repository.interface';
 import { ServiceTypeId } from '@domain/value-objects/service-type-id.value-object';
 import { AppContext, AppContextFactory } from '@shared/context/app-context';
-import { UserRole } from '@shared/enums/user-role.enum';
 
 import { BusinessId } from '@domain/value-objects/business-id.value-object';
 
@@ -70,7 +68,7 @@ export class CreateServiceUseCase {
   constructor(
     private readonly serviceRepository: ServiceRepository,
     private readonly businessRepository: BusinessRepository,
-    private readonly userRepository: UserRepository,
+    private readonly permissionService: IPermissionService,
     private readonly logger: Logger,
     private readonly i18n: I18nService,
   ) {}
@@ -157,17 +155,19 @@ export class CreateServiceUseCase {
   private async validatePermissions(
     requestingUserId: string,
     businessId: string,
-    _context: AppContext,
+    context: AppContext,
   ): Promise<void> {
-    const requestingUser = await this.userRepository.findById(requestingUserId);
-    if (!requestingUser) {
-      throw new InsufficientPermissionsError(
-        'Requesting user not found',
-        UserRole.REGULAR_CLIENT,
-      );
-    }
+    // 1. 🔐 Vérifier les permissions CREATE_SERVICE avec contexte business
+    await this.permissionService.requirePermission(
+      requestingUserId,
+      'CREATE_SERVICE',
+      {
+        businessId,
+        targetResource: 'SERVICE',
+      },
+    );
 
-    // Vérifier que l'entreprise existe
+    // 2. 🏢 Vérifier que l'entreprise existe
     const business = await this.businessRepository.findById(
       BusinessId.create(businessId),
     );
@@ -177,29 +177,12 @@ export class CreateServiceUseCase {
       );
     }
 
-    // Platform admins peuvent créer des services dans n'importe quelle entreprise
-    if (requestingUser.role === UserRole.PLATFORM_ADMIN) {
-      return;
-    }
-
-    // Business owners et admins peuvent créer des services
-    const allowedRoles = [UserRole.BUSINESS_OWNER, UserRole.BUSINESS_ADMIN];
-
-    if (!allowedRoles.includes(requestingUser.role)) {
-      this.logger.warn(this.i18n.t('warnings.permission.denied'), {
-        requestingUserId,
-        requestingUserRole: requestingUser.role,
-        requiredPermissions: 'CREATE_SERVICE',
-        businessId,
-      });
-      throw new InsufficientPermissionsError(
-        requestingUserId,
-        'CREATE_SERVICE',
-        'service',
-      );
-    }
+    // 3. ✅ Si on arrive ici, les permissions sont validées
+    this.logger.audit('service_creation_authorized', requestingUserId, {
+      ...context,
+      businessId,
+    } as Record<string, unknown>);
   }
-
   private async validateBusinessRules(
     request: CreateServiceRequest,
     _context: AppContext,

@@ -1,4 +1,4 @@
-import { BusinessId } from '../../../../domain/value-objects/business-id.value-object';
+import { BusinessId } from '@domain/value-objects/business-id.value-object';
 
 /**
  * 🧪 BusinessId Value Object Unit Tests

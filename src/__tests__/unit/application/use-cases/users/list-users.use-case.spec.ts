@@ -17,10 +17,10 @@ import {
 import {
   ListUsersUseCase,
   type ListUsersRequest,
-} from '../../../../../application/use-cases/users/list-users.use-case';
-import { User } from '../../../../../domain/entities/user.entity';
-import { Email } from '../../../../../domain/value-objects/email.vo';
-import { UserRole } from '../../../../../shared/enums/user-role.enum';
+} from '@application/use-cases/users/list-users.use-case';
+import { User } from '@domain/entities/user.entity';
+import { Email } from '@domain/value-objects/email.vo';
+import { UserRole } from '@shared/enums/user-role.enum';
 
 describe('ListUsersUseCase', () => {
   let listUsersUseCase: ListUsersUseCase;

@@ -7,17 +7,14 @@
 
 import type { I18nService } from '../../../application/ports/i18n.port';
 import type { Logger } from '../../../application/ports/logger.port';
+import type { IPermissionService } from '../../../application/ports/permission.service.interface';
 import type { UserRepository } from '../../../domain/repositories/user.repository.interface';
 import { UserRole } from '../../../shared/enums/user-role.enum';
-import { AppContextFactory } from '../../../shared/utils/app-context.factory';
-import {
-  ForbiddenError,
-  UserNotFoundError,
-} from '../../exceptions/auth.exceptions';
 import type {
   UserQueryParams,
   UserSortField,
 } from '../../../shared/types/user-query.types';
+import { AppContextFactory } from '../../../shared/utils/app-context.factory';
 
 /**
  * 📋 Request pour la recherche d'utilisateurs
@@ -76,6 +73,7 @@ export class SearchUsersUseCase {
     private readonly userRepository: UserRepository,
     private readonly logger: Logger,
     private readonly i18n: I18nService,
+    private readonly permissionService: IPermissionService,
   ) {}
 
   async execute(request: SearchUsersRequest): Promise<SearchUsersResponse> {
@@ -90,8 +88,12 @@ export class SearchUsersUseCase {
     );
 
     try {
-      // 1. Vérification des permissions - SUPER_ADMIN uniquement
-      await this.validatePermissions(request.requestingUserId);
+      // 1. 🛡️ PERMISSIONS - Vérifier les droits utilisateur avec IPermissionService
+      await this.permissionService.requirePermission(
+        request.requestingUserId,
+        'MANAGE_USERS',
+        {},
+      );
 
       // 2. Normalisation des paramètres de recherche
       const searchParams = this.normalizeSearchParams(request);
@@ -139,18 +141,7 @@ export class SearchUsersUseCase {
     }
   }
 
-  private async validatePermissions(requestingUserId: string): Promise<void> {
-    const requestingUser = await this.userRepository.findById(requestingUserId);
-    if (!requestingUser) {
-      throw new UserNotFoundError('Requesting user not found');
-    }
-
-    if (requestingUser.role !== UserRole.PLATFORM_ADMIN) {
-      throw new ForbiddenError(
-        'Only PLATFORM_ADMIN can search and manage users',
-      );
-    }
-  }
+  // ✅ REMOVED - validatePermissions method replaced by IPermissionService.requirePermission
 
   private normalizeSearchParams(request: SearchUsersRequest): UserQueryParams {
     return {

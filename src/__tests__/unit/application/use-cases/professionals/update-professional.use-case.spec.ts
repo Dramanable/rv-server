@@ -21,7 +21,7 @@ import { ProfessionalId } from '@domain/value-objects/professional-id.value-obje
 import {
   UpdateProfessionalRequest,
   UpdateProfessionalUseCase,
-} from '../../../../../application/use-cases/professionals/update-professional.use-case';
+} from '@application/use-cases/professionals/update-professional.use-case';
 
 describe('UpdateProfessionalUseCase - TDD', () => {
   let useCase: UpdateProfessionalUseCase;

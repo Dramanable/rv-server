@@ -4,10 +4,13 @@
  * ✅ Compatible avec les interfaces Clean Architecture
  */
 
+import type { IAuditService } from '@application/ports/audit.port';
 import type { ICacheService } from '@application/ports/cache.port';
 import type { I18nService } from '@application/ports/i18n.port';
 import type { Logger } from '@application/ports/logger.port';
 import type { IPasswordService } from '@application/ports/password.service.interface';
+import type { IPermissionService } from '@application/ports/permission.service.interface';
+import type { IServiceTypeRepository } from '@domain/repositories/service-type.repository';
 import type { UserRepository } from '@domain/repositories/user.repository.interface';
 import type { ExecutionContext } from '@nestjs/common';
 import type { Request, Response } from 'express';
@@ -185,3 +188,50 @@ export const createMockCalendarRepository = () => ({
   getUtilizationStats: jest.fn(),
   getRecurringPatterns: jest.fn(),
 });
+
+// 🔐 Mock PermissionService
+export const createMockPermissionService =
+  (): jest.Mocked<IPermissionService> => ({
+    requirePermission: jest.fn(),
+    hasPermission: jest.fn(),
+    getUserPermissions: jest.fn(),
+    canActOnRole: jest.fn(),
+    getUserRole: jest.fn(),
+    hasRole: jest.fn(),
+    hasBusinessPermission: jest.fn(),
+    canManageUser: jest.fn(),
+    requireSuperAdminPermission: jest.fn(),
+    isSuperAdmin: jest.fn(),
+  });
+
+// 📊 Mock AuditService
+export const createMockAuditService = (): jest.Mocked<IAuditService> => ({
+  logOperation: jest.fn(),
+  findAuditEntries: jest.fn(),
+  getEntityHistory: jest.fn(),
+  getUserActions: jest.fn(),
+  verifyIntegrity: jest.fn(),
+  archiveOldEntries: jest.fn(),
+  exportAuditData: jest.fn(),
+});
+
+// 🏷️ Mock ServiceTypeRepository
+export const createMockServiceTypeRepository =
+  (): jest.Mocked<IServiceTypeRepository> => ({
+    save: jest.fn(),
+    findById: jest.fn(),
+    findByBusinessIdAndCode: jest.fn(),
+    findByBusinessIdAndName: jest.fn(),
+    findByBusinessId: jest.fn(),
+    findActiveByBusinessId: jest.fn(),
+    search: jest.fn(),
+    existsByBusinessIdAndCode: jest.fn(),
+    existsByBusinessIdAndName: jest.fn(),
+    countByBusinessId: jest.fn(),
+    countActiveByBusinessId: jest.fn(),
+    delete: jest.fn(),
+    hardDelete: jest.fn(),
+    isReferencedByServices: jest.fn(),
+    findByBusinessIdOrderedBySortOrder: jest.fn(),
+    updateSortOrders: jest.fn(),
+  });

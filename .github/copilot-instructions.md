@@ -2,11 +2,218 @@
 ````instructions
 # 🤖 GitHub Copilot Instructions pour Clean Architecture + NestJS
 
+## 🚨 **RÈGLES CRITIQUES DE CONNEXION BASE DE DONNÉES**
+
+**⚠️ CONFIGURATION DOCKER OBLIGATOIRE** : Utiliser UNIQUEMENT les paramètres de .env et docker-compose.yml :
+
+```bash
+# ✅ CONNEXION POSTGRESQL CORRECTE (basé sur .env et docker-compose.yml)
+# Service: postgres (nom du service dans docker-compose.yml)
+# User: rvproject_user (POSTGRES_USER dans .env)
+# Database: rvproject_app (POSTGRES_DB dans .env)
+# Schema: rvproject_schema (DB_SCHEMA dans .env)
+
+# ✅ COMMANDES CORRECTES OBLIGATOIRES
+docker compose exec postgres psql -U rvproject_user -d rvproject_app
+docker compose exec postgres pg_dump -U rvproject_user rvproject_app
+docker compose exec postgres psql -U rvproject_user -d rvproject_app -c "SELECT * FROM rvproject_schema.migrations_history;"
+docker compose exec postgres psql -U rvproject_user -d rvproject_app -c "\\dt rvproject_schema.*;"
+
+# ❌ ERREURS COURANTES À ÉVITER
+docker compose exec postgres-dev ...  # Service inexistant
+docker compose exec postgres psql -U postgres ...  # User incorrect
+docker compose exec postgres psql ... appointment_system  # Base incorrecte
+```
+
 ## 🎯 **Context du Projet**
 
 Vous travaillez sur une **application enterprise NestJS** implémentant la **Clean Architecture de Robert C. Martin (Uncle Bob)** avec une approche **TDD rigoureuse**, les **principes SOLID**, et les **meilleures pratiques TypeScript** strictes. L'application est **production-ready** avec sécurité, i18n, et patterns enterprise.
 
-## 🚨 **RÈGLE CRITIQUE : APPLICATION PROFESSIONNELLE D'ENTREPRISE**
+## � **RÈGLE CRITIQUE ABSOLUE : SÉCURITÉ ET PERMISSIONS STRICTES**
+
+**⚠️ RÈGLE NON-NÉGOCIABLE DE SÉCURITÉ** : Cette application gère des données sensibles et critiques. **AUCUNE opération** ne doit être exécutée sans vérification des permissions appropriées.
+
+### 🛡️ **RÈGLES DE PERMISSIONS OBLIGATOIRES**
+
+**CHAQUE endpoint, use case et opération DOIT :**
+
+```typescript
+// ✅ OBLIGATOIRE - Vérification des permissions dans CHAQUE Use Case
+export class AssignRoleUseCase {
+  async execute(request: AssignRoleRequest): Promise<AssignRoleResponse> {
+    // 🚨 CRITIQUE : TOUJOURS vérifier les permissions en PREMIER
+    await this.permissionService.requirePermission(
+      request.requestingUserId,
+      'MANAGE_ROLES',
+      { businessId: request.context.businessId }
+    );
+
+    // 🚨 CRITIQUE : Vérifier que l'utilisateur peut agir sur le rôle cible
+    await this.permissionService.canActOnRole(
+      request.requestingUserId,
+      request.role,
+      request.context
+    );
+
+    // 🚨 CRITIQUE : Vérifier que l'utilisateur peut gérer l'utilisateur cible
+    await this.permissionService.canManageUser(
+      request.requestingUserId,
+      request.targetUserId,
+      request.context
+    );
+
+    // Seulement APRÈS validation complète des permissions
+    const roleAssignment = RoleAssignment.create({ /* ... */ });
+  }
+}
+```
+
+### 🎯 **MATRICE DES PERMISSIONS OBLIGATOIRES**
+
+**JAMAIS d'opération sans ces vérifications :**
+
+- **🏢 Business Operations** : `MANAGE_BUSINESS`, `READ_BUSINESS`, `UPDATE_BUSINESS`
+- **👥 User Management** : `MANAGE_USERS`, `VIEW_USERS`, `ASSIGN_ROLES`
+- **🎭 Role Management** : `MANAGE_ROLES`, `ASSIGN_ROLES`, `REVOKE_ROLES`
+- **💼 Service Management** : `MANAGE_SERVICES`, `VIEW_SERVICES`, `BOOK_SERVICES`
+- **📅 Appointment Management** : `MANAGE_APPOINTMENTS`, `VIEW_APPOINTMENTS`, `CANCEL_APPOINTMENTS`
+
+### 🚨 **INTERDICTIONS ABSOLUES DE SÉCURITÉ**
+
+- ❌ **JAMAIS** d'opération CRUD sans vérification de permission
+- ❌ **JAMAIS** de bypass des permissions "pour les tests" en production
+- ❌ **JAMAIS** de permissions hardcodées (`return true`)
+- ❌ **JAMAIS** d'accès aux données sans scoping par business/rôle
+- ❌ **JAMAIS** de token ou session sans validation d'expiration
+- ❌ **JAMAIS** d'opération sensible sans audit trail
+- ❌ **JAMAIS** d'exception qui expose les détails internes
+- ❌ **JAMAIS** de requête SQL sans paramètres bindés
+
+### 🎖️ **PRINCIPES DE DÉFENSE EN PROFONDEUR**
+
+1. **Authentication** : JWT valide et non-expiré
+2. **Authorization** : Permissions granulaires par ressource
+3. **Business Scoping** : Limitation par contexte business
+4. **Role Hierarchy** : Respect de la hiérarchie des rôles
+5. **Audit Logging** : Traçabilité complète des actions
+6. **Input Validation** : Sanitisation et validation strictes
+7. **Rate Limiting** : Protection contre les abus
+8. **Error Masking** : Messages d'erreur sécurisés
+
+## 🐳 **RÈGLE CRITIQUE ABSOLUE : ENVIRONNEMENT DOCKER EXCLUSIF**
+
+### 🚨 **INTERDICTION TOTALE DES COMMANDES HOST - ZÉRO TOLÉRANCE**
+
+**⚠️ RÈGLE NON-NÉGOCIABLE** : Cette application **FONCTIONNE EXCLUSIVEMENT AVEC DOCKER COMPOSE**. Il est **STRICTEMENT INTERDIT** d'exécuter des commandes npm, node, tsc, ou migrations directement sur la machine host.
+
+**🎯 POURQUOI CETTE RÈGLE EST CRITIQUE :**
+- **🏗️ Consistance d'environnement** : Même stack sur dev/staging/prod
+- **🗄️ Isolation des services** : PostgreSQL + Redis + App containerisés
+- **🔧 Reproductibilité** : Déploiements identiques partout
+- **🛡️ Sécurité** : Pas de pollution de l'environnement host
+- **📦 Maîtrise des versions** : Dependencies exactes dans containers
+
+### ✅ **COMMANDES DOCKER OBLIGATOIRES - AUCUNE EXCEPTION**
+
+```bash
+# 🚀 DÉVELOPPEMENT
+docker compose exec app npm run start:dev      # Démarrer en mode développement
+docker compose exec app npm run build          # Build de l'application
+docker compose exec app npx tsc --noEmit      # Vérification TypeScript
+
+# 🧪 TESTS
+docker compose exec app npm test               # Tous les tests
+docker compose exec app npm run test:unit     # Tests unitaires
+docker compose exec app npm run test:e2e      # Tests d'intégration
+docker compose exec app npm run test:cov      # Coverage de tests
+
+# 🔍 QUALITÉ CODE
+docker compose exec app npm run lint          # ESLint
+docker compose exec app npm run lint -- --fix # Auto-correction ESLint
+docker compose exec app npm run format        # Formatage Prettier
+
+# 🗄️ BASE DE DONNÉES
+docker compose exec app npm run migration:run     # Exécuter migrations
+docker compose exec app npm run migration:revert  # Rollback migration
+docker compose exec app npm run migration:generate -- -n NomMigration
+
+# 📦 GESTION DÉPENDANCES
+docker compose exec app npm install package-name  # Installer dépendance
+docker compose exec app npm ci                    # Clean install
+docker compose exec app npm audit                 # Audit sécurité
+
+# 🔍 ACCÈS BASE DE DONNÉES
+docker compose exec postgres psql -U rvproject_user -d rvproject_app
+docker compose exec postgres psql -U rvproject_user -d rvproject_app -c "\\dt rvproject_schema.*;"
+```
+
+### 🚨 **WORKFLOW INSTALLATION DÉPENDANCES - OBLIGATOIRE**
+
+**⚠️ RÈGLE CRITIQUE** : Pour éviter les problèmes de cache Docker et compatibilité :
+
+```bash
+# 1️⃣ Installer dans le container
+docker compose exec app npm install nouvelle-dependance
+
+# 2️⃣ OBLIGATOIRE : Supprimer le container
+docker compose down app
+
+# 3️⃣ OBLIGATOIRE : Reconstruire sans cache
+docker compose build --no-cache app
+
+# 4️⃣ Redémarrer avec nouvelle image
+docker compose up -d app
+
+# 5️⃣ Vérifier démarrage
+docker compose logs app --tail=20
+```
+
+### ❌ **VIOLATIONS STRICTEMENT INTERDITES**
+
+**Toute utilisation de ces commandes est une VIOLATION GRAVE :**
+
+- ❌ **JAMAIS** `npm run start:dev` sur l'host
+- ❌ **JAMAIS** `npm test` sur l'host
+- ❌ **JAMAIS** `npm run build` sur l'host
+- ❌ **JAMAIS** `npm run lint` sur l'host
+- ❌ **JAMAIS** `npm install` sur l'host
+- ❌ **JAMAIS** `npx tsc` sur l'host
+- ❌ **JAMAIS** `npm run migration:run` sur l'host
+- ❌ **JAMAIS** installer PostgreSQL/Redis localement
+- ❌ **JAMAIS** utiliser node/npm directement sur l'host
+
+### 🔄 **WORKFLOW DE DÉVELOPPEMENT CORRECT**
+
+```bash
+# 🏃 Démarrage quotidien
+docker compose up -d                           # Démarrer tous les services
+docker compose exec app npm run start:dev     # Mode développement avec hot reload
+
+# 🧪 Avant commit
+docker compose exec app npm run lint -- --fix # Correction auto des erreurs
+docker compose exec app npm test              # Validation des tests
+docker compose exec app npm run build         # Validation build
+
+# 🗄️ Travail sur la DB
+docker compose exec app npm run migration:run # Appliquer migrations
+docker compose exec postgres psql -U rvproject_user -d rvproject_app # Explorer DB
+
+# 🛑 Fin de journée
+docker compose down                            # Arrêter tous les services
+```
+
+### 🚨 **SANCTIONS POUR NON-RESPECT**
+
+Le non-respect de cette règle entraîne :
+- **Erreurs d'environnement** et bugs difficiles à reproduire
+- **Corruption des dépendances** et versions incohérentes
+- **Échec des déploiements** en staging/production
+- **Review obligatoire** de tout le code modifié
+- **Formation supplémentaire** sur Docker et développement containerisé
+
+**Cette règle est FONDAMENTALE pour la stabilité et la reproductibilité du système !**
+
+## �🚨 **RÈGLE CRITIQUE : APPLICATION PROFESSIONNELLE D'ENTREPRISE**
 
 **⚠️ RÈGLE NON-NÉGOCIABLE** : Cette application est une **solution d'entreprise professionnelle**, pas un blog ou prototype. CHAQUE ligne de code DOIT respecter les standards d'entreprise :
 
@@ -1675,6 +1882,55 @@ Si une violation est détectée :
 3. **ANALYSER** la cause de la violation
 4. **REPRENDRE** depuis la dernière couche validée
 5. **APPLIQUER** le workflow TDD strict
+
+## 🚨 **RÈGLE CRITIQUE NON-NÉGOCIABLE : VALIDATION MIGRATIONS AVANT PRÉSENTATION**
+
+### ⚠️ **INTERDICTION ABSOLUE : PASSER À PRESENTATION SANS MIGRATIONS VALIDÉES**
+
+**Il est STRICTEMENT INTERDIT de commencer la couche Presentation sans avoir validé que TOUTES les migrations TypeORM fonctionnent parfaitement en base de données.**
+
+#### **📋 WORKFLOW OBLIGATOIRE MIGRATIONS INFRASTRUCTURE**
+
+**Avant TOUT travail sur Controllers/DTOs, TOUJOURS :**
+
+```bash
+# 1️⃣ VÉRIFIER l'état des migrations
+docker compose exec app npm run migration:show
+
+# 2️⃣ TESTER les migrations en cours
+docker compose exec app npm run migration:run
+
+# 3️⃣ VÉRIFIER les tables créées
+docker compose exec postgres psql -U rvproject_user -d rvproject_app -c "\\dt rvproject_schema.*;"
+
+# 4️⃣ VÉRIFIER la structure des tables critiques
+docker compose exec postgres psql -U rvproject_user -d rvproject_app -c "\\d rvproject_schema.table_name;"
+
+# 5️⃣ TESTER le rollback (si nécessaire)
+docker compose exec app npm run migration:revert
+docker compose exec app npm run migration:run
+
+# 6️⃣ VALIDER les contraintes et index
+docker compose exec postgres psql -U rvproject_user -d rvproject_app -c "SELECT * FROM information_schema.table_constraints WHERE table_schema = 'rvproject_schema';"
+```
+
+#### **🚨 SEULEMENT SI TOUTES CES VÉRIFICATIONS PASSENT → Continuer vers Presentation**
+
+#### **❌ VIOLATIONS INTERDITES**
+
+- ❌ **JAMAIS** créer Controllers sans migrations testées
+- ❌ **JAMAIS** créer DTOs sans validation tables DB
+- ❌ **JAMAIS** ignorer les erreurs de migration
+- ❌ **JAMAIS** contourner cette validation sous prétexte de "rapidité"
+
+#### **✅ CETTE RÈGLE GARANTIT**
+
+- **🛡️ Intégrité des données** en production
+- **🔄 Déploiements sans erreur**
+- **🧪 Tests d'intégration fiables**
+- **📊 Structure DB cohérente**
+
+**Cette règle est CRITIQUE pour la stabilité du système !**
 
 ### 🧪 **TEST-DRIVEN DEVELOPMENT (TDD) - PRATIQUES OBLIGATOIRES**
 

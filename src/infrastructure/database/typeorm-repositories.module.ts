@@ -24,6 +24,10 @@ import { ServiceTypeOrmEntity } from './sql/postgresql/entities/service-type-orm
 import { StaffOrmEntity } from './sql/postgresql/entities/staff-orm.entity';
 import { UserOrmEntity } from './sql/postgresql/entities/user-orm.entity';
 
+// 🎭 RBAC Entities
+import { BusinessContextOrmEntity } from './sql/postgresql/entities/business-context-orm.entity';
+import { RoleAssignmentOrmEntity } from './sql/postgresql/entities/role-assignment-orm.entity';
+
 // Repository Implementations
 import { RefreshTokenOrmRepository } from './sql/postgresql/repositories/refresh-token-orm.repository';
 import { TypeOrmAppointmentRepository } from './sql/postgresql/repositories/typeorm-appointment.repository';
@@ -31,73 +35,22 @@ import { TypeOrmBusinessRepository } from './sql/postgresql/repositories/typeorm
 import { TypeOrmCalendarTypeRepository } from './sql/postgresql/repositories/typeorm-calendar-type.repository';
 import { TypeOrmCalendarRepository } from './sql/postgresql/repositories/typeorm-calendar.repository';
 import { TypeOrmProfessionalRepository } from './sql/postgresql/repositories/typeorm-professional.repository';
-import { TypeOrmServiceRepository } from './sql/postgresql/repositories/typeorm-service.repository';
 import { TypeOrmServiceTypeRepository } from './sql/postgresql/repositories/typeorm-service-type.repository';
+import { TypeOrmServiceRepository } from './sql/postgresql/repositories/typeorm-service.repository';
 import { TypeOrmStaffRepository } from './sql/postgresql/repositories/typeorm-staff.repository';
 import { TypeOrmUserRepository } from './sql/postgresql/repositories/user.repository';
 
+// 🎭 RBAC Repository Implementations
+import { TypeOrmRbacBusinessContextRepository } from './sql/postgresql/repositories/typeorm-rbac-business-context.repository';
+import { TypeOrmRoleAssignmentRepository } from './sql/postgresql/repositories/typeorm-role-assignment.repository';
+
 // Services nécessaires
+import type { I18nService } from '../../application/ports/i18n.port';
 import type { Logger } from '../../application/ports/logger.port';
+import { ProductionI18nService } from '../i18n/production-i18n.service';
 
-/**
- * 🛡️ Simple Permission Service - Real Implementation
- *
- * Service de permissions basé sur les rôles utilisateur pour BusinessSector
- */
-class SimplePermissionService {
-  constructor(private readonly logger: Logger) {}
-
-  async hasPermission(userId: string, permission: string): Promise<boolean> {
-    // Pour l'instant, on assume que tous les utilisateurs sont super-admin
-    // En production, ceci ferait une requête pour vérifier le rôle utilisateur
-    this.logger.debug('Permission check - assuming super admin for now', {
-      userId,
-      permission,
-      result: true,
-    });
-
-    return true;
-  }
-
-  async isSuperAdmin(userId: string): Promise<boolean> {
-    this.logger.debug('Super admin check - assuming true for now', {
-      userId,
-      result: true,
-    });
-
-    return true;
-  }
-
-  async requireSuperAdminPermission(userId: string): Promise<void> {
-    const isSuperAdmin = await this.isSuperAdmin(userId);
-    if (!isSuperAdmin) {
-      throw new Error('Super admin permission required');
-    }
-  }
-
-  // Implémentation simplifiée des autres méthodes requises par l'interface
-  async canActOnRole(): Promise<boolean> {
-    return true;
-  }
-  async requirePermission(): Promise<void> {
-    return;
-  }
-  async getUserPermissions(): Promise<any[]> {
-    return [];
-  }
-  async getUserRole(): Promise<any> {
-    return 'PLATFORM_ADMIN';
-  }
-  async hasRole(): Promise<boolean> {
-    return true;
-  }
-  async hasBusinessPermission(): Promise<boolean> {
-    return true;
-  }
-  async canManageUser(): Promise<boolean> {
-    return true;
-  }
-}
+// 🛡️ RBAC Permission Service - Real Implementation
+import { RbacPermissionService } from '../services/rbac-permission.service';
 
 @Module({
   imports: [
@@ -114,6 +67,9 @@ class SimplePermissionService {
       CalendarOrmEntity,
       CalendarTypeOrmEntity,
       ProfessionalOrmEntity, // ✅ Professional entity for actor separation
+      // 🎭 RBAC Entities
+      RoleAssignmentOrmEntity,
+      BusinessContextOrmEntity,
     ]),
     // Import du PinoLoggerModule pour avoir accès au Logger
     PinoLoggerModule,
@@ -187,11 +143,59 @@ class SimplePermissionService {
       useClass: TypeOrmProfessionalRepository,
     },
 
-    // Permission Service (simple mais réel)
+    // 🎭 RBAC Repositories
+    {
+      provide: TOKENS.ROLE_ASSIGNMENT_REPOSITORY,
+      useFactory: (ormRepository: any, logger: Logger, i18n: I18nService) =>
+        new TypeOrmRoleAssignmentRepository(ormRepository, logger, i18n),
+      inject: [
+        getRepositoryToken(RoleAssignmentOrmEntity),
+        'Logger',
+        'I18nService',
+      ],
+    },
+
+    {
+      provide: TOKENS.RBAC_BUSINESS_CONTEXT_REPOSITORY,
+      useFactory: (ormRepository: any, logger: Logger, i18n: I18nService) =>
+        new TypeOrmRbacBusinessContextRepository(ormRepository, logger, i18n),
+      inject: [
+        getRepositoryToken(BusinessContextOrmEntity),
+        'Logger',
+        'I18nService',
+      ],
+    },
+
+    // 🛡️ RBAC Permission Service - Real Implementation with Business Rules
     {
       provide: TOKENS.PERMISSION_SERVICE,
-      useFactory: (logger: Logger) => new SimplePermissionService(logger),
-      inject: [TOKENS.LOGGER],
+      useFactory: (
+        roleAssignmentRepository: any,
+        businessContextRepository: any,
+        userRepository: any,
+        logger: Logger,
+        i18n: I18nService,
+      ) =>
+        new RbacPermissionService(
+          roleAssignmentRepository,
+          businessContextRepository,
+          userRepository,
+          logger,
+          i18n,
+        ),
+      inject: [
+        TOKENS.ROLE_ASSIGNMENT_REPOSITORY,
+        TOKENS.RBAC_BUSINESS_CONTEXT_REPOSITORY,
+        TOKENS.USER_REPOSITORY,
+        'Logger',
+        'I18nService',
+      ],
+    },
+
+    // I18n Service
+    {
+      provide: TOKENS.I18N_SERVICE,
+      useClass: ProductionI18nService,
     },
   ],
   exports: [
@@ -207,6 +211,11 @@ class SimplePermissionService {
     TOKENS.CALENDAR_TYPE_REPOSITORY,
     TOKENS.APPOINTMENT_REPOSITORY,
     TOKENS.PROFESSIONAL_REPOSITORY, // ✅ Professional repository for actor separation
+    // 🎭 RBAC Repositories
+    TOKENS.ROLE_ASSIGNMENT_REPOSITORY,
+    TOKENS.RBAC_BUSINESS_CONTEXT_REPOSITORY,
+    // Services
+    TOKENS.I18N_SERVICE,
   ],
 })
 export class TypeOrmRepositoriesModule {}

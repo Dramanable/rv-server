@@ -4,28 +4,25 @@
  * Mise à jour d'une entreprise avec validation métier et permissions
  */
 import {
+  BusinessNotFoundError,
+  BusinessValidationError,
+} from '../../../application/exceptions/application.exceptions';
+import type { I18nService } from '../../../application/ports/i18n.port';
+import type { Logger } from '../../../application/ports/logger.port';
+import type { IPermissionService } from '../../../application/ports/permission.service.interface';
+import {
   Business,
   BusinessStatus,
 } from '../../../domain/entities/business.entity';
+import type { BusinessRepository } from '../../../domain/repositories/business.repository.interface';
 import { BusinessId } from '../../../domain/value-objects/business-id.value-object';
 import { BusinessName } from '../../../domain/value-objects/business-name.value-object';
-import type { BusinessRepository } from '../../../domain/repositories/business.repository.interface';
-import type { Logger } from '../../../application/ports/logger.port';
-import type { I18nService } from '../../../application/ports/i18n.port';
+import { Email } from '../../../domain/value-objects/email.value-object';
+import { Phone } from '../../../domain/value-objects/phone.value-object';
 import {
   AppContext,
   AppContextFactory,
 } from '../../../shared/context/app-context';
-import { UserRole, Permission } from '../../../shared/enums/user-role.enum';
-import { User } from '../../../domain/entities/user.entity';
-import { UserRepository } from '../../../domain/repositories/user.repository.interface';
-import {
-  InsufficientPermissionsError,
-  BusinessValidationError,
-  BusinessNotFoundError,
-} from '../../../application/exceptions/application.exceptions';
-import { Email } from '../../../domain/value-objects/email.value-object';
-import { Phone } from '../../../domain/value-objects/phone.value-object';
 
 export interface UpdateBusinessRequest {
   readonly requestingUserId: string;
@@ -85,8 +82,7 @@ export interface UpdateBusinessResponse {
 export class UpdateBusinessUseCase {
   constructor(
     private readonly businessRepository: BusinessRepository,
-
-    private readonly userRepository: UserRepository,
+    private readonly permissionService: IPermissionService,
     private readonly logger: Logger,
     private readonly i18n: I18nService,
   ) {}
@@ -164,14 +160,19 @@ export class UpdateBusinessUseCase {
     businessId: string,
     context: AppContext,
   ): Promise<Business> {
-    const requestingUser = await this.userRepository.findById(requestingUserId);
-    if (!requestingUser) {
-      throw new InsufficientPermissionsError(
-        'Requesting user not found',
-        UserRole.REGULAR_CLIENT,
-      );
-    }
+    this.logger.info('🔐 Validating permissions for business update', {
+      requestingUserId,
+      businessId,
+    });
 
+    // 🎯 Use new permission service for validation
+    await this.permissionService.requirePermission(
+      requestingUserId,
+      'MANAGE_BUSINESS',
+      { businessId },
+    );
+
+    // 🔍 Get target business after permission validation
     const business = await this.businessRepository.findById(
       BusinessId.create(businessId),
     );
@@ -181,27 +182,10 @@ export class UpdateBusinessUseCase {
       );
     }
 
-    // Platform admins peuvent modifier toutes les entreprises
-    if (requestingUser.role === UserRole.PLATFORM_ADMIN) {
-      return business;
-    }
-
-    // Business owners et admins peuvent modifier leur entreprise
-    // Note: Il faudrait ajouter une relation business-user pour vérifier l'appartenance
-    const allowedRoles = [UserRole.BUSINESS_OWNER, UserRole.BUSINESS_ADMIN];
-
-    if (!allowedRoles.includes(requestingUser.role)) {
-      this.logger.warn(this.i18n.t('warnings.permission.denied'), {
-        requestingUserId,
-        requestingUserRole: requestingUser.role,
-        requiredPermissions: 'UPDATE_BUSINESS',
-        businessId,
-      });
-      throw new InsufficientPermissionsError(
-        Permission.CONFIGURE_BUSINESS_SETTINGS,
-        requestingUser.role,
-      );
-    }
+    this.logger.info('✅ Permissions validated successfully', {
+      requestingUserId,
+      businessId,
+    });
 
     return business;
   }

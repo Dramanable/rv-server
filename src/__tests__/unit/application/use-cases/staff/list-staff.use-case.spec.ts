@@ -5,18 +5,20 @@
  * Couche Application - Tests d'orchestration métier
  */
 
+import { ListStaffUseCase } from '@application/use-cases/staff/list-staff.use-case';
+import { Staff } from '@domain/entities/staff.entity';
+import { BusinessId } from '@domain/value-objects/business-id.value-object';
+import { StaffRole } from '@shared/enums/staff-role.enum';
 import { ApplicationValidationError } from '../../../../../application/exceptions/application.exceptions';
 import { I18nService } from '../../../../../application/ports/i18n.port';
 import { Logger } from '../../../../../application/ports/logger.port';
-import { ListStaffUseCase } from '../../../../../application/use-cases/staff/list-staff.use-case';
-import { Staff } from '../../../../../domain/entities/staff.entity';
+import { IPermissionService } from '../../../../../application/ports/permission.service.interface';
 import { StaffRepository } from '../../../../../domain/repositories/staff.repository.interface';
-import { BusinessId } from '../../../../../domain/value-objects/business-id.value-object';
-import { StaffRole } from '../../../../../shared/enums/staff-role.enum';
 
 describe('ListStaffUseCase', () => {
   let useCase: ListStaffUseCase;
   let mockStaffRepository: jest.Mocked<StaffRepository>;
+  let mockPermissionService: jest.Mocked<IPermissionService>;
   let mockLogger: jest.Mocked<Logger>;
   let mockI18n: jest.Mocked<I18nService>;
 
@@ -74,7 +76,25 @@ describe('ListStaffUseCase', () => {
       exists: jest.fn(),
     };
 
-    useCase = new ListStaffUseCase(mockStaffRepository, mockLogger, mockI18n);
+    mockPermissionService = {
+      requirePermission: jest.fn(),
+      hasPermission: jest.fn(),
+      canActOnRole: jest.fn(),
+      getUserPermissions: jest.fn(),
+      getUserRole: jest.fn(),
+      hasRole: jest.fn(),
+      hasBusinessPermission: jest.fn(),
+      canManageUser: jest.fn(),
+      requireSuperAdminPermission: jest.fn(),
+      isSuperAdmin: jest.fn(),
+    };
+
+    useCase = new ListStaffUseCase(
+      mockStaffRepository,
+      mockLogger,
+      mockI18n,
+      mockPermissionService,
+    );
   });
 
   describe('Parameter validation', () => {

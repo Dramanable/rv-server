@@ -5,7 +5,7 @@
  * Test 1 : Email valide doit être accepté
  */
 
-import { Email } from '../../../../domain/value-objects/email.vo';
+import { Email } from '@domain/value-objects/email.vo';
 
 describe('Email Value Object', () => {
   describe('Valid Email Creation', () => {

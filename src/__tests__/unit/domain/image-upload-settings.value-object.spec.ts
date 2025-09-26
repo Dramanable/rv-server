@@ -8,7 +8,7 @@ import {
   ImageFormat,
   ImagePolicy,
   ImageUploadSettings,
-} from '../../../domain/value-objects/image-upload-settings.value-object';
+} from '@domain/value-objects/image-upload-settings.value-object';
 
 describe('ImageUploadSettings Value Object', () => {
   describe('🔴 RED - Creation and Validation', () => {

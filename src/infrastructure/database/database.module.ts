@@ -18,6 +18,10 @@ import { ServiceOrmEntity } from './sql/postgresql/entities/service-orm.entity';
 import { StaffOrmEntity } from './sql/postgresql/entities/staff-orm.entity';
 import { UserOrmEntity } from './sql/postgresql/entities/user-orm.entity';
 
+// 🎭 RBAC Entities
+import { BusinessContextOrmEntity } from './sql/postgresql/entities/business-context-orm.entity';
+import { RoleAssignmentOrmEntity } from './sql/postgresql/entities/role-assignment-orm.entity';
+
 // 🖼️ Business Image & Gallery Entities
 import { BusinessGalleryOrmEntity } from './sql/postgresql/entities/business-gallery-orm.entity';
 import { BusinessImageOrmEntity } from './sql/postgresql/entities/business-image-orm.entity';
@@ -59,6 +63,9 @@ import { BusinessImageOrmEntity } from './sql/postgresql/entities/business-image
           // 🖼️ Business Image & Gallery Entities
           BusinessImageOrmEntity,
           BusinessGalleryOrmEntity,
+          // 🎭 RBAC Entities
+          RoleAssignmentOrmEntity,
+          BusinessContextOrmEntity,
         ],
         migrations: [
           'dist/infrastructure/database/sql/postgresql/migrations/*.js',

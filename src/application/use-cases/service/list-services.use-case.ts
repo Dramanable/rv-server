@@ -1,7 +1,13 @@
 import { Service } from '../../../domain/entities/service.entity';
 import { ServiceRepository } from '../../../domain/repositories/service.repository.interface';
 import { BusinessId } from '../../../domain/value-objects/business-id.value-object';
-import { ApplicationValidationError } from '../../exceptions/application.exceptions';
+import {
+  ApplicationValidationError,
+  InsufficientPermissionsError,
+} from '../../exceptions/application.exceptions';
+import { Logger } from '../../ports/logger.port';
+import { I18nService } from '../../ports/i18n.port';
+import { IPermissionService } from '../../ports/permission.service.interface';
 
 export interface ListServicesRequest {
   readonly requestingUserId: string;
@@ -66,8 +72,12 @@ export interface ListServicesResponse {
 export class ListServicesUseCase {
   constructor(
     private readonly serviceRepository: ServiceRepository,
+    private readonly permissionService: IPermissionService,
     private readonly logger: Logger,
-  ) {}
+    private readonly i18n: I18nService,
+  ) {
+    // Constructeur avec 4 paramètres pour permissions
+  }
 
   async execute(request: ListServicesRequest): Promise<ListServicesResponse> {
     try {
@@ -76,7 +86,7 @@ export class ListServicesUseCase {
 
       const { requestingUserId, businessId, pagination, filters } = request;
 
-      (this.logger as any).info('Attempting to list services', {
+      this.logger.info('Attempting to list services', {
         businessId,
         requestingUserId,
         page: pagination.page,
@@ -85,6 +95,37 @@ export class ListServicesUseCase {
 
       // Créer BusinessId value object
       const businessIdVO = BusinessId.create(businessId);
+
+      // Vérification des permissions AVANT toute opération métier
+      try {
+        await this.permissionService.requirePermission(
+          requestingUserId,
+          'VIEW_SERVICES',
+          {
+            businessId,
+          },
+        );
+      } catch (error) {
+        this.logger.error(
+          'Permission denied for service listing',
+          error instanceof Error ? error : new Error(String(error)),
+          {
+            requestingUserId,
+            businessId,
+            requiredPermission: 'VIEW_SERVICES',
+          },
+        );
+
+        if (error instanceof InsufficientPermissionsError) {
+          throw error;
+        }
+
+        throw new InsufficientPermissionsError(
+          requestingUserId,
+          'VIEW_SERVICES',
+          businessId,
+        );
+      }
 
       // Calculer l'offset pour la pagination
       const offset = (pagination.page - 1) * pagination.limit;
@@ -106,7 +147,7 @@ export class ListServicesUseCase {
       const hasNextPage = pagination.page < totalPages;
       const hasPrevPage = pagination.page > 1;
 
-      (this.logger as any).info('Services listed successfully', {
+      this.logger.info('Services listed successfully', {
         businessId,
         requestingUserId,
         totalFound: total,
@@ -131,7 +172,7 @@ export class ListServicesUseCase {
         throw error;
       }
 
-      (this.logger as any).error(
+      this.logger.error(
         'Error listing services',
         error instanceof Error ? error : new Error(String(error)),
         {
