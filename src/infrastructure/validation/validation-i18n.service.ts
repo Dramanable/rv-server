@@ -4,7 +4,7 @@
  * Service pour fournir des messages de validation traduits
  */
 
-import { Injectable } from '@nestjs/common';
+import { Injectable } from "@nestjs/common";
 
 @Injectable()
 export class ValidationI18nService {
@@ -15,31 +15,31 @@ export class ValidationI18nService {
     {
       // 🇫🇷 Français
       fr: {
-        'validation.email.invalid': 'Veuillez fournir une adresse email valide',
-        'validation.email.required': "L'email est requis",
-        'validation.password.required': 'Le mot de passe est requis',
-        'validation.password.string':
-          'Le mot de passe doit être une chaîne de caractères',
-        'validation.password.minLength':
-          'Le mot de passe doit contenir au moins {min} caractères',
-        'validation.rememberMe.boolean':
-          'Se souvenir de moi doit être un booléen',
-        'validation.logoutAll.boolean':
-          'Déconnecter tous les appareils doit être un booléen',
-        'validation.refreshToken.string':
-          'Le token de rafraîchissement doit être une chaîne de caractères',
+        "validation.email.invalid": "Veuillez fournir une adresse email valide",
+        "validation.email.required": "L'email est requis",
+        "validation.password.required": "Le mot de passe est requis",
+        "validation.password.string":
+          "Le mot de passe doit être une chaîne de caractères",
+        "validation.password.minLength":
+          "Le mot de passe doit contenir au moins {min} caractères",
+        "validation.rememberMe.boolean":
+          "Se souvenir de moi doit être un booléen",
+        "validation.logoutAll.boolean":
+          "Déconnecter tous les appareils doit être un booléen",
+        "validation.refreshToken.string":
+          "Le token de rafraîchissement doit être une chaîne de caractères",
       },
       // 🇬🇧 English (fallback)
       en: {
-        'validation.email.invalid': 'Please provide a valid email address',
-        'validation.email.required': 'Email is required',
-        'validation.password.required': 'Password is required',
-        'validation.password.string': 'Password must be a string',
-        'validation.password.minLength':
-          'Password must be at least {min} characters long',
-        'validation.rememberMe.boolean': 'Remember me must be a boolean',
-        'validation.logoutAll.boolean': 'Logout all must be a boolean',
-        'validation.refreshToken.string': 'Refresh token must be a string',
+        "validation.email.invalid": "Please provide a valid email address",
+        "validation.email.required": "Email is required",
+        "validation.password.required": "Password is required",
+        "validation.password.string": "Password must be a string",
+        "validation.password.minLength":
+          "Password must be at least {min} characters long",
+        "validation.rememberMe.boolean": "Remember me must be a boolean",
+        "validation.logoutAll.boolean": "Logout all must be a boolean",
+        "validation.refreshToken.string": "Refresh token must be a string",
       },
     };
 
@@ -48,7 +48,7 @@ export class ValidationI18nService {
    */
   getValidationMessage(
     key: string,
-    locale: string = 'fr',
+    locale: string = "fr",
     params?: Record<string, unknown>,
   ): string {
     const messages =
@@ -68,7 +68,7 @@ export class ValidationI18nService {
   /**
    * Obtenir tous les messages pour une locale
    */
-  getAllMessages(locale: string = 'fr'): Record<string, string> {
+  getAllMessages(locale: string = "fr"): Record<string, string> {
     return this.validationMessages[locale] || this.validationMessages.en;
   }
 }

@@ -1,22 +1,22 @@
-import { Address } from '../value-objects/address.value-object';
-import { BusinessGallery } from '../value-objects/business-gallery.value-object';
-import { BusinessHours } from '../value-objects/business-hours.value-object';
-import { BusinessId } from '../value-objects/business-id.value-object';
-import { BusinessName } from '../value-objects/business-name.value-object';
-import { BusinessSeoProfile } from '../value-objects/business-seo-profile.value-object';
-import { Email } from '../value-objects/email.value-object';
-import { FileUrl } from '../value-objects/file-url.value-object';
-import { Phone } from '../value-objects/phone.value-object';
-import { BusinessSector } from './business-sector.entity';
+import { Address } from "../value-objects/address.value-object";
+import { BusinessGallery } from "../value-objects/business-gallery.value-object";
+import { BusinessHours } from "../value-objects/business-hours.value-object";
+import { BusinessId } from "../value-objects/business-id.value-object";
+import { BusinessName } from "../value-objects/business-name.value-object";
+import { BusinessSeoProfile } from "../value-objects/business-seo-profile.value-object";
+import { Email } from "../value-objects/email.value-object";
+import { FileUrl } from "../value-objects/file-url.value-object";
+import { Phone } from "../value-objects/phone.value-object";
+import { BusinessSector } from "./business-sector.entity";
 
 // Réexporter BusinessSector pour compatibilité
-export { BusinessSector } from './business-sector.entity';
+export { BusinessSector } from "./business-sector.entity";
 
 export enum BusinessStatus {
-  ACTIVE = 'ACTIVE',
-  INACTIVE = 'INACTIVE',
-  SUSPENDED = 'SUSPENDED',
-  PENDING_VERIFICATION = 'PENDING_VERIFICATION',
+  ACTIVE = "ACTIVE",
+  INACTIVE = "INACTIVE",
+  SUSPENDED = "SUSPENDED",
+  PENDING_VERIFICATION = "PENDING_VERIFICATION",
 }
 
 export interface BusinessBranding {
@@ -163,14 +163,14 @@ export class Business {
     businessHours?: BusinessHours;
   }): Business {
     const defaultSettings: BusinessSettings = {
-      timezone: 'Europe/Paris',
-      currency: 'EUR',
-      language: 'fr',
+      timezone: "Europe/Paris",
+      currency: "EUR",
+      language: "fr",
       appointmentSettings: {
         defaultDuration: 30,
         bufferTime: 5,
         advanceBookingLimit: 30,
-        cancellationPolicy: '24h avant le rendez-vous',
+        cancellationPolicy: "24h avant le rendez-vous",
       },
       notificationSettings: {
         emailNotifications: true,
@@ -183,7 +183,7 @@ export class Business {
       BusinessId.generate(),
       BusinessName.create(data.name),
       data.description,
-      data.slogan || '',
+      data.slogan || "",
       data.sector,
       {},
       BusinessGallery.empty(),
@@ -192,7 +192,7 @@ export class Business {
       data.contactInfo,
       { ...defaultSettings, ...data.settings },
       data.businessHours ||
-        BusinessHours.createStandardWeek([1, 2, 3, 4, 5], '09:00', '17:00'),
+        BusinessHours.createStandardWeek([1, 2, 3, 4, 5], "09:00", "17:00"),
       BusinessStatus.PENDING_VERIFICATION,
       new Date(),
       new Date(),
@@ -309,8 +309,8 @@ export class Business {
   }
 
   public generateBasicSeoProfile(): BusinessSeoProfile {
-    const cityName = this._address.getCity() || 'France';
-    const businessType = this._sector?.name || 'Service';
+    const cityName = this._address.getCity() || "France";
+    const businessType = this._sector?.name || "Service";
 
     return BusinessSeoProfile.create({
       metaTitle: `${this._name.getValue()} - ${businessType} à ${cityName}`,
@@ -323,15 +323,15 @@ export class Business {
       ],
       canonicalUrl: this._contactInfo.website,
       structuredData: {
-        '@context': 'https://schema.org',
-        '@type': 'LocalBusiness',
+        "@context": "https://schema.org",
+        "@type": "LocalBusiness",
         name: this._name.getValue(),
         description: this._description,
         url: this._contactInfo.website,
         telephone: this._contactInfo.primaryPhone.getValue(),
         email: this._contactInfo.primaryEmail.getValue(),
         address: {
-          '@type': 'PostalAddress',
+          "@type": "PostalAddress",
           streetAddress: this._address.getStreet(),
           addressLocality: this._address.getCity(),
           postalCode: this._address.getPostalCode(),
@@ -344,7 +344,7 @@ export class Business {
   // Domain events
   public activate(): void {
     if (this._status !== BusinessStatus.PENDING_VERIFICATION) {
-      throw new Error('Business must be verified before activation');
+      throw new Error("Business must be verified before activation");
     }
     this._status = BusinessStatus.ACTIVE;
     this._updatedAt = new Date();
@@ -352,7 +352,7 @@ export class Business {
 
   public suspend(): void {
     if (!this.isActive()) {
-      throw new Error('Only active businesses can be suspended');
+      throw new Error("Only active businesses can be suspended");
     }
     this._status = BusinessStatus.SUSPENDED;
     this._updatedAt = new Date();

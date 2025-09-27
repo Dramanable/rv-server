@@ -4,30 +4,30 @@
  * @description Tests unitaires RED-GREEN-REFACTOR pour CreateProfessionalUseCase
  */
 
-import { IAuditService } from '@application/ports/audit.port';
-import { I18nService } from '@application/ports/i18n.port';
-import { Logger } from '@application/ports/logger.port';
-import { CreateProfessionalUseCase } from '@application/use-cases/professionals/create-professional.use-case';
-import { Professional } from '@domain/entities/professional.entity';
-import { ProfessionalValidationError } from '@domain/exceptions/professional.exceptions';
-import { IProfessionalRepository } from '@domain/repositories/professional.repository';
-import { BusinessId } from '@domain/value-objects/business-id.value-object';
-import { Email } from '@domain/value-objects/email.vo';
+import { IAuditService } from "@application/ports/audit.port";
+import { I18nService } from "@application/ports/i18n.port";
+import { Logger } from "@application/ports/logger.port";
+import { CreateProfessionalUseCase } from "@application/use-cases/professionals/create-professional.use-case";
+import { Professional } from "@domain/entities/professional.entity";
+import { ProfessionalValidationError } from "@domain/exceptions/professional.exceptions";
+import { IProfessionalRepository } from "@domain/repositories/professional.repository";
+import { BusinessId } from "@domain/value-objects/business-id.value-object";
+import { Email } from "@domain/value-objects/email.vo";
 
-describe('CreateProfessionalUseCase - TDD', () => {
+describe("CreateProfessionalUseCase - TDD", () => {
   // ✅ Test Data Factory
   const createValidRequest = () => ({
     businessId: BusinessId.generate().getValue(),
-    firstName: 'Dr. Marie',
-    lastName: 'Martin',
-    email: 'marie.martin@clinic.com',
-    speciality: 'Cardiologie',
-    licenseNumber: 'ORDRE-789012',
-    phoneNumber: '+33187654321',
-    bio: 'Cardiologue expérimentée avec 15 ans de pratique',
+    firstName: "Dr. Marie",
+    lastName: "Martin",
+    email: "marie.martin@clinic.com",
+    speciality: "Cardiologie",
+    licenseNumber: "ORDRE-789012",
+    phoneNumber: "+33187654321",
+    bio: "Cardiologue expérimentée avec 15 ans de pratique",
     experience: 15,
-    requestingUserId: 'admin-user-id',
-    correlationId: 'test-correlation-123',
+    requestingUserId: "admin-user-id",
+    correlationId: "test-correlation-123",
     timestamp: new Date(),
   });
 
@@ -69,8 +69,8 @@ describe('CreateProfessionalUseCase - TDD', () => {
     } as jest.Mocked<Logger>;
 
     mockI18n = {
-      translate: jest.fn().mockReturnValue('Translated message'),
-      t: jest.fn().mockReturnValue('Translated message'),
+      translate: jest.fn().mockReturnValue("Translated message"),
+      t: jest.fn().mockReturnValue("Translated message"),
       setDefaultLanguage: jest.fn(),
       exists: jest.fn().mockReturnValue(true),
     } as jest.Mocked<I18nService>;
@@ -93,8 +93,8 @@ describe('CreateProfessionalUseCase - TDD', () => {
     );
   });
 
-  describe('🔴 RED - Professional Creation Success', () => {
-    it('should create professional with valid data', async () => {
+  describe("🔴 RED - Professional Creation Success", () => {
+    it("should create professional with valid data", async () => {
       // Given
       const request = createValidRequest();
       const expectedProfessional = Professional.create({
@@ -141,17 +141,17 @@ describe('CreateProfessionalUseCase - TDD', () => {
       );
     });
 
-    it('should create professional with minimal required data', async () => {
+    it("should create professional with minimal required data", async () => {
       // Given
       const request = {
         businessId: BusinessId.generate().getValue(),
-        firstName: 'Dr. Paul',
-        lastName: 'Dubois',
-        email: 'paul.dubois@clinic.com',
-        speciality: 'Médecine générale',
-        licenseNumber: 'ORDRE-345678',
-        requestingUserId: 'admin-user-id',
-        correlationId: 'test-correlation-456',
+        firstName: "Dr. Paul",
+        lastName: "Dubois",
+        email: "paul.dubois@clinic.com",
+        speciality: "Médecine générale",
+        licenseNumber: "ORDRE-345678",
+        requestingUserId: "admin-user-id",
+        correlationId: "test-correlation-456",
         timestamp: new Date(),
       };
 
@@ -176,11 +176,11 @@ describe('CreateProfessionalUseCase - TDD', () => {
     });
   });
 
-  describe('🔴 RED - Professional Validation Errors', () => {
-    it('should throw error for empty first name', async () => {
+  describe("🔴 RED - Professional Validation Errors", () => {
+    it("should throw error for empty first name", async () => {
       // Given
       const request = createRequestWithOverrides({
-        firstName: '', // ❌ Empty first name
+        firstName: "", // ❌ Empty first name
       });
 
       // When/Then
@@ -190,11 +190,11 @@ describe('CreateProfessionalUseCase - TDD', () => {
       expect(mockProfessionalRepository.save).not.toHaveBeenCalled();
     });
 
-    it('should throw error for empty last name', async () => {
+    it("should throw error for empty last name", async () => {
       // Given
       const request = {
         ...createValidRequest(),
-        lastName: '',
+        lastName: "",
       };
 
       // When/Then
@@ -204,11 +204,11 @@ describe('CreateProfessionalUseCase - TDD', () => {
       expect(mockProfessionalRepository.save).not.toHaveBeenCalled();
     });
 
-    it('should throw error for invalid email format', async () => {
+    it("should throw error for invalid email format", async () => {
       // Given
       const request = {
         ...createValidRequest(),
-        email: 'invalid-email',
+        email: "invalid-email",
       };
 
       // When/Then
@@ -216,11 +216,11 @@ describe('CreateProfessionalUseCase - TDD', () => {
       expect(mockProfessionalRepository.save).not.toHaveBeenCalled();
     });
 
-    it('should throw error for empty speciality', async () => {
+    it("should throw error for empty speciality", async () => {
       // Given
       const request = {
         ...createValidRequest(),
-        speciality: '',
+        speciality: "",
       };
 
       // When/Then
@@ -230,11 +230,11 @@ describe('CreateProfessionalUseCase - TDD', () => {
       expect(mockProfessionalRepository.save).not.toHaveBeenCalled();
     });
 
-    it('should throw error for empty license number', async () => {
+    it("should throw error for empty license number", async () => {
       // Given
       const request = {
         ...createValidRequest(),
-        licenseNumber: '',
+        licenseNumber: "",
       };
 
       // When/Then
@@ -244,7 +244,7 @@ describe('CreateProfessionalUseCase - TDD', () => {
       expect(mockProfessionalRepository.save).not.toHaveBeenCalled();
     });
 
-    it('should throw error for negative experience', async () => {
+    it("should throw error for negative experience", async () => {
       // Given
       const request = {
         ...createValidRequest(),
@@ -259,8 +259,8 @@ describe('CreateProfessionalUseCase - TDD', () => {
     });
   });
 
-  describe('🔴 RED - Professional Business Rules', () => {
-    it('should throw error for duplicate email', async () => {
+  describe("🔴 RED - Professional Business Rules", () => {
+    it("should throw error for duplicate email", async () => {
       // Given
       const request = createValidRequest();
       mockProfessionalRepository.existsByEmail.mockResolvedValue(true);
@@ -272,7 +272,7 @@ describe('CreateProfessionalUseCase - TDD', () => {
       expect(mockProfessionalRepository.save).not.toHaveBeenCalled();
     });
 
-    it('should throw error for duplicate license number', async () => {
+    it("should throw error for duplicate license number", async () => {
       // Given
       const request = createValidRequest();
       mockProfessionalRepository.existsByEmail.mockResolvedValue(false);
@@ -285,7 +285,7 @@ describe('CreateProfessionalUseCase - TDD', () => {
       expect(mockProfessionalRepository.save).not.toHaveBeenCalled();
     });
 
-    it('should validate business context', async () => {
+    it("should validate business context", async () => {
       // Given
       const request = createValidRequest();
       mockProfessionalRepository.existsByEmail.mockResolvedValue(false);
@@ -305,8 +305,8 @@ describe('CreateProfessionalUseCase - TDD', () => {
     });
   });
 
-  describe('🔴 RED - Professional Response Mapping', () => {
-    it('should return complete professional response', async () => {
+  describe("🔴 RED - Professional Response Mapping", () => {
+    it("should return complete professional response", async () => {
       // Given
       const request = createValidRequest();
       mockProfessionalRepository.existsByEmail.mockResolvedValue(false);
@@ -335,7 +335,7 @@ describe('CreateProfessionalUseCase - TDD', () => {
           experience: request.experience.toString(),
           isActive: true,
           isVerified: false,
-          status: 'ACTIVE',
+          status: "ACTIVE",
           createdBy: request.requestingUserId,
           updatedBy: request.requestingUserId,
           createdAt: expect.any(Date),
@@ -349,43 +349,43 @@ describe('CreateProfessionalUseCase - TDD', () => {
     });
   });
 
-  describe('🔴 RED - Repository Error Handling', () => {
-    it('should handle repository save errors', async () => {
+  describe("🔴 RED - Repository Error Handling", () => {
+    it("should handle repository save errors", async () => {
       // Given
       const request = createValidRequest();
       mockProfessionalRepository.existsByEmail.mockResolvedValue(false);
       mockProfessionalRepository.existsByLicenseNumber.mockResolvedValue(false);
       mockProfessionalRepository.save.mockRejectedValue(
-        new Error('Database connection failed'),
+        new Error("Database connection failed"),
       );
 
       // When/Then
       await expect(useCase.execute(request)).rejects.toThrow(
-        'Database connection failed',
+        "Database connection failed",
       );
     });
 
-    it('should handle email existence check errors', async () => {
+    it("should handle email existence check errors", async () => {
       // Given
       const request = createValidRequest();
       mockProfessionalRepository.existsByEmail.mockRejectedValue(
-        new Error('DB query failed'),
+        new Error("DB query failed"),
       );
 
       // When/Then
-      await expect(useCase.execute(request)).rejects.toThrow('DB query failed');
+      await expect(useCase.execute(request)).rejects.toThrow("DB query failed");
     });
 
-    it('should handle license existence check errors', async () => {
+    it("should handle license existence check errors", async () => {
       // Given
       const request = createValidRequest();
       mockProfessionalRepository.existsByEmail.mockResolvedValue(false);
       mockProfessionalRepository.existsByLicenseNumber.mockRejectedValue(
-        new Error('DB query failed'),
+        new Error("DB query failed"),
       );
 
       // When/Then
-      await expect(useCase.execute(request)).rejects.toThrow('DB query failed');
+      await expect(useCase.execute(request)).rejects.toThrow("DB query failed");
     });
   });
 });

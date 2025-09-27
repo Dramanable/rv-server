@@ -2,22 +2,22 @@ import {
   Appointment,
   AppointmentId,
   AppointmentStatus,
-} from '@domain/entities/appointment.entity';
+} from "@domain/entities/appointment.entity";
 import {
   AppointmentRepository,
   AppointmentSearchCriteria,
   AppointmentStatistics,
-} from '@domain/repositories/appointment.repository.interface';
-import { BusinessId } from '@domain/value-objects/business-id.value-object';
-import { CalendarId } from '@domain/value-objects/calendar-id.value-object';
-import { Email } from '@domain/value-objects/email.value-object';
-import { ServiceId } from '@domain/value-objects/service-id.value-object';
-import { UserId } from '@domain/value-objects/user-id.value-object';
-import { AppointmentOrmEntity } from '@infrastructure/database/sql/postgresql/entities/appointment-orm.entity';
-import { AppointmentOrmMapper } from '@infrastructure/mappers/appointment-orm.mapper';
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+} from "@domain/repositories/appointment.repository.interface";
+import { BusinessId } from "@domain/value-objects/business-id.value-object";
+import { CalendarId } from "@domain/value-objects/calendar-id.value-object";
+import { Email } from "@domain/value-objects/email.value-object";
+import { ServiceId } from "@domain/value-objects/service-id.value-object";
+import { UserId } from "@domain/value-objects/user-id.value-object";
+import { AppointmentOrmEntity } from "@infrastructure/database/sql/postgresql/entities/appointment-orm.entity";
+import { AppointmentOrmMapper } from "@infrastructure/mappers/appointment-orm.mapper";
+import { Injectable } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
 
 /**
  * 📅 APPOINTMENT REPOSITORY - TypeORM Implementation
@@ -51,11 +51,11 @@ export class TypeOrmAppointmentRepository implements AppointmentRepository {
     const ormEntity = await this.repository.findOne({
       where: { id: id.getValue() },
       relations: [
-        'business',
-        'calendar',
-        'service',
-        'assignedStaff',
-        'parentAppointment',
+        "business",
+        "calendar",
+        "service",
+        "assignedStaff",
+        "parentAppointment",
       ],
     });
 
@@ -74,20 +74,20 @@ export class TypeOrmAppointmentRepository implements AppointmentRepository {
     excludeAppointmentId?: AppointmentId,
   ): Promise<Appointment[]> {
     const queryBuilder = this.repository
-      .createQueryBuilder('appointment')
-      .where('appointment.calendar_id = :calendarId', {
+      .createQueryBuilder("appointment")
+      .where("appointment.calendar_id = :calendarId", {
         calendarId: calendarId.getValue(),
       })
-      .andWhere('appointment.status NOT IN (:...excludedStatuses)', {
-        excludedStatuses: ['cancelled', 'no_show'],
+      .andWhere("appointment.status NOT IN (:...excludedStatuses)", {
+        excludedStatuses: ["cancelled", "no_show"],
       })
       .andWhere(
-        '(appointment.start_time < :endTime AND appointment.end_time > :startTime)',
+        "(appointment.start_time < :endTime AND appointment.end_time > :startTime)",
         { startTime, endTime },
       );
 
     if (excludeAppointmentId) {
-      queryBuilder.andWhere('appointment.id != :excludeId', {
+      queryBuilder.andWhere("appointment.id != :excludeId", {
         excludeId: excludeAppointmentId.getValue(),
       });
     }
@@ -107,34 +107,34 @@ export class TypeOrmAppointmentRepository implements AppointmentRepository {
    * 📊 COUNT - Comptage avec critères
    */
   async count(criteria: AppointmentSearchCriteria): Promise<number> {
-    const queryBuilder = this.repository.createQueryBuilder('appointment');
+    const queryBuilder = this.repository.createQueryBuilder("appointment");
 
     if (criteria.businessId) {
-      queryBuilder.andWhere('appointment.business_id = :businessId', {
+      queryBuilder.andWhere("appointment.business_id = :businessId", {
         businessId: criteria.businessId.getValue(),
       });
     }
 
     if (criteria.calendarId) {
-      queryBuilder.andWhere('appointment.calendar_id = :calendarId', {
+      queryBuilder.andWhere("appointment.calendar_id = :calendarId", {
         calendarId: criteria.calendarId.getValue(),
       });
     }
 
     if (criteria.status && criteria.status.length > 0) {
-      queryBuilder.andWhere('appointment.status IN (:...statuses)', {
+      queryBuilder.andWhere("appointment.status IN (:...statuses)", {
         statuses: criteria.status,
       });
     }
 
     if (criteria.startDate) {
-      queryBuilder.andWhere('appointment.start_time >= :startDate', {
+      queryBuilder.andWhere("appointment.start_time >= :startDate", {
         startDate: criteria.startDate,
       });
     }
 
     if (criteria.endDate) {
-      queryBuilder.andWhere('appointment.end_time <= :endDate', {
+      queryBuilder.andWhere("appointment.end_time <= :endDate", {
         endDate: criteria.endDate,
       });
     }
@@ -150,7 +150,7 @@ export class TypeOrmAppointmentRepository implements AppointmentRepository {
     businessId: BusinessId,
     criteria?: AppointmentSearchCriteria,
   ): Promise<Appointment[]> {
-    throw new Error('findByBusinessId not implemented yet - TODO Phase 2');
+    throw new Error("findByBusinessId not implemented yet - TODO Phase 2");
   }
 
   async findByCalendarId(
@@ -158,42 +158,42 @@ export class TypeOrmAppointmentRepository implements AppointmentRepository {
     startDate?: Date,
     endDate?: Date,
   ): Promise<Appointment[]> {
-    throw new Error('findByCalendarId not implemented yet - TODO Phase 2');
+    throw new Error("findByCalendarId not implemented yet - TODO Phase 2");
   }
 
   async findByServiceId(
     serviceId: ServiceId,
     criteria?: AppointmentSearchCriteria,
   ): Promise<Appointment[]> {
-    throw new Error('findByServiceId not implemented yet - TODO Phase 2');
+    throw new Error("findByServiceId not implemented yet - TODO Phase 2");
   }
 
   async findByClientEmail(
     email: Email,
     criteria?: AppointmentSearchCriteria,
   ): Promise<Appointment[]> {
-    throw new Error('findByClientEmail not implemented yet - TODO Phase 2');
+    throw new Error("findByClientEmail not implemented yet - TODO Phase 2");
   }
 
   async findByStaffId(
     staffId: UserId,
     criteria?: AppointmentSearchCriteria,
   ): Promise<Appointment[]> {
-    throw new Error('findByStaffId not implemented yet - TODO Phase 2');
+    throw new Error("findByStaffId not implemented yet - TODO Phase 2");
   }
 
   async findByStatus(
     status: AppointmentStatus[],
     criteria?: AppointmentSearchCriteria,
   ): Promise<Appointment[]> {
-    throw new Error('findByStatus not implemented yet - TODO Phase 2');
+    throw new Error("findByStatus not implemented yet - TODO Phase 2");
   }
 
   async search(criteria: AppointmentSearchCriteria): Promise<{
     appointments: Appointment[];
     total: number;
   }> {
-    throw new Error('search not implemented yet - TODO Phase 2');
+    throw new Error("search not implemented yet - TODO Phase 2");
   }
 
   async findAvailableSlots(
@@ -202,7 +202,7 @@ export class TypeOrmAppointmentRepository implements AppointmentRepository {
     date: Date,
     duration: number,
   ): Promise<{ startTime: Date; endTime: Date }[]> {
-    throw new Error('findAvailableSlots not implemented yet - TODO Phase 2');
+    throw new Error("findAvailableSlots not implemented yet - TODO Phase 2");
   }
 
   async getStatistics(
@@ -210,7 +210,7 @@ export class TypeOrmAppointmentRepository implements AppointmentRepository {
     startDate: Date,
     endDate: Date,
   ): Promise<AppointmentStatistics> {
-    throw new Error('getStatistics not implemented yet - TODO Phase 2');
+    throw new Error("getStatistics not implemented yet - TODO Phase 2");
   }
 
   async getUpcomingAppointments(
@@ -218,13 +218,13 @@ export class TypeOrmAppointmentRepository implements AppointmentRepository {
     hours?: number,
   ): Promise<Appointment[]> {
     throw new Error(
-      'getUpcomingAppointments not implemented yet - TODO Phase 2',
+      "getUpcomingAppointments not implemented yet - TODO Phase 2",
     );
   }
 
   async getOverdueAppointments(businessId: BusinessId): Promise<Appointment[]> {
     throw new Error(
-      'getOverdueAppointments not implemented yet - TODO Phase 2',
+      "getOverdueAppointments not implemented yet - TODO Phase 2",
     );
   }
 
@@ -233,7 +233,7 @@ export class TypeOrmAppointmentRepository implements AppointmentRepository {
     parentAppointmentId?: AppointmentId,
   ): Promise<Appointment[]> {
     throw new Error(
-      'findRecurringAppointments not implemented yet - TODO Phase 2',
+      "findRecurringAppointments not implemented yet - TODO Phase 2",
     );
   }
 
@@ -242,7 +242,7 @@ export class TypeOrmAppointmentRepository implements AppointmentRepository {
     reminderTime: Date,
   ): Promise<Appointment[]> {
     throw new Error(
-      'getAppointmentsForReminders not implemented yet - TODO Phase 2',
+      "getAppointmentsForReminders not implemented yet - TODO Phase 2",
     );
   }
 
@@ -251,14 +251,14 @@ export class TypeOrmAppointmentRepository implements AppointmentRepository {
     status: AppointmentStatus,
     reason?: string,
   ): Promise<void> {
-    throw new Error('bulkUpdateStatus not implemented yet - TODO Phase 2');
+    throw new Error("bulkUpdateStatus not implemented yet - TODO Phase 2");
   }
 
   async bulkCancel(
     appointmentIds: AppointmentId[],
     reason?: string,
   ): Promise<void> {
-    throw new Error('bulkCancel not implemented yet - TODO Phase 2');
+    throw new Error("bulkCancel not implemented yet - TODO Phase 2");
   }
 
   async getClientHistory(
@@ -266,7 +266,7 @@ export class TypeOrmAppointmentRepository implements AppointmentRepository {
     businessId?: BusinessId,
     limit?: number,
   ): Promise<Appointment[]> {
-    throw new Error('getClientHistory not implemented yet - TODO Phase 2');
+    throw new Error("getClientHistory not implemented yet - TODO Phase 2");
   }
 
   async findAppointmentsNeedingFollowUp(
@@ -274,7 +274,7 @@ export class TypeOrmAppointmentRepository implements AppointmentRepository {
     daysSinceCompletion: number,
   ): Promise<Appointment[]> {
     throw new Error(
-      'findAppointmentsNeedingFollowUp not implemented yet - TODO Phase 2',
+      "findAppointmentsNeedingFollowUp not implemented yet - TODO Phase 2",
     );
   }
 
@@ -290,11 +290,11 @@ export class TypeOrmAppointmentRepository implements AppointmentRepository {
     peakTimes: { time: string; bookingCount: number }[];
   }> {
     throw new Error(
-      'getCalendarUtilization not implemented yet - TODO Phase 2',
+      "getCalendarUtilization not implemented yet - TODO Phase 2",
     );
   }
 
   async export(criteria: AppointmentSearchCriteria): Promise<Appointment[]> {
-    throw new Error('export not implemented yet - TODO Phase 2');
+    throw new Error("export not implemented yet - TODO Phase 2");
   }
 }

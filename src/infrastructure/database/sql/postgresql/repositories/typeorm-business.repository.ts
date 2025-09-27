@@ -9,15 +9,15 @@
  * ✅ Gestion des erreurs et logging
  */
 
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Business } from '../../../../../domain/entities/business.entity';
-import { BusinessRepository } from '../../../../../domain/repositories/business.repository.interface';
-import { BusinessId } from '../../../../../domain/value-objects/business-id.value-object';
-import { BusinessName } from '../../../../../domain/value-objects/business-name.value-object';
-import { BusinessMapper } from '../../../../mappers/domain-mappers';
-import { BusinessOrmEntity } from '../entities/business-orm.entity';
+import { Injectable } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+import { Business } from "../../../../../domain/entities/business.entity";
+import { BusinessRepository } from "../../../../../domain/repositories/business.repository.interface";
+import { BusinessId } from "../../../../../domain/value-objects/business-id.value-object";
+import { BusinessName } from "../../../../../domain/value-objects/business-name.value-object";
+import { BusinessMapper } from "../../../../mappers/domain-mappers";
+import { BusinessOrmEntity } from "../entities/business-orm.entity";
 
 @Injectable()
 export class TypeOrmBusinessRepository implements BusinessRepository {
@@ -37,7 +37,7 @@ export class TypeOrmBusinessRepository implements BusinessRepository {
       return ormEntity ? BusinessMapper.fromTypeOrmEntity(ormEntity) : null;
     } catch (error) {
       throw new Error(
-        `Failed to find business by id: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Failed to find business by id: ${error instanceof Error ? error.message : "Unknown error"}`,
       );
     }
   }
@@ -53,7 +53,7 @@ export class TypeOrmBusinessRepository implements BusinessRepository {
       return ormEntity ? BusinessMapper.fromTypeOrmEntity(ormEntity) : null;
     } catch (error) {
       throw new Error(
-        `Failed to find business by name: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Failed to find business by name: ${error instanceof Error ? error.message : "Unknown error"}`,
       );
     }
   }
@@ -70,7 +70,7 @@ export class TypeOrmBusinessRepository implements BusinessRepository {
       );
     } catch (error) {
       throw new Error(
-        `Failed to find businesses by sector: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Failed to find businesses by sector: ${error instanceof Error ? error.message : "Unknown error"}`,
       );
     }
   }
@@ -87,17 +87,17 @@ export class TypeOrmBusinessRepository implements BusinessRepository {
     total: number;
   }> {
     try {
-      const queryBuilder = this.ormRepository.createQueryBuilder('business');
+      const queryBuilder = this.ormRepository.createQueryBuilder("business");
 
       // Apply filters
       if (criteria.name) {
-        queryBuilder.andWhere('business.name ILIKE :name', {
+        queryBuilder.andWhere("business.name ILIKE :name", {
           name: `%${criteria.name}%`,
         });
       }
 
       if (criteria.sector) {
-        queryBuilder.andWhere('business.sector = :sector', {
+        queryBuilder.andWhere("business.sector = :sector", {
           sector: criteria.sector,
         });
       }
@@ -109,8 +109,8 @@ export class TypeOrmBusinessRepository implements BusinessRepository {
       }
 
       if (criteria.isActive !== undefined) {
-        const status = criteria.isActive ? 'ACTIVE' : 'INACTIVE';
-        queryBuilder.andWhere('business.status = :status', { status });
+        const status = criteria.isActive ? "ACTIVE" : "INACTIVE";
+        queryBuilder.andWhere("business.status = :status", { status });
       }
 
       // Count total
@@ -126,7 +126,7 @@ export class TypeOrmBusinessRepository implements BusinessRepository {
       }
 
       // Order by creation date
-      queryBuilder.orderBy('business.created_at', 'DESC');
+      queryBuilder.orderBy("business.created_at", "DESC");
 
       const ormEntities = await queryBuilder.getMany();
       const businesses = ormEntities.map((entity) =>
@@ -136,7 +136,7 @@ export class TypeOrmBusinessRepository implements BusinessRepository {
       return { businesses, total };
     } catch (error) {
       throw new Error(
-        `Failed to search businesses: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Failed to search businesses: ${error instanceof Error ? error.message : "Unknown error"}`,
       );
     }
   }
@@ -150,7 +150,7 @@ export class TypeOrmBusinessRepository implements BusinessRepository {
       await this.ormRepository.save(ormEntity);
     } catch (error) {
       throw new Error(
-        `Failed to save business: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Failed to save business: ${error instanceof Error ? error.message : "Unknown error"}`,
       );
     }
   }
@@ -165,7 +165,7 @@ export class TypeOrmBusinessRepository implements BusinessRepository {
       }
     } catch (error) {
       throw new Error(
-        `Failed to delete business: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Failed to delete business: ${error instanceof Error ? error.message : "Unknown error"}`,
       );
     }
   }
@@ -180,7 +180,7 @@ export class TypeOrmBusinessRepository implements BusinessRepository {
       return count > 0;
     } catch (error) {
       throw new Error(
-        `Failed to check business name existence: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Failed to check business name existence: ${error instanceof Error ? error.message : "Unknown error"}`,
       );
     }
   }
@@ -193,7 +193,7 @@ export class TypeOrmBusinessRepository implements BusinessRepository {
   ): Promise<Business[]> {
     try {
       // Requête SQL avec calcul de distance géographique
-      const queryBuilder = this.ormRepository.createQueryBuilder('business');
+      const queryBuilder = this.ormRepository.createQueryBuilder("business");
 
       queryBuilder.andWhere(
         `
@@ -213,7 +213,7 @@ export class TypeOrmBusinessRepository implements BusinessRepository {
           ST_SetSRID(ST_MakePoint(:longitude, :latitude), 4326)
         )
       `,
-        'ASC',
+        "ASC",
       );
 
       if (limit) {
@@ -268,7 +268,7 @@ export class TypeOrmBusinessRepository implements BusinessRepository {
       };
     } catch (error) {
       throw new Error(
-        `Failed to get business statistics: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Failed to get business statistics: ${error instanceof Error ? error.message : "Unknown error"}`,
       );
     }
   }

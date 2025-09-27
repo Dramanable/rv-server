@@ -1,4 +1,4 @@
-import { v4 as uuidv4, validate as uuidValidate } from 'uuid';
+import { v4 as uuidv4, validate as uuidValidate } from "uuid";
 
 /**
  * 🆔 CalendarType ID Value Object
@@ -38,7 +38,7 @@ export class CalendarTypeId {
    * Check if a string is a valid CalendarTypeId
    */
   static isValid(value: string): boolean {
-    return typeof value === 'string' && uuidValidate(value);
+    return typeof value === "string" && uuidValidate(value);
   }
 
   /**

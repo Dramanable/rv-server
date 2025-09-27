@@ -3,23 +3,23 @@ import {
   QueryRunner,
   TableColumn,
   TableForeignKey,
-} from 'typeorm';
+} from "typeorm";
 
 export class MigrateBusinessSectorToRelation1758496500000
   implements MigrationInterface
 {
-  name = 'MigrateBusinessSectorToRelation1758496500000';
+  name = "MigrateBusinessSectorToRelation1758496500000";
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     // Utiliser la variable d'environnement pour le schéma
-    const schema = process.env.DB_SCHEMA || 'rvproject_schema';
+    const schema = process.env.DB_SCHEMA || "rvproject_schema";
 
     // 1. Ajouter la nouvelle colonne business_sector_id
     await queryRunner.addColumn(
       `${schema}.businesses`,
       new TableColumn({
-        name: 'business_sector_id',
-        type: 'uuid',
+        name: "business_sector_id",
+        type: "uuid",
         isNullable: true, // Temporairement nullable pour la migration
       }),
     );
@@ -27,54 +27,54 @@ export class MigrateBusinessSectorToRelation1758496500000
     // 2. Créer des business sectors par défaut pour chaque enum existant
     const defaultSectors = [
       {
-        code: 'LEGAL',
-        name: 'Services Juridiques',
-        description: 'Avocats, notaires, conseils juridiques',
+        code: "LEGAL",
+        name: "Services Juridiques",
+        description: "Avocats, notaires, conseils juridiques",
       },
       {
-        code: 'MEDICAL',
-        name: 'Services Médicaux',
-        description: 'Médecins, spécialistes, cliniques',
+        code: "MEDICAL",
+        name: "Services Médicaux",
+        description: "Médecins, spécialistes, cliniques",
       },
       {
-        code: 'HEALTH',
-        name: 'Santé & Bien-être',
-        description: 'Kinésithérapeutes, ostéopathes, services de santé',
+        code: "HEALTH",
+        name: "Santé & Bien-être",
+        description: "Kinésithérapeutes, ostéopathes, services de santé",
       },
       {
-        code: 'BEAUTY',
-        name: 'Beauté & Esthétique',
-        description: 'Salons de beauté, esthéticienne, coiffeurs',
+        code: "BEAUTY",
+        name: "Beauté & Esthétique",
+        description: "Salons de beauté, esthéticienne, coiffeurs",
       },
       {
-        code: 'CONSULTING',
-        name: 'Conseil & Expertise',
-        description: 'Consultants, experts, conseil en management',
+        code: "CONSULTING",
+        name: "Conseil & Expertise",
+        description: "Consultants, experts, conseil en management",
       },
       {
-        code: 'FINANCE',
-        name: 'Services Financiers',
-        description: 'Comptables, conseillers financiers, banques',
+        code: "FINANCE",
+        name: "Services Financiers",
+        description: "Comptables, conseillers financiers, banques",
       },
       {
-        code: 'EDUCATION',
-        name: 'Éducation & Formation',
-        description: 'Écoles, formations, cours particuliers',
+        code: "EDUCATION",
+        name: "Éducation & Formation",
+        description: "Écoles, formations, cours particuliers",
       },
       {
-        code: 'WELLNESS',
-        name: 'Bien-être & Relaxation',
-        description: 'Spas, massage, centres de bien-être',
+        code: "WELLNESS",
+        name: "Bien-être & Relaxation",
+        description: "Spas, massage, centres de bien-être",
       },
       {
-        code: 'AUTOMOTIVE',
-        name: 'Automobile',
-        description: 'Garages, concessionnaires, services auto',
+        code: "AUTOMOTIVE",
+        name: "Automobile",
+        description: "Garages, concessionnaires, services auto",
       },
       {
-        code: 'OTHER',
-        name: 'Autres Services',
-        description: 'Autres types de services',
+        code: "OTHER",
+        name: "Autres Services",
+        description: "Autres types de services",
       },
     ];
 
@@ -123,10 +123,10 @@ export class MigrateBusinessSectorToRelation1758496500000
     // 4. Rendre business_sector_id NOT NULL
     await queryRunner.changeColumn(
       `${schema}.businesses`,
-      'business_sector_id',
+      "business_sector_id",
       new TableColumn({
-        name: 'business_sector_id',
-        type: 'uuid',
+        name: "business_sector_id",
+        type: "uuid",
         isNullable: false,
       }),
     );
@@ -135,16 +135,16 @@ export class MigrateBusinessSectorToRelation1758496500000
     await queryRunner.createForeignKey(
       `${schema}.businesses`,
       new TableForeignKey({
-        columnNames: ['business_sector_id'],
+        columnNames: ["business_sector_id"],
         referencedTableName: `${schema}.business_sectors`,
-        referencedColumnNames: ['id'],
-        onDelete: 'RESTRICT',
-        name: 'FK_businesses_business_sector_id',
+        referencedColumnNames: ["id"],
+        onDelete: "RESTRICT",
+        name: "FK_businesses_business_sector_id",
       }),
     );
 
     // 6. Supprimer l'ancienne colonne enum sector
-    await queryRunner.dropColumn(`${schema}.businesses`, 'sector');
+    await queryRunner.dropColumn(`${schema}.businesses`, "sector");
 
     // 7. Créer un index sur la nouvelle colonne
     await queryRunner.query(`
@@ -154,25 +154,25 @@ export class MigrateBusinessSectorToRelation1758496500000
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    const schema = process.env.DB_SCHEMA || 'rvproject_schema';
+    const schema = process.env.DB_SCHEMA || "rvproject_schema";
 
     // 1. Recréer la colonne enum sector
     await queryRunner.addColumn(
       `${schema}.businesses`,
       new TableColumn({
-        name: 'sector',
-        type: 'enum',
+        name: "sector",
+        type: "enum",
         enum: [
-          'LEGAL',
-          'MEDICAL',
-          'HEALTH',
-          'BEAUTY',
-          'CONSULTING',
-          'FINANCE',
-          'EDUCATION',
-          'WELLNESS',
-          'AUTOMOTIVE',
-          'OTHER',
+          "LEGAL",
+          "MEDICAL",
+          "HEALTH",
+          "BEAUTY",
+          "CONSULTING",
+          "FINANCE",
+          "EDUCATION",
+          "WELLNESS",
+          "AUTOMOTIVE",
+          "OTHER",
         ],
         default: "'OTHER'",
       }),
@@ -189,11 +189,11 @@ export class MigrateBusinessSectorToRelation1758496500000
     // 3. Supprimer la foreign key
     await queryRunner.dropForeignKey(
       `${schema}.businesses`,
-      'FK_businesses_business_sector_id',
+      "FK_businesses_business_sector_id",
     );
 
     // 4. Supprimer la colonne business_sector_id (TypeORM supprime automatiquement l'index)
-    await queryRunner.dropColumn(`${schema}.businesses`, 'business_sector_id');
+    await queryRunner.dropColumn(`${schema}.businesses`, "business_sector_id");
 
     // 6. Recréer l'index sur sector
     await queryRunner.query(`

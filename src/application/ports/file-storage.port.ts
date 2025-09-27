@@ -1,7 +1,7 @@
 import {
   FileUrl,
   CloudProvider,
-} from '../../domain/value-objects/file-url.value-object';
+} from "../../domain/value-objects/file-url.value-object";
 
 export interface UploadFileRequest {
   file: Buffer;

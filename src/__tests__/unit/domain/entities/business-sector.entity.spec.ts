@@ -5,22 +5,22 @@
  * Valide la logique métier et les règles de validation
  */
 
-import { BusinessSector } from '@domain/entities/business-sector.entity';
-import { DomainError } from '@domain/exceptions/domain.exceptions';
+import { BusinessSector } from "@domain/entities/business-sector.entity";
+import { DomainError } from "@domain/exceptions/domain.exceptions";
 
-describe('BusinessSector Entity', () => {
+describe("BusinessSector Entity", () => {
   // ═══════════════════════════════════════════════════════════════
   // 🏭 FACTORY METHODS TESTS
   // ═══════════════════════════════════════════════════════════════
 
-  describe('create', () => {
-    it('should create a valid business sector', () => {
+  describe("create", () => {
+    it("should create a valid business sector", () => {
       // Given
-      const name = 'Technologie';
+      const name = "Technologie";
       const description =
         "Secteur des technologies de l'information et de la communication";
-      const code = 'TECH';
-      const createdBy = 'super-admin-id';
+      const code = "TECH";
+      const createdBy = "super-admin-id";
 
       // When
       const businessSector = BusinessSector.create(
@@ -33,7 +33,7 @@ describe('BusinessSector Entity', () => {
       // Then
       expect(businessSector.name).toBe(name);
       expect(businessSector.description).toBe(description);
-      expect(businessSector.code).toBe('TECH'); // Uppercase
+      expect(businessSector.code).toBe("TECH"); // Uppercase
       expect(businessSector.isActive).toBe(true);
       expect(businessSector.createdBy).toBe(createdBy);
       expect(businessSector.id).toMatch(/^bs_\d+_[a-z0-9]+$/);
@@ -41,13 +41,13 @@ describe('BusinessSector Entity', () => {
       expect(businessSector.updatedAt).toBeUndefined();
     });
 
-    it('should trim and uppercase code when creating', () => {
+    it("should trim and uppercase code when creating", () => {
       // Given
-      const name = 'Finance';
+      const name = "Finance";
       const description =
-        'Services financiers et bancaires pour les entreprises';
-      const code = '  finance  ';
-      const createdBy = 'super-admin-id';
+        "Services financiers et bancaires pour les entreprises";
+      const code = "  finance  ";
+      const createdBy = "super-admin-id";
 
       // When
       const businessSector = BusinessSector.create(
@@ -58,15 +58,15 @@ describe('BusinessSector Entity', () => {
       );
 
       // Then
-      expect(businessSector.code).toBe('FINANCE');
+      expect(businessSector.code).toBe("FINANCE");
     });
 
-    it('should throw error for empty name', () => {
+    it("should throw error for empty name", () => {
       // Given
-      const name = '';
-      const description = 'Valid description';
-      const code = 'VALID';
-      const createdBy = 'super-admin-id';
+      const name = "";
+      const description = "Valid description";
+      const code = "VALID";
+      const createdBy = "super-admin-id";
 
       // When & Then
       expect(() =>
@@ -74,15 +74,15 @@ describe('BusinessSector Entity', () => {
       ).toThrow(DomainError);
       expect(() =>
         BusinessSector.create(name, description, code, createdBy),
-      ).toThrow('Business sector name cannot be empty');
+      ).toThrow("Business sector name cannot be empty");
     });
 
-    it('should throw error for short name', () => {
+    it("should throw error for short name", () => {
       // Given
-      const name = 'A';
-      const description = 'Valid description';
-      const code = 'VALID';
-      const createdBy = 'super-admin-id';
+      const name = "A";
+      const description = "Valid description";
+      const code = "VALID";
+      const createdBy = "super-admin-id";
 
       // When & Then
       expect(() =>
@@ -90,15 +90,15 @@ describe('BusinessSector Entity', () => {
       ).toThrow(DomainError);
       expect(() =>
         BusinessSector.create(name, description, code, createdBy),
-      ).toThrow('Business sector name must be at least 2 characters long');
+      ).toThrow("Business sector name must be at least 2 characters long");
     });
 
-    it('should throw error for long name', () => {
+    it("should throw error for long name", () => {
       // Given
-      const name = 'A'.repeat(101);
-      const description = 'Valid description';
-      const code = 'VALID';
-      const createdBy = 'super-admin-id';
+      const name = "A".repeat(101);
+      const description = "Valid description";
+      const code = "VALID";
+      const createdBy = "super-admin-id";
 
       // When & Then
       expect(() =>
@@ -106,15 +106,15 @@ describe('BusinessSector Entity', () => {
       ).toThrow(DomainError);
       expect(() =>
         BusinessSector.create(name, description, code, createdBy),
-      ).toThrow('Business sector name must be less than 100 characters');
+      ).toThrow("Business sector name must be less than 100 characters");
     });
 
-    it('should throw error for invalid name characters', () => {
+    it("should throw error for invalid name characters", () => {
       // Given
-      const name = 'Tech@#$%';
-      const description = 'Valid description';
-      const code = 'TECH';
-      const createdBy = 'super-admin-id';
+      const name = "Tech@#$%";
+      const description = "Valid description";
+      const code = "TECH";
+      const createdBy = "super-admin-id";
 
       // When & Then
       expect(() =>
@@ -122,15 +122,15 @@ describe('BusinessSector Entity', () => {
       ).toThrow(DomainError);
       expect(() =>
         BusinessSector.create(name, description, code, createdBy),
-      ).toThrow('Business sector name contains invalid characters');
+      ).toThrow("Business sector name contains invalid characters");
     });
 
-    it('should throw error for empty description', () => {
+    it("should throw error for empty description", () => {
       // Given
-      const name = 'Valid Name';
-      const description = '';
-      const code = 'VALID';
-      const createdBy = 'super-admin-id';
+      const name = "Valid Name";
+      const description = "";
+      const code = "VALID";
+      const createdBy = "super-admin-id";
 
       // When & Then
       expect(() =>
@@ -138,97 +138,15 @@ describe('BusinessSector Entity', () => {
       ).toThrow(DomainError);
       expect(() =>
         BusinessSector.create(name, description, code, createdBy),
-      ).toThrow('Business sector description cannot be empty');
+      ).toThrow("Business sector description cannot be empty");
     });
 
-    it('should throw error for short description', () => {
+    it("should throw error for short description", () => {
       // Given
-      const name = 'Valid Name';
-      const description = 'Short';
-      const code = 'VALID';
-      const createdBy = 'super-admin-id';
-
-      // When & Then
-      expect(() =>
-        BusinessSector.create(name, description, code, createdBy),
-      ).toThrow(DomainError);
-      expect(() =>
-        BusinessSector.create(name, description, code, createdBy),
-      ).toThrow(
-        'Business sector description must be at least 10 characters long',
-      );
-    });
-
-    it('should throw error for long description', () => {
-      // Given
-      const name = 'Valid Name';
-      const description = 'A'.repeat(501);
-      const code = 'VALID';
-      const createdBy = 'super-admin-id';
-
-      // When & Then
-      expect(() =>
-        BusinessSector.create(name, description, code, createdBy),
-      ).toThrow(DomainError);
-      expect(() =>
-        BusinessSector.create(name, description, code, createdBy),
-      ).toThrow('Business sector description must be less than 500 characters');
-    });
-
-    it('should throw error for empty code', () => {
-      // Given
-      const name = 'Valid Name';
-      const description = 'Valid description with enough characters';
-      const code = '';
-      const createdBy = 'super-admin-id';
-
-      // When & Then
-      expect(() =>
-        BusinessSector.create(name, description, code, createdBy),
-      ).toThrow(DomainError);
-      expect(() =>
-        BusinessSector.create(name, description, code, createdBy),
-      ).toThrow('Business sector code cannot be empty');
-    });
-
-    it('should throw error for short code', () => {
-      // Given
-      const name = 'Valid Name';
-      const description = 'Valid description with enough characters';
-      const code = 'A';
-      const createdBy = 'super-admin-id';
-
-      // When & Then
-      expect(() =>
-        BusinessSector.create(name, description, code, createdBy),
-      ).toThrow(DomainError);
-      expect(() =>
-        BusinessSector.create(name, description, code, createdBy),
-      ).toThrow('Business sector code must be at least 2 characters long');
-    });
-
-    it('should throw error for long code', () => {
-      // Given
-      const name = 'Valid Name';
-      const description = 'Valid description with enough characters';
-      const code = 'A'.repeat(21);
-      const createdBy = 'super-admin-id';
-
-      // When & Then
-      expect(() =>
-        BusinessSector.create(name, description, code, createdBy),
-      ).toThrow(DomainError);
-      expect(() =>
-        BusinessSector.create(name, description, code, createdBy),
-      ).toThrow('Business sector code must be less than 20 characters');
-    });
-
-    it('should throw error for invalid code characters', () => {
-      // Given
-      const name = 'Valid Name';
-      const description = 'Valid description with enough characters';
-      const code = 'TECH-123@';
-      const createdBy = 'super-admin-id';
+      const name = "Valid Name";
+      const description = "Short";
+      const code = "VALID";
+      const createdBy = "super-admin-id";
 
       // When & Then
       expect(() =>
@@ -237,16 +155,16 @@ describe('BusinessSector Entity', () => {
       expect(() =>
         BusinessSector.create(name, description, code, createdBy),
       ).toThrow(
-        'Business sector code must contain only uppercase letters, numbers and underscores',
+        "Business sector description must be at least 10 characters long",
       );
     });
 
-    it('should throw error for empty createdBy', () => {
+    it("should throw error for long description", () => {
       // Given
-      const name = 'Valid Name';
-      const description = 'Valid description with enough characters';
-      const code = 'VALID';
-      const createdBy = '';
+      const name = "Valid Name";
+      const description = "A".repeat(501);
+      const code = "VALID";
+      const createdBy = "super-admin-id";
 
       // When & Then
       expect(() =>
@@ -254,15 +172,97 @@ describe('BusinessSector Entity', () => {
       ).toThrow(DomainError);
       expect(() =>
         BusinessSector.create(name, description, code, createdBy),
-      ).toThrow('CreatedBy user ID cannot be empty');
+      ).toThrow("Business sector description must be less than 500 characters");
     });
 
-    it('should accept valid code with underscores and numbers', () => {
+    it("should throw error for empty code", () => {
       // Given
-      const name = 'Finance & Technology';
-      const description = 'Secteur financier avec technologies numériques';
-      const code = 'FIN_TECH_2024';
-      const createdBy = 'super-admin-id';
+      const name = "Valid Name";
+      const description = "Valid description with enough characters";
+      const code = "";
+      const createdBy = "super-admin-id";
+
+      // When & Then
+      expect(() =>
+        BusinessSector.create(name, description, code, createdBy),
+      ).toThrow(DomainError);
+      expect(() =>
+        BusinessSector.create(name, description, code, createdBy),
+      ).toThrow("Business sector code cannot be empty");
+    });
+
+    it("should throw error for short code", () => {
+      // Given
+      const name = "Valid Name";
+      const description = "Valid description with enough characters";
+      const code = "A";
+      const createdBy = "super-admin-id";
+
+      // When & Then
+      expect(() =>
+        BusinessSector.create(name, description, code, createdBy),
+      ).toThrow(DomainError);
+      expect(() =>
+        BusinessSector.create(name, description, code, createdBy),
+      ).toThrow("Business sector code must be at least 2 characters long");
+    });
+
+    it("should throw error for long code", () => {
+      // Given
+      const name = "Valid Name";
+      const description = "Valid description with enough characters";
+      const code = "A".repeat(21);
+      const createdBy = "super-admin-id";
+
+      // When & Then
+      expect(() =>
+        BusinessSector.create(name, description, code, createdBy),
+      ).toThrow(DomainError);
+      expect(() =>
+        BusinessSector.create(name, description, code, createdBy),
+      ).toThrow("Business sector code must be less than 20 characters");
+    });
+
+    it("should throw error for invalid code characters", () => {
+      // Given
+      const name = "Valid Name";
+      const description = "Valid description with enough characters";
+      const code = "TECH-123@";
+      const createdBy = "super-admin-id";
+
+      // When & Then
+      expect(() =>
+        BusinessSector.create(name, description, code, createdBy),
+      ).toThrow(DomainError);
+      expect(() =>
+        BusinessSector.create(name, description, code, createdBy),
+      ).toThrow(
+        "Business sector code must contain only uppercase letters, numbers and underscores",
+      );
+    });
+
+    it("should throw error for empty createdBy", () => {
+      // Given
+      const name = "Valid Name";
+      const description = "Valid description with enough characters";
+      const code = "VALID";
+      const createdBy = "";
+
+      // When & Then
+      expect(() =>
+        BusinessSector.create(name, description, code, createdBy),
+      ).toThrow(DomainError);
+      expect(() =>
+        BusinessSector.create(name, description, code, createdBy),
+      ).toThrow("CreatedBy user ID cannot be empty");
+    });
+
+    it("should accept valid code with underscores and numbers", () => {
+      // Given
+      const name = "Finance & Technology";
+      const description = "Secteur financier avec technologies numériques";
+      const code = "FIN_TECH_2024";
+      const createdBy = "super-admin-id";
 
       // When
       const businessSector = BusinessSector.create(
@@ -273,22 +273,22 @@ describe('BusinessSector Entity', () => {
       );
 
       // Then
-      expect(businessSector.code).toBe('FIN_TECH_2024');
+      expect(businessSector.code).toBe("FIN_TECH_2024");
     });
   });
 
-  describe('restore', () => {
-    it('should restore a business sector from persisted data', () => {
+  describe("restore", () => {
+    it("should restore a business sector from persisted data", () => {
       // Given
-      const id = 'bs-123';
-      const name = 'Healthcare';
-      const description = 'Services de santé et médicaux';
-      const code = 'HEALTH';
+      const id = "bs-123";
+      const name = "Healthcare";
+      const description = "Services de santé et médicaux";
+      const code = "HEALTH";
       const isActive = true;
-      const createdAt = new Date('2024-01-01');
-      const createdBy = 'super-admin-id';
-      const updatedAt = new Date('2024-01-02');
-      const updatedBy = 'admin-id';
+      const createdAt = new Date("2024-01-01");
+      const createdBy = "super-admin-id";
+      const updatedAt = new Date("2024-01-02");
+      const updatedBy = "admin-id";
 
       // When
       const businessSector = BusinessSector.restore(
@@ -315,15 +315,15 @@ describe('BusinessSector Entity', () => {
       expect(businessSector.updatedBy).toBe(updatedBy);
     });
 
-    it('should restore a business sector without optional fields', () => {
+    it("should restore a business sector without optional fields", () => {
       // Given
-      const id = 'bs-123';
-      const name = 'Education';
-      const description = 'Services éducatifs et formation';
-      const code = 'EDU';
+      const id = "bs-123";
+      const name = "Education";
+      const description = "Services éducatifs et formation";
+      const code = "EDU";
       const isActive = false;
-      const createdAt = new Date('2024-01-01');
-      const createdBy = 'super-admin-id';
+      const createdAt = new Date("2024-01-01");
+      const createdBy = "super-admin-id";
 
       // When
       const businessSector = BusinessSector.restore(
@@ -346,19 +346,19 @@ describe('BusinessSector Entity', () => {
   // 🔄 BUSINESS METHODS TESTS
   // ═══════════════════════════════════════════════════════════════
 
-  describe('update', () => {
-    it('should update name and description', () => {
+  describe("update", () => {
+    it("should update name and description", () => {
       // Given
       const originalSector = BusinessSector.create(
-        'Technology',
-        'Original tech description',
-        'TECH',
-        'super-admin-id',
+        "Technology",
+        "Original tech description",
+        "TECH",
+        "super-admin-id",
       );
-      const newName = 'Information Technology';
+      const newName = "Information Technology";
       const newDescription =
-        'Updated description for IT services and solutions';
-      const updatedBy = 'admin-id';
+        "Updated description for IT services and solutions";
+      const updatedBy = "admin-id";
 
       // When
       const updatedSector = originalSector.update(
@@ -379,35 +379,35 @@ describe('BusinessSector Entity', () => {
       );
     });
 
-    it('should validate name when updating', () => {
+    it("should validate name when updating", () => {
       // Given
       const sector = BusinessSector.create(
-        'Technology',
-        'Tech description',
-        'TECH',
-        'super-admin-id',
+        "Technology",
+        "Tech description",
+        "TECH",
+        "super-admin-id",
       );
 
       // When & Then
-      expect(() => sector.update('', 'Valid description', 'admin-id')).toThrow(
-        'Business sector name cannot be empty',
+      expect(() => sector.update("", "Valid description", "admin-id")).toThrow(
+        "Business sector name cannot be empty",
       );
     });
   });
 
-  describe('activate', () => {
-    it('should activate a deactivated business sector', () => {
+  describe("activate", () => {
+    it("should activate a deactivated business sector", () => {
       // Given
       const sector = BusinessSector.restore(
-        'bs-123',
-        'Technology',
-        'Tech description',
-        'TECH',
+        "bs-123",
+        "Technology",
+        "Tech description",
+        "TECH",
         false, // Inactive
-        new Date('2024-01-01'),
-        'super-admin-id',
+        new Date("2024-01-01"),
+        "super-admin-id",
       );
-      const updatedBy = 'admin-id';
+      const updatedBy = "admin-id";
 
       // When
       const activatedSector = sector.activate(updatedBy);
@@ -419,16 +419,16 @@ describe('BusinessSector Entity', () => {
     });
   });
 
-  describe('deactivate', () => {
-    it('should deactivate an active business sector', () => {
+  describe("deactivate", () => {
+    it("should deactivate an active business sector", () => {
       // Given
       const sector = BusinessSector.create(
-        'Technology',
-        'Tech description',
-        'TECH',
-        'super-admin-id',
+        "Technology",
+        "Tech description",
+        "TECH",
+        "super-admin-id",
       );
-      const updatedBy = 'admin-id';
+      const updatedBy = "admin-id";
 
       // When
       const deactivatedSector = sector.deactivate(updatedBy);
@@ -444,14 +444,14 @@ describe('BusinessSector Entity', () => {
   // 🔍 QUERY METHODS TESTS
   // ═══════════════════════════════════════════════════════════════
 
-  describe('isCreatedBy', () => {
-    it('should return true for matching creator', () => {
+  describe("isCreatedBy", () => {
+    it("should return true for matching creator", () => {
       // Given
-      const createdBy = 'super-admin-id';
+      const createdBy = "super-admin-id";
       const sector = BusinessSector.create(
-        'Technology',
-        'Tech description',
-        'TECH',
+        "Technology",
+        "Tech description",
+        "TECH",
         createdBy,
       );
 
@@ -459,42 +459,42 @@ describe('BusinessSector Entity', () => {
       expect(sector.isCreatedBy(createdBy)).toBe(true);
     });
 
-    it('should return false for different creator', () => {
+    it("should return false for different creator", () => {
       // Given
       const sector = BusinessSector.create(
-        'Technology',
-        'Tech description',
-        'TECH',
-        'super-admin-id',
+        "Technology",
+        "Tech description",
+        "TECH",
+        "super-admin-id",
       );
 
       // When & Then
-      expect(sector.isCreatedBy('other-admin-id')).toBe(false);
+      expect(sector.isCreatedBy("other-admin-id")).toBe(false);
     });
   });
 
-  describe('canBeUsedForBusiness', () => {
-    it('should return true for active sector', () => {
+  describe("canBeUsedForBusiness", () => {
+    it("should return true for active sector", () => {
       // Given
       const sector = BusinessSector.create(
-        'Technology',
-        'Tech description',
-        'TECH',
-        'super-admin-id',
+        "Technology",
+        "Tech description",
+        "TECH",
+        "super-admin-id",
       );
 
       // When & Then
       expect(sector.canBeUsedForBusiness()).toBe(true);
     });
 
-    it('should return false for inactive sector', () => {
+    it("should return false for inactive sector", () => {
       // Given
       const sector = BusinessSector.create(
-        'Technology',
-        'Tech description',
-        'TECH',
-        'super-admin-id',
-      ).deactivate('admin-id');
+        "Technology",
+        "Tech description",
+        "TECH",
+        "super-admin-id",
+      ).deactivate("admin-id");
 
       // When & Then
       expect(sector.canBeUsedForBusiness()).toBe(false);
@@ -505,51 +505,51 @@ describe('BusinessSector Entity', () => {
   // 🔄 EQUALITY & COMPARISON TESTS
   // ═══════════════════════════════════════════════════════════════
 
-  describe('equals', () => {
-    it('should return true for same ID', () => {
+  describe("equals", () => {
+    it("should return true for same ID", () => {
       // Given
       const sector1 = BusinessSector.restore(
-        'bs-123',
-        'Technology',
-        'Tech description',
-        'TECH',
+        "bs-123",
+        "Technology",
+        "Tech description",
+        "TECH",
         true,
         new Date(),
-        'super-admin-id',
+        "super-admin-id",
       );
       const sector2 = BusinessSector.restore(
-        'bs-123',
-        'Different Name',
-        'Different description',
-        'DIFF',
+        "bs-123",
+        "Different Name",
+        "Different description",
+        "DIFF",
         false,
         new Date(),
-        'other-admin-id',
+        "other-admin-id",
       );
 
       // When & Then
       expect(sector1.equals(sector2)).toBe(true);
     });
 
-    it('should return false for different ID', () => {
+    it("should return false for different ID", () => {
       // Given
       const sector1 = BusinessSector.restore(
-        'bs-123',
-        'Technology',
-        'Tech description',
-        'TECH',
+        "bs-123",
+        "Technology",
+        "Tech description",
+        "TECH",
         true,
         new Date(),
-        'super-admin-id',
+        "super-admin-id",
       );
       const sector2 = BusinessSector.restore(
-        'bs-456',
-        'Technology',
-        'Tech description',
-        'TECH',
+        "bs-456",
+        "Technology",
+        "Tech description",
+        "TECH",
         true,
         new Date(),
-        'super-admin-id',
+        "super-admin-id",
       );
 
       // When & Then
@@ -557,51 +557,51 @@ describe('BusinessSector Entity', () => {
     });
   });
 
-  describe('isSame', () => {
-    it('should return true for same ID, name and code', () => {
+  describe("isSame", () => {
+    it("should return true for same ID, name and code", () => {
       // Given
       const sector1 = BusinessSector.restore(
-        'bs-123',
-        'Technology',
-        'Tech description',
-        'TECH',
+        "bs-123",
+        "Technology",
+        "Tech description",
+        "TECH",
         true,
         new Date(),
-        'super-admin-id',
+        "super-admin-id",
       );
       const sector2 = BusinessSector.restore(
-        'bs-123',
-        'Technology',
-        'Different description',
-        'TECH',
+        "bs-123",
+        "Technology",
+        "Different description",
+        "TECH",
         false,
         new Date(),
-        'other-admin-id',
+        "other-admin-id",
       );
 
       // When & Then
       expect(sector1.isSame(sector2)).toBe(true);
     });
 
-    it('should return false for different name', () => {
+    it("should return false for different name", () => {
       // Given
       const sector1 = BusinessSector.restore(
-        'bs-123',
-        'Technology',
-        'Tech description',
-        'TECH',
+        "bs-123",
+        "Technology",
+        "Tech description",
+        "TECH",
         true,
         new Date(),
-        'super-admin-id',
+        "super-admin-id",
       );
       const sector2 = BusinessSector.restore(
-        'bs-123',
-        'Different Technology',
-        'Tech description',
-        'TECH',
+        "bs-123",
+        "Different Technology",
+        "Tech description",
+        "TECH",
         true,
         new Date(),
-        'super-admin-id',
+        "super-admin-id",
       );
 
       // When & Then

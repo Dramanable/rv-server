@@ -2,12 +2,12 @@
  * JwtTokenService - Service JWT pour génération et vérification des tokens
  */
 
-import { Inject, Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { randomBytes } from 'crypto';
-import type { I18nService } from '../../application/ports/i18n.port';
-import type { Logger } from '../../application/ports/logger.port';
-import { TOKENS } from '../../shared/constants/injection-tokens';
+import { Inject, Injectable } from "@nestjs/common";
+import { JwtService } from "@nestjs/jwt";
+import { randomBytes } from "crypto";
+import type { I18nService } from "../../application/ports/i18n.port";
+import type { Logger } from "../../application/ports/logger.port";
+import { TOKENS } from "../../shared/constants/injection-tokens";
 
 interface JwtPayload {
   sub: string;
@@ -34,13 +34,13 @@ export class JwtTokenService {
     expiresIn: number,
   ): string {
     const context = {
-      operation: 'GENERATE_ACCESS_TOKEN',
+      operation: "GENERATE_ACCESS_TOKEN",
       timestamp: new Date().toISOString(),
       userId,
     };
 
     this.logger.info(
-      this.i18n.t('operations.token.generate_access_attempt'),
+      this.i18n.t("operations.token.generate_access_attempt"),
       context,
     );
 
@@ -56,14 +56,14 @@ export class JwtTokenService {
       });
 
       this.logger.info(
-        this.i18n.t('operations.token.generate_access_success'),
+        this.i18n.t("operations.token.generate_access_success"),
         { ...context, expiresIn },
       );
 
       return token;
     } catch (error) {
       this.logger.error(
-        this.i18n.t('errors.token.generate_access_failed'),
+        this.i18n.t("errors.token.generate_access_failed"),
         error as Error,
         context,
       );
@@ -73,18 +73,18 @@ export class JwtTokenService {
 
   generateRefreshToken(): string {
     const context = {
-      operation: 'generateRefreshToken',
+      operation: "generateRefreshToken",
     };
 
     this.logger.info(
-      this.i18n.t('operations.token.generate_refresh_attempt'),
+      this.i18n.t("operations.token.generate_refresh_attempt"),
       context,
     );
 
-    const token = randomBytes(64).toString('base64url');
+    const token = randomBytes(64).toString("base64url");
 
     this.logger.info(
-      this.i18n.t('operations.token.generate_refresh_success'),
+      this.i18n.t("operations.token.generate_refresh_success"),
       context,
     );
 
@@ -93,17 +93,17 @@ export class JwtTokenService {
 
   verifyToken(token: string, secret: string): JwtPayload {
     const context = {
-      operation: 'VERIFY_TOKEN',
+      operation: "VERIFY_TOKEN",
       timestamp: new Date().toISOString(),
     };
 
-    this.logger.info(this.i18n.t('operations.token.verify_attempt'), context);
+    this.logger.info(this.i18n.t("operations.token.verify_attempt"), context);
 
     try {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const payload = this.jwtService.verify(token, { secret });
 
-      this.logger.info(this.i18n.t('operations.token.verify_success'), {
+      this.logger.info(this.i18n.t("operations.token.verify_success"), {
         ...context,
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         userId: payload.sub,
@@ -112,7 +112,7 @@ export class JwtTokenService {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       return payload;
     } catch (error) {
-      this.logger.warn(this.i18n.t('warnings.token.verify_failed'), {
+      this.logger.warn(this.i18n.t("warnings.token.verify_failed"), {
         ...context,
         error: (error as Error).message,
       });

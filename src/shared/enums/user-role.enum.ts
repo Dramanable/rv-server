@@ -10,32 +10,32 @@
  */
 export enum UserRole {
   // 🔴 Niveau Enterprise (Plateforme)
-  SUPER_ADMIN = 'SUPER_ADMIN', // Super administrateur système
-  PLATFORM_ADMIN = 'PLATFORM_ADMIN', // Admin plateforme multi-tenant
+  SUPER_ADMIN = "SUPER_ADMIN", // Super administrateur système
+  PLATFORM_ADMIN = "PLATFORM_ADMIN", // Admin plateforme multi-tenant
 
   // 🟠 Niveau Business (Entreprise)
-  BUSINESS_OWNER = 'BUSINESS_OWNER', // Propriétaire principal
-  BUSINESS_ADMIN = 'BUSINESS_ADMIN', // Administrateur délégué
+  BUSINESS_OWNER = "BUSINESS_OWNER", // Propriétaire principal
+  BUSINESS_ADMIN = "BUSINESS_ADMIN", // Administrateur délégué
 
   // 🟡 Niveau Management (Gestion)
-  LOCATION_MANAGER = 'LOCATION_MANAGER', // Gestionnaire de site
-  DEPARTMENT_HEAD = 'DEPARTMENT_HEAD', // Chef de département/service
+  LOCATION_MANAGER = "LOCATION_MANAGER", // Gestionnaire de site
+  DEPARTMENT_HEAD = "DEPARTMENT_HEAD", // Chef de département/service
 
   // 🟢 Niveau Opérationnel (Praticiens)
-  SENIOR_PRACTITIONER = 'SENIOR_PRACTITIONER', // Praticien senior
-  PRACTITIONER = 'PRACTITIONER', // Praticien standard
-  JUNIOR_PRACTITIONER = 'JUNIOR_PRACTITIONER', // Praticien junior/stagiaire
+  SENIOR_PRACTITIONER = "SENIOR_PRACTITIONER", // Praticien senior
+  PRACTITIONER = "PRACTITIONER", // Praticien standard
+  JUNIOR_PRACTITIONER = "JUNIOR_PRACTITIONER", // Praticien junior/stagiaire
 
   // 🔵 Niveau Support (Personnel de soutien)
-  RECEPTIONIST = 'RECEPTIONIST', // Réceptionniste
-  ASSISTANT = 'ASSISTANT', // Assistant(e)
-  SCHEDULER = 'SCHEDULER', // Planificateur/coordinateur
+  RECEPTIONIST = "RECEPTIONIST", // Réceptionniste
+  ASSISTANT = "ASSISTANT", // Assistant(e)
+  SCHEDULER = "SCHEDULER", // Planificateur/coordinateur
 
   // 🟣 Niveau Externe (Clients)
-  CORPORATE_CLIENT = 'CORPORATE_CLIENT', // Client entreprise (RH, etc.)
-  REGULAR_CLIENT = 'REGULAR_CLIENT', // Client particulier
-  VIP_CLIENT = 'VIP_CLIENT', // Client VIP/Premium
-  GUEST_CLIENT = 'GUEST_CLIENT', // Client invité (sans compte)
+  CORPORATE_CLIENT = "CORPORATE_CLIENT", // Client entreprise (RH, etc.)
+  REGULAR_CLIENT = "REGULAR_CLIENT", // Client particulier
+  VIP_CLIENT = "VIP_CLIENT", // Client VIP/Premium
+  GUEST_CLIENT = "GUEST_CLIENT", // Client invité (sans compte)
 }
 
 /**
@@ -43,112 +43,112 @@ export enum UserRole {
  */
 export enum Permission {
   // 🏢 === BUSINESS MANAGEMENT ===
-  CONFIGURE_BUSINESS_SETTINGS = 'CONFIGURE_BUSINESS_SETTINGS',
-  MANAGE_BUSINESS_LOCATIONS = 'MANAGE_BUSINESS_LOCATIONS',
-  MANAGE_BUSINESS_BRANDING = 'MANAGE_BUSINESS_BRANDING',
-  VIEW_BUSINESS_ANALYTICS = 'VIEW_BUSINESS_ANALYTICS',
-  MANAGE_BILLING_SETTINGS = 'MANAGE_BILLING_SETTINGS',
+  CONFIGURE_BUSINESS_SETTINGS = "CONFIGURE_BUSINESS_SETTINGS",
+  MANAGE_BUSINESS_LOCATIONS = "MANAGE_BUSINESS_LOCATIONS",
+  MANAGE_BUSINESS_BRANDING = "MANAGE_BUSINESS_BRANDING",
+  VIEW_BUSINESS_ANALYTICS = "VIEW_BUSINESS_ANALYTICS",
+  MANAGE_BILLING_SETTINGS = "MANAGE_BILLING_SETTINGS",
 
   // 👥 === STAFF MANAGEMENT ===
-  MANAGE_ALL_STAFF = 'MANAGE_ALL_STAFF',
-  HIRE_STAFF = 'HIRE_STAFF',
-  FIRE_STAFF = 'FIRE_STAFF',
-  ASSIGN_ROLES = 'ASSIGN_ROLES',
-  VIEW_STAFF_PERFORMANCE = 'VIEW_STAFF_PERFORMANCE',
-  APPROVE_STAFF_LEAVE = 'APPROVE_STAFF_LEAVE',
+  MANAGE_ALL_STAFF = "MANAGE_ALL_STAFF",
+  HIRE_STAFF = "HIRE_STAFF",
+  FIRE_STAFF = "FIRE_STAFF",
+  ASSIGN_ROLES = "ASSIGN_ROLES",
+  VIEW_STAFF_PERFORMANCE = "VIEW_STAFF_PERFORMANCE",
+  APPROVE_STAFF_LEAVE = "APPROVE_STAFF_LEAVE",
 
   // 📅 === CALENDAR MANAGEMENT ===
-  CONFIGURE_BUSINESS_CALENDAR = 'CONFIGURE_BUSINESS_CALENDAR',
-  MANAGE_CALENDAR_RULES = 'MANAGE_CALENDAR_RULES',
-  OVERRIDE_CALENDAR_RULES = 'OVERRIDE_CALENDAR_RULES',
-  BLOCK_TIME_SLOTS = 'BLOCK_TIME_SLOTS',
-  MANAGE_HOLIDAYS = 'MANAGE_HOLIDAYS',
-  VIEW_ALL_CALENDARS = 'VIEW_ALL_CALENDARS',
+  CONFIGURE_BUSINESS_CALENDAR = "CONFIGURE_BUSINESS_CALENDAR",
+  MANAGE_CALENDAR_RULES = "MANAGE_CALENDAR_RULES",
+  OVERRIDE_CALENDAR_RULES = "OVERRIDE_CALENDAR_RULES",
+  BLOCK_TIME_SLOTS = "BLOCK_TIME_SLOTS",
+  MANAGE_HOLIDAYS = "MANAGE_HOLIDAYS",
+  VIEW_ALL_CALENDARS = "VIEW_ALL_CALENDARS",
 
   // 🛎️ === SERVICE MANAGEMENT ===
-  MANAGE_SERVICE_CATALOG = 'MANAGE_SERVICE_CATALOG',
-  CREATE_SERVICES = 'CREATE_SERVICES',
-  UPDATE_SERVICE_PRICING = 'UPDATE_SERVICE_PRICING',
-  MANAGE_SERVICE_PACKAGES = 'MANAGE_SERVICE_PACKAGES',
-  ASSIGN_SERVICES_TO_STAFF = 'ASSIGN_SERVICES_TO_STAFF',
+  MANAGE_SERVICE_CATALOG = "MANAGE_SERVICE_CATALOG",
+  CREATE_SERVICES = "CREATE_SERVICES",
+  UPDATE_SERVICE_PRICING = "UPDATE_SERVICE_PRICING",
+  MANAGE_SERVICE_PACKAGES = "MANAGE_SERVICE_PACKAGES",
+  ASSIGN_SERVICES_TO_STAFF = "ASSIGN_SERVICES_TO_STAFF",
 
   // 📞 === APPOINTMENT MANAGEMENT ===
-  BOOK_ANY_APPOINTMENT = 'BOOK_ANY_APPOINTMENT',
-  BOOK_FOR_OTHERS = 'BOOK_FOR_OTHERS',
-  RESCHEDULE_ANY_APPOINTMENT = 'RESCHEDULE_ANY_APPOINTMENT',
-  CANCEL_ANY_APPOINTMENT = 'CANCEL_ANY_APPOINTMENT',
-  CONFIRM_APPOINTMENTS = 'CONFIRM_APPOINTMENTS',
-  VIEW_ALL_APPOINTMENTS = 'VIEW_ALL_APPOINTMENTS',
-  MANAGE_WAITING_LIST = 'MANAGE_WAITING_LIST',
+  BOOK_ANY_APPOINTMENT = "BOOK_ANY_APPOINTMENT",
+  BOOK_FOR_OTHERS = "BOOK_FOR_OTHERS",
+  RESCHEDULE_ANY_APPOINTMENT = "RESCHEDULE_ANY_APPOINTMENT",
+  CANCEL_ANY_APPOINTMENT = "CANCEL_ANY_APPOINTMENT",
+  CONFIRM_APPOINTMENTS = "CONFIRM_APPOINTMENTS",
+  VIEW_ALL_APPOINTMENTS = "VIEW_ALL_APPOINTMENTS",
+  MANAGE_WAITING_LIST = "MANAGE_WAITING_LIST",
 
   // 👤 === CLIENT MANAGEMENT ===
-  MANAGE_ALL_CLIENTS = 'MANAGE_ALL_CLIENTS',
-  VIEW_CLIENT_HISTORY = 'VIEW_CLIENT_HISTORY',
-  CREATE_CLIENT_ACCOUNTS = 'CREATE_CLIENT_ACCOUNTS',
-  EXPORT_CLIENT_DATA = 'EXPORT_CLIENT_DATA',
-  MANAGE_CLIENT_NOTES = 'MANAGE_CLIENT_NOTES',
+  MANAGE_ALL_CLIENTS = "MANAGE_ALL_CLIENTS",
+  VIEW_CLIENT_HISTORY = "VIEW_CLIENT_HISTORY",
+  CREATE_CLIENT_ACCOUNTS = "CREATE_CLIENT_ACCOUNTS",
+  EXPORT_CLIENT_DATA = "EXPORT_CLIENT_DATA",
+  MANAGE_CLIENT_NOTES = "MANAGE_CLIENT_NOTES",
 
   // 💰 === FINANCIAL MANAGEMENT ===
-  MANAGE_PRICING = 'MANAGE_PRICING',
-  VIEW_FINANCIAL_REPORTS = 'VIEW_FINANCIAL_REPORTS',
-  PROCESS_PAYMENTS = 'PROCESS_PAYMENTS',
-  ISSUE_REFUNDS = 'ISSUE_REFUNDS',
-  MANAGE_DISCOUNTS = 'MANAGE_DISCOUNTS',
+  MANAGE_PRICING = "MANAGE_PRICING",
+  VIEW_FINANCIAL_REPORTS = "VIEW_FINANCIAL_REPORTS",
+  PROCESS_PAYMENTS = "PROCESS_PAYMENTS",
+  ISSUE_REFUNDS = "ISSUE_REFUNDS",
+  MANAGE_DISCOUNTS = "MANAGE_DISCOUNTS",
 
   // 📊 === REPORTING & ANALYTICS ===
-  VIEW_DETAILED_REPORTS = 'VIEW_DETAILED_REPORTS',
-  EXPORT_DATA = 'EXPORT_DATA',
-  VIEW_STAFF_UTILIZATION = 'VIEW_STAFF_UTILIZATION',
-  VIEW_REVENUE_ANALYTICS = 'VIEW_REVENUE_ANALYTICS',
-  GENERATE_CUSTOM_REPORTS = 'GENERATE_CUSTOM_REPORTS',
+  VIEW_DETAILED_REPORTS = "VIEW_DETAILED_REPORTS",
+  EXPORT_DATA = "EXPORT_DATA",
+  VIEW_STAFF_UTILIZATION = "VIEW_STAFF_UTILIZATION",
+  VIEW_REVENUE_ANALYTICS = "VIEW_REVENUE_ANALYTICS",
+  GENERATE_CUSTOM_REPORTS = "GENERATE_CUSTOM_REPORTS",
 
   // 🔧 === FACILITY MANAGEMENT ===
-  MANAGE_FACILITIES = 'MANAGE_FACILITIES',
-  ASSIGN_EQUIPMENT = 'ASSIGN_EQUIPMENT',
-  BOOK_FACILITIES = 'BOOK_FACILITIES',
-  MAINTAIN_EQUIPMENT = 'MAINTAIN_EQUIPMENT',
+  MANAGE_FACILITIES = "MANAGE_FACILITIES",
+  ASSIGN_EQUIPMENT = "ASSIGN_EQUIPMENT",
+  BOOK_FACILITIES = "BOOK_FACILITIES",
+  MAINTAIN_EQUIPMENT = "MAINTAIN_EQUIPMENT",
 
   // 📢 === COMMUNICATION ===
-  SEND_BULK_NOTIFICATIONS = 'SEND_BULK_NOTIFICATIONS',
-  MANAGE_EMAIL_TEMPLATES = 'MANAGE_EMAIL_TEMPLATES',
-  ACCESS_CLIENT_COMMUNICATIONS = 'ACCESS_CLIENT_COMMUNICATIONS',
+  SEND_BULK_NOTIFICATIONS = "SEND_BULK_NOTIFICATIONS",
+  MANAGE_EMAIL_TEMPLATES = "MANAGE_EMAIL_TEMPLATES",
+  ACCESS_CLIENT_COMMUNICATIONS = "ACCESS_CLIENT_COMMUNICATIONS",
 
   // 🎯 === PERSONAL PERMISSIONS (Self-Service) ===
-  MANAGE_OWN_SCHEDULE = 'MANAGE_OWN_SCHEDULE',
-  VIEW_OWN_APPOINTMENTS = 'VIEW_OWN_APPOINTMENTS',
-  UPDATE_OWN_PROFILE = 'UPDATE_OWN_PROFILE',
-  SET_OWN_AVAILABILITY = 'SET_OWN_AVAILABILITY',
-  REQUEST_LEAVE = 'REQUEST_LEAVE',
+  MANAGE_OWN_SCHEDULE = "MANAGE_OWN_SCHEDULE",
+  VIEW_OWN_APPOINTMENTS = "VIEW_OWN_APPOINTMENTS",
+  UPDATE_OWN_PROFILE = "UPDATE_OWN_PROFILE",
+  SET_OWN_AVAILABILITY = "SET_OWN_AVAILABILITY",
+  REQUEST_LEAVE = "REQUEST_LEAVE",
 
   // 🏥 === CLIENT PERMISSIONS ===
-  BOOK_APPOINTMENT = 'BOOK_APPOINTMENT',
-  CANCEL_OWN_APPOINTMENTS = 'CANCEL_OWN_APPOINTMENTS',
-  RESCHEDULE_OWN_APPOINTMENTS = 'RESCHEDULE_OWN_APPOINTMENTS',
-  VIEW_SERVICE_CATALOG = 'VIEW_SERVICE_CATALOG',
-  BOOK_FOR_FAMILY_MEMBER = 'BOOK_FOR_FAMILY_MEMBER',
-  JOIN_WAITING_LIST = 'JOIN_WAITING_LIST',
+  BOOK_APPOINTMENT = "BOOK_APPOINTMENT",
+  CANCEL_OWN_APPOINTMENTS = "CANCEL_OWN_APPOINTMENTS",
+  RESCHEDULE_OWN_APPOINTMENTS = "RESCHEDULE_OWN_APPOINTMENTS",
+  VIEW_SERVICE_CATALOG = "VIEW_SERVICE_CATALOG",
+  BOOK_FOR_FAMILY_MEMBER = "BOOK_FOR_FAMILY_MEMBER",
+  JOIN_WAITING_LIST = "JOIN_WAITING_LIST",
 
   // 🔒 === SYSTEM ADMINISTRATION ===
-  MANAGE_SYSTEM_SETTINGS = 'MANAGE_SYSTEM_SETTINGS',
-  VIEW_SYSTEM_LOGS = 'VIEW_SYSTEM_LOGS',
-  MANAGE_INTEGRATIONS = 'MANAGE_INTEGRATIONS',
-  BACKUP_DATA = 'BACKUP_DATA',
+  MANAGE_SYSTEM_SETTINGS = "MANAGE_SYSTEM_SETTINGS",
+  VIEW_SYSTEM_LOGS = "VIEW_SYSTEM_LOGS",
+  MANAGE_INTEGRATIONS = "MANAGE_INTEGRATIONS",
+  BACKUP_DATA = "BACKUP_DATA",
 }
 
 /**
  * 🎯 Contexte Métier - Types d'Entreprises Supportées
  */
 export enum BusinessType {
-  MEDICAL_CLINIC = 'MEDICAL_CLINIC', // Clinique médicale
-  DENTAL_OFFICE = 'DENTAL_OFFICE', // Cabinet dentaire
-  LAW_FIRM = 'LAW_FIRM', // Cabinet d'avocat
-  BEAUTY_SALON = 'BEAUTY_SALON', // Salon de beauté
-  THERAPY_CENTER = 'THERAPY_CENTER', // Centre de thérapie
-  VETERINARY_CLINIC = 'VETERINARY_CLINIC', // Clinique vétérinaire
-  CONSULTING_FIRM = 'CONSULTING_FIRM', // Cabinet conseil
-  WELLNESS_CENTER = 'WELLNESS_CENTER', // Centre bien-être
-  FITNESS_CENTER = 'FITNESS_CENTER', // Centre de fitness
-  EDUCATIONAL_CENTER = 'EDUCATIONAL_CENTER', // Centre éducatif
+  MEDICAL_CLINIC = "MEDICAL_CLINIC", // Clinique médicale
+  DENTAL_OFFICE = "DENTAL_OFFICE", // Cabinet dentaire
+  LAW_FIRM = "LAW_FIRM", // Cabinet d'avocat
+  BEAUTY_SALON = "BEAUTY_SALON", // Salon de beauté
+  THERAPY_CENTER = "THERAPY_CENTER", // Centre de thérapie
+  VETERINARY_CLINIC = "VETERINARY_CLINIC", // Clinique vétérinaire
+  CONSULTING_FIRM = "CONSULTING_FIRM", // Cabinet conseil
+  WELLNESS_CENTER = "WELLNESS_CENTER", // Centre bien-être
+  FITNESS_CENTER = "FITNESS_CENTER", // Centre de fitness
+  EDUCATIONAL_CENTER = "EDUCATIONAL_CENTER", // Centre éducatif
 }
 
 /**
@@ -732,28 +732,28 @@ export class RoleUtils {
    * Détermine si c'est un rôle de management
    */
   static isManagementRole(role: UserRole): boolean {
-    return this.isInGroup(role, 'MANAGEMENT');
+    return this.isInGroup(role, "MANAGEMENT");
   }
 
   /**
    * Détermine si c'est un rôle de praticien
    */
   static isPractitionerRole(role: UserRole): boolean {
-    return this.isInGroup(role, 'PRACTITIONERS');
+    return this.isInGroup(role, "PRACTITIONERS");
   }
 
   /**
    * Détermine si c'est un rôle client
    */
   static isClientRole(role: UserRole): boolean {
-    return this.isInGroup(role, 'CLIENTS');
+    return this.isInGroup(role, "CLIENTS");
   }
 
   /**
    * Détermine si c'est un rôle de personnel de support
    */
   static isSupportRole(role: UserRole): boolean {
-    return this.isInGroup(role, 'SUPPORT_STAFF');
+    return this.isInGroup(role, "SUPPORT_STAFF");
   }
 
   /**
@@ -799,9 +799,9 @@ export class RoleUtils {
   static getRoleDescription(role: UserRole): string {
     const descriptions: Record<UserRole, string> = {
       [UserRole.SUPER_ADMIN]:
-        'Super Administrateur - Accès absolu à tous les systèmes',
+        "Super Administrateur - Accès absolu à tous les systèmes",
       [UserRole.PLATFORM_ADMIN]:
-        'Administrateur Plateforme - Accès complet multi-tenant',
+        "Administrateur Plateforme - Accès complet multi-tenant",
       [UserRole.BUSINESS_OWNER]:
         "Propriétaire - Contrôle total de l'entreprise",
       [UserRole.BUSINESS_ADMIN]:
@@ -810,21 +810,21 @@ export class RoleUtils {
         "Gestionnaire de Site - Supervision d'un lieu",
       [UserRole.DEPARTMENT_HEAD]:
         "Chef de Département - Direction d'équipe spécialisée",
-      [UserRole.SENIOR_PRACTITIONER]: 'Praticien Senior - Expert avec mentorat',
-      [UserRole.PRACTITIONER]: 'Praticien - Professionnel certifié',
+      [UserRole.SENIOR_PRACTITIONER]: "Praticien Senior - Expert avec mentorat",
+      [UserRole.PRACTITIONER]: "Praticien - Professionnel certifié",
       [UserRole.JUNIOR_PRACTITIONER]:
-        'Praticien Junior - En formation/supervision',
+        "Praticien Junior - En formation/supervision",
       [UserRole.RECEPTIONIST]:
-        'Réceptionniste - Accueil et gestion front office',
-      [UserRole.ASSISTANT]: 'Assistant(e) - Support aux praticiens',
-      [UserRole.SCHEDULER]: 'Planificateur - Spécialiste de la planification',
+        "Réceptionniste - Accueil et gestion front office",
+      [UserRole.ASSISTANT]: "Assistant(e) - Support aux praticiens",
+      [UserRole.SCHEDULER]: "Planificateur - Spécialiste de la planification",
       [UserRole.CORPORATE_CLIENT]:
-        'Client Entreprise - Réservations pour employés',
-      [UserRole.VIP_CLIENT]: 'Client VIP - Privilèges étendus',
-      [UserRole.REGULAR_CLIENT]: 'Client - Accès standard aux services',
-      [UserRole.GUEST_CLIENT]: 'Invité - Accès limité sans compte',
+        "Client Entreprise - Réservations pour employés",
+      [UserRole.VIP_CLIENT]: "Client VIP - Privilèges étendus",
+      [UserRole.REGULAR_CLIENT]: "Client - Accès standard aux services",
+      [UserRole.GUEST_CLIENT]: "Invité - Accès limité sans compte",
     };
 
-    return descriptions[role] || 'Rôle non défini';
+    return descriptions[role] || "Rôle non défini";
   }
 }

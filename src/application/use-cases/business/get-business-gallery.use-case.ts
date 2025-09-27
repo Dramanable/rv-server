@@ -4,15 +4,15 @@
  * ✅ Business logic for retrieving business gallery with images
  */
 
-import { BusinessRepository } from '../../../domain/repositories/business.repository';
-import { BusinessId } from '../../../domain/value-objects/business-id.value-object';
+import { BusinessRepository } from "../../../domain/repositories/business.repository";
+import { BusinessId } from "../../../domain/value-objects/business-id.value-object";
 import {
   BusinessImage,
   ImageCategory,
-} from '../../../domain/value-objects/business-image.value-object';
-import { I18nService } from '../../../shared/types/i18n.interface';
-import { ILogger } from '../../../shared/types/logger.interface';
-import { BusinessNotFoundError } from '../../exceptions/business.exceptions';
+} from "../../../domain/value-objects/business-image.value-object";
+import { I18nService } from "../../../shared/types/i18n.interface";
+import { ILogger } from "../../../shared/types/logger.interface";
+import { BusinessNotFoundError } from "../../exceptions/business.exceptions";
 
 export interface GetBusinessGalleryRequest {
   readonly businessId: string;
@@ -68,7 +68,7 @@ export class GetBusinessGalleryUseCase {
   async execute(
     request: GetBusinessGalleryRequest,
   ): Promise<GetBusinessGalleryResponse> {
-    this.logger.log('Retrieving business gallery', {
+    this.logger.log("Retrieving business gallery", {
       businessId: request.businessId,
       includePrivate: request.includePrivate,
       category: request.category,
@@ -81,8 +81,8 @@ export class GetBusinessGalleryUseCase {
       const business = await this.businessRepository.findById(businessId);
 
       if (!business) {
-        const errorMessage = this.i18n.t('error.business.not_found');
-        this.logger.error('Business not found for gallery retrieval', {
+        const errorMessage = this.i18n.t("error.business.not_found");
+        this.logger.error("Business not found for gallery retrieval", {
           businessId: request.businessId,
           requestingUserId: request.requestingUserId,
         });
@@ -111,7 +111,7 @@ export class GetBusinessGalleryUseCase {
       // 5. Get gallery statistics
       const statistics = gallery.getStatistics();
 
-      this.logger.log('Business gallery retrieved successfully', {
+      this.logger.log("Business gallery retrieved successfully", {
         businessId: request.businessId,
         totalImages: images.length,
         hasLogo: business.hasLogo(),
@@ -128,8 +128,8 @@ export class GetBusinessGalleryUseCase {
       };
     } catch (error) {
       const errorMessage =
-        error instanceof Error ? error.message : 'Unknown error';
-      this.logger.error('Failed to retrieve business gallery', {
+        error instanceof Error ? error.message : "Unknown error";
+      this.logger.error("Failed to retrieve business gallery", {
         businessId: request.businessId,
         error: errorMessage,
         requestingUserId: request.requestingUserId,

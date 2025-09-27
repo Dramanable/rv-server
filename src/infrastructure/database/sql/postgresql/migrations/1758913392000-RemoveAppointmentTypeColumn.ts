@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner } from 'typeorm';
+import { MigrationInterface, QueryRunner } from "typeorm";
 
 /**
  * 🗑️ MIGRATION : Remove AppointmentType Column
@@ -23,10 +23,10 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 export class RemoveAppointmentTypeColumn1758913392000
   implements MigrationInterface
 {
-  name = 'RemoveAppointmentTypeColumn1758913392000';
+  name = "RemoveAppointmentTypeColumn1758913392000";
 
   private getSchemaName(): string {
-    const schema = process.env.DB_SCHEMA || 'public';
+    const schema = process.env.DB_SCHEMA || "public";
 
     // Validation du nom de schéma (sécurité)
     if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(schema)) {
@@ -62,7 +62,7 @@ export class RemoveAppointmentTypeColumn1758913392000
     // ✅ ÉTAPE 3 - Vérifier l'existence de la colonne avant suppression
     const columnExists = await queryRunner.hasColumn(
       `${schema}.appointments`,
-      'type',
+      "type",
     );
 
     if (columnExists) {
@@ -107,7 +107,7 @@ export class RemoveAppointmentTypeColumn1758913392000
         WHERE "${schema}"."appointments".id = backup.id
       `);
 
-      console.log('✅ Données type restaurées depuis appointments_type_backup');
+      console.log("✅ Données type restaurées depuis appointments_type_backup");
 
       // ✅ ÉTAPE 4 - Nettoyer la table de sauvegarde
       await queryRunner.query(`

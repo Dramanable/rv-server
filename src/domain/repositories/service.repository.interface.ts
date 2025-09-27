@@ -1,9 +1,9 @@
-import { Service } from '../entities/service.entity';
-import { BusinessId } from '../value-objects/business-id.value-object';
-import { ServiceId } from '../value-objects/service-id.value-object';
-import { UserId } from '../value-objects/user-id.value-object';
+import { Service } from "../entities/service.entity";
+import { BusinessId } from "../value-objects/business-id.value-object";
+import { ServiceId } from "../value-objects/service-id.value-object";
+import { UserId } from "../value-objects/user-id.value-object";
 
-export const SERVICE_REPOSITORY = 'SERVICE_REPOSITORY';
+export const SERVICE_REPOSITORY = "SERVICE_REPOSITORY";
 
 export interface ServiceRepository {
   /**

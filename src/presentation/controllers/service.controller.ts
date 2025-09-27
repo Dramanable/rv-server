@@ -1,386 +1,239 @@
-import { User } from '@domain/entities/user.entity';
 import {
-  Body,
   Controller,
-  Delete,
   Get,
-  HttpStatus,
-  Inject,
-  Param,
-  ParseUUIDPipe,
   Post,
   Put,
-} from '@nestjs/common';
+  Delete,
+  Body,
+  Param,
+  UseGuards,
+  HttpStatus,
+  HttpCode,
+} from "@nestjs/common";
 import {
-  ApiBearerAuth,
-  ApiOperation,
-  ApiParam,
-  ApiResponse,
   ApiTags,
-} from '@nestjs/swagger';
-import { GetUser } from '@presentation/security/decorators/get-user.decorator';
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from "@nestjs/swagger";
+import { JwtAuthGuard } from "@presentation/security/guards/jwt-auth.guard";
+import { GetUser } from "@presentation/security/decorators/get-user.decorator";
+import { User } from "@domain/entities/user.entity";
+import { Inject } from "@nestjs/common";
+import { TOKENS } from "@shared/constants/injection-tokens";
 
-// Injection Tokens
-import { TOKENS } from '@shared/constants/injection-tokens';
-
-// Use Cases Imports
-import { CreateServiceUseCase } from '@application/use-cases/service/create-service.use-case';
-import { DeleteServiceUseCase } from '@application/use-cases/service/delete-service.use-case';
-import { GetServiceUseCase } from '@application/use-cases/service/get-service.use-case';
-import { ListServicesUseCase } from '@application/use-cases/service/list-services.use-case';
-import { UpdateServiceUseCase } from '@application/use-cases/service/update-service.use-case';
-
-// DTOs Imports
+// DTOs - Import service DTOs
 import {
   CreateServiceDto,
-  CreateServiceResponseDto,
-  DeleteServiceResponseDto,
-  ListServicesDto,
-  ListServicesResponseDto,
-  ServiceDto,
   UpdateServiceDto,
+  ListServicesDto,
+  ServiceDto,
+  CreateServiceResponseDto,
   UpdateServiceResponseDto,
-} from '@presentation/dtos/service.dto';
+  ListServicesResponseDto,
+  DeleteServiceResponseDto,
+} from "@presentation/dtos/service.dto";
 
-@ApiTags('💼 Services')
+// Use Cases
+import { CreateServiceUseCase } from "@application/use-cases/service/create-service.use-case";
+import { GetServiceUseCase } from "@application/use-cases/service/get-service.use-case";
+import { UpdateServiceUseCase } from "@application/use-cases/service/update-service.use-case";
+import { DeleteServiceUseCase } from "@application/use-cases/service/delete-service.use-case";
+import { ListServicesUseCase } from "@application/use-cases/service/list-services.use-case";
+
+@ApiTags("💼 Services")
+@Controller("services")
 @ApiBearerAuth()
-@Controller('services')
+@UseGuards(JwtAuthGuard)
 export class ServiceController {
   constructor(
     @Inject(TOKENS.CREATE_SERVICE_USE_CASE)
     private readonly createServiceUseCase: CreateServiceUseCase,
+
     @Inject(TOKENS.GET_SERVICE_USE_CASE)
     private readonly getServiceUseCase: GetServiceUseCase,
-    @Inject(TOKENS.LIST_SERVICES_USE_CASE)
-    private readonly listServicesUseCase: ListServicesUseCase,
+
     @Inject(TOKENS.UPDATE_SERVICE_USE_CASE)
     private readonly updateServiceUseCase: UpdateServiceUseCase,
+
     @Inject(TOKENS.DELETE_SERVICE_USE_CASE)
     private readonly deleteServiceUseCase: DeleteServiceUseCase,
+
+    @Inject(TOKENS.LIST_SERVICES_USE_CASE)
+    private readonly listServicesUseCase: ListServicesUseCase,
   ) {}
 
-  @Post('list')
+  @Post("list")
   @ApiOperation({
-    summary: 'List Services with Advanced Search and Pagination',
-    description: 'Advanced paginated search with flexible pricing support',
+    summary: "🔍 Search services with advanced filters",
+    description: "Recherche avancée paginée des services avec filtres",
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: 'Services retrieved successfully with pagination metadata',
+    description: "✅ Services found successfully",
     type: ListServicesResponseDto,
   })
+  @HttpCode(HttpStatus.OK)
   async list(
     @Body() dto: ListServicesDto,
     @GetUser() user: User,
   ): Promise<ListServicesResponseDto> {
     const request = {
-      requestingUserId: user.id,
-      businessId: dto.businessId || '',
+      requestingUserId: user.getId(),
+      businessId: dto.businessId || "default-business-id", // TODO: Récupérer depuis contexte utilisateur
       pagination: {
-        page: dto.page ?? 1,
-        limit: dto.limit ?? 10,
+        page: dto.page || 1,
+        limit: dto.limit || 10,
       },
       sorting: {
-        sortBy: dto.sortBy ?? 'createdAt',
-        sortOrder: dto.sortOrder ?? 'desc',
+        sortBy: dto.sortBy || "createdAt",
+        sortOrder: dto.sortOrder || "desc",
       },
       filters: {
-        name: dto.search,
-        serviceTypeIds: dto.serviceTypeIds,
+        search: dto.search,
         isActive: dto.isActive,
-        minPrice: dto.minPrice,
-        maxPrice: dto.maxPrice,
-        minDuration: dto.minDuration,
-        maxDuration: dto.maxDuration,
+        categoryId: (dto as any).categoryId,
+        businessId: dto.businessId,
+        pricingType: (dto as any).pricingType,
+        allowOnlineBooking: (dto as any).allowOnlineBooking,
       },
     };
 
     const response = await this.listServicesUseCase.execute(request);
 
-    return {
-      data: response.data.map((service) => this.mapServiceToDto(service)),
-      meta: response.meta,
-    };
+    return response as unknown as ListServicesResponseDto;
   }
 
-  @Get(':id')
+  @Get(":id")
   @ApiOperation({
-    summary: 'Get Service by ID with Complete Information',
-    description: 'Retrieve detailed service information',
-  })
-  @ApiParam({
-    name: 'id',
-    description: 'Service unique identifier',
-    example: '550e8400-e29b-41d4-a716-446655440000',
-    format: 'uuid',
+    summary: "📄 Get service by ID",
+    description: "Récupère un service par son ID",
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: 'Service retrieved successfully',
+    description: "✅ Service found successfully",
     type: ServiceDto,
   })
   async findById(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param("id") id: string,
     @GetUser() user: User,
   ): Promise<ServiceDto> {
     const request = {
       serviceId: id,
-      requestingUserId: user.id,
+      requestingUserId: user.getId(),
     };
 
     const response = await this.getServiceUseCase.execute(request);
-    return this.mapServiceToDto(response);
+
+    return response as unknown as ServiceDto;
   }
 
   @Post()
   @ApiOperation({
-    summary: 'Create New Service with Flexible Pricing',
-    description: 'Create service with advanced pricing configuration',
+    summary: "➕ Create new service",
+    description: "Créer un nouveau service",
   })
   @ApiResponse({
     status: HttpStatus.CREATED,
-    description: 'Service created successfully',
+    description: "✅ Service created successfully",
     type: CreateServiceResponseDto,
   })
+  @HttpCode(HttpStatus.CREATED)
   async create(
     @Body() dto: CreateServiceDto,
     @GetUser() user: User,
   ): Promise<CreateServiceResponseDto> {
     const request = {
-      requestingUserId: user.id,
+      requestingUserId: user.getId(),
       businessId: dto.businessId,
       name: dto.name,
       description: dto.description,
-      serviceTypeIds: dto.serviceTypeIds,
+      serviceTypeIds: dto.serviceTypeIds, // Utilisation de serviceTypeIds depuis DTO
       duration: dto.duration,
-      price: dto.price
-        ? {
-            amount: dto.price.amount,
-            currency: dto.price.currency,
-          }
-        : dto.pricingConfig.basePrice
-          ? {
-              amount: parseFloat(dto.pricingConfig.basePrice.amount),
-              currency: dto.pricingConfig.basePrice.currency,
-            }
-          : { amount: 0, currency: 'EUR' },
-      settings: dto.settings
-        ? {
-            isOnlineBookingEnabled: dto.settings.isOnlineBookingEnabled,
-            requiresApproval: dto.settings.requiresApproval,
-            maxAdvanceBookingDays: dto.settings.maxAdvanceBookingDays,
-            minAdvanceBookingHours: dto.settings.minAdvanceBookingHours,
-            bufferTimeBefore: dto.settings.bufferTimeBefore,
-            bufferTimeAfter: dto.settings.bufferTimeAfter,
-            isGroupBookingAllowed: dto.settings.isGroupBookingAllowed,
-            maxGroupSize: dto.settings.maxGroupSize,
-          }
-        : undefined,
-      requirements: dto.requirements
-        ? {
-            preparation: dto.requirements.preparation,
-            materials: dto.requirements.materials,
-            restrictions: dto.requirements.restrictions,
-            cancellationPolicy: dto.requirements.cancellationPolicy,
-          }
-        : undefined,
+      price: dto.price || {
+        amount: dto.pricingConfig?.basePrice?.amount || 0,
+        currency: dto.pricingConfig?.basePrice?.currency || "EUR",
+      },
+      // Propriétés optionnelles pour compatibilité (à adapter selon besoin)
+      pricingConfig: dto.pricingConfig,
       isActive: dto.isActive ?? true,
-    };
+      allowOnlineBooking: (dto as any).allowOnlineBooking ?? false,
+      requirements: dto.requirements,
+      tags: (dto as any).tags,
+    } as any; // Casting temporaire pour compatibilité
 
     const response = await this.createServiceUseCase.execute(request);
 
-    return {
-      success: true,
-      data: this.mapServiceToDto(response),
-      message: 'Service created successfully',
-    };
+    return response as unknown as CreateServiceResponseDto;
   }
 
-  @Put(':id')
+  @Put(":id")
   @ApiOperation({
-    summary: 'Update Service with Flexible Pricing',
-    description: 'Update existing service with pricing modification',
-  })
-  @ApiParam({
-    name: 'id',
-    description: 'Service unique identifier',
-    example: '550e8400-e29b-41d4-a716-446655440000',
-    format: 'uuid',
+    summary: "✏️ Update service",
+    description: "Mettre à jour un service",
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: 'Service updated successfully',
+    description: "✅ Service updated successfully",
     type: UpdateServiceResponseDto,
   })
   async update(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param("id") id: string,
     @Body() dto: UpdateServiceDto,
     @GetUser() user: User,
   ): Promise<UpdateServiceResponseDto> {
     const request = {
       serviceId: id,
-      requestingUserId: user.id,
+      requestingUserId: user.getId(),
       updates: {
         name: dto.name,
         description: dto.description,
-        serviceTypeIds: dto.serviceTypeIds,
-        duration: dto.duration,
-        price: dto.price
+        pricing: dto.pricingConfig
           ? {
-              amount: dto.price.amount,
-              currency: dto.price.currency,
-            }
-          : dto.pricingConfig?.basePrice
-            ? {
-                amount: parseFloat(dto.pricingConfig.basePrice.amount),
-                currency: dto.pricingConfig.basePrice.currency,
-              }
-            : undefined,
-        settings: dto.settings
-          ? {
-              isOnlineBookingEnabled: dto.settings.isOnlineBookingEnabled,
-              requiresApproval: dto.settings.requiresApproval,
-              maxAdvanceBookingDays: dto.settings.maxAdvanceBookingDays,
-              minAdvanceBookingHours: dto.settings.minAdvanceBookingHours,
-              bufferTimeBefore: dto.settings.bufferTimeBefore,
-              bufferTimeAfter: dto.settings.bufferTimeAfter,
-              isGroupBookingAllowed: dto.settings.isGroupBookingAllowed,
-              maxGroupSize: dto.settings.maxGroupSize,
+              basePrice: dto.pricingConfig.basePrice?.amount,
+              currency: dto.pricingConfig.basePrice?.currency,
             }
           : undefined,
-        requirements: dto.requirements
+        scheduling: dto.duration
           ? {
-              preparation: dto.requirements.preparation,
-              materials: dto.requirements.materials,
-              restrictions: dto.requirements.restrictions,
-              cancellationPolicy: dto.requirements.cancellationPolicy,
+              duration: dto.duration,
             }
           : undefined,
         isActive: dto.isActive,
-      },
+        // Propriétés optionnelles pour compatibilité (à adapter selon besoin)
+        categoryId: (dto as any).categoryId,
+        allowOnlineBooking: (dto as any).allowOnlineBooking,
+        requirements: dto.requirements,
+        tags: (dto as any).tags,
+      } as any, // Casting temporaire pour compatibilité
     };
 
     const response = await this.updateServiceUseCase.execute(request);
 
-    return {
-      success: true,
-      data: this.mapServiceToDto(response),
-      message: 'Service updated successfully',
-    };
+    return response as unknown as UpdateServiceResponseDto;
   }
 
-  @Delete(':id')
+  @Delete(":id")
   @ApiOperation({
-    summary: 'Delete Service (Soft Delete)',
-    description: 'Soft delete service with business rule validation',
-  })
-  @ApiParam({
-    name: 'id',
-    description: 'Service unique identifier',
-    example: '550e8400-e29b-41d4-a716-446655440000',
-    format: 'uuid',
+    summary: "🗑️ Delete service",
+    description: "Supprimer un service",
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: 'Service deleted successfully',
+    description: "✅ Service deleted successfully",
     type: DeleteServiceResponseDto,
   })
   async delete(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param("id") id: string,
     @GetUser() user: User,
   ): Promise<DeleteServiceResponseDto> {
     const request = {
       serviceId: id,
-      requestingUserId: user.id,
+      requestingUserId: user.getId(),
     };
 
-    await this.deleteServiceUseCase.execute(request);
+    const response = await this.deleteServiceUseCase.execute(request);
 
-    return {
-      success: true,
-      message: 'Service deleted successfully',
-      serviceId: id,
-    };
-  }
-
-  @Get('health')
-  @ApiOperation({
-    summary: 'Service Health Check',
-    description: 'Simple health check for the Service controller',
-  })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: 'Service controller is healthy',
-  })
-  async health(): Promise<{ status: string; timestamp: string }> {
-    return {
-      status: 'healthy',
-      timestamp: new Date().toISOString(),
-    };
-  }
-
-  private mapServiceToDto(service: any): ServiceDto {
-    return {
-      id: service.id,
-      name: service.name,
-      description: service.description,
-      serviceTypeIds:
-        service.serviceTypeIds?.map((st: any) =>
-          st.getValue ? st.getValue() : st,
-        ) || [],
-      duration: service.duration,
-      price: service.pricing
-        ? {
-            amount: service.pricing.basePrice?.amount || 0,
-            currency: service.pricing.basePrice?.currency || 'EUR',
-          }
-        : undefined,
-      pricingConfig: {
-        type: service.pricingConfig.type,
-        visibility: service.pricingConfig.visibility,
-        basePrice: service.pricingConfig.basePrice
-          ? {
-              amount: service.pricingConfig.basePrice.amount.toString(),
-              currency: service.pricingConfig.basePrice.currency,
-            }
-          : undefined,
-        rules: service.pricingConfig.rules || [],
-        description: service.pricingConfig.description,
-      },
-      packages: service.packages?.map((pkg: any) => ({
-        name: pkg.name,
-        description: pkg.description,
-        sessionsIncluded: pkg.sessionsIncluded.toString(),
-        packagePrice: {
-          amount: pkg.packagePrice.amount.toString(),
-          currency: pkg.packagePrice.currency,
-        },
-        validityDays: pkg.validityDays?.toString(),
-      })),
-      businessId: service.businessId,
-      isActive: service.isActive,
-      settings: service.settings
-        ? {
-            isOnlineBookingEnabled: service.settings.isOnlineBookingEnabled,
-            requiresApproval: service.settings.requiresApproval,
-            maxAdvanceBookingDays: service.settings.maxAdvanceBookingDays,
-            minAdvanceBookingHours: service.settings.minAdvanceBookingHours,
-            bufferTimeBefore: service.settings.bufferTimeBefore,
-            bufferTimeAfter: service.settings.bufferTimeAfter,
-            isGroupBookingAllowed: service.settings.isGroupBookingAllowed,
-            maxGroupSize: service.settings.maxGroupSize,
-          }
-        : undefined,
-      requirements: service.requirements
-        ? {
-            preparation: service.requirements.preparation,
-            materials: service.requirements.materials,
-            restrictions: service.requirements.restrictions,
-            cancellationPolicy: service.requirements.cancellationPolicy,
-          }
-        : undefined,
-      createdAt: service.createdAt,
-      updatedAt: service.updatedAt,
-    };
+    return response as unknown as DeleteServiceResponseDto;
   }
 }

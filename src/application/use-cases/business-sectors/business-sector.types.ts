@@ -8,19 +8,19 @@
 export type {
   CreateBusinessSectorRequest,
   CreateBusinessSectorResponse,
-} from './create-business-sector.use-case';
+} from "./create-business-sector.use-case";
 
 export type {
   ListBusinessSectorsRequest,
   ListBusinessSectorsResponse,
-} from './list-business-sectors.use-case';
+} from "./list-business-sectors.use-case";
 
 export type {
   UpdateBusinessSectorRequest,
   UpdateBusinessSectorResponse,
-} from './update-business-sector.use-case';
+} from "./update-business-sector.use-case";
 
 export type {
   DeleteBusinessSectorRequest,
   DeleteBusinessSectorResponse,
-} from './delete-business-sector.use-case';
+} from "./delete-business-sector.use-case";

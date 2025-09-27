@@ -7,16 +7,16 @@
  * @since 2024
  */
 
-import { ForbiddenError } from '@application/exceptions/auth.exceptions';
-import { BusinessSectorOperationError } from '@application/exceptions/business-sector.exceptions';
+import { ForbiddenError } from "@application/exceptions/auth.exceptions";
+import { BusinessSectorOperationError } from "@application/exceptions/business-sector.exceptions";
 import {
   BusinessSectorListResult,
   BusinessSectorQueryOptions,
   IBusinessSectorRepository,
-} from '@application/ports/business-sector.repository.interface';
-import { I18nService } from '@application/ports/i18n.port';
-import { Logger } from '@application/ports/logger.port';
-import { IPermissionService } from '@application/ports/permission.service.interface';
+} from "@application/ports/business-sector.repository.interface";
+import { I18nService } from "@application/ports/i18n.port";
+import { Logger } from "@application/ports/logger.port";
+import { IPermissionService } from "@application/ports/permission.service.interface";
 
 /**
  * 📋 Requête pour lister les secteurs d'activité
@@ -27,8 +27,8 @@ export interface ListBusinessSectorsRequest {
   readonly limit?: number;
   readonly search?: string;
   readonly isActive?: boolean;
-  readonly sortBy?: 'name' | 'code' | 'createdAt';
-  readonly sortOrder?: 'ASC' | 'DESC';
+  readonly sortBy?: "name" | "code" | "createdAt";
+  readonly sortOrder?: "ASC" | "DESC";
 }
 
 /**
@@ -64,10 +64,10 @@ export class ListBusinessSectorsUseCase {
   ): Promise<ListBusinessSectorsResponse> {
     const context = {
       userId: request.requestingUserId,
-      operation: 'list_business_sectors',
+      operation: "list_business_sectors",
     };
 
-    this.logger.info('Listing business sectors', context);
+    this.logger.info("Listing business sectors", context);
 
     try {
       // 🚨 Vérification des permissions
@@ -96,7 +96,7 @@ export class ListBusinessSectorsUseCase {
       };
     } catch (error) {
       this.logger.error(
-        'Failed to list business sectors',
+        "Failed to list business sectors",
         error as Error,
         context,
       );
@@ -112,11 +112,11 @@ export class ListBusinessSectorsUseCase {
     const isSuperAdmin = await this.permissionService.isSuperAdmin(userId);
 
     if (!isSuperAdmin) {
-      const message = this.i18n.translate('permissions.super_admin_required');
+      const message = this.i18n.translate("permissions.super_admin_required");
       this.logger.error(
-        'Access denied: user tried to list business sectors',
+        "Access denied: user tried to list business sectors",
         new Error(message),
-        { userId, operation: 'list_business_sectors' },
+        { userId, operation: "list_business_sectors" },
       );
       throw new ForbiddenError(message);
     }
@@ -131,38 +131,38 @@ export class ListBusinessSectorsUseCase {
     // Validation de la pagination
     if (page < 1) {
       throw new BusinessSectorOperationError(
-        'list',
-        'validation',
+        "list",
+        "validation",
         undefined,
-        this.i18n.translate('validation.page_must_be_positive'),
+        this.i18n.translate("validation.page_must_be_positive"),
       );
     }
 
     if (limit > 100) {
       throw new BusinessSectorOperationError(
-        'list',
-        'validation',
+        "list",
+        "validation",
         undefined,
-        this.i18n.translate('validation.limit_max_100'),
+        this.i18n.translate("validation.limit_max_100"),
       );
     }
 
     // Validation du tri
-    if (sortBy && !['name', 'code', 'createdAt'].includes(sortBy)) {
+    if (sortBy && !["name", "code", "createdAt"].includes(sortBy)) {
       throw new BusinessSectorOperationError(
-        'list',
-        'validation',
+        "list",
+        "validation",
         undefined,
-        this.i18n.translate('validation.invalid_sort_field'),
+        this.i18n.translate("validation.invalid_sort_field"),
       );
     }
 
-    if (sortOrder && !['ASC', 'DESC'].includes(sortOrder)) {
+    if (sortOrder && !["ASC", "DESC"].includes(sortOrder)) {
       throw new BusinessSectorOperationError(
-        'list',
-        'validation',
+        "list",
+        "validation",
         undefined,
-        this.i18n.translate('validation.invalid_sort_order'),
+        this.i18n.translate("validation.invalid_sort_order"),
       );
     }
   }
@@ -178,8 +178,8 @@ export class ListBusinessSectorsUseCase {
       limit = 20,
       search,
       isActive,
-      sortBy = 'name',
-      sortOrder = 'ASC',
+      sortBy = "name",
+      sortOrder = "ASC",
     } = request;
 
     return {

@@ -10,25 +10,25 @@
  * - Analytics et rapports
  */
 
-import { BusinessId } from '@domain/value-objects/business-id.value-object';
-import { BusinessOwnerId } from '@domain/value-objects/business-owner-id.value-object';
-import { UserId } from '@domain/value-objects/user-id.value-object';
+import { BusinessId } from "@domain/value-objects/business-id.value-object";
+import { BusinessOwnerId } from "@domain/value-objects/business-owner-id.value-object";
+import { UserId } from "@domain/value-objects/user-id.value-object";
 
 export enum SubscriptionLevel {
-  FREE = 'FREE',
-  BASIC = 'BASIC',
-  PREMIUM = 'PREMIUM',
-  ENTERPRISE = 'ENTERPRISE',
+  FREE = "FREE",
+  BASIC = "BASIC",
+  PREMIUM = "PREMIUM",
+  ENTERPRISE = "ENTERPRISE",
 }
 
 export enum BusinessPermission {
-  CONFIGURE_BUSINESS_SETTINGS = 'CONFIGURE_BUSINESS_SETTINGS',
-  MANAGE_STAFF = 'MANAGE_STAFF',
-  VIEW_ANALYTICS = 'VIEW_ANALYTICS',
-  MANAGE_BILLING = 'MANAGE_BILLING',
-  CONFIGURE_INTEGRATIONS = 'CONFIGURE_INTEGRATIONS',
-  MANAGE_BRANDING = 'MANAGE_BRANDING',
-  EXPORT_DATA = 'EXPORT_DATA',
+  CONFIGURE_BUSINESS_SETTINGS = "CONFIGURE_BUSINESS_SETTINGS",
+  MANAGE_STAFF = "MANAGE_STAFF",
+  VIEW_ANALYTICS = "VIEW_ANALYTICS",
+  MANAGE_BILLING = "MANAGE_BILLING",
+  CONFIGURE_INTEGRATIONS = "CONFIGURE_INTEGRATIONS",
+  MANAGE_BRANDING = "MANAGE_BRANDING",
+  EXPORT_DATA = "EXPORT_DATA",
 }
 
 export interface BillingInformation {
@@ -43,7 +43,7 @@ export interface BillingInformation {
 
 export interface AnalyticsPreferences {
   readonly enableAdvancedReports: boolean;
-  readonly emailReportsFrequency: 'NEVER' | 'DAILY' | 'WEEKLY' | 'MONTHLY';
+  readonly emailReportsFrequency: "NEVER" | "DAILY" | "WEEKLY" | "MONTHLY";
   readonly dashboardWidgets: string[];
   readonly dataRetentionMonths: number;
 }
@@ -133,8 +133,8 @@ export class BusinessOwner {
 
     const analyticsPreferences: AnalyticsPreferences = {
       enableAdvancedReports: data.subscriptionLevel !== SubscriptionLevel.FREE,
-      emailReportsFrequency: 'WEEKLY',
-      dashboardWidgets: ['appointments', 'revenue', 'staff_performance'],
+      emailReportsFrequency: "WEEKLY",
+      dashboardWidgets: ["appointments", "revenue", "staff_performance"],
       dataRetentionMonths:
         data.subscriptionLevel === SubscriptionLevel.ENTERPRISE ? 60 : 24,
     };
@@ -215,17 +215,17 @@ export class BusinessOwner {
     );
   }
 
-  getBillingStatus(): 'ACTIVE' | 'EXPIRED' | 'SUSPENDED' | 'CANCELLED' {
-    if (!this._billingInfo.isActive) return 'SUSPENDED';
+  getBillingStatus(): "ACTIVE" | "EXPIRED" | "SUSPENDED" | "CANCELLED" {
+    if (!this._billingInfo.isActive) return "SUSPENDED";
 
     if (
       this._billingInfo.subscriptionEndDate &&
       this._billingInfo.subscriptionEndDate < new Date()
     ) {
-      return 'EXPIRED';
+      return "EXPIRED";
     }
 
-    return 'ACTIVE';
+    return "ACTIVE";
   }
 
   hasPermission(permission: BusinessPermission): boolean {

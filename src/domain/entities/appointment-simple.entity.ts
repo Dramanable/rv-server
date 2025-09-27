@@ -4,20 +4,20 @@
  * Entité métier avec logique de validation
  */
 
-import { BusinessId } from '@domain/value-objects/business-id.value-object';
-import { ServiceId } from '@domain/value-objects/service-id.value-object';
-import { UserId } from '@domain/value-objects/user-id.value-object';
-import { Email } from '@domain/value-objects/email.value-object';
-import { Phone } from '@domain/value-objects/phone.value-object';
-import { Money } from '@domain/value-objects/money.value-object';
-import { generateId } from '@shared/utils/id.utils';
+import { BusinessId } from "@domain/value-objects/business-id.value-object";
+import { ServiceId } from "@domain/value-objects/service-id.value-object";
+import { UserId } from "@domain/value-objects/user-id.value-object";
+import { Email } from "@domain/value-objects/email.value-object";
+import { Phone } from "@domain/value-objects/phone.value-object";
+import { Money } from "@domain/value-objects/money.value-object";
+import { generateId } from "@shared/utils/id.utils";
 
 // VALUE OBJECTS
 
 export class AppointmentId {
   private constructor(private readonly value: string) {
     if (!value || value.trim().length === 0) {
-      throw new Error('AppointmentId cannot be empty');
+      throw new Error("AppointmentId cannot be empty");
     }
   }
 
@@ -41,12 +41,12 @@ export class AppointmentId {
 // ENUMS
 
 export enum AppointmentStatus {
-  REQUESTED = 'REQUESTED',
-  CONFIRMED = 'CONFIRMED',
-  IN_PROGRESS = 'IN_PROGRESS',
-  COMPLETED = 'COMPLETED',
-  CANCELLED = 'CANCELLED',
-  NO_SHOW = 'NO_SHOW',
+  REQUESTED = "REQUESTED",
+  CONFIRMED = "CONFIRMED",
+  IN_PROGRESS = "IN_PROGRESS",
+  COMPLETED = "COMPLETED",
+  CANCELLED = "CANCELLED",
+  NO_SHOW = "NO_SHOW",
 }
 
 // INTERFACES
@@ -62,7 +62,7 @@ export interface AppointmentPricing {
   readonly basePrice: Money;
   readonly finalPrice: Money;
   readonly totalAmount: Money;
-  readonly paymentStatus: 'PENDING' | 'PAID' | 'PARTIALLY_PAID' | 'REFUNDED';
+  readonly paymentStatus: "PENDING" | "PAID" | "PARTIALLY_PAID" | "REFUNDED";
 }
 
 export interface TimeSlot {

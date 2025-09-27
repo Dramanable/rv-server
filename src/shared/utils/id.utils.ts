@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 
 /**
  * ✅ OBLIGATOIRE - Utilitaire génération ID enterprise
@@ -21,7 +21,7 @@ export function generateId(): string {
  * 🔍 Valide qu'une string est un UUID v4 valide
  */
 export function isValidId(id: string): boolean {
-  if (!id || typeof id !== 'string') {
+  if (!id || typeof id !== "string") {
     return false;
   }
 
@@ -34,7 +34,7 @@ export function isValidId(id: string): boolean {
 /**
  * 🔄 Génère un ID temporaire pour tests
  */
-export function generateTestId(prefix = 'test'): string {
+export function generateTestId(prefix = "test"): string {
   return `${prefix}-${uuidv4()}`;
 }
 

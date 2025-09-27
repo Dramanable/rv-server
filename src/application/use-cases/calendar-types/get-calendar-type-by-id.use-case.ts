@@ -1,9 +1,9 @@
-import { I18nService } from '@application/ports/i18n.port';
-import { Logger } from '@application/ports/logger.port';
-import { CalendarType } from '@domain/entities/calendar-type.entity';
-import { CalendarTypeNotFoundError } from '@domain/exceptions/calendar-type.exceptions';
-import { ICalendarTypeRepository } from '@domain/repositories/calendar-type.repository';
-import { CalendarTypeId } from '@domain/value-objects/calendar-type-id.value-object';
+import { I18nService } from "@application/ports/i18n.port";
+import { Logger } from "@application/ports/logger.port";
+import { CalendarType } from "@domain/entities/calendar-type.entity";
+import { CalendarTypeNotFoundError } from "@domain/exceptions/calendar-type.exceptions";
+import { ICalendarTypeRepository } from "@domain/repositories/calendar-type.repository";
+import { CalendarTypeId } from "@domain/value-objects/calendar-type-id.value-object";
 
 export interface GetCalendarTypeByIdRequest {
   readonly calendarTypeId: string;
@@ -31,7 +31,7 @@ export class GetCalendarTypeByIdUseCase {
   async execute(
     request: GetCalendarTypeByIdRequest,
   ): Promise<GetCalendarTypeByIdResponse> {
-    this.logger.info('Getting calendar type by ID', {
+    this.logger.info("Getting calendar type by ID", {
       calendarTypeId: request.calendarTypeId,
       requestingUserId: request.requestingUserId,
       correlationId: request.correlationId,
@@ -49,7 +49,7 @@ export class GetCalendarTypeByIdUseCase {
         await this.calendarTypeRepository.findById(calendarTypeId);
 
       if (!calendarType) {
-        this.logger.warn('Calendar type not found', {
+        this.logger.warn("Calendar type not found", {
           calendarTypeId: request.calendarTypeId,
           correlationId: request.correlationId,
         });
@@ -57,7 +57,7 @@ export class GetCalendarTypeByIdUseCase {
         throw new CalendarTypeNotFoundError(request.calendarTypeId);
       }
 
-      this.logger.info('Calendar type retrieved successfully', {
+      this.logger.info("Calendar type retrieved successfully", {
         calendarTypeId: request.calendarTypeId,
         calendarTypeName: calendarType.getName(),
         correlationId: request.correlationId,
@@ -67,7 +67,7 @@ export class GetCalendarTypeByIdUseCase {
         calendarType,
       };
     } catch (error) {
-      this.logger.error('Failed to get calendar type by ID', error as Error, {
+      this.logger.error("Failed to get calendar type by ID", error as Error, {
         calendarTypeId: request.calendarTypeId,
         requestingUserId: request.requestingUserId,
         correlationId: request.correlationId,

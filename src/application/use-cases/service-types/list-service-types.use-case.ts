@@ -1,12 +1,12 @@
 // 🎯 ListServiceTypesUseCase - Implémentation Clean Architecture
 // Pattern TDD : GREEN phase - Implementation minimale qui fait passer les tests
 
-import { ApplicationValidationError } from '@application/exceptions/application.exceptions';
-import { I18nService } from '@application/ports/i18n.port';
-import { Logger } from '@application/ports/logger.port';
-import { ServiceType } from '@domain/entities/service-type.entity';
-import { IServiceTypeRepository } from '@domain/repositories/service-type.repository';
-import { BusinessId } from '@domain/value-objects/business-id.value-object';
+import { ApplicationValidationError } from "@application/exceptions/application.exceptions";
+import { I18nService } from "@application/ports/i18n.port";
+import { Logger } from "@application/ports/logger.port";
+import { ServiceType } from "@domain/entities/service-type.entity";
+import { IServiceTypeRepository } from "@domain/repositories/service-type.repository";
+import { BusinessId } from "@domain/value-objects/business-id.value-object";
 
 /**
  * 📋 Request interface for listing service types
@@ -25,8 +25,8 @@ export interface ListServiceTypesRequest {
     readonly limit?: number;
   };
   readonly sorting?: {
-    readonly sortBy?: 'name' | 'code' | 'createdAt' | 'sortOrder';
-    readonly sortOrder?: 'asc' | 'desc';
+    readonly sortBy?: "name" | "code" | "createdAt" | "sortOrder";
+    readonly sortOrder?: "asc" | "desc";
   };
 }
 
@@ -60,7 +60,7 @@ export class ListServiceTypesUseCase {
     // 🔍 Input validation
     this.validateRequest(request);
 
-    this.logger.info('Listing service types for business', {
+    this.logger.info("Listing service types for business", {
       businessId: request.businessId.getValue(),
       requestingUserId: request.requestingUserId,
       correlationId: request.correlationId,
@@ -90,7 +90,7 @@ export class ListServiceTypesUseCase {
         totalCount: serviceTypes.length,
       };
 
-      this.logger.info('Service types listed successfully', {
+      this.logger.info("Service types listed successfully", {
         businessId: request.businessId.getValue(),
         count: serviceTypes.length,
         correlationId: request.correlationId,
@@ -99,7 +99,7 @@ export class ListServiceTypesUseCase {
       return response;
     } catch (error) {
       this.logger.error(
-        'Failed to list service types',
+        "Failed to list service types",
         error instanceof Error ? error : undefined,
         {
           businessId: request.businessId.getValue(),
@@ -119,12 +119,12 @@ export class ListServiceTypesUseCase {
   private validateRequest(request: ListServiceTypesRequest): void {
     if (
       !request.businessId ||
-      typeof request.businessId.getValue !== 'function'
+      typeof request.businessId.getValue !== "function"
     ) {
       throw new ApplicationValidationError(
-        'businessId',
+        "businessId",
         request.businessId,
-        'required',
+        "required",
       );
     }
 
@@ -133,17 +133,17 @@ export class ListServiceTypesUseCase {
       request.requestingUserId.trim().length === 0
     ) {
       throw new ApplicationValidationError(
-        'requestingUserId',
+        "requestingUserId",
         request.requestingUserId,
-        'required',
+        "required",
       );
     }
 
     if (!request.correlationId || request.correlationId.trim().length === 0) {
       throw new ApplicationValidationError(
-        'correlationId',
+        "correlationId",
         request.correlationId,
-        'required',
+        "required",
       );
     }
   }

@@ -10,13 +10,13 @@
  * - Isole la logique de persistance TypeORM
  */
 
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
 
-import type { Logger } from '../../../../../application/ports/logger.port';
-import { RefreshToken } from '../../../../../domain/entities/refresh-token.entity';
-import { RefreshTokenRepository } from '../../../../../domain/repositories/refresh-token.repository.interface';
-import { RefreshTokenOrmEntity } from '../entities/refresh-token-orm.entity';
+import type { Logger } from "../../../../../application/ports/logger.port";
+import { RefreshToken } from "../../../../../domain/entities/refresh-token.entity";
+import { RefreshTokenRepository } from "../../../../../domain/repositories/refresh-token.repository.interface";
+import { RefreshTokenOrmEntity } from "../entities/refresh-token-orm.entity";
 
 export class RefreshTokenOrmRepository implements RefreshTokenRepository {
   constructor(
@@ -33,7 +33,7 @@ export class RefreshTokenOrmRepository implements RefreshTokenRepository {
       const ormEntity = this.toOrmEntity(token);
       const savedEntity = await this.repository.save(ormEntity);
 
-      this.logger.debug('Refresh token saved successfully', {
+      this.logger.debug("Refresh token saved successfully", {
         tokenId: savedEntity.id,
         userId: savedEntity.userId,
       });
@@ -41,7 +41,7 @@ export class RefreshTokenOrmRepository implements RefreshTokenRepository {
       return this.toDomainEntity(savedEntity);
     } catch (error) {
       this.logger.error(
-        'Failed to save refresh token',
+        "Failed to save refresh token",
         error instanceof Error ? error : new Error(String(error)),
         { userId: token.userId },
       );
@@ -59,14 +59,14 @@ export class RefreshTokenOrmRepository implements RefreshTokenRepository {
       });
 
       if (!ormEntity) {
-        this.logger.debug('Refresh token not found', { tokenHash });
+        this.logger.debug("Refresh token not found", { tokenHash });
         return null;
       }
 
       return this.toDomainEntity(ormEntity);
     } catch (error) {
       this.logger.error(
-        'Failed to find refresh token by token',
+        "Failed to find refresh token by token",
         error instanceof Error ? error : new Error(String(error)),
         { tokenHash },
       );
@@ -81,10 +81,10 @@ export class RefreshTokenOrmRepository implements RefreshTokenRepository {
     try {
       const ormEntities = await this.repository.find({
         where: { userId, isRevoked: false },
-        order: { createdAt: 'DESC' },
+        order: { createdAt: "DESC" },
       });
 
-      this.logger.debug('Found refresh tokens for user', {
+      this.logger.debug("Found refresh tokens for user", {
         userId,
         count: ormEntities.length,
       });
@@ -92,7 +92,7 @@ export class RefreshTokenOrmRepository implements RefreshTokenRepository {
       return ormEntities.map((entity) => this.toDomainEntity(entity));
     } catch (error) {
       this.logger.error(
-        'Failed to find refresh tokens by user ID',
+        "Failed to find refresh tokens by user ID",
         error instanceof Error ? error : new Error(String(error)),
         { userId },
       );
@@ -107,13 +107,13 @@ export class RefreshTokenOrmRepository implements RefreshTokenRepository {
     try {
       const result = await this.repository.delete({ userId });
 
-      this.logger.info('Deleted refresh tokens for user', {
+      this.logger.info("Deleted refresh tokens for user", {
         userId,
         deletedCount: result.affected || 0,
       });
     } catch (error) {
       this.logger.error(
-        'Failed to delete refresh tokens by user ID',
+        "Failed to delete refresh tokens by user ID",
         error instanceof Error ? error : new Error(String(error)),
         { userId },
       );
@@ -131,13 +131,13 @@ export class RefreshTokenOrmRepository implements RefreshTokenRepository {
         { isRevoked: true },
       );
 
-      this.logger.info('Revoked all refresh tokens for user', {
+      this.logger.info("Revoked all refresh tokens for user", {
         userId,
         revokedCount: result.affected || 0,
       });
     } catch (error) {
       this.logger.error(
-        'Failed to revoke refresh tokens by user ID',
+        "Failed to revoke refresh tokens by user ID",
         error instanceof Error ? error : new Error(String(error)),
         { userId },
       );
@@ -155,13 +155,13 @@ export class RefreshTokenOrmRepository implements RefreshTokenRepository {
         { isRevoked: true },
       );
 
-      this.logger.debug('Revoked refresh token', {
+      this.logger.debug("Revoked refresh token", {
         tokenHash,
         revokedCount: result.affected || 0,
       });
     } catch (error) {
       this.logger.error(
-        'Failed to revoke refresh token',
+        "Failed to revoke refresh token",
         error instanceof Error ? error : new Error(String(error)),
         { tokenHash },
       );
@@ -178,11 +178,11 @@ export class RefreshTokenOrmRepository implements RefreshTokenRepository {
       const result = await this.repository
         .createQueryBuilder()
         .delete()
-        .where('expiresAt < :now', { now })
+        .where("expiresAt < :now", { now })
         .execute();
 
       const deletedCount = result.affected || 0;
-      this.logger.info('Deleted expired refresh tokens', {
+      this.logger.info("Deleted expired refresh tokens", {
         deletedCount,
         timestamp: now,
       });
@@ -190,7 +190,7 @@ export class RefreshTokenOrmRepository implements RefreshTokenRepository {
       return deletedCount;
     } catch (error) {
       this.logger.error(
-        'Failed to delete expired refresh tokens',
+        "Failed to delete expired refresh tokens",
         error instanceof Error ? error : new Error(String(error)),
       );
       throw error;

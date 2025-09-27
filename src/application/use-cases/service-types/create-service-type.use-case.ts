@@ -1,14 +1,14 @@
-import { IAuditService } from '@application/ports/audit.port';
-import { Logger } from '@application/ports/logger.port';
-import { IPermissionService } from '@application/ports/permission.service.interface';
-import { ServiceType } from '@domain/entities/service-type.entity';
+import { IAuditService } from "@application/ports/audit.port";
+import { Logger } from "@application/ports/logger.port";
+import { IPermissionService } from "@application/ports/permission.service.interface";
+import { ServiceType } from "@domain/entities/service-type.entity";
 import {
   ServiceTypeCodeConflictError,
   ServiceTypeNameConflictError,
   ServiceTypeValidationError,
-} from '@domain/exceptions/service-type.exceptions';
-import { IServiceTypeRepository } from '@domain/repositories/service-type.repository';
-import { BusinessId } from '@domain/value-objects/business-id.value-object';
+} from "@domain/exceptions/service-type.exceptions";
+import { IServiceTypeRepository } from "@domain/repositories/service-type.repository";
+import { BusinessId } from "@domain/value-objects/business-id.value-object";
 
 interface I18nTranslateFunction {
   translate(
@@ -69,7 +69,7 @@ export class CreateServiceTypeUseCase {
   async execute(
     request: CreateServiceTypeRequest,
   ): Promise<CreateServiceTypeResponse> {
-    this.logger.info('Creating new service type', {
+    this.logger.info("Creating new service type", {
       businessId: request.businessId,
       name: request.name,
       code: request.code,
@@ -83,7 +83,7 @@ export class CreateServiceTypeUseCase {
       // 🛡️ PERMISSIONS - Vérifier les droits utilisateur
       await this.permissionService.requirePermission(
         request.requestingUserId,
-        'MANAGE_SERVICES',
+        "MANAGE_SERVICES",
         { businessId: request.businessId },
       );
 
@@ -99,13 +99,13 @@ export class CreateServiceTypeUseCase {
 
       if (existingByName) {
         const errorMessage = await this.i18n.translate(
-          'domain.serviceType.errors.nameConflict',
+          "domain.serviceType.errors.nameConflict",
           {
             args: { name: request.name },
           },
         );
 
-        this.logger.error('Service type name already exists', undefined, {
+        this.logger.error("Service type name already exists", undefined, {
           name: request.name,
           businessId: request.businessId,
           correlationId: request.correlationId,
@@ -123,13 +123,13 @@ export class CreateServiceTypeUseCase {
 
       if (existingByCode) {
         const errorMessage = await this.i18n.translate(
-          'domain.serviceType.errors.codeConflict',
+          "domain.serviceType.errors.codeConflict",
           {
             args: { code: request.code },
           },
         );
 
-        this.logger.error('Service type with code already exists', undefined, {
+        this.logger.error("Service type with code already exists", undefined, {
           businessId: request.businessId,
           code: request.code,
           correlationId: request.correlationId,
@@ -152,7 +152,7 @@ export class CreateServiceTypeUseCase {
       const savedServiceType =
         await this.serviceTypeRepository.save(serviceType);
 
-      this.logger.info('Service type created successfully', {
+      this.logger.info("Service type created successfully", {
         serviceTypeId: savedServiceType.getId().getValue(),
         businessId: request.businessId,
         name: request.name,
@@ -162,8 +162,8 @@ export class CreateServiceTypeUseCase {
 
       // 📊 AUDIT TRAIL - Opération auditée
       await this.auditService.logOperation({
-        operation: 'CREATE_SERVICE_TYPE',
-        entityType: 'SERVICE_TYPE',
+        operation: "CREATE_SERVICE_TYPE",
+        entityType: "SERVICE_TYPE",
         entityId: savedServiceType.getId().getValue(),
         businessId: request.businessId,
         userId: request.requestingUserId,
@@ -182,8 +182,8 @@ export class CreateServiceTypeUseCase {
       return createServiceTypeResponseFromServiceType(savedServiceType);
     } catch (error) {
       this.logger.error(
-        'Failed to create service type',
-        error instanceof Error ? error : new Error('Unknown error'),
+        "Failed to create service type",
+        error instanceof Error ? error : new Error("Unknown error"),
         {
           businessId: request.businessId,
           name: request.name,
@@ -201,63 +201,63 @@ export class CreateServiceTypeUseCase {
   ): Promise<void> {
     if (!request.correlationId) {
       const errorMessage = await this.i18n.translate(
-        'domain.serviceType.validation.correlationIdRequired',
+        "domain.serviceType.validation.correlationIdRequired",
       );
       throw new ServiceTypeValidationError(errorMessage);
     }
 
     if (!request.requestingUserId) {
       const errorMessage = await this.i18n.translate(
-        'domain.serviceType.validation.requestingUserIdRequired',
+        "domain.serviceType.validation.requestingUserIdRequired",
       );
       throw new ServiceTypeValidationError(errorMessage);
     }
 
     if (!request.timestamp) {
       const errorMessage = await this.i18n.translate(
-        'domain.serviceType.validation.timestampRequired',
+        "domain.serviceType.validation.timestampRequired",
       );
       throw new ServiceTypeValidationError(errorMessage);
     }
 
     if (!request.businessId) {
       const errorMessage = await this.i18n.translate(
-        'domain.serviceType.validation.businessIdRequired',
+        "domain.serviceType.validation.businessIdRequired",
       );
       throw new ServiceTypeValidationError(errorMessage);
     }
 
     if (!request.name || request.name.length < 2) {
       const errorMessage = await this.i18n.translate(
-        'domain.serviceType.validation.nameRequired',
+        "domain.serviceType.validation.nameRequired",
       );
       throw new ServiceTypeValidationError(errorMessage);
     }
 
     if (request.name.length > 100) {
       const errorMessage = await this.i18n.translate(
-        'domain.serviceType.validation.nameTooLong',
+        "domain.serviceType.validation.nameTooLong",
       );
       throw new ServiceTypeValidationError(errorMessage);
     }
 
     if (!request.code || request.code.length < 2) {
       const errorMessage = await this.i18n.translate(
-        'domain.serviceType.validation.codeRequired',
+        "domain.serviceType.validation.codeRequired",
       );
       throw new ServiceTypeValidationError(errorMessage);
     }
 
     if (request.code.length > 20) {
       const errorMessage = await this.i18n.translate(
-        'domain.serviceType.validation.codeTooLong',
+        "domain.serviceType.validation.codeTooLong",
       );
       throw new ServiceTypeValidationError(errorMessage);
     }
 
     if (request.description && request.description.length > 500) {
       const errorMessage = await this.i18n.translate(
-        'domain.serviceType.validation.descriptionTooLong',
+        "domain.serviceType.validation.descriptionTooLong",
       );
       throw new ServiceTypeValidationError(errorMessage);
     }
@@ -266,7 +266,7 @@ export class CreateServiceTypeUseCase {
     const codePattern = /^[A-Z0-9_]+$/;
     if (!codePattern.test(request.code)) {
       const errorMessage = await this.i18n.translate(
-        'domain.serviceType.validation.invalidCode',
+        "domain.serviceType.validation.invalidCode",
       );
       throw new ServiceTypeValidationError(errorMessage);
     }

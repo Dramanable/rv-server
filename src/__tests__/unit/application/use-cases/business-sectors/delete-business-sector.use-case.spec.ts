@@ -1,14 +1,14 @@
-import { InsufficientPermissionsError } from '@application/exceptions/auth.exceptions';
+import { InsufficientPermissionsError } from "@application/exceptions/auth.exceptions";
 import {
   BusinessSectorInUseError,
   BusinessSectorNotFoundError,
-} from '@application/exceptions/business-sector.exceptions';
-import { IBusinessSectorRepository } from '@application/ports/business-sector.repository.interface';
-import { Logger } from '@application/ports/logger.port';
-import { IPermissionService } from '@application/ports/permission.service.interface';
-import { DeleteBusinessSectorUseCase } from '@application/use-cases/business-sectors/delete-business-sector.use-case';
-import { BusinessSector } from '@domain/entities/business-sector.entity';
-import { Permission } from '@shared/enums/permission.enum';
+} from "@application/exceptions/business-sector.exceptions";
+import { IBusinessSectorRepository } from "@application/ports/business-sector.repository.interface";
+import { Logger } from "@application/ports/logger.port";
+import { IPermissionService } from "@application/ports/permission.service.interface";
+import { DeleteBusinessSectorUseCase } from "@application/use-cases/business-sectors/delete-business-sector.use-case";
+import { BusinessSector } from "@domain/entities/business-sector.entity";
+import { Permission } from "@shared/enums/permission.enum";
 
 /**
  * 🧪 Test Suite: DeleteBusinessSectorUseCase
@@ -16,25 +16,25 @@ import { Permission } from '@shared/enums/permission.enum';
  * Tests TDD pour le use case de suppression de secteur d'activité
  * avec validation permissions, règles métier et gestion d'erreurs.
  */
-describe('DeleteBusinessSectorUseCase', () => {
+describe("DeleteBusinessSectorUseCase", () => {
   let useCase: DeleteBusinessSectorUseCase;
   let mockRepository: jest.Mocked<IBusinessSectorRepository>;
   let mockPermissionService: jest.Mocked<IPermissionService>;
   let mockLogger: jest.Mocked<Logger>;
 
   // 📋 Test Data
-  const validSectorId = 'sector-123';
-  const validRequestingUserId = 'user-456';
+  const validSectorId = "sector-123";
+  const validRequestingUserId = "user-456";
   const businessSectorMock = BusinessSector.restore(
     validSectorId,
-    'Manufacturing',
-    'Manufacturing and production services',
-    'MANUFACTURING',
+    "Manufacturing",
+    "Manufacturing and production services",
+    "MANUFACTURING",
     true,
-    new Date('2024-01-01'),
-    'creator-123',
-    new Date('2024-01-15'),
-    'updater-789',
+    new Date("2024-01-01"),
+    "creator-123",
+    new Date("2024-01-15"),
+    "updater-789",
   );
 
   beforeEach(() => {
@@ -73,8 +73,8 @@ describe('DeleteBusinessSectorUseCase', () => {
   // 🎯 Use Case Construction
   // ═══════════════════════════════════════════════════════════════
 
-  describe('🎯 Use Case Construction', () => {
-    it('should create use case with all dependencies', () => {
+  describe("🎯 Use Case Construction", () => {
+    it("should create use case with all dependencies", () => {
       expect(useCase).toBeDefined();
       expect(useCase).toBeInstanceOf(DeleteBusinessSectorUseCase);
     });
@@ -84,7 +84,7 @@ describe('DeleteBusinessSectorUseCase', () => {
   // ✅ Successful Business Sector Deletion
   // ═══════════════════════════════════════════════════════════════
 
-  describe('✅ Successful Business Sector Deletion', () => {
+  describe("✅ Successful Business Sector Deletion", () => {
     beforeEach(() => {
       mockPermissionService.hasPermission.mockResolvedValue(true);
       mockRepository.findById.mockResolvedValue(businessSectorMock);
@@ -94,7 +94,7 @@ describe('DeleteBusinessSectorUseCase', () => {
       );
     });
 
-    it('should delete (deactivate) business sector successfully', async () => {
+    it("should delete (deactivate) business sector successfully", async () => {
       // 🎯 Arrange
       const request = {
         id: validSectorId,
@@ -108,7 +108,7 @@ describe('DeleteBusinessSectorUseCase', () => {
       // ✅ Assert
       expect(result).toBeDefined();
       expect(result.success).toBe(true);
-      expect(result.message).toContain('deactivated successfully');
+      expect(result.message).toContain("deactivated successfully");
       expect(result.deletedAt).toBeDefined();
 
       // 📋 Vérifier les appels
@@ -124,7 +124,7 @@ describe('DeleteBusinessSectorUseCase', () => {
 
       // 📊 Vérifier le logging
       expect(mockLogger.info).toHaveBeenCalledWith(
-        'Business sector deactivated successfully',
+        "Business sector deactivated successfully",
         expect.objectContaining({
           sectorId: validSectorId,
           requestingUserId: validRequestingUserId,
@@ -132,7 +132,7 @@ describe('DeleteBusinessSectorUseCase', () => {
       );
     });
 
-    it('should support forced deletion when explicitly requested', async () => {
+    it("should support forced deletion when explicitly requested", async () => {
       // 🎯 Arrange - Force delete même avec usage
       mockRepository.countUsageInBusinesses.mockResolvedValue(5); // Secteur utilisé
       const request = {
@@ -147,11 +147,11 @@ describe('DeleteBusinessSectorUseCase', () => {
       // ✅ Assert
       expect(result).toBeDefined();
       expect(result.success).toBe(true);
-      expect(result.message).toContain('forcefully deactivated');
+      expect(result.message).toContain("forcefully deactivated");
 
       // 📊 Vérifier le logging de warning
       expect(mockLogger.warn).toHaveBeenCalledWith(
-        'Business sector forcefully deactivated despite being in use',
+        "Business sector forcefully deactivated despite being in use",
         expect.objectContaining({
           sectorId: validSectorId,
           usageCount: 5,
@@ -164,13 +164,13 @@ describe('DeleteBusinessSectorUseCase', () => {
   // 🚨 Permission Validation
   // ═══════════════════════════════════════════════════════════════
 
-  describe('🚨 Permission Validation', () => {
+  describe("🚨 Permission Validation", () => {
     beforeEach(() => {
       mockRepository.findById.mockResolvedValue(businessSectorMock);
       mockRepository.countUsageInBusinesses.mockResolvedValue(0);
     });
 
-    it('should throw InsufficientPermissionsError when user lacks MANAGE_BUSINESS_SECTORS permission', async () => {
+    it("should throw InsufficientPermissionsError when user lacks MANAGE_BUSINESS_SECTORS permission", async () => {
       // 🎯 Arrange
       mockPermissionService.hasPermission.mockResolvedValue(false);
       const request = {
@@ -184,7 +184,7 @@ describe('DeleteBusinessSectorUseCase', () => {
         InsufficientPermissionsError,
       );
       await expect(useCase.execute(request)).rejects.toThrow(
-        'User does not have permission to manage business sectors',
+        "User does not have permission to manage business sectors",
       );
 
       // 📋 Vérifier qu'aucune autre opération n'est appelée
@@ -192,7 +192,7 @@ describe('DeleteBusinessSectorUseCase', () => {
       expect(mockRepository.save).not.toHaveBeenCalled();
     });
 
-    it('should log permission denial attempt', async () => {
+    it("should log permission denial attempt", async () => {
       // 🎯 Arrange
       mockPermissionService.hasPermission.mockResolvedValue(false);
       const request = {
@@ -210,7 +210,7 @@ describe('DeleteBusinessSectorUseCase', () => {
 
       // ✅ Assert
       expect(mockLogger.warn).toHaveBeenCalledWith(
-        'Permission denied for business sector deletion',
+        "Permission denied for business sector deletion",
         expect.objectContaining({
           requestingUserId: validRequestingUserId,
           sectorId: validSectorId,
@@ -224,16 +224,16 @@ describe('DeleteBusinessSectorUseCase', () => {
   // 🔍 Business Sector Existence Validation
   // ═══════════════════════════════════════════════════════════════
 
-  describe('🔍 Business Sector Existence Validation', () => {
+  describe("🔍 Business Sector Existence Validation", () => {
     beforeEach(() => {
       mockPermissionService.hasPermission.mockResolvedValue(true);
     });
 
-    it('should throw BusinessSectorNotFoundError when sector does not exist', async () => {
+    it("should throw BusinessSectorNotFoundError when sector does not exist", async () => {
       // 🎯 Arrange
       mockRepository.findById.mockResolvedValue(null);
       const request = {
-        id: 'non-existent-id',
+        id: "non-existent-id",
         requestingUserId: validRequestingUserId,
         force: false,
       };
@@ -243,16 +243,16 @@ describe('DeleteBusinessSectorUseCase', () => {
         BusinessSectorNotFoundError,
       );
       await expect(useCase.execute(request)).rejects.toThrow(
-        'Business sector with id non-existent-id not found',
+        "Business sector with id non-existent-id not found",
       );
 
       // 📋 Vérifier qu'aucune modification n'est tentée
       expect(mockRepository.save).not.toHaveBeenCalled();
     });
 
-    it('should log sector not found attempt', async () => {
+    it("should log sector not found attempt", async () => {
       // 🎯 Arrange
-      const nonExistentId = 'non-existent-id';
+      const nonExistentId = "non-existent-id";
       mockRepository.findById.mockResolvedValue(null);
       const request = {
         id: nonExistentId,
@@ -269,7 +269,7 @@ describe('DeleteBusinessSectorUseCase', () => {
 
       // ✅ Assert
       expect(mockLogger.warn).toHaveBeenCalledWith(
-        'Attempted to delete non-existent business sector',
+        "Attempted to delete non-existent business sector",
         expect.objectContaining({
           sectorId: nonExistentId,
           requestingUserId: validRequestingUserId,
@@ -282,13 +282,13 @@ describe('DeleteBusinessSectorUseCase', () => {
   // 💼 Business Rules Validation
   // ═══════════════════════════════════════════════════════════════
 
-  describe('💼 Business Rules Validation', () => {
+  describe("💼 Business Rules Validation", () => {
     beforeEach(() => {
       mockPermissionService.hasPermission.mockResolvedValue(true);
       mockRepository.findById.mockResolvedValue(businessSectorMock);
     });
 
-    it('should throw BusinessSectorInUseError when sector is in use and force is false', async () => {
+    it("should throw BusinessSectorInUseError when sector is in use and force is false", async () => {
       // 🎯 Arrange
       mockRepository.countUsageInBusinesses.mockResolvedValue(3); // Secteur utilisé
       const request = {
@@ -302,14 +302,14 @@ describe('DeleteBusinessSectorUseCase', () => {
         BusinessSectorInUseError,
       );
       await expect(useCase.execute(request)).rejects.toThrow(
-        'Cannot delete business sector: it is currently used by 3 businesses',
+        "Cannot delete business sector: it is currently used by 3 businesses",
       );
 
       // 📋 Vérifier qu'aucune modification n'est tentée
       expect(mockRepository.save).not.toHaveBeenCalled();
     });
 
-    it('should log business rule violation attempt', async () => {
+    it("should log business rule violation attempt", async () => {
       // 🎯 Arrange
       mockRepository.countUsageInBusinesses.mockResolvedValue(5);
       const request = {
@@ -327,7 +327,7 @@ describe('DeleteBusinessSectorUseCase', () => {
 
       // ✅ Assert
       expect(mockLogger.warn).toHaveBeenCalledWith(
-        'Attempted to delete business sector in use',
+        "Attempted to delete business sector in use",
         expect.objectContaining({
           sectorId: validSectorId,
           usageCount: 5,
@@ -336,7 +336,7 @@ describe('DeleteBusinessSectorUseCase', () => {
       );
     });
 
-    it('should prevent deletion of already inactive sector', async () => {
+    it("should prevent deletion of already inactive sector", async () => {
       // 🎯 Arrange - Secteur déjà inactif
       const inactiveSector = businessSectorMock.deactivate(
         validRequestingUserId,
@@ -355,7 +355,7 @@ describe('DeleteBusinessSectorUseCase', () => {
         BusinessSectorNotFoundError,
       );
       await expect(useCase.execute(request)).rejects.toThrow(
-        'Business sector is already inactive',
+        "Business sector is already inactive",
       );
     });
   });
@@ -364,16 +364,16 @@ describe('DeleteBusinessSectorUseCase', () => {
   // 🔧 Error Handling
   // ═══════════════════════════════════════════════════════════════
 
-  describe('🔧 Error Handling', () => {
+  describe("🔧 Error Handling", () => {
     beforeEach(() => {
       mockPermissionService.hasPermission.mockResolvedValue(true);
       mockRepository.findById.mockResolvedValue(businessSectorMock);
       mockRepository.countUsageInBusinesses.mockResolvedValue(0);
     });
 
-    it('should handle repository save errors gracefully', async () => {
+    it("should handle repository save errors gracefully", async () => {
       // 🎯 Arrange
-      const repositoryError = new Error('Database connection failed');
+      const repositoryError = new Error("Database connection failed");
       mockRepository.save.mockRejectedValue(repositoryError);
       const request = {
         id: validSectorId,
@@ -386,7 +386,7 @@ describe('DeleteBusinessSectorUseCase', () => {
 
       // 📊 Vérifier le logging d'erreur
       expect(mockLogger.error).toHaveBeenCalledWith(
-        'Failed to delete business sector',
+        "Failed to delete business sector",
         repositoryError,
         expect.objectContaining({
           requestingUserId: validRequestingUserId,
@@ -395,9 +395,9 @@ describe('DeleteBusinessSectorUseCase', () => {
       );
     });
 
-    it('should handle permission service errors gracefully', async () => {
+    it("should handle permission service errors gracefully", async () => {
       // 🎯 Arrange
-      const permissionError = new Error('Permission service unavailable');
+      const permissionError = new Error("Permission service unavailable");
       mockPermissionService.hasPermission.mockRejectedValue(permissionError);
       const request = {
         id: validSectorId,
@@ -410,7 +410,7 @@ describe('DeleteBusinessSectorUseCase', () => {
 
       // 📊 Vérifier le logging d'erreur
       expect(mockLogger.error).toHaveBeenCalledWith(
-        'Failed to delete business sector',
+        "Failed to delete business sector",
         permissionError,
         expect.objectContaining({
           requestingUserId: validRequestingUserId,
@@ -424,7 +424,7 @@ describe('DeleteBusinessSectorUseCase', () => {
   // 📊 Logging
   // ═══════════════════════════════════════════════════════════════
 
-  describe('📊 Logging', () => {
+  describe("📊 Logging", () => {
     beforeEach(() => {
       mockPermissionService.hasPermission.mockResolvedValue(true);
       mockRepository.findById.mockResolvedValue(businessSectorMock);
@@ -434,7 +434,7 @@ describe('DeleteBusinessSectorUseCase', () => {
       );
     });
 
-    it('should log operation attempt and success', async () => {
+    it("should log operation attempt and success", async () => {
       // 🎯 Arrange
       const request = {
         id: validSectorId,
@@ -447,7 +447,7 @@ describe('DeleteBusinessSectorUseCase', () => {
 
       // ✅ Assert - Log de début
       expect(mockLogger.debug).toHaveBeenCalledWith(
-        'Deleting business sector',
+        "Deleting business sector",
         expect.objectContaining({
           sectorId: validSectorId,
           requestingUserId: validRequestingUserId,
@@ -457,7 +457,7 @@ describe('DeleteBusinessSectorUseCase', () => {
 
       // ✅ Assert - Log de succès
       expect(mockLogger.info).toHaveBeenCalledWith(
-        'Business sector deactivated successfully',
+        "Business sector deactivated successfully",
         expect.objectContaining({
           sectorId: validSectorId,
           requestingUserId: validRequestingUserId,

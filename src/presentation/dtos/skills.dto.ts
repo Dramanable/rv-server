@@ -84,8 +84,8 @@ export class ListSkillsDto {
   // Pagination
   page?: number = 1;
   limit?: number = 10;
-  sortBy?: 'name' | 'category' | 'createdAt' | 'updatedAt' = 'name';
-  sortOrder?: 'asc' | 'desc' = 'asc';
+  sortBy?: "name" | "category" | "createdAt" | "updatedAt" = "name";
+  sortOrder?: "asc" | "desc" = "asc";
 
   // Filtres
   search?: string;

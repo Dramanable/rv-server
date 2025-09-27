@@ -5,7 +5,7 @@
  * Respecte exactement l'interface Logger
  */
 
-import type { Logger } from '@application/ports/logger.port';
+import type { Logger } from "@application/ports/logger.port";
 
 export const createMockLogger = (): jest.Mocked<Logger> => {
   const mockChild = {

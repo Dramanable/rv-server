@@ -8,12 +8,12 @@ import {
   PricingType,
   PricingVisibility,
   PricingRule,
-} from '@domain/value-objects/pricing-config.value-object';
-import { Money } from '@domain/value-objects/money.value-object';
+} from "@domain/value-objects/pricing-config.value-object";
+import { Money } from "@domain/value-objects/money.value-object";
 
-describe('PricingConfig Value Object', () => {
-  describe('Free Pricing', () => {
-    it('should create free pricing configuration', () => {
+describe("PricingConfig Value Object", () => {
+  describe("Free Pricing", () => {
+    it("should create free pricing configuration", () => {
       // WHEN
       const pricing = PricingConfig.createFree();
 
@@ -25,20 +25,20 @@ describe('PricingConfig Value Object', () => {
       expect(pricing.isVisibleToPublic()).toBe(true);
     });
 
-    it('should create free pricing with custom visibility', () => {
+    it("should create free pricing with custom visibility", () => {
       // WHEN
       const pricing = PricingConfig.createFree(
         PricingVisibility.AUTHENTICATED,
-        'Free for members',
+        "Free for members",
       );
 
       // THEN
       expect(pricing.getVisibility()).toBe(PricingVisibility.AUTHENTICATED);
-      expect(pricing.getDescription()).toBe('Free for members');
+      expect(pricing.getDescription()).toBe("Free for members");
       expect(pricing.isVisibleToPublic()).toBe(false);
     });
 
-    it('should calculate zero price for free pricing', () => {
+    it("should calculate zero price for free pricing", () => {
       // GIVEN
       const pricing = PricingConfig.createFree();
 
@@ -47,14 +47,14 @@ describe('PricingConfig Value Object', () => {
 
       // THEN
       expect(price.getAmount()).toBe(0);
-      expect(price.getCurrency()).toBe('EUR');
+      expect(price.getCurrency()).toBe("EUR");
     });
   });
 
-  describe('Fixed Pricing', () => {
-    it('should create fixed pricing configuration', () => {
+  describe("Fixed Pricing", () => {
+    it("should create fixed pricing configuration", () => {
       // GIVEN
-      const basePrice = Money.create(5000, 'EUR'); // 50.00 EUR
+      const basePrice = Money.create(5000, "EUR"); // 50.00 EUR
 
       // WHEN
       const pricing = PricingConfig.createFixed(basePrice);
@@ -65,16 +65,16 @@ describe('PricingConfig Value Object', () => {
       expect(pricing.isFree()).toBe(false);
     });
 
-    it('should reject negative base price', () => {
+    it("should reject negative base price", () => {
       // WHEN & THEN - Money itself rejects negative amounts
-      expect(() => Money.create(-1000, 'EUR')).toThrow(
-        'Amount cannot be negative',
+      expect(() => Money.create(-1000, "EUR")).toThrow(
+        "Amount cannot be negative",
       );
     });
 
-    it('should calculate fixed price regardless of duration', () => {
+    it("should calculate fixed price regardless of duration", () => {
       // GIVEN
-      const basePrice = Money.create(5000, 'EUR');
+      const basePrice = Money.create(5000, "EUR");
       const pricing = PricingConfig.createFixed(basePrice);
 
       // WHEN
@@ -87,21 +87,21 @@ describe('PricingConfig Value Object', () => {
     });
   });
 
-  describe('Variable Pricing', () => {
-    it('should create variable pricing with rules', () => {
+  describe("Variable Pricing", () => {
+    it("should create variable pricing with rules", () => {
       // GIVEN
       const rules: PricingRule[] = [
         {
           minDuration: 30,
           maxDuration: 60,
-          basePrice: Money.create(3000, 'EUR'),
-          pricePerMinute: Money.create(50, 'EUR'),
+          basePrice: Money.create(3000, "EUR"),
+          pricePerMinute: Money.create(50, "EUR"),
         },
         {
           minDuration: 61,
           maxDuration: 120,
-          basePrice: Money.create(5000, 'EUR'),
-          pricePerMinute: Money.create(40, 'EUR'),
+          basePrice: Money.create(5000, "EUR"),
+          pricePerMinute: Money.create(40, "EUR"),
         },
       ];
 
@@ -114,21 +114,21 @@ describe('PricingConfig Value Object', () => {
       expect(pricing.getBasePrice()?.getAmount()).toBe(3000); // Premier prix de base
     });
 
-    it('should reject empty rules', () => {
+    it("should reject empty rules", () => {
       // WHEN & THEN
       expect(() => PricingConfig.createVariable([])).toThrow(
-        'Variable pricing requires at least one rule',
+        "Variable pricing requires at least one rule",
       );
     });
 
-    it('should calculate price based on duration rules', () => {
+    it("should calculate price based on duration rules", () => {
       // GIVEN
       const rules: PricingRule[] = [
         {
           minDuration: 30,
           maxDuration: 60,
-          basePrice: Money.create(3000, 'EUR'), // 30 EUR base
-          pricePerMinute: Money.create(50, 'EUR'), // 0.50 EUR/min extra
+          basePrice: Money.create(3000, "EUR"), // 30 EUR base
+          pricePerMinute: Money.create(50, "EUR"), // 0.50 EUR/min extra
         },
       ];
       const pricing = PricingConfig.createVariable(rules);
@@ -142,28 +142,28 @@ describe('PricingConfig Value Object', () => {
       expect(priceExtra.getAmount()).toBe(3750); // 30 EUR + (15 * 0.50) = 37.50 EUR
     });
 
-    it('should throw error for duration without applicable rule', () => {
+    it("should throw error for duration without applicable rule", () => {
       // GIVEN
       const rules: PricingRule[] = [
         {
           minDuration: 30,
           maxDuration: 60,
-          basePrice: Money.create(3000, 'EUR'),
+          basePrice: Money.create(3000, "EUR"),
         },
       ];
       const pricing = PricingConfig.createVariable(rules);
 
       // WHEN & THEN
       expect(() => pricing.calculatePrice(120)).toThrow(
-        'No pricing rule found for duration: 120 minutes',
+        "No pricing rule found for duration: 120 minutes",
       );
     });
   });
 
-  describe('Hidden Pricing', () => {
-    it('should create hidden pricing configuration', () => {
+  describe("Hidden Pricing", () => {
+    it("should create hidden pricing configuration", () => {
       // WHEN
-      const pricing = PricingConfig.createHidden('Internal pricing');
+      const pricing = PricingConfig.createHidden("Internal pricing");
 
       // THEN
       expect(pricing.getType()).toBe(PricingType.HIDDEN);
@@ -172,19 +172,19 @@ describe('PricingConfig Value Object', () => {
       expect(pricing.isVisibleToPublic()).toBe(false);
     });
 
-    it('should not allow price calculation for hidden pricing', () => {
+    it("should not allow price calculation for hidden pricing", () => {
       // GIVEN
       const pricing = PricingConfig.createHidden();
 
       // WHEN & THEN
       expect(() => pricing.calculatePrice(60)).toThrow(
-        'Cannot calculate price for hidden or on-demand pricing',
+        "Cannot calculate price for hidden or on-demand pricing",
       );
     });
   });
 
-  describe('On-Demand Pricing', () => {
-    it('should create on-demand pricing configuration', () => {
+  describe("On-Demand Pricing", () => {
+    it("should create on-demand pricing configuration", () => {
       // WHEN
       const pricing = PricingConfig.createOnDemand();
 
@@ -194,22 +194,22 @@ describe('PricingConfig Value Object', () => {
       expect(pricing.getBasePrice()).toBeNull();
     });
 
-    it('should not allow price calculation for on-demand pricing', () => {
+    it("should not allow price calculation for on-demand pricing", () => {
       // GIVEN
       const pricing = PricingConfig.createOnDemand();
 
       // WHEN & THEN
       expect(() => pricing.calculatePrice(60)).toThrow(
-        'Cannot calculate price for hidden or on-demand pricing',
+        "Cannot calculate price for hidden or on-demand pricing",
       );
     });
   });
 
-  describe('Visibility Logic', () => {
-    it('should handle public visibility correctly', () => {
+  describe("Visibility Logic", () => {
+    it("should handle public visibility correctly", () => {
       // GIVEN
       const pricing = PricingConfig.createFixed(
-        Money.create(5000, 'EUR'),
+        Money.create(5000, "EUR"),
         PricingVisibility.PUBLIC,
       );
 
@@ -219,10 +219,10 @@ describe('PricingConfig Value Object', () => {
       expect(pricing.isVisibleToUser(true, true)).toBe(true); // Staff
     });
 
-    it('should handle authenticated visibility correctly', () => {
+    it("should handle authenticated visibility correctly", () => {
       // GIVEN
       const pricing = PricingConfig.createFixed(
-        Money.create(5000, 'EUR'),
+        Money.create(5000, "EUR"),
         PricingVisibility.AUTHENTICATED,
       );
 
@@ -232,10 +232,10 @@ describe('PricingConfig Value Object', () => {
       expect(pricing.isVisibleToUser(true, true)).toBe(true); // Staff
     });
 
-    it('should handle private visibility correctly', () => {
+    it("should handle private visibility correctly", () => {
       // GIVEN
       const pricing = PricingConfig.createFixed(
-        Money.create(5000, 'EUR'),
+        Money.create(5000, "EUR"),
         PricingVisibility.PRIVATE,
       );
 
@@ -245,7 +245,7 @@ describe('PricingConfig Value Object', () => {
       expect(pricing.isVisibleToUser(true, true)).toBe(true); // Staff
     });
 
-    it('should handle hidden visibility correctly', () => {
+    it("should handle hidden visibility correctly", () => {
       // GIVEN
       const pricing = PricingConfig.createHidden();
 
@@ -256,13 +256,13 @@ describe('PricingConfig Value Object', () => {
     });
   });
 
-  describe('Serialization', () => {
-    it('should serialize and deserialize fixed pricing', () => {
+  describe("Serialization", () => {
+    it("should serialize and deserialize fixed pricing", () => {
       // GIVEN
       const original = PricingConfig.createFixed(
-        Money.create(5000, 'EUR'),
+        Money.create(5000, "EUR"),
         PricingVisibility.PUBLIC,
-        'Standard pricing',
+        "Standard pricing",
       );
 
       // WHEN
@@ -278,14 +278,14 @@ describe('PricingConfig Value Object', () => {
       expect(restored.getDescription()).toBe(original.getDescription());
     });
 
-    it('should serialize and deserialize variable pricing', () => {
+    it("should serialize and deserialize variable pricing", () => {
       // GIVEN
       const rules: PricingRule[] = [
         {
           minDuration: 30,
           maxDuration: 60,
-          basePrice: Money.create(3000, 'EUR'),
-          pricePerMinute: Money.create(50, 'EUR'),
+          basePrice: Money.create(3000, "EUR"),
+          pricePerMinute: Money.create(50, "EUR"),
         },
       ];
       const original = PricingConfig.createVariable(
@@ -309,14 +309,14 @@ describe('PricingConfig Value Object', () => {
     });
   });
 
-  describe('Edge Cases', () => {
-    it('should handle zero duration for variable pricing', () => {
+  describe("Edge Cases", () => {
+    it("should handle zero duration for variable pricing", () => {
       // GIVEN
       const rules: PricingRule[] = [
         {
           minDuration: 0,
           maxDuration: 30,
-          basePrice: Money.create(1000, 'EUR'),
+          basePrice: Money.create(1000, "EUR"),
         },
       ];
       const pricing = PricingConfig.createVariable(rules);
@@ -328,18 +328,18 @@ describe('PricingConfig Value Object', () => {
       expect(price.getAmount()).toBe(1000);
     });
 
-    it('should handle exact boundary durations', () => {
+    it("should handle exact boundary durations", () => {
       // GIVEN
       const rules: PricingRule[] = [
         {
           minDuration: 30,
           maxDuration: 60,
-          basePrice: Money.create(3000, 'EUR'),
+          basePrice: Money.create(3000, "EUR"),
         },
         {
           minDuration: 61,
           maxDuration: 120,
-          basePrice: Money.create(5000, 'EUR'),
+          basePrice: Money.create(5000, "EUR"),
         },
       ];
       const pricing = PricingConfig.createVariable(rules);

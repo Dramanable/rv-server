@@ -8,33 +8,32 @@ import {
   ParseUUIDPipe,
   Post,
   UseGuards,
-} from '@nestjs/common';
+} from "@nestjs/common";
 import {
   ApiBearerAuth,
   ApiOperation,
   ApiParam,
   ApiResponse,
   ApiTags,
-} from '@nestjs/swagger';
+} from "@nestjs/swagger";
 
-import { RoleBasedGuard } from '../security/guards/role-based.guard';
-import { RequireStaff } from '../security/decorators/roles.decorator';
-import { GetUser } from '@presentation/security/decorators/get-user.decorator';
-import { TOKENS } from '@shared/constants/injection-tokens';
+import { GetUser } from "@presentation/security/decorators/get-user.decorator";
+import { TOKENS } from "@shared/constants/injection-tokens";
+import { RoleBasedGuard } from "../security/guards/role-based.guard";
 
 // Use Cases
-import { GetAvailableStaffUseCase } from '@application/use-cases/staff/get-available-staff.use-case';
-import { GetStaffAvailabilityUseCase } from '@application/use-cases/staff/get-staff-availability.use-case';
-import { SetStaffAvailabilityUseCase } from '@application/use-cases/staff/set-staff-availability.use-case';
+import { GetAvailableStaffUseCase } from "@application/use-cases/staff/get-available-staff.use-case";
+import { GetStaffAvailabilityUseCase } from "@application/use-cases/staff/get-staff-availability.use-case";
+import { SetStaffAvailabilityUseCase } from "@application/use-cases/staff/set-staff-availability.use-case";
 
 // DTOs
-import { AvailableStaffListResponseDto } from '@presentation/dtos/staff/available-staff-list-response.dto';
-import { GetAvailableStaffDto } from '@presentation/dtos/staff/get-available-staff.dto';
-import { SetStaffAvailabilityDto } from '@presentation/dtos/staff/set-staff-availability.dto';
-import { StaffAvailabilityResponseDto } from '@presentation/dtos/staff/staff-availability-response.dto';
+import { AvailableStaffListResponseDto } from "@presentation/dtos/staff/available-staff-list-response.dto";
+import { GetAvailableStaffDto } from "@presentation/dtos/staff/get-available-staff.dto";
+import { SetStaffAvailabilityDto } from "@presentation/dtos/staff/set-staff-availability.dto";
+import { StaffAvailabilityResponseDto } from "@presentation/dtos/staff/staff-availability-response.dto";
 
 // Domain Types
-import { User } from '@domain/entities/user.entity';
+import { User } from "@domain/entities/user.entity";
 
 /**
  * 📅 Staff Availability Controller
@@ -45,8 +44,8 @@ import { User } from '@domain/entities/user.entity';
  * - Recherche de staff disponible selon critères
  * - Respect des WorkingHours et contraintes métier
  */
-@ApiTags('👨‍💼 Staff Availability Management')
-@Controller('staff/availability')
+@ApiTags("👨‍💼 Staff Availability Management")
+@Controller("staff/availability")
 @ApiBearerAuth()
 @UseGuards(RoleBasedGuard)
 export class StaffAvailabilityController {
@@ -64,9 +63,9 @@ export class StaffAvailabilityController {
   /**
    * 🔧 Définir la disponibilité d'un membre du staff
    */
-  @Post(':staffId/set')
+  @Post(":staffId/set")
   @ApiOperation({
-    summary: '🔧 Set Staff Member Availability',
+    summary: "🔧 Set Staff Member Availability",
     description: `
       **Définir les créneaux de disponibilité** d'un membre du personnel.
 
@@ -114,30 +113,30 @@ export class StaffAvailabilityController {
     `,
   })
   @ApiParam({
-    name: 'staffId',
-    description: 'UUID du membre du staff',
-    example: 'f47ac10b-58cc-4372-a567-0e02b2c3d479',
+    name: "staffId",
+    description: "UUID du membre du staff",
+    example: "f47ac10b-58cc-4372-a567-0e02b2c3d479",
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: '✅ Staff availability set successfully',
+    description: "✅ Staff availability set successfully",
     type: StaffAvailabilityResponseDto,
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
-    description: '❌ Invalid availability data or overlapping slots',
+    description: "❌ Invalid availability data or overlapping slots",
   })
   @ApiResponse({
     status: HttpStatus.FORBIDDEN,
     description:
-      '🚫 Insufficient permissions to manage this staff availability',
+      "🚫 Insufficient permissions to manage this staff availability",
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
-    description: '👤 Staff member not found',
+    description: "👤 Staff member not found",
   })
   async setStaffAvailability(
-    @Param('staffId', ParseUUIDPipe) staffId: string,
+    @Param("staffId", ParseUUIDPipe) staffId: string,
     @Body() dto: SetStaffAvailabilityDto,
     @GetUser() user: User,
   ): Promise<StaffAvailabilityResponseDto> {
@@ -154,9 +153,9 @@ export class StaffAvailabilityController {
   /**
    * 📋 Récupérer la disponibilité d'un membre du staff
    */
-  @Get(':staffId')
+  @Get(":staffId")
   @ApiOperation({
-    summary: '📋 Get Staff Member Availability',
+    summary: "📋 Get Staff Member Availability",
     description: `
       **Récupérer les créneaux de disponibilité** d'un membre du personnel.
 
@@ -181,25 +180,25 @@ export class StaffAvailabilityController {
     `,
   })
   @ApiParam({
-    name: 'staffId',
-    description: 'UUID du membre du staff',
-    example: 'f47ac10b-58cc-4372-a567-0e02b2c3d479',
+    name: "staffId",
+    description: "UUID du membre du staff",
+    example: "f47ac10b-58cc-4372-a567-0e02b2c3d479",
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: '✅ Staff availability retrieved successfully',
+    description: "✅ Staff availability retrieved successfully",
     type: StaffAvailabilityResponseDto,
   })
   @ApiResponse({
     status: HttpStatus.FORBIDDEN,
-    description: '🚫 Insufficient permissions to view this staff availability',
+    description: "🚫 Insufficient permissions to view this staff availability",
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
-    description: '👤 Staff member not found',
+    description: "👤 Staff member not found",
   })
   async getStaffAvailability(
-    @Param('staffId', ParseUUIDPipe) staffId: string,
+    @Param("staffId", ParseUUIDPipe) staffId: string,
     @GetUser() user: User,
   ): Promise<StaffAvailabilityResponseDto> {
     const result = await this.getStaffAvailabilityUseCase.execute({
@@ -213,9 +212,9 @@ export class StaffAvailabilityController {
   /**
    * 🔍 Rechercher le staff disponible selon critères
    */
-  @Post('search')
+  @Post("search")
   @ApiOperation({
-    summary: '🔍 Search Available Staff with Filters',
+    summary: "🔍 Search Available Staff with Filters",
     description: `
       **Recherche avancée du personnel disponible** selon critères métier.
 
@@ -254,16 +253,16 @@ export class StaffAvailabilityController {
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: '✅ Available staff found successfully',
+    description: "✅ Available staff found successfully",
     type: AvailableStaffListResponseDto,
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
-    description: '❌ Invalid search criteria',
+    description: "❌ Invalid search criteria",
   })
   @ApiResponse({
     status: HttpStatus.FORBIDDEN,
-    description: '🚫 Insufficient permissions to search staff',
+    description: "🚫 Insufficient permissions to search staff",
   })
   async searchAvailableStaff(
     @Body() dto: GetAvailableStaffDto,

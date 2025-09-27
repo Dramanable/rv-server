@@ -5,17 +5,17 @@
  * ✅ Pattern Request-Response simple
  */
 
-import type { AppointmentRepository } from '../../../domain/repositories/appointment.repository.interface';
-import type { CalendarRepository } from '../../../domain/repositories/calendar.repository.interface';
-import type { ServiceRepository } from '../../../domain/repositories/service.repository.interface';
-import type { StaffRepository } from '../../../domain/repositories/staff.repository.interface';
-import { ViewMode } from '../../../presentation/dtos/appointment.dto';
-import type { I18nService } from '../../ports/i18n.port';
-import type { Logger } from '../../ports/logger.port';
+import type { AppointmentRepository } from "../../../domain/repositories/appointment.repository.interface";
+import type { CalendarRepository } from "../../../domain/repositories/calendar.repository.interface";
+import type { ServiceRepository } from "../../../domain/repositories/service.repository.interface";
+import type { StaffRepository } from "../../../domain/repositories/staff.repository.interface";
+import { ViewMode } from "../../../presentation/dtos/appointment.dto";
+import type { I18nService } from "../../ports/i18n.port";
+import type { Logger } from "../../ports/logger.port";
 
-import { CalendarId } from '../../../domain/value-objects/calendar-id.value-object';
-import { ServiceId } from '../../../domain/value-objects/service-id.value-object';
-import { UserId } from '../../../domain/value-objects/user-id.value-object';
+import { CalendarId } from "../../../domain/value-objects/calendar-id.value-object";
+import { ServiceId } from "../../../domain/value-objects/service-id.value-object";
+import { UserId } from "../../../domain/value-objects/user-id.value-object";
 
 export interface GetAvailableSlotsRequest {
   readonly businessId: string;
@@ -78,7 +78,7 @@ export class GetAvailableSlotsUseCase {
     request: GetAvailableSlotsRequest,
   ): Promise<GetAvailableSlotsResponse> {
     this.logger.info(
-      this.i18n.translate('operations.availability.fetching_slots'),
+      this.i18n.translate("operations.availability.fetching_slots"),
       {
         businessId: request.businessId,
         serviceId: request.serviceId,
@@ -131,7 +131,7 @@ export class GetAvailableSlotsUseCase {
       };
 
       this.logger.info(
-        this.i18n.translate('operations.availability.slots_fetched'),
+        this.i18n.translate("operations.availability.slots_fetched"),
         {
           businessId: request.businessId,
           totalSlots: response.metadata.totalSlots,
@@ -143,7 +143,7 @@ export class GetAvailableSlotsUseCase {
       return response;
     } catch (error) {
       this.logger.error(
-        this.i18n.translate('operations.availability.fetch_failed'),
+        this.i18n.translate("operations.availability.fetch_failed"),
         error instanceof Error ? error : new Error(String(error)),
         {
           businessId: request.businessId,
@@ -160,25 +160,25 @@ export class GetAvailableSlotsUseCase {
   ): Promise<void> {
     if (!request.businessId?.trim()) {
       throw new Error(
-        this.i18n.translate('errors.validation.business_id_required'),
+        this.i18n.translate("errors.validation.business_id_required"),
       );
     }
 
     if (!request.serviceId?.trim()) {
       throw new Error(
-        this.i18n.translate('errors.validation.service_id_required'),
+        this.i18n.translate("errors.validation.service_id_required"),
       );
     }
 
     if (!request.calendarId?.trim()) {
       throw new Error(
-        this.i18n.translate('errors.validation.calendar_id_required'),
+        this.i18n.translate("errors.validation.calendar_id_required"),
       );
     }
 
     if (!request.referenceDate) {
       throw new Error(
-        this.i18n.translate('errors.validation.reference_date_required'),
+        this.i18n.translate("errors.validation.reference_date_required"),
       );
     }
 
@@ -186,7 +186,7 @@ export class GetAvailableSlotsUseCase {
     if (request.duration !== undefined) {
       if (request.duration < 15 || request.duration > 480) {
         throw new Error(
-          this.i18n.translate('errors.validation.invalid_duration'),
+          this.i18n.translate("errors.validation.invalid_duration"),
         );
       }
     }
@@ -206,15 +206,15 @@ export class GetAvailableSlotsUseCase {
     ]);
 
     if (!service) {
-      throw new Error(this.i18n.translate('errors.service.not_found'));
+      throw new Error(this.i18n.translate("errors.service.not_found"));
     }
 
     if (!calendar) {
-      throw new Error(this.i18n.translate('errors.calendar.not_found'));
+      throw new Error(this.i18n.translate("errors.calendar.not_found"));
     }
 
     if (request.staffId && !staff) {
-      throw new Error(this.i18n.translate('errors.staff.not_found'));
+      throw new Error(this.i18n.translate("errors.staff.not_found"));
     }
 
     return { service, calendar, staff };
@@ -388,8 +388,8 @@ export class GetAvailableSlotsUseCase {
           staffId: staff?.getId().getValue(),
           unavailableReason: !isAvailable
             ? isOccupied
-              ? 'Créneau occupé'
-              : 'Créneau passé'
+              ? "Créneau occupé"
+              : "Créneau passé"
             : undefined,
         });
       }
@@ -398,7 +398,7 @@ export class GetAvailableSlotsUseCase {
     }
 
     return {
-      date: date.toISOString().split('T')[0],
+      date: date.toISOString().split("T")[0],
       dayOfWeek,
       slots,
     };
@@ -409,22 +409,22 @@ export class GetAvailableSlotsUseCase {
     viewMode: ViewMode,
   ): string {
     const options: Intl.DateTimeFormatOptions = {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
+      day: "numeric",
+      month: "long",
+      year: "numeric",
     };
 
     switch (viewMode) {
       case ViewMode.DAY:
-        return period.startDate.toLocaleDateString('fr-FR', options);
+        return period.startDate.toLocaleDateString("fr-FR", options);
 
       case ViewMode.WEEK: {
-        const startFormatted = period.startDate.toLocaleDateString('fr-FR', {
-          day: 'numeric',
-          month: 'long',
+        const startFormatted = period.startDate.toLocaleDateString("fr-FR", {
+          day: "numeric",
+          month: "long",
         });
         const endFormatted = period.endDate.toLocaleDateString(
-          'fr-FR',
+          "fr-FR",
           options,
         );
         return `Semaine du ${startFormatted} au ${endFormatted}`;
@@ -432,21 +432,21 @@ export class GetAvailableSlotsUseCase {
 
       case ViewMode.NEXT_WEEK: {
         const nextStartFormatted = period.startDate.toLocaleDateString(
-          'fr-FR',
+          "fr-FR",
           {
-            day: 'numeric',
-            month: 'long',
+            day: "numeric",
+            month: "long",
           },
         );
         const nextEndFormatted = period.endDate.toLocaleDateString(
-          'fr-FR',
+          "fr-FR",
           options,
         );
         return `Semaine suivante du ${nextStartFormatted} au ${nextEndFormatted}`;
       }
 
       default:
-        return '';
+        return "";
     }
   }
 

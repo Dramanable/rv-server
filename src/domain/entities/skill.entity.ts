@@ -1,9 +1,9 @@
-import { BusinessId } from '../value-objects/business-id.value-object';
+import { BusinessId } from "../value-objects/business-id.value-object";
 import {
   SkillValidationException,
   SkillOperationNotAllowedException,
   CriticalSkillException,
-} from '../exceptions/skill.exceptions';
+} from "../exceptions/skill.exceptions";
 
 /**
  * 🎯 Skill Entity - Compétences Configurables par Business
@@ -40,32 +40,32 @@ export class Skill {
     // Validation des données d'entrée avec exceptions spécialisées
     if (!name || name.trim().length < 2) {
       throw new SkillValidationException(
-        'SKILL_NAME_TOO_SHORT',
-        'Le nom de la compétence doit contenir au moins 2 caractères',
+        "SKILL_NAME_TOO_SHORT",
+        "Le nom de la compétence doit contenir au moins 2 caractères",
         { name, minimumLength: 2 },
       );
     }
 
     if (!category || category.trim().length < 2) {
       throw new SkillValidationException(
-        'SKILL_CATEGORY_TOO_SHORT',
-        'La catégorie de la compétence doit contenir au moins 2 caractères',
+        "SKILL_CATEGORY_TOO_SHORT",
+        "La catégorie de la compétence doit contenir au moins 2 caractères",
         { category, minimumLength: 2 },
       );
     }
 
     if (name.trim().length > 100) {
       throw new SkillValidationException(
-        'SKILL_NAME_TOO_LONG',
-        'Le nom de la compétence ne peut pas dépasser 100 caractères',
+        "SKILL_NAME_TOO_LONG",
+        "Le nom de la compétence ne peut pas dépasser 100 caractères",
         { name, maximumLength: 100 },
       );
     }
 
     if (description && description.length > 500) {
       throw new SkillValidationException(
-        'SKILL_DESCRIPTION_TOO_LONG',
-        'La description de la compétence ne peut pas dépasser 500 caractères',
+        "SKILL_DESCRIPTION_TOO_LONG",
+        "La description de la compétence ne peut pas dépasser 500 caractères",
         { description, maximumLength: 500 },
       );
     }
@@ -77,7 +77,7 @@ export class Skill {
       businessId,
       name.trim(),
       category.trim(),
-      description?.trim() || '',
+      description?.trim() || "",
       isCritical,
       true, // Active par défaut
       now,
@@ -184,16 +184,16 @@ export class Skill {
     // Validation
     if (updatedName.length < 2 || updatedName.length > 100) {
       throw new Error(
-        'Le nom de la compétence doit contenir entre 2 et 100 caractères',
+        "Le nom de la compétence doit contenir entre 2 et 100 caractères",
       );
     }
 
     if (updatedCategory.length < 2) {
-      throw new Error('La catégorie doit contenir au moins 2 caractères');
+      throw new Error("La catégorie doit contenir au moins 2 caractères");
     }
 
     if (updatedDescription.length > 500) {
-      throw new Error('La description ne peut pas dépasser 500 caractères');
+      throw new Error("La description ne peut pas dépasser 500 caractères");
     }
 
     return new Skill(

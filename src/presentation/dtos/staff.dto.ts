@@ -5,7 +5,7 @@
  * ✅ Documentation Swagger détaillée
  */
 
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import {
   IsArray,
   IsBoolean,
@@ -17,9 +17,9 @@ import {
   IsUUID,
   Length,
   ValidateNested,
-} from 'class-validator';
-import { Type } from 'class-transformer';
-import { StaffRole } from '../../shared/enums/staff-role.enum';
+} from "class-validator";
+import { Type } from "class-transformer";
+import { StaffRole } from "../../shared/enums/staff-role.enum";
 
 /**
  * 📋 LIST STAFF DTO - Recherche avancée paginée
@@ -36,39 +36,39 @@ export class ListStaffDto {
   readonly limit?: number = 10;
 
   @ApiPropertyOptional({
-    enum: ['createdAt', 'firstName', 'lastName', 'role', 'email'],
-    default: 'createdAt',
+    enum: ["createdAt", "firstName", "lastName", "role", "email"],
+    default: "createdAt",
   })
   @IsOptional()
   @IsString()
-  readonly sortBy?: string = 'createdAt';
+  readonly sortBy?: string = "createdAt";
 
-  @ApiPropertyOptional({ enum: ['asc', 'desc'], default: 'desc' })
+  @ApiPropertyOptional({ enum: ["asc", "desc"], default: "desc" })
   @IsOptional()
   @IsString()
-  readonly sortOrder?: 'asc' | 'desc' = 'desc';
+  readonly sortOrder?: "asc" | "desc" = "desc";
 
   @ApiPropertyOptional({
-    description: 'Search term for name, email, specialization',
+    description: "Search term for name, email, specialization",
   })
   @IsOptional()
   @IsString()
   @Length(1, 100)
   readonly search?: string;
 
-  @ApiPropertyOptional({ description: 'Filter by staff role' })
+  @ApiPropertyOptional({ description: "Filter by staff role" })
   @IsOptional()
   @IsEnum(StaffRole)
   readonly role?: StaffRole;
 
-  @ApiPropertyOptional({ description: 'Filter by active status' })
+  @ApiPropertyOptional({ description: "Filter by active status" })
   @IsOptional()
   @IsBoolean()
   readonly isActive?: boolean;
 
   @ApiPropertyOptional({
-    description: 'Filter by business ID',
-    example: '123e4567-e89b-12d3-a456-426614174000',
+    description: "Filter by business ID",
+    example: "123e4567-e89b-12d3-a456-426614174000",
   })
   @IsOptional()
   @IsUUID()
@@ -83,33 +83,33 @@ export class GetStaffResponseDto {
   readonly success!: boolean;
 
   @ApiProperty({
-    description: 'Staff member details',
-    type: 'object',
+    description: "Staff member details",
+    type: "object",
     properties: {
-      id: { type: 'string', format: 'uuid' },
-      businessId: { type: 'string', format: 'uuid' },
+      id: { type: "string", format: "uuid" },
+      businessId: { type: "string", format: "uuid" },
       profile: {
-        type: 'object',
+        type: "object",
         properties: {
-          firstName: { type: 'string' },
-          lastName: { type: 'string' },
-          title: { type: 'string' },
-          specialization: { type: 'string' },
-          bio: { type: 'string' },
-          profileImageUrl: { type: 'string' },
-          certifications: { type: 'array', items: { type: 'string' } },
-          languages: { type: 'array', items: { type: 'string' } },
+          firstName: { type: "string" },
+          lastName: { type: "string" },
+          title: { type: "string" },
+          specialization: { type: "string" },
+          bio: { type: "string" },
+          profileImageUrl: { type: "string" },
+          certifications: { type: "array", items: { type: "string" } },
+          languages: { type: "array", items: { type: "string" } },
         },
       },
-      role: { type: 'string', enum: Object.values(StaffRole) },
-      email: { type: 'string', format: 'email' },
-      phone: { type: 'string' },
-      status: { type: 'string' },
-      availability: { type: 'object', additionalProperties: true },
-      calendarIntegration: { type: 'object', additionalProperties: true },
-      hireDate: { type: 'string', format: 'date-time' },
-      createdAt: { type: 'string', format: 'date-time' },
-      updatedAt: { type: 'string', format: 'date-time' },
+      role: { type: "string", enum: Object.values(StaffRole) },
+      email: { type: "string", format: "email" },
+      phone: { type: "string" },
+      status: { type: "string" },
+      availability: { type: "object", additionalProperties: true },
+      calendarIntegration: { type: "object", additionalProperties: true },
+      hireDate: { type: "string", format: "date-time" },
+      createdAt: { type: "string", format: "date-time" },
+      updatedAt: { type: "string", format: "date-time" },
     },
   })
   readonly data!: any;
@@ -129,41 +129,41 @@ export class ListStaffResponseDto {
   readonly success!: boolean;
 
   @ApiProperty({
-    description: 'Array of staff members',
-    type: 'array',
+    description: "Array of staff members",
+    type: "array",
     items: {
-      type: 'object',
+      type: "object",
       properties: {
-        id: { type: 'string', format: 'uuid' },
-        businessId: { type: 'string', format: 'uuid' },
+        id: { type: "string", format: "uuid" },
+        businessId: { type: "string", format: "uuid" },
         profile: {
-          type: 'object',
+          type: "object",
           properties: {
-            firstName: { type: 'string' },
-            lastName: { type: 'string' },
-            specialization: { type: 'string' },
+            firstName: { type: "string" },
+            lastName: { type: "string" },
+            specialization: { type: "string" },
           },
         },
-        role: { type: 'string', enum: Object.values(StaffRole) },
-        email: { type: 'string', format: 'email' },
-        status: { type: 'string' },
-        createdAt: { type: 'string', format: 'date-time' },
-        updatedAt: { type: 'string', format: 'date-time' },
+        role: { type: "string", enum: Object.values(StaffRole) },
+        email: { type: "string", format: "email" },
+        status: { type: "string" },
+        createdAt: { type: "string", format: "date-time" },
+        updatedAt: { type: "string", format: "date-time" },
       },
     },
   })
   readonly data!: any[];
 
   @ApiProperty({
-    description: 'Pagination metadata',
-    type: 'object',
+    description: "Pagination metadata",
+    type: "object",
     properties: {
-      currentPage: { type: 'number' },
-      totalPages: { type: 'number' },
-      totalItems: { type: 'number' },
-      itemsPerPage: { type: 'number' },
-      hasNextPage: { type: 'boolean' },
-      hasPrevPage: { type: 'boolean' },
+      currentPage: { type: "number" },
+      totalPages: { type: "number" },
+      totalItems: { type: "number" },
+      itemsPerPage: { type: "number" },
+      hasNextPage: { type: "boolean" },
+      hasPrevPage: { type: "boolean" },
     },
   })
   readonly meta!: any;
@@ -174,16 +174,16 @@ export class ListStaffResponseDto {
  */
 export class CreateStaffDto {
   @ApiProperty({
-    description: 'Business UUID',
-    example: '123e4567-e89b-12d3-a456-426614174000',
+    description: "Business UUID",
+    example: "123e4567-e89b-12d3-a456-426614174000",
   })
   @IsUUID()
   @IsNotEmpty()
   readonly businessId!: string;
 
   @ApiProperty({
-    description: 'Staff first name',
-    example: 'Dr. Jean',
+    description: "Staff first name",
+    example: "Dr. Jean",
     minLength: 2,
     maxLength: 50,
   })
@@ -193,8 +193,8 @@ export class CreateStaffDto {
   readonly firstName!: string;
 
   @ApiProperty({
-    description: 'Staff last name',
-    example: 'Dupont',
+    description: "Staff last name",
+    example: "Dupont",
     minLength: 2,
     maxLength: 50,
   })
@@ -204,24 +204,24 @@ export class CreateStaffDto {
   readonly lastName!: string;
 
   @ApiProperty({
-    description: 'Staff email address',
-    example: 'dr.dupont@medicenter.fr',
-    format: 'email',
+    description: "Staff email address",
+    example: "dr.dupont@medicenter.fr",
+    format: "email",
   })
   @IsEmail()
   @IsNotEmpty()
   readonly email!: string;
 
   @ApiPropertyOptional({
-    description: 'Staff phone number',
-    example: '+33123456789',
+    description: "Staff phone number",
+    example: "+33123456789",
   })
   @IsOptional()
   @IsString()
   readonly phone?: string;
 
   @ApiProperty({
-    description: 'Staff role',
+    description: "Staff role",
     enum: StaffRole,
     example: StaffRole.DOCTOR,
   })
@@ -230,8 +230,8 @@ export class CreateStaffDto {
   readonly role!: StaffRole;
 
   @ApiPropertyOptional({
-    description: 'Job title',
-    example: 'Médecin Généraliste',
+    description: "Job title",
+    example: "Médecin Généraliste",
     maxLength: 100,
   })
   @IsOptional()
@@ -240,8 +240,8 @@ export class CreateStaffDto {
   readonly jobTitle?: string;
 
   @ApiPropertyOptional({
-    description: 'Professional specialization',
-    example: 'Consultation et Traitement',
+    description: "Professional specialization",
+    example: "Consultation et Traitement",
     maxLength: 200,
   })
   @IsOptional()
@@ -250,8 +250,8 @@ export class CreateStaffDto {
   readonly specialization?: string;
 
   @ApiPropertyOptional({
-    description: 'Professional biography',
-    example: 'Médecin expérimenté avec 15 ans de pratique...',
+    description: "Professional biography",
+    example: "Médecin expérimenté avec 15 ans de pratique...",
     maxLength: 1000,
   })
   @IsOptional()
@@ -260,8 +260,8 @@ export class CreateStaffDto {
   readonly bio?: string;
 
   @ApiPropertyOptional({
-    description: 'Professional certifications',
-    example: ['Diplôme de Médecine', 'Spécialisation Cardiologie'],
+    description: "Professional certifications",
+    example: ["Diplôme de Médecine", "Spécialisation Cardiologie"],
     type: [String],
   })
   @IsOptional()
@@ -270,8 +270,8 @@ export class CreateStaffDto {
   readonly certifications?: string[];
 
   @ApiPropertyOptional({
-    description: 'Spoken languages',
-    example: ['French', 'English', 'Spanish'],
+    description: "Spoken languages",
+    example: ["French", "English", "Spanish"],
     type: [String],
   })
   @IsOptional()
@@ -280,8 +280,8 @@ export class CreateStaffDto {
   readonly languages?: string[];
 
   @ApiPropertyOptional({
-    description: 'Working hours configuration',
-    type: 'object',
+    description: "Working hours configuration",
+    type: "object",
     additionalProperties: true,
   })
   @IsOptional()
@@ -304,17 +304,17 @@ export class CreateStaffResponseDto {
   readonly success!: boolean;
 
   @ApiProperty({
-    description: 'Created staff member details',
-    type: 'object',
+    description: "Created staff member details",
+    type: "object",
     properties: {
-      id: { type: 'string', format: 'uuid' },
-      firstName: { type: 'string' },
-      lastName: { type: 'string' },
-      email: { type: 'string', format: 'email' },
-      role: { type: 'string', enum: Object.values(StaffRole) },
-      businessId: { type: 'string', format: 'uuid' },
-      isActive: { type: 'boolean' },
-      createdAt: { type: 'string', format: 'date-time' },
+      id: { type: "string", format: "uuid" },
+      firstName: { type: "string" },
+      lastName: { type: "string" },
+      email: { type: "string", format: "email" },
+      role: { type: "string", enum: Object.values(StaffRole) },
+      businessId: { type: "string", format: "uuid" },
+      isActive: { type: "boolean" },
+      createdAt: { type: "string", format: "date-time" },
     },
   })
   readonly data!: {
@@ -391,7 +391,7 @@ export class StaffProfileUpdateDto {
  * Contact Info Update DTO (partial)
  */
 export class StaffContactInfoUpdateDto {
-  @ApiPropertyOptional({ format: 'email' })
+  @ApiPropertyOptional({ format: "email" })
   @IsOptional()
   @IsEmail()
   readonly email?: string;
@@ -407,7 +407,7 @@ export class StaffContactInfoUpdateDto {
  */
 export class UpdateStaffDto {
   @ApiPropertyOptional({
-    description: 'Profile information to update',
+    description: "Profile information to update",
     type: StaffProfileUpdateDto,
   })
   @IsOptional()
@@ -416,7 +416,7 @@ export class UpdateStaffDto {
   readonly profile?: StaffProfileUpdateDto;
 
   @ApiPropertyOptional({
-    description: 'Staff role',
+    description: "Staff role",
     enum: StaffRole,
   })
   @IsOptional()
@@ -424,15 +424,15 @@ export class UpdateStaffDto {
   readonly role?: StaffRole;
 
   @ApiPropertyOptional({
-    description: 'Staff status',
-    enum: ['ACTIVE', 'INACTIVE', 'ON_LEAVE', 'SUSPENDED'],
+    description: "Staff status",
+    enum: ["ACTIVE", "INACTIVE", "ON_LEAVE", "SUSPENDED"],
   })
   @IsOptional()
   @IsString()
   readonly status?: string;
 
   @ApiPropertyOptional({
-    description: 'Contact information to update',
+    description: "Contact information to update",
     type: StaffContactInfoUpdateDto,
   })
   @IsOptional()
@@ -441,16 +441,16 @@ export class UpdateStaffDto {
   readonly contactInfo?: StaffContactInfoUpdateDto;
 
   @ApiPropertyOptional({
-    description: 'Availability configuration',
-    type: 'object',
+    description: "Availability configuration",
+    type: "object",
     additionalProperties: true,
   })
   @IsOptional()
   readonly availability?: any;
 
   @ApiPropertyOptional({
-    description: 'Calendar integration settings',
-    type: 'object',
+    description: "Calendar integration settings",
+    type: "object",
     additionalProperties: true,
   })
   @IsOptional()
@@ -465,8 +465,8 @@ export class UpdateStaffResponseDto {
   readonly success!: boolean;
 
   @ApiProperty({
-    description: 'Updated staff member details',
-    type: 'object',
+    description: "Updated staff member details",
+    type: "object",
     additionalProperties: true,
   })
   readonly data!: any;
@@ -486,11 +486,11 @@ export class DeleteStaffResponseDto {
   readonly success!: boolean;
 
   @ApiProperty({
-    description: 'Deletion confirmation',
-    type: 'object',
+    description: "Deletion confirmation",
+    type: "object",
     properties: {
-      staffId: { type: 'string', format: 'uuid' },
-      message: { type: 'string' },
+      staffId: { type: "string", format: "uuid" },
+      message: { type: "string" },
     },
   })
   readonly data!: {

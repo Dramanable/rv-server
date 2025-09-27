@@ -11,7 +11,7 @@ export class DomainError extends Error {
     public readonly context?: Record<string, unknown>,
   ) {
     super(message);
-    this.name = 'DomainError';
+    this.name = "DomainError";
   }
 }
 
@@ -21,8 +21,8 @@ export class ValidationError extends DomainError {
     public readonly field?: string,
     context?: Record<string, unknown>,
   ) {
-    super(message, 'VALIDATION_ERROR', { field, ...context });
-    this.name = 'ValidationError';
+    super(message, "VALIDATION_ERROR", { field, ...context });
+    this.name = "ValidationError";
   }
 }
 
@@ -32,8 +32,8 @@ export class BusinessRuleViolationError extends DomainError {
     public readonly rule?: string,
     context?: Record<string, unknown>,
   ) {
-    super(message, 'BUSINESS_RULE_VIOLATION', { rule, ...context });
-    this.name = 'BusinessRuleViolationError';
+    super(message, "BUSINESS_RULE_VIOLATION", { rule, ...context });
+    this.name = "BusinessRuleViolationError";
   }
 }
 
@@ -43,12 +43,12 @@ export class EntityNotFoundError extends DomainError {
     identifier: string | Record<string, unknown>,
     context?: Record<string, unknown>,
   ) {
-    super(`${entityName} not found`, 'ENTITY_NOT_FOUND', {
+    super(`${entityName} not found`, "ENTITY_NOT_FOUND", {
       entityName,
       identifier,
       ...context,
     });
-    this.name = 'EntityNotFoundError';
+    this.name = "EntityNotFoundError";
   }
 }
 
@@ -61,60 +61,60 @@ export class DuplicateEntityError extends DomainError {
   ) {
     super(
       `${entityName} with ${field} '${value}' already exists`,
-      'DUPLICATE_ENTITY',
+      "DUPLICATE_ENTITY",
       { entityName, field, value, ...context },
     );
-    this.name = 'DuplicateEntityError';
+    this.name = "DuplicateEntityError";
   }
 }
 
 export class AuthenticationError extends DomainError {
   constructor(
-    message: string = 'Authentication failed',
+    message: string = "Authentication failed",
     context?: Record<string, unknown>,
   ) {
-    super(message, 'AUTHENTICATION_ERROR', context);
-    this.name = 'AuthenticationError';
+    super(message, "AUTHENTICATION_ERROR", context);
+    this.name = "AuthenticationError";
   }
 }
 
 export class AuthorizationError extends DomainError {
   constructor(
-    message: string = 'Access denied',
+    message: string = "Access denied",
     public readonly requiredPermission?: string,
     context?: Record<string, unknown>,
   ) {
-    super(message, 'AUTHORIZATION_ERROR', { requiredPermission, ...context });
-    this.name = 'AuthorizationError';
+    super(message, "AUTHORIZATION_ERROR", { requiredPermission, ...context });
+    this.name = "AuthorizationError";
   }
 }
 
 export class InvalidPasswordError extends DomainError {
   constructor(
-    message: string = 'Invalid password',
+    message: string = "Invalid password",
     context?: Record<string, unknown>,
   ) {
-    super(message, 'INVALID_PASSWORD', context);
-    this.name = 'InvalidPasswordError';
+    super(message, "INVALID_PASSWORD", context);
+    this.name = "InvalidPasswordError";
   }
 }
 
 export class ExpiredTokenError extends DomainError {
   constructor(
-    message: string = 'Token has expired',
+    message: string = "Token has expired",
     context?: Record<string, unknown>,
   ) {
-    super(message, 'EXPIRED_TOKEN', context);
-    this.name = 'ExpiredTokenError';
+    super(message, "EXPIRED_TOKEN", context);
+    this.name = "ExpiredTokenError";
   }
 }
 
 export class InvalidTokenError extends DomainError {
   constructor(
-    message: string = 'Invalid token',
+    message: string = "Invalid token",
     context?: Record<string, unknown>,
   ) {
-    super(message, 'INVALID_TOKEN', context);
-    this.name = 'InvalidTokenError';
+    super(message, "INVALID_TOKEN", context);
+    this.name = "InvalidTokenError";
   }
 }

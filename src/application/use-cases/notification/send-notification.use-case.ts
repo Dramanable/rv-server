@@ -4,11 +4,11 @@
  * @version 1.0.0
  */
 
-import { Notification } from '../../../domain/entities/notification.entity';
-import { NotificationChannel } from '../../../domain/value-objects/notification-channel.value-object';
-import { NotificationPriority } from '../../../domain/value-objects/notification-priority.value-object';
-import { NotificationStatus } from '../../../domain/value-objects/notification-status.value-object';
-import { NotificationException } from '../../exceptions/notification.exceptions';
+import { Notification } from "../../../domain/entities/notification.entity";
+import { NotificationChannel } from "../../../domain/value-objects/notification-channel.value-object";
+import { NotificationPriority } from "../../../domain/value-objects/notification-priority.value-object";
+import { NotificationStatus } from "../../../domain/value-objects/notification-status.value-object";
+import { NotificationException } from "../../exceptions/notification.exceptions";
 
 /**
  * Requête pour envoyer une notification
@@ -29,7 +29,7 @@ export interface SendNotificationRequest {
  */
 export interface SendNotificationResponse {
   readonly notificationId: string;
-  readonly status: 'sent' | 'scheduled' | 'queued' | 'failed';
+  readonly status: "sent" | "scheduled" | "queued" | "failed";
   readonly messageId?: string;
   readonly scheduledFor?: Date;
   readonly scheduledId?: string;
@@ -100,7 +100,7 @@ export class SendNotificationUseCase {
     this.validateRequest(request);
 
     // 📊 Log notification attempt
-    this.logger.info('Attempting to send notification', {
+    this.logger.info("Attempting to send notification", {
       recipientId: request.recipientId,
       channel: request.channel,
       priority: request.priority,
@@ -127,8 +127,8 @@ export class SendNotificationUseCase {
         );
       }
     } catch (error) {
-      this.logger.error('Failed to send notification', {
-        error: error instanceof Error ? error.message : 'Unknown error',
+      this.logger.error("Failed to send notification", {
+        error: error instanceof Error ? error.message : "Unknown error",
         recipientId: request.recipientId,
       });
 
@@ -137,12 +137,12 @@ export class SendNotificationUseCase {
       }
 
       throw new NotificationException(
-        'Failed to send notification',
-        'SEND_FAILED',
-        'errors.notifications.send_failed',
+        "Failed to send notification",
+        "SEND_FAILED",
+        "errors.notifications.send_failed",
         {
           originalError:
-            error instanceof Error ? error.message : 'Unknown error',
+            error instanceof Error ? error.message : "Unknown error",
         },
       );
     }
@@ -151,33 +151,33 @@ export class SendNotificationUseCase {
   private validateRequest(request: SendNotificationRequest): void {
     if (!request.recipientId?.trim()) {
       throw new NotificationException(
-        'Recipient ID is required',
-        'VALIDATION_ERROR',
-        'errors.notifications.recipient_required',
+        "Recipient ID is required",
+        "VALIDATION_ERROR",
+        "errors.notifications.recipient_required",
       );
     }
 
     if (!request.title?.trim()) {
       throw new NotificationException(
-        'Notification title is required',
-        'VALIDATION_ERROR',
-        'errors.notifications.title_required',
+        "Notification title is required",
+        "VALIDATION_ERROR",
+        "errors.notifications.title_required",
       );
     }
 
     if (!request.content?.trim()) {
       throw new NotificationException(
-        'Notification content is required',
-        'VALIDATION_ERROR',
-        'errors.notifications.content_required',
+        "Notification content is required",
+        "VALIDATION_ERROR",
+        "errors.notifications.content_required",
       );
     }
 
     if (!request.requestingUserId?.trim()) {
       throw new NotificationException(
-        'Requesting user ID is required',
-        'VALIDATION_ERROR',
-        'errors.notifications.requesting_user_required',
+        "Requesting user ID is required",
+        "VALIDATION_ERROR",
+        "errors.notifications.requesting_user_required",
       );
     }
 
@@ -190,8 +190,8 @@ export class SendNotificationUseCase {
     ) {
       throw new NotificationException(
         `Content exceeds maximum length for ${request.channel.toString()}`,
-        'VALIDATION_ERROR',
-        'errors.notifications.content_too_long',
+        "VALIDATION_ERROR",
+        "errors.notifications.content_too_long",
         { maxLength: contentLimit, actualLength: request.content.length },
       );
     }
@@ -200,9 +200,9 @@ export class SendNotificationUseCase {
     if (request.scheduledFor) {
       if (request.scheduledFor <= new Date()) {
         throw new NotificationException(
-          'Scheduled date cannot be in the past',
-          'VALIDATION_ERROR',
-          'errors.notifications.invalid_schedule_date',
+          "Scheduled date cannot be in the past",
+          "VALIDATION_ERROR",
+          "errors.notifications.invalid_schedule_date",
         );
       }
     }
@@ -228,17 +228,17 @@ export class SendNotificationUseCase {
     try {
       return await this.notificationRepository.save(notification);
     } catch (error) {
-      this.logger.error('Failed to save notification to repository', {
-        error: error instanceof Error ? error.message : 'Unknown error',
+      this.logger.error("Failed to save notification to repository", {
+        error: error instanceof Error ? error.message : "Unknown error",
       });
 
       throw new NotificationException(
-        'Failed to save notification',
-        'REPOSITORY_ERROR',
-        'errors.notifications.save_failed',
+        "Failed to save notification",
+        "REPOSITORY_ERROR",
+        "errors.notifications.save_failed",
         {
           originalError:
-            error instanceof Error ? error.message : 'Unknown error',
+            error instanceof Error ? error.message : "Unknown error",
         },
       );
     }
@@ -258,9 +258,9 @@ export class SendNotificationUseCase {
 
     if (!validationResult.valid) {
       throw new NotificationException(
-        'Invalid scheduling window',
-        'VALIDATION_ERROR',
-        'errors.notifications.invalid_scheduling_window',
+        "Invalid scheduling window",
+        "VALIDATION_ERROR",
+        "errors.notifications.invalid_scheduling_window",
         { reason: validationResult.reason },
       );
     }
@@ -270,14 +270,14 @@ export class SendNotificationUseCase {
       scheduledFor,
     );
 
-    this.logger.info('Notification scheduled for future delivery', {
+    this.logger.info("Notification scheduled for future delivery", {
       notificationId,
       scheduledFor,
     });
 
     return {
       notificationId,
-      status: 'scheduled',
+      status: "scheduled",
       scheduledFor,
       scheduledId: scheduleResult.scheduledId,
     };
@@ -294,14 +294,14 @@ export class SendNotificationUseCase {
       try {
         const sendResult = await this.notificationService.send(notification);
 
-        this.logger.info('Notification sent successfully', {
+        this.logger.info("Notification sent successfully", {
           notificationId,
           messageId: sendResult.messageId,
         });
 
         return {
           notificationId,
-          status: 'sent',
+          status: "sent",
           messageId: sendResult.messageId,
           deliveryTime: sendResult.deliveryTime,
         };
@@ -310,12 +310,12 @@ export class SendNotificationUseCase {
 
         if (retryCount > maxRetries) {
           throw new NotificationException(
-            'Failed to send notification',
-            'DELIVERY_ERROR',
-            'errors.notifications.delivery_failed',
+            "Failed to send notification",
+            "DELIVERY_ERROR",
+            "errors.notifications.delivery_failed",
             {
               originalError:
-                error instanceof Error ? error.message : 'Unknown error',
+                error instanceof Error ? error.message : "Unknown error",
               retryCount: maxRetries,
             },
           );
@@ -323,7 +323,7 @@ export class SendNotificationUseCase {
 
         // Wait before retry (exponential backoff)
         // For testing: skip delays completely when NODE_ENV is test
-        if (process.env.NODE_ENV !== 'test') {
+        if (process.env.NODE_ENV !== "test") {
           await new Promise((resolve) =>
             setTimeout(resolve, Math.pow(2, retryCount) * 1000),
           );
@@ -333,9 +333,9 @@ export class SendNotificationUseCase {
 
     // This should never be reached, but TypeScript requires it
     throw new NotificationException(
-      'Unexpected error in delivery handling',
-      'UNEXPECTED_ERROR',
-      'errors.notifications.unexpected_error',
+      "Unexpected error in delivery handling",
+      "UNEXPECTED_ERROR",
+      "errors.notifications.unexpected_error",
     );
   }
 }

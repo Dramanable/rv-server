@@ -26,15 +26,15 @@
  * - Index hiérarchiques optimisés
  */
 
-import { MigrationInterface, QueryRunner, Table } from 'typeorm';
+import { MigrationInterface, QueryRunner, Table } from "typeorm";
 
 export class CreateBusinessContextTable1727289700000
   implements MigrationInterface
 {
-  name = 'CreateBusinessContextTable1727289700000';
+  name = "CreateBusinessContextTable1727289700000";
 
   private getSchemaName(): string {
-    const schema = process.env.DB_SCHEMA || 'public';
+    const schema = process.env.DB_SCHEMA || "public";
 
     // Validation du nom de schéma (sécurité)
     if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(schema)) {
@@ -62,90 +62,90 @@ export class CreateBusinessContextTable1727289700000
         columns: [
           // 🆔 Identification primaire
           {
-            name: 'id',
-            type: 'uuid',
+            name: "id",
+            type: "uuid",
             isPrimary: true,
-            generationStrategy: 'uuid',
-            default: 'uuid_generate_v4()',
-            comment: 'Identifiant unique du contexte métier',
+            generationStrategy: "uuid",
+            default: "uuid_generate_v4()",
+            comment: "Identifiant unique du contexte métier",
           },
 
           // 🏢 Identification et hiérarchie
           {
-            name: 'name',
-            type: 'varchar',
-            length: '200',
+            name: "name",
+            type: "varchar",
+            length: "200",
             isNullable: false,
-            comment: 'Nom du contexte (business, location, department)',
+            comment: "Nom du contexte (business, location, department)",
           },
           {
-            name: 'type',
-            type: 'varchar',
-            length: '20',
+            name: "type",
+            type: "varchar",
+            length: "20",
             isNullable: false,
-            comment: 'Type de contexte (BUSINESS, LOCATION, DEPARTMENT)',
+            comment: "Type de contexte (BUSINESS, LOCATION, DEPARTMENT)",
           },
           {
-            name: 'business_id',
-            type: 'uuid',
+            name: "business_id",
+            type: "uuid",
             isNullable: false,
-            comment: 'UUID du business racine',
+            comment: "UUID du business racine",
           },
           {
-            name: 'parent_context_id',
-            type: 'uuid',
+            name: "parent_context_id",
+            type: "uuid",
             isNullable: true,
-            comment: 'UUID du contexte parent (null pour business)',
+            comment: "UUID du contexte parent (null pour business)",
           },
 
           // 📝 Métadonnées descriptives
           {
-            name: 'description',
-            type: 'text',
+            name: "description",
+            type: "text",
             isNullable: true,
-            comment: 'Description détaillée du contexte',
+            comment: "Description détaillée du contexte",
           },
           {
-            name: 'code',
-            type: 'varchar',
-            length: '50',
+            name: "code",
+            type: "varchar",
+            length: "50",
             isNullable: true,
-            comment: 'Code métier unique (optionnel)',
+            comment: "Code métier unique (optionnel)",
           },
 
           // 🎯 Configuration et statut
           {
-            name: 'is_active',
-            type: 'boolean',
+            name: "is_active",
+            type: "boolean",
             isNullable: false,
             default: true,
-            comment: 'Status actif/inactif du contexte',
+            comment: "Status actif/inactif du contexte",
           },
           {
-            name: 'settings',
-            type: 'jsonb',
+            name: "settings",
+            type: "jsonb",
             isNullable: true,
-            comment: 'Configuration flexible en JSON',
+            comment: "Configuration flexible en JSON",
           },
 
           // 📊 Métadonnées hiérarchiques
           {
-            name: 'level',
-            type: 'integer',
+            name: "level",
+            type: "integer",
             isNullable: false,
             default: 0,
             comment:
-              'Niveau hiérarchique (0=Business, 1=Location, 2=Department)',
+              "Niveau hiérarchique (0=Business, 1=Location, 2=Department)",
           },
           {
-            name: 'path',
-            type: 'text',
+            name: "path",
+            type: "text",
             isNullable: true,
-            comment: 'Chemin hiérarchique pour requêtes rapides',
+            comment: "Chemin hiérarchique pour requêtes rapides",
           },
           {
-            name: 'display_order',
-            type: 'integer',
+            name: "display_order",
+            type: "integer",
             isNullable: false,
             default: 0,
             comment: "Ordre d'affichage dans les listes",
@@ -153,55 +153,55 @@ export class CreateBusinessContextTable1727289700000
 
           // 👥 Audit trail - Traçabilité obligatoire
           {
-            name: 'created_by',
-            type: 'uuid',
+            name: "created_by",
+            type: "uuid",
             isNullable: false,
             comment: "UUID de l'utilisateur créateur",
           },
           {
-            name: 'updated_by',
-            type: 'uuid',
+            name: "updated_by",
+            type: "uuid",
             isNullable: false,
-            comment: 'UUID du dernier utilisateur modificateur',
+            comment: "UUID du dernier utilisateur modificateur",
           },
 
           // ⏱️ Timestamps automatiques
           {
-            name: 'created_at',
-            type: 'timestamp with time zone',
+            name: "created_at",
+            type: "timestamp with time zone",
             isNullable: false,
-            default: 'CURRENT_TIMESTAMP',
-            comment: 'Date de création',
+            default: "CURRENT_TIMESTAMP",
+            comment: "Date de création",
           },
           {
-            name: 'updated_at',
-            type: 'timestamp with time zone',
+            name: "updated_at",
+            type: "timestamp with time zone",
             isNullable: false,
-            default: 'CURRENT_TIMESTAMP',
-            comment: 'Date de dernière modification',
+            default: "CURRENT_TIMESTAMP",
+            comment: "Date de dernière modification",
           },
 
           // 🔄 Versioning et intégrations
           {
-            name: 'version',
-            type: 'integer',
+            name: "version",
+            type: "integer",
             isNullable: false,
             default: 1,
-            comment: 'Version pour optimistic locking',
+            comment: "Version pour optimistic locking",
           },
           {
-            name: 'external_id',
-            type: 'varchar',
-            length: '100',
+            name: "external_id",
+            type: "varchar",
+            length: "100",
             isNullable: true,
-            comment: 'ID externe pour intégrations',
+            comment: "ID externe pour intégrations",
           },
           {
-            name: 'timezone',
-            type: 'varchar',
-            length: '50',
+            name: "timezone",
+            type: "varchar",
+            length: "50",
             isNullable: true,
-            comment: 'Timezone pour locations/departments',
+            comment: "Timezone pour locations/departments",
           },
         ],
       }),

@@ -4,16 +4,16 @@
  * ✅ Clean Architecture - Application Layer
  */
 
-import { Appointment } from '../../../domain/entities/appointment.entity';
-import { AppointmentRepository } from '../../../domain/repositories/appointment.repository.interface';
-import { AppointmentNotFoundError } from '../../exceptions/appointment.exceptions';
+import { Appointment } from "../../../domain/entities/appointment.entity";
+import { AppointmentRepository } from "../../../domain/repositories/appointment.repository.interface";
+import { AppointmentNotFoundError } from "../../exceptions/appointment.exceptions";
 
 // ===== REQUEST & RESPONSE =====
 
 export interface ConfirmAppointmentRequest {
   readonly appointmentId: string;
   readonly requestingUserId: string;
-  readonly confirmationMethod: 'EMAIL' | 'PHONE' | 'SMS' | 'IN_PERSON';
+  readonly confirmationMethod: "EMAIL" | "PHONE" | "SMS" | "IN_PERSON";
   readonly notes?: string;
 }
 
@@ -37,6 +37,6 @@ export class ConfirmAppointmentUseCase {
     // - Envoi de notification de confirmation
     // - Audit trail de la confirmation
 
-    throw new Error('ConfirmAppointmentUseCase not yet fully implemented');
+    throw new Error("ConfirmAppointmentUseCase not yet fully implemented");
   }
 }

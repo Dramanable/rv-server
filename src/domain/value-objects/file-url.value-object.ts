@@ -1,7 +1,7 @@
 export enum CloudProvider {
-  AWS_S3 = 'AWS_S3',
-  AZURE_BLOB = 'AZURE_BLOB',
-  GCP_STORAGE = 'GCP_STORAGE',
+  AWS_S3 = "AWS_S3",
+  AZURE_BLOB = "AZURE_BLOB",
+  GCP_STORAGE = "GCP_STORAGE",
 }
 
 export class FileUrl {
@@ -19,28 +19,28 @@ export class FileUrl {
 
   private validateUrl(url: string): void {
     if (!url || url.trim().length === 0) {
-      throw new Error('File URL cannot be empty');
+      throw new Error("File URL cannot be empty");
     }
 
     try {
       const urlObj = new URL(url);
-      if (!['http:', 'https:'].includes(urlObj.protocol)) {
-        throw new Error('File URL must use HTTP or HTTPS protocol');
+      if (!["http:", "https:"].includes(urlObj.protocol)) {
+        throw new Error("File URL must use HTTP or HTTPS protocol");
       }
     } catch {
-      throw new Error('Invalid file URL format');
+      throw new Error("Invalid file URL format");
     }
   }
 
   private validateKey(key: string): void {
     if (!key || key.trim().length === 0) {
-      throw new Error('File key cannot be empty');
+      throw new Error("File key cannot be empty");
     }
 
     // Vérifier les caractères interdits dans les clés
     const forbiddenChars = /[<>:"|?*\\]/;
     if (forbiddenChars.test(key)) {
-      throw new Error('File key contains forbidden characters');
+      throw new Error("File key contains forbidden characters");
     }
   }
 
@@ -59,7 +59,7 @@ export class FileUrl {
   static createS3Url(
     bucket: string,
     key: string,
-    region: string = 'eu-west-1',
+    region: string = "eu-west-1",
     contentType?: string,
     size?: number,
   ): FileUrl {
@@ -136,49 +136,49 @@ export class FileUrl {
 
   // Utility methods
   getFileName(): string {
-    return this.key.split('/').pop() || this.key;
+    return this.key.split("/").pop() || this.key;
   }
 
   getFileExtension(): string {
     const fileName = this.getFileName();
-    const lastDotIndex = fileName.lastIndexOf('.');
+    const lastDotIndex = fileName.lastIndexOf(".");
     return lastDotIndex > 0
       ? fileName.substring(lastDotIndex + 1).toLowerCase()
-      : '';
+      : "";
   }
 
   isImage(): boolean {
-    const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg'];
+    const imageExtensions = ["jpg", "jpeg", "png", "gif", "webp", "bmp", "svg"];
     const extension = this.getFileExtension();
     return (
       imageExtensions.includes(extension) ||
-      (this.contentType?.startsWith('image/') ?? false)
+      (this.contentType?.startsWith("image/") ?? false)
     );
   }
 
   isDocument(): boolean {
-    const documentExtensions = ['pdf', 'doc', 'docx', 'txt', 'rtf', 'odt'];
+    const documentExtensions = ["pdf", "doc", "docx", "txt", "rtf", "odt"];
     const extension = this.getFileExtension();
     return (
       documentExtensions.includes(extension) ||
-      (this.contentType?.includes('document') ?? false) ||
-      this.contentType === 'application/pdf'
+      (this.contentType?.includes("document") ?? false) ||
+      this.contentType === "application/pdf"
     );
   }
 
   // Validation methods
   validateImageConstraints(
     maxSizeMB: number = 5,
-    allowedExtensions: string[] = ['jpg', 'jpeg', 'png', 'webp'],
+    allowedExtensions: string[] = ["jpg", "jpeg", "png", "webp"],
   ): void {
     if (!this.isImage()) {
-      throw new Error('File is not a valid image');
+      throw new Error("File is not a valid image");
     }
 
     const extension = this.getFileExtension();
     if (!allowedExtensions.includes(extension)) {
       throw new Error(
-        `Image extension ${extension} is not allowed. Allowed: ${allowedExtensions.join(', ')}`,
+        `Image extension ${extension} is not allowed. Allowed: ${allowedExtensions.join(", ")}`,
       );
     }
 
@@ -191,7 +191,7 @@ export class FileUrl {
 
   // Security methods
   isSecure(): boolean {
-    return this.url.startsWith('https://');
+    return this.url.startsWith("https://");
   }
 
   isSameProvider(other: FileUrl): boolean {

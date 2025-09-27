@@ -8,24 +8,24 @@
 import {
   CreateUserUseCase,
   type CreateUserRequest,
-} from '@application/use-cases/users/create-user.use-case';
-import { User } from '@domain/entities/user.entity';
-import { Email } from '@domain/value-objects/email.vo';
-import { UserRole } from '@shared/enums/user-role.enum';
+} from "@application/use-cases/users/create-user.use-case";
+import { User } from "@domain/entities/user.entity";
+import { Email } from "@domain/value-objects/email.vo";
+import { UserRole } from "@shared/enums/user-role.enum";
 import {
   DuplicationError,
   ForbiddenError,
   UserNotFoundError,
   ValidationError,
-} from '../../../../../application/exceptions/auth.exceptions';
+} from "../../../../../application/exceptions/auth.exceptions";
 import {
   createMockI18nService,
   createMockLogger,
   createMockUserRepository,
-} from '../../../../../application/mocks/typed-mocks';
-import { IPermissionService } from '../../../../../application/ports/permission.service.interface';
+} from "../../../../../application/mocks/typed-mocks";
+import { IPermissionService } from "../../../../../application/ports/permission.service.interface";
 
-describe('CreateUserUseCase', () => {
+describe("CreateUserUseCase", () => {
   let createUserUseCase: CreateUserUseCase;
   let mockUserRepository: ReturnType<typeof createMockUserRepository>;
   let mockLogger: ReturnType<typeof createMockLogger>;
@@ -42,7 +42,7 @@ describe('CreateUserUseCase', () => {
   ): User => {
     const user = User.create(Email.create(email), name, role);
     // Override id for testing purposes
-    Object.defineProperty(user, 'id', { value: id, writable: false });
+    Object.defineProperty(user, "id", { value: id, writable: false });
     return user;
   };
 
@@ -59,7 +59,7 @@ describe('CreateUserUseCase', () => {
       canManageUser: jest.fn().mockResolvedValue(true),
       canAccessBusiness: jest.fn().mockResolvedValue(true),
       getUserPermissions: jest.fn().mockResolvedValue([]),
-      getUserRole: jest.fn().mockResolvedValue('PLATFORM_ADMIN'),
+      getUserRole: jest.fn().mockResolvedValue("PLATFORM_ADMIN"),
       hasRole: jest.fn().mockResolvedValue(true),
       hasBusinessPermission: jest.fn().mockResolvedValue(true),
       isSuperAdmin: jest.fn().mockResolvedValue(false),
@@ -78,13 +78,13 @@ describe('CreateUserUseCase', () => {
   // 🔒 TESTS DE PERMISSIONS - TDD
   // ═══════════════════════════════════════════════════════════════
 
-  describe('🚨 Permission Validation', () => {
-    it('should throw UserNotFoundError when requesting user does not exist', async () => {
+  describe("🚨 Permission Validation", () => {
+    it("should throw UserNotFoundError when requesting user does not exist", async () => {
       // Arrange
       const request: CreateUserRequest = {
-        requestingUserId: 'non-existent-user',
-        email: 'newuser@test.com',
-        name: 'New User',
+        requestingUserId: "non-existent-user",
+        email: "newuser@test.com",
+        name: "New User",
         role: UserRole.REGULAR_CLIENT,
       };
 
@@ -96,23 +96,23 @@ describe('CreateUserUseCase', () => {
       );
 
       expect(mockUserRepository.findById).toHaveBeenCalledWith(
-        'non-existent-user',
+        "non-existent-user",
       );
     });
 
-    it('should throw ForbiddenError when REGULAR_CLIENT tries to create users', async () => {
+    it("should throw ForbiddenError when REGULAR_CLIENT tries to create users", async () => {
       // Arrange
       const regularClient = createTestUser(
-        'client-1',
-        'client@test.com',
-        'Regular Client',
+        "client-1",
+        "client@test.com",
+        "Regular Client",
         UserRole.REGULAR_CLIENT,
       );
 
       const request: CreateUserRequest = {
-        requestingUserId: 'client-1',
-        email: 'newuser@test.com',
-        name: 'New User',
+        requestingUserId: "client-1",
+        email: "newuser@test.com",
+        name: "New User",
         role: UserRole.REGULAR_CLIENT,
       };
 
@@ -120,7 +120,7 @@ describe('CreateUserUseCase', () => {
 
       // Mock permission service pour refuser cette action
       mockPermissionService.requirePermission.mockRejectedValue(
-        new ForbiddenError('Insufficient permissions'),
+        new ForbiddenError("Insufficient permissions"),
       );
 
       // Act & Assert
@@ -129,19 +129,19 @@ describe('CreateUserUseCase', () => {
       );
     });
 
-    it('should throw ForbiddenError when PRACTITIONER tries to create users', async () => {
+    it("should throw ForbiddenError when PRACTITIONER tries to create users", async () => {
       // Arrange
       const practitioner = createTestUser(
-        'pract-1',
-        'practitioner@test.com',
-        'Practitioner',
+        "pract-1",
+        "practitioner@test.com",
+        "Practitioner",
         UserRole.PRACTITIONER,
       );
 
       const request: CreateUserRequest = {
-        requestingUserId: 'pract-1',
-        email: 'newuser@test.com',
-        name: 'New User',
+        requestingUserId: "pract-1",
+        email: "newuser@test.com",
+        name: "New User",
         role: UserRole.REGULAR_CLIENT,
       };
 
@@ -149,7 +149,7 @@ describe('CreateUserUseCase', () => {
 
       // Mock permission service pour refuser cette action
       mockPermissionService.requirePermission.mockRejectedValue(
-        new ForbiddenError('Insufficient permissions'),
+        new ForbiddenError("Insufficient permissions"),
       );
 
       // Act & Assert
@@ -163,27 +163,27 @@ describe('CreateUserUseCase', () => {
   // 👑 PLATFORM_ADMIN PERMISSIONS - TDD
   // ═══════════════════════════════════════════════════════════════
 
-  describe('👑 PLATFORM_ADMIN Permissions', () => {
-    it('should allow PLATFORM_ADMIN to create any user', async () => {
+  describe("👑 PLATFORM_ADMIN Permissions", () => {
+    it("should allow PLATFORM_ADMIN to create any user", async () => {
       // Arrange
       const platformAdmin = createTestUser(
-        'admin-1',
-        'admin@test.com',
-        'Platform Admin',
+        "admin-1",
+        "admin@test.com",
+        "Platform Admin",
         UserRole.PLATFORM_ADMIN,
       );
 
       const request: CreateUserRequest = {
-        requestingUserId: 'admin-1',
-        email: 'newowner@test.com',
-        name: 'New Business Owner',
+        requestingUserId: "admin-1",
+        email: "newowner@test.com",
+        name: "New Business Owner",
         role: UserRole.BUSINESS_OWNER,
       };
 
       const expectedNewUser = createTestUser(
-        'new-user-id',
-        'newowner@test.com',
-        'New Business Owner',
+        "new-user-id",
+        "newowner@test.com",
+        "New Business Owner",
         UserRole.BUSINESS_OWNER,
       );
 
@@ -195,32 +195,32 @@ describe('CreateUserUseCase', () => {
       const result = await createUserUseCase.execute(request);
 
       // Assert
-      expect(result.id).toBe('new-user-id');
-      expect(result.email).toBe('newowner@test.com');
+      expect(result.id).toBe("new-user-id");
+      expect(result.email).toBe("newowner@test.com");
       expect(result.role).toBe(UserRole.BUSINESS_OWNER);
       expect(mockUserRepository.save).toHaveBeenCalled();
     });
 
-    it('should allow PLATFORM_ADMIN to create other PLATFORM_ADMIN users', async () => {
+    it("should allow PLATFORM_ADMIN to create other PLATFORM_ADMIN users", async () => {
       // Arrange
       const platformAdmin = createTestUser(
-        'admin-1',
-        'admin@test.com',
-        'Platform Admin',
+        "admin-1",
+        "admin@test.com",
+        "Platform Admin",
         UserRole.PLATFORM_ADMIN,
       );
 
       const request: CreateUserRequest = {
-        requestingUserId: 'admin-1',
-        email: 'newadmin@test.com',
-        name: 'New Platform Admin',
+        requestingUserId: "admin-1",
+        email: "newadmin@test.com",
+        name: "New Platform Admin",
         role: UserRole.PLATFORM_ADMIN,
       };
 
       const expectedNewUser = createTestUser(
-        'new-admin-id',
-        'newadmin@test.com',
-        'New Platform Admin',
+        "new-admin-id",
+        "newadmin@test.com",
+        "New Platform Admin",
         UserRole.PLATFORM_ADMIN,
       );
 
@@ -240,29 +240,29 @@ describe('CreateUserUseCase', () => {
   // 🏢 BUSINESS_OWNER PERMISSIONS - TDD
   // ═══════════════════════════════════════════════════════════════
 
-  describe('🏢 BUSINESS_OWNER Permissions', () => {
-    it('should allow BUSINESS_OWNER to create business-level users', async () => {
+  describe("🏢 BUSINESS_OWNER Permissions", () => {
+    it("should allow BUSINESS_OWNER to create business-level users", async () => {
       // Arrange
       const businessOwner = createTestUser(
-        'owner-1',
-        'owner@test.com',
-        'Business Owner',
+        "owner-1",
+        "owner@test.com",
+        "Business Owner",
         UserRole.BUSINESS_OWNER,
-        'business-1',
+        "business-1",
       );
 
       const request: CreateUserRequest = {
-        requestingUserId: 'owner-1',
-        email: 'newadmin@business.com',
-        name: 'New Business Admin',
+        requestingUserId: "owner-1",
+        email: "newadmin@business.com",
+        name: "New Business Admin",
         role: UserRole.BUSINESS_ADMIN,
-        businessId: 'business-1',
+        businessId: "business-1",
       };
 
       const expectedNewUser = createTestUser(
-        'new-admin-id',
-        'newadmin@business.com',
-        'New Business Admin',
+        "new-admin-id",
+        "newadmin@business.com",
+        "New Business Admin",
         UserRole.BUSINESS_ADMIN,
       );
 
@@ -277,26 +277,26 @@ describe('CreateUserUseCase', () => {
       expect(result.role).toBe(UserRole.BUSINESS_ADMIN);
       expect(mockUserRepository.save).toHaveBeenCalledWith(
         expect.objectContaining({
-          email: expect.objectContaining({ value: 'newadmin@business.com' }),
-          name: 'New Business Admin',
+          email: expect.objectContaining({ value: "newadmin@business.com" }),
+          name: "New Business Admin",
           role: UserRole.BUSINESS_ADMIN,
         }),
       );
     });
 
-    it('should prevent BUSINESS_OWNER from creating PLATFORM_ADMIN', async () => {
+    it("should prevent BUSINESS_OWNER from creating PLATFORM_ADMIN", async () => {
       // Arrange
       const businessOwner = createTestUser(
-        'owner-1',
-        'owner@test.com',
-        'Business Owner',
+        "owner-1",
+        "owner@test.com",
+        "Business Owner",
         UserRole.BUSINESS_OWNER,
       );
 
       const request: CreateUserRequest = {
-        requestingUserId: 'owner-1',
-        email: 'newadmin@test.com',
-        name: 'New Admin',
+        requestingUserId: "owner-1",
+        email: "newadmin@test.com",
+        name: "New Admin",
         role: UserRole.PLATFORM_ADMIN, // Forbidden!
       };
 
@@ -305,7 +305,7 @@ describe('CreateUserUseCase', () => {
       // Mock permission service pour refuser cette action (canActOnRole)
       mockPermissionService.requirePermission.mockResolvedValue(undefined);
       mockPermissionService.canActOnRole.mockRejectedValue(
-        new ForbiddenError('Cannot create this role'),
+        new ForbiddenError("Cannot create this role"),
       );
 
       // Act & Assert
@@ -314,19 +314,19 @@ describe('CreateUserUseCase', () => {
       );
     });
 
-    it('should prevent BUSINESS_OWNER from creating other BUSINESS_OWNER', async () => {
+    it("should prevent BUSINESS_OWNER from creating other BUSINESS_OWNER", async () => {
       // Arrange
       const businessOwner = createTestUser(
-        'owner-1',
-        'owner@test.com',
-        'Business Owner',
+        "owner-1",
+        "owner@test.com",
+        "Business Owner",
         UserRole.BUSINESS_OWNER,
       );
 
       const request: CreateUserRequest = {
-        requestingUserId: 'owner-1',
-        email: 'newowner@test.com',
-        name: 'New Business Owner',
+        requestingUserId: "owner-1",
+        email: "newowner@test.com",
+        name: "New Business Owner",
         role: UserRole.BUSINESS_OWNER, // Forbidden!
       };
 
@@ -335,7 +335,7 @@ describe('CreateUserUseCase', () => {
       // Mock permission service pour refuser cette action (canActOnRole)
       mockPermissionService.requirePermission.mockResolvedValue(undefined);
       mockPermissionService.canActOnRole.mockRejectedValue(
-        new ForbiddenError('Cannot create this role'),
+        new ForbiddenError("Cannot create this role"),
       );
 
       // Act & Assert
@@ -349,29 +349,29 @@ describe('CreateUserUseCase', () => {
   // 🏪 BUSINESS_ADMIN PERMISSIONS - TDD
   // ═══════════════════════════════════════════════════════════════
 
-  describe('🏪 BUSINESS_ADMIN Permissions', () => {
-    it('should allow BUSINESS_ADMIN to create location-level users', async () => {
+  describe("🏪 BUSINESS_ADMIN Permissions", () => {
+    it("should allow BUSINESS_ADMIN to create location-level users", async () => {
       // Arrange
       const businessAdmin = createTestUser(
-        'badmin-1',
-        'badmin@test.com',
-        'Business Admin',
+        "badmin-1",
+        "badmin@test.com",
+        "Business Admin",
         UserRole.BUSINESS_ADMIN,
       );
 
       const request: CreateUserRequest = {
-        requestingUserId: 'badmin-1',
-        email: 'newmanager@test.com',
-        name: 'New Location Manager',
+        requestingUserId: "badmin-1",
+        email: "newmanager@test.com",
+        name: "New Location Manager",
         role: UserRole.LOCATION_MANAGER,
-        businessId: 'business-1',
-        locationId: 'location-1',
+        businessId: "business-1",
+        locationId: "location-1",
       };
 
       const expectedNewUser = createTestUser(
-        'new-manager-id',
-        'newmanager@test.com',
-        'New Location Manager',
+        "new-manager-id",
+        "newmanager@test.com",
+        "New Location Manager",
         UserRole.LOCATION_MANAGER,
       );
 
@@ -386,19 +386,19 @@ describe('CreateUserUseCase', () => {
       expect(result.role).toBe(UserRole.LOCATION_MANAGER);
     });
 
-    it('should prevent BUSINESS_ADMIN from creating management roles', async () => {
+    it("should prevent BUSINESS_ADMIN from creating management roles", async () => {
       // Arrange
       const businessAdmin = createTestUser(
-        'badmin-1',
-        'badmin@test.com',
-        'Business Admin',
+        "badmin-1",
+        "badmin@test.com",
+        "Business Admin",
         UserRole.BUSINESS_ADMIN,
       );
 
       const request: CreateUserRequest = {
-        requestingUserId: 'badmin-1',
-        email: 'newowner@test.com',
-        name: 'New Business Owner',
+        requestingUserId: "badmin-1",
+        email: "newowner@test.com",
+        name: "New Business Owner",
         role: UserRole.BUSINESS_OWNER, // Forbidden!
       };
 
@@ -407,7 +407,7 @@ describe('CreateUserUseCase', () => {
       // Mock permission service pour refuser cette action (canActOnRole)
       mockPermissionService.requirePermission.mockResolvedValue(undefined);
       mockPermissionService.canActOnRole.mockRejectedValue(
-        new ForbiddenError('Cannot create this role'),
+        new ForbiddenError("Cannot create this role"),
       );
 
       // Act & Assert
@@ -421,20 +421,20 @@ describe('CreateUserUseCase', () => {
   // ✅ VALIDATION TESTS - TDD
   // ═══════════════════════════════════════════════════════════════
 
-  describe('✅ Data Validation', () => {
-    it('should throw ValidationError for invalid email', async () => {
+  describe("✅ Data Validation", () => {
+    it("should throw ValidationError for invalid email", async () => {
       // Arrange
       const platformAdmin = createTestUser(
-        'admin-1',
-        'admin@test.com',
-        'Platform Admin',
+        "admin-1",
+        "admin@test.com",
+        "Platform Admin",
         UserRole.PLATFORM_ADMIN,
       );
 
       const request: CreateUserRequest = {
-        requestingUserId: 'admin-1',
-        email: 'invalid-email', // Invalid!
-        name: 'New User',
+        requestingUserId: "admin-1",
+        email: "invalid-email", // Invalid!
+        name: "New User",
         role: UserRole.REGULAR_CLIENT,
       };
 
@@ -446,19 +446,19 @@ describe('CreateUserUseCase', () => {
       );
     });
 
-    it('should throw ValidationError for empty name', async () => {
+    it("should throw ValidationError for empty name", async () => {
       // Arrange
       const platformAdmin = createTestUser(
-        'admin-1',
-        'admin@test.com',
-        'Platform Admin',
+        "admin-1",
+        "admin@test.com",
+        "Platform Admin",
         UserRole.PLATFORM_ADMIN,
       );
 
       const request: CreateUserRequest = {
-        requestingUserId: 'admin-1',
-        email: 'valid@test.com',
-        name: '', // Empty!
+        requestingUserId: "admin-1",
+        email: "valid@test.com",
+        name: "", // Empty!
         role: UserRole.REGULAR_CLIENT,
       };
 
@@ -470,19 +470,19 @@ describe('CreateUserUseCase', () => {
       );
     });
 
-    it('should throw DuplicationError when email already exists', async () => {
+    it("should throw DuplicationError when email already exists", async () => {
       // Arrange
       const platformAdmin = createTestUser(
-        'admin-1',
-        'admin@test.com',
-        'Platform Admin',
+        "admin-1",
+        "admin@test.com",
+        "Platform Admin",
         UserRole.PLATFORM_ADMIN,
       );
 
       const request: CreateUserRequest = {
-        requestingUserId: 'admin-1',
-        email: 'existing@test.com',
-        name: 'New User',
+        requestingUserId: "admin-1",
+        email: "existing@test.com",
+        name: "New User",
         role: UserRole.REGULAR_CLIENT,
       };
 
@@ -500,27 +500,27 @@ describe('CreateUserUseCase', () => {
   // 📊 LOGGING & AUDIT - TDD
   // ═══════════════════════════════════════════════════════════════
 
-  describe('📊 Logging', () => {
-    it('should log successful user creation', async () => {
+  describe("📊 Logging", () => {
+    it("should log successful user creation", async () => {
       // Arrange
       const platformAdmin = createTestUser(
-        'admin-1',
-        'admin@test.com',
-        'Platform Admin',
+        "admin-1",
+        "admin@test.com",
+        "Platform Admin",
         UserRole.PLATFORM_ADMIN,
       );
 
       const request: CreateUserRequest = {
-        requestingUserId: 'admin-1',
-        email: 'newuser@test.com',
-        name: 'New User',
+        requestingUserId: "admin-1",
+        email: "newuser@test.com",
+        name: "New User",
         role: UserRole.REGULAR_CLIENT,
       };
 
       const expectedNewUser = createTestUser(
-        'new-user-id',
-        'newuser@test.com',
-        'New User',
+        "new-user-id",
+        "newuser@test.com",
+        "New User",
         UserRole.REGULAR_CLIENT,
       );
 
@@ -533,35 +533,35 @@ describe('CreateUserUseCase', () => {
 
       // Assert
       expect(mockLogger.info).toHaveBeenCalledWith(
-        'create_attempt',
+        "create_attempt",
         expect.any(Object),
       );
       expect(mockLogger.info).toHaveBeenCalledWith(
-        'create_success',
+        "create_success",
         expect.objectContaining({
-          createdUserId: 'new-user-id',
+          createdUserId: "new-user-id",
           createdUserRole: UserRole.REGULAR_CLIENT,
         }),
       );
     });
 
-    it('should log errors', async () => {
+    it("should log errors", async () => {
       // Arrange
       const platformAdmin = createTestUser(
-        'admin-1',
-        'admin@test.com',
-        'Platform Admin',
+        "admin-1",
+        "admin@test.com",
+        "Platform Admin",
         UserRole.PLATFORM_ADMIN,
       );
 
       const request: CreateUserRequest = {
-        requestingUserId: 'admin-1',
-        email: 'newuser@test.com',
-        name: 'New User',
+        requestingUserId: "admin-1",
+        email: "newuser@test.com",
+        name: "New User",
         role: UserRole.REGULAR_CLIENT,
       };
 
-      const error = new Error('Database connection failed');
+      const error = new Error("Database connection failed");
 
       mockUserRepository.findById.mockResolvedValue(platformAdmin);
       mockUserRepository.emailExists.mockResolvedValue(false);
@@ -571,7 +571,7 @@ describe('CreateUserUseCase', () => {
       await expect(createUserUseCase.execute(request)).rejects.toThrow(error);
 
       expect(mockLogger.error).toHaveBeenCalledWith(
-        'create_failed',
+        "create_failed",
         error,
         expect.any(Object),
       );

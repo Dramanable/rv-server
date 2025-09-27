@@ -9,7 +9,7 @@ export class InvalidServiceDataError extends Error {
 
   constructor(field: string, message: string) {
     super(message);
-    this.name = 'InvalidServiceDataError';
+    this.name = "InvalidServiceDataError";
     this.field = field;
   }
 }
@@ -19,7 +19,7 @@ export class ServiceNotFoundError extends Error {
 
   constructor(serviceId: string) {
     super(`Service with ID '${serviceId}' not found`);
-    this.name = 'ServiceNotFoundError';
+    this.name = "ServiceNotFoundError";
     this.serviceId = serviceId;
   }
 }
@@ -32,7 +32,7 @@ export class ServiceAlreadyExistsError extends Error {
     super(
       `Service '${serviceName}' already exists in business '${businessId}'`,
     );
-    this.name = 'ServiceAlreadyExistsError';
+    this.name = "ServiceAlreadyExistsError";
     this.serviceName = serviceName;
     this.businessId = businessId;
   }
@@ -43,7 +43,7 @@ export class ServiceInactiveError extends Error {
 
   constructor(serviceId: string) {
     super(`Service with ID '${serviceId}' is inactive`);
-    this.name = 'ServiceInactiveError';
+    this.name = "ServiceInactiveError";
     this.serviceId = serviceId;
   }
 }
@@ -57,7 +57,7 @@ export class InvalidPricingError extends Error {
       ? `Invalid pricing ${amount} ${currency}: ${reason}`
       : `Invalid pricing: ${amount} ${currency}`;
     super(message);
-    this.name = 'InvalidPricingError';
+    this.name = "InvalidPricingError";
     this.amount = amount;
     this.currency = currency;
   }
@@ -72,7 +72,7 @@ export class ServiceUnavailableError extends Error {
       ? `Service '${serviceId}' unavailable on ${requestedDate.toISOString()}: ${reason}`
       : `Service '${serviceId}' unavailable on ${requestedDate.toISOString()}`;
     super(message);
-    this.name = 'ServiceUnavailableError';
+    this.name = "ServiceUnavailableError";
     this.serviceId = serviceId;
     this.requestedDate = requestedDate;
   }

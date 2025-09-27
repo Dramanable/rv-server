@@ -13,16 +13,16 @@
  */
 
 import {
-  Injectable,
   CanActivate,
   ExecutionContext,
-  UnauthorizedException,
   ForbiddenException,
+  Injectable,
   Logger,
-} from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
-import { ROLES_KEY } from '../decorators/roles.decorator';
-import { UserRole } from '../../../shared/enums/user-role.enum';
+  UnauthorizedException,
+} from "@nestjs/common";
+import { Reflector } from "@nestjs/core";
+import { UserRole } from "../../../shared/enums/user-role.enum";
+import { ROLES_KEY } from "../decorators/roles.decorator";
 
 /**
  * Interface pour utilisateur authentifié avec contexte métier
@@ -69,14 +69,14 @@ export class RoleBasedGuard implements CanActivate {
 
     // 2️⃣ Si aucun rôle spécifié, autoriser l'accès (endpoint public)
     if (!requiredRoles || requiredRoles.length === 0) {
-      this.logger.debug('No roles required - public endpoint');
+      this.logger.debug("No roles required - public endpoint");
       return true;
     }
 
     // 3️⃣ Vérifier que l'utilisateur est authentifié
     if (!request.user) {
-      this.logger.warn('Access denied: User not authenticated');
-      throw new UnauthorizedException('Authentication required');
+      this.logger.warn("Access denied: User not authenticated");
+      throw new UnauthorizedException("Authentication required");
     }
 
     const user = request.user;
@@ -84,12 +84,12 @@ export class RoleBasedGuard implements CanActivate {
     // 4️⃣ Vérifier que l'utilisateur est actif et vérifié
     if (!user.isActive) {
       this.logger.warn(`Access denied: User ${user.id} is not active`);
-      throw new ForbiddenException('User account is not active');
+      throw new ForbiddenException("User account is not active");
     }
 
     if (!user.isVerified) {
       this.logger.warn(`Access denied: User ${user.id} is not verified`);
-      throw new ForbiddenException('User account is not verified');
+      throw new ForbiddenException("User account is not verified");
     }
 
     // 5️⃣ Vérifier le contexte multi-tenant
@@ -102,7 +102,7 @@ export class RoleBasedGuard implements CanActivate {
             `trying to access business ${requestedBusinessId}`,
         );
         throw new ForbiddenException(
-          'Access denied: insufficient permissions for this business context',
+          "Access denied: insufficient permissions for this business context",
         );
       }
     }
@@ -111,10 +111,10 @@ export class RoleBasedGuard implements CanActivate {
     if (!this.hasRequiredRole(user.role, requiredRoles)) {
       this.logger.warn(
         `Access denied: User ${user.id} with role ${user.role} ` +
-          `does not have required roles: ${requiredRoles.join(', ')}`,
+          `does not have required roles: ${requiredRoles.join(", ")}`,
       );
       throw new ForbiddenException(
-        `Insufficient role permissions. Required roles: ${requiredRoles.join(', ')}`,
+        `Insufficient role permissions. Required roles: ${requiredRoles.join(", ")}`,
       );
     }
 

@@ -5,14 +5,14 @@
  * ✅ Dependency Inversion Principle respecté
  * ✅ Interface-driven design
  */
-import type { IPermissionService } from '@application/ports/permission.service.interface';
-import type { I18nService } from '../../../application/ports/i18n.port';
-import type { Logger } from '../../../application/ports/logger.port';
-import type { BusinessRepository } from '../../../domain/repositories/business.repository.interface';
+import type { IPermissionService } from "@application/ports/permission.service.interface";
+import type { I18nService } from "../../../application/ports/i18n.port";
+import type { Logger } from "../../../application/ports/logger.port";
+import type { BusinessRepository } from "../../../domain/repositories/business.repository.interface";
 import {
   AppContext,
   AppContextFactory,
-} from '../../../shared/context/app-context';
+} from "../../../shared/context/app-context";
 
 export interface ListBusinessRequest {
   readonly requestingUserId: string;
@@ -23,9 +23,9 @@ export interface ListBusinessRequest {
   readonly sector?: string;
   readonly city?: string;
   readonly isActive?: boolean;
-  readonly status?: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
-  readonly sortBy?: 'name' | 'createdAt' | 'updatedAt';
-  readonly sortOrder?: 'ASC' | 'DESC';
+  readonly status?: "ACTIVE" | "INACTIVE" | "SUSPENDED";
+  readonly sortBy?: "name" | "createdAt" | "updatedAt";
+  readonly sortOrder?: "ASC" | "DESC";
 }
 
 export interface ListBusinessResponse {
@@ -66,12 +66,12 @@ export class ListBusinessUseCase {
   async execute(request: ListBusinessRequest): Promise<ListBusinessResponse> {
     // 1. Context pour traçabilité
     const context: AppContext = AppContextFactory.create()
-      .operation('ListBusiness')
+      .operation("ListBusiness")
       .requestingUser(request.requestingUserId)
       .build();
 
     this.logger.info(
-      this.i18n.t('operations.business.list_attempt'),
+      this.i18n.t("operations.business.list_attempt"),
       context as any,
     );
     try {
@@ -127,7 +127,7 @@ export class ListBusinessUseCase {
         },
       };
 
-      this.logger.info(this.i18n.t('operations.business.list_success'), {
+      this.logger.info(this.i18n.t("operations.business.list_success"), {
         ...context,
         totalBusinesses: total,
         page,
@@ -137,7 +137,7 @@ export class ListBusinessUseCase {
       return response;
     } catch (error) {
       this.logger.error(
-        this.i18n.t('operations.business.list_failed'),
+        this.i18n.t("operations.business.list_failed"),
         error as Error,
         context as unknown as Record<string, unknown>,
       );
@@ -152,7 +152,7 @@ export class ListBusinessUseCase {
     requestingUserId: string,
     context: AppContext,
   ): Promise<void> {
-    this.logger.info('Validating LIST_BUSINESSES permission', {
+    this.logger.info("Validating LIST_BUSINESSES permission", {
       requestingUserId,
       correlationId: context.correlationId,
     });
@@ -160,18 +160,18 @@ export class ListBusinessUseCase {
     try {
       await this.permissionService.requirePermission(
         requestingUserId,
-        'LIST_BUSINESSES',
+        "LIST_BUSINESSES",
         {
           correlationId: context.correlationId,
         },
       );
 
-      this.logger.info('LIST_BUSINESSES permission validated successfully', {
+      this.logger.info("LIST_BUSINESSES permission validated successfully", {
         requestingUserId,
         correlationId: context.correlationId,
       });
     } catch (error) {
-      this.logger.error('LIST_BUSINESSES permission denied', error as Error, {
+      this.logger.error("LIST_BUSINESSES permission denied", error as Error, {
         requestingUserId,
         correlationId: context.correlationId,
       });
@@ -185,28 +185,28 @@ export class ListBusinessUseCase {
   private validateBusinessRules(request: ListBusinessRequest): void {
     // Validation de la pagination
     if (request.page !== undefined && request.page < 1) {
-      throw new Error('Page number must be greater than 0');
+      throw new Error("Page number must be greater than 0");
     }
 
     if (
       request.limit !== undefined &&
       (request.limit < 1 || request.limit > 100)
     ) {
-      throw new Error('Limit must be between 1 and 100');
+      throw new Error("Limit must be between 1 and 100");
     }
 
     // Validation du tri
-    const validSortFields = ['name', 'createdAt', 'updatedAt'];
+    const validSortFields = ["name", "createdAt", "updatedAt"];
     if (request.sortBy && !validSortFields.includes(request.sortBy)) {
       throw new Error(
-        `Invalid sort field. Must be one of: ${validSortFields.join(', ')}`,
+        `Invalid sort field. Must be one of: ${validSortFields.join(", ")}`,
       );
     }
 
-    const validSortOrders = ['ASC', 'DESC'];
+    const validSortOrders = ["ASC", "DESC"];
     if (request.sortOrder && !validSortOrders.includes(request.sortOrder)) {
       throw new Error(
-        `Invalid sort order. Must be one of: ${validSortOrders.join(', ')}`,
+        `Invalid sort order. Must be one of: ${validSortOrders.join(", ")}`,
       );
     }
   }

@@ -3,7 +3,7 @@ import type {
   AuditOperation,
   AuditQuery,
   IAuditService,
-} from '@application/ports/audit.port';
+} from "@application/ports/audit.port";
 
 /**
  * 🚀 Mock Audit Service pour développement
@@ -13,7 +13,7 @@ import type {
 export class MockAuditService implements IAuditService {
   async logOperation(operation: AuditOperation): Promise<void> {
     // Pour le développement, on fait juste un console.log
-    console.log('🔍 AUDIT LOG:', {
+    console.log("🔍 AUDIT LOG:", {
       operation: operation.operation,
       entityType: operation.entityType,
       entityId: operation.entityId,
@@ -30,7 +30,7 @@ export class MockAuditService implements IAuditService {
     total: number;
     hasMore: boolean;
   }> {
-    console.log('🔍 Mock findAuditEntries called with:', query);
+    console.log("🔍 Mock findAuditEntries called with:", query);
     return {
       entries: [],
       total: 0,
@@ -42,7 +42,7 @@ export class MockAuditService implements IAuditService {
     entityType: string,
     entityId: string,
   ): Promise<AuditEntry[]> {
-    console.log('🔍 Mock getEntityHistory called for:', {
+    console.log("🔍 Mock getEntityHistory called for:", {
       entityType,
       entityId,
     });
@@ -58,7 +58,7 @@ export class MockAuditService implements IAuditService {
       limit?: number;
     },
   ): Promise<AuditEntry[]> {
-    console.log('🔍 Mock getUserActions called for:', { userId, options });
+    console.log("🔍 Mock getUserActions called for:", { userId, options });
     return [];
   }
 
@@ -75,7 +75,7 @@ export class MockAuditService implements IAuditService {
       affectedRecords: string[];
     }>;
   }> {
-    console.log('🔍 Mock verifyIntegrity called with:', options);
+    console.log("🔍 Mock verifyIntegrity called with:", options);
     return {
       isValid: true,
       inconsistencies: [],
@@ -86,7 +86,7 @@ export class MockAuditService implements IAuditService {
     archivedCount: number;
     remainingCount: number;
   }> {
-    console.log('🔍 Mock archiveOldEntries called for date:', olderThan);
+    console.log("🔍 Mock archiveOldEntries called for date:", olderThan);
     return {
       archivedCount: 0,
       remainingCount: 0,
@@ -95,14 +95,14 @@ export class MockAuditService implements IAuditService {
 
   async exportAuditData(query: AuditQuery): Promise<{
     data: AuditEntry[];
-    format: 'json' | 'csv';
+    format: "json" | "csv";
     checksum: string;
   }> {
-    console.log('🔍 Mock exportAuditData called with:', query);
+    console.log("🔍 Mock exportAuditData called with:", query);
     return {
       data: [],
-      format: 'json',
-      checksum: 'mock-checksum',
+      format: "json",
+      checksum: "mock-checksum",
     };
   }
 }

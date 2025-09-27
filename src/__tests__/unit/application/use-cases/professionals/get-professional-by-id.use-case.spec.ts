@@ -4,43 +4,43 @@
  * @description Tests unitaires RED-GREEN-REFACTOR pour GetProfessionalByIdUseCase
  */
 
-import { I18nService } from '@application/ports/i18n.port';
-import { Logger } from '@application/ports/logger.port';
+import { I18nService } from "@application/ports/i18n.port";
+import { Logger } from "@application/ports/logger.port";
 import {
   Professional,
   ProfessionalStatus,
-} from '@domain/entities/professional.entity';
-import { ProfessionalNotFoundError } from '@domain/exceptions/professional.exceptions';
-import { IProfessionalRepository } from '@domain/repositories/professional.repository';
-import { BusinessId } from '@domain/value-objects/business-id.value-object';
-import { Email } from '@domain/value-objects/email.value-object';
-import { ProfessionalId } from '@domain/value-objects/professional-id.value-object';
+} from "@domain/entities/professional.entity";
+import { ProfessionalNotFoundError } from "@domain/exceptions/professional.exceptions";
+import { IProfessionalRepository } from "@domain/repositories/professional.repository";
+import { BusinessId } from "@domain/value-objects/business-id.value-object";
+import { Email } from "@domain/value-objects/email.value-object";
+import { ProfessionalId } from "@domain/value-objects/professional-id.value-object";
 import {
   GetProfessionalByIdRequest,
   GetProfessionalByIdUseCase,
-} from '@application/use-cases/professionals/get-professional-by-id.use-case';
+} from "@application/use-cases/professionals/get-professional-by-id.use-case";
 
-describe('GetProfessionalByIdUseCase - TDD', () => {
+describe("GetProfessionalByIdUseCase - TDD", () => {
   // ✅ Test Data Factory
   const createValidRequest = () => ({
     professionalId: ProfessionalId.generate().getValue(),
-    requestingUserId: 'admin-user-id',
-    correlationId: 'test-correlation-123',
+    requestingUserId: "admin-user-id",
+    correlationId: "test-correlation-123",
     timestamp: new Date(),
   });
 
   const createProfessionalEntity = () => {
     return Professional.create({
       businessId: BusinessId.generate(),
-      email: Email.create('marie.martin@clinic.com'),
-      firstName: 'Dr. Marie',
-      lastName: 'Martin',
-      speciality: 'Cardiologie',
-      licenseNumber: 'ORDRE-789012',
-      phoneNumber: '+33187654321',
-      bio: 'Cardiologue expérimentée avec 15 ans de pratique',
+      email: Email.create("marie.martin@clinic.com"),
+      firstName: "Dr. Marie",
+      lastName: "Martin",
+      speciality: "Cardiologie",
+      licenseNumber: "ORDRE-789012",
+      phoneNumber: "+33187654321",
+      bio: "Cardiologue expérimentée avec 15 ans de pratique",
       experience: 15,
-      createdBy: 'admin-user-id',
+      createdBy: "admin-user-id",
     });
   };
 
@@ -73,8 +73,8 @@ describe('GetProfessionalByIdUseCase - TDD', () => {
     } as any;
 
     mockI18n = {
-      translate: jest.fn().mockReturnValue('Translated message'),
-      t: jest.fn().mockReturnValue('Translated message'),
+      translate: jest.fn().mockReturnValue("Translated message"),
+      t: jest.fn().mockReturnValue("Translated message"),
       setDefaultLanguage: jest.fn(),
       exists: jest.fn().mockReturnValue(true),
     };
@@ -86,8 +86,8 @@ describe('GetProfessionalByIdUseCase - TDD', () => {
     );
   });
 
-  describe('🔴 RED - Professional Retrieval Success', () => {
-    it('should retrieve professional by valid ID', async () => {
+  describe("🔴 RED - Professional Retrieval Success", () => {
+    it("should retrieve professional by valid ID", async () => {
       // Given
       const request = createValidRequest();
       const expectedProfessional = createProfessionalEntity();
@@ -120,7 +120,7 @@ describe('GetProfessionalByIdUseCase - TDD', () => {
 
       // Verify logging
       expect(mockLogger.info).toHaveBeenCalledWith(
-        'Professional retrieved successfully',
+        "Professional retrieved successfully",
         expect.objectContaining({
           professionalId: request.professionalId,
           correlationId: request.correlationId,
@@ -130,7 +130,7 @@ describe('GetProfessionalByIdUseCase - TDD', () => {
       );
     });
 
-    it('should log retrieval operation with context', async () => {
+    it("should log retrieval operation with context", async () => {
       // Given
       const request = createValidRequest();
       const professional = createProfessionalEntity();
@@ -142,7 +142,7 @@ describe('GetProfessionalByIdUseCase - TDD', () => {
 
       // Then
       expect(mockLogger.info).toHaveBeenCalledWith(
-        'Retrieving professional by ID',
+        "Retrieving professional by ID",
         expect.objectContaining({
           professionalId: request.professionalId,
           requestingUserId: request.requestingUserId,
@@ -151,7 +151,7 @@ describe('GetProfessionalByIdUseCase - TDD', () => {
       );
 
       expect(mockLogger.info).toHaveBeenCalledWith(
-        'Professional retrieved successfully',
+        "Professional retrieved successfully",
         expect.objectContaining({
           professionalId: request.professionalId,
           businessId: professional.getBusinessId().getValue(),
@@ -160,8 +160,8 @@ describe('GetProfessionalByIdUseCase - TDD', () => {
     });
   });
 
-  describe('🔴 RED - Professional Not Found', () => {
-    it('should throw error when professional does not exist', async () => {
+  describe("🔴 RED - Professional Not Found", () => {
+    it("should throw error when professional does not exist", async () => {
       // Given
       const request = createValidRequest();
 
@@ -178,7 +178,7 @@ describe('GetProfessionalByIdUseCase - TDD', () => {
 
       // Verify error logging
       expect(mockLogger.error).toHaveBeenCalledWith(
-        'Professional not found',
+        "Professional not found",
         expect.any(Error),
         expect.objectContaining({
           professionalId: request.professionalId,
@@ -187,31 +187,31 @@ describe('GetProfessionalByIdUseCase - TDD', () => {
       );
     });
 
-    it('should use i18n for error messages', async () => {
+    it("should use i18n for error messages", async () => {
       // Given
       const request = createValidRequest();
 
       mockProfessionalRepository.findById.mockResolvedValue(null);
-      mockI18n.translate.mockReturnValue('Professional not found');
+      mockI18n.translate.mockReturnValue("Professional not found");
 
       // When/Then
       await expect(useCase.execute(request)).rejects.toThrow(
-        'Professional not found',
+        "Professional not found",
       );
 
       expect(mockI18n.translate).toHaveBeenCalledWith(
-        'professional.errors.notFound',
+        "professional.errors.notFound",
         { professionalId: request.professionalId },
       );
     });
   });
 
-  describe('🔴 RED - Input Validation', () => {
-    it('should throw error for invalid professional ID format', async () => {
+  describe("🔴 RED - Input Validation", () => {
+    it("should throw error for invalid professional ID format", async () => {
       // Given
       const request = {
         ...createValidRequest(),
-        professionalId: 'invalid-uuid-format',
+        professionalId: "invalid-uuid-format",
       };
 
       // When/Then
@@ -220,11 +220,11 @@ describe('GetProfessionalByIdUseCase - TDD', () => {
       expect(mockProfessionalRepository.findById).not.toHaveBeenCalled();
     });
 
-    it('should throw error for empty professional ID', async () => {
+    it("should throw error for empty professional ID", async () => {
       // Given
       const request = {
         ...createValidRequest(),
-        professionalId: '',
+        professionalId: "",
       };
 
       // When/Then
@@ -234,23 +234,23 @@ describe('GetProfessionalByIdUseCase - TDD', () => {
     });
   });
 
-  describe('🔴 RED - Repository Error Handling', () => {
-    it('should handle repository errors gracefully', async () => {
+  describe("🔴 RED - Repository Error Handling", () => {
+    it("should handle repository errors gracefully", async () => {
       // Given
       const request = createValidRequest();
 
       mockProfessionalRepository.findById.mockRejectedValue(
-        new Error('Database connection failed'),
+        new Error("Database connection failed"),
       );
 
       // When/Then
       await expect(useCase.execute(request)).rejects.toThrow(
-        'Database connection failed',
+        "Database connection failed",
       );
 
       // Verify error logging
       expect(mockLogger.error).toHaveBeenCalledWith(
-        'Failed to retrieve professional',
+        "Failed to retrieve professional",
         expect.any(Error),
         expect.objectContaining({
           professionalId: request.professionalId,
@@ -259,7 +259,7 @@ describe('GetProfessionalByIdUseCase - TDD', () => {
       );
     });
 
-    it('should handle unexpected repository responses', async () => {
+    it("should handle unexpected repository responses", async () => {
       // Given
       const request = createValidRequest();
 
@@ -273,8 +273,8 @@ describe('GetProfessionalByIdUseCase - TDD', () => {
     });
   });
 
-  describe('🔴 RED - Response Mapping', () => {
-    it('should return complete professional response', async () => {
+  describe("🔴 RED - Response Mapping", () => {
+    it("should return complete professional response", async () => {
       // Given
       const request = createValidRequest();
       const professional = createProfessionalEntity();
@@ -312,19 +312,19 @@ describe('GetProfessionalByIdUseCase - TDD', () => {
       });
     });
 
-    it('should handle professionals with minimal data', async () => {
+    it("should handle professionals with minimal data", async () => {
       // Given
       const request = createValidRequest();
       const minimalProfessional = Professional.create({
         businessId: BusinessId.fromString(
-          'bbbbbbbb-cccc-4ddd-8eee-ffffffffffff',
+          "bbbbbbbb-cccc-4ddd-8eee-ffffffffffff",
         ),
-        email: Email.create('minimal@clinic.com'),
-        firstName: 'Dr. Min',
-        lastName: 'Mal',
-        speciality: 'General',
-        licenseNumber: 'LICENSE-123',
-        createdBy: 'admin',
+        email: Email.create("minimal@clinic.com"),
+        firstName: "Dr. Min",
+        lastName: "Mal",
+        speciality: "General",
+        licenseNumber: "LICENSE-123",
+        createdBy: "admin",
       });
 
       mockProfessionalRepository.findById.mockResolvedValue(
@@ -346,31 +346,31 @@ describe('GetProfessionalByIdUseCase - TDD', () => {
 // ✅ OBLIGATOIRE - Helper functions pour tests cohérents
 function createValidRequest(): GetProfessionalByIdRequest {
   return {
-    professionalId: 'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee',
-    requestingUserId: 'admin-user-id',
-    correlationId: 'test-correlation-123',
+    professionalId: "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee",
+    requestingUserId: "admin-user-id",
+    correlationId: "test-correlation-123",
     timestamp: new Date(),
   };
 }
 
 function createProfessionalEntity(): Professional {
   return Professional.reconstruct({
-    id: ProfessionalId.fromString('aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee'), // ✅ CRITIQUE : Même ID que la requête
-    businessId: BusinessId.fromString('bbbbbbbb-cccc-4ddd-8eee-ffffffffffff'), // ✅ Utiliser un UUID v4 valide
-    email: Email.create('doctor@clinic.com'),
-    firstName: 'Dr. Marie',
-    lastName: 'Martin',
-    speciality: 'Cardiologie',
-    licenseNumber: 'ORDRE-789012',
-    phone: '+33187654321',
-    profileImage: 'https://example.com/profile.jpg',
-    bio: 'Cardiologue expérimentée',
-    experience: '15',
-    status: 'ACTIVE' as ProfessionalStatus,
+    id: ProfessionalId.fromString("aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee"), // ✅ CRITIQUE : Même ID que la requête
+    businessId: BusinessId.fromString("bbbbbbbb-cccc-4ddd-8eee-ffffffffffff"), // ✅ Utiliser un UUID v4 valide
+    email: Email.create("doctor@clinic.com"),
+    firstName: "Dr. Marie",
+    lastName: "Martin",
+    speciality: "Cardiologie",
+    licenseNumber: "ORDRE-789012",
+    phone: "+33187654321",
+    profileImage: "https://example.com/profile.jpg",
+    bio: "Cardiologue expérimentée",
+    experience: "15",
+    status: "ACTIVE" as ProfessionalStatus,
     isVerified: true,
-    createdBy: 'admin-user-id',
-    updatedBy: 'admin-user-id',
-    createdAt: new Date('2023-09-24T16:35:11.143Z'),
-    updatedAt: new Date('2025-09-24T16:35:11.143Z'),
+    createdBy: "admin-user-id",
+    updatedBy: "admin-user-id",
+    createdAt: new Date("2023-09-24T16:35:11.143Z"),
+    updatedAt: new Date("2025-09-24T16:35:11.143Z"),
   });
 }

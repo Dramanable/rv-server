@@ -8,14 +8,14 @@
 import {
   InsufficientPermissionsError,
   UserNotFoundError,
-} from '../../../../../application/exceptions/auth.exceptions';
+} from "../../../../../application/exceptions/auth.exceptions";
 import {
   UpdateUserRequest,
   UpdateUserUseCase,
-} from '../../../../../application/use-cases/users/update-user.use-case';
-import { User } from '../../../../../domain/entities/user.entity';
-import { Email } from '../../../../../domain/value-objects/email.vo';
-import { UserRole } from '../../../../../shared/enums/user-role.enum';
+} from "../../../../../application/use-cases/users/update-user.use-case";
+import { User } from "../../../../../domain/entities/user.entity";
+import { Email } from "../../../../../domain/value-objects/email.vo";
+import { UserRole } from "../../../../../shared/enums/user-role.enum";
 
 // ═══════════════════════════════════════════════════════════════
 // 🛠️ TEST SETUP & HELPERS
@@ -49,13 +49,13 @@ const mockI18n = {
 // 🧪 TEST DATA
 // ═══════════════════════════════════════════════════════════════
 
-const validUserId = 'fd8c5ac8-90b2-4d91-8d1b-2c5e1a8f4b3e';
-const targetUserId = 'bd9c2ac7-80a1-3c82-7c0a-1b4d0a7e3c2d';
-const businessId = 'business-uuid-12345';
+const validUserId = "fd8c5ac8-90b2-4d91-8d1b-2c5e1a8f4b3e";
+const targetUserId = "bd9c2ac7-80a1-3c82-7c0a-1b4d0a7e3c2d";
+const businessId = "business-uuid-12345";
 
 // Créer un utilisateur de test
 const createTestUser = (id: string, email: string, role: UserRole): User => {
-  const user = User.create(Email.create(email), 'Test User', role);
+  const user = User.create(Email.create(email), "Test User", role);
   // Simuler un utilisateur existant avec ID
   (user as any).id = id;
   return user;
@@ -65,14 +65,14 @@ const createTestUser = (id: string, email: string, role: UserRole): User => {
 // 🧪 TESTS PRINCIPAUX
 // ═══════════════════════════════════════════════════════════════
 
-describe('UpdateUserUseCase - Permission Validation', () => {
+describe("UpdateUserUseCase - Permission Validation", () => {
   let useCase: UpdateUserUseCase;
 
   beforeEach(() => {
     jest.clearAllMocks();
 
     // Réinitialiser les mocks par défaut
-    mockI18n.translate.mockReturnValue('Mocked translation');
+    mockI18n.translate.mockReturnValue("Mocked translation");
     mockPermissionService.canManageUser.mockResolvedValue(true);
     mockPermissionService.canActOnRole.mockResolvedValue(true);
 
@@ -84,12 +84,12 @@ describe('UpdateUserUseCase - Permission Validation', () => {
     );
   });
 
-  describe('🔐 Permission Validation - Different Requesting Users', () => {
-    it('should allow authorized user to update target user', async () => {
+  describe("🔐 Permission Validation - Different Requesting Users", () => {
+    it("should allow authorized user to update target user", async () => {
       // Arrange
       const targetUser = createTestUser(
         targetUserId,
-        'target@example.com',
+        "target@example.com",
         UserRole.REGULAR_CLIENT,
       );
 
@@ -97,7 +97,7 @@ describe('UpdateUserUseCase - Permission Validation', () => {
         targetUserId,
         requestingUserId: validUserId,
         updates: {
-          email: 'newemail@example.com',
+          email: "newemail@example.com",
         },
       };
 
@@ -106,7 +106,7 @@ describe('UpdateUserUseCase - Permission Validation', () => {
 
       const updatedUser = createTestUser(
         targetUserId,
-        'newemail@example.com',
+        "newemail@example.com",
         UserRole.REGULAR_CLIENT,
       );
       mockUserRepository.save.mockResolvedValue(updatedUser);
@@ -119,11 +119,11 @@ describe('UpdateUserUseCase - Permission Validation', () => {
       );
     });
 
-    it('should deny when user cannot manage target user', async () => {
+    it("should deny when user cannot manage target user", async () => {
       // Arrange
       const targetUser = createTestUser(
         targetUserId,
-        'target@example.com',
+        "target@example.com",
         UserRole.REGULAR_CLIENT,
       );
 
@@ -131,7 +131,7 @@ describe('UpdateUserUseCase - Permission Validation', () => {
         targetUserId,
         requestingUserId: validUserId,
         updates: {
-          email: 'newemail@example.com',
+          email: "newemail@example.com",
         },
       };
 
@@ -148,11 +148,11 @@ describe('UpdateUserUseCase - Permission Validation', () => {
       );
     });
 
-    it('should deny role assignment when user cannot act on target role', async () => {
+    it("should deny role assignment when user cannot act on target role", async () => {
       // Arrange
       const targetUser = createTestUser(
         targetUserId,
-        'target@example.com',
+        "target@example.com",
         UserRole.REGULAR_CLIENT,
       );
 
@@ -178,13 +178,13 @@ describe('UpdateUserUseCase - Permission Validation', () => {
       );
     });
 
-    it('should throw UserNotFoundError when target user does not exist', async () => {
+    it("should throw UserNotFoundError when target user does not exist", async () => {
       // Arrange
       const request: UpdateUserRequest = {
-        targetUserId: 'non-existent-user-id',
+        targetUserId: "non-existent-user-id",
         requestingUserId: validUserId,
         updates: {
-          email: 'newemail@example.com',
+          email: "newemail@example.com",
         },
       };
 
@@ -195,12 +195,12 @@ describe('UpdateUserUseCase - Permission Validation', () => {
     });
   });
 
-  describe('🔄 Self-Update Permissions', () => {
-    it('should allow user to update their own profile (basic fields)', async () => {
+  describe("🔄 Self-Update Permissions", () => {
+    it("should allow user to update their own profile (basic fields)", async () => {
       // Arrange - Self update case
       const requestingUser = createTestUser(
         validUserId,
-        'requesting@example.com',
+        "requesting@example.com",
         UserRole.REGULAR_CLIENT,
       );
 
@@ -208,7 +208,7 @@ describe('UpdateUserUseCase - Permission Validation', () => {
         targetUserId: validUserId,
         requestingUserId: validUserId, // Same user
         updates: {
-          email: 'mynewemail@example.com',
+          email: "mynewemail@example.com",
         },
       };
 
@@ -216,7 +216,7 @@ describe('UpdateUserUseCase - Permission Validation', () => {
 
       const updatedUser = createTestUser(
         validUserId,
-        'mynewemail@example.com',
+        "mynewemail@example.com",
         UserRole.REGULAR_CLIENT,
       );
       mockUserRepository.save.mockResolvedValue(updatedUser);
@@ -228,11 +228,11 @@ describe('UpdateUserUseCase - Permission Validation', () => {
       expect(mockPermissionService.canManageUser).not.toHaveBeenCalled();
     });
 
-    it('should deny user from changing their own role in self-update', async () => {
+    it("should deny user from changing their own role in self-update", async () => {
       // Arrange - Self update with role change (should be denied)
       const requestingUser = createTestUser(
         validUserId,
-        'requesting@example.com',
+        "requesting@example.com",
         UserRole.REGULAR_CLIENT,
       );
 
@@ -253,12 +253,12 @@ describe('UpdateUserUseCase - Permission Validation', () => {
     });
   });
 
-  describe('🔍 Logging and Audit', () => {
-    it('should log permission validation attempts', async () => {
+  describe("🔍 Logging and Audit", () => {
+    it("should log permission validation attempts", async () => {
       // Arrange
       const targetUser = createTestUser(
         targetUserId,
-        'target@example.com',
+        "target@example.com",
         UserRole.REGULAR_CLIENT,
       );
 
@@ -266,7 +266,7 @@ describe('UpdateUserUseCase - Permission Validation', () => {
         targetUserId,
         requestingUserId: validUserId,
         updates: {
-          email: 'newemail@example.com',
+          email: "newemail@example.com",
         },
       };
 

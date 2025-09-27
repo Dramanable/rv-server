@@ -1,7 +1,7 @@
-import { MigrationInterface, QueryRunner } from 'typeorm';
+import { MigrationInterface, QueryRunner } from "typeorm";
 
 export class UpdateTimestampTypes1758389727489 implements MigrationInterface {
-  name = 'UpdateTimestampTypes1758389727489';
+  name = "UpdateTimestampTypes1758389727489";
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     // Cette migration met à jour les types de colonnes timestamp

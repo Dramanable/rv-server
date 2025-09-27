@@ -4,20 +4,20 @@
  * Implémentation concrète du repository BusinessSector avec TypeORM
  */
 
-import { Inject, Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Inject, Injectable } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
 
 import type {
   BusinessSectorFilters,
   BusinessSectorListResult,
   BusinessSectorQueryOptions,
   IBusinessSectorRepository,
-} from '../../../../../application/ports/business-sector.repository.interface';
-import type { Logger } from '../../../../../application/ports/logger.port';
-import { BusinessSector } from '../../../../../domain/entities/business-sector.entity';
-import { TOKENS } from '../../../../../shared/constants/injection-tokens';
-import { BusinessSectorOrmEntity } from '../entities/business-sector-orm.entity';
+} from "../../../../../application/ports/business-sector.repository.interface";
+import type { Logger } from "../../../../../application/ports/logger.port";
+import { BusinessSector } from "../../../../../domain/entities/business-sector.entity";
+import { TOKENS } from "../../../../../shared/constants/injection-tokens";
+import { BusinessSectorOrmEntity } from "../entities/business-sector-orm.entity";
 
 @Injectable()
 export class TypeOrmBusinessSectorRepository
@@ -39,20 +39,20 @@ export class TypeOrmBusinessSectorRepository
         BusinessSectorOrmEntity.fromDomainEntity(businessSector);
       const savedEntity = await this.repository.save(ormEntity);
 
-      this.logger.info('Business sector saved successfully', {
+      this.logger.info("Business sector saved successfully", {
         id: savedEntity.id,
         code: savedEntity.code,
-        operation: 'save',
+        operation: "save",
       });
 
       return this.toDomainEntity(savedEntity);
     } catch (error) {
       this.logger.error(
-        'Failed to save business sector',
-        error instanceof Error ? error : new Error('Unknown error'),
+        "Failed to save business sector",
+        error instanceof Error ? error : new Error("Unknown error"),
         {
           businessSectorId: businessSector.id,
-          operation: 'save',
+          operation: "save",
         },
       );
       throw error;
@@ -69,18 +69,18 @@ export class TypeOrmBusinessSectorRepository
       });
 
       if (!ormEntity) {
-        this.logger.debug('Business sector not found by ID', { id });
+        this.logger.debug("Business sector not found by ID", { id });
         return null;
       }
 
       return this.toDomainEntity(ormEntity);
     } catch (error) {
       this.logger.error(
-        'Failed to find business sector by ID',
-        error instanceof Error ? error : new Error('Unknown error'),
+        "Failed to find business sector by ID",
+        error instanceof Error ? error : new Error("Unknown error"),
         {
           id,
-          operation: 'findById',
+          operation: "findById",
         },
       );
       throw error;
@@ -97,18 +97,18 @@ export class TypeOrmBusinessSectorRepository
       });
 
       if (!ormEntity) {
-        this.logger.debug('Business sector not found by code', { code });
+        this.logger.debug("Business sector not found by code", { code });
         return null;
       }
 
       return this.toDomainEntity(ormEntity);
     } catch (error) {
       this.logger.error(
-        'Failed to find business sector by code',
-        error instanceof Error ? error : new Error('Unknown error'),
+        "Failed to find business sector by code",
+        error instanceof Error ? error : new Error("Unknown error"),
         {
           code,
-          operation: 'findByCode',
+          operation: "findByCode",
         },
       );
       throw error;
@@ -122,18 +122,18 @@ export class TypeOrmBusinessSectorRepository
     options?: BusinessSectorQueryOptions,
   ): Promise<BusinessSectorListResult> {
     try {
-      const queryBuilder = this.repository.createQueryBuilder('bs');
+      const queryBuilder = this.repository.createQueryBuilder("bs");
 
       // Filtres
       if (options?.filters?.isActive !== undefined) {
-        queryBuilder.andWhere('bs.isActive = :isActive', {
+        queryBuilder.andWhere("bs.isActive = :isActive", {
           isActive: options.filters.isActive,
         });
       }
 
       if (options?.filters?.search) {
         queryBuilder.andWhere(
-          '(LOWER(bs.name) LIKE LOWER(:search) OR LOWER(bs.code) LIKE LOWER(:search) OR LOWER(bs.description) LIKE LOWER(:search))',
+          "(LOWER(bs.name) LIKE LOWER(:search) OR LOWER(bs.code) LIKE LOWER(:search) OR LOWER(bs.description) LIKE LOWER(:search))",
           {
             search: `%${options.filters.search}%`,
           },
@@ -141,14 +141,14 @@ export class TypeOrmBusinessSectorRepository
       }
 
       if (options?.filters?.codes?.length) {
-        queryBuilder.andWhere('bs.code IN (:...codes)', {
+        queryBuilder.andWhere("bs.code IN (:...codes)", {
           codes: options.filters.codes,
         });
       }
 
       // Tri
-      const sortField = options?.sort?.field || 'createdAt';
-      const sortDirection = options?.sort?.direction || 'DESC';
+      const sortField = options?.sort?.field || "createdAt";
+      const sortDirection = options?.sort?.direction || "DESC";
 
       queryBuilder.orderBy(`bs.${sortField}`, sortDirection);
 
@@ -168,13 +168,13 @@ export class TypeOrmBusinessSectorRepository
       const data = ormEntities.map((entity) => this.toDomainEntity(entity));
       const totalPages = Math.ceil(total / limit);
 
-      this.logger.info('Business sectors listed successfully', {
+      this.logger.info("Business sectors listed successfully", {
         total,
         page,
         limit,
         totalPages,
         filtersApplied: Object.keys(options?.filters || {}).length,
-        operation: 'findAll',
+        operation: "findAll",
       });
 
       return {
@@ -190,11 +190,11 @@ export class TypeOrmBusinessSectorRepository
       };
     } catch (error) {
       this.logger.error(
-        'Failed to list business sectors',
-        error instanceof Error ? error : new Error('Unknown error'),
+        "Failed to list business sectors",
+        error instanceof Error ? error : new Error("Unknown error"),
         {
           options,
-          operation: 'findAll',
+          operation: "findAll",
         },
       );
       throw error;
@@ -209,21 +209,21 @@ export class TypeOrmBusinessSectorRepository
       const result = await this.repository.update(id, { isActive: false });
 
       if (result.affected === 0) {
-        this.logger.warn('No business sector found to delete', { id });
+        this.logger.warn("No business sector found to delete", { id });
         return;
       }
 
-      this.logger.info('Business sector deleted (soft delete) successfully', {
+      this.logger.info("Business sector deleted (soft delete) successfully", {
         id,
-        operation: 'delete',
+        operation: "delete",
       });
     } catch (error) {
       this.logger.error(
-        'Failed to delete business sector',
-        error instanceof Error ? error : new Error('Unknown error'),
+        "Failed to delete business sector",
+        error instanceof Error ? error : new Error("Unknown error"),
         {
           id,
-          operation: 'delete',
+          operation: "delete",
         },
       );
       throw error;
@@ -239,11 +239,11 @@ export class TypeOrmBusinessSectorRepository
       return count > 0;
     } catch (error) {
       this.logger.error(
-        'Failed to check business sector existence',
-        error instanceof Error ? error : new Error('Unknown error'),
+        "Failed to check business sector existence",
+        error instanceof Error ? error : new Error("Unknown error"),
         {
           id,
-          operation: 'exists',
+          operation: "exists",
         },
       );
       throw error;
@@ -255,23 +255,23 @@ export class TypeOrmBusinessSectorRepository
    */
   async isCodeUnique(code: string, excludeId?: string): Promise<boolean> {
     try {
-      const queryBuilder = this.repository.createQueryBuilder('bs');
-      queryBuilder.where('bs.code = :code', { code: code.toUpperCase() });
+      const queryBuilder = this.repository.createQueryBuilder("bs");
+      queryBuilder.where("bs.code = :code", { code: code.toUpperCase() });
 
       if (excludeId) {
-        queryBuilder.andWhere('bs.id != :excludeId', { excludeId });
+        queryBuilder.andWhere("bs.id != :excludeId", { excludeId });
       }
 
       const count = await queryBuilder.getCount();
       return count === 0;
     } catch (error) {
       this.logger.error(
-        'Failed to check code uniqueness',
-        error instanceof Error ? error : new Error('Unknown error'),
+        "Failed to check code uniqueness",
+        error instanceof Error ? error : new Error("Unknown error"),
         {
           code,
           excludeId,
-          operation: 'isCodeUnique',
+          operation: "isCodeUnique",
         },
       );
       throw error;
@@ -283,17 +283,17 @@ export class TypeOrmBusinessSectorRepository
    */
   async count(filters?: BusinessSectorFilters): Promise<number> {
     try {
-      const queryBuilder = this.repository.createQueryBuilder('bs');
+      const queryBuilder = this.repository.createQueryBuilder("bs");
 
       if (filters?.isActive !== undefined) {
-        queryBuilder.andWhere('bs.isActive = :isActive', {
+        queryBuilder.andWhere("bs.isActive = :isActive", {
           isActive: filters.isActive,
         });
       }
 
       if (filters?.search) {
         queryBuilder.andWhere(
-          '(LOWER(bs.name) LIKE LOWER(:search) OR LOWER(bs.code) LIKE LOWER(:search))',
+          "(LOWER(bs.name) LIKE LOWER(:search) OR LOWER(bs.code) LIKE LOWER(:search))",
           {
             search: `%${filters.search}%`,
           },
@@ -303,11 +303,11 @@ export class TypeOrmBusinessSectorRepository
       return await queryBuilder.getCount();
     } catch (error) {
       this.logger.error(
-        'Failed to count business sectors',
-        error instanceof Error ? error : new Error('Unknown error'),
+        "Failed to count business sectors",
+        error instanceof Error ? error : new Error("Unknown error"),
         {
           filters,
-          operation: 'count',
+          operation: "count",
         },
       );
       throw error;
@@ -362,21 +362,21 @@ export class TypeOrmBusinessSectorRepository
         throw new Error(`Business sector with id ${id} not found after update`);
       }
 
-      this.logger.info('Business sector status updated', {
+      this.logger.info("Business sector status updated", {
         id,
         isActive,
-        operation: 'updateStatus',
+        operation: "updateStatus",
       });
 
       return this.toDomainEntity(updatedEntity);
     } catch (error) {
       this.logger.error(
-        'Failed to update business sector status',
-        error instanceof Error ? error : new Error('Unknown error'),
+        "Failed to update business sector status",
+        error instanceof Error ? error : new Error("Unknown error"),
         {
           id,
           isActive,
-          operation: 'updateStatus',
+          operation: "updateStatus",
         },
       );
       throw error;
@@ -393,18 +393,18 @@ export class TypeOrmBusinessSectorRepository
 
       const ormEntities = await this.repository.find({
         where: { isActive: true },
-        order: { createdAt: 'DESC' },
+        order: { createdAt: "DESC" },
         take: limit || 10,
       });
 
       return ormEntities.map((entity) => this.toDomainEntity(entity));
     } catch (error) {
       this.logger.error(
-        'Failed to find most used business sectors',
-        error instanceof Error ? error : new Error('Unknown error'),
+        "Failed to find most used business sectors",
+        error instanceof Error ? error : new Error("Unknown error"),
         {
           limit,
-          operation: 'findMostUsed',
+          operation: "findMostUsed",
         },
       );
       throw error;
@@ -419,20 +419,20 @@ export class TypeOrmBusinessSectorRepository
       // TODO: Implémenter quand la table businesses existera avec la colonne business_sector_id
       // Pour l'instant, retourner 0 par défaut
 
-      this.logger.debug('Business sector usage count requested', {
+      this.logger.debug("Business sector usage count requested", {
         sectorId,
         count: 0, // Valeur par défaut
-        operation: 'countUsageInBusinesses',
+        operation: "countUsageInBusinesses",
       });
 
       return 0;
     } catch (error) {
       this.logger.error(
-        'Failed to count business sector usage',
-        error instanceof Error ? error : new Error('Unknown error'),
+        "Failed to count business sector usage",
+        error instanceof Error ? error : new Error("Unknown error"),
         {
           sectorId,
-          operation: 'countUsageInBusinesses',
+          operation: "countUsageInBusinesses",
         },
       );
       throw error;
@@ -446,7 +446,7 @@ export class TypeOrmBusinessSectorRepository
     return BusinessSector.restore(
       ormEntity.id,
       ormEntity.name,
-      ormEntity.description || '',
+      ormEntity.description || "",
       ormEntity.code,
       ormEntity.isActive,
       ormEntity.createdAt,

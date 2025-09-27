@@ -1,5 +1,5 @@
 export enum CalendarVisibility {
-  PUBLIC = 'PUBLIC',
-  PRIVATE = 'PRIVATE',
-  RESTRICTED = 'RESTRICTED',
+  PUBLIC = "PUBLIC",
+  PRIVATE = "PRIVATE",
+  RESTRICTED = "RESTRICTED",
 }

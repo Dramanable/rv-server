@@ -25,18 +25,18 @@
       }la logique métier sans dépendance framework
  */
 
-import { User } from '../../../domain/entities/user.entity';
-import { UserRepository } from '../../../domain/repositories/user.repository.interface';
-import { AppContextFactory } from '../../../shared/context/app-context';
+import { User } from "../../../domain/entities/user.entity";
+import { UserRepository } from "../../../domain/repositories/user.repository.interface";
+import { AppContextFactory } from "../../../shared/context/app-context";
 import {
   ForbiddenError,
   InsufficientPermissionsError,
   UserNotFoundError,
   ValidationError,
-} from '../../exceptions/auth.exceptions';
-import { I18nService } from '../../ports/i18n.port';
-import { Logger } from '../../ports/logger.port';
-import { IPermissionService } from '../../ports/permission.service.interface';
+} from "../../exceptions/auth.exceptions";
+import { I18nService } from "../../ports/i18n.port";
+import { Logger } from "../../ports/logger.port";
+import { IPermissionService } from "../../ports/permission.service.interface";
 
 // ═══════════════════════════════════════════════════════════════
 // 📋 REQUEST & RESPONSE TYPES
@@ -68,12 +68,12 @@ export class DeleteUserUseCase {
 
   async execute(request: DeleteUserRequest): Promise<DeleteUserResponse> {
     const context = AppContextFactory.userOperation(
-      'DeleteUser',
+      "DeleteUser",
       request.requestingUserId,
       request.targetUserId,
     );
 
-    this.logger.info('delete_attempt', {
+    this.logger.info("delete_attempt", {
       ...context,
       targetUserId: request.targetUserId,
     });
@@ -84,7 +84,7 @@ export class DeleteUserUseCase {
         request.requestingUserId,
       );
       if (!requestingUser) {
-        throw new UserNotFoundError('Requesting user not found', {
+        throw new UserNotFoundError("Requesting user not found", {
           userId: request.requestingUserId,
         });
       }
@@ -94,7 +94,7 @@ export class DeleteUserUseCase {
         request.targetUserId,
       );
       if (!targetUser) {
-        throw new UserNotFoundError('Target user not found', {
+        throw new UserNotFoundError("Target user not found", {
           userId: request.targetUserId,
         });
       }
@@ -102,7 +102,7 @@ export class DeleteUserUseCase {
       // 3. 🔐 Vérifier les permissions avec IPermissionService
       await this.permissionService.requirePermission(
         request.requestingUserId,
-        'DELETE_USER',
+        "DELETE_USER",
         {
           targetUserId: request.targetUserId,
           targetRole: targetUser.role,
@@ -123,7 +123,7 @@ export class DeleteUserUseCase {
 
       // 5. ❌ Interdiction d'auto-suppression (même avec permissions)
       if (request.requestingUserId === request.targetUserId) {
-        throw new ForbiddenError('Users cannot delete themselves');
+        throw new ForbiddenError("Users cannot delete themselves");
       }
 
       // 4. Vérifier que l'utilisateur n'est pas déjà supprimé
@@ -134,7 +134,7 @@ export class DeleteUserUseCase {
 
       const response = this.buildResponse(targetUser, request.requestingUserId);
 
-      this.logger.info('delete_success', {
+      this.logger.info("delete_success", {
         ...context,
         deletedUserId: response.id,
         deletedBy: request.requestingUserId,
@@ -143,7 +143,7 @@ export class DeleteUserUseCase {
       return response;
     } catch (error) {
       this.logger.error(
-        'delete_failed',
+        "delete_failed",
         error as Error,
         context as unknown as Record<string, unknown>,
       );
@@ -160,7 +160,7 @@ export class DeleteUserUseCase {
     // Plus tard, on implémentera isDeleted() quand on aura le soft delete
     const user = await this.userRepository.findById(userId);
     if (!user) {
-      throw new ValidationError('User is already deleted', { userId });
+      throw new ValidationError("User is already deleted", { userId });
     }
   }
 

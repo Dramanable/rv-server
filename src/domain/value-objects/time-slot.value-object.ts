@@ -1,17 +1,17 @@
 export enum TimeSlotStatus {
-  AVAILABLE = 'AVAILABLE',
-  BOOKED = 'BOOKED',
-  BLOCKED = 'BLOCKED',
-  MAINTENANCE = 'MAINTENANCE',
+  AVAILABLE = "AVAILABLE",
+  BOOKED = "BOOKED",
+  BLOCKED = "BLOCKED",
+  MAINTENANCE = "MAINTENANCE",
 }
 
 export enum RecurrenceType {
-  NONE = 'NONE',
-  DAILY = 'DAILY',
-  WEEKLY = 'WEEKLY',
-  MONTHLY = 'MONTHLY',
-  YEARLY = 'YEARLY',
-  CUSTOM = 'CUSTOM',
+  NONE = "NONE",
+  DAILY = "DAILY",
+  WEEKLY = "WEEKLY",
+  MONTHLY = "MONTHLY",
+  YEARLY = "YEARLY",
+  CUSTOM = "CUSTOM",
 }
 
 export enum WeekDay {
@@ -41,18 +41,18 @@ export class TimeSlot {
 
   private validate(): void {
     if (this.startTime >= this.endTime) {
-      throw new Error('Start time must be before end time');
+      throw new Error("Start time must be before end time");
     }
 
     const diffMinutes =
       (this.endTime.getTime() - this.startTime.getTime()) / (1000 * 60);
     if (diffMinutes < 5) {
-      throw new Error('Time slot must be at least 5 minutes');
+      throw new Error("Time slot must be at least 5 minutes");
     }
 
     if (diffMinutes > 480) {
       // 8 heures max
-      throw new Error('Time slot cannot exceed 8 hours');
+      throw new Error("Time slot cannot exceed 8 hours");
     }
   }
 
@@ -116,7 +116,7 @@ export class TimeSlot {
   // Operations
   split(splitTime: Date): TimeSlot[] {
     if (!this.contains(splitTime)) {
-      throw new Error('Split time must be within the time slot');
+      throw new Error("Split time must be within the time slot");
     }
 
     if (
@@ -134,7 +134,7 @@ export class TimeSlot {
 
   merge(other: TimeSlot): TimeSlot {
     if (!this.canMerge(other)) {
-      throw new Error('Time slots cannot be merged');
+      throw new Error("Time slots cannot be merged");
     }
 
     const newStart =
@@ -160,13 +160,13 @@ export class TimeSlot {
 
   // Formatting
   format(): string {
-    const start = this.startTime.toLocaleTimeString('fr-FR', {
-      hour: '2-digit',
-      minute: '2-digit',
+    const start = this.startTime.toLocaleTimeString("fr-FR", {
+      hour: "2-digit",
+      minute: "2-digit",
     });
-    const end = this.endTime.toLocaleTimeString('fr-FR', {
-      hour: '2-digit',
-      minute: '2-digit',
+    const end = this.endTime.toLocaleTimeString("fr-FR", {
+      hour: "2-digit",
+      minute: "2-digit",
     });
     return `${start} - ${end}`;
   }

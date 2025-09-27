@@ -1,9 +1,9 @@
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 
 export class ServiceTypeId {
   private constructor(private readonly value: string) {
     if (!value) {
-      throw new Error('ServiceTypeId cannot be empty');
+      throw new Error("ServiceTypeId cannot be empty");
     }
 
     // Basic UUID validation

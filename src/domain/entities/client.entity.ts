@@ -1,9 +1,9 @@
-import { ClientValidationError } from '@domain/exceptions/client.exceptions';
-import { BusinessId } from '@domain/value-objects/business-id.value-object';
-import { ClientId } from '@domain/value-objects/client-id.value-object';
-import { Email } from '@domain/value-objects/email.value-object';
-import { Phone } from '@domain/value-objects/phone.value-object';
-import { UserId } from '@domain/value-objects/user-id.value-object';
+import { ClientValidationError } from "@domain/exceptions/client.exceptions";
+import { BusinessId } from "@domain/value-objects/business-id.value-object";
+import { ClientId } from "@domain/value-objects/client-id.value-object";
+import { Email } from "@domain/value-objects/email.value-object";
+import { Phone } from "@domain/value-objects/phone.value-object";
+import { UserId } from "@domain/value-objects/user-id.value-object";
 
 export interface CreateClientParams {
   readonly userId: UserId;
@@ -86,27 +86,27 @@ export class Client {
   static create(params: CreateClientParams): Client {
     // 🔍 Validation firstName
     if (!params.firstName || params.firstName.trim().length === 0) {
-      throw new ClientValidationError('Client first name cannot be empty');
+      throw new ClientValidationError("Client first name cannot be empty");
     }
     if (params.firstName.trim().length < 2) {
       throw new ClientValidationError(
-        'Client first name must be at least 2 characters long',
+        "Client first name must be at least 2 characters long",
       );
     }
 
     // 🔍 Validation lastName
     if (!params.lastName || params.lastName.trim().length === 0) {
-      throw new ClientValidationError('Client last name cannot be empty');
+      throw new ClientValidationError("Client last name cannot be empty");
     }
     if (params.lastName.trim().length < 2) {
       throw new ClientValidationError(
-        'Client last name must be at least 2 characters long',
+        "Client last name must be at least 2 characters long",
       );
     }
 
     // 🔍 Validation createdBy
     if (!params.createdBy || params.createdBy.trim().length === 0) {
-      throw new ClientValidationError('CreatedBy is required');
+      throw new ClientValidationError("CreatedBy is required");
     }
 
     const now = new Date();
@@ -158,11 +158,11 @@ export class Client {
     // 🔍 Validation firstName si fourni
     if (params.firstName !== undefined) {
       if (!params.firstName || params.firstName.trim().length === 0) {
-        throw new ClientValidationError('Client first name cannot be empty');
+        throw new ClientValidationError("Client first name cannot be empty");
       }
       if (params.firstName.trim().length < 2) {
         throw new ClientValidationError(
-          'Client first name must be at least 2 characters long',
+          "Client first name must be at least 2 characters long",
         );
       }
       this._firstName = params.firstName.trim();
@@ -171,11 +171,11 @@ export class Client {
     // 🔍 Validation lastName si fourni
     if (params.lastName !== undefined) {
       if (!params.lastName || params.lastName.trim().length === 0) {
-        throw new ClientValidationError('Client last name cannot be empty');
+        throw new ClientValidationError("Client last name cannot be empty");
       }
       if (params.lastName.trim().length < 2) {
         throw new ClientValidationError(
-          'Client last name must be at least 2 characters long',
+          "Client last name must be at least 2 characters long",
         );
       }
       this._lastName = params.lastName.trim();
@@ -183,7 +183,7 @@ export class Client {
 
     // 🔍 Validation updatedBy
     if (!params.updatedBy || params.updatedBy.trim().length === 0) {
-      throw new ClientValidationError('UpdatedBy is required');
+      throw new ClientValidationError("UpdatedBy is required");
     }
 
     // ✅ Appliquer les mises à jour
@@ -206,7 +206,7 @@ export class Client {
    */
   deactivate(updatedBy: string): void {
     if (!updatedBy || updatedBy.trim().length === 0) {
-      throw new ClientValidationError('UpdatedBy is required');
+      throw new ClientValidationError("UpdatedBy is required");
     }
 
     this._isActive = false;
@@ -219,7 +219,7 @@ export class Client {
    */
   reactivate(updatedBy: string): void {
     if (!updatedBy || updatedBy.trim().length === 0) {
-      throw new ClientValidationError('UpdatedBy is required');
+      throw new ClientValidationError("UpdatedBy is required");
     }
 
     this._isActive = true;
@@ -239,7 +239,7 @@ export class Client {
    */
   markAsHavingAppointmentHistory(updatedBy: string): void {
     if (!updatedBy || updatedBy.trim().length === 0) {
-      throw new ClientValidationError('UpdatedBy is required');
+      throw new ClientValidationError("UpdatedBy is required");
     }
 
     this._hasAppointmentHistory = true;

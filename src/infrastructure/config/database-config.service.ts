@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Injectable } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import {
   DatabaseType,
   IDatabaseConfigService,
-} from '../../application/ports/database-config.port';
+} from "../../application/ports/database-config.port";
 
 /**
  * 🔧 Service de Configuration de Base de Données
@@ -38,12 +38,12 @@ export class DatabaseConfigService implements IDatabaseConfigService {
 
   constructor(private readonly configService: ConfigService) {
     const dbType = this.configService
-      .get<string>('DATABASE_TYPE', 'sql')
+      .get<string>("DATABASE_TYPE", "sql")
       .toLowerCase();
 
     if (!Object.values(DatabaseType).includes(dbType as DatabaseType)) {
       throw new Error(
-        `Invalid DATABASE_TYPE: ${dbType}. Must be one of: ${Object.values(DatabaseType).join(', ')}`,
+        `Invalid DATABASE_TYPE: ${dbType}. Must be one of: ${Object.values(DatabaseType).join(", ")}`,
       );
     }
 

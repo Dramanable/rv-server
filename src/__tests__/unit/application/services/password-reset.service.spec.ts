@@ -4,8 +4,8 @@
  * Tests basiques pour le service de réinitialisation de mot de passe
  */
 
-describe('PasswordResetService', () => {
-  it('should be defined', () => {
+describe("PasswordResetService", () => {
+  it("should be defined", () => {
     expect(true).toBe(true);
   });
 });

@@ -4,15 +4,15 @@
  * @description Use case pour mettre à jour un professionnel selon la Clean Architecture
  */
 
-import { I18nService } from '@application/ports/i18n.port';
-import { Logger } from '@application/ports/logger.port';
+import { I18nService } from "@application/ports/i18n.port";
+import { Logger } from "@application/ports/logger.port";
 import {
   ProfessionalNotFoundError,
   ProfessionalValidationError,
-} from '@domain/exceptions/professional.exceptions';
-import { IProfessionalRepository } from '@domain/repositories/professional.repository';
-import { Email } from '@domain/value-objects/email.value-object';
-import { ProfessionalId } from '@domain/value-objects/professional-id.value-object';
+} from "@domain/exceptions/professional.exceptions";
+import { IProfessionalRepository } from "@domain/repositories/professional.repository";
+import { Email } from "@domain/value-objects/email.value-object";
+import { ProfessionalId } from "@domain/value-objects/professional-id.value-object";
 
 /**
  * ✅ OBLIGATOIRE - Interface de requête avec contexte complet
@@ -77,7 +77,7 @@ export class UpdateProfessionalUseCase {
     request: UpdateProfessionalRequest,
   ): Promise<UpdateProfessionalResponse> {
     // ✅ OBLIGATOIRE - Logging de début avec contexte complet
-    this.logger.info('Updating professional', {
+    this.logger.info("Updating professional", {
       professionalId: request.professionalId,
       requestingUserId: request.requestingUserId,
       correlationId: request.correlationId,
@@ -91,13 +91,13 @@ export class UpdateProfessionalUseCase {
         professionalId = ProfessionalId.fromString(request.professionalId);
       } catch (error) {
         const errorMessage = this.i18n.translate(
-          'professional.errors.invalidId',
+          "professional.errors.invalidId",
           {
             professionalId: request.professionalId,
           },
         );
 
-        this.logger.error('Invalid professional ID format', error as Error, {
+        this.logger.error("Invalid professional ID format", error as Error, {
           professionalId: request.professionalId,
           correlationId: request.correlationId,
         });
@@ -111,14 +111,14 @@ export class UpdateProfessionalUseCase {
 
       if (!existingProfessional) {
         const errorMessage = this.i18n.translate(
-          'professional.errors.notFound',
+          "professional.errors.notFound",
           {
             professionalId: request.professionalId,
           },
         );
 
         this.logger.error(
-          'Professional not found for update',
+          "Professional not found for update",
           new Error(errorMessage),
           {
             professionalId: request.professionalId,
@@ -132,28 +132,28 @@ export class UpdateProfessionalUseCase {
       // ✅ ÉTAPE 3 - Validation des champs requis
       if (request.firstName !== undefined && !request.firstName?.trim()) {
         this.logger.error(
-          'Professional update failed: empty first name',
+          "Professional update failed: empty first name",
           undefined,
           {
             correlationId: request.correlationId,
           },
         );
         throw new ProfessionalValidationError(
-          this.i18n.translate('professional.validation.firstNameRequired'),
+          this.i18n.translate("professional.validation.firstNameRequired"),
           { professionalId: request.professionalId },
         );
       }
 
       if (request.lastName !== undefined && !request.lastName?.trim()) {
         this.logger.error(
-          'Professional update failed: empty last name',
+          "Professional update failed: empty last name",
           undefined,
           {
             correlationId: request.correlationId,
           },
         );
         throw new ProfessionalValidationError(
-          this.i18n.translate('professional.validation.lastNameRequired'),
+          this.i18n.translate("professional.validation.lastNameRequired"),
           { professionalId: request.professionalId },
         );
       }
@@ -164,7 +164,7 @@ export class UpdateProfessionalUseCase {
           Email.create(request.email); // Validation du format
         } catch (error) {
           this.logger.error(
-            'Professional update failed: invalid email format',
+            "Professional update failed: invalid email format",
             error instanceof Error ? error : undefined,
             {
               email: request.email,
@@ -172,7 +172,7 @@ export class UpdateProfessionalUseCase {
             },
           );
           throw new ProfessionalValidationError(
-            this.i18n.translate('professional.errors.emailInvalid'),
+            this.i18n.translate("professional.errors.emailInvalid"),
             { professionalId: request.professionalId, email: request.email },
           );
         }
@@ -206,7 +206,7 @@ export class UpdateProfessionalUseCase {
         const experienceNum = Number(request.experience);
         if (isNaN(experienceNum) || experienceNum < 0) {
           this.logger.error(
-            'Professional update failed: invalid experience',
+            "Professional update failed: invalid experience",
             undefined,
             {
               experience: request.experience,
@@ -214,7 +214,7 @@ export class UpdateProfessionalUseCase {
             },
           );
           throw new ProfessionalValidationError(
-            this.i18n.translate('professional.validation.experienceInvalid'),
+            this.i18n.translate("professional.validation.experienceInvalid"),
             {
               professionalId: request.professionalId,
               experience: request.experience,
@@ -234,11 +234,11 @@ export class UpdateProfessionalUseCase {
         await this.professionalRepository.save(existingProfessional);
 
       // ✅ OBLIGATOIRE - Logging de succès
-      this.logger.info('Professional updated successfully', {
+      this.logger.info("Professional updated successfully", {
         professionalId: updatedProfessional.getId().getValue(),
         updatedBy: request.requestingUserId,
         updateFields: Object.keys(updateData).filter(
-          (key) => key !== 'updatedBy',
+          (key) => key !== "updatedBy",
         ),
         correlationId: request.correlationId,
       });
@@ -272,7 +272,7 @@ export class UpdateProfessionalUseCase {
         !(error instanceof ProfessionalValidationError)
       ) {
         this.logger.error(
-          'Repository error during professional update',
+          "Repository error during professional update",
           error as Error,
           {
             professionalId: request.professionalId,

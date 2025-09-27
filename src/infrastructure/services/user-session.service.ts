@@ -2,18 +2,18 @@
  * 👤 USER SESSION SERVICE - Service pour la gestion des sessions utilisateur Redis
  */
 
-import { Injectable, Inject } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import type { ICacheService } from '../../application/ports/cache.port';
-import { IUserSessionService } from '../../application/ports/user-session.port';
-import type { Logger } from '../../application/ports/logger.port';
-import type { I18nService } from '../../application/ports/i18n.port';
-import { User } from '../../domain/entities/user.entity';
+import { Injectable, Inject } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import type { ICacheService } from "../../application/ports/cache.port";
+import { IUserSessionService } from "../../application/ports/user-session.port";
+import type { Logger } from "../../application/ports/logger.port";
+import type { I18nService } from "../../application/ports/i18n.port";
+import { User } from "../../domain/entities/user.entity";
 import {
   CacheException,
   CacheOperationException,
-} from '../../application/exceptions/cache.exceptions';
-import { TOKENS } from '../../shared/constants/injection-tokens';
+} from "../../application/exceptions/cache.exceptions";
+import { TOKENS } from "../../shared/constants/injection-tokens";
 
 // Temporary exceptions for compilation
 class UserSessionException extends CacheException {
@@ -31,7 +31,7 @@ class UserSessionNotFoundError extends CacheException {
 @Injectable()
 export class UserSessionService implements IUserSessionService {
   private readonly sessionTtl: number;
-  private readonly sessionKeyPrefix = 'user_session:';
+  private readonly sessionKeyPrefix = "user_session:";
 
   constructor(
     @Inject(TOKENS.CACHE_SERVICE)
@@ -43,7 +43,7 @@ export class UserSessionService implements IUserSessionService {
     private readonly i18n: I18nService,
   ) {
     this.sessionTtl = this.configService.get<number>(
-      'USER_SESSION_TTL_SECONDS',
+      "USER_SESSION_TTL_SECONDS",
       3600, // 1 heure par défaut
     );
   }
@@ -55,13 +55,13 @@ export class UserSessionService implements IUserSessionService {
 
       await this.cacheService.set(sessionKey, userData, this.sessionTtl);
 
-      this.logger.info(this.i18n.t('infrastructure.session.user_stored'), {
+      this.logger.info(this.i18n.t("infrastructure.session.user_stored"), {
         userId,
         ttl: this.sessionTtl,
       });
     } catch (error) {
       this.logger.error(
-        this.i18n.t('infrastructure.session.store_failed'),
+        this.i18n.t("infrastructure.session.store_failed"),
         error as Error,
         { userId },
       );
@@ -78,7 +78,7 @@ export class UserSessionService implements IUserSessionService {
       const userData = await this.cacheService.get(sessionKey);
 
       if (!userData) {
-        this.logger.debug(this.i18n.t('infrastructure.session.not_found'), {
+        this.logger.debug(this.i18n.t("infrastructure.session.not_found"), {
           userId,
         });
         return null;
@@ -86,7 +86,7 @@ export class UserSessionService implements IUserSessionService {
 
       const user = this.deserializeUser(userData);
 
-      this.logger.debug(this.i18n.t('infrastructure.session.user_retrieved'), {
+      this.logger.debug(this.i18n.t("infrastructure.session.user_retrieved"), {
         userId,
         email: user.email,
       });
@@ -94,7 +94,7 @@ export class UserSessionService implements IUserSessionService {
       return user;
     } catch (error) {
       this.logger.error(
-        this.i18n.t('infrastructure.session.retrieve_failed'),
+        this.i18n.t("infrastructure.session.retrieve_failed"),
         error as Error,
         { userId },
       );
@@ -110,12 +110,12 @@ export class UserSessionService implements IUserSessionService {
       const sessionKey = this.getSessionKey(userId);
       await this.cacheService.delete(sessionKey);
 
-      this.logger.info(this.i18n.t('infrastructure.session.user_removed'), {
+      this.logger.info(this.i18n.t("infrastructure.session.user_removed"), {
         userId,
       });
     } catch (error) {
       this.logger.error(
-        this.i18n.t('infrastructure.session.remove_failed'),
+        this.i18n.t("infrastructure.session.remove_failed"),
         error as Error,
         { userId },
       );
@@ -132,12 +132,12 @@ export class UserSessionService implements IUserSessionService {
       await this.cacheService.deletePattern(pattern);
 
       this.logger.info(
-        this.i18n.t('infrastructure.session.all_sessions_removed'),
+        this.i18n.t("infrastructure.session.all_sessions_removed"),
         { userId },
       );
     } catch (error) {
       this.logger.error(
-        this.i18n.t('infrastructure.session.remove_all_failed'),
+        this.i18n.t("infrastructure.session.remove_all_failed"),
         error as Error,
         { userId },
       );
@@ -154,7 +154,7 @@ export class UserSessionService implements IUserSessionService {
       return await this.cacheService.exists(sessionKey);
     } catch (error) {
       this.logger.error(
-        this.i18n.t('infrastructure.session.exists_check_failed'),
+        this.i18n.t("infrastructure.session.exists_check_failed"),
         error as Error,
         { userId },
       );
@@ -172,12 +172,12 @@ export class UserSessionService implements IUserSessionService {
 
       await this.storeUserSession(userId, user);
 
-      this.logger.debug(this.i18n.t('infrastructure.session.refreshed'), {
+      this.logger.debug(this.i18n.t("infrastructure.session.refreshed"), {
         userId,
       });
     } catch (error) {
       this.logger.error(
-        this.i18n.t('infrastructure.session.refresh_failed'),
+        this.i18n.t("infrastructure.session.refresh_failed"),
         error as Error,
         { userId },
       );
@@ -231,7 +231,7 @@ export class UserSessionService implements IUserSessionService {
         new Date(data.updatedAt),
       );
     } catch (error) {
-      throw new UserSessionException('Failed to deserialize user data', {
+      throw new UserSessionException("Failed to deserialize user data", {
         userData,
       });
     }

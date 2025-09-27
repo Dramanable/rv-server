@@ -9,20 +9,17 @@
  * 🔵 REFACTOR : Amélioration du code en gardant les tests verts
  */
 
-import { GetUserEffectivePermissionsUseCase } from '@application/use-cases/role-management/get-user-effective-permissions.use-case';
-import { IRoleAssignmentRepository } from '@domain/repositories/role-assignment.repository.interface';
-import { IBusinessContextRepository } from '@domain/repositories/business-context.repository.interface';
-import { IPermissionService } from '@application/ports/permission.service.interface';
-import { Logger } from '@application/ports/logger.port';
-import { I18nService } from '@application/ports/i18n.port';
-import {
-  RoleAssignment,
-  RoleAssignmentContext,
-} from '@domain/entities/role-assignment.entity';
-import { Permission, UserRole } from '@shared/enums/user-role.enum';
-import { InsufficientPermissionsError } from '@application/exceptions/application.exceptions';
+import { InsufficientPermissionsError } from "@application/exceptions/application.exceptions";
+import { I18nService } from "@application/ports/i18n.port";
+import { Logger } from "@application/ports/logger.port";
+import { IPermissionService } from "@application/ports/permission.service.interface";
+import { GetUserEffectivePermissionsUseCase } from "@application/use-cases/role-management/get-user-effective-permissions.use-case";
+import { RoleAssignmentContext } from "@domain/entities/role-assignment.entity";
+import { IBusinessContextRepository } from "@domain/repositories/business-context.repository.interface";
+import { IRoleAssignmentRepository } from "@domain/repositories/role-assignment.repository.interface";
+import { Permission, UserRole } from "@shared/enums/user-role.enum";
 
-describe('🧪 GetUserEffectivePermissionsUseCase - TDD Suite', () => {
+describe("🧪 GetUserEffectivePermissionsUseCase - TDD Suite", () => {
   let useCase: GetUserEffectivePermissionsUseCase;
   let mockRoleAssignmentRepository: jest.Mocked<IRoleAssignmentRepository>;
   let mockBusinessContextRepository: jest.Mocked<IBusinessContextRepository>;
@@ -32,14 +29,14 @@ describe('🧪 GetUserEffectivePermissionsUseCase - TDD Suite', () => {
 
   // Test data
   const testContext: RoleAssignmentContext = {
-    businessId: 'business-123',
-    locationId: 'location-456',
-    departmentId: 'department-789',
+    businessId: "business-123",
+    locationId: "location-456",
+    departmentId: "department-789",
   };
 
-  const requestingUserId = 'manager-user-123';
-  const targetUserId = 'staff-user-456';
-  const correlationId = 'correlation-123';
+  const requestingUserId = "manager-user-123";
+  const targetUserId = "staff-user-456";
+  const correlationId = "correlation-123";
 
   beforeEach(() => {
     // 🎭 MOCKS SETUP
@@ -94,8 +91,8 @@ describe('🧪 GetUserEffectivePermissionsUseCase - TDD Suite', () => {
     );
   });
 
-  describe('🔴 RED Phase - Permission Validation', () => {
-    it('should require MANAGE_ALL_STAFF permission when requesting other user permissions', async () => {
+  describe("🔴 RED Phase - Permission Validation", () => {
+    it("should require MANAGE_ALL_STAFF permission when requesting other user permissions", async () => {
       // Given
       const request = {
         requestingUserId,
@@ -106,7 +103,7 @@ describe('🧪 GetUserEffectivePermissionsUseCase - TDD Suite', () => {
       };
 
       mockPermissionService.requirePermission.mockRejectedValueOnce(
-        new InsufficientPermissionsError('MANAGE_ALL_STAFF'),
+        new InsufficientPermissionsError("MANAGE_ALL_STAFF"),
       );
 
       // When & Then
@@ -116,7 +113,7 @@ describe('🧪 GetUserEffectivePermissionsUseCase - TDD Suite', () => {
 
       expect(mockPermissionService.requirePermission).toHaveBeenCalledWith(
         requestingUserId,
-        'MANAGE_ALL_STAFF',
+        "MANAGE_ALL_STAFF",
         {
           businessId: testContext.businessId,
           locationId: testContext.locationId,
@@ -126,7 +123,7 @@ describe('🧪 GetUserEffectivePermissionsUseCase - TDD Suite', () => {
       );
     });
 
-    it('should allow user to view their own permissions without additional checks', async () => {
+    it("should allow user to view their own permissions without additional checks", async () => {
       // Given - Same user requesting their own permissions
       const request = {
         requestingUserId: targetUserId, // Same user
@@ -147,8 +144,8 @@ describe('🧪 GetUserEffectivePermissionsUseCase - TDD Suite', () => {
     });
   });
 
-  describe('🔴 RED Phase - Role Assignment Retrieval', () => {
-    it('should return empty permissions when user has no role assignments', async () => {
+  describe("🔴 RED Phase - Role Assignment Retrieval", () => {
+    it("should return empty permissions when user has no role assignments", async () => {
       // Given
       const request = {
         requestingUserId: targetUserId, // Same user
@@ -175,7 +172,7 @@ describe('🧪 GetUserEffectivePermissionsUseCase - TDD Suite', () => {
       });
 
       expect(mockLogger.warn).toHaveBeenCalledWith(
-        'No active role assignments found for user',
+        "No active role assignments found for user",
         expect.objectContaining({
           targetUserId,
           correlationId,
@@ -183,7 +180,7 @@ describe('🧪 GetUserEffectivePermissionsUseCase - TDD Suite', () => {
       );
     });
 
-    it('should filter out expired and inactive role assignments', async () => {
+    it("should filter out expired and inactive role assignments", async () => {
       // Given
       const request = {
         requestingUserId: targetUserId,
@@ -223,8 +220,8 @@ describe('🧪 GetUserEffectivePermissionsUseCase - TDD Suite', () => {
     });
   });
 
-  describe('🟢 GREEN Phase - Effective Permissions Calculation', () => {
-    it('should calculate effective permissions from multiple active role assignments', async () => {
+  describe("🟢 GREEN Phase - Effective Permissions Calculation", () => {
+    it("should calculate effective permissions from multiple active role assignments", async () => {
       // Given
       const request = {
         requestingUserId: targetUserId,
@@ -246,10 +243,10 @@ describe('🧪 GetUserEffectivePermissionsUseCase - TDD Suite', () => {
             Permission.VIEW_BUSINESS_ANALYTICS,
           ]),
         getRole: jest.fn().mockReturnValue(UserRole.BUSINESS_ADMIN),
-        getAssignmentScope: jest.fn().mockReturnValue('BUSINESS'),
+        getAssignmentScope: jest.fn().mockReturnValue("BUSINESS"),
         getAssignedAt: jest.fn().mockReturnValue(new Date()),
         getExpiresAt: jest.fn().mockReturnValue(undefined),
-        getAssignedBy: jest.fn().mockReturnValue('business-owner-123'),
+        getAssignedBy: jest.fn().mockReturnValue("business-owner-123"),
       } as any;
 
       // Mock active LOCATION_MANAGER assignment
@@ -264,10 +261,10 @@ describe('🧪 GetUserEffectivePermissionsUseCase - TDD Suite', () => {
             Permission.BOOK_ANY_APPOINTMENT,
           ]),
         getRole: jest.fn().mockReturnValue(UserRole.LOCATION_MANAGER),
-        getAssignmentScope: jest.fn().mockReturnValue('LOCATION'),
+        getAssignmentScope: jest.fn().mockReturnValue("LOCATION"),
         getAssignedAt: jest.fn().mockReturnValue(new Date()),
         getExpiresAt: jest.fn().mockReturnValue(undefined),
-        getAssignedBy: jest.fn().mockReturnValue('business-admin-456'),
+        getAssignedBy: jest.fn().mockReturnValue("business-admin-456"),
       } as any;
 
       mockRoleAssignmentRepository.findByUserId.mockResolvedValueOnce([
@@ -293,17 +290,17 @@ describe('🧪 GetUserEffectivePermissionsUseCase - TDD Suite', () => {
         expect.arrayContaining([
           expect.objectContaining({
             role: UserRole.BUSINESS_ADMIN,
-            scope: 'BUSINESS',
+            scope: "BUSINESS",
           }),
           expect.objectContaining({
             role: UserRole.LOCATION_MANAGER,
-            scope: 'LOCATION',
+            scope: "LOCATION",
           }),
         ]),
       );
     });
 
-    it('should calculate correct hierarchy level from multiple roles', async () => {
+    it("should calculate correct hierarchy level from multiple roles", async () => {
       // Given
       const request = {
         requestingUserId: targetUserId,
@@ -320,10 +317,10 @@ describe('🧪 GetUserEffectivePermissionsUseCase - TDD Suite', () => {
         isValidInContext: jest.fn().mockReturnValue(true),
         getEffectivePermissions: jest.fn().mockReturnValue([]),
         getRole: jest.fn().mockReturnValue(UserRole.BUSINESS_OWNER),
-        getAssignmentScope: jest.fn().mockReturnValue('BUSINESS'),
+        getAssignmentScope: jest.fn().mockReturnValue("BUSINESS"),
         getAssignedAt: jest.fn().mockReturnValue(new Date()),
         getExpiresAt: jest.fn().mockReturnValue(undefined),
-        getAssignedBy: jest.fn().mockReturnValue('platform-admin-123'),
+        getAssignedBy: jest.fn().mockReturnValue("platform-admin-123"),
       } as any;
 
       mockRoleAssignmentRepository.findByUserId.mockResolvedValueOnce([
@@ -342,12 +339,12 @@ describe('🧪 GetUserEffectivePermissionsUseCase - TDD Suite', () => {
     });
   });
 
-  describe('🟢 GREEN Phase - Business Context Validation', () => {
-    it('should only include assignments valid in the specified context', async () => {
+  describe("🟢 GREEN Phase - Business Context Validation", () => {
+    it("should only include assignments valid in the specified context", async () => {
       // Given
       const specificContext: RoleAssignmentContext = {
-        businessId: 'business-123',
-        locationId: 'location-456',
+        businessId: "business-123",
+        locationId: "location-456",
       };
 
       const request = {
@@ -367,10 +364,10 @@ describe('🧪 GetUserEffectivePermissionsUseCase - TDD Suite', () => {
           .fn()
           .mockReturnValue([Permission.MANAGE_CALENDAR_RULES]),
         getRole: jest.fn().mockReturnValue(UserRole.LOCATION_MANAGER),
-        getAssignmentScope: jest.fn().mockReturnValue('LOCATION'),
+        getAssignmentScope: jest.fn().mockReturnValue("LOCATION"),
         getAssignedAt: jest.fn().mockReturnValue(new Date()),
         getExpiresAt: jest.fn().mockReturnValue(undefined),
-        getAssignedBy: jest.fn().mockReturnValue('business-admin-456'),
+        getAssignedBy: jest.fn().mockReturnValue("business-admin-456"),
       } as any;
 
       // Assignment invalid in context (wrong location)
@@ -395,8 +392,8 @@ describe('🧪 GetUserEffectivePermissionsUseCase - TDD Suite', () => {
     });
   });
 
-  describe('🔴 RED Phase - Error Handling', () => {
-    it('should handle repository errors gracefully', async () => {
+  describe("🔴 RED Phase - Error Handling", () => {
+    it("should handle repository errors gracefully", async () => {
       // Given
       const request = {
         requestingUserId: targetUserId,
@@ -406,7 +403,7 @@ describe('🧪 GetUserEffectivePermissionsUseCase - TDD Suite', () => {
         timestamp: new Date(),
       };
 
-      const repositoryError = new Error('Database connection failed');
+      const repositoryError = new Error("Database connection failed");
       mockRoleAssignmentRepository.findByUserId.mockRejectedValueOnce(
         repositoryError,
       );
@@ -415,7 +412,7 @@ describe('🧪 GetUserEffectivePermissionsUseCase - TDD Suite', () => {
       await expect(useCase.execute(request)).rejects.toThrow(repositoryError);
 
       expect(mockLogger.error).toHaveBeenCalledWith(
-        'Failed to retrieve user effective permissions',
+        "Failed to retrieve user effective permissions",
         repositoryError,
         expect.objectContaining({
           targetUserId,
@@ -424,7 +421,7 @@ describe('🧪 GetUserEffectivePermissionsUseCase - TDD Suite', () => {
       );
     });
 
-    it('should handle permission service errors', async () => {
+    it("should handle permission service errors", async () => {
       // Given
       const request = {
         requestingUserId,
@@ -435,7 +432,7 @@ describe('🧪 GetUserEffectivePermissionsUseCase - TDD Suite', () => {
       };
 
       const permissionError = new InsufficientPermissionsError(
-        'MANAGE_ALL_STAFF',
+        "MANAGE_ALL_STAFF",
       );
       mockPermissionService.requirePermission.mockRejectedValueOnce(
         permissionError,
@@ -446,8 +443,8 @@ describe('🧪 GetUserEffectivePermissionsUseCase - TDD Suite', () => {
     });
   });
 
-  describe('🔵 REFACTOR Phase - Integration Tests', () => {
-    it('should execute complete flow for BUSINESS_ADMIN requesting PRACTITIONER permissions', async () => {
+  describe("🔵 REFACTOR Phase - Integration Tests", () => {
+    it("should execute complete flow for BUSINESS_ADMIN requesting PRACTITIONER permissions", async () => {
       // Given - Business scenario: Admin checking practitioner permissions
       const request = {
         requestingUserId, // BUSINESS_ADMIN
@@ -472,10 +469,10 @@ describe('🧪 GetUserEffectivePermissionsUseCase - TDD Suite', () => {
             Permission.MANAGE_CLIENT_NOTES,
           ]),
         getRole: jest.fn().mockReturnValue(UserRole.PRACTITIONER),
-        getAssignmentScope: jest.fn().mockReturnValue('DEPARTMENT'),
+        getAssignmentScope: jest.fn().mockReturnValue("DEPARTMENT"),
         getAssignedAt: jest.fn().mockReturnValue(new Date()),
         getExpiresAt: jest.fn().mockReturnValue(undefined),
-        getAssignedBy: jest.fn().mockReturnValue('department-head-789'),
+        getAssignedBy: jest.fn().mockReturnValue("department-head-789"),
       } as any;
 
       mockRoleAssignmentRepository.findByUserId.mockResolvedValueOnce([
@@ -497,7 +494,7 @@ describe('🧪 GetUserEffectivePermissionsUseCase - TDD Suite', () => {
       expect(result.hierarchyLevel).toBe(400); // PRACTITIONER level
 
       expect(mockLogger.info).toHaveBeenCalledWith(
-        'Retrieving user effective permissions',
+        "Retrieving user effective permissions",
         expect.objectContaining({
           requestingUserId,
           targetUserId,
@@ -506,7 +503,7 @@ describe('🧪 GetUserEffectivePermissionsUseCase - TDD Suite', () => {
       );
 
       expect(mockLogger.info).toHaveBeenCalledWith(
-        'User effective permissions retrieved successfully',
+        "User effective permissions retrieved successfully",
         expect.objectContaining({
           targetUserId,
           effectivePermissionsCount: 2,
@@ -517,9 +514,9 @@ describe('🧪 GetUserEffectivePermissionsUseCase - TDD Suite', () => {
       );
     });
 
-    it('should handle CLIENT permissions correctly', async () => {
+    it("should handle CLIENT permissions correctly", async () => {
       // Given - Client checking their own permissions
-      const clientUserId = 'client-123';
+      const clientUserId = "client-123";
       const request = {
         requestingUserId: clientUserId,
         targetUserId: clientUserId,
@@ -542,10 +539,10 @@ describe('🧪 GetUserEffectivePermissionsUseCase - TDD Suite', () => {
             Permission.JOIN_WAITING_LIST,
           ]),
         getRole: jest.fn().mockReturnValue(UserRole.VIP_CLIENT),
-        getAssignmentScope: jest.fn().mockReturnValue('BUSINESS'),
+        getAssignmentScope: jest.fn().mockReturnValue("BUSINESS"),
         getAssignedAt: jest.fn().mockReturnValue(new Date()),
         getExpiresAt: jest.fn().mockReturnValue(undefined),
-        getAssignedBy: jest.fn().mockReturnValue('business-admin-123'),
+        getAssignedBy: jest.fn().mockReturnValue("business-admin-123"),
       } as any;
 
       mockRoleAssignmentRepository.findByUserId.mockResolvedValueOnce([

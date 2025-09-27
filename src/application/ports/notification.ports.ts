@@ -4,8 +4,8 @@
  * @version 1.0.0
  */
 
-import { NotificationChannel } from '../../domain/value-objects/notification-channel.value-object';
-import { NotificationPriority } from '../../domain/value-objects/notification-priority.value-object';
+import { NotificationChannel } from "../../domain/value-objects/notification-channel.value-object";
+import { NotificationPriority } from "../../domain/value-objects/notification-priority.value-object";
 
 /**
  * Données pour l'envoi d'une notification
@@ -248,7 +248,7 @@ export interface INotificationQueuePort {
    */
   getJobStatus(jobId: string): Promise<{
     id: string;
-    status: 'waiting' | 'active' | 'completed' | 'failed' | 'cancelled';
+    status: "waiting" | "active" | "completed" | "failed" | "cancelled";
     progress?: number;
     result?: any;
     error?: string;
@@ -274,7 +274,7 @@ export interface INotificationAnalyticsPort {
    */
   trackEvent(
     notificationId: string,
-    event: 'sent' | 'delivered' | 'opened' | 'clicked' | 'failed',
+    event: "sent" | "delivered" | "opened" | "clicked" | "failed",
     metadata?: Record<string, any>,
   ): Promise<void>;
 

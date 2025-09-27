@@ -5,12 +5,12 @@
  * Logging structuré pour la Clean Architecture
  */
 
-import { Global, Module } from '@nestjs/common';
-import { LoggerModule } from 'nestjs-pino';
-import { TOKENS } from '../../shared/constants/injection-tokens';
-import { AppConfigService } from '../config/app-config.service';
-import { pinoConfig } from './pino-logger.config';
-import { PinoLoggerService } from './pino-logger.service';
+import { Global, Module } from "@nestjs/common";
+import { LoggerModule } from "nestjs-pino";
+import { TOKENS } from "../../shared/constants/injection-tokens";
+import { AppConfigService } from "../config/app-config.service";
+import { pinoConfig } from "./pino-logger.config";
+import { PinoLoggerService } from "./pino-logger.service";
 
 @Global()
 @Module({

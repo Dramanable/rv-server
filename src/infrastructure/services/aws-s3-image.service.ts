@@ -10,10 +10,10 @@ import {
   DeleteObjectCommand,
   PutObjectCommand,
   S3Client,
-} from '@aws-sdk/client-s3';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { ImageCategory } from '../../domain/value-objects/business-image.value-object';
-import { ImageUploadSettings } from '../../domain/value-objects/image-upload-settings.value-object';
+} from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { ImageCategory } from "../../domain/value-objects/business-image.value-object";
+import { ImageUploadSettings } from "../../domain/value-objects/image-upload-settings.value-object";
 
 export interface UploadImageMetadata {
   readonly category: ImageCategory;
@@ -48,7 +48,7 @@ export class AwsS3ImageService {
   private readonly region: string;
   private readonly urlCache = new Map<string, { url: string; expires: Date }>();
 
-  constructor(s3Client: S3Client, bucketName: string, region = 'eu-west-1') {
+  constructor(s3Client: S3Client, bucketName: string, region = "eu-west-1") {
     this.s3Client = s3Client;
     this.bucketName = bucketName;
     this.region = region;
@@ -119,7 +119,7 @@ export class AwsS3ImageService {
       Metadata: {
         businessId,
         category: metadata.category,
-        alt: metadata.alt || '',
+        alt: metadata.alt || "",
       },
     });
 
@@ -167,8 +167,8 @@ export class AwsS3ImageService {
     );
 
     // Generate variants (simplified for GREEN phase)
-    const baseKey = originalResult.s3Key.replace(/(\.[^.]+)$/, '');
-    const extension = originalResult.s3Key.match(/(\.[^.]+)$/)?.[1] || '.jpg';
+    const baseKey = originalResult.s3Key.replace(/(\.[^.]+)$/, "");
+    const extension = originalResult.s3Key.match(/(\.[^.]+)$/)?.[1] || ".jpg";
 
     const originalUrl = `https://${this.bucketName}.s3.${this.region}.amazonaws.com/${originalResult.s3Key}`;
 
@@ -196,14 +196,14 @@ export class AwsS3ImageService {
     // Validate against settings
     const validation = uploadSettings.validateImage({
       size: imageBuffer.length,
-      format: metadata.contentType.split('/')[1]?.toUpperCase() || 'UNKNOWN',
+      format: metadata.contentType.split("/")[1]?.toUpperCase() || "UNKNOWN",
       dimensions: metadata.dimensions || { width: 0, height: 0 },
       category: metadata.category,
     });
 
     if (!validation.isValid) {
       throw new Error(
-        `Image validation failed: ${validation.errors.join(', ')}`,
+        `Image validation failed: ${validation.errors.join(", ")}`,
       );
     }
 
@@ -244,9 +244,9 @@ export class AwsS3ImageService {
   generateS3Key(businessId: string, metadata: UploadImageMetadata): string {
     // Sanitize filename to prevent path traversal
     const sanitizedFileName = metadata.fileName
-      .replace(/[^a-zA-Z0-9.-]/g, '_')
-      .replace(/\.+/g, '.')
-      .replace(/^\.+|\.+$/g, '');
+      .replace(/[^a-zA-Z0-9.-]/g, "_")
+      .replace(/\.+/g, ".")
+      .replace(/^\.+|\.+$/g, "");
 
     const category = metadata.category.toLowerCase();
     return `${businessId}/${category}/${sanitizedFileName}`;
@@ -286,7 +286,7 @@ export class AwsS3ImageService {
     // Check if S3 key belongs to the business
     if (!s3Key.startsWith(businessId)) {
       throw new Error(
-        'Unauthorized: Cannot delete image from different business',
+        "Unauthorized: Cannot delete image from different business",
       );
     }
 
@@ -306,7 +306,7 @@ export class AwsS3ImageService {
   }> {
     // Extract S3 key from URL for signed URL generation
     const s3KeyMatch = params.originalUrl.match(/amazonaws\.com\/(.+)$/);
-    const s3Key = s3KeyMatch ? s3KeyMatch[1] : 'default-key';
+    const s3Key = s3KeyMatch ? s3KeyMatch[1] : "default-key";
 
     const viewUrl = await this.generateDownloadUrl(s3Key, 15); // 15 minutes
     const downloadUrl = await this.generateDownloadUrl(s3Key, 60); // 1 hour

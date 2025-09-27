@@ -4,4 +4,4 @@
  * ✅ Node.js 24 compatible
  */
 
-export * from './entities';
+export * from "./entities";

@@ -15,7 +15,7 @@ Documentation complète des APIs de gestion des Services avec tarification flexi
 ### ✅ **Tous les endpoints ServiceController sont maintenant OPÉRATIONNELS**
 
 - **POST /api/v1/services/list** - Recherche avancée paginée ✅
-- **GET /api/v1/services/:id** - Récupérer service par ID ✅  
+- **GET /api/v1/services/:id** - Récupérer service par ID ✅
 - **POST /api/v1/services** - Créer nouveau service ✅
 - **PUT /api/v1/services/:id** - Mettre à jour service ✅
 - **DELETE /api/v1/services/:id** - Supprimer service ✅
@@ -26,7 +26,7 @@ Documentation complète des APIs de gestion des Services avec tarification flexi
 ### ✅ **Service Use Cases - ALL TESTS PASSING**
 
 - **UpdateServiceUseCase** : ✅ 11 tests passent (parameter validation, business rules, success scenarios, logging)
-- **ListServicesUseCase** : ✅ 8 tests passent (permissions, success logging, error handling)  
+- **ListServicesUseCase** : ✅ 8 tests passent (permissions, success logging, error handling)
 - **DeleteServiceUseCase** : ✅ 8 tests passent (parameter validation, business rules, success scenarios, logging)
 - **Service Entity** : ✅ Tous les tests Domain passent (creation, validation, many-to-many ServiceTypes)
 
@@ -34,11 +34,11 @@ Documentation complète des APIs de gestion des Services avec tarification flexi
 
 #### **Domain Layer** ✅
 - Service Entity avec business rules
-- PricingConfig Value Object  
+- PricingConfig Value Object
 - ServiceType many-to-many relations
 - Validation métier complète
 
-#### **Application Layer** ✅  
+#### **Application Layer** ✅
 - CreateService, GetService, ListServices, UpdateService, DeleteService Use Cases
 - IPermissionService integration stricte
 - Logging et audit complets
@@ -47,7 +47,7 @@ Documentation complète des APIs de gestion des Services avec tarification flexi
 #### **Infrastructure Layer** ✅
 - ServiceOrmEntity avec TypeORM
 - TypeOrmServiceRepository implémentation
-- ServiceOrmMapper pour conversions Domain ↔ Persistence  
+- ServiceOrmMapper pour conversions Domain ↔ Persistence
 - Migrations validées et testées
 
 #### **Presentation Layer** ✅

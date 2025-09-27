@@ -5,25 +5,25 @@
  * pour l'opération de listage du personnel
  */
 
-import { I18nService } from '../../../../../application/ports/i18n.port';
-import { Logger } from '../../../../../application/ports/logger.port';
-import { IPermissionService } from '../../../../../application/ports/permission.service.interface';
+import { I18nService } from "../../../../../application/ports/i18n.port";
+import { Logger } from "../../../../../application/ports/logger.port";
+import { IPermissionService } from "../../../../../application/ports/permission.service.interface";
 import {
   ListStaffRequest,
   ListStaffUseCase,
-} from '../../../../../application/use-cases/staff/list-staff.use-case';
-import { Staff } from '../../../../../domain/entities/staff.entity';
-import { StaffRepository } from '../../../../../domain/repositories/staff.repository.interface';
-import { BusinessId } from '../../../../../domain/value-objects/business-id.value-object';
-import { Permission } from '../../../../../shared/enums/permission.enum';
-import { StaffRole } from '../../../../../shared/enums/staff-role.enum';
+} from "../../../../../application/use-cases/staff/list-staff.use-case";
+import { Staff } from "../../../../../domain/entities/staff.entity";
+import { StaffRepository } from "../../../../../domain/repositories/staff.repository.interface";
+import { BusinessId } from "../../../../../domain/value-objects/business-id.value-object";
+import { Permission } from "../../../../../shared/enums/permission.enum";
+import { StaffRole } from "../../../../../shared/enums/staff-role.enum";
 import {
   createMockI18nService,
   createMockLogger,
   createMockPermissionService,
-} from '../../../../setup/test-mocks';
+} from "../../../../setup/test-mocks";
 
-describe('ListStaffUseCase - Permission Tests', () => {
+describe("ListStaffUseCase - Permission Tests", () => {
   let useCase: ListStaffUseCase;
   let mockStaffRepository: jest.Mocked<StaffRepository>;
   let mockPermissionService: jest.Mocked<IPermissionService>;
@@ -31,17 +31,17 @@ describe('ListStaffUseCase - Permission Tests', () => {
   let mockI18n: jest.Mocked<I18nService>;
 
   const validRequest: ListStaffRequest = {
-    requestingUserId: '123e4567-e89b-42d3-a456-426614174000',
+    requestingUserId: "123e4567-e89b-42d3-a456-426614174000",
     pagination: {
       page: 1,
       limit: 10,
     },
     sorting: {
-      sortBy: 'createdAt',
-      sortOrder: 'desc',
+      sortBy: "createdAt",
+      sortOrder: "desc",
     },
     filters: {
-      businessId: '123e4567-e89b-42d3-a456-426614174001',
+      businessId: "123e4567-e89b-42d3-a456-426614174001",
       isActive: true,
     },
   };
@@ -74,8 +74,8 @@ describe('ListStaffUseCase - Permission Tests', () => {
     );
   });
 
-  describe('Permission Validation', () => {
-    it('should require VIEW_STAFF permission', async () => {
+  describe("Permission Validation", () => {
+    it("should require VIEW_STAFF permission", async () => {
       // Arrange
       mockPermissionService.requirePermission.mockResolvedValue();
       mockStaffRepository.search.mockResolvedValue({
@@ -91,31 +91,31 @@ describe('ListStaffUseCase - Permission Tests', () => {
         validRequest.requestingUserId,
         Permission.VIEW_STAFF,
         {
-          action: 'list',
-          resource: 'staff',
+          action: "list",
+          resource: "staff",
           businessId: validRequest.filters.businessId,
         },
       );
     });
 
-    it('should throw error when permission is denied', async () => {
+    it("should throw error when permission is denied", async () => {
       // Arrange
-      const permissionError = new Error('Permission denied');
+      const permissionError = new Error("Permission denied");
       mockPermissionService.requirePermission.mockRejectedValue(
         permissionError,
       );
 
       // Act & Assert
       await expect(useCase.execute(validRequest)).rejects.toThrow(
-        'Permission denied',
+        "Permission denied",
       );
 
       expect(mockPermissionService.requirePermission).toHaveBeenCalledWith(
         validRequest.requestingUserId,
         Permission.VIEW_STAFF,
         {
-          action: 'list',
-          resource: 'staff',
+          action: "list",
+          resource: "staff",
           businessId: validRequest.filters.businessId,
         },
       );
@@ -124,17 +124,17 @@ describe('ListStaffUseCase - Permission Tests', () => {
       expect(mockStaffRepository.search).not.toHaveBeenCalled();
     });
 
-    it('should successfully list staff when permission is granted', async () => {
+    it("should successfully list staff when permission is granted", async () => {
       // Arrange
       const mockStaff = Staff.create({
-        businessId: BusinessId.create('123e4567-e89b-42d3-a456-426614174001'),
+        businessId: BusinessId.create("123e4567-e89b-42d3-a456-426614174001"),
         profile: {
-          firstName: 'John',
-          lastName: 'Doe',
-          specialization: 'General',
+          firstName: "John",
+          lastName: "Doe",
+          specialization: "General",
         },
         role: StaffRole.DOCTOR,
-        email: 'john.doe@test.com',
+        email: "john.doe@test.com",
       });
 
       mockPermissionService.requirePermission.mockResolvedValue();
@@ -155,8 +155,8 @@ describe('ListStaffUseCase - Permission Tests', () => {
         validRequest.requestingUserId,
         Permission.VIEW_STAFF,
         {
-          action: 'list',
-          resource: 'staff',
+          action: "list",
+          resource: "staff",
           businessId: validRequest.filters.businessId,
         },
       );
@@ -165,8 +165,8 @@ describe('ListStaffUseCase - Permission Tests', () => {
     });
   });
 
-  describe('Logging', () => {
-    it('should log operation start and success', async () => {
+  describe("Logging", () => {
+    it("should log operation start and success", async () => {
       // Arrange
       mockPermissionService.requirePermission.mockResolvedValue();
       mockStaffRepository.search.mockResolvedValue({
@@ -179,7 +179,7 @@ describe('ListStaffUseCase - Permission Tests', () => {
 
       // Assert
       expect(mockLogger.info).toHaveBeenCalledWith(
-        'Attempting to list staff',
+        "Attempting to list staff",
         expect.objectContaining({
           requestingUserId: validRequest.requestingUserId,
           page: validRequest.pagination.page,
@@ -189,7 +189,7 @@ describe('ListStaffUseCase - Permission Tests', () => {
       );
 
       expect(mockLogger.info).toHaveBeenCalledWith(
-        'Staff list retrieved successfully',
+        "Staff list retrieved successfully",
         expect.objectContaining({
           requestingUserId: validRequest.requestingUserId,
           totalItems: 0,
@@ -198,19 +198,19 @@ describe('ListStaffUseCase - Permission Tests', () => {
       );
     });
 
-    it('should log errors when operation fails', async () => {
+    it("should log errors when operation fails", async () => {
       // Arrange
-      const testError = new Error('Database error');
+      const testError = new Error("Database error");
       mockPermissionService.requirePermission.mockResolvedValue();
       mockStaffRepository.search.mockRejectedValue(testError);
 
       // Act & Assert
       await expect(useCase.execute(validRequest)).rejects.toThrow(
-        'Database error',
+        "Database error",
       );
 
       expect(mockLogger.error).toHaveBeenCalledWith(
-        'Error listing staff',
+        "Error listing staff",
         testError,
         {
           requestingUserId: validRequest.requestingUserId,

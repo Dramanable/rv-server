@@ -9,22 +9,22 @@ import {
   ApplicationValidationError,
   InsufficientPermissionsError,
   ResourceNotFoundError,
-} from '../../../application/exceptions/application.exceptions';
-import type { I18nService } from '../../../application/ports/i18n.port';
-import type { Logger } from '../../../application/ports/logger.port';
+} from "../../../application/exceptions/application.exceptions";
+import type { I18nService } from "../../../application/ports/i18n.port";
+import type { Logger } from "../../../application/ports/logger.port";
 import {
   Calendar,
   CalendarStatus,
   CalendarType,
-} from '../../../domain/entities/calendar.entity';
-import type { CalendarRepository } from '../../../domain/repositories/calendar.repository.interface';
-import type { UserRepository } from '../../../domain/repositories/user.repository.interface';
-import { CalendarId } from '../../../domain/value-objects/calendar-id.value-object';
+} from "../../../domain/entities/calendar.entity";
+import type { CalendarRepository } from "../../../domain/repositories/calendar.repository.interface";
+import type { UserRepository } from "../../../domain/repositories/user.repository.interface";
+import { CalendarId } from "../../../domain/value-objects/calendar-id.value-object";
 import {
   AppContext,
   AppContextFactory,
-} from '../../../shared/context/app-context';
-import { UserRole } from '../../../shared/enums/user-role.enum';
+} from "../../../shared/context/app-context";
+import { UserRole } from "../../../shared/enums/user-role.enum";
 
 export interface GetCalendarByIdRequest {
   readonly requestingUserId: string;
@@ -95,13 +95,13 @@ export class GetCalendarByIdUseCase {
   ): Promise<CalendarDetailsResponse> {
     // 1. Context pour traçabilité
     const context: AppContext = AppContextFactory.create()
-      .operation('GetCalendarById')
+      .operation("GetCalendarById")
       .requestingUser(request.requestingUserId)
-      .metadata('calendarId', request.calendarId)
+      .metadata("calendarId", request.calendarId)
       .build();
 
     this.logger.info(
-      this.i18n.t('operations.calendar.get_attempt'),
+      this.i18n.t("operations.calendar.get_attempt"),
       context as any,
     );
 
@@ -114,7 +114,7 @@ export class GetCalendarByIdUseCase {
       const calendar = await this.calendarRepository.findById(calendarId);
 
       if (!calendar) {
-        throw new ResourceNotFoundError('Calendar', request.calendarId);
+        throw new ResourceNotFoundError("Calendar", request.calendarId);
       }
 
       // 4. Validation des permissions
@@ -127,7 +127,7 @@ export class GetCalendarByIdUseCase {
       // 5. Mapping vers response détaillée
       const response = this.mapToCalendarDetailsResponse(calendar);
 
-      this.logger.info(this.i18n.t('operations.calendar.get_success'), {
+      this.logger.info(this.i18n.t("operations.calendar.get_success"), {
         ...(context as any),
         calendarName: calendar.name,
         calendarType: calendar.type,
@@ -136,7 +136,7 @@ export class GetCalendarByIdUseCase {
       return response;
     } catch (error) {
       this.logger.error(
-        this.i18n.t('operations.calendar.get_failed', {
+        this.i18n.t("operations.calendar.get_failed", {
           error: (error as Error).message,
         }),
         context as any,
@@ -148,9 +148,9 @@ export class GetCalendarByIdUseCase {
   private validateRequestParameters(request: GetCalendarByIdRequest): void {
     if (!request.calendarId || request.calendarId.trim().length === 0) {
       throw new ApplicationValidationError(
-        'calendarId',
+        "calendarId",
         request.calendarId,
-        'Calendar ID is required',
+        "Calendar ID is required",
       );
     }
 
@@ -159,9 +159,9 @@ export class GetCalendarByIdUseCase {
       request.requestingUserId.trim().length === 0
     ) {
       throw new ApplicationValidationError(
-        'requestingUserId',
+        "requestingUserId",
         request.requestingUserId,
-        'Requesting user ID is required',
+        "Requesting user ID is required",
       );
     }
   }
@@ -175,8 +175,8 @@ export class GetCalendarByIdUseCase {
     if (!requestingUser) {
       throw new InsufficientPermissionsError(
         requestingUserId,
-        'VIEW_CALENDAR',
-        'calendar',
+        "VIEW_CALENDAR",
+        "calendar",
       );
     }
 
@@ -230,7 +230,7 @@ export class GetCalendarByIdUseCase {
     }
 
     // Par défaut, refuser l'accès
-    this.logger.warn(this.i18n.t('warnings.permission.denied'), {
+    this.logger.warn(this.i18n.t("warnings.permission.denied"), {
       requestingUserId,
       requestingUserRole: requestingUser.role,
       calendarId: calendar.id.getValue(),
@@ -239,8 +239,8 @@ export class GetCalendarByIdUseCase {
 
     throw new InsufficientPermissionsError(
       requestingUserId,
-      'VIEW_CALENDAR',
-      'calendar',
+      "VIEW_CALENDAR",
+      "calendar",
       { calendarId: calendar.id.getValue() },
     );
   }
@@ -278,13 +278,13 @@ export class GetCalendarByIdUseCase {
           })),
         })),
         specialDates: availability.specialDates.map((sd) => ({
-          date: sd.date.toISOString().split('T')[0], // YYYY-MM-DD format
+          date: sd.date.toISOString().split("T")[0], // YYYY-MM-DD format
           isAvailable: sd.isAvailable,
           reason: sd.reason,
         })),
         holidays: availability.holidays.map((holiday) => ({
           name: holiday.name,
-          date: holiday.date.toISOString().split('T')[0],
+          date: holiday.date.toISOString().split("T")[0],
         })),
         maintenancePeriods: availability.maintenancePeriods.map((mp) => ({
           startDate: mp.startDate.toISOString(),

@@ -13,33 +13,33 @@ import {
   HttpStatus,
   Inject,
   Post,
-} from '@nestjs/common';
+} from "@nestjs/common";
 import {
   ApiBearerAuth,
   ApiBody,
   ApiOperation,
   ApiResponse,
   ApiTags,
-} from '@nestjs/swagger';
+} from "@nestjs/swagger";
 
-import { SendBulkNotificationUseCase } from '../../application/use-cases/notification/send-bulk-notification.use-case';
-import { SendNotificationUseCase } from '../../application/use-cases/notification/send-notification.use-case';
-import { NotificationChannel } from '../../domain/value-objects/notification-channel.value-object';
-import { NotificationPriority } from '../../domain/value-objects/notification-priority.value-object';
-import { NotificationTemplateType } from '../../domain/value-objects/notification-template.value-object';
-import { TOKENS } from '../../shared/constants/injection-tokens';
-import { SendNotificationResponseDto } from '../dtos/notification/notification-response.dto';
-import { SendBulkNotificationResponseDto } from '../dtos/notification/send-bulk-notification-response.dto';
-import { SendBulkNotificationDto } from '../dtos/notification/send-bulk-notification.dto';
-import { SendNotificationDto } from '../dtos/notification/send-notification.dto';
+import { SendBulkNotificationUseCase } from "../../application/use-cases/notification/send-bulk-notification.use-case";
+import { SendNotificationUseCase } from "../../application/use-cases/notification/send-notification.use-case";
+import { NotificationChannel } from "../../domain/value-objects/notification-channel.value-object";
+import { NotificationPriority } from "../../domain/value-objects/notification-priority.value-object";
+import { NotificationTemplateType } from "../../domain/value-objects/notification-template.value-object";
+import { TOKENS } from "../../shared/constants/injection-tokens";
+import { SendNotificationResponseDto } from "../dtos/notification/notification-response.dto";
+import { SendBulkNotificationResponseDto } from "../dtos/notification/send-bulk-notification-response.dto";
+import { SendBulkNotificationDto } from "../dtos/notification/send-bulk-notification.dto";
+import { SendNotificationDto } from "../dtos/notification/send-notification.dto";
 // TODO: Import correct decorators when available
 // import { GetUser } from '../security/get-user.decorator';
 
 /**
  * Contrôleur pour la gestion des notifications
  */
-@ApiTags('📢 Notifications')
-@Controller('notifications')
+@ApiTags("📢 Notifications")
+@Controller("notifications")
 @ApiBearerAuth()
 export class NotificationController {
   constructor(
@@ -52,11 +52,11 @@ export class NotificationController {
   /**
    * Envoie une nouvelle notification
    */
-  @Post('send')
+  @Post("send")
   @HttpCode(HttpStatus.OK)
   // @RateLimit({ ttl: 3600, limit: 100 }) // 100 notifications per hour - DISABLED
   @ApiOperation({
-    summary: '📤 Send notification to recipient',
+    summary: "📤 Send notification to recipient",
     description: `
     **Envoie une notification** via le canal spécifié avec support de planification.
 
@@ -141,53 +141,53 @@ export class NotificationController {
   })
   @ApiBody({
     type: SendNotificationDto,
-    description: 'Données de la notification à envoyer',
+    description: "Données de la notification à envoyer",
     examples: {
       immediate_email: {
-        summary: '📧 Email immédiat',
-        description: 'Notification email envoyée immédiatement',
+        summary: "📧 Email immédiat",
+        description: "Notification email envoyée immédiatement",
         value: {
-          recipientId: 'user_123e4567-e89b-12d3-a456-426614174000',
-          title: 'Confirmation de rendez-vous',
-          content: 'Votre rendez-vous du 23/09/2025 à 14h30 est confirmé.',
-          channel: 'EMAIL',
-          priority: 'HIGH',
+          recipientId: "user_123e4567-e89b-12d3-a456-426614174000",
+          title: "Confirmation de rendez-vous",
+          content: "Votre rendez-vous du 23/09/2025 à 14h30 est confirmé.",
+          channel: "EMAIL",
+          priority: "HIGH",
           metadata: {
-            appointmentId: 'appointment_123e4567-e89b-12d3-a456-426614174000',
-            businessId: 'business_456e7890-e89b-12d3-a456-426614174001',
-            templateId: 'appointment_confirmation',
+            appointmentId: "appointment_123e4567-e89b-12d3-a456-426614174000",
+            businessId: "business_456e7890-e89b-12d3-a456-426614174001",
+            templateId: "appointment_confirmation",
           },
         },
       },
       scheduled_sms: {
-        summary: '📱 SMS planifié',
-        description: 'SMS de rappel planifié pour plus tard',
+        summary: "📱 SMS planifié",
+        description: "SMS de rappel planifié pour plus tard",
         value: {
-          recipientId: 'user_789e0123-e89b-12d3-a456-426614174002',
-          title: 'Rappel RDV',
-          content: 'RDV demain 14h30 - Cabinet Médical',
-          channel: 'SMS',
-          priority: 'NORMAL',
-          scheduledFor: '2025-09-23T10:00:00.000Z',
+          recipientId: "user_789e0123-e89b-12d3-a456-426614174002",
+          title: "Rappel RDV",
+          content: "RDV demain 14h30 - Cabinet Médical",
+          channel: "SMS",
+          priority: "NORMAL",
+          scheduledFor: "2025-09-23T10:00:00.000Z",
           metadata: {
-            appointmentId: 'appointment_456e7890-e89b-12d3-a456-426614174003',
-            correlationId: 'reminder_batch_001',
+            appointmentId: "appointment_456e7890-e89b-12d3-a456-426614174003",
+            correlationId: "reminder_batch_001",
           },
         },
       },
       urgent_push: {
-        summary: '🚨 Push urgent',
-        description: 'Notification push urgente',
+        summary: "🚨 Push urgent",
+        description: "Notification push urgente",
         value: {
-          recipientId: 'user_012e3456-e89b-12d3-a456-426614174004',
-          title: 'Annulation de rendez-vous',
+          recipientId: "user_012e3456-e89b-12d3-a456-426614174004",
+          title: "Annulation de rendez-vous",
           content:
-            'Votre rendez-vous de 15h00 a été annulé. Veuillez nous contacter pour reprogrammer.',
-          channel: 'PUSH',
-          priority: 'URGENT',
+            "Votre rendez-vous de 15h00 a été annulé. Veuillez nous contacter pour reprogrammer.",
+          channel: "PUSH",
+          priority: "URGENT",
           metadata: {
-            appointmentId: 'appointment_789e0123-e89b-12d3-a456-426614174005',
-            eventType: 'APPOINTMENT_CANCELLED',
+            appointmentId: "appointment_789e0123-e89b-12d3-a456-426614174005",
+            eventType: "APPOINTMENT_CANCELLED",
           },
         },
       },
@@ -195,39 +195,39 @@ export class NotificationController {
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: '✅ Notification envoyée avec succès',
+    description: "✅ Notification envoyée avec succès",
     type: SendNotificationResponseDto,
     examples: {
       immediate_success: {
-        summary: 'Envoi immédiat réussi',
+        summary: "Envoi immédiat réussi",
         value: {
           success: true,
           data: {
-            id: 'notif_123e4567-e89b-12d3-a456-426614174000',
-            status: 'SENT',
-            sentAt: '2025-09-22T10:30:00.000Z',
-            estimatedDelivery: '2025-09-22T10:30:15.000Z',
+            id: "notif_123e4567-e89b-12d3-a456-426614174000",
+            status: "SENT",
+            sentAt: "2025-09-22T10:30:00.000Z",
+            estimatedDelivery: "2025-09-22T10:30:15.000Z",
           },
           meta: {
-            timestamp: '2025-09-22T10:30:00.000Z',
-            correlationId: 'req_456e7890-e89b-12d3-a456-426614174001',
+            timestamp: "2025-09-22T10:30:00.000Z",
+            correlationId: "req_456e7890-e89b-12d3-a456-426614174001",
             processingTime: 245,
           },
         },
       },
       scheduled_success: {
-        summary: 'Planification réussie',
+        summary: "Planification réussie",
         value: {
           success: true,
           data: {
-            id: 'notif_789e0123-e89b-12d3-a456-426614174002',
-            status: 'PENDING',
-            scheduledFor: '2025-09-23T10:00:00.000Z',
-            estimatedDelivery: '2025-09-23T10:00:05.000Z',
+            id: "notif_789e0123-e89b-12d3-a456-426614174002",
+            status: "PENDING",
+            scheduledFor: "2025-09-23T10:00:00.000Z",
+            estimatedDelivery: "2025-09-23T10:00:05.000Z",
           },
           meta: {
-            timestamp: '2025-09-22T10:30:00.000Z',
-            correlationId: 'req_012e3456-e89b-12d3-a456-426614174003',
+            timestamp: "2025-09-22T10:30:00.000Z",
+            correlationId: "req_012e3456-e89b-12d3-a456-426614174003",
             processingTime: 89,
           },
         },
@@ -236,23 +236,23 @@ export class NotificationController {
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
-    description: '❌ Données de notification invalides',
+    description: "❌ Données de notification invalides",
     schema: {
-      type: 'object',
+      type: "object",
       properties: {
-        success: { type: 'boolean', example: false },
+        success: { type: "boolean", example: false },
         error: {
-          type: 'object',
+          type: "object",
           properties: {
-            code: { type: 'string', example: 'NOTIFICATION_INVALID_DATA' },
+            code: { type: "string", example: "NOTIFICATION_INVALID_DATA" },
             message: {
-              type: 'string',
+              type: "string",
               example:
-                'Le contenu dépasse la limite du canal SMS (160 caractères)',
+                "Le contenu dépasse la limite du canal SMS (160 caractères)",
             },
-            field: { type: 'string', example: 'content' },
-            timestamp: { type: 'string', example: '2025-09-22T10:30:00.000Z' },
-            path: { type: 'string', example: '/api/v1/notifications/send' },
+            field: { type: "string", example: "content" },
+            timestamp: { type: "string", example: "2025-09-22T10:30:00.000Z" },
+            path: { type: "string", example: "/api/v1/notifications/send" },
           },
         },
       },
@@ -260,19 +260,19 @@ export class NotificationController {
   })
   @ApiResponse({
     status: HttpStatus.UNAUTHORIZED,
-    description: '🔐 Authentification requise',
+    description: "🔐 Authentification requise",
   })
   @ApiResponse({
     status: HttpStatus.FORBIDDEN,
-    description: '🚫 Permissions insuffisantes',
+    description: "🚫 Permissions insuffisantes",
   })
   @ApiResponse({
     status: HttpStatus.TOO_MANY_REQUESTS,
-    description: '⚡ Limite de taux dépassée (100 notifications/heure)',
+    description: "⚡ Limite de taux dépassée (100 notifications/heure)",
   })
   @ApiResponse({
     status: HttpStatus.INTERNAL_SERVER_ERROR,
-    description: '💥 Erreur serveur interne',
+    description: "💥 Erreur serveur interne",
   })
   async sendNotification(
     @Body() dto: SendNotificationDto,
@@ -285,7 +285,7 @@ export class NotificationController {
     const channel = NotificationChannel.fromString(dto.channel);
     const priority = dto.priority
       ? NotificationPriority.fromString(dto.priority)
-      : NotificationPriority.fromString('NORMAL'); // Default to NORMAL
+      : NotificationPriority.fromString("NORMAL"); // Default to NORMAL
 
     // Exécution du use case
     const result = await this.sendNotificationUseCase.execute({
@@ -296,7 +296,7 @@ export class NotificationController {
       priority,
       metadata: dto.metadata,
       scheduledFor: dto.scheduledFor ? new Date(dto.scheduledFor) : undefined,
-      requestingUserId: 'system', // TODO: Use real user.id when auth is available
+      requestingUserId: "system", // TODO: Use real user.id when auth is available
     });
 
     // Construction de la réponse
@@ -322,11 +322,11 @@ export class NotificationController {
   /**
    * Envoie des notifications en lot (campagne)
    */
-  @Post('bulk')
+  @Post("bulk")
   @HttpCode(HttpStatus.OK)
   // @RateLimit({ ttl: 3600, limit: 10 }) // 10 campagnes par heure max - DISABLED
   @ApiOperation({
-    summary: '📬 Send bulk notifications (Campaign)',
+    summary: "📬 Send bulk notifications (Campaign)",
     description: `
     **Envoie des notifications en lot** avec support de templates et segmentation avancée.
 
@@ -421,37 +421,37 @@ export class NotificationController {
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: '✅ Campagne de notifications créée avec succès',
+    description: "✅ Campagne de notifications créée avec succès",
     schema: {
-      type: 'object',
+      type: "object",
       properties: {
-        success: { type: 'boolean', example: true },
+        success: { type: "boolean", example: true },
         data: {
-          type: 'object',
+          type: "object",
           properties: {
             campaignId: {
-              type: 'string',
-              example: 'campaign_123e4567-e89b-12d3-a456-426614174000',
+              type: "string",
+              example: "campaign_123e4567-e89b-12d3-a456-426614174000",
             },
-            totalRecipients: { type: 'number', example: 1250 },
-            totalBatches: { type: 'number', example: 25 },
-            estimatedDuration: { type: 'number', example: 3 },
-            status: { type: 'string', example: 'PROCESSING' },
+            totalRecipients: { type: "number", example: 1250 },
+            totalBatches: { type: "number", example: 25 },
+            estimatedDuration: { type: "number", example: 3 },
+            status: { type: "string", example: "PROCESSING" },
             preview: {
-              type: 'object',
+              type: "object",
               properties: {
                 sampleSubject: {
-                  type: 'string',
-                  example: 'Confirmation de rendez-vous - Cabinet Médical',
+                  type: "string",
+                  example: "Confirmation de rendez-vous - Cabinet Médical",
                 },
                 sampleContent: {
-                  type: 'string',
-                  example: 'Bonjour Jean Dupont, votre rendez-vous...',
+                  type: "string",
+                  example: "Bonjour Jean Dupont, votre rendez-vous...",
                 },
                 affectedChannels: {
-                  type: 'array',
-                  items: { type: 'string' },
-                  example: ['EMAIL', 'SMS'],
+                  type: "array",
+                  items: { type: "string" },
+                  example: ["EMAIL", "SMS"],
                 },
               },
             },
@@ -507,7 +507,7 @@ export class NotificationController {
         : undefined,
       batchSize: dto.batchSize,
       rateLimitPerMinute: dto.rateLimitPerMinute,
-      requestingUserId: 'system', // TODO: Use real user.id when auth is available
+      requestingUserId: "system", // TODO: Use real user.id when auth is available
       campaignName: dto.campaignName,
     };
 
@@ -532,48 +532,48 @@ export class NotificationController {
   /**
    * Obtient le statut d'une campagne
    */
-  @Get('campaigns/:campaignId/status')
+  @Get("campaigns/:campaignId/status")
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
-    summary: '📊 Get campaign status',
+    summary: "📊 Get campaign status",
     description:
       "Récupère le statut détaillé d'une campagne de notifications en cours ou terminée",
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: '✅ Statut de campagne récupéré avec succès',
+    description: "✅ Statut de campagne récupéré avec succès",
     schema: {
-      type: 'object',
+      type: "object",
       properties: {
-        success: { type: 'boolean', example: true },
+        success: { type: "boolean", example: true },
         data: {
-          type: 'object',
+          type: "object",
           properties: {
-            campaignId: { type: 'string' },
-            campaignName: { type: 'string' },
+            campaignId: { type: "string" },
+            campaignName: { type: "string" },
             status: {
-              type: 'string',
+              type: "string",
               enum: [
-                'QUEUED',
-                'PROCESSING',
-                'COMPLETED',
-                'FAILED',
-                'CANCELLED',
+                "QUEUED",
+                "PROCESSING",
+                "COMPLETED",
+                "FAILED",
+                "CANCELLED",
               ],
             },
             progress: {
-              type: 'object',
+              type: "object",
               properties: {
-                totalRecipients: { type: 'number' },
-                processedRecipients: { type: 'number' },
-                successfulSends: { type: 'number' },
-                failedSends: { type: 'number' },
-                percentageComplete: { type: 'number' },
+                totalRecipients: { type: "number" },
+                processedRecipients: { type: "number" },
+                successfulSends: { type: "number" },
+                failedSends: { type: "number" },
+                percentageComplete: { type: "number" },
               },
             },
-            startedAt: { type: 'string', format: 'date-time' },
-            completedAt: { type: 'string', format: 'date-time' },
-            estimatedCompletionAt: { type: 'string', format: 'date-time' },
+            startedAt: { type: "string", format: "date-time" },
+            completedAt: { type: "string", format: "date-time" },
+            estimatedCompletionAt: { type: "string", format: "date-time" },
           },
         },
       },
@@ -586,9 +586,9 @@ export class NotificationController {
     return {
       success: true,
       data: {
-        campaignId: 'campaign_123e4567-e89b-12d3-a456-426614174000',
-        campaignName: 'Rappels du jour',
-        status: 'PROCESSING',
+        campaignId: "campaign_123e4567-e89b-12d3-a456-426614174000",
+        campaignName: "Rappels du jour",
+        status: "PROCESSING",
         progress: {
           totalRecipients: 1250,
           processedRecipients: 850,
@@ -596,8 +596,8 @@ export class NotificationController {
           failedSends: 25,
           percentageComplete: 68.0,
         },
-        startedAt: '2025-09-22T10:30:00.000Z',
-        estimatedCompletionAt: '2025-09-22T10:45:00.000Z',
+        startedAt: "2025-09-22T10:30:00.000Z",
+        estimatedCompletionAt: "2025-09-22T10:45:00.000Z",
       },
     };
   }
@@ -605,16 +605,16 @@ export class NotificationController {
   /**
    * Annule une campagne en cours
    */
-  @Delete('campaigns/:campaignId')
+  @Delete("campaigns/:campaignId")
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
-    summary: '🛑 Cancel campaign',
+    summary: "🛑 Cancel campaign",
     description:
-      'Annule une campagne de notifications en cours (impossible si déjà terminée)',
+      "Annule une campagne de notifications en cours (impossible si déjà terminée)",
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: '✅ Campagne annulée avec succès',
+    description: "✅ Campagne annulée avec succès",
   })
   async cancelCampaign() // @Param('campaignId') campaignId: string,
   // @GetUser() user: User,
@@ -622,58 +622,58 @@ export class NotificationController {
     // TODO: Implement campaign cancellation
     return {
       success: true,
-      message: 'Campaign cancelled successfully',
+      message: "Campaign cancelled successfully",
     };
   }
 
   /**
    * Obtient les analytics des notifications
    */
-  @Get('analytics')
+  @Get("analytics")
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
-    summary: '📈 Get notification analytics',
+    summary: "📈 Get notification analytics",
     description:
-      'Récupère les métriques et analytics détaillées des notifications',
+      "Récupère les métriques et analytics détaillées des notifications",
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: '✅ Analytics récupérées avec succès',
+    description: "✅ Analytics récupérées avec succès",
     schema: {
-      type: 'object',
+      type: "object",
       properties: {
-        success: { type: 'boolean', example: true },
+        success: { type: "boolean", example: true },
         data: {
-          type: 'object',
+          type: "object",
           properties: {
-            period: { type: 'string', example: 'Last 30 days' },
-            totalSent: { type: 'number', example: 15420 },
-            deliveryRate: { type: 'number', example: 94.2 },
+            period: { type: "string", example: "Last 30 days" },
+            totalSent: { type: "number", example: 15420 },
+            deliveryRate: { type: "number", example: 94.2 },
             channelBreakdown: {
-              type: 'object',
+              type: "object",
               example: { EMAIL: 8250, SMS: 4180, PUSH: 2990 },
             },
             peakHours: {
-              type: 'array',
+              type: "array",
               items: {
-                type: 'object',
+                type: "object",
                 properties: {
-                  hour: { type: 'number' },
-                  count: { type: 'number' },
-                  percentage: { type: 'number' },
+                  hour: { type: "number" },
+                  count: { type: "number" },
+                  percentage: { type: "number" },
                 },
               },
             },
             recommendations: {
-              type: 'array',
+              type: "array",
               items: {
-                type: 'object',
+                type: "object",
                 properties: {
-                  type: { type: 'string' },
-                  priority: { type: 'string' },
-                  title: { type: 'string' },
-                  description: { type: 'string' },
-                  action: { type: 'string' },
+                  type: { type: "string" },
+                  priority: { type: "string" },
+                  title: { type: "string" },
+                  description: { type: "string" },
+                  action: { type: "string" },
                 },
               },
             },
@@ -689,7 +689,7 @@ export class NotificationController {
     return {
       success: true,
       data: {
-        period: 'Last 30 days',
+        period: "Last 30 days",
         totalSent: 15420,
         totalDelivered: 14526,
         totalFailed: 894,
@@ -707,12 +707,12 @@ export class NotificationController {
         ],
         recommendations: [
           {
-            type: 'optimization',
-            priority: 'medium',
+            type: "optimization",
+            priority: "medium",
             title: "Optimiser les heures d'envoi",
             description:
-              'Les envois sont concentrés sur 9h-10h (15% du volume)',
-            action: 'Répartir les envois pour optimiser les performances',
+              "Les envois sont concentrés sur 9h-10h (15% du volume)",
+            action: "Répartir les envois pour optimiser les performances",
           },
         ],
       },

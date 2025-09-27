@@ -8,21 +8,21 @@
 import {
   ForbiddenError,
   UserNotFoundError,
-} from '../../../../../application/exceptions/auth.exceptions';
+} from "../../../../../application/exceptions/auth.exceptions";
 import {
   createMockI18nService,
   createMockLogger,
   createMockUserRepository,
-} from '../../../../../application/mocks/typed-mocks';
+} from "../../../../../application/mocks/typed-mocks";
 import {
   ListUsersUseCase,
   type ListUsersRequest,
-} from '@application/use-cases/users/list-users.use-case';
-import { User } from '@domain/entities/user.entity';
-import { Email } from '@domain/value-objects/email.vo';
-import { UserRole } from '@shared/enums/user-role.enum';
+} from "@application/use-cases/users/list-users.use-case";
+import { User } from "@domain/entities/user.entity";
+import { Email } from "@domain/value-objects/email.vo";
+import { UserRole } from "@shared/enums/user-role.enum";
 
-describe('ListUsersUseCase', () => {
+describe("ListUsersUseCase", () => {
   let listUsersUseCase: ListUsersUseCase;
   let mockUserRepository: ReturnType<typeof createMockUserRepository>;
   let mockLogger: ReturnType<typeof createMockLogger>;
@@ -38,7 +38,7 @@ describe('ListUsersUseCase', () => {
   ): User => {
     const user = User.create(Email.create(email), name, role);
     // Override id for testing purposes (using Object.defineProperty to modify readonly)
-    Object.defineProperty(user, 'id', { value: id, writable: false });
+    Object.defineProperty(user, "id", { value: id, writable: false });
     return user;
   };
 
@@ -58,11 +58,11 @@ describe('ListUsersUseCase', () => {
   // 🔒 TESTS DE PERMISSIONS - TDD
   // ═══════════════════════════════════════════════════════════════
 
-  describe('🚨 Permission Validation', () => {
-    it('should throw UserNotFoundError when requesting user does not exist', async () => {
+  describe("🚨 Permission Validation", () => {
+    it("should throw UserNotFoundError when requesting user does not exist", async () => {
       // Arrange
       const request: ListUsersRequest = {
-        requestingUserId: 'non-existent-user',
+        requestingUserId: "non-existent-user",
         pagination: { page: 1, limit: 20 },
       };
 
@@ -74,21 +74,21 @@ describe('ListUsersUseCase', () => {
       );
 
       expect(mockUserRepository.findById).toHaveBeenCalledWith(
-        'non-existent-user',
+        "non-existent-user",
       );
     });
 
-    it('should throw ForbiddenError when REGULAR_CLIENT tries to list users', async () => {
+    it("should throw ForbiddenError when REGULAR_CLIENT tries to list users", async () => {
       // Arrange
       const regularClient = createTestUser(
-        'client-1',
-        'client@test.com',
-        'Regular Client',
+        "client-1",
+        "client@test.com",
+        "Regular Client",
         UserRole.REGULAR_CLIENT,
       );
 
       const request: ListUsersRequest = {
-        requestingUserId: 'client-1',
+        requestingUserId: "client-1",
         pagination: { page: 1, limit: 20 },
       };
 
@@ -100,17 +100,17 @@ describe('ListUsersUseCase', () => {
       );
     });
 
-    it('should throw ForbiddenError when PRACTITIONER tries to list users', async () => {
+    it("should throw ForbiddenError when PRACTITIONER tries to list users", async () => {
       // Arrange
       const practitioner = createTestUser(
-        'practitioner-1',
-        'doctor@test.com',
-        'Dr. Smith',
+        "practitioner-1",
+        "doctor@test.com",
+        "Dr. Smith",
         UserRole.PRACTITIONER,
       );
 
       const request: ListUsersRequest = {
-        requestingUserId: 'practitioner-1',
+        requestingUserId: "practitioner-1",
         pagination: { page: 1, limit: 20 },
       };
 
@@ -127,41 +127,41 @@ describe('ListUsersUseCase', () => {
   // 👑 PLATFORM_ADMIN PERMISSIONS - PEUT VOIR TOUT LE MONDE SAUF LUI-MÊME
   // ═══════════════════════════════════════════════════════════════
 
-  describe('👑 PLATFORM_ADMIN Permissions', () => {
-    it('should allow PLATFORM_ADMIN to list all users EXCEPT himself', async () => {
+  describe("👑 PLATFORM_ADMIN Permissions", () => {
+    it("should allow PLATFORM_ADMIN to list all users EXCEPT himself", async () => {
       // Arrange
       const platformAdmin = createTestUser(
-        'admin-1',
-        'admin@test.com',
-        'Platform Admin',
+        "admin-1",
+        "admin@test.com",
+        "Platform Admin",
         UserRole.PLATFORM_ADMIN,
       );
 
       const otherAdmin = createTestUser(
-        'admin-2',
-        'admin2@test.com',
-        'Other Admin',
+        "admin-2",
+        "admin2@test.com",
+        "Other Admin",
         UserRole.PLATFORM_ADMIN,
       );
 
       const businessOwner = createTestUser(
-        'owner-1',
-        'owner@test.com',
-        'Business Owner',
+        "owner-1",
+        "owner@test.com",
+        "Business Owner",
         UserRole.BUSINESS_OWNER,
       );
 
       const client = createTestUser(
-        'client-1',
-        'client@test.com',
-        'Regular Client',
+        "client-1",
+        "client@test.com",
+        "Regular Client",
         UserRole.REGULAR_CLIENT,
       );
 
       const allUsersExceptRequester = [otherAdmin, businessOwner, client];
 
       const request: ListUsersRequest = {
-        requestingUserId: 'admin-1',
+        requestingUserId: "admin-1",
         pagination: { page: 1, limit: 20 },
       };
 
@@ -184,46 +184,46 @@ describe('ListUsersUseCase', () => {
       // Assert
       expect(result.data).toHaveLength(3);
       expect(result.data.map((u) => u.id)).toEqual([
-        'admin-2',
-        'owner-1',
-        'client-1',
+        "admin-2",
+        "owner-1",
+        "client-1",
       ]);
-      expect(result.data.map((u) => u.id)).not.toContain('admin-1'); // Ne doit pas se voir lui-même
+      expect(result.data.map((u) => u.id)).not.toContain("admin-1"); // Ne doit pas se voir lui-même
       expect(mockUserRepository.search).toHaveBeenCalledWith(
         expect.objectContaining({
           filters: expect.objectContaining({
-            excludeUserIds: ['admin-1'], // Doit exclure l'utilisateur requérant
+            excludeUserIds: ["admin-1"], // Doit exclure l'utilisateur requérant
           }),
         }),
       );
     });
 
-    it('should allow PLATFORM_ADMIN to filter by specific roles', async () => {
+    it("should allow PLATFORM_ADMIN to filter by specific roles", async () => {
       // Arrange
       const platformAdmin = createTestUser(
-        'admin-1',
-        'admin@test.com',
-        'Platform Admin',
+        "admin-1",
+        "admin@test.com",
+        "Platform Admin",
         UserRole.PLATFORM_ADMIN,
       );
 
       const businessOwners = [
         createTestUser(
-          'owner-1',
-          'owner1@test.com',
-          'Owner 1',
+          "owner-1",
+          "owner1@test.com",
+          "Owner 1",
           UserRole.BUSINESS_OWNER,
         ),
         createTestUser(
-          'owner-2',
-          'owner2@test.com',
-          'Owner 2',
+          "owner-2",
+          "owner2@test.com",
+          "Owner 2",
           UserRole.BUSINESS_OWNER,
         ),
       ];
 
       const request: ListUsersRequest = {
-        requestingUserId: 'admin-1',
+        requestingUserId: "admin-1",
         pagination: { page: 1, limit: 20 },
         filters: {
           roles: [UserRole.BUSINESS_OWNER],
@@ -258,39 +258,39 @@ describe('ListUsersUseCase', () => {
   // 🏢 BUSINESS_OWNER PERMISSIONS
   // ═══════════════════════════════════════════════════════════════
 
-  describe('🏢 BUSINESS_OWNER Permissions', () => {
-    it('should allow BUSINESS_OWNER to see users from his business only', async () => {
+  describe("🏢 BUSINESS_OWNER Permissions", () => {
+    it("should allow BUSINESS_OWNER to see users from his business only", async () => {
       // Arrange
       const businessOwner = createTestUser(
-        'owner-1',
-        'owner@business1.com',
-        'Business Owner',
+        "owner-1",
+        "owner@business1.com",
+        "Business Owner",
         UserRole.BUSINESS_OWNER,
       );
 
       const businessUsers = [
         createTestUser(
-          'admin-1',
-          'admin@business1.com',
-          'Business Admin',
+          "admin-1",
+          "admin@business1.com",
+          "Business Admin",
           UserRole.BUSINESS_ADMIN,
         ),
         createTestUser(
-          'manager-1',
-          'manager@business1.com',
-          'Location Manager',
+          "manager-1",
+          "manager@business1.com",
+          "Location Manager",
           UserRole.LOCATION_MANAGER,
         ),
         createTestUser(
-          'doctor-1',
-          'doctor@business1.com',
-          'Doctor',
+          "doctor-1",
+          "doctor@business1.com",
+          "Doctor",
           UserRole.PRACTITIONER,
         ),
       ];
 
       const request: ListUsersRequest = {
-        requestingUserId: 'owner-1',
+        requestingUserId: "owner-1",
         pagination: { page: 1, limit: 20 },
       };
 
@@ -315,24 +315,24 @@ describe('ListUsersUseCase', () => {
       expect(mockUserRepository.search).toHaveBeenCalledWith(
         expect.objectContaining({
           filters: expect.objectContaining({
-            businessId: 'business-1', // Filtre par business ID
+            businessId: "business-1", // Filtre par business ID
             excludeRoles: [UserRole.PLATFORM_ADMIN, UserRole.BUSINESS_OWNER], // Ne peut pas voir les autres owners
           }),
         }),
       );
     });
 
-    it('should prevent BUSINESS_OWNER from seeing other business owners', async () => {
+    it("should prevent BUSINESS_OWNER from seeing other business owners", async () => {
       // Arrange
       const businessOwner = createTestUser(
-        'owner-1',
-        'owner1@business1.com',
-        'Business Owner 1',
+        "owner-1",
+        "owner1@business1.com",
+        "Business Owner 1",
         UserRole.BUSINESS_OWNER,
       );
 
       const request: ListUsersRequest = {
-        requestingUserId: 'owner-1',
+        requestingUserId: "owner-1",
         pagination: { page: 1, limit: 20 },
         filters: {
           roles: [UserRole.BUSINESS_OWNER], // Essaie de voir les autres owners
@@ -352,39 +352,39 @@ describe('ListUsersUseCase', () => {
   // 🏪 BUSINESS_ADMIN PERMISSIONS
   // ═══════════════════════════════════════════════════════════════
 
-  describe('🏪 BUSINESS_ADMIN Permissions', () => {
-    it('should allow BUSINESS_ADMIN to see business users but not owners/platform admins', async () => {
+  describe("🏪 BUSINESS_ADMIN Permissions", () => {
+    it("should allow BUSINESS_ADMIN to see business users but not owners/platform admins", async () => {
       // Arrange
       const businessAdmin = createTestUser(
-        'admin-1',
-        'admin@business1.com',
-        'Business Admin',
+        "admin-1",
+        "admin@business1.com",
+        "Business Admin",
         UserRole.BUSINESS_ADMIN,
       );
 
       const allowedUsers = [
         createTestUser(
-          'manager-1',
-          'manager@business1.com',
-          'Manager',
+          "manager-1",
+          "manager@business1.com",
+          "Manager",
           UserRole.LOCATION_MANAGER,
         ),
         createTestUser(
-          'doctor-1',
-          'doctor@business1.com',
-          'Doctor',
+          "doctor-1",
+          "doctor@business1.com",
+          "Doctor",
           UserRole.PRACTITIONER,
         ),
         createTestUser(
-          'client-1',
-          'client@business1.com',
-          'Client',
+          "client-1",
+          "client@business1.com",
+          "Client",
           UserRole.REGULAR_CLIENT,
         ),
       ];
 
       const request: ListUsersRequest = {
-        requestingUserId: 'admin-1',
+        requestingUserId: "admin-1",
         pagination: { page: 1, limit: 20 },
       };
 
@@ -409,7 +409,7 @@ describe('ListUsersUseCase', () => {
       expect(mockUserRepository.search).toHaveBeenCalledWith(
         expect.objectContaining({
           filters: expect.objectContaining({
-            businessId: 'business-1',
+            businessId: "business-1",
             excludeRoles: [UserRole.PLATFORM_ADMIN, UserRole.BUSINESS_OWNER],
           }),
         }),
@@ -421,39 +421,39 @@ describe('ListUsersUseCase', () => {
   // 🏪 LOCATION_MANAGER PERMISSIONS
   // ═══════════════════════════════════════════════════════════════
 
-  describe('🏪 LOCATION_MANAGER Permissions', () => {
-    it('should allow LOCATION_MANAGER to see users from his location only', async () => {
+  describe("🏪 LOCATION_MANAGER Permissions", () => {
+    it("should allow LOCATION_MANAGER to see users from his location only", async () => {
       // Arrange
       const locationManager = createTestUser(
-        'manager-1',
-        'manager@location1.com',
-        'Location Manager',
+        "manager-1",
+        "manager@location1.com",
+        "Location Manager",
         UserRole.LOCATION_MANAGER,
       );
 
       const locationUsers = [
         createTestUser(
-          'doctor-1',
-          'doctor@location1.com',
-          'Doctor',
+          "doctor-1",
+          "doctor@location1.com",
+          "Doctor",
           UserRole.PRACTITIONER,
         ),
         createTestUser(
-          'assistant-1',
-          'assistant@location1.com',
-          'Assistant',
+          "assistant-1",
+          "assistant@location1.com",
+          "Assistant",
           UserRole.ASSISTANT,
         ),
         createTestUser(
-          'client-1',
-          'client@location1.com',
-          'Client',
+          "client-1",
+          "client@location1.com",
+          "Client",
           UserRole.REGULAR_CLIENT,
         ),
       ];
 
       const request: ListUsersRequest = {
-        requestingUserId: 'manager-1',
+        requestingUserId: "manager-1",
         pagination: { page: 1, limit: 20 },
       };
 
@@ -478,7 +478,7 @@ describe('ListUsersUseCase', () => {
       expect(mockUserRepository.search).toHaveBeenCalledWith(
         expect.objectContaining({
           filters: expect.objectContaining({
-            locationId: 'location-1',
+            locationId: "location-1",
             excludeRoles: [
               UserRole.PLATFORM_ADMIN,
               UserRole.BUSINESS_OWNER,
@@ -495,18 +495,18 @@ describe('ListUsersUseCase', () => {
   // 📄 PAGINATION TESTS
   // ═══════════════════════════════════════════════════════════════
 
-  describe('📄 Pagination', () => {
-    it('should respect pagination parameters', async () => {
+  describe("📄 Pagination", () => {
+    it("should respect pagination parameters", async () => {
       // Arrange
       const platformAdmin = createTestUser(
-        'admin-1',
-        'admin@test.com',
-        'Platform Admin',
+        "admin-1",
+        "admin@test.com",
+        "Platform Admin",
         UserRole.PLATFORM_ADMIN,
       );
 
       const request: ListUsersRequest = {
-        requestingUserId: 'admin-1',
+        requestingUserId: "admin-1",
         pagination: { page: 2, limit: 5 },
       };
 
@@ -534,17 +534,17 @@ describe('ListUsersUseCase', () => {
       expect(result.meta.hasPreviousPage).toBe(true);
     });
 
-    it('should enforce maximum limit of 100', async () => {
+    it("should enforce maximum limit of 100", async () => {
       // Arrange
       const platformAdmin = createTestUser(
-        'admin-1',
-        'admin@test.com',
-        'Platform Admin',
+        "admin-1",
+        "admin@test.com",
+        "Platform Admin",
         UserRole.PLATFORM_ADMIN,
       );
 
       const request: ListUsersRequest = {
-        requestingUserId: 'admin-1',
+        requestingUserId: "admin-1",
         pagination: { page: 1, limit: 200 }, // Limite trop élevée
       };
 
@@ -577,26 +577,26 @@ describe('ListUsersUseCase', () => {
   // 🔍 FILTERING TESTS
   // ═══════════════════════════════════════════════════════════════
 
-  describe('🔍 Filtering', () => {
-    it('should apply search filters correctly', async () => {
+  describe("🔍 Filtering", () => {
+    it("should apply search filters correctly", async () => {
       // Arrange
       const platformAdmin = createTestUser(
-        'admin-1',
-        'admin@test.com',
-        'Platform Admin',
+        "admin-1",
+        "admin@test.com",
+        "Platform Admin",
         UserRole.PLATFORM_ADMIN,
       );
 
       const request: ListUsersRequest = {
-        requestingUserId: 'admin-1',
+        requestingUserId: "admin-1",
         pagination: { page: 1, limit: 20 },
         filters: {
-          search: 'john',
-          email: 'doctor@clinic.com',
+          search: "john",
+          email: "doctor@clinic.com",
           roles: [UserRole.PRACTITIONER],
           isActive: true,
-          createdAfter: '2024-01-01',
-          createdBefore: '2024-12-31',
+          createdAfter: "2024-01-01",
+          createdBefore: "2024-12-31",
         },
       };
 
@@ -620,7 +620,7 @@ describe('ListUsersUseCase', () => {
       expect(mockUserRepository.search).toHaveBeenCalledWith(
         expect.objectContaining({
           search: expect.objectContaining({
-            query: 'john',
+            query: "john",
           }),
           filters: expect.objectContaining({
             role: [UserRole.PRACTITIONER],
@@ -639,18 +639,18 @@ describe('ListUsersUseCase', () => {
   // 📊 LOGGING TESTS
   // ═══════════════════════════════════════════════════════════════
 
-  describe('📊 Logging', () => {
-    it('should log successful operations', async () => {
+  describe("📊 Logging", () => {
+    it("should log successful operations", async () => {
       // Arrange
       const platformAdmin = createTestUser(
-        'admin-1',
-        'admin@test.com',
-        'Platform Admin',
+        "admin-1",
+        "admin@test.com",
+        "Platform Admin",
         UserRole.PLATFORM_ADMIN,
       );
 
       const request: ListUsersRequest = {
-        requestingUserId: 'admin-1',
+        requestingUserId: "admin-1",
         pagination: { page: 1, limit: 20 },
       };
 
@@ -672,11 +672,11 @@ describe('ListUsersUseCase', () => {
 
       // Assert
       expect(mockLogger.info).toHaveBeenCalledWith(
-        expect.stringContaining('list_attempt'),
+        expect.stringContaining("list_attempt"),
         expect.any(Object),
       );
       expect(mockLogger.info).toHaveBeenCalledWith(
-        expect.stringContaining('list_success'),
+        expect.stringContaining("list_success"),
         expect.objectContaining({
           resultCount: 0,
           totalItems: 0,
@@ -685,21 +685,21 @@ describe('ListUsersUseCase', () => {
       );
     });
 
-    it('should log errors', async () => {
+    it("should log errors", async () => {
       // Arrange
       const platformAdmin = createTestUser(
-        'admin-1',
-        'admin@test.com',
-        'Platform Admin',
+        "admin-1",
+        "admin@test.com",
+        "Platform Admin",
         UserRole.PLATFORM_ADMIN,
       );
 
       const request: ListUsersRequest = {
-        requestingUserId: 'admin-1',
+        requestingUserId: "admin-1",
         pagination: { page: 1, limit: 20 },
       };
 
-      const error = new Error('Database connection failed');
+      const error = new Error("Database connection failed");
 
       mockUserRepository.findById.mockResolvedValue(platformAdmin);
       mockUserRepository.search.mockRejectedValue(error);
@@ -708,7 +708,7 @@ describe('ListUsersUseCase', () => {
       await expect(listUsersUseCase.execute(request)).rejects.toThrow(error);
 
       expect(mockLogger.error).toHaveBeenCalledWith(
-        expect.stringContaining('list_failed'),
+        expect.stringContaining("list_failed"),
         error,
         expect.any(Object),
       );

@@ -1,9 +1,9 @@
-import { Calendar } from '../../domain/entities/calendar.entity';
-import { CalendarId } from '../../domain/value-objects/calendar-id.value-object';
-import { BusinessId } from '../../domain/value-objects/business-id.value-object';
-import { UserId } from '../../domain/value-objects/user-id.value-object';
-import { TimeSlot } from '../../domain/value-objects/time-slot.value-object';
-import { RecurrencePattern } from '../../domain/value-objects/recurrence-pattern.value-object';
+import { Calendar } from "../../domain/entities/calendar.entity";
+import { CalendarId } from "../../domain/value-objects/calendar-id.value-object";
+import { BusinessId } from "../../domain/value-objects/business-id.value-object";
+import { UserId } from "../../domain/value-objects/user-id.value-object";
+import { TimeSlot } from "../../domain/value-objects/time-slot.value-object";
+import { RecurrencePattern } from "../../domain/value-objects/recurrence-pattern.value-object";
 
 export interface CalendarSlotRequest {
   calendarIds: CalendarId[];
@@ -29,7 +29,7 @@ export interface CalendarConflict {
   calendarId: CalendarId;
   conflictingSlot: TimeSlot;
   reason: string;
-  severity: 'low' | 'medium' | 'high';
+  severity: "low" | "medium" | "high";
   suggestions: TimeSlot[];
 }
 

@@ -5,18 +5,18 @@
  * ✅ Business logic for calendar updates
  */
 
-import type { BusinessRepository } from '../../../domain/repositories/business.repository.interface';
-import type { CalendarRepository } from '../../../domain/repositories/calendar.repository.interface';
-import type { I18nService } from '../../ports/i18n.port';
-import type { Logger } from '../../ports/logger.port';
+import type { BusinessRepository } from "../../../domain/repositories/business.repository.interface";
+import type { CalendarRepository } from "../../../domain/repositories/calendar.repository.interface";
+import type { I18nService } from "../../ports/i18n.port";
+import type { Logger } from "../../ports/logger.port";
 
-import { Calendar } from '../../../domain/entities/calendar.entity';
-import { CalendarId } from '../../../domain/value-objects/calendar-id.value-object';
-import { WorkingHours } from '../../../domain/value-objects/working-hours.value-object';
+import { Calendar } from "../../../domain/entities/calendar.entity";
+import { CalendarId } from "../../../domain/value-objects/calendar-id.value-object";
+import { WorkingHours } from "../../../domain/value-objects/working-hours.value-object";
 import {
   CalendarNotFoundError,
   CalendarPermissionError,
-} from '../../exceptions/calendar.exceptions';
+} from "../../exceptions/calendar.exceptions";
 
 export interface UpdateCalendarRequest {
   readonly requestingUserId: string;
@@ -56,7 +56,7 @@ export class UpdateCalendarUseCase {
   async execute(
     request: UpdateCalendarRequest,
   ): Promise<UpdateCalendarResponse> {
-    this.logger.info('Updating calendar', {
+    this.logger.info("Updating calendar", {
       calendarId: request.calendarId,
       requestingUserId: request.requestingUserId,
     });
@@ -69,7 +69,7 @@ export class UpdateCalendarUseCase {
     const existingCalendar = await this.calendarRepository.findById(calendarId);
 
     if (!existingCalendar) {
-      this.logger.error('Calendar not found for update', {
+      this.logger.error("Calendar not found for update", {
         calendarId: request.calendarId,
       } as any);
       throw new CalendarNotFoundError(request.calendarId);
@@ -87,20 +87,20 @@ export class UpdateCalendarUseCase {
     // 5. Sauvegarde
     const savedCalendar = await this.calendarRepository.save(updatedCalendar);
 
-    this.logger.info('Calendar updated successfully', {
+    this.logger.info("Calendar updated successfully", {
       calendarId: updatedCalendar.id.getValue(),
       requestingUserId: request.requestingUserId,
     });
 
     return {
       calendar: updatedCalendar,
-      message: this.i18n.t('calendar.updated_successfully'),
+      message: this.i18n.t("calendar.updated_successfully"),
     };
   }
 
   private async validateRequest(request: UpdateCalendarRequest): Promise<void> {
     if (!request.calendarId || !request.requestingUserId) {
-      throw new Error(this.i18n.t('calendar.invalid_update_request'));
+      throw new Error(this.i18n.t("calendar.invalid_update_request"));
     }
 
     // Validation des horaires de travail si fournis
@@ -110,14 +110,14 @@ export class UpdateCalendarUseCase {
 
     // Validation des paramètres de réservation
     if (request.settings?.slotDuration && request.settings.slotDuration < 15) {
-      throw new Error(this.i18n.t('calendar.invalid_slot_duration'));
+      throw new Error(this.i18n.t("calendar.invalid_slot_duration"));
     }
 
     if (
       request.settings?.maxAdvanceBooking &&
       request.settings.maxAdvanceBooking < 1
     ) {
-      throw new Error(this.i18n.t('calendar.invalid_advance_booking'));
+      throw new Error(this.i18n.t("calendar.invalid_advance_booking"));
     }
   }
 
@@ -125,29 +125,29 @@ export class UpdateCalendarUseCase {
     workingHours: Record<string, { start: string; end: string }>,
   ): void {
     const validDays = [
-      'monday',
-      'tuesday',
-      'wednesday',
-      'thursday',
-      'friday',
-      'saturday',
-      'sunday',
+      "monday",
+      "tuesday",
+      "wednesday",
+      "thursday",
+      "friday",
+      "saturday",
+      "sunday",
     ];
 
     for (const [day, hours] of Object.entries(workingHours)) {
       if (!validDays.includes(day)) {
-        throw new Error(this.i18n.t('calendar.invalid_day', { day }));
+        throw new Error(this.i18n.t("calendar.invalid_day", { day }));
       }
 
       // Validation format horaire (HH:MM)
       const timeRegex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
       if (!timeRegex.test(hours.start) || !timeRegex.test(hours.end)) {
-        throw new Error(this.i18n.t('calendar.invalid_time_format', { day }));
+        throw new Error(this.i18n.t("calendar.invalid_time_format", { day }));
       }
 
       // Validation cohérence horaires
       if (hours.start >= hours.end) {
-        throw new Error(this.i18n.t('calendar.invalid_time_range', { day }));
+        throw new Error(this.i18n.t("calendar.invalid_time_range", { day }));
       }
     }
   }
@@ -162,7 +162,7 @@ export class UpdateCalendarUseCase {
     );
 
     if (!business) {
-      throw new Error(this.i18n.t('business.not_found'));
+      throw new Error(this.i18n.t("business.not_found"));
     }
 
     // Vérifier si l'utilisateur est le propriétaire du business ou a les permissions
@@ -170,7 +170,7 @@ export class UpdateCalendarUseCase {
     // TODO: Ajouter vérification des rôles/permissions pour les employés autorisés
 
     if (!isOwner) {
-      this.logger.warn('Unauthorized calendar update attempt', {
+      this.logger.warn("Unauthorized calendar update attempt", {
         requestingUserId,
         calendarId: calendar.id.getValue(),
         businessId: business.id.getValue(),
@@ -178,7 +178,7 @@ export class UpdateCalendarUseCase {
       throw new CalendarPermissionError(
         calendar.id.getValue(),
         requestingUserId,
-        'update',
+        "update",
       );
     }
   }

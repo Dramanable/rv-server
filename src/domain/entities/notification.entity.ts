@@ -4,10 +4,10 @@
  * @version 1.0.0
  */
 
-import { DomainError } from '../exceptions/domain.exceptions';
-import { NotificationChannel } from '../value-objects/notification-channel.value-object';
-import { NotificationPriority } from '../value-objects/notification-priority.value-object';
-import { NotificationStatus } from '../value-objects/notification-status.value-object';
+import { DomainError } from "../exceptions/domain.exceptions";
+import { NotificationChannel } from "../value-objects/notification-channel.value-object";
+import { NotificationPriority } from "../value-objects/notification-priority.value-object";
+import { NotificationStatus } from "../value-objects/notification-status.value-object";
 
 /**
  * Interface pour les métadonnées de notification
@@ -145,50 +145,50 @@ export class Notification {
    */
   private validateInvariants(): void {
     if (!this._id || this._id.trim().length === 0) {
-      throw new DomainError('Notification ID is required');
+      throw new DomainError("Notification ID is required");
     }
 
     if (!this._recipientId || this._recipientId.trim().length === 0) {
-      throw new DomainError('Recipient ID is required');
+      throw new DomainError("Recipient ID is required");
     }
 
     if (!this._title || this._title.trim().length === 0) {
-      throw new DomainError('Notification title is required');
+      throw new DomainError("Notification title is required");
     }
 
     if (!this._content || this._content.trim().length === 0) {
-      throw new DomainError('Notification content is required');
+      throw new DomainError("Notification content is required");
     }
 
     if (this._title.length > 255) {
-      throw new DomainError('Notification title cannot exceed 255 characters');
+      throw new DomainError("Notification title cannot exceed 255 characters");
     }
 
     if (this._content.length > 2000) {
       throw new DomainError(
-        'Notification content cannot exceed 2000 characters',
+        "Notification content cannot exceed 2000 characters",
       );
     }
 
     if (this._retryCount < 0) {
-      throw new DomainError('Retry count cannot be negative');
+      throw new DomainError("Retry count cannot be negative");
     }
 
     if (this._retryCount > 10) {
-      throw new DomainError('Maximum retry count exceeded');
+      throw new DomainError("Maximum retry count exceeded");
     }
 
     // Validation des dates logiques
     if (this._sentAt && this._sentAt < this._createdAt) {
-      throw new DomainError('Sent date cannot be before creation date');
+      throw new DomainError("Sent date cannot be before creation date");
     }
 
     if (this._deliveredAt && this._sentAt && this._deliveredAt < this._sentAt) {
-      throw new DomainError('Delivered date cannot be before sent date');
+      throw new DomainError("Delivered date cannot be before sent date");
     }
 
     if (this._readAt && this._deliveredAt && this._readAt < this._deliveredAt) {
-      throw new DomainError('Read date cannot be before delivered date');
+      throw new DomainError("Read date cannot be before delivered date");
     }
   }
 
@@ -364,7 +364,7 @@ export class Notification {
     }
 
     if (!reason || reason.trim().length === 0) {
-      throw new DomainError('Failure reason is required');
+      throw new DomainError("Failure reason is required");
     }
 
     return new Notification(
@@ -422,7 +422,7 @@ export class Notification {
    */
   incrementRetryCount(): Notification {
     if (!this._status.canRetry()) {
-      throw new DomainError('Cannot retry notification with current status');
+      throw new DomainError("Cannot retry notification with current status");
     }
 
     const maxRetries = this._priority.getMaxRetryAttempts();

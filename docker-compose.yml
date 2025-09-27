@@ -30,27 +30,23 @@ services:
       - "3000:3000"      # Application
       - "9229:9229"      # Debug port
 
-    # 📁 Development volumes for hot reload
+    # 📁 Development volumes - CONFIGURATION PROPRE
     volumes:
-      # Source code hot reload
-      - ./src:/app/src:delegated
-      - ./test:/app/test:delegated
+      # Code source - hot reload
+      - ./src:/app/src
+      - ./test:/app/test
+      - ./templates:/app/templates
 
-      # Configuration files
-      - ./package.json:/app/package.json:cached
-      - ./package-lock.json:/app/package-lock.json:cached
-      - ./tsconfig.json:/app/tsconfig.json:cached
-      - ./tsconfig.build.json:/app/tsconfig.build.json:cached
-      - ./nest-cli.json:/app/nest-cli.json:cached
-      - ./.env:/app/.env:cached
-      - ./.eslintrc.js:/app/.eslintrc.js:cached
-      - ./.prettierrc:/app/.prettierrc:cached
+      # Configuration - lecture seule
+      - ./package.json:/app/package.json:ro
+      - ./package-lock.json:/app/package-lock.json:ro
+      - ./tsconfig.json:/app/tsconfig.json:ro
+      - ./tsconfig.build.json:/app/tsconfig.build.json:ro
+      - ./nest-cli.json:/app/nest-cli.json:ro
+      - ./.env:/app/.env:ro
 
-      # Development tools
-      - ./scripts:/app/scripts:cached
-
-      # Node modules cache for performance
-      - node_modules_cache:/app/node_modules
+      # Volumes nommés pour éviter les conflits
+      - node_modules_volume:/app/node_modules
 
     # 🌐 Network
     networks:
@@ -164,7 +160,7 @@ volumes:
     driver: local
   pgadmin_data:
     driver: local
-  node_modules_cache:
+  node_modules_volume:
     driver: local
 
 networks:

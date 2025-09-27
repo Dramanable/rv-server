@@ -4,12 +4,12 @@
  * @version 1.0.0
  */
 
-import { Module } from '@nestjs/common';
-import { TOKENS } from '@shared/constants/injection-tokens';
+import { Module } from "@nestjs/common";
+import { TOKENS } from "@shared/constants/injection-tokens";
 
 // Imports des services de notification
-import { MockCampaignService } from '../services/campaign.service';
-import { MockUserSegmentationService } from '../services/user-segmentation.service';
+import { MockCampaignService } from "../services/campaign.service";
+import { MockUserSegmentationService } from "../services/user-segmentation.service";
 
 @Module({
   providers: [
@@ -30,11 +30,11 @@ import { MockUserSegmentationService } from '../services/user-segmentation.servi
       provide: TOKENS.NOTIFICATION_SERVICE,
       useValue: {
         send: async (notification: any) => {
-          console.log('Mock notification sent:', notification);
+          console.log("Mock notification sent:", notification);
           return { success: true, messageId: `msg-${Date.now()}` };
         },
         sendBulk: async (notifications: any[]) => {
-          console.log('Mock bulk notifications sent:', notifications.length);
+          console.log("Mock bulk notifications sent:", notifications.length);
           return notifications.map((_, index) => ({
             success: true,
             messageId: `bulk-msg-${Date.now()}-${index}`,

@@ -12,60 +12,60 @@ import {
   Index,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
-} from 'typeorm';
+} from "typeorm";
 
-@Entity('calendar_types')
-@Index(['business_id', 'code'], { unique: true })
-@Index(['business_id'])
+@Entity("calendar_types")
+@Index(["business_id", "code"], { unique: true })
+@Index(["business_id"])
 export class CalendarTypeOrmEntity {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryGeneratedColumn("uuid")
   id!: string;
 
-  @Column({ type: 'uuid', nullable: false })
+  @Column({ type: "uuid", nullable: false })
   @Index()
   business_id!: string;
 
-  @Column({ type: 'varchar', length: 100, nullable: false })
+  @Column({ type: "varchar", length: 100, nullable: false })
   name!: string;
 
-  @Column({ type: 'varchar', length: 20, nullable: false })
+  @Column({ type: "varchar", length: 20, nullable: false })
   code!: string;
 
-  @Column({ type: 'text', nullable: true })
+  @Column({ type: "text", nullable: true })
   description!: string | null;
 
-  @Column({ type: 'jsonb', nullable: false, default: '{}' })
+  @Column({ type: "jsonb", nullable: false, default: "{}" })
   settings!: Record<string, any>;
 
-  @Column({ type: 'boolean', nullable: false, default: true })
+  @Column({ type: "boolean", nullable: false, default: true })
   is_active!: boolean;
 
   @Column({
-    type: 'uuid',
+    type: "uuid",
     nullable: false,
-    comment: 'UUID of user who created this calendar type',
+    comment: "UUID of user who created this calendar type",
   })
   created_by!: string;
 
   @Column({
-    type: 'uuid',
+    type: "uuid",
     nullable: false,
-    comment: 'UUID of user who last updated this calendar type',
+    comment: "UUID of user who last updated this calendar type",
   })
   updated_by!: string;
 
   @CreateDateColumn({
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP',
-    comment: 'Creation timestamp',
+    type: "timestamp",
+    default: () => "CURRENT_TIMESTAMP",
+    comment: "Creation timestamp",
   })
   created_at!: Date;
 
   @UpdateDateColumn({
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP',
-    onUpdate: 'CURRENT_TIMESTAMP',
-    comment: 'Last update timestamp',
+    type: "timestamp",
+    default: () => "CURRENT_TIMESTAMP",
+    onUpdate: "CURRENT_TIMESTAMP",
+    comment: "Last update timestamp",
   })
   updated_at!: Date;
 }

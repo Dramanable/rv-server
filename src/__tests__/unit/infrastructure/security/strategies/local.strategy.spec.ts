@@ -9,14 +9,14 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 
-import { User } from '@domain/entities/user.entity';
-import { Email } from '@domain/value-objects/email.vo';
-import { Test, TestingModule } from '@nestjs/testing';
-import { LocalStrategy } from '@presentation/security/strategies/local.strategy';
-import { TOKENS } from '@shared/constants/injection-tokens';
-import { UserRole } from '@shared/enums/user-role.enum';
+import { User } from "@domain/entities/user.entity";
+import { Email } from "@domain/value-objects/email.vo";
+import { Test, TestingModule } from "@nestjs/testing";
+import { LocalStrategy } from "@presentation/security/strategies/local.strategy";
+import { TOKENS } from "@shared/constants/injection-tokens";
+import { UserRole } from "@shared/enums/user-role.enum";
 
-describe('LocalStrategy', () => {
+describe("LocalStrategy", () => {
   let strategy: LocalStrategy;
   let mockUserRepository: any;
   let mockPasswordService: any;
@@ -42,7 +42,7 @@ describe('LocalStrategy', () => {
           useValue: mockPasswordService,
         },
         {
-          provide: 'PinoLogger',
+          provide: "PinoLogger",
           useValue: {
             debug: jest.fn(),
             info: jest.fn(),
@@ -56,33 +56,33 @@ describe('LocalStrategy', () => {
     strategy = module.get<LocalStrategy>(LocalStrategy);
   });
 
-  describe('Strategy Configuration', () => {
-    it('should be defined', () => {
+  describe("Strategy Configuration", () => {
+    it("should be defined", () => {
       expect(strategy).toBeDefined();
     });
 
-    it('should extend PassportStrategy with local strategy', () => {
-      expect(strategy.name).toBe('local');
+    it("should extend PassportStrategy with local strategy", () => {
+      expect(strategy.name).toBe("local");
     });
   });
 
-  describe('Technical Validation (Clean Architecture)', () => {
-    it('should return user data when valid credentials provided', async () => {
+  describe("Technical Validation (Clean Architecture)", () => {
+    it("should return user data when valid credentials provided", async () => {
       // Arrange
-      const email = 'valid@example.com';
-      const password = 'password123';
+      const email = "valid@example.com";
+      const password = "password123";
       const mockReq = {
-        ip: '127.0.0.1',
-        headers: { 'user-agent': 'test-agent' },
-        path: '/auth/login',
+        ip: "127.0.0.1",
+        headers: { "user-agent": "test-agent" },
+        path: "/auth/login",
       };
 
       const mockUser = User.createWithHashedPassword(
-        'test-user-id',
-        Email.create('valid@example.com'),
-        'Test User',
+        "test-user-id",
+        Email.create("valid@example.com"),
+        "Test User",
         UserRole.REGULAR_CLIENT,
-        'hashedPassword123',
+        "hashedPassword123",
         new Date(),
         undefined,
         undefined,
@@ -101,7 +101,7 @@ describe('LocalStrategy', () => {
       expect(result).toEqual({
         id: mockUser.id,
         email: email,
-        name: 'Test User',
+        name: "Test User",
         role: UserRole.REGULAR_CLIENT,
         createdAt: expect.any(Date),
       });
@@ -110,18 +110,18 @@ describe('LocalStrategy', () => {
       );
       expect(mockPasswordService.compare).toHaveBeenCalledWith(
         password,
-        'hashedPassword123',
+        "hashedPassword123",
       );
     });
 
-    it('should return null when user not found', async () => {
+    it("should return null when user not found", async () => {
       // Arrange
-      const email = 'nonexistent@example.com';
-      const password = 'anyPassword';
+      const email = "nonexistent@example.com";
+      const password = "anyPassword";
       const mockReq = {
-        headers: { 'user-agent': 'test-agent' },
-        ip: '127.0.0.1',
-        path: '/auth/login',
+        headers: { "user-agent": "test-agent" },
+        ip: "127.0.0.1",
+        path: "/auth/login",
       };
 
       mockUserRepository.findByEmail.mockResolvedValue(null);
@@ -134,21 +134,21 @@ describe('LocalStrategy', () => {
       expect(mockPasswordService.compare).not.toHaveBeenCalled();
     });
 
-    it('should return null when password is invalid', async () => {
+    it("should return null when password is invalid", async () => {
       // Arrange
-      const email = 'test@example.com';
-      const password = 'invalidPassword';
+      const email = "test@example.com";
+      const password = "invalidPassword";
       const mockReq = {
-        headers: { 'user-agent': 'test-agent' },
-        ip: '127.0.0.1',
-        path: '/auth/login',
+        headers: { "user-agent": "test-agent" },
+        ip: "127.0.0.1",
+        path: "/auth/login",
       };
       const mockUser = User.createWithHashedPassword(
-        'user-456',
+        "user-456",
         Email.create(email),
-        'Test User',
+        "Test User",
         UserRole.REGULAR_CLIENT,
-        'hashedPassword123',
+        "hashedPassword123",
         new Date(),
         undefined,
         undefined,
@@ -167,18 +167,18 @@ describe('LocalStrategy', () => {
       expect(result).toBeNull();
       expect(mockPasswordService.compare).toHaveBeenCalledWith(
         password,
-        'hashedPassword123',
+        "hashedPassword123",
       );
     });
 
-    it('should return null when email validation fails', async () => {
+    it("should return null when email validation fails", async () => {
       // Arrange
-      const invalidEmail = 'invalid-email';
-      const password = 'anyPassword';
+      const invalidEmail = "invalid-email";
+      const password = "anyPassword";
       const mockReq = {
-        headers: { 'user-agent': 'test-agent' },
-        ip: '127.0.0.1',
-        path: '/auth/login',
+        headers: { "user-agent": "test-agent" },
+        ip: "127.0.0.1",
+        path: "/auth/login",
       };
 
       // Act

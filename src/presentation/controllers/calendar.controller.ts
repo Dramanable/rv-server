@@ -20,7 +20,7 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
-} from '@nestjs/common';
+} from "@nestjs/common";
 import {
   ApiBearerAuth,
   ApiBody,
@@ -28,21 +28,21 @@ import {
   ApiParam,
   ApiResponse,
   ApiTags,
-} from '@nestjs/swagger';
-import { CreateCalendarUseCase } from '../../application/use-cases/calendar/create-calendar.use-case';
+} from "@nestjs/swagger";
+import { CreateCalendarUseCase } from "../../application/use-cases/calendar/create-calendar.use-case";
 import {
   DeleteCalendarRequest,
   DeleteCalendarUseCase,
-} from '../../application/use-cases/calendar/delete-calendar.use-case';
-import { GetCalendarByIdUseCase } from '../../application/use-cases/calendar/get-calendar-by-id.use-case';
-import { ListCalendarsUseCase } from '../../application/use-cases/calendar/list-calendars.use-case';
+} from "../../application/use-cases/calendar/delete-calendar.use-case";
+import { GetCalendarByIdUseCase } from "../../application/use-cases/calendar/get-calendar-by-id.use-case";
+import { ListCalendarsUseCase } from "../../application/use-cases/calendar/list-calendars.use-case";
 import {
   UpdateCalendarRequest,
   UpdateCalendarUseCase,
-} from '../../application/use-cases/calendar/update-calendar.use-case';
-import { CalendarStatus as DomainCalendarStatus } from '../../domain/entities/calendar.entity';
-import { User } from '../../domain/entities/user.entity';
-import { TOKENS } from '../../shared/constants/injection-tokens';
+} from "../../application/use-cases/calendar/update-calendar.use-case";
+import { CalendarStatus as DomainCalendarStatus } from "../../domain/entities/calendar.entity";
+import { User } from "../../domain/entities/user.entity";
+import { TOKENS } from "../../shared/constants/injection-tokens";
 import {
   CalendarResponseDto,
   CalendarStatus,
@@ -54,12 +54,12 @@ import {
   UpdateCalendarDto,
   UpdateCalendarResponseDto,
   WorkingHoursDto,
-} from '../dtos/calendar.dto';
-import { CalendarRequestMapper } from '../mappers/calendar-request.mapper';
-import { GetUser } from '../security/decorators/get-user.decorator';
+} from "../dtos/calendar.dto";
+import { CalendarRequestMapper } from "../mappers/calendar-request.mapper";
+import { GetUser } from "../security/decorators/get-user.decorator";
 
-@ApiTags('� Calendars')
-@Controller('calendars')
+@ApiTags("� Calendars")
+@Controller("calendars")
 @ApiBearerAuth()
 export class CalendarController {
   constructor(
@@ -83,9 +83,9 @@ export class CalendarController {
    * 🔍 LIST CALENDARS - POST /api/v1/calendars/list
    * Recherche et filtrage avancés avec pagination
    */
-  @Post('list')
+  @Post("list")
   @ApiOperation({
-    summary: 'List calendars with advanced search and pagination',
+    summary: "List calendars with advanced search and pagination",
     description: `
     Provides comprehensive search, filtering, and pagination for calendars.
 
@@ -102,20 +102,20 @@ export class CalendarController {
   @ApiBody({ type: ListCalendarsDto })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: 'Paginated list of calendars returned successfully',
+    description: "Paginated list of calendars returned successfully",
     type: ListCalendarsResponseDto,
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
-    description: 'Invalid request parameters (validation failed)',
+    description: "Invalid request parameters (validation failed)",
   })
   @ApiResponse({
     status: HttpStatus.UNAUTHORIZED,
-    description: 'Authentication required',
+    description: "Authentication required",
   })
   @ApiResponse({
     status: HttpStatus.FORBIDDEN,
-    description: 'Insufficient permissions to list calendars',
+    description: "Insufficient permissions to list calendars",
   })
   async list(
     @Body() dto: ListCalendarsDto,
@@ -132,14 +132,14 @@ export class CalendarController {
         name: calendar.name,
         description:
           calendar.description?.length > 100
-            ? calendar.description.substring(0, 100) + '...'
-            : calendar.description || '',
+            ? calendar.description.substring(0, 100) + "..."
+            : calendar.description || "",
         businessId: calendar.businessId,
         type: calendar.type,
         status: this.mapDomainStatusToDto(calendar.status),
-        timeZone: 'Europe/Paris', // TODO: Add to use case response
+        timeZone: "Europe/Paris", // TODO: Add to use case response
         isDefault: false, // TODO: Add to use case response
-        color: '#007bff', // TODO: Add to use case response
+        color: "#007bff", // TODO: Add to use case response
         createdAt: calendar.createdAt,
         updatedAt: calendar.updatedAt,
       })),
@@ -158,9 +158,9 @@ export class CalendarController {
    * 📄 GET CALENDAR BY ID - GET /api/v1/calendars/:id
    * Récupère les détails complets d'un calendrier
    */
-  @Get(':id')
+  @Get(":id")
   @ApiOperation({
-    summary: 'Get calendar by ID',
+    summary: "Get calendar by ID",
     description: `
     Retrieves detailed information about a specific calendar.
 
@@ -174,29 +174,29 @@ export class CalendarController {
     `,
   })
   @ApiParam({
-    name: 'id',
-    description: 'Calendar unique identifier (UUID)',
-    example: 'c123e4567-e89b-12d3-a456-426614174000',
+    name: "id",
+    description: "Calendar unique identifier (UUID)",
+    example: "c123e4567-e89b-12d3-a456-426614174000",
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: 'Calendar details returned successfully',
+    description: "Calendar details returned successfully",
     type: CalendarResponseDto,
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
-    description: 'Invalid calendar ID format',
+    description: "Invalid calendar ID format",
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
-    description: 'Calendar not found',
+    description: "Calendar not found",
   })
   @ApiResponse({
     status: HttpStatus.FORBIDDEN,
-    description: 'Insufficient permissions to view this calendar',
+    description: "Insufficient permissions to view this calendar",
   })
   async findById(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param("id", ParseUUIDPipe) id: string,
     @GetUser() user: User,
   ): Promise<CalendarResponseDto> {
     const request = {
@@ -227,7 +227,7 @@ export class CalendarController {
    */
   @Post()
   @ApiOperation({
-    summary: 'Create new calendar',
+    summary: "Create new calendar",
     description: `
     Creates a new calendar with complete configuration.
 
@@ -243,20 +243,20 @@ export class CalendarController {
   @ApiBody({ type: CreateCalendarDto })
   @ApiResponse({
     status: HttpStatus.CREATED,
-    description: 'Calendar created successfully',
+    description: "Calendar created successfully",
     type: CreateCalendarResponseDto,
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
-    description: 'Invalid calendar data (validation failed)',
+    description: "Invalid calendar data (validation failed)",
   })
   @ApiResponse({
     status: HttpStatus.CONFLICT,
-    description: 'Calendar with this name already exists for the business',
+    description: "Calendar with this name already exists for the business",
   })
   @ApiResponse({
     status: HttpStatus.FORBIDDEN,
-    description: 'Insufficient permissions to create calendar',
+    description: "Insufficient permissions to create calendar",
   })
   async create(
     @Body() dto: CreateCalendarDto,
@@ -269,18 +269,18 @@ export class CalendarController {
       businessId: dto.businessId,
       type: dto.type,
       address: {
-        street: '',
-        city: '',
-        state: '',
-        zipCode: '',
-        country: 'FR',
+        street: "",
+        city: "",
+        state: "",
+        zipCode: "",
+        country: "FR",
       }, // TODO: Add to DTO or make optional in use case
       workingHours: {
-        monday: { start: '09:00', end: '17:00' },
-        tuesday: { start: '09:00', end: '17:00' },
-        wednesday: { start: '09:00', end: '17:00' },
-        thursday: { start: '09:00', end: '17:00' },
-        friday: { start: '09:00', end: '17:00' },
+        monday: { start: "09:00", end: "17:00" },
+        tuesday: { start: "09:00", end: "17:00" },
+        wednesday: { start: "09:00", end: "17:00" },
+        thursday: { start: "09:00", end: "17:00" },
+        friday: { start: "09:00", end: "17:00" },
       }, // TODO: Add to DTO or make optional in use case
     };
 
@@ -289,7 +289,7 @@ export class CalendarController {
     return {
       id: result.id,
       name: result.name,
-      description: result.description || '',
+      description: result.description || "",
       businessId: result.businessId,
       type: result.type,
       status: CalendarStatus.ACTIVE, // TODO: Add to CreateCalendarResponse
@@ -301,9 +301,9 @@ export class CalendarController {
    * ✏️ UPDATE CALENDAR - PUT /api/v1/calendars/:id
    * Met à jour un calendrier existant
    */
-  @Put(':id')
+  @Put(":id")
   @ApiOperation({
-    summary: 'Update calendar',
+    summary: "Update calendar",
     description: `
     Updates an existing calendar with new information.
 
@@ -317,30 +317,30 @@ export class CalendarController {
     `,
   })
   @ApiParam({
-    name: 'id',
-    description: 'Calendar unique identifier (UUID)',
-    example: 'c123e4567-e89b-12d3-a456-426614174000',
+    name: "id",
+    description: "Calendar unique identifier (UUID)",
+    example: "c123e4567-e89b-12d3-a456-426614174000",
   })
   @ApiBody({ type: UpdateCalendarDto })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: 'Calendar updated successfully',
+    description: "Calendar updated successfully",
     type: UpdateCalendarResponseDto,
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
-    description: 'Invalid calendar data (validation failed)',
+    description: "Invalid calendar data (validation failed)",
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
-    description: 'Calendar not found',
+    description: "Calendar not found",
   })
   @ApiResponse({
     status: HttpStatus.FORBIDDEN,
-    description: 'Insufficient permissions to update this calendar',
+    description: "Insufficient permissions to update this calendar",
   })
   async update(
-    @Param('id') id: string,
+    @Param("id") id: string,
     @Body() dto: UpdateCalendarDto,
     @GetUser() user: User,
   ): Promise<UpdateCalendarResponseDto> {
@@ -380,9 +380,9 @@ export class CalendarController {
    * 🗑️ DELETE CALENDAR - DELETE /api/v1/calendars/:id
    * Supprime un calendrier
    */
-  @Delete(':id')
+  @Delete(":id")
   @ApiOperation({
-    summary: 'Delete calendar',
+    summary: "Delete calendar",
     description: `
     Deletes a calendar and handles associated appointments.
 
@@ -395,30 +395,30 @@ export class CalendarController {
     `,
   })
   @ApiParam({
-    name: 'id',
-    description: 'Calendar unique identifier (UUID)',
-    example: 'c123e4567-e89b-12d3-a456-426614174000',
+    name: "id",
+    description: "Calendar unique identifier (UUID)",
+    example: "c123e4567-e89b-12d3-a456-426614174000",
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: 'Calendar deleted successfully',
+    description: "Calendar deleted successfully",
     type: DeleteCalendarResponseDto,
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
-    description: 'Calendar not found',
+    description: "Calendar not found",
   })
   @ApiResponse({
     status: HttpStatus.FORBIDDEN,
-    description: 'Insufficient permissions to delete this calendar',
+    description: "Insufficient permissions to delete this calendar",
   })
   @ApiResponse({
     status: HttpStatus.CONFLICT,
     description:
-      'Cannot delete calendar with active appointments or constraints',
+      "Cannot delete calendar with active appointments or constraints",
   })
   async delete(
-    @Param('id') id: string,
+    @Param("id") id: string,
     @GetUser() user: User,
   ): Promise<DeleteCalendarResponseDto> {
     const request: DeleteCalendarRequest = {
@@ -449,15 +449,15 @@ export class CalendarController {
     const statusValue = status as string;
 
     switch (statusValue) {
-      case 'ACTIVE':
+      case "ACTIVE":
         return DomainCalendarStatus.ACTIVE;
-      case 'INACTIVE':
+      case "INACTIVE":
         return DomainCalendarStatus.INACTIVE;
-      case 'MAINTENANCE':
+      case "MAINTENANCE":
         return DomainCalendarStatus.MAINTENANCE;
-      case 'SUSPENDED':
+      case "SUSPENDED":
         return DomainCalendarStatus.INACTIVE; // Suspended → Inactive
-      case 'ARCHIVED':
+      case "ARCHIVED":
         return DomainCalendarStatus.INACTIVE; // Archived → Inactive
       default:
         return undefined;
@@ -508,14 +508,14 @@ export class CalendarController {
    */
   private getDayName(dayOfWeek: number): string {
     const days = [
-      'sunday',
-      'monday',
-      'tuesday',
-      'wednesday',
-      'thursday',
-      'friday',
-      'saturday',
+      "sunday",
+      "monday",
+      "tuesday",
+      "wednesday",
+      "thursday",
+      "friday",
+      "saturday",
     ];
-    return days[dayOfWeek] || 'monday';
+    return days[dayOfWeek] || "monday";
   }
 }

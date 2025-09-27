@@ -5,14 +5,14 @@
  * ✅ TDD avec règles métier et cas d'erreur
  */
 
-import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, HttpStatus } from '@nestjs/common';
-import * as request from 'supertest';
-import { DataSource } from 'typeorm';
-import { User } from '../../domain/entities/user.entity';
-import { AppModule } from '../../app.module';
+import { Test, TestingModule } from "@nestjs/testing";
+import { INestApplication, HttpStatus } from "@nestjs/common";
+import * as request from "supertest";
+import { DataSource } from "typeorm";
+import { User } from "../../domain/entities/user.entity";
+import { AppModule } from "../../app.module";
 
-describe('🧪 AppointmentController (E2E) - Clean Architecture Flow', () => {
+describe("🧪 AppointmentController (E2E) - Clean Architecture Flow", () => {
   let app: INestApplication;
   let dataSource: DataSource;
   let authToken: string;
@@ -52,10 +52,10 @@ describe('🧪 AppointmentController (E2E) - Clean Architecture Flow', () => {
   async function setupTestEnvironment(): Promise<void> {
     // 1. Create test user and get auth token
     const loginResponse = await request(app.getHttpServer())
-      .post('/auth/login')
+      .post("/auth/login")
       .send({
-        email: 'admin@example.com',
-        password: 'password123',
+        email: "admin@example.com",
+        password: "password123",
       })
       .expect(HttpStatus.OK);
 
@@ -64,15 +64,15 @@ describe('🧪 AppointmentController (E2E) - Clean Architecture Flow', () => {
 
     // 2. Create business
     const businessResponse = await request(app.getHttpServer())
-      .post('/businesses')
-      .set('Authorization', `Bearer ${authToken}`)
+      .post("/businesses")
+      .set("Authorization", `Bearer ${authToken}`)
       .send({
-        name: 'Test Appointment Business',
-        email: 'business@appointment-test.com',
-        address: '123 Test Street',
-        city: 'Test City',
-        country: 'France',
-        businessSectorId: 'existing-sector-id',
+        name: "Test Appointment Business",
+        email: "business@appointment-test.com",
+        address: "123 Test Street",
+        city: "Test City",
+        country: "France",
+        businessSectorId: "existing-sector-id",
       })
       .expect(HttpStatus.CREATED);
 
@@ -80,13 +80,13 @@ describe('🧪 AppointmentController (E2E) - Clean Architecture Flow', () => {
 
     // 3. Create calendar
     const calendarResponse = await request(app.getHttpServer())
-      .post('/calendars')
-      .set('Authorization', `Bearer ${authToken}`)
+      .post("/calendars")
+      .set("Authorization", `Bearer ${authToken}`)
       .send({
-        name: 'Appointment Test Calendar',
-        description: 'Calendar for appointment testing',
+        name: "Appointment Test Calendar",
+        description: "Calendar for appointment testing",
         businessId: businessId,
-        calendarTypeId: 'existing-calendar-type-id',
+        calendarTypeId: "existing-calendar-type-id",
       })
       .expect(HttpStatus.CREATED);
 
@@ -94,17 +94,17 @@ describe('🧪 AppointmentController (E2E) - Clean Architecture Flow', () => {
 
     // 4. Create service with online booking allowed
     const serviceResponse = await request(app.getHttpServer())
-      .post('/services')
-      .set('Authorization', `Bearer ${authToken}`)
+      .post("/services")
+      .set("Authorization", `Bearer ${authToken}`)
       .send({
         businessId: businessId,
-        name: 'Test Consultation Service',
-        description: 'Service for appointment testing',
+        name: "Test Consultation Service",
+        description: "Service for appointment testing",
         duration: 60,
         allowOnlineBooking: true, // ✅ CRITICAL: Must allow online booking
         pricingConfig: {
-          type: 'FIXED',
-          basePrice: { amount: 75.0, currency: 'EUR' },
+          type: "FIXED",
+          basePrice: { amount: 75.0, currency: "EUR" },
         },
       })
       .expect(HttpStatus.CREATED);
@@ -113,14 +113,14 @@ describe('🧪 AppointmentController (E2E) - Clean Architecture Flow', () => {
 
     // 5. Create staff member
     const staffResponse = await request(app.getHttpServer())
-      .post('/staff')
-      .set('Authorization', `Bearer ${authToken}`)
+      .post("/staff")
+      .set("Authorization", `Bearer ${authToken}`)
       .send({
         businessId: businessId,
-        firstName: 'Dr. Jean',
-        lastName: 'Dupont',
-        email: 'dr.dupont@test.com',
-        specializations: ['General Medicine'],
+        firstName: "Dr. Jean",
+        lastName: "Dupont",
+        email: "dr.dupont@test.com",
+        specializations: ["General Medicine"],
         isActive: true,
       })
       .expect(HttpStatus.CREATED);
@@ -135,146 +135,146 @@ describe('🧪 AppointmentController (E2E) - Clean Architecture Flow', () => {
     if (dataSource && dataSource.isInitialized) {
       // Clean in reverse dependency order
       await dataSource.query(
-        'DELETE FROM appointments WHERE business_id = $1',
+        "DELETE FROM appointments WHERE business_id = $1",
         [businessId],
       );
-      await dataSource.query('DELETE FROM staff WHERE business_id = $1', [
+      await dataSource.query("DELETE FROM staff WHERE business_id = $1", [
         businessId,
       ]);
-      await dataSource.query('DELETE FROM services WHERE business_id = $1', [
+      await dataSource.query("DELETE FROM services WHERE business_id = $1", [
         businessId,
       ]);
-      await dataSource.query('DELETE FROM calendars WHERE business_id = $1', [
+      await dataSource.query("DELETE FROM calendars WHERE business_id = $1", [
         businessId,
       ]);
-      await dataSource.query('DELETE FROM businesses WHERE id = $1', [
+      await dataSource.query("DELETE FROM businesses WHERE id = $1", [
         businessId,
       ]);
     }
   }
 
-  describe('🔍 GET AVAILABLE SLOTS - Domain → Application → Infrastructure → Presentation', () => {
-    it('should get available slots successfully with valid service', async () => {
+  describe("🔍 GET AVAILABLE SLOTS - Domain → Application → Infrastructure → Presentation", () => {
+    it("should get available slots successfully with valid service", async () => {
       const getAvailableSlotsDto = {
         businessId,
         calendarId,
         serviceId,
-        dateFrom: '2024-01-15T08:00:00Z',
-        dateTo: '2024-01-15T18:00:00Z',
+        dateFrom: "2024-01-15T08:00:00Z",
+        dateTo: "2024-01-15T18:00:00Z",
       };
 
       const response = await request(app.getHttpServer())
-        .post('/appointments/available-slots')
-        .set('Authorization', `Bearer ${authToken}`)
+        .post("/appointments/available-slots")
+        .set("Authorization", `Bearer ${authToken}`)
         .send(getAvailableSlotsDto)
         .expect(HttpStatus.OK);
 
       // ✅ Validate response structure
-      expect(response.body).toHaveProperty('success', true);
-      expect(response.body).toHaveProperty('data');
+      expect(response.body).toHaveProperty("success", true);
+      expect(response.body).toHaveProperty("data");
       expect(Array.isArray(response.body.data)).toBe(true);
 
       // ✅ If slots are available, validate structure
       if (response.body.data.length > 0) {
         const slot = response.body.data[0];
-        expect(slot).toHaveProperty('startTime');
-        expect(slot).toHaveProperty('endTime');
-        expect(slot).toHaveProperty('available', true);
+        expect(slot).toHaveProperty("startTime");
+        expect(slot).toHaveProperty("endTime");
+        expect(slot).toHaveProperty("available", true);
         expect(new Date(slot.startTime)).toBeInstanceOf(Date);
         expect(new Date(slot.endTime)).toBeInstanceOf(Date);
       }
     });
 
-    it('should return 400 for invalid service ID', async () => {
+    it("should return 400 for invalid service ID", async () => {
       const invalidDto = {
         businessId,
         calendarId,
-        serviceId: 'invalid-uuid',
-        dateFrom: '2024-01-15T08:00:00Z',
-        dateTo: '2024-01-15T18:00:00Z',
+        serviceId: "invalid-uuid",
+        dateFrom: "2024-01-15T08:00:00Z",
+        dateTo: "2024-01-15T18:00:00Z",
       };
 
       const response = await request(app.getHttpServer())
-        .post('/appointments/available-slots')
-        .set('Authorization', `Bearer ${authToken}`)
+        .post("/appointments/available-slots")
+        .set("Authorization", `Bearer ${authToken}`)
         .send(invalidDto)
         .expect(HttpStatus.BAD_REQUEST);
 
-      expect(response.body).toHaveProperty('success', false);
+      expect(response.body).toHaveProperty("success", false);
       expect(response.body.error).toBeDefined();
     });
 
-    it('should require authentication', async () => {
+    it("should require authentication", async () => {
       await request(app.getHttpServer())
-        .post('/appointments/available-slots')
+        .post("/appointments/available-slots")
         .send({ serviceId })
         .expect(HttpStatus.UNAUTHORIZED);
     });
   });
 
-  describe('📅 BOOK APPOINTMENT - Complete Business Flow', () => {
+  describe("📅 BOOK APPOINTMENT - Complete Business Flow", () => {
     const validClientInfo = {
-      firstName: 'Marie',
-      lastName: 'Martin',
-      email: 'marie.martin@example.com',
-      phone: '+33123456789',
+      firstName: "Marie",
+      lastName: "Martin",
+      email: "marie.martin@example.com",
+      phone: "+33123456789",
       isNewClient: true,
     };
 
-    it('should book appointment successfully with valid data', async () => {
+    it("should book appointment successfully with valid data", async () => {
       const bookingDto = {
         businessId,
         calendarId,
         serviceId,
-        startTime: '2024-01-15T14:00:00Z',
-        endTime: '2024-01-15T15:00:00Z',
+        startTime: "2024-01-15T14:00:00Z",
+        endTime: "2024-01-15T15:00:00Z",
         clientInfo: validClientInfo,
         assignedStaffId: staffId,
-        title: 'Consultation générale',
-        description: 'Première consultation',
+        title: "Consultation générale",
+        description: "Première consultation",
       };
 
       const response = await request(app.getHttpServer())
-        .post('/appointments')
-        .set('Authorization', `Bearer ${authToken}`)
+        .post("/appointments")
+        .set("Authorization", `Bearer ${authToken}`)
         .send(bookingDto)
         .expect(HttpStatus.CREATED);
 
       // ✅ Validate success response structure
-      expect(response.body).toHaveProperty('success', true);
-      expect(response.body).toHaveProperty('data');
+      expect(response.body).toHaveProperty("success", true);
+      expect(response.body).toHaveProperty("data");
 
       const appointment = response.body.data;
-      expect(appointment).toHaveProperty('id');
-      expect(appointment).toHaveProperty('status', 'BOOKED');
-      expect(appointment).toHaveProperty('startTime', bookingDto.startTime);
-      expect(appointment).toHaveProperty('endTime', bookingDto.endTime);
-      expect(appointment).toHaveProperty('clientInfo');
+      expect(appointment).toHaveProperty("id");
+      expect(appointment).toHaveProperty("status", "BOOKED");
+      expect(appointment).toHaveProperty("startTime", bookingDto.startTime);
+      expect(appointment).toHaveProperty("endTime", bookingDto.endTime);
+      expect(appointment).toHaveProperty("clientInfo");
       expect(appointment.clientInfo).toMatchObject(validClientInfo);
 
       // ✅ Validate pricing calculation
-      expect(appointment).toHaveProperty('calculatedPrice');
-      expect(appointment.calculatedPrice).toHaveProperty('amount', 75.0);
-      expect(appointment.calculatedPrice).toHaveProperty('currency', 'EUR');
+      expect(appointment).toHaveProperty("calculatedPrice");
+      expect(appointment.calculatedPrice).toHaveProperty("amount", 75.0);
+      expect(appointment.calculatedPrice).toHaveProperty("currency", "EUR");
 
       // Store appointment ID for subsequent tests
       (global as any).testAppointmentId = appointment.id;
     });
 
-    it('should reject booking for service without online booking allowed', async () => {
+    it("should reject booking for service without online booking allowed", async () => {
       // Create service with allowOnlineBooking: false
       const restrictedServiceResponse = await request(app.getHttpServer())
-        .post('/services')
-        .set('Authorization', `Bearer ${authToken}`)
+        .post("/services")
+        .set("Authorization", `Bearer ${authToken}`)
         .send({
           businessId,
-          name: 'Restricted Service',
-          description: 'No online booking allowed',
+          name: "Restricted Service",
+          description: "No online booking allowed",
           duration: 30,
           allowOnlineBooking: false, // ❌ Online booking disabled
           pricingConfig: {
-            type: 'FIXED',
-            basePrice: { amount: 50.0, currency: 'EUR' },
+            type: "FIXED",
+            basePrice: { amount: 50.0, currency: "EUR" },
           },
         })
         .expect(HttpStatus.CREATED);
@@ -285,124 +285,124 @@ describe('🧪 AppointmentController (E2E) - Clean Architecture Flow', () => {
         businessId,
         calendarId,
         serviceId: restrictedServiceId,
-        startTime: '2024-01-15T16:00:00Z',
-        endTime: '2024-01-15T16:30:00Z',
+        startTime: "2024-01-15T16:00:00Z",
+        endTime: "2024-01-15T16:30:00Z",
         clientInfo: validClientInfo,
       };
 
       const response = await request(app.getHttpServer())
-        .post('/appointments')
-        .set('Authorization', `Bearer ${authToken}`)
+        .post("/appointments")
+        .set("Authorization", `Bearer ${authToken}`)
         .send(bookingDto)
         .expect(HttpStatus.UNPROCESSABLE_ENTITY);
 
       // ✅ Validate business rule error
-      expect(response.body).toHaveProperty('success', false);
+      expect(response.body).toHaveProperty("success", false);
       expect(response.body.error).toBeDefined();
-      expect(response.body.error.code).toBe('SERVICE_NOT_BOOKABLE_ONLINE');
+      expect(response.body.error.code).toBe("SERVICE_NOT_BOOKABLE_ONLINE");
     });
 
-    it('should validate required client information', async () => {
+    it("should validate required client information", async () => {
       const invalidBookingDto = {
         businessId,
         calendarId,
         serviceId,
-        startTime: '2024-01-15T15:00:00Z',
-        endTime: '2024-01-15T16:00:00Z',
+        startTime: "2024-01-15T15:00:00Z",
+        endTime: "2024-01-15T16:00:00Z",
         clientInfo: {
-          firstName: '', // ❌ Empty required field
-          lastName: 'Martin',
-          email: 'invalid-email', // ❌ Invalid email format
+          firstName: "", // ❌ Empty required field
+          lastName: "Martin",
+          email: "invalid-email", // ❌ Invalid email format
         },
       };
 
       const response = await request(app.getHttpServer())
-        .post('/appointments')
-        .set('Authorization', `Bearer ${authToken}`)
+        .post("/appointments")
+        .set("Authorization", `Bearer ${authToken}`)
         .send(invalidBookingDto)
         .expect(HttpStatus.BAD_REQUEST);
 
-      expect(response.body).toHaveProperty('success', false);
+      expect(response.body).toHaveProperty("success", false);
       expect(response.body.error).toBeDefined();
     });
 
-    it('should handle time slot conflicts', async () => {
+    it("should handle time slot conflicts", async () => {
       // Book first appointment
       const firstBooking = {
         businessId,
         calendarId,
         serviceId,
-        startTime: '2024-01-16T10:00:00Z',
-        endTime: '2024-01-16T11:00:00Z',
+        startTime: "2024-01-16T10:00:00Z",
+        endTime: "2024-01-16T11:00:00Z",
         clientInfo: validClientInfo,
         assignedStaffId: staffId,
       };
 
       await request(app.getHttpServer())
-        .post('/appointments')
-        .set('Authorization', `Bearer ${authToken}`)
+        .post("/appointments")
+        .set("Authorization", `Bearer ${authToken}`)
         .send(firstBooking)
         .expect(HttpStatus.CREATED);
 
       // Try to book conflicting appointment
       const conflictingBooking = {
         ...firstBooking,
-        startTime: '2024-01-16T10:30:00Z', // ❌ Overlapping time
-        endTime: '2024-01-16T11:30:00Z',
+        startTime: "2024-01-16T10:30:00Z", // ❌ Overlapping time
+        endTime: "2024-01-16T11:30:00Z",
         clientInfo: {
           ...validClientInfo,
-          email: 'another.client@example.com',
+          email: "another.client@example.com",
         },
       };
 
       const response = await request(app.getHttpServer())
-        .post('/appointments')
-        .set('Authorization', `Bearer ${authToken}`)
+        .post("/appointments")
+        .set("Authorization", `Bearer ${authToken}`)
         .send(conflictingBooking)
         .expect(HttpStatus.CONFLICT);
 
-      expect(response.body).toHaveProperty('success', false);
-      expect(response.body.error.code).toBe('APPOINTMENT_TIME_CONFLICT');
+      expect(response.body).toHaveProperty("success", false);
+      expect(response.body.error.code).toBe("APPOINTMENT_TIME_CONFLICT");
     });
   });
 
-  describe('📋 LIST APPOINTMENTS - Pagination & Filtering', () => {
+  describe("📋 LIST APPOINTMENTS - Pagination & Filtering", () => {
     beforeAll(async () => {
       // Create multiple appointments for testing filters and pagination
       const appointments = [
         {
           clientInfo: {
-            firstName: 'Alice',
-            lastName: 'Johnson',
-            email: 'alice@test.com',
+            firstName: "Alice",
+            lastName: "Johnson",
+            email: "alice@test.com",
           },
-          startTime: '2024-01-20T09:00:00Z',
-          endTime: '2024-01-20T10:00:00Z',
+          startTime: "2024-01-20T09:00:00Z",
+          endTime: "2024-01-20T10:00:00Z",
         },
         {
           clientInfo: {
-            firstName: 'Bob',
-            lastName: 'Smith',
-            email: 'bob@test.com',
+            firstName: "Bob",
+            lastName: "Smith",
+            email: "bob@test.com",
           },
-          startTime: '2024-01-20T14:00:00Z',
-          endTime: '2024-01-20T15:00:00Z',
+          startTime: "2024-01-20T14:00:00Z",
+          endTime: "2024-01-20T15:00:00Z",
         },
         {
           clientInfo: {
-            firstName: 'Charlie',
-            lastName: 'Brown',
-            email: 'charlie@test.com',
+            firstName: "Charlie",
+            lastName: "Brown",
+            email: "charlie@test.com",
           },
-          startTime: '2024-01-21T11:00:00Z',
-          endTime: '2024-01-21T12:00:00Z',
+          startTime: "2024-01-21T11:00:00Z",
+          endTime: "2024-01-21T12:00:00Z",
         },
       ];
 
       for (const appointmentData of appointments) {
         await request(app.getHttpServer())
-          .post('/appointments')
-          .set('Authorization', `Bearer ${authToken}`)
+          .post("/appointments")
+          .set("Authorization", `Bearer ${authToken}`)
           .send({
             businessId,
             calendarId,
@@ -413,57 +413,57 @@ describe('🧪 AppointmentController (E2E) - Clean Architecture Flow', () => {
       }
     });
 
-    it('should list appointments with pagination', async () => {
+    it("should list appointments with pagination", async () => {
       const listDto = {
         page: 1,
         limit: 10,
-        sortBy: 'startTime',
-        sortOrder: 'asc',
+        sortBy: "startTime",
+        sortOrder: "asc",
       };
 
       const response = await request(app.getHttpServer())
-        .post('/appointments/list')
-        .set('Authorization', `Bearer ${authToken}`)
+        .post("/appointments/list")
+        .set("Authorization", `Bearer ${authToken}`)
         .send(listDto)
         .expect(HttpStatus.OK);
 
       // ✅ Validate pagination response structure
-      expect(response.body).toHaveProperty('success', true);
-      expect(response.body).toHaveProperty('data');
-      expect(response.body).toHaveProperty('meta');
+      expect(response.body).toHaveProperty("success", true);
+      expect(response.body).toHaveProperty("data");
+      expect(response.body).toHaveProperty("meta");
 
       const { data, meta } = response.body;
       expect(Array.isArray(data)).toBe(true);
-      expect(meta).toHaveProperty('currentPage', 1);
-      expect(meta).toHaveProperty('totalItems');
-      expect(meta).toHaveProperty('totalPages');
-      expect(meta).toHaveProperty('itemsPerPage', 10);
-      expect(meta).toHaveProperty('hasNextPage');
-      expect(meta).toHaveProperty('hasPrevPage', false);
+      expect(meta).toHaveProperty("currentPage", 1);
+      expect(meta).toHaveProperty("totalItems");
+      expect(meta).toHaveProperty("totalPages");
+      expect(meta).toHaveProperty("itemsPerPage", 10);
+      expect(meta).toHaveProperty("hasNextPage");
+      expect(meta).toHaveProperty("hasPrevPage", false);
 
       // ✅ Validate appointment structure
       if (data.length > 0) {
         const appointment = data[0];
-        expect(appointment).toHaveProperty('id');
-        expect(appointment).toHaveProperty('status');
-        expect(appointment).toHaveProperty('startTime');
-        expect(appointment).toHaveProperty('endTime');
-        expect(appointment).toHaveProperty('clientInfo');
-        expect(appointment).toHaveProperty('service');
+        expect(appointment).toHaveProperty("id");
+        expect(appointment).toHaveProperty("status");
+        expect(appointment).toHaveProperty("startTime");
+        expect(appointment).toHaveProperty("endTime");
+        expect(appointment).toHaveProperty("clientInfo");
+        expect(appointment).toHaveProperty("service");
       }
     });
 
-    it('should filter appointments by date range', async () => {
+    it("should filter appointments by date range", async () => {
       const listDto = {
-        dateFrom: '2024-01-20T00:00:00Z',
-        dateTo: '2024-01-20T23:59:59Z',
+        dateFrom: "2024-01-20T00:00:00Z",
+        dateTo: "2024-01-20T23:59:59Z",
         page: 1,
         limit: 20,
       };
 
       const response = await request(app.getHttpServer())
-        .post('/appointments/list')
-        .set('Authorization', `Bearer ${authToken}`)
+        .post("/appointments/list")
+        .set("Authorization", `Bearer ${authToken}`)
         .send(listDto)
         .expect(HttpStatus.OK);
 
@@ -479,35 +479,35 @@ describe('🧪 AppointmentController (E2E) - Clean Architecture Flow', () => {
       });
     });
 
-    it('should filter appointments by status', async () => {
+    it("should filter appointments by status", async () => {
       const listDto = {
-        status: 'BOOKED',
+        status: "BOOKED",
         page: 1,
         limit: 10,
       };
 
       const response = await request(app.getHttpServer())
-        .post('/appointments/list')
-        .set('Authorization', `Bearer ${authToken}`)
+        .post("/appointments/list")
+        .set("Authorization", `Bearer ${authToken}`)
         .send(listDto)
         .expect(HttpStatus.OK);
 
       const { data } = response.body;
       data.forEach((appointment) => {
-        expect(appointment.status).toBe('BOOKED');
+        expect(appointment.status).toBe("BOOKED");
       });
     });
 
-    it('should search appointments by client name', async () => {
+    it("should search appointments by client name", async () => {
       const listDto = {
-        search: 'Alice',
+        search: "Alice",
         page: 1,
         limit: 10,
       };
 
       const response = await request(app.getHttpServer())
-        .post('/appointments/list')
-        .set('Authorization', `Bearer ${authToken}`)
+        .post("/appointments/list")
+        .set("Authorization", `Bearer ${authToken}`)
         .send(listDto)
         .expect(HttpStatus.OK);
 
@@ -516,8 +516,8 @@ describe('🧪 AppointmentController (E2E) - Clean Architecture Flow', () => {
       // Should return appointments with client names matching 'Alice'
       const hasAlice = data.some(
         (appointment) =>
-          appointment.clientInfo.firstName.toLowerCase().includes('alice') ||
-          appointment.clientInfo.lastName.toLowerCase().includes('alice'),
+          appointment.clientInfo.firstName.toLowerCase().includes("alice") ||
+          appointment.clientInfo.lastName.toLowerCase().includes("alice"),
       );
 
       if (data.length > 0) {
@@ -526,25 +526,25 @@ describe('🧪 AppointmentController (E2E) - Clean Architecture Flow', () => {
     });
   });
 
-  describe('📄 GET APPOINTMENT BY ID - Domain Entity Retrieval', () => {
-    it('should get appointment by ID successfully', async () => {
+  describe("📄 GET APPOINTMENT BY ID - Domain Entity Retrieval", () => {
+    it("should get appointment by ID successfully", async () => {
       const appointmentId = (global as any).testAppointmentId;
 
       if (!appointmentId) {
         // Create a test appointment if none exists
         const bookingResponse = await request(app.getHttpServer())
-          .post('/appointments')
-          .set('Authorization', `Bearer ${authToken}`)
+          .post("/appointments")
+          .set("Authorization", `Bearer ${authToken}`)
           .send({
             businessId,
             calendarId,
             serviceId,
-            startTime: '2024-01-25T10:00:00Z',
-            endTime: '2024-01-25T11:00:00Z',
+            startTime: "2024-01-25T10:00:00Z",
+            endTime: "2024-01-25T11:00:00Z",
             clientInfo: {
-              firstName: 'Test',
-              lastName: 'Client',
-              email: 'test.client@example.com',
+              firstName: "Test",
+              lastName: "Client",
+              email: "test.client@example.com",
             },
           })
           .expect(HttpStatus.CREATED);
@@ -554,69 +554,69 @@ describe('🧪 AppointmentController (E2E) - Clean Architecture Flow', () => {
 
       const response = await request(app.getHttpServer())
         .get(`/appointments/${appointmentId}`)
-        .set('Authorization', `Bearer ${authToken}`)
+        .set("Authorization", `Bearer ${authToken}`)
         .expect(HttpStatus.OK);
 
       // ✅ Validate complete appointment data
-      expect(response.body).toHaveProperty('success', true);
-      expect(response.body).toHaveProperty('data');
+      expect(response.body).toHaveProperty("success", true);
+      expect(response.body).toHaveProperty("data");
 
       const appointment = response.body.data;
-      expect(appointment).toHaveProperty('id', appointmentId);
-      expect(appointment).toHaveProperty('status');
-      expect(appointment).toHaveProperty('startTime');
-      expect(appointment).toHaveProperty('endTime');
-      expect(appointment).toHaveProperty('clientInfo');
-      expect(appointment).toHaveProperty('service');
-      expect(appointment).toHaveProperty('calculatedPrice');
+      expect(appointment).toHaveProperty("id", appointmentId);
+      expect(appointment).toHaveProperty("status");
+      expect(appointment).toHaveProperty("startTime");
+      expect(appointment).toHaveProperty("endTime");
+      expect(appointment).toHaveProperty("clientInfo");
+      expect(appointment).toHaveProperty("service");
+      expect(appointment).toHaveProperty("calculatedPrice");
 
       // ✅ Validate nested objects
-      expect(appointment.clientInfo).toHaveProperty('firstName');
-      expect(appointment.clientInfo).toHaveProperty('lastName');
-      expect(appointment.service).toHaveProperty('name');
-      expect(appointment.service).toHaveProperty('duration');
+      expect(appointment.clientInfo).toHaveProperty("firstName");
+      expect(appointment.clientInfo).toHaveProperty("lastName");
+      expect(appointment.service).toHaveProperty("name");
+      expect(appointment.service).toHaveProperty("duration");
     });
 
-    it('should return 404 for non-existent appointment', async () => {
-      const nonExistentId = '550e8400-e29b-41d4-a716-446655440000';
+    it("should return 404 for non-existent appointment", async () => {
+      const nonExistentId = "550e8400-e29b-41d4-a716-446655440000";
 
       const response = await request(app.getHttpServer())
         .get(`/appointments/${nonExistentId}`)
-        .set('Authorization', `Bearer ${authToken}`)
+        .set("Authorization", `Bearer ${authToken}`)
         .expect(HttpStatus.NOT_FOUND);
 
-      expect(response.body).toHaveProperty('success', false);
-      expect(response.body.error.code).toBe('APPOINTMENT_NOT_FOUND');
+      expect(response.body).toHaveProperty("success", false);
+      expect(response.body.error.code).toBe("APPOINTMENT_NOT_FOUND");
     });
 
-    it('should validate appointment ID format', async () => {
-      const invalidId = 'invalid-uuid-format';
+    it("should validate appointment ID format", async () => {
+      const invalidId = "invalid-uuid-format";
 
       await request(app.getHttpServer())
         .get(`/appointments/${invalidId}`)
-        .set('Authorization', `Bearer ${authToken}`)
+        .set("Authorization", `Bearer ${authToken}`)
         .expect(HttpStatus.BAD_REQUEST);
     });
   });
 
-  describe('✏️ UPDATE APPOINTMENT - Business Rule Validation', () => {
+  describe("✏️ UPDATE APPOINTMENT - Business Rule Validation", () => {
     let updateTestAppointmentId: string;
 
     beforeAll(async () => {
       // Create appointment specifically for update tests
       const bookingResponse = await request(app.getHttpServer())
-        .post('/appointments')
-        .set('Authorization', `Bearer ${authToken}`)
+        .post("/appointments")
+        .set("Authorization", `Bearer ${authToken}`)
         .send({
           businessId,
           calendarId,
           serviceId,
-          startTime: '2024-01-30T09:00:00Z',
-          endTime: '2024-01-30T10:00:00Z',
+          startTime: "2024-01-30T09:00:00Z",
+          endTime: "2024-01-30T10:00:00Z",
           clientInfo: {
-            firstName: 'Update',
-            lastName: 'Test',
-            email: 'update.test@example.com',
+            firstName: "Update",
+            lastName: "Test",
+            email: "update.test@example.com",
           },
         })
         .expect(HttpStatus.CREATED);
@@ -624,109 +624,109 @@ describe('🧪 AppointmentController (E2E) - Clean Architecture Flow', () => {
       updateTestAppointmentId = bookingResponse.body.data.id;
     });
 
-    it('should update appointment time successfully', async () => {
+    it("should update appointment time successfully", async () => {
       const updateDto = {
-        startTime: '2024-01-30T14:00:00Z',
-        endTime: '2024-01-30T15:00:00Z',
+        startTime: "2024-01-30T14:00:00Z",
+        endTime: "2024-01-30T15:00:00Z",
       };
 
       const response = await request(app.getHttpServer())
         .put(`/appointments/${updateTestAppointmentId}`)
-        .set('Authorization', `Bearer ${authToken}`)
+        .set("Authorization", `Bearer ${authToken}`)
         .send(updateDto)
         .expect(HttpStatus.OK);
 
-      expect(response.body).toHaveProperty('success', true);
+      expect(response.body).toHaveProperty("success", true);
       expect(response.body.data).toHaveProperty(
-        'startTime',
+        "startTime",
         updateDto.startTime,
       );
-      expect(response.body.data).toHaveProperty('endTime', updateDto.endTime);
+      expect(response.body.data).toHaveProperty("endTime", updateDto.endTime);
     });
 
-    it('should update appointment status BOOKED -> CONFIRMED', async () => {
+    it("should update appointment status BOOKED -> CONFIRMED", async () => {
       const updateDto = {
-        status: 'CONFIRMED',
+        status: "CONFIRMED",
       };
 
       const response = await request(app.getHttpServer())
         .put(`/appointments/${updateTestAppointmentId}`)
-        .set('Authorization', `Bearer ${authToken}`)
+        .set("Authorization", `Bearer ${authToken}`)
         .send(updateDto)
         .expect(HttpStatus.OK);
 
-      expect(response.body.data).toHaveProperty('status', 'CONFIRMED');
+      expect(response.body.data).toHaveProperty("status", "CONFIRMED");
     });
 
-    it('should reject invalid status transitions', async () => {
+    it("should reject invalid status transitions", async () => {
       // Try to set status back to BOOKED from CONFIRMED (should fail)
       const invalidUpdateDto = {
-        status: 'BOOKED',
+        status: "BOOKED",
       };
 
       const response = await request(app.getHttpServer())
         .put(`/appointments/${updateTestAppointmentId}`)
-        .set('Authorization', `Bearer ${authToken}`)
+        .set("Authorization", `Bearer ${authToken}`)
         .send(invalidUpdateDto)
         .expect(HttpStatus.BAD_REQUEST);
 
-      expect(response.body).toHaveProperty('success', false);
-      expect(response.body.error.code).toBe('INVALID_STATUS_TRANSITION');
+      expect(response.body).toHaveProperty("success", false);
+      expect(response.body.error.code).toBe("INVALID_STATUS_TRANSITION");
     });
 
-    it('should validate time slot availability for updates', async () => {
+    it("should validate time slot availability for updates", async () => {
       // Create another appointment to create a conflict
       await request(app.getHttpServer())
-        .post('/appointments')
-        .set('Authorization', `Bearer ${authToken}`)
+        .post("/appointments")
+        .set("Authorization", `Bearer ${authToken}`)
         .send({
           businessId,
           calendarId,
           serviceId,
-          startTime: '2024-01-31T10:00:00Z',
-          endTime: '2024-01-31T11:00:00Z',
+          startTime: "2024-01-31T10:00:00Z",
+          endTime: "2024-01-31T11:00:00Z",
           clientInfo: {
-            firstName: 'Conflict',
-            lastName: 'Test',
-            email: 'conflict.test@example.com',
+            firstName: "Conflict",
+            lastName: "Test",
+            email: "conflict.test@example.com",
           },
         })
         .expect(HttpStatus.CREATED);
 
       // Try to update appointment to conflicting time
       const conflictingUpdateDto = {
-        startTime: '2024-01-31T10:30:00Z', // Overlapping with above
-        endTime: '2024-01-31T11:30:00Z',
+        startTime: "2024-01-31T10:30:00Z", // Overlapping with above
+        endTime: "2024-01-31T11:30:00Z",
       };
 
       const response = await request(app.getHttpServer())
         .put(`/appointments/${updateTestAppointmentId}`)
-        .set('Authorization', `Bearer ${authToken}`)
+        .set("Authorization", `Bearer ${authToken}`)
         .send(conflictingUpdateDto)
         .expect(HttpStatus.CONFLICT);
 
-      expect(response.body.error.code).toBe('APPOINTMENT_TIME_CONFLICT');
+      expect(response.body.error.code).toBe("APPOINTMENT_TIME_CONFLICT");
     });
   });
 
-  describe('❌ CANCEL APPOINTMENT - Business Flow Completion', () => {
+  describe("❌ CANCEL APPOINTMENT - Business Flow Completion", () => {
     let cancelTestAppointmentId: string;
 
     beforeAll(async () => {
       // Create appointment specifically for cancellation tests
       const bookingResponse = await request(app.getHttpServer())
-        .post('/appointments')
-        .set('Authorization', `Bearer ${authToken}`)
+        .post("/appointments")
+        .set("Authorization", `Bearer ${authToken}`)
         .send({
           businessId,
           calendarId,
           serviceId,
-          startTime: '2024-02-01T15:00:00Z',
-          endTime: '2024-02-01T16:00:00Z',
+          startTime: "2024-02-01T15:00:00Z",
+          endTime: "2024-02-01T16:00:00Z",
           clientInfo: {
-            firstName: 'Cancel',
-            lastName: 'Test',
-            email: 'cancel.test@example.com',
+            firstName: "Cancel",
+            lastName: "Test",
+            email: "cancel.test@example.com",
           },
         })
         .expect(HttpStatus.CREATED);
@@ -734,78 +734,78 @@ describe('🧪 AppointmentController (E2E) - Clean Architecture Flow', () => {
       cancelTestAppointmentId = bookingResponse.body.data.id;
     });
 
-    it('should cancel appointment successfully', async () => {
+    it("should cancel appointment successfully", async () => {
       const cancelDto = {
-        reason: 'Client request',
+        reason: "Client request",
       };
 
       const response = await request(app.getHttpServer())
         .delete(`/appointments/${cancelTestAppointmentId}`)
-        .set('Authorization', `Bearer ${authToken}`)
+        .set("Authorization", `Bearer ${authToken}`)
         .send(cancelDto)
         .expect(HttpStatus.OK);
 
       // ✅ Validate cancellation response
-      expect(response.body).toHaveProperty('success', true);
-      expect(response.body.data).toHaveProperty('status', 'CANCELLED');
-      expect(response.body.data).toHaveProperty('cancelledAt');
+      expect(response.body).toHaveProperty("success", true);
+      expect(response.body.data).toHaveProperty("status", "CANCELLED");
+      expect(response.body.data).toHaveProperty("cancelledAt");
       expect(response.body.data).toHaveProperty(
-        'cancellationReason',
-        'Client request',
+        "cancellationReason",
+        "Client request",
       );
 
       // ✅ Verify appointment status is updated
       const verificationResponse = await request(app.getHttpServer())
         .get(`/appointments/${cancelTestAppointmentId}`)
-        .set('Authorization', `Bearer ${authToken}`)
+        .set("Authorization", `Bearer ${authToken}`)
         .expect(HttpStatus.OK);
 
       expect(verificationResponse.body.data).toHaveProperty(
-        'status',
-        'CANCELLED',
+        "status",
+        "CANCELLED",
       );
     });
 
-    it('should prevent cancelling already cancelled appointments', async () => {
+    it("should prevent cancelling already cancelled appointments", async () => {
       const cancelDto = {
-        reason: 'Duplicate cancellation attempt',
+        reason: "Duplicate cancellation attempt",
       };
 
       const response = await request(app.getHttpServer())
         .delete(`/appointments/${cancelTestAppointmentId}`)
-        .set('Authorization', `Bearer ${authToken}`)
+        .set("Authorization", `Bearer ${authToken}`)
         .send(cancelDto)
         .expect(HttpStatus.BAD_REQUEST);
 
-      expect(response.body.error.code).toBe('APPOINTMENT_ALREADY_CANCELLED');
+      expect(response.body.error.code).toBe("APPOINTMENT_ALREADY_CANCELLED");
     });
 
-    it('should handle non-existent appointment cancellation', async () => {
-      const nonExistentId = '550e8400-e29b-41d4-a716-446655440999';
+    it("should handle non-existent appointment cancellation", async () => {
+      const nonExistentId = "550e8400-e29b-41d4-a716-446655440999";
 
       const response = await request(app.getHttpServer())
         .delete(`/appointments/${nonExistentId}`)
-        .set('Authorization', `Bearer ${authToken}`)
-        .send({ reason: 'Test' })
+        .set("Authorization", `Bearer ${authToken}`)
+        .send({ reason: "Test" })
         .expect(HttpStatus.NOT_FOUND);
 
-      expect(response.body.error.code).toBe('APPOINTMENT_NOT_FOUND');
+      expect(response.body.error.code).toBe("APPOINTMENT_NOT_FOUND");
     });
   });
 
-  describe('🔒 SECURITY & PERMISSIONS - Business Context Validation', () => {
-    it('should enforce business context isolation', async () => {
+  describe("🔒 SECURITY & PERMISSIONS - Business Context Validation", () => {
+    it("should enforce business context isolation", async () => {
       // Create another business and try to access appointments
       const otherBusinessResponse = await request(app.getHttpServer())
-        .post('/businesses')
-        .set('Authorization', `Bearer ${authToken}`)
+        .post("/businesses")
+        .set("Authorization", `Bearer ${authToken}`)
         .send({
-          name: 'Other Business',
-          email: 'other@business.com',
-          address: '456 Other Street',
-          city: 'Other City',
-          country: 'France',
-          businessSectorId: 'existing-sector-id',
+          name: "Other Business",
+          email: "other@business.com",
+          address: "456 Other Street",
+          city: "Other City",
+          country: "France",
+          businessSectorId: "existing-sector-id",
         })
         .expect(HttpStatus.CREATED);
 
@@ -813,8 +813,8 @@ describe('🧪 AppointmentController (E2E) - Clean Architecture Flow', () => {
 
       // Try to list appointments with wrong business context
       const response = await request(app.getHttpServer())
-        .post('/appointments/list')
-        .set('Authorization', `Bearer ${authToken}`)
+        .post("/appointments/list")
+        .set("Authorization", `Bearer ${authToken}`)
         .send({
           businessId: otherBusinessId, // Different business
           page: 1,
@@ -826,14 +826,14 @@ describe('🧪 AppointmentController (E2E) - Clean Architecture Flow', () => {
       expect(response.body.data).toHaveLength(0);
     });
 
-    it('should require authentication for all endpoints', async () => {
+    it("should require authentication for all endpoints", async () => {
       const testCases = [
-        { method: 'post', path: '/appointments/available-slots' },
-        { method: 'post', path: '/appointments' },
-        { method: 'post', path: '/appointments/list' },
-        { method: 'get', path: '/appointments/some-id' },
-        { method: 'put', path: '/appointments/some-id' },
-        { method: 'delete', path: '/appointments/some-id' },
+        { method: "post", path: "/appointments/available-slots" },
+        { method: "post", path: "/appointments" },
+        { method: "post", path: "/appointments/list" },
+        { method: "get", path: "/appointments/some-id" },
+        { method: "put", path: "/appointments/some-id" },
+        { method: "delete", path: "/appointments/some-id" },
       ];
 
       for (const { method, path } of testCases) {
@@ -845,19 +845,19 @@ describe('🧪 AppointmentController (E2E) - Clean Architecture Flow', () => {
     });
   });
 
-  describe('🎯 PERFORMANCE & EDGE CASES', () => {
-    it('should handle large pagination requests efficiently', async () => {
+  describe("🎯 PERFORMANCE & EDGE CASES", () => {
+    it("should handle large pagination requests efficiently", async () => {
       const listDto = {
         page: 1,
         limit: 100, // Max allowed
-        sortBy: 'startTime',
-        sortOrder: 'desc',
+        sortBy: "startTime",
+        sortOrder: "desc",
       };
 
       const startTime = Date.now();
       const response = await request(app.getHttpServer())
-        .post('/appointments/list')
-        .set('Authorization', `Bearer ${authToken}`)
+        .post("/appointments/list")
+        .set("Authorization", `Bearer ${authToken}`)
         .send(listDto)
         .expect(HttpStatus.OK);
 
@@ -868,32 +868,32 @@ describe('🧪 AppointmentController (E2E) - Clean Architecture Flow', () => {
       expect(response.body.data.length).toBeLessThanOrEqual(100);
     });
 
-    it('should reject pagination limits exceeding maximum', async () => {
+    it("should reject pagination limits exceeding maximum", async () => {
       const listDto = {
         page: 1,
         limit: 150, // Exceeds max of 100
       };
 
       const response = await request(app.getHttpServer())
-        .post('/appointments/list')
-        .set('Authorization', `Bearer ${authToken}`)
+        .post("/appointments/list")
+        .set("Authorization", `Bearer ${authToken}`)
         .send(listDto)
         .expect(HttpStatus.BAD_REQUEST);
 
-      expect(response.body.error.message).toContain('limit');
+      expect(response.body.error.message).toContain("limit");
     });
 
-    it('should handle concurrent booking attempts gracefully', async () => {
+    it("should handle concurrent booking attempts gracefully", async () => {
       const bookingDto = {
         businessId,
         calendarId,
         serviceId,
-        startTime: '2024-02-15T10:00:00Z',
-        endTime: '2024-02-15T11:00:00Z',
+        startTime: "2024-02-15T10:00:00Z",
+        endTime: "2024-02-15T11:00:00Z",
         clientInfo: {
-          firstName: 'Concurrent',
-          lastName: 'Test',
-          email: 'concurrent@test.com',
+          firstName: "Concurrent",
+          lastName: "Test",
+          email: "concurrent@test.com",
         },
       };
 
@@ -902,8 +902,8 @@ describe('🧪 AppointmentController (E2E) - Clean Architecture Flow', () => {
         .fill(0)
         .map((_, index) =>
           request(app.getHttpServer())
-            .post('/appointments')
-            .set('Authorization', `Bearer ${authToken}`)
+            .post("/appointments")
+            .set("Authorization", `Bearer ${authToken}`)
             .send({
               ...bookingDto,
               clientInfo: {

@@ -1,10 +1,10 @@
 import {
   StaffAvailability,
   StaffWorkingHours,
-} from '../../../domain/entities/staff.entity';
-import { StaffNotFoundError } from '../../../domain/exceptions/staff.exceptions';
-import { StaffRepository } from '../../../domain/repositories/staff.repository.interface';
-import { UserId } from '../../../domain/value-objects/user-id.value-object';
+} from "../../../domain/entities/staff.entity";
+import { StaffNotFoundError } from "../../../domain/exceptions/staff.exceptions";
+import { StaffRepository } from "../../../domain/repositories/staff.repository.interface";
+import { UserId } from "../../../domain/value-objects/user-id.value-object";
 
 export interface SetStaffAvailabilityRequest {
   readonly staffId: string;

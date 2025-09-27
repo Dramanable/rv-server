@@ -10,67 +10,67 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
-} from 'typeorm';
+} from "typeorm";
 
-@Entity('users')
+@Entity("users")
 export class UserOrmEntity {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryGeneratedColumn("uuid")
   id!: string;
 
-  @Column({ type: 'varchar', length: 255, unique: true })
+  @Column({ type: "varchar", length: 255, unique: true })
   email!: string;
 
-  @Column({ type: 'varchar', length: 100, unique: true, nullable: true })
+  @Column({ type: "varchar", length: 100, unique: true, nullable: true })
   username?: string;
 
-  @Column({ type: 'varchar', length: 255, name: 'hashed_password' })
+  @Column({ type: "varchar", length: 255, name: "hashed_password" })
   hashedPassword!: string;
 
-  @Column({ type: 'varchar', length: 50, name: 'first_name' })
+  @Column({ type: "varchar", length: 50, name: "first_name" })
   firstName!: string;
 
-  @Column({ type: 'varchar', length: 50, name: 'last_name' })
+  @Column({ type: "varchar", length: 50, name: "last_name" })
   lastName!: string;
 
   @Column({
-    type: 'enum',
+    type: "enum",
     enum: [
-      'PLATFORM_ADMIN',
-      'BUSINESS_OWNER',
-      'BUSINESS_ADMIN',
-      'LOCATION_MANAGER',
-      'DEPARTMENT_HEAD',
-      'SENIOR_PRACTITIONER',
-      'PRACTITIONER',
-      'JUNIOR_PRACTITIONER',
-      'RECEPTIONIST',
-      'ASSISTANT',
-      'SCHEDULER',
-      'CORPORATE_CLIENT',
-      'VIP_CLIENT',
-      'REGULAR_CLIENT',
-      'GUEST_CLIENT',
+      "PLATFORM_ADMIN",
+      "BUSINESS_OWNER",
+      "BUSINESS_ADMIN",
+      "LOCATION_MANAGER",
+      "DEPARTMENT_HEAD",
+      "SENIOR_PRACTITIONER",
+      "PRACTITIONER",
+      "JUNIOR_PRACTITIONER",
+      "RECEPTIONIST",
+      "ASSISTANT",
+      "SCHEDULER",
+      "CORPORATE_CLIENT",
+      "VIP_CLIENT",
+      "REGULAR_CLIENT",
+      "GUEST_CLIENT",
     ],
   })
   role!: string;
 
-  @Column({ type: 'boolean', default: true, name: 'is_active' })
+  @Column({ type: "boolean", default: true, name: "is_active" })
   isActive!: boolean;
 
-  @Column({ type: 'boolean', default: false, name: 'is_verified' })
+  @Column({ type: "boolean", default: false, name: "is_verified" })
   isVerified!: boolean;
 
   @CreateDateColumn({
-    name: 'created_at',
-    type: 'timestamp',
-    comment: 'Timestamp when the user was created',
+    name: "created_at",
+    type: "timestamp",
+    comment: "Timestamp when the user was created",
   })
   createdAt!: Date;
 
   @UpdateDateColumn({
-    name: 'updated_at',
-    type: 'timestamp',
-    comment: 'Timestamp when the user was last updated',
+    name: "updated_at",
+    type: "timestamp",
+    comment: "Timestamp when the user was last updated",
   })
   updatedAt!: Date;
 }

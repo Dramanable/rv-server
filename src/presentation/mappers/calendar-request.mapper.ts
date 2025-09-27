@@ -5,12 +5,12 @@
  * ✅ Conversion safe des types presentation → application
  */
 
-import { ListCalendarsRequest } from '../../application/use-cases/calendar/list-calendars.use-case';
-import { CalendarStatus as DomainCalendarStatus } from '../../domain/entities/calendar.entity';
+import { ListCalendarsRequest } from "../../application/use-cases/calendar/list-calendars.use-case";
+import { CalendarStatus as DomainCalendarStatus } from "../../domain/entities/calendar.entity";
 import {
   CalendarStatus as DtoCalendarStatus,
   ListCalendarsDto,
-} from '../dtos/calendar.dto';
+} from "../dtos/calendar.dto";
 
 export class CalendarRequestMapper {
   /**
@@ -28,8 +28,8 @@ export class CalendarRequestMapper {
         limit: dto.limit ?? 10,
       },
       sorting: {
-        sortBy: dto.sortBy ?? 'createdAt',
-        sortOrder: dto.sortOrder ?? 'desc',
+        sortBy: dto.sortBy ?? "createdAt",
+        sortOrder: dto.sortOrder ?? "desc",
       },
       filters: {
         search: dto.search,
@@ -52,15 +52,15 @@ export class CalendarRequestMapper {
     const statusValue = status as string;
 
     switch (statusValue) {
-      case 'ACTIVE':
+      case "ACTIVE":
         return DomainCalendarStatus.ACTIVE;
-      case 'INACTIVE':
+      case "INACTIVE":
         return DomainCalendarStatus.INACTIVE;
-      case 'MAINTENANCE':
+      case "MAINTENANCE":
         return DomainCalendarStatus.MAINTENANCE;
-      case 'SUSPENDED':
+      case "SUSPENDED":
         return DomainCalendarStatus.INACTIVE; // Map to INACTIVE
-      case 'ARCHIVED':
+      case "ARCHIVED":
         return DomainCalendarStatus.INACTIVE; // Map to INACTIVE
       default:
         return undefined;

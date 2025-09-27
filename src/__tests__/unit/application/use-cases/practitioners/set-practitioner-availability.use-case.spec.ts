@@ -5,21 +5,20 @@
  * 🔴 RED → 🟢 GREEN → 🔵 REFACTOR
  */
 
-import { SetPractitionerAvailabilityUseCase } from '@application/use-cases/practitioners/set-practitioner-availability.use-case';
-import { StaffRepository } from '@domain/repositories/staff.repository.interface';
-import { IRoleAssignmentRepository } from '@domain/repositories/role-assignment.repository.interface';
-import { AppointmentRepository } from '@domain/repositories/appointment.repository.interface';
-import { IPermissionService } from '@application/ports/permission.service.interface';
-import { ILogger } from '@shared/types/logger.interface';
-import { I18nService } from '@application/ports/i18n.port';
-import { Permission, UserRole } from '@shared/enums/user-role.enum';
+import { I18nService } from "@application/ports/i18n.port";
+import { IPermissionService } from "@application/ports/permission.service.interface";
 import {
-  InsufficientPermissionsError,
-  PractitionerNotFoundError,
   InvalidAvailabilityDataError,
-} from '@application/use-cases/practitioners/set-practitioner-availability.use-case';
+  PractitionerNotFoundError,
+  SetPractitionerAvailabilityUseCase,
+} from "@application/use-cases/practitioners/set-practitioner-availability.use-case";
+import { AppointmentRepository } from "@domain/repositories/appointment.repository.interface";
+import { IRoleAssignmentRepository } from "@domain/repositories/role-assignment.repository.interface";
+import { StaffRepository } from "@domain/repositories/staff.repository.interface";
+import { Permission } from "@shared/enums/user-role.enum";
+import { ILogger } from "@shared/types/logger.interface";
 
-describe('🧪 SetPractitionerAvailabilityUseCase - TDD Suite', () => {
+describe("🧪 SetPractitionerAvailabilityUseCase - TDD Suite", () => {
   let useCase: SetPractitionerAvailabilityUseCase;
   let mockStaffRepository: jest.Mocked<StaffRepository>;
   let mockRoleAssignmentRepository: jest.Mocked<IRoleAssignmentRepository>;
@@ -29,22 +28,22 @@ describe('🧪 SetPractitionerAvailabilityUseCase - TDD Suite', () => {
   let mockI18n: jest.Mocked<I18nService>;
 
   // Test data - VALID UUIDs
-  const practitionerId = 'f47ac10b-58cc-4372-a567-0e02b2c3d479';
-  const businessId = 'f47ac10b-58cc-4372-a567-0e02b2c3d481';
-  const correlationId = 'correlation-abc';
+  const practitionerId = "f47ac10b-58cc-4372-a567-0e02b2c3d479";
+  const businessId = "f47ac10b-58cc-4372-a567-0e02b2c3d481";
+  const correlationId = "correlation-abc";
 
   const baseAvailability = {
-    startDate: new Date('2025-10-01'),
-    endDate: new Date('2025-12-31'),
+    startDate: new Date("2025-10-01"),
+    endDate: new Date("2025-12-31"),
     availabilities: [
       {
         dayOfWeek: 1, // Monday
         isAvailable: true,
         timeSlots: [
-          { startTime: '09:00', endTime: '12:00' },
-          { startTime: '14:00', endTime: '17:00' },
+          { startTime: "09:00", endTime: "12:00" },
+          { startTime: "14:00", endTime: "17:00" },
         ],
-        breakPeriods: [{ startTime: '10:30', endTime: '10:45' }],
+        breakPeriods: [{ startTime: "10:30", endTime: "10:45" }],
       },
     ],
     exceptions: [],
@@ -111,8 +110,8 @@ describe('🧪 SetPractitionerAvailabilityUseCase - TDD Suite', () => {
     );
   });
 
-  describe('🟢 GREEN Phase - Happy Path Scenarios', () => {
-    it('should successfully set practitioner availability', async () => {
+  describe("🟢 GREEN Phase - Happy Path Scenarios", () => {
+    it("should successfully set practitioner availability", async () => {
       // Given - Valid request for practitioner setting own availability
       const request = {
         practitionerId,
@@ -136,7 +135,7 @@ describe('🧪 SetPractitionerAvailabilityUseCase - TDD Suite', () => {
         availableSlots: 2, // 2 time slots from base availability
         conflictsDetected: 0,
         conflictsResolved: 0,
-        message: 'Availability updated successfully',
+        message: "Availability updated successfully",
         notificationsSent: [], // Empty array initially
       });
 
@@ -149,7 +148,7 @@ describe('🧪 SetPractitionerAvailabilityUseCase - TDD Suite', () => {
 
       // Verify logging
       expect(mockLogger.log).toHaveBeenCalledWith(
-        'Setting practitioner availability',
+        "Setting practitioner availability",
         expect.objectContaining({
           practitionerId,
           businessId,
@@ -158,7 +157,7 @@ describe('🧪 SetPractitionerAvailabilityUseCase - TDD Suite', () => {
       );
 
       expect(mockLogger.log).toHaveBeenCalledWith(
-        'Practitioner availability set successfully',
+        "Practitioner availability set successfully",
         expect.objectContaining({
           practitionerId,
           availableSlots: 2,
@@ -170,8 +169,8 @@ describe('🧪 SetPractitionerAvailabilityUseCase - TDD Suite', () => {
     });
   });
 
-  describe('🔴 RED Phase - Error Scenarios', () => {
-    it('should reject when practitioner is not found', async () => {
+  describe("🔴 RED Phase - Error Scenarios", () => {
+    it("should reject when practitioner is not found", async () => {
       // Given - Practitioner does not exist
       const request = {
         practitionerId,
@@ -189,7 +188,7 @@ describe('🧪 SetPractitionerAvailabilityUseCase - TDD Suite', () => {
       );
 
       expect(mockLogger.error).toHaveBeenCalledWith(
-        'Practitioner not found',
+        "Practitioner not found",
         expect.objectContaining({
           practitionerId,
           correlationId,
@@ -197,7 +196,7 @@ describe('🧪 SetPractitionerAvailabilityUseCase - TDD Suite', () => {
       );
     });
 
-    it('should reject when practitioner is not active', async () => {
+    it("should reject when practitioner is not active", async () => {
       // Given - Inactive practitioner
       const request = {
         practitionerId,
@@ -217,7 +216,7 @@ describe('🧪 SetPractitionerAvailabilityUseCase - TDD Suite', () => {
       );
 
       expect(mockLogger.error).toHaveBeenCalledWith(
-        'Practitioner not active',
+        "Practitioner not active",
         expect.objectContaining({
           practitionerId,
           correlationId,
@@ -225,7 +224,7 @@ describe('🧪 SetPractitionerAvailabilityUseCase - TDD Suite', () => {
       );
     });
 
-    it('should reject when user is not a practitioner', async () => {
+    it("should reject when user is not a practitioner", async () => {
       // Given - User is not a practitioner
       const request = {
         practitionerId,
@@ -245,7 +244,7 @@ describe('🧪 SetPractitionerAvailabilityUseCase - TDD Suite', () => {
       );
 
       expect(mockLogger.error).toHaveBeenCalledWith(
-        'User is not a practitioner',
+        "User is not a practitioner",
         expect.objectContaining({
           practitionerId,
           correlationId,
@@ -253,15 +252,15 @@ describe('🧪 SetPractitionerAvailabilityUseCase - TDD Suite', () => {
       );
     });
 
-    it('should reject invalid date range', async () => {
+    it("should reject invalid date range", async () => {
       // Given - Invalid date range (end before start)
       const request = {
         practitionerId,
         businessId,
         availability: {
           ...baseAvailability,
-          startDate: new Date('2025-12-31'),
-          endDate: new Date('2025-10-01'), // End before start
+          startDate: new Date("2025-12-31"),
+          endDate: new Date("2025-10-01"), // End before start
         },
         requestingUserId: practitionerId,
         correlationId,
@@ -276,14 +275,14 @@ describe('🧪 SetPractitionerAvailabilityUseCase - TDD Suite', () => {
       );
 
       expect(mockLogger.error).toHaveBeenCalledWith(
-        'Invalid date range',
+        "Invalid date range",
         expect.objectContaining({
           correlationId,
         }),
       );
     });
 
-    it('should reject invalid time slots', async () => {
+    it("should reject invalid time slots", async () => {
       // Given - Invalid time slot (end before start)
       const request = {
         practitionerId,
@@ -295,7 +294,7 @@ describe('🧪 SetPractitionerAvailabilityUseCase - TDD Suite', () => {
               dayOfWeek: 1,
               isAvailable: true,
               timeSlots: [
-                { startTime: '17:00', endTime: '09:00' }, // End before start
+                { startTime: "17:00", endTime: "09:00" }, // End before start
               ],
             },
           ],
@@ -313,11 +312,11 @@ describe('🧪 SetPractitionerAvailabilityUseCase - TDD Suite', () => {
       );
 
       expect(mockLogger.error).toHaveBeenCalledWith(
-        'Invalid time slot',
+        "Invalid time slot",
         expect.objectContaining({
           day: 1,
-          startTime: '17:00',
-          endTime: '09:00',
+          startTime: "17:00",
+          endTime: "09:00",
           correlationId,
         }),
       );

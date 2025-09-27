@@ -15,7 +15,7 @@ import {
   ROLE_HIERARCHY,
   ROLE_PERMISSIONS,
   UserRole,
-} from '@shared/enums/user-role.enum';
+} from "@shared/enums/user-role.enum";
 
 export interface RoleAssignmentContext {
   readonly businessId: string;
@@ -230,7 +230,7 @@ export class RoleAssignment {
    */
   extendExpiration(newExpirationDate: Date): RoleAssignment {
     if (newExpirationDate <= new Date()) {
-      throw new Error('New expiration date must be in the future');
+      throw new Error("New expiration date must be in the future");
     }
 
     return new RoleAssignment(
@@ -278,14 +278,14 @@ export class RoleAssignment {
   /**
    * 🏢 Obtenir le scope de l'assignation (BUSINESS, LOCATION, DEPARTMENT)
    */
-  getAssignmentScope(): 'BUSINESS' | 'LOCATION' | 'DEPARTMENT' {
+  getAssignmentScope(): "BUSINESS" | "LOCATION" | "DEPARTMENT" {
     if (this._context.departmentId) {
-      return 'DEPARTMENT';
+      return "DEPARTMENT";
     }
     if (this._context.locationId) {
-      return 'LOCATION';
+      return "LOCATION";
     }
-    return 'BUSINESS';
+    return "BUSINESS";
   }
 
   /**
@@ -314,19 +314,19 @@ export class RoleAssignment {
   ): void {
     // Validation du businessId obligatoire
     if (!context.businessId || context.businessId.trim().length === 0) {
-      throw new Error('Business ID is required');
+      throw new Error("Business ID is required");
     }
 
     // Validation du rôle selon le contexte
     if (role === UserRole.SUPER_ADMIN || role === UserRole.PLATFORM_ADMIN) {
       throw new Error(
-        'Super admin and platform admin roles cannot be assigned in business context',
+        "Super admin and platform admin roles cannot be assigned in business context",
       );
     }
 
     // Validation de la hiérarchie des contextes
     if (context.departmentId && !context.locationId) {
-      throw new Error('Department assignments must include location context');
+      throw new Error("Department assignments must include location context");
     }
 
     // Validation des rôles selon le niveau de contexte
@@ -358,7 +358,7 @@ export class RoleAssignment {
 
   private static generateId(): string {
     return (
-      'role_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9)
+      "role_" + Date.now() + "_" + Math.random().toString(36).substring(2, 9)
     );
   }
 }

@@ -5,7 +5,7 @@
  * Implémente le port défini dans l'Application Layer
  */
 
-import { Injectable } from '@nestjs/common';
+import { Injectable } from "@nestjs/common";
 import {
   AppointmentConfirmationEmailData,
   EmailOptions,
@@ -14,7 +14,7 @@ import {
   IEmailService,
   PasswordResetEmailData,
   WelcomeEmailData,
-} from '../../application/ports/email.port';
+} from "../../application/ports/email.port";
 
 @Injectable()
 export class MockEmailService implements IEmailService {
@@ -27,9 +27,9 @@ export class MockEmailService implements IEmailService {
 
   async sendEmail(options: EmailOptions): Promise<EmailResult> {
     const emailContent = {
-      to: Array.isArray(options.to) ? options.to.join(', ') : options.to,
+      to: Array.isArray(options.to) ? options.to.join(", ") : options.to,
       subject: options.subject,
-      body: options.html || options.text || 'Email content',
+      body: options.html || options.text || "Email content",
       timestamp: new Date(),
     };
 
@@ -69,9 +69,9 @@ export class MockEmailService implements IEmailService {
       html: `
         <h1>Bienvenue ${data.userName}!</h1>
         <p>Votre compte a été créé avec succès sur ${data.companyName}.</p>
-        ${data.temporaryPassword ? `<p>Mot de passe temporaire : <strong>${data.temporaryPassword}</strong></p>` : ''}
-        ${data.activationLink ? `<p><a href="${data.activationLink}">Activer mon compte</a></p>` : ''}
-        ${data.loginUrl ? `<p><a href="${data.loginUrl}">Se connecter</a></p>` : ''}
+        ${data.temporaryPassword ? `<p>Mot de passe temporaire : <strong>${data.temporaryPassword}</strong></p>` : ""}
+        ${data.activationLink ? `<p><a href="${data.activationLink}">Activer mon compte</a></p>` : ""}
+        ${data.loginUrl ? `<p><a href="${data.loginUrl}">Se connecter</a></p>` : ""}
         <p>Cordialement,<br>L'équipe ${data.companyName}</p>
       `,
     });
@@ -111,7 +111,7 @@ export class MockEmailService implements IEmailService {
           <li>Heure : ${data.appointmentTime}</li>
           <li>Lieu : ${data.location}</li>
         </ul>
-        ${data.cancelationLink ? `<p><a href="${data.cancelationLink}">Annuler ce rendez-vous</a></p>` : ''}
+        ${data.cancelationLink ? `<p><a href="${data.cancelationLink}">Annuler ce rendez-vous</a></p>` : ""}
       `,
     });
   }

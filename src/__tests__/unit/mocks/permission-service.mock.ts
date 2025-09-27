@@ -5,7 +5,7 @@
  * Respecte exactement l'interface IPermissionService
  */
 
-import type { IPermissionService } from '@application/ports/permission.service.interface';
+import type { IPermissionService } from "@application/ports/permission.service.interface";
 
 export const createMockPermissionService =
   (): jest.Mocked<IPermissionService> => {
@@ -14,7 +14,7 @@ export const createMockPermissionService =
       canActOnRole: jest.fn().mockResolvedValue(true),
       requirePermission: jest.fn().mockResolvedValue(undefined),
       getUserPermissions: jest.fn().mockResolvedValue([]),
-      getUserRole: jest.fn().mockResolvedValue('BUSINESS_OWNER' as any),
+      getUserRole: jest.fn().mockResolvedValue("BUSINESS_OWNER" as any),
       hasRole: jest.fn().mockResolvedValue(true),
       hasBusinessPermission: jest.fn().mockResolvedValue(true),
       canManageUser: jest.fn().mockResolvedValue(true),

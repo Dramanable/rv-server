@@ -4,11 +4,11 @@
  * ✅ Initializes business gallery for image management
  */
 
-import { BusinessRepository } from '../../../domain/repositories/business.repository';
-import { BusinessId } from '../../../domain/value-objects/business-id.value-object';
-import { I18nService } from '../../../shared/types/i18n.interface';
-import { ILogger } from '../../../shared/types/logger.interface';
-import { BusinessNotFoundError } from '../../exceptions/business.exceptions';
+import { BusinessRepository } from "../../../domain/repositories/business.repository";
+import { BusinessId } from "../../../domain/value-objects/business-id.value-object";
+import { I18nService } from "../../../shared/types/i18n.interface";
+import { ILogger } from "../../../shared/types/logger.interface";
+import { BusinessNotFoundError } from "../../exceptions/business.exceptions";
 
 export interface CreateBusinessGalleryRequest {
   readonly businessId: string;
@@ -36,7 +36,7 @@ export class CreateBusinessGalleryUseCase {
   async execute(
     request: CreateBusinessGalleryRequest,
   ): Promise<CreateBusinessGalleryResponse> {
-    this.logger.log('Validating business gallery readiness', {
+    this.logger.log("Validating business gallery readiness", {
       businessId: request.businessId,
       requestingUserId: request.requestingUserId,
     });
@@ -47,8 +47,8 @@ export class CreateBusinessGalleryUseCase {
       const business = await this.businessRepository.findById(businessId);
 
       if (!business) {
-        const errorMessage = this.i18n.t('error.business.not_found');
-        this.logger.error('Business not found for gallery validation', {
+        const errorMessage = this.i18n.t("error.business.not_found");
+        this.logger.error("Business not found for gallery validation", {
           businessId: request.businessId,
           requestingUserId: request.requestingUserId,
         });
@@ -59,7 +59,7 @@ export class CreateBusinessGalleryUseCase {
       const currentGallery = business.gallery;
       const imageCount = currentGallery.count;
 
-      this.logger.log('Business gallery validated successfully', {
+      this.logger.log("Business gallery validated successfully", {
         businessId: request.businessId,
         currentImageCount: imageCount,
         hasLogo: business.hasLogo(),
@@ -69,8 +69,8 @@ export class CreateBusinessGalleryUseCase {
       // 3. Return gallery status
       const message =
         imageCount > 0
-          ? this.i18n.t('gallery.existing_with_images', { count: imageCount })
-          : this.i18n.t('gallery.ready_for_images');
+          ? this.i18n.t("gallery.existing_with_images", { count: imageCount })
+          : this.i18n.t("gallery.ready_for_images");
 
       return {
         success: true,
@@ -80,8 +80,8 @@ export class CreateBusinessGalleryUseCase {
       };
     } catch (error) {
       const errorMessage =
-        error instanceof Error ? error.message : 'Unknown error';
-      this.logger.error('Failed to validate business gallery', {
+        error instanceof Error ? error.message : "Unknown error";
+      this.logger.error("Failed to validate business gallery", {
         businessId: request.businessId,
         error: errorMessage,
         requestingUserId: request.requestingUserId,

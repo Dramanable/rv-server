@@ -1,40 +1,39 @@
-import type { I18nService } from '@application/ports/i18n.port';
-import type { Logger } from '@application/ports/logger.port';
+import type { I18nService } from "@application/ports/i18n.port";
+import type { Logger } from "@application/ports/logger.port";
 import {
   BookAppointmentRequest,
   BookAppointmentUseCase,
-} from '@application/use-cases/appointments/book-appointment.use-case';
-import type { AppointmentRepository } from '@domain/repositories/appointment.repository.interface';
-import type { BusinessRepository } from '@domain/repositories/business.repository.interface';
-import type { CalendarRepository } from '@domain/repositories/calendar.repository.interface';
-import type { ServiceRepository } from '@domain/repositories/service.repository.interface';
-import type { StaffRepository } from '@domain/repositories/staff.repository.interface';
+} from "@application/use-cases/appointments/book-appointment.use-case";
+import type { AppointmentRepository } from "@domain/repositories/appointment.repository.interface";
+import type { BusinessRepository } from "@domain/repositories/business.repository.interface";
+import type { CalendarRepository } from "@domain/repositories/calendar.repository.interface";
+import type { ServiceRepository } from "@domain/repositories/service.repository.interface";
+import type { StaffRepository } from "@domain/repositories/staff.repository.interface";
 
 // Test mocks créés inline pour éviter les problèmes de compatibilité d'interface
 
 import {
   Appointment,
   AppointmentStatus,
-  // AppointmentType removed - type now determined by Service
-} from '@domain/entities/appointment.entity';
-import { Business } from '@domain/entities/business.entity';
-import { Calendar } from '@domain/entities/calendar.entity';
-import { Service } from '@domain/entities/service.entity';
-import { Staff } from '@domain/entities/staff.entity';
-import { BusinessId } from '@domain/value-objects/business-id.value-object';
-import { CalendarId } from '@domain/value-objects/calendar-id.value-object';
-import { Money } from '@domain/value-objects/money.value-object';
-import { ServiceId } from '@domain/value-objects/service-id.value-object';
-import { UserId } from '@domain/value-objects/user-id.value-object';
+} from "@domain/entities/appointment.entity";
+import { Business } from "@domain/entities/business.entity";
+import { Calendar } from "@domain/entities/calendar.entity";
+import { Service } from "@domain/entities/service.entity";
+import { Staff } from "@domain/entities/staff.entity";
+import { BusinessId } from "@domain/value-objects/business-id.value-object";
+import { CalendarId } from "@domain/value-objects/calendar-id.value-object";
+import { Money } from "@domain/value-objects/money.value-object";
+import { ServiceId } from "@domain/value-objects/service-id.value-object";
+import { UserId } from "@domain/value-objects/user-id.value-object";
 
 import {
   AppointmentConflictError,
   BusinessNotFoundError,
   CalendarNotFoundError,
   ServiceNotFoundError,
-} from '@application/exceptions/appointment.exceptions';
+} from "@application/exceptions/appointment.exceptions";
 
-describe('BookAppointmentUseCase', () => {
+describe("BookAppointmentUseCase", () => {
   let useCase: BookAppointmentUseCase;
   let mockAppointmentRepo: jest.Mocked<AppointmentRepository>;
   let mockBusinessRepo: jest.Mocked<BusinessRepository>;
@@ -45,50 +44,50 @@ describe('BookAppointmentUseCase', () => {
   let mockI18n: jest.Mocked<I18nService>;
 
   const validRequest: BookAppointmentRequest = {
-    businessId: 'fd2c7d0d-5947-4c85-b4ae-9c496fa45b06',
-    calendarId: '92be0e8b-abbe-4d1e-b5ee-cff8c97b5fad',
-    serviceId: '3c79dda0-259b-4cdc-bb03-27e1814edf71',
+    businessId: "fd2c7d0d-5947-4c85-b4ae-9c496fa45b06",
+    calendarId: "92be0e8b-abbe-4d1e-b5ee-cff8c97b5fad",
+    serviceId: "3c79dda0-259b-4cdc-bb03-27e1814edf71",
     startTime: new Date(Date.now() + 3 * 60 * 60 * 1000), // +3h (respecte la règle 2h minimum)
     endTime: new Date(Date.now() + 4 * 60 * 60 * 1000), // +4h
     clientInfo: {
-      email: 'jean.dupont@example.com',
-      firstName: 'Jean',
-      lastName: 'Dupont',
-      phone: '+33123456789',
+      email: "jean.dupont@example.com",
+      firstName: "Jean",
+      lastName: "Dupont",
+      phone: "+33123456789",
       isNewClient: false,
     },
     // Type removed - now determined by linked Service
-    source: 'ONLINE',
+    source: "ONLINE",
   };
 
   const mockBusiness = {
-    getId: () => BusinessId.create('fd2c7d0d-5947-4c85-b4ae-9c496fa45b06'),
-    getName: () => 'Test Business',
-    getAddress: () => ({ toString: () => 'Test Address, 75001 Paris' }),
+    getId: () => BusinessId.create("fd2c7d0d-5947-4c85-b4ae-9c496fa45b06"),
+    getName: () => "Test Business",
+    getAddress: () => ({ toString: () => "Test Address, 75001 Paris" }),
     isActive: () => true,
   } as unknown as Business;
 
   const mockService = {
-    getId: () => ServiceId.create('3c79dda0-259b-4cdc-bb03-27e1814edf71'),
-    getName: () => 'Test Service',
+    getId: () => ServiceId.create("3c79dda0-259b-4cdc-bb03-27e1814edf71"),
+    getName: () => "Test Service",
     isActive: () => true,
     isBookable: () => true, // ✅ Service autorise la prise de rendez-vous en ligne
     getDuration: () => 60, // 60 minutes
     getDefaultDuration: () => 60, // ✅ AJOUTÉ pour BookAppointmentUseCase
-    getPrice: () => Money.create(5000, 'EUR'), // 50.00 EUR
-    getBasePrice: () => Money.create(5000, 'EUR'), // 50.00 EUR - ajouté pour le use case
+    getPrice: () => Money.create(5000, "EUR"), // 50.00 EUR
+    getBasePrice: () => Money.create(5000, "EUR"), // 50.00 EUR - ajouté pour le use case
   } as unknown as Service;
 
   const mockCalendar = {
-    getId: () => CalendarId.create('92be0e8b-abbe-4d1e-b5ee-cff8c97b5fad'),
+    getId: () => CalendarId.create("92be0e8b-abbe-4d1e-b5ee-cff8c97b5fad"),
     isActive: () => true,
   } as unknown as Calendar;
 
   const mockStaff = {
-    getId: () => UserId.create('staff-123'),
+    getId: () => UserId.create("staff-123"),
     getProfile: () => ({
-      firstName: 'Dr Jean',
-      lastName: 'Martin',
+      firstName: "Dr Jean",
+      lastName: "Martin",
     }),
     isActive: () => true,
   } as unknown as Staff;
@@ -205,25 +204,25 @@ describe('BookAppointmentUseCase', () => {
     mockCalendarRepo.findById.mockResolvedValue(mockCalendar);
     mockAppointmentRepo.findConflictingAppointments.mockResolvedValue([]);
     mockAppointmentRepo.save.mockResolvedValue(undefined);
-    mockI18n.t.mockReturnValue('Appointment booked successfully');
-    mockI18n.translate.mockReturnValue('Test translated message');
+    mockI18n.t.mockReturnValue("Appointment booked successfully");
+    mockI18n.translate.mockReturnValue("Test translated message");
   });
 
-  describe('Use Case Construction', () => {
-    it('should create use case with all dependencies', () => {
+  describe("Use Case Construction", () => {
+    it("should create use case with all dependencies", () => {
       // WHEN & THEN
       expect(useCase).toBeDefined();
       expect(useCase).toBeInstanceOf(BookAppointmentUseCase);
     });
   });
 
-  describe('Successful Booking', () => {
-    it('should book appointment with valid data', async () => {
+  describe("Successful Booking", () => {
+    it("should book appointment with valid data", async () => {
       // GIVEN - Setup proper request with all required fields
       const completeRequest = {
         ...validRequest,
-        source: 'ONLINE' as const,
-        language: 'fr',
+        source: "ONLINE" as const,
+        language: "fr",
       };
 
       // WHEN
@@ -235,7 +234,7 @@ describe('BookAppointmentUseCase', () => {
       expect(result.status).toBeDefined();
       expect(result.message).toBeDefined();
       expect(result.clientInfo).toBeDefined();
-      expect(result.clientInfo.fullName).toBe('Jean Dupont');
+      expect(result.clientInfo.fullName).toBe("Jean Dupont");
 
       expect(mockBusinessRepo.findById).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -258,12 +257,12 @@ describe('BookAppointmentUseCase', () => {
       expect(mockAppointmentRepo.save).toHaveBeenCalled();
     });
 
-    it('should handle new client correctly', async () => {
+    it("should handle new client correctly", async () => {
       // GIVEN
       const newClientRequest = {
         ...validRequest,
-        source: 'ONLINE' as const,
-        language: 'fr',
+        source: "ONLINE" as const,
+        language: "fr",
         clientInfo: {
           ...validRequest.clientInfo,
           isNewClient: true,
@@ -275,12 +274,12 @@ describe('BookAppointmentUseCase', () => {
 
       // THEN
       expect(result.success).toBe(true);
-      expect(result.clientInfo.fullName).toBe('Jean Dupont');
+      expect(result.clientInfo.fullName).toBe("Jean Dupont");
     });
   });
 
-  describe('Validation Errors', () => {
-    it('should throw BusinessNotFoundError when business does not exist', async () => {
+  describe("Validation Errors", () => {
+    it("should throw BusinessNotFoundError when business does not exist", async () => {
       // GIVEN
       mockBusinessRepo.findById.mockResolvedValue(null);
 
@@ -290,7 +289,7 @@ describe('BookAppointmentUseCase', () => {
       );
     });
 
-    it('should throw ServiceNotFoundError when service does not exist', async () => {
+    it("should throw ServiceNotFoundError when service does not exist", async () => {
       // GIVEN
       mockServiceRepo.findById.mockResolvedValue(null);
 
@@ -300,7 +299,7 @@ describe('BookAppointmentUseCase', () => {
       );
     });
 
-    it('should throw CalendarNotFoundError when calendar does not exist', async () => {
+    it("should throw CalendarNotFoundError when calendar does not exist", async () => {
       // GIVEN
       mockCalendarRepo.findById.mockResolvedValue(null);
 
@@ -310,7 +309,7 @@ describe('BookAppointmentUseCase', () => {
       );
     });
 
-    it('should throw error when business is inactive', async () => {
+    it("should throw error when business is inactive", async () => {
       // GIVEN - Business inactif
       const inactiveBusiness = {
         ...mockBusiness,
@@ -326,7 +325,7 @@ describe('BookAppointmentUseCase', () => {
       await expect(useCase.execute(validRequest)).rejects.toThrow();
     });
 
-    it('should throw error when service is inactive', async () => {
+    it("should throw error when service is inactive", async () => {
       // GIVEN
       const inactiveService = {
         ...mockService,
@@ -338,7 +337,7 @@ describe('BookAppointmentUseCase', () => {
       await expect(useCase.execute(validRequest)).rejects.toThrow();
     });
 
-    it('should throw error when service does not allow online booking', async () => {
+    it("should throw error when service does not allow online booking", async () => {
       // GIVEN
       const nonBookableService = {
         ...mockService,
@@ -349,18 +348,18 @@ describe('BookAppointmentUseCase', () => {
 
       // WHEN & THEN
       await expect(useCase.execute(validRequest)).rejects.toThrow(
-        'Service 3c79dda0-259b-4cdc-bb03-27e1814edf71 does not allow online booking',
+        "Service 3c79dda0-259b-4cdc-bb03-27e1814edf71 does not allow online booking",
       );
     });
 
-    it('should throw AppointmentConflictError when time slot is already booked', async () => {
+    it("should throw AppointmentConflictError when time slot is already booked", async () => {
       // GIVEN
       mockBusinessRepo.findById.mockResolvedValue(mockBusiness);
       mockServiceRepo.findById.mockResolvedValue(mockService);
       mockCalendarRepo.findById.mockResolvedValue(mockCalendar);
 
       const conflictingAppointment = {
-        id: { getValue: () => 'conflict-id' },
+        id: { getValue: () => "conflict-id" },
         getStatus: () => AppointmentStatus.CONFIRMED,
       } as unknown as Appointment;
 
@@ -374,7 +373,7 @@ describe('BookAppointmentUseCase', () => {
       );
     });
 
-    it('should validate time slot is in the future', async () => {
+    it("should validate time slot is in the future", async () => {
       // GIVEN
       const pastRequest = {
         ...validRequest,
@@ -386,7 +385,7 @@ describe('BookAppointmentUseCase', () => {
       await expect(useCase.execute(pastRequest)).rejects.toThrow();
     });
 
-    it('should validate minimum booking notice', async () => {
+    it("should validate minimum booking notice", async () => {
       // GIVEN
       const tooSoonRequest = {
         ...validRequest,
@@ -399,11 +398,11 @@ describe('BookAppointmentUseCase', () => {
     });
   });
 
-  describe('Error Handling', () => {
-    it('should handle repository errors gracefully', async () => {
+  describe("Error Handling", () => {
+    it("should handle repository errors gracefully", async () => {
       // GIVEN
       mockBusinessRepo.findById.mockRejectedValue(
-        new Error('Database connection failed'),
+        new Error("Database connection failed"),
       );
 
       // WHEN & THEN
@@ -416,29 +415,29 @@ describe('BookAppointmentUseCase', () => {
     });
   });
 
-  describe('Business Rules', () => {
-    it('should calculate correct pricing', async () => {
+  describe("Business Rules", () => {
+    it("should calculate correct pricing", async () => {
       // WHEN
       const result = await useCase.execute(validRequest);
 
       // THEN
       expect(result.appointmentDetails.price).toBeGreaterThan(0);
-      expect(result.appointmentDetails.currency).toBe('EUR');
+      expect(result.appointmentDetails.currency).toBe("EUR");
     });
 
-    it('should set correct appointment defaults', async () => {
+    it("should set correct appointment defaults", async () => {
       // WHEN
       const result = await useCase.execute(validRequest);
 
       // THEN
-      expect(result.status).toBe('REQUESTED');
+      expect(result.status).toBe("REQUESTED");
       expect(result.appointmentDetails.startTime).toBeInstanceOf(Date);
       expect(result.appointmentDetails.endTime).toBeInstanceOf(Date);
     });
   });
 
-  describe('Logging', () => {
-    it('should log booking attempt', async () => {
+  describe("Logging", () => {
+    it("should log booking attempt", async () => {
       // WHEN
       await useCase.execute(validRequest);
 
@@ -449,7 +448,7 @@ describe('BookAppointmentUseCase', () => {
       );
     });
 
-    it('should log successful booking', async () => {
+    it("should log successful booking", async () => {
       // WHEN
       await useCase.execute(validRequest);
 
@@ -460,9 +459,9 @@ describe('BookAppointmentUseCase', () => {
       );
     });
 
-    it('should log errors', async () => {
+    it("should log errors", async () => {
       // GIVEN
-      mockBusinessRepo.findById.mockRejectedValue(new Error('Test error'));
+      mockBusinessRepo.findById.mockRejectedValue(new Error("Test error"));
 
       // WHEN & THEN
       await expect(useCase.execute(validRequest)).rejects.toThrow();

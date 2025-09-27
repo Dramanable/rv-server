@@ -1,9 +1,9 @@
-import { MigrationInterface, QueryRunner } from 'typeorm';
+import { MigrationInterface, QueryRunner } from "typeorm";
 
 export class AddAppointmentForeignKeys1695830000000
   implements MigrationInterface
 {
-  name = 'AddAppointmentForeignKeys1695830000000';
+  name = "AddAppointmentForeignKeys1695830000000";
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     // Add foreign key constraints for appointments table

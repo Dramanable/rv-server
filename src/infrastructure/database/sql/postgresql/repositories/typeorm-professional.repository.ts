@@ -1,13 +1,13 @@
-import { Professional } from '@domain/entities/professional.entity';
-import { IProfessionalRepository } from '@domain/repositories/professional.repository';
-import { BusinessId } from '@domain/value-objects/business-id.value-object';
-import { Email } from '@domain/value-objects/email.value-object';
-import { ProfessionalId } from '@domain/value-objects/professional-id.value-object';
-import { ProfessionalOrmEntity } from '@infrastructure/database/sql/postgresql/entities/professional-orm.entity';
-import { ProfessionalOrmMapper } from '@infrastructure/mappers/professional-orm.mapper';
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Professional } from "@domain/entities/professional.entity";
+import { IProfessionalRepository } from "@domain/repositories/professional.repository";
+import { BusinessId } from "@domain/value-objects/business-id.value-object";
+import { Email } from "@domain/value-objects/email.value-object";
+import { ProfessionalId } from "@domain/value-objects/professional-id.value-object";
+import { ProfessionalOrmEntity } from "@infrastructure/database/sql/postgresql/entities/professional-orm.entity";
+import { ProfessionalOrmMapper } from "@infrastructure/mappers/professional-orm.mapper";
+import { Injectable } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
 
 /**
  * 🗄️ PROFESSIONAL REPOSITORY IMPLEMENTATION - Infrastructure Layer
@@ -68,7 +68,7 @@ export class TypeOrmProfessionalRepository implements IProfessionalRepository {
   async findAll(businessId: BusinessId): Promise<Professional[]> {
     const ormEntities = await this.repository.find({
       where: { business_id: businessId.getValue() },
-      order: { created_at: 'DESC' },
+      order: { created_at: "DESC" },
     });
 
     return ProfessionalOrmMapper.toDomainEntities(ormEntities);
@@ -91,24 +91,24 @@ export class TypeOrmProfessionalRepository implements IProfessionalRepository {
       };
       sorting: {
         sortBy: string;
-        sortOrder: 'asc' | 'desc';
+        sortOrder: "asc" | "desc";
       };
     },
   ): Promise<{ professionals: Professional[]; total: number }> {
     const queryBuilder = this.repository
-      .createQueryBuilder('professional')
-      .where('professional.business_id = :businessId', { businessId });
+      .createQueryBuilder("professional")
+      .where("professional.business_id = :businessId", { businessId });
 
     // Filtres
     if (options.filters.isActive !== undefined) {
-      queryBuilder.andWhere('professional.is_active = :isActive', {
+      queryBuilder.andWhere("professional.is_active = :isActive", {
         isActive: options.filters.isActive,
       });
     }
 
     if (options.filters.specialization) {
       queryBuilder.andWhere(
-        'professional.specialization ILIKE :specialization',
+        "professional.specialization ILIKE :specialization",
         {
           specialization: `%${options.filters.specialization}%`,
         },
@@ -117,17 +117,17 @@ export class TypeOrmProfessionalRepository implements IProfessionalRepository {
 
     if (options.search) {
       queryBuilder.andWhere(
-        '(professional.first_name ILIKE :search OR professional.last_name ILIKE :search OR professional.email ILIKE :search)',
+        "(professional.first_name ILIKE :search OR professional.last_name ILIKE :search OR professional.email ILIKE :search)",
         { search: `%${options.search}%` },
       );
     }
 
     // Tri
-    const sortBy = options.sorting.sortBy || 'created_at';
-    const sortOrder = options.sorting.sortOrder || 'desc';
+    const sortBy = options.sorting.sortBy || "created_at";
+    const sortOrder = options.sorting.sortOrder || "desc";
     queryBuilder.orderBy(
       `professional.${sortBy}`,
-      sortOrder.toUpperCase() as 'ASC' | 'DESC',
+      sortOrder.toUpperCase() as "ASC" | "DESC",
     );
 
     // Pagination

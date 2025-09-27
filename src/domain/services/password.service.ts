@@ -5,8 +5,8 @@
  * ✅ Pas de dépendances externes - logique métier uniquement
  */
 
-import { HashedPassword } from '../value-objects/hashed-password.value-object';
-import { DomainError } from '../exceptions/domain.error';
+import { HashedPassword } from "../value-objects/hashed-password.value-object";
+import { DomainError } from "../exceptions/domain.error";
 
 export class PasswordService {
   /**
@@ -15,15 +15,15 @@ export class PasswordService {
    */
   static validatePlainPassword(plainPassword: string): void {
     if (!plainPassword) {
-      throw new DomainError('Password is required');
+      throw new DomainError("Password is required");
     }
 
     if (plainPassword.length < 8) {
-      throw new DomainError('Password must be at least 8 characters long');
+      throw new DomainError("Password must be at least 8 characters long");
     }
 
     if (plainPassword.length > 128) {
-      throw new DomainError('Password must not exceed 128 characters');
+      throw new DomainError("Password must not exceed 128 characters");
     }
 
     // Règles métier de complexité
@@ -41,7 +41,7 @@ export class PasswordService {
 
     if (complexityCount < 3) {
       throw new DomainError(
-        'Password must contain at least 3 of: uppercase, lowercase, numbers, special characters',
+        "Password must contain at least 3 of: uppercase, lowercase, numbers, special characters",
       );
     }
   }
@@ -52,12 +52,12 @@ export class PasswordService {
    */
   static validateHashedPassword(hashedPassword: HashedPassword): void {
     if (!hashedPassword) {
-      throw new DomainError('Hashed password is required');
+      throw new DomainError("Hashed password is required");
     }
 
     // Validation métier : le hash ne doit pas être vide
     if (!hashedPassword.value || hashedPassword.value.trim().length === 0) {
-      throw new DomainError('Hashed password cannot be empty');
+      throw new DomainError("Hashed password cannot be empty");
     }
   }
 

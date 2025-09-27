@@ -3,12 +3,12 @@
  * Présentation layer pour la gestion des utilisateurs avec pagination POST
  */
 
-import { CreateUserUseCase } from '@application/use-cases/users/create-user.use-case';
-import { DeleteUserUseCase } from '@application/use-cases/users/delete-user.use-case';
-import { GetMeUseCase } from '@application/use-cases/users/get-me.use-case';
-import { GetUserByIdUseCase } from '@application/use-cases/users/get-user-by-id.use-case';
-import { ListUsersUseCase } from '@application/use-cases/users/list-users.use-case';
-import { UpdateUserUseCase } from '@application/use-cases/users/update-user.use-case';
+import { CreateUserUseCase } from "@application/use-cases/users/create-user.use-case";
+import { DeleteUserUseCase } from "@application/use-cases/users/delete-user.use-case";
+import { GetMeUseCase } from "@application/use-cases/users/get-me.use-case";
+import { GetUserByIdUseCase } from "@application/use-cases/users/get-user-by-id.use-case";
+import { ListUsersUseCase } from "@application/use-cases/users/list-users.use-case";
+import { UpdateUserUseCase } from "@application/use-cases/users/update-user.use-case";
 import {
   Body,
   Controller,
@@ -21,7 +21,7 @@ import {
   Post,
   Put,
   Request,
-} from '@nestjs/common';
+} from "@nestjs/common";
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -32,13 +32,13 @@ import {
   ApiResponse,
   ApiTags,
   ApiUnauthorizedResponse,
-} from '@nestjs/swagger';
+} from "@nestjs/swagger";
 import {
   UnauthorizedErrorDto,
   ValidationErrorDto,
-} from '@presentation/dtos/auth.dto';
-import { TOKENS } from '@shared/constants/injection-tokens';
-import { getUserIdFromRequestSafe } from '../../shared/types/request.types';
+} from "@presentation/dtos/auth.dto";
+import { TOKENS } from "@shared/constants/injection-tokens";
+import { getUserIdFromRequestSafe } from "../../shared/types/request.types";
 import {
   CreateUserRequestDto,
   DeleteUserResponseDto,
@@ -47,10 +47,10 @@ import {
   UpdateUserRequestDto,
   UserListValidationErrorDto,
   UserResponseDto,
-} from '../dtos/user.dto';
+} from "../dtos/user.dto";
 
-@ApiTags('👥 Users')
-@Controller('users')
+@ApiTags("👥 Users")
+@Controller("users")
 @ApiBearerAuth()
 export class UserController {
   constructor(
@@ -68,10 +68,10 @@ export class UserController {
     private readonly deleteUserUseCase: DeleteUserUseCase,
   ) {}
 
-  @Post('list')
+  @Post("list")
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
-    summary: '📋 List users with advanced pagination and filters',
+    summary: "📋 List users with advanced pagination and filters",
     description: `
     🎯 **POST Endpoint for Complex User Listing**
 
@@ -93,21 +93,21 @@ export class UserController {
   })
   @ApiResponse({
     status: 200,
-    description: '✅ Users retrieved successfully with pagination metadata',
+    description: "✅ Users retrieved successfully with pagination metadata",
     type: ListUsersResponseDto,
   })
   @ApiBadRequestResponse({
-    description: '❌ Invalid request parameters (validation errors)',
+    description: "❌ Invalid request parameters (validation errors)",
     type: UserListValidationErrorDto,
     examples: {
       validationError: {
-        summary: 'Validation Error Example',
+        summary: "Validation Error Example",
         value: {
-          message: 'Invalid request parameters',
+          message: "Invalid request parameters",
           error: [
-            'pagination.page must be at least 1',
-            'pagination.limit must not exceed 100',
-            'filters.roles[0] must be a valid enum value',
+            "pagination.page must be at least 1",
+            "pagination.limit must not exceed 100",
+            "filters.roles[0] must be a valid enum value",
           ],
           statusCode: 400,
         },
@@ -115,21 +115,21 @@ export class UserController {
     },
   })
   @ApiUnauthorizedResponse({
-    description: '🔒 User not authenticated',
+    description: "🔒 User not authenticated",
     type: UnauthorizedErrorDto,
   })
   @ApiForbiddenResponse({
     description:
-      '🚫 Insufficient permissions - Only PLATFORM_ADMIN can list users',
+      "🚫 Insufficient permissions - Only PLATFORM_ADMIN can list users",
     schema: {
-      type: 'object',
+      type: "object",
       properties: {
         message: {
-          type: 'string',
-          example: 'Insufficient permissions to list users',
+          type: "string",
+          example: "Insufficient permissions to list users",
         },
-        error: { type: 'string', example: 'Forbidden' },
-        statusCode: { type: 'number', example: 403 },
+        error: { type: "string", example: "Forbidden" },
+        statusCode: { type: "number", example: 403 },
       },
     },
   })
@@ -138,7 +138,7 @@ export class UserController {
     @Request() req: any,
   ): Promise<ListUsersResponseDto> {
     // Extraction de l'utilisateur connecté depuis la requête
-    const requestingUserId = getUserIdFromRequestSafe(req, 'temp-admin-id');
+    const requestingUserId = getUserIdFromRequestSafe(req, "temp-admin-id");
 
     // Appel du Use Case avec les paramètres de la requête
     const result = await this.listUsersUseCase.execute({
@@ -171,14 +171,14 @@ export class UserController {
     return {
       data: result.data,
       meta: result.meta,
-      message: 'Users retrieved successfully',
+      message: "Users retrieved successfully",
     };
   }
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
-    summary: '👤 Create a new user',
+    summary: "👤 Create a new user",
     description: `
     🎯 **Create User Endpoint**
 
@@ -197,25 +197,25 @@ export class UserController {
   })
   @ApiResponse({
     status: 201,
-    description: '✅ User created successfully',
+    description: "✅ User created successfully",
     type: UserResponseDto,
   })
   @ApiBadRequestResponse({
-    description: '❌ Invalid request data or validation errors',
+    description: "❌ Invalid request data or validation errors",
     type: ValidationErrorDto,
   })
   @ApiUnauthorizedResponse({
-    description: '🔒 User not authenticated',
+    description: "🔒 User not authenticated",
     type: UnauthorizedErrorDto,
   })
   @ApiForbiddenResponse({
-    description: '🚫 Insufficient permissions to create user',
+    description: "🚫 Insufficient permissions to create user",
   })
   async createUser(
     @Body() request: CreateUserRequestDto,
     @Request() req: any,
   ): Promise<UserResponseDto> {
-    const requestingUserId = req.user?.id || 'temp-admin-id';
+    const requestingUserId = req.user?.id || "temp-admin-id";
 
     const result = await this.createUserUseCase.execute({
       requestingUserId,
@@ -227,8 +227,8 @@ export class UserController {
     return {
       id: result.id,
       email: result.email,
-      firstName: result.name.split(' ')[0] || '',
-      lastName: result.name.split(' ').slice(1).join(' ') || '',
+      firstName: result.name.split(" ")[0] || "",
+      lastName: result.name.split(" ").slice(1).join(" ") || "",
       role: result.role,
       phone: undefined, // TODO: Add phone support to use case
       isActive: result.isActive,
@@ -238,9 +238,9 @@ export class UserController {
     };
   }
 
-  @Get(':id')
+  @Get(":id")
   @ApiOperation({
-    summary: '👤 Get user by ID',
+    summary: "👤 Get user by ID",
     description: `
     🎯 **Get User by ID Endpoint**
 
@@ -255,32 +255,32 @@ export class UserController {
     `,
   })
   @ApiParam({
-    name: 'id',
-    description: 'User unique identifier (UUID)',
-    type: 'string',
-    format: 'uuid',
-    example: '123e4567-e89b-12d3-a456-426614174000',
+    name: "id",
+    description: "User unique identifier (UUID)",
+    type: "string",
+    format: "uuid",
+    example: "123e4567-e89b-12d3-a456-426614174000",
   })
   @ApiResponse({
     status: 200,
-    description: '✅ User retrieved successfully',
+    description: "✅ User retrieved successfully",
     type: UserResponseDto,
   })
   @ApiNotFoundResponse({
-    description: '❌ User not found',
+    description: "❌ User not found",
   })
   @ApiUnauthorizedResponse({
-    description: '🔒 User not authenticated',
+    description: "🔒 User not authenticated",
     type: UnauthorizedErrorDto,
   })
   @ApiForbiddenResponse({
-    description: '🚫 Insufficient permissions to view user',
+    description: "🚫 Insufficient permissions to view user",
   })
   async getUserById(
-    @Param('id') userId: string,
+    @Param("id") userId: string,
     @Request() req: any,
   ): Promise<UserResponseDto> {
-    const requestingUserId = req.user?.id || 'temp-admin-id';
+    const requestingUserId = req.user?.id || "temp-admin-id";
 
     const result = await this.getUserByIdUseCase.execute({
       requestingUserId,
@@ -290,8 +290,8 @@ export class UserController {
     return {
       id: result.id,
       email: result.email,
-      firstName: result.name.split(' ')[0] || '',
-      lastName: result.name.split(' ').slice(1).join(' ') || '',
+      firstName: result.name.split(" ")[0] || "",
+      lastName: result.name.split(" ").slice(1).join(" ") || "",
       role: result.role,
       phone: undefined, // TODO: Add phone support
       isActive: result.isActive,
@@ -301,10 +301,10 @@ export class UserController {
     };
   }
 
-  @Put(':id')
+  @Put(":id")
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
-    summary: '✏️ Update user',
+    summary: "✏️ Update user",
     description: `
     🎯 **Update User Endpoint**
 
@@ -323,41 +323,41 @@ export class UserController {
     `,
   })
   @ApiParam({
-    name: 'id',
-    description: 'User unique identifier (UUID)',
-    type: 'string',
-    format: 'uuid',
-    example: '123e4567-e89b-12d3-a456-426614174000',
+    name: "id",
+    description: "User unique identifier (UUID)",
+    type: "string",
+    format: "uuid",
+    example: "123e4567-e89b-12d3-a456-426614174000",
   })
   @ApiResponse({
     status: 200,
-    description: '✅ User updated successfully',
+    description: "✅ User updated successfully",
     type: UserResponseDto,
   })
   @ApiNotFoundResponse({
-    description: '❌ User not found',
+    description: "❌ User not found",
   })
   @ApiBadRequestResponse({
-    description: '❌ Invalid request data or validation errors',
+    description: "❌ Invalid request data or validation errors",
     type: ValidationErrorDto,
   })
   @ApiUnauthorizedResponse({
-    description: '🔒 User not authenticated',
+    description: "🔒 User not authenticated",
     type: UnauthorizedErrorDto,
   })
   @ApiForbiddenResponse({
-    description: '🚫 Insufficient permissions to update user',
+    description: "🚫 Insufficient permissions to update user",
   })
   async updateUser(
-    @Param('id') userId: string,
+    @Param("id") userId: string,
     @Body() request: UpdateUserRequestDto,
     @Request() req: any,
   ): Promise<UserResponseDto> {
-    const requestingUserId = req.user?.id || 'temp-admin-id';
+    const requestingUserId = req.user?.id || "temp-admin-id";
 
     const nameUpdate =
       request.firstName || request.lastName
-        ? `${request.firstName || ''} ${request.lastName || ''}`.trim()
+        ? `${request.firstName || ""} ${request.lastName || ""}`.trim()
         : undefined;
 
     const result = await this.updateUserUseCase.execute({
@@ -373,8 +373,8 @@ export class UserController {
     return {
       id: result.id,
       email: result.email,
-      firstName: result.name.split(' ')[0] || '',
-      lastName: result.name.split(' ').slice(1).join(' ') || '',
+      firstName: result.name.split(" ")[0] || "",
+      lastName: result.name.split(" ").slice(1).join(" ") || "",
       role: result.role,
       phone: undefined, // TODO: Add phone support
       isActive: result.isActive,
@@ -384,10 +384,10 @@ export class UserController {
     };
   }
 
-  @Delete(':id')
+  @Delete(":id")
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
-    summary: '🗑️ Delete user',
+    summary: "🗑️ Delete user",
     description: `
     🎯 **Delete User Endpoint**
 
@@ -406,33 +406,33 @@ export class UserController {
     `,
   })
   @ApiParam({
-    name: 'id',
-    description: 'User unique identifier (UUID)',
-    type: 'string',
-    format: 'uuid',
-    example: '123e4567-e89b-12d3-a456-426614174000',
+    name: "id",
+    description: "User unique identifier (UUID)",
+    type: "string",
+    format: "uuid",
+    example: "123e4567-e89b-12d3-a456-426614174000",
   })
   @ApiResponse({
     status: 200,
-    description: '✅ User deleted successfully',
+    description: "✅ User deleted successfully",
     type: DeleteUserResponseDto,
   })
   @ApiNotFoundResponse({
-    description: '❌ User not found',
+    description: "❌ User not found",
   })
   @ApiUnauthorizedResponse({
-    description: '🔒 User not authenticated',
+    description: "🔒 User not authenticated",
     type: UnauthorizedErrorDto,
   })
   @ApiForbiddenResponse({
     description:
-      '🚫 Insufficient permissions to delete user or attempting self-deletion',
+      "🚫 Insufficient permissions to delete user or attempting self-deletion",
   })
   async deleteUser(
-    @Param('id') userId: string,
+    @Param("id") userId: string,
     @Request() req: any,
   ): Promise<DeleteUserResponseDto> {
-    const requestingUserId = req.user?.id || 'temp-admin-id';
+    const requestingUserId = req.user?.id || "temp-admin-id";
 
     await this.deleteUserUseCase.execute({
       requestingUserId,
@@ -440,7 +440,7 @@ export class UserController {
     });
 
     return {
-      message: 'User deleted successfully',
+      message: "User deleted successfully",
       deletedUserId: userId,
     };
   }

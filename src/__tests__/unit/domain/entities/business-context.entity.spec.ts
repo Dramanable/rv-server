@@ -9,29 +9,29 @@ import {
   BusinessContext,
   LocationContext,
   DepartmentContext,
-} from '@domain/entities/business-context.entity';
+} from "@domain/entities/business-context.entity";
 
-describe('BusinessContext Entity', () => {
-  const mockBusinessId = 'business-123';
-  const mockBusinessName = 'Test Business Corp';
+describe("BusinessContext Entity", () => {
+  const mockBusinessId = "business-123";
+  const mockBusinessName = "Test Business Corp";
 
   const mockLocation1: LocationContext = {
-    locationId: 'location-456',
-    locationName: 'Downtown Office',
+    locationId: "location-456",
+    locationName: "Downtown Office",
     departments: [
       {
-        departmentId: 'dept-001',
-        departmentName: 'Sales',
+        departmentId: "dept-001",
+        departmentName: "Sales",
         isActive: true,
       },
       {
-        departmentId: 'dept-002',
-        departmentName: 'Marketing',
+        departmentId: "dept-002",
+        departmentName: "Marketing",
         isActive: true,
       },
       {
-        departmentId: 'dept-003',
-        departmentName: 'Inactive Dept',
+        departmentId: "dept-003",
+        departmentName: "Inactive Dept",
         isActive: false,
       },
     ],
@@ -39,12 +39,12 @@ describe('BusinessContext Entity', () => {
   };
 
   const mockLocation2: LocationContext = {
-    locationId: 'location-789',
-    locationName: 'Uptown Branch',
+    locationId: "location-789",
+    locationName: "Uptown Branch",
     departments: [
       {
-        departmentId: 'dept-004',
-        departmentName: 'Operations',
+        departmentId: "dept-004",
+        departmentName: "Operations",
         isActive: true,
       },
     ],
@@ -52,14 +52,14 @@ describe('BusinessContext Entity', () => {
   };
 
   const mockInactiveLocation: LocationContext = {
-    locationId: 'location-inactive',
-    locationName: 'Closed Location',
+    locationId: "location-inactive",
+    locationName: "Closed Location",
     departments: [],
     isActive: false,
   };
 
-  describe('create', () => {
-    it('should create business context with valid data', () => {
+  describe("create", () => {
+    it("should create business context with valid data", () => {
       // When
       const context = BusinessContext.create(mockBusinessId, mockBusinessName);
 
@@ -70,7 +70,7 @@ describe('BusinessContext Entity', () => {
       expect(context.isActiveContext()).toBe(true);
     });
 
-    it('should create business context with locations', () => {
+    it("should create business context with locations", () => {
       // Given
       const locations = [mockLocation1, mockLocation2, mockInactiveLocation];
 
@@ -90,49 +90,49 @@ describe('BusinessContext Entity', () => {
       );
     });
 
-    it('should trim business name whitespace', () => {
+    it("should trim business name whitespace", () => {
       // Given
-      const nameWithSpaces = '  Test Business  ';
+      const nameWithSpaces = "  Test Business  ";
 
       // When
       const context = BusinessContext.create(mockBusinessId, nameWithSpaces);
 
       // Then
-      expect(context.getBusinessName()).toBe('Test Business');
+      expect(context.getBusinessName()).toBe("Test Business");
     });
 
-    it('should throw error for empty business ID', () => {
+    it("should throw error for empty business ID", () => {
       // When & Then
       expect(() => {
-        BusinessContext.create('', mockBusinessName);
-      }).toThrow('Business ID is required');
+        BusinessContext.create("", mockBusinessName);
+      }).toThrow("Business ID is required");
 
       expect(() => {
-        BusinessContext.create('   ', mockBusinessName);
-      }).toThrow('Business ID is required');
+        BusinessContext.create("   ", mockBusinessName);
+      }).toThrow("Business ID is required");
     });
 
-    it('should throw error for empty business name', () => {
+    it("should throw error for empty business name", () => {
       // When & Then
       expect(() => {
-        BusinessContext.create(mockBusinessId, '');
-      }).toThrow('Business name is required');
+        BusinessContext.create(mockBusinessId, "");
+      }).toThrow("Business name is required");
 
       expect(() => {
-        BusinessContext.create(mockBusinessId, '   ');
-      }).toThrow('Business name is required');
+        BusinessContext.create(mockBusinessId, "   ");
+      }).toThrow("Business name is required");
     });
 
-    it('should throw error for business name too short', () => {
+    it("should throw error for business name too short", () => {
       // When & Then
       expect(() => {
-        BusinessContext.create(mockBusinessId, 'A');
-      }).toThrow('Business name must be at least 2 characters long');
+        BusinessContext.create(mockBusinessId, "A");
+      }).toThrow("Business name must be at least 2 characters long");
     });
   });
 
-  describe('restore', () => {
-    it('should restore business context from persistence data', () => {
+  describe("restore", () => {
+    it("should restore business context from persistence data", () => {
       // Given
       const data = {
         businessId: mockBusinessId,
@@ -151,7 +151,7 @@ describe('BusinessContext Entity', () => {
       expect(context.isActiveContext()).toBe(true);
     });
 
-    it('should restore inactive business context', () => {
+    it("should restore inactive business context", () => {
       // Given
       const data = {
         businessId: mockBusinessId,
@@ -168,7 +168,7 @@ describe('BusinessContext Entity', () => {
     });
   });
 
-  describe('getLocation', () => {
+  describe("getLocation", () => {
     let context: BusinessContext;
 
     beforeEach(() => {
@@ -179,32 +179,32 @@ describe('BusinessContext Entity', () => {
       ]);
     });
 
-    it('should return active location by ID', () => {
+    it("should return active location by ID", () => {
       // When
-      const location = context.getLocation('location-456');
+      const location = context.getLocation("location-456");
 
       // Then
       expect(location).toEqual(mockLocation1);
     });
 
-    it('should return undefined for non-existent location', () => {
+    it("should return undefined for non-existent location", () => {
       // When
-      const location = context.getLocation('non-existent');
+      const location = context.getLocation("non-existent");
 
       // Then
       expect(location).toBeUndefined();
     });
 
-    it('should return undefined for inactive location', () => {
+    it("should return undefined for inactive location", () => {
       // When
-      const location = context.getLocation('location-inactive');
+      const location = context.getLocation("location-inactive");
 
       // Then
       expect(location).toBeUndefined();
     });
   });
 
-  describe('getDepartment', () => {
+  describe("getDepartment", () => {
     let context: BusinessContext;
 
     beforeEach(() => {
@@ -213,40 +213,40 @@ describe('BusinessContext Entity', () => {
       ]);
     });
 
-    it('should return active department in existing location', () => {
+    it("should return active department in existing location", () => {
       // When
-      const department = context.getDepartment('location-456', 'dept-001');
+      const department = context.getDepartment("location-456", "dept-001");
 
       // Then
       expect(department).toEqual(mockLocation1.departments[0]);
     });
 
-    it('should return undefined for department in non-existent location', () => {
+    it("should return undefined for department in non-existent location", () => {
       // When
-      const department = context.getDepartment('non-existent', 'dept-001');
+      const department = context.getDepartment("non-existent", "dept-001");
 
       // Then
       expect(department).toBeUndefined();
     });
 
-    it('should return undefined for non-existent department', () => {
+    it("should return undefined for non-existent department", () => {
       // When
-      const department = context.getDepartment('location-456', 'non-existent');
+      const department = context.getDepartment("location-456", "non-existent");
 
       // Then
       expect(department).toBeUndefined();
     });
 
-    it('should return undefined for inactive department', () => {
+    it("should return undefined for inactive department", () => {
       // When
-      const department = context.getDepartment('location-456', 'dept-003');
+      const department = context.getDepartment("location-456", "dept-003");
 
       // Then
       expect(department).toBeUndefined();
     });
   });
 
-  describe('hasLocation and hasDepartment', () => {
+  describe("hasLocation and hasDepartment", () => {
     let context: BusinessContext;
 
     beforeEach(() => {
@@ -256,33 +256,33 @@ describe('BusinessContext Entity', () => {
       ]);
     });
 
-    it('should return true for existing active location', () => {
+    it("should return true for existing active location", () => {
       // When & Then
-      expect(context.hasLocation('location-456')).toBe(true);
+      expect(context.hasLocation("location-456")).toBe(true);
     });
 
-    it('should return false for non-existent location', () => {
+    it("should return false for non-existent location", () => {
       // When & Then
-      expect(context.hasLocation('non-existent')).toBe(false);
+      expect(context.hasLocation("non-existent")).toBe(false);
     });
 
-    it('should return false for inactive location', () => {
+    it("should return false for inactive location", () => {
       // When & Then
-      expect(context.hasLocation('location-inactive')).toBe(false);
+      expect(context.hasLocation("location-inactive")).toBe(false);
     });
 
-    it('should return true for existing active department', () => {
+    it("should return true for existing active department", () => {
       // When & Then
-      expect(context.hasDepartment('location-456', 'dept-001')).toBe(true);
+      expect(context.hasDepartment("location-456", "dept-001")).toBe(true);
     });
 
-    it('should return false for inactive department', () => {
+    it("should return false for inactive department", () => {
       // When & Then
-      expect(context.hasDepartment('location-456', 'dept-003')).toBe(false);
+      expect(context.hasDepartment("location-456", "dept-003")).toBe(false);
     });
   });
 
-  describe('getLocationDepartments', () => {
+  describe("getLocationDepartments", () => {
     let context: BusinessContext;
 
     beforeEach(() => {
@@ -291,9 +291,9 @@ describe('BusinessContext Entity', () => {
       ]);
     });
 
-    it('should return active departments for existing location', () => {
+    it("should return active departments for existing location", () => {
       // When
-      const departments = context.getLocationDepartments('location-456');
+      const departments = context.getLocationDepartments("location-456");
 
       // Then
       expect(departments).toHaveLength(2); // Only active departments
@@ -305,16 +305,16 @@ describe('BusinessContext Entity', () => {
       );
     });
 
-    it('should return empty array for non-existent location', () => {
+    it("should return empty array for non-existent location", () => {
       // When
-      const departments = context.getLocationDepartments('non-existent');
+      const departments = context.getLocationDepartments("non-existent");
 
       // Then
       expect(departments).toEqual([]);
     });
   });
 
-  describe('getAllDepartments', () => {
+  describe("getAllDepartments", () => {
     let context: BusinessContext;
 
     beforeEach(() => {
@@ -324,7 +324,7 @@ describe('BusinessContext Entity', () => {
       ]);
     });
 
-    it('should return all active departments with location info', () => {
+    it("should return all active departments with location info", () => {
       // When
       const departments = context.getAllDepartments();
 
@@ -335,26 +335,26 @@ describe('BusinessContext Entity', () => {
       expect(departments).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
-            departmentId: 'dept-001',
-            departmentName: 'Sales',
-            locationId: 'location-456',
+            departmentId: "dept-001",
+            departmentName: "Sales",
+            locationId: "location-456",
           }),
           expect.objectContaining({
-            departmentId: 'dept-002',
-            departmentName: 'Marketing',
-            locationId: 'location-456',
+            departmentId: "dept-002",
+            departmentName: "Marketing",
+            locationId: "location-456",
           }),
           expect.objectContaining({
-            departmentId: 'dept-004',
-            departmentName: 'Operations',
-            locationId: 'location-789',
+            departmentId: "dept-004",
+            departmentName: "Operations",
+            locationId: "location-789",
           }),
         ]),
       );
     });
   });
 
-  describe('getContextStats', () => {
+  describe("getContextStats", () => {
     let context: BusinessContext;
 
     beforeEach(() => {
@@ -365,7 +365,7 @@ describe('BusinessContext Entity', () => {
       ]);
     });
 
-    it('should return correct statistics', () => {
+    it("should return correct statistics", () => {
       // When
       const stats = context.getContextStats();
 
@@ -379,7 +379,7 @@ describe('BusinessContext Entity', () => {
     });
   });
 
-  describe('searchLocationsByName', () => {
+  describe("searchLocationsByName", () => {
     let context: BusinessContext;
 
     beforeEach(() => {
@@ -389,42 +389,42 @@ describe('BusinessContext Entity', () => {
       ]);
     });
 
-    it('should find locations by partial name (case insensitive)', () => {
+    it("should find locations by partial name (case insensitive)", () => {
       // When
-      const results = context.searchLocationsByName('downtown');
+      const results = context.searchLocationsByName("downtown");
 
       // Then
       expect(results).toHaveLength(1);
       expect(results[0]).toEqual(mockLocation1);
     });
 
-    it('should find locations by partial name (different case)', () => {
+    it("should find locations by partial name (different case)", () => {
       // When
-      const results = context.searchLocationsByName('OFFICE');
+      const results = context.searchLocationsByName("OFFICE");
 
       // Then
       expect(results).toHaveLength(1);
       expect(results[0]).toEqual(mockLocation1);
     });
 
-    it('should return empty array when no matches', () => {
+    it("should return empty array when no matches", () => {
       // When
-      const results = context.searchLocationsByName('nonexistent');
+      const results = context.searchLocationsByName("nonexistent");
 
       // Then
       expect(results).toEqual([]);
     });
 
-    it('should handle empty search term', () => {
+    it("should handle empty search term", () => {
       // When
-      const results = context.searchLocationsByName('');
+      const results = context.searchLocationsByName("");
 
       // Then
       expect(results).toEqual([]); // Empty string should match nothing
     });
   });
 
-  describe('searchDepartmentsByName', () => {
+  describe("searchDepartmentsByName", () => {
     let context: BusinessContext;
 
     beforeEach(() => {
@@ -434,29 +434,29 @@ describe('BusinessContext Entity', () => {
       ]);
     });
 
-    it('should find departments by partial name (case insensitive)', () => {
+    it("should find departments by partial name (case insensitive)", () => {
       // When
-      const results = context.searchDepartmentsByName('sales');
+      const results = context.searchDepartmentsByName("sales");
 
       // Then
       expect(results).toHaveLength(1);
       expect(results[0]).toMatchObject({
-        departmentId: 'dept-001',
-        departmentName: 'Sales',
-        locationId: 'location-456',
+        departmentId: "dept-001",
+        departmentName: "Sales",
+        locationId: "location-456",
       });
     });
 
-    it('should find multiple matching departments', () => {
+    it("should find multiple matching departments", () => {
       // When
-      const results = context.searchDepartmentsByName('a'); // Should match "Sales", "Marketing", "Operations"
+      const results = context.searchDepartmentsByName("a"); // Should match "Sales", "Marketing", "Operations"
 
       // Then
       expect(results).toHaveLength(3);
     });
   });
 
-  describe('isValidContext', () => {
+  describe("isValidContext", () => {
     let context: BusinessContext;
 
     beforeEach(() => {
@@ -465,62 +465,62 @@ describe('BusinessContext Entity', () => {
       ]);
     });
 
-    it('should validate business-only context', () => {
+    it("should validate business-only context", () => {
       // When & Then
       expect(context.isValidContext({ businessId: mockBusinessId })).toBe(true);
-      expect(context.isValidContext({ businessId: 'other-business' })).toBe(
+      expect(context.isValidContext({ businessId: "other-business" })).toBe(
         false,
       );
     });
 
-    it('should validate location context', () => {
+    it("should validate location context", () => {
       // When & Then
       expect(
         context.isValidContext({
           businessId: mockBusinessId,
-          locationId: 'location-456',
+          locationId: "location-456",
         }),
       ).toBe(true);
 
       expect(
         context.isValidContext({
           businessId: mockBusinessId,
-          locationId: 'non-existent',
+          locationId: "non-existent",
         }),
       ).toBe(false);
     });
 
-    it('should validate department context', () => {
+    it("should validate department context", () => {
       // When & Then
       expect(
         context.isValidContext({
           businessId: mockBusinessId,
-          locationId: 'location-456',
-          departmentId: 'dept-001',
+          locationId: "location-456",
+          departmentId: "dept-001",
         }),
       ).toBe(true);
 
       expect(
         context.isValidContext({
           businessId: mockBusinessId,
-          locationId: 'location-456',
-          departmentId: 'non-existent',
+          locationId: "location-456",
+          departmentId: "non-existent",
         }),
       ).toBe(false);
     });
 
-    it('should invalidate department without location', () => {
+    it("should invalidate department without location", () => {
       // When & Then
       expect(
         context.isValidContext({
           businessId: mockBusinessId,
-          departmentId: 'dept-001',
+          departmentId: "dept-001",
         }),
       ).toBe(false);
     });
   });
 
-  describe('addLocation', () => {
+  describe("addLocation", () => {
     let context: BusinessContext;
 
     beforeEach(() => {
@@ -529,25 +529,25 @@ describe('BusinessContext Entity', () => {
       ]);
     });
 
-    it('should add new location successfully', () => {
+    it("should add new location successfully", () => {
       // When
       const updatedContext = context.addLocation(mockLocation2);
 
       // Then
       expect(updatedContext.getLocations()).toHaveLength(2);
-      expect(updatedContext.hasLocation('location-789')).toBe(true);
+      expect(updatedContext.hasLocation("location-789")).toBe(true);
       expect(context.getLocations()).toHaveLength(1); // Original unchanged
     });
 
-    it('should throw error when adding duplicate location', () => {
+    it("should throw error when adding duplicate location", () => {
       // When & Then
       expect(() => {
         context.addLocation(mockLocation1);
-      }).toThrow('Location location-456 already exists');
+      }).toThrow("Location location-456 already exists");
     });
   });
 
-  describe('addDepartmentToLocation', () => {
+  describe("addDepartmentToLocation", () => {
     let context: BusinessContext;
 
     beforeEach(() => {
@@ -556,59 +556,59 @@ describe('BusinessContext Entity', () => {
       ]);
     });
 
-    it('should add department to existing location', () => {
+    it("should add department to existing location", () => {
       // Given
       const newDepartment: DepartmentContext = {
-        departmentId: 'dept-new',
-        departmentName: 'HR',
+        departmentId: "dept-new",
+        departmentName: "HR",
         isActive: true,
       };
 
       // When
       const updatedContext = context.addDepartmentToLocation(
-        'location-456',
+        "location-456",
         newDepartment,
       );
 
       // Then
       expect(
-        updatedContext.getLocationDepartments('location-456'),
+        updatedContext.getLocationDepartments("location-456"),
       ).toHaveLength(3); // 2 + new one
-      expect(updatedContext.hasDepartment('location-456', 'dept-new')).toBe(
+      expect(updatedContext.hasDepartment("location-456", "dept-new")).toBe(
         true,
       );
     });
 
-    it('should throw error for non-existent location', () => {
+    it("should throw error for non-existent location", () => {
       // Given
       const newDepartment: DepartmentContext = {
-        departmentId: 'dept-new',
-        departmentName: 'HR',
+        departmentId: "dept-new",
+        departmentName: "HR",
         isActive: true,
       };
 
       // When & Then
       expect(() => {
-        context.addDepartmentToLocation('non-existent', newDepartment);
-      }).toThrow('Location non-existent not found');
+        context.addDepartmentToLocation("non-existent", newDepartment);
+      }).toThrow("Location non-existent not found");
     });
 
-    it('should throw error for duplicate department', () => {
+    it("should throw error for duplicate department", () => {
       // Given
       const duplicateDepartment: DepartmentContext = {
-        departmentId: 'dept-001', // Already exists
-        departmentName: 'Duplicate',
+        departmentId: "dept-001", // Already exists
+        departmentName: "Duplicate",
         isActive: true,
       };
 
       // When & Then
       expect(() => {
-        context.addDepartmentToLocation('location-456', duplicateDepartment);
-      }).toThrow('Department dept-001 already exists in location location-456');
+        context.addDepartmentToLocation("location-456", duplicateDepartment);
+      }).toThrow("Department dept-001 already exists in location location-456");
     });
   });
 
-  describe('getContextPath', () => {
+  describe("getContextPath", () => {
     let context: BusinessContext;
 
     beforeEach(() => {
@@ -617,7 +617,7 @@ describe('BusinessContext Entity', () => {
       ]);
     });
 
-    it('should return business name only for business-level context', () => {
+    it("should return business name only for business-level context", () => {
       // When
       const path = context.getContextPath({});
 
@@ -625,35 +625,35 @@ describe('BusinessContext Entity', () => {
       expect(path).toBe(mockBusinessName);
     });
 
-    it('should return business > location for location-level context', () => {
+    it("should return business > location for location-level context", () => {
       // When
-      const path = context.getContextPath({ locationId: 'location-456' });
+      const path = context.getContextPath({ locationId: "location-456" });
 
       // Then
       expect(path).toBe(`${mockBusinessName} > Downtown Office`);
     });
 
-    it('should return full hierarchy for department-level context', () => {
+    it("should return full hierarchy for department-level context", () => {
       // When
       const path = context.getContextPath({
-        locationId: 'location-456',
-        departmentId: 'dept-001',
+        locationId: "location-456",
+        departmentId: "dept-001",
       });
 
       // Then
       expect(path).toBe(`${mockBusinessName} > Downtown Office > Sales`);
     });
 
-    it('should handle non-existent location gracefully', () => {
+    it("should handle non-existent location gracefully", () => {
       // When
-      const path = context.getContextPath({ locationId: 'non-existent' });
+      const path = context.getContextPath({ locationId: "non-existent" });
 
       // Then
       expect(path).toBe(mockBusinessName); // Only business name
     });
   });
 
-  describe('toAuditData', () => {
+  describe("toAuditData", () => {
     let context: BusinessContext;
 
     beforeEach(() => {
@@ -663,7 +663,7 @@ describe('BusinessContext Entity', () => {
       ]);
     });
 
-    it('should return comprehensive audit data', () => {
+    it("should return comprehensive audit data", () => {
       // When
       const auditData = context.toAuditData();
 

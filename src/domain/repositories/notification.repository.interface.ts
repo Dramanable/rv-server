@@ -4,10 +4,10 @@
  * @version 1.0.0
  */
 
-import { Notification } from '../entities/notification.entity';
-import { NotificationChannel } from '../value-objects/notification-channel.value-object';
-import { NotificationPriority } from '../value-objects/notification-priority.value-object';
-import { NotificationStatus } from '../value-objects/notification-status.value-object';
+import { Notification } from "../entities/notification.entity";
+import { NotificationChannel } from "../value-objects/notification-channel.value-object";
+import { NotificationPriority } from "../value-objects/notification-priority.value-object";
+import { NotificationStatus } from "../value-objects/notification-status.value-object";
 
 /**
  * Critères de recherche pour les notifications
@@ -35,7 +35,7 @@ export interface NotificationPaginationOptions {
   readonly page: number;
   readonly limit: number;
   readonly sortBy?: string;
-  readonly sortOrder?: 'asc' | 'desc';
+  readonly sortOrder?: "asc" | "desc";
 }
 
 /**

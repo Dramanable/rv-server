@@ -4,14 +4,14 @@
  * ✅ NoSQL optimized structure
  */
 
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Types } from 'mongoose';
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { Document, Types } from "mongoose";
 
 export type UserDocument = UserMongoEntity & Document;
 
 @Schema({
-  collection: 'users',
-  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
+  collection: "users",
+  timestamps: { createdAt: "created_at", updatedAt: "updated_at" },
   versionKey: false,
 })
 export class UserMongoEntity {
@@ -57,21 +57,21 @@ export class UserMongoEntity {
   @Prop({
     required: true,
     enum: [
-      'PLATFORM_ADMIN',
-      'BUSINESS_OWNER',
-      'BUSINESS_ADMIN',
-      'LOCATION_MANAGER',
-      'DEPARTMENT_HEAD',
-      'SENIOR_PRACTITIONER',
-      'PRACTITIONER',
-      'JUNIOR_PRACTITIONER',
-      'RECEPTIONIST',
-      'ASSISTANT',
-      'SCHEDULER',
-      'CORPORATE_CLIENT',
-      'VIP_CLIENT',
-      'REGULAR_CLIENT',
-      'GUEST_CLIENT',
+      "PLATFORM_ADMIN",
+      "BUSINESS_OWNER",
+      "BUSINESS_ADMIN",
+      "LOCATION_MANAGER",
+      "DEPARTMENT_HEAD",
+      "SENIOR_PRACTITIONER",
+      "PRACTITIONER",
+      "JUNIOR_PRACTITIONER",
+      "RECEPTIONIST",
+      "ASSISTANT",
+      "SCHEDULER",
+      "CORPORATE_CLIENT",
+      "VIP_CLIENT",
+      "REGULAR_CLIENT",
+      "GUEST_CLIENT",
     ],
     index: true,
   })
@@ -114,9 +114,9 @@ export class UserMongoEntity {
 
   @Prop({
     type: {
-      theme: { type: String, default: 'light' },
-      language: { type: String, default: 'en' },
-      timezone: { type: String, default: 'UTC' },
+      theme: { type: String, default: "light" },
+      language: { type: String, default: "en" },
+      timezone: { type: String, default: "UTC" },
       notifications: {
         email: { type: Boolean, default: true },
         push: { type: Boolean, default: true },
@@ -143,28 +143,28 @@ export const UserSchema = SchemaFactory.createForClass(UserMongoEntity);
 UserSchema.index({ email: 1, isActive: 1 });
 UserSchema.index({ role: 1, isActive: 1 });
 UserSchema.index({ created_at: -1 });
-UserSchema.index({ 'authMetadata.lastLogin': -1 });
+UserSchema.index({ "authMetadata.lastLogin": -1 });
 
 // 🔍 Index de recherche textuelle
 UserSchema.index({
-  firstName: 'text',
-  lastName: 'text',
-  email: 'text',
+  firstName: "text",
+  lastName: "text",
+  email: "text",
 });
 
 // ⚡ Virtual pour le nom complet
-UserSchema.virtual('fullName').get(function () {
+UserSchema.virtual("fullName").get(function () {
   return `${this.firstName} ${this.lastName}`;
 });
 
 // 🔒 Pré-hook pour hasher le mot de passe (si nécessaire)
-UserSchema.pre('save', function (next) {
+UserSchema.pre("save", function (next) {
   // Logique de pre-save si nécessaire
   next();
 });
 
 // 🧹 Post-hook pour cleanup
-UserSchema.post('deleteOne', function () {
+UserSchema.post("deleteOne", function () {
   // Cleanup related data when user is removed
   // Ex: remove refresh tokens, sessions, etc.
 });

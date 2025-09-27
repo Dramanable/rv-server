@@ -8,20 +8,20 @@
  * Statut: � GREEN (Use Case already uses IPermissionService)
  */
 
-import { InsufficientPermissionsError } from '@application/exceptions/application.exceptions';
+import { InsufficientPermissionsError } from "@application/exceptions/application.exceptions";
 import {
   CreateServiceTypeRequest,
   CreateServiceTypeUseCase,
-} from '@application/use-cases/service-types/create-service-type.use-case';
+} from "@application/use-cases/service-types/create-service-type.use-case";
 import {
   createMockAuditService,
   createMockI18nService,
   createMockLogger,
   createMockPermissionService,
   createMockServiceTypeRepository,
-} from '../../../../setup/test-mocks';
+} from "../../../../setup/test-mocks";
 
-describe('CreateServiceTypeUseCase - IPermissionService TDD', () => {
+describe("CreateServiceTypeUseCase - IPermissionService TDD", () => {
   let useCase: CreateServiceTypeUseCase;
   let mockServiceTypeRepository: ReturnType<
     typeof createMockServiceTypeRepository
@@ -49,16 +49,16 @@ describe('CreateServiceTypeUseCase - IPermissionService TDD', () => {
     );
   });
 
-  describe('� GREEN Phase - IPermissionService Already Integrated', () => {
-    it('should use IPermissionService.requirePermission for authorization', async () => {
+  describe("� GREEN Phase - IPermissionService Already Integrated", () => {
+    it("should use IPermissionService.requirePermission for authorization", async () => {
       // Arrange
       const request: CreateServiceTypeRequest = {
-        businessId: '550e8400-e29b-41d4-a716-446655440001',
-        name: 'Test Service Type',
-        code: 'TEST_TYPE',
-        description: 'Test description',
-        requestingUserId: '550e8400-e29b-41d4-a716-446655440002',
-        correlationId: '550e8400-e29b-41d4-a716-446655440003',
+        businessId: "550e8400-e29b-41d4-a716-446655440001",
+        name: "Test Service Type",
+        code: "TEST_TYPE",
+        description: "Test description",
+        requestingUserId: "550e8400-e29b-41d4-a716-446655440002",
+        correlationId: "550e8400-e29b-41d4-a716-446655440003",
         timestamp: new Date(),
       };
 
@@ -68,7 +68,7 @@ describe('CreateServiceTypeUseCase - IPermissionService TDD', () => {
       mockPermissionService.requirePermission.mockResolvedValue(undefined);
 
       const mockServiceType = {
-        getId: () => ({ getValue: () => 'service-type-123' }),
+        getId: () => ({ getValue: () => "service-type-123" }),
         getBusinessId: () => ({ getValue: () => request.businessId }),
         getName: () => request.name,
         getCode: () => request.code,
@@ -87,28 +87,28 @@ describe('CreateServiceTypeUseCase - IPermissionService TDD', () => {
       // Assert - Permission should be checked with MANAGE_SERVICES
       expect(mockPermissionService.requirePermission).toHaveBeenCalledWith(
         request.requestingUserId,
-        'MANAGE_SERVICES',
+        "MANAGE_SERVICES",
         { businessId: request.businessId },
       );
 
       expect(mockServiceTypeRepository.save).toHaveBeenCalled();
     });
 
-    it('should propagate InsufficientPermissionsError from IPermissionService', async () => {
+    it("should propagate InsufficientPermissionsError from IPermissionService", async () => {
       // Arrange
       const request: CreateServiceTypeRequest = {
-        businessId: '550e8400-e29b-41d4-a716-446655440001',
-        name: 'Test Service Type',
-        code: 'TEST_TYPE',
-        description: 'Test description',
-        requestingUserId: '550e8400-e29b-41d4-a716-446655440002',
-        correlationId: '550e8400-e29b-41d4-a716-446655440003',
+        businessId: "550e8400-e29b-41d4-a716-446655440001",
+        name: "Test Service Type",
+        code: "TEST_TYPE",
+        description: "Test description",
+        requestingUserId: "550e8400-e29b-41d4-a716-446655440002",
+        correlationId: "550e8400-e29b-41d4-a716-446655440003",
         timestamp: new Date(),
       };
 
       const permissionError = new InsufficientPermissionsError(
         request.requestingUserId,
-        'MANAGE_SERVICES',
+        "MANAGE_SERVICES",
         request.businessId,
       );
 
@@ -123,7 +123,7 @@ describe('CreateServiceTypeUseCase - IPermissionService TDD', () => {
 
       expect(mockPermissionService.requirePermission).toHaveBeenCalledWith(
         request.requestingUserId,
-        'MANAGE_SERVICES',
+        "MANAGE_SERVICES",
         { businessId: request.businessId },
       );
 

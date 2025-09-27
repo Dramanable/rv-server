@@ -7,16 +7,16 @@
  * - Migration des données existantes vers le nouveau format
  */
 
-import { MigrationInterface, QueryRunner } from 'typeorm';
+import { MigrationInterface, QueryRunner } from "typeorm";
 
 export class AddFlexiblePricingToServices1695829250000
   implements MigrationInterface
 {
-  name = 'AddFlexiblePricingToServices1695829250000';
+  name = "AddFlexiblePricingToServices1695829250000";
 
   // 🎯 OBLIGATOIRE : Récupérer le schéma depuis l'environnement
   private getSchemaName(): string {
-    const schema = process.env.DB_SCHEMA || 'public';
+    const schema = process.env.DB_SCHEMA || "public";
 
     // Validation du nom de schéma (sécurité)
     if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(schema)) {

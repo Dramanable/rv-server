@@ -5,14 +5,14 @@
  */
 
 export enum ImageCategory {
-  LOGO = 'LOGO',
-  COVER = 'COVER',
-  INTERIOR = 'INTERIOR',
-  EXTERIOR = 'EXTERIOR',
-  STAFF = 'STAFF',
-  EQUIPMENT = 'EQUIPMENT',
-  SERVICES = 'SERVICES',
-  GALLERY = 'GALLERY',
+  LOGO = "LOGO",
+  COVER = "COVER",
+  INTERIOR = "INTERIOR",
+  EXTERIOR = "EXTERIOR",
+  STAFF = "STAFF",
+  EQUIPMENT = "EQUIPMENT",
+  SERVICES = "SERVICES",
+  GALLERY = "GALLERY",
 }
 
 export interface ImageDimensions {
@@ -100,7 +100,7 @@ export class BusinessImage {
   // Business rules
   isOptimizedForWeb(): boolean {
     const maxSize = 2 * 1024 * 1024; // 2MB
-    const supportedFormats = ['jpg', 'jpeg', 'png', 'webp'];
+    const supportedFormats = ["jpg", "jpeg", "png", "webp"];
 
     return (
       this._metadata.size <= maxSize &&
@@ -118,9 +118,9 @@ export class BusinessImage {
 
   generateThumbnailUrl(): string {
     // Simple thumbnail generation logic
-    const urlParts = this._url.split('.');
+    const urlParts = this._url.split(".");
     const extension = urlParts.pop();
-    const baseName = urlParts.join('.');
+    const baseName = urlParts.join(".");
 
     return `${baseName}_thumb.${extension}`;
   }
@@ -131,9 +131,9 @@ export class BusinessImage {
     large: string;
     original: string;
   } {
-    const urlParts = this._url.split('.');
+    const urlParts = this._url.split(".");
     const extension = urlParts.pop();
-    const baseName = urlParts.join('.');
+    const baseName = urlParts.join(".");
 
     return {
       small: `${baseName}_small.${extension}`,
@@ -146,29 +146,29 @@ export class BusinessImage {
   // Validation methods
   private validateUrl(): void {
     if (!this._url || this._url.trim().length === 0) {
-      throw new Error('Image URL cannot be empty');
+      throw new Error("Image URL cannot be empty");
     }
 
     try {
       new URL(this._url);
     } catch {
-      throw new Error('Invalid image URL format');
+      throw new Error("Invalid image URL format");
     }
   }
 
   private validateAlt(): void {
     if (!this._alt || this._alt.trim().length === 0) {
-      throw new Error('Alt text is required for accessibility');
+      throw new Error("Alt text is required for accessibility");
     }
 
     if (this._alt.length > 200) {
-      throw new Error('Alt text must be less than 200 characters');
+      throw new Error("Alt text must be less than 200 characters");
     }
   }
 
   private validateOrder(): void {
     if (this._order < 0) {
-      throw new Error('Image order must be non-negative');
+      throw new Error("Image order must be non-negative");
     }
   }
 

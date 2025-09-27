@@ -9,7 +9,7 @@ import {
   Post,
   Put,
   Req,
-} from '@nestjs/common';
+} from "@nestjs/common";
 import {
   ApiBearerAuth,
   ApiBody,
@@ -18,11 +18,11 @@ import {
   ApiParam,
   ApiResponse,
   ApiTags,
-} from '@nestjs/swagger';
-import { FastifyRequest } from 'fastify';
+} from "@nestjs/swagger";
+import { FastifyRequest } from "fastify";
 
-import { User } from '../../domain/entities/user.entity';
-import { GetUser } from '../security/decorators/get-user.decorator';
+import { User } from "../../domain/entities/user.entity";
+import { GetUser } from "../security/decorators/get-user.decorator";
 
 import {
   BusinessGalleryDto,
@@ -32,24 +32,24 @@ import {
   ImageCategoryDto,
   UpdateBusinessGalleryDto,
   UpdateBusinessGalleryResponseDto,
-} from '../dtos/business-gallery.dto';
-import { ImageUploadResponseDto } from '../dtos/image-upload.dto';
+} from "../dtos/business-gallery.dto";
+import { ImageUploadResponseDto } from "../dtos/image-upload.dto";
 
-import { AddImageToBusinessGalleryUseCase } from '../../application/use-cases/business/add-image-to-business-gallery.use-case';
-import { CreateBusinessGalleryUseCase } from '../../application/use-cases/business/create-business-gallery.use-case';
-import { DeleteBusinessGalleryUseCase } from '../../application/use-cases/business/delete-business-gallery.use-case';
-import { GetBusinessGalleryUseCase } from '../../application/use-cases/business/get-business-gallery.use-case';
+import { AddImageToBusinessGalleryUseCase } from "../../application/use-cases/business/add-image-to-business-gallery.use-case";
+import { CreateBusinessGalleryUseCase } from "../../application/use-cases/business/create-business-gallery.use-case";
+import { DeleteBusinessGalleryUseCase } from "../../application/use-cases/business/delete-business-gallery.use-case";
+import { GetBusinessGalleryUseCase } from "../../application/use-cases/business/get-business-gallery.use-case";
 import {
   UpdateBusinessGalleryRequest,
   UpdateBusinessGalleryUseCase,
-} from '../../application/use-cases/business/update-business-gallery.use-case';
-import { ImageCategory } from '../../domain/value-objects/business-image.value-object';
+} from "../../application/use-cases/business/update-business-gallery.use-case";
+import { ImageCategory } from "../../domain/value-objects/business-image.value-object";
 
-import { Inject } from '@nestjs/common';
-import { TOKENS } from '../../shared/constants/injection-tokens';
+import { Inject } from "@nestjs/common";
+import { TOKENS } from "../../shared/constants/injection-tokens";
 
-@ApiTags('🖼️ Business Gallery')
-@Controller('business-galleries')
+@ApiTags("🖼️ Business Gallery")
+@Controller("business-galleries")
 @ApiBearerAuth()
 export class BusinessGalleryController {
   constructor(
@@ -65,9 +65,9 @@ export class BusinessGalleryController {
     private readonly addImageToBusinessGalleryUseCase: AddImageToBusinessGalleryUseCase,
   ) {}
 
-  @Post(':businessId/create')
+  @Post(":businessId/create")
   @ApiOperation({
-    summary: '➕ Create Business Gallery',
+    summary: "➕ Create Business Gallery",
     description: `
     Créer une nouvelle galerie pour une entreprise.
 
@@ -118,34 +118,34 @@ export class BusinessGalleryController {
     `,
   })
   @ApiParam({
-    name: 'businessId',
+    name: "businessId",
     description: "ID de l'entreprise",
-    type: 'string',
-    format: 'uuid',
+    type: "string",
+    format: "uuid",
   })
   @ApiResponse({
     status: HttpStatus.CREATED,
-    description: '✅ Galerie créée avec succès',
+    description: "✅ Galerie créée avec succès",
     type: CreateBusinessGalleryResponseDto,
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
-    description: '❌ Données invalides',
+    description: "❌ Données invalides",
   })
   @ApiResponse({
     status: HttpStatus.UNAUTHORIZED,
-    description: '🔐 Authentification requise',
+    description: "🔐 Authentification requise",
   })
   @ApiResponse({
     status: HttpStatus.FORBIDDEN,
-    description: '🚫 Permissions insuffisantes',
+    description: "🚫 Permissions insuffisantes",
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
-    description: '❌ Entreprise introuvable',
+    description: "❌ Entreprise introuvable",
   })
   async createGallery(
-    @Param('businessId', ParseUUIDPipe) businessId: string,
+    @Param("businessId", ParseUUIDPipe) businessId: string,
     @Body() dto: CreateBusinessGalleryDto,
     @GetUser() user: User,
   ): Promise<CreateBusinessGalleryResponseDto> {
@@ -172,9 +172,9 @@ export class BusinessGalleryController {
     };
   }
 
-  @Get(':businessId/galleries')
+  @Get(":businessId/galleries")
   @ApiOperation({
-    summary: '📋 List Business Galleries',
+    summary: "📋 List Business Galleries",
     description: `
     Récupérer toutes les galeries d'une entreprise avec métadonnées.
 
@@ -198,26 +198,26 @@ export class BusinessGalleryController {
     `,
   })
   @ApiParam({
-    name: 'businessId',
+    name: "businessId",
     description: "ID de l'entreprise",
-    type: 'string',
-    format: 'uuid',
+    type: "string",
+    format: "uuid",
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: '✅ Galeries récupérées avec succès',
+    description: "✅ Galeries récupérées avec succès",
     type: [BusinessGalleryDto],
   })
   @ApiResponse({
     status: HttpStatus.UNAUTHORIZED,
-    description: '🔐 Authentification requise',
+    description: "🔐 Authentification requise",
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
-    description: '❌ Entreprise introuvable',
+    description: "❌ Entreprise introuvable",
   })
   async getBusinessGalleries(
-    @Param('businessId', ParseUUIDPipe) businessId: string,
+    @Param("businessId", ParseUUIDPipe) businessId: string,
     @GetUser() user: User,
   ): Promise<BusinessGalleryDto[]> {
     const result = await this.getBusinessGalleryUseCase.execute({
@@ -253,9 +253,9 @@ export class BusinessGalleryController {
     ];
   }
 
-  @Get(':galleryId')
+  @Get(":galleryId")
   @ApiOperation({
-    summary: '🔍 Get Gallery by ID',
+    summary: "🔍 Get Gallery by ID",
     description: `
     Récupérer une galerie spécifique avec toutes ses images.
 
@@ -275,26 +275,26 @@ export class BusinessGalleryController {
     `,
   })
   @ApiParam({
-    name: 'galleryId',
-    description: 'ID de la galerie',
-    type: 'string',
-    format: 'uuid',
+    name: "galleryId",
+    description: "ID de la galerie",
+    type: "string",
+    format: "uuid",
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: '✅ Galerie récupérée avec succès',
+    description: "✅ Galerie récupérée avec succès",
     type: BusinessGalleryDto,
   })
   @ApiResponse({
     status: HttpStatus.UNAUTHORIZED,
-    description: '🔐 Authentification requise',
+    description: "🔐 Authentification requise",
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
-    description: '❌ Galerie introuvable',
+    description: "❌ Galerie introuvable",
   })
   async getGalleryById(
-    @Param('galleryId', ParseUUIDPipe) galleryId: string,
+    @Param("galleryId", ParseUUIDPipe) galleryId: string,
     @GetUser() user: User,
   ): Promise<BusinessGalleryDto> {
     // Using galleryId as businessId for now (this should be refactored)
@@ -329,9 +329,9 @@ export class BusinessGalleryController {
     };
   }
 
-  @Put(':galleryId')
+  @Put(":galleryId")
   @ApiOperation({
-    summary: '✏️ Update Gallery',
+    summary: "✏️ Update Gallery",
     description: `
     Mettre à jour les informations d'une galerie existante.
 
@@ -355,38 +355,38 @@ export class BusinessGalleryController {
     `,
   })
   @ApiParam({
-    name: 'galleryId',
-    description: 'ID de la galerie',
-    type: 'string',
-    format: 'uuid',
+    name: "galleryId",
+    description: "ID de la galerie",
+    type: "string",
+    format: "uuid",
   })
   @ApiBody({
     type: UpdateBusinessGalleryDto,
-    description: 'Données de mise à jour de la galerie',
+    description: "Données de mise à jour de la galerie",
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: '✅ Galerie mise à jour avec succès',
+    description: "✅ Galerie mise à jour avec succès",
     type: UpdateBusinessGalleryResponseDto,
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
-    description: '❌ Données invalides',
+    description: "❌ Données invalides",
   })
   @ApiResponse({
     status: HttpStatus.UNAUTHORIZED,
-    description: '🔐 Authentification requise',
+    description: "🔐 Authentification requise",
   })
   @ApiResponse({
     status: HttpStatus.FORBIDDEN,
-    description: '🚫 Permissions insuffisantes - Propriétaire requis',
+    description: "🚫 Permissions insuffisantes - Propriétaire requis",
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
-    description: '❌ Galerie introuvable',
+    description: "❌ Galerie introuvable",
   })
   async updateGallery(
-    @Param('galleryId') galleryId: string,
+    @Param("galleryId") galleryId: string,
     @Body() dto: UpdateBusinessGalleryDto,
     @GetUser() user: User,
   ): Promise<UpdateBusinessGalleryResponseDto> {
@@ -421,9 +421,9 @@ export class BusinessGalleryController {
     };
   }
 
-  @Delete(':galleryId')
+  @Delete(":galleryId")
   @ApiOperation({
-    summary: '🗑️ Delete Gallery',
+    summary: "🗑️ Delete Gallery",
     description: `
     Supprimer une galerie et gérer les images associées.
 
@@ -447,35 +447,35 @@ export class BusinessGalleryController {
     `,
   })
   @ApiParam({
-    name: 'galleryId',
-    description: 'ID de la galerie',
-    type: 'string',
-    format: 'uuid',
+    name: "galleryId",
+    description: "ID de la galerie",
+    type: "string",
+    format: "uuid",
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: '✅ Galerie supprimée avec succès',
+    description: "✅ Galerie supprimée avec succès",
     type: DeleteBusinessGalleryResponseDto,
   })
   @ApiResponse({
     status: HttpStatus.UNAUTHORIZED,
-    description: '🔐 Authentification requise',
+    description: "🔐 Authentification requise",
   })
   @ApiResponse({
     status: HttpStatus.FORBIDDEN,
-    description: '🚫 Permissions insuffisantes - Propriétaire requis',
+    description: "🚫 Permissions insuffisantes - Propriétaire requis",
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
-    description: '❌ Galerie introuvable',
+    description: "❌ Galerie introuvable",
   })
   @ApiResponse({
     status: HttpStatus.UNPROCESSABLE_ENTITY,
     description:
-      '⚠️ Suppression impossible - Galerie principale unique ou images présentes',
+      "⚠️ Suppression impossible - Galerie principale unique ou images présentes",
   })
   async deleteGallery(
-    @Param('galleryId') galleryId: string,
+    @Param("galleryId") galleryId: string,
     @GetUser() user: User,
   ): Promise<DeleteBusinessGalleryResponseDto> {
     // For now, use galleryId as businessId (this should be refactored)
@@ -495,10 +495,10 @@ export class BusinessGalleryController {
     };
   }
 
-  @Post(':galleryId/images/upload')
-  @ApiConsumes('multipart/form-data')
+  @Post(":galleryId/images/upload")
+  @ApiConsumes("multipart/form-data")
   @ApiOperation({
-    summary: '📤 Upload Image to Gallery',
+    summary: "📤 Upload Image to Gallery",
     description: `
     Uploader une nouvelle image dans une galerie spécifique avec traitement AWS S3 complet.
 
@@ -610,79 +610,79 @@ export class BusinessGalleryController {
     `,
   })
   @ApiParam({
-    name: 'galleryId',
-    description: 'ID de la galerie destination',
-    type: 'string',
-    format: 'uuid',
-    example: '123e4567-e89b-12d3-a456-426614174000',
+    name: "galleryId",
+    description: "ID de la galerie destination",
+    type: "string",
+    format: "uuid",
+    example: "123e4567-e89b-12d3-a456-426614174000",
   })
   @ApiBody({
-    description: 'Image file avec métadonnées optionnelles',
+    description: "Image file avec métadonnées optionnelles",
     schema: {
-      type: 'object',
+      type: "object",
       properties: {
         image: {
-          type: 'string',
-          format: 'binary',
-          description: 'Fichier image (JPEG, PNG, WEBP - max 10MB)',
+          type: "string",
+          format: "binary",
+          description: "Fichier image (JPEG, PNG, WEBP - max 10MB)",
         },
         alt: {
-          type: 'string',
+          type: "string",
           description: "Texte alternatif pour l'accessibilité",
-          example: 'Photo de notre nouveau local',
+          example: "Photo de notre nouveau local",
           maxLength: 255,
         },
         caption: {
-          type: 'string',
+          type: "string",
           description: "Description visible de l'image",
-          example: 'Notre espace de réception rénové en 2024',
+          example: "Notre espace de réception rénové en 2024",
           maxLength: 500,
         },
         category: {
-          type: 'string',
-          enum: ['GALLERY', 'COVER', 'PROFILE', 'LOGO'],
+          type: "string",
+          enum: ["GALLERY", "COVER", "PROFILE", "LOGO"],
           description: "Catégorie de l'image",
-          example: 'GALLERY',
+          example: "GALLERY",
         },
         isPublic: {
-          type: 'boolean',
+          type: "boolean",
           description: "Visibilité publique de l'image",
           example: true,
         },
       },
-      required: ['image'],
+      required: ["image"],
     },
   })
   @ApiResponse({
     status: HttpStatus.CREATED,
-    description: '✅ Image uploadée et traitée avec succès',
+    description: "✅ Image uploadée et traitée avec succès",
     type: ImageUploadResponseDto,
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
-    description: '❌ Fichier invalide ou données manquantes',
+    description: "❌ Fichier invalide ou données manquantes",
     schema: {
-      type: 'object',
+      type: "object",
       properties: {
-        success: { type: 'boolean', example: false },
+        success: { type: "boolean", example: false },
         error: {
-          type: 'object',
+          type: "object",
           properties: {
-            code: { type: 'string', example: 'INVALID_FILE_FORMAT' },
+            code: { type: "string", example: "INVALID_FILE_FORMAT" },
             message: {
-              type: 'string',
-              example: 'Only JPEG, PNG, and WEBP formats are allowed',
+              type: "string",
+              example: "Only JPEG, PNG, and WEBP formats are allowed",
             },
             details: {
-              type: 'object',
+              type: "object",
               properties: {
                 allowedFormats: {
-                  type: 'array',
-                  items: { type: 'string' },
-                  example: ['JPEG', 'PNG', 'WEBP'],
+                  type: "array",
+                  items: { type: "string" },
+                  example: ["JPEG", "PNG", "WEBP"],
                 },
-                receivedFormat: { type: 'string', example: 'GIF' },
-                maxSize: { type: 'string', example: '10MB' },
+                receivedFormat: { type: "string", example: "GIF" },
+                maxSize: { type: "string", example: "10MB" },
               },
             },
           },
@@ -692,38 +692,38 @@ export class BusinessGalleryController {
   })
   @ApiResponse({
     status: HttpStatus.UNAUTHORIZED,
-    description: '🔐 Authentification JWT requise',
+    description: "🔐 Authentification JWT requise",
   })
   @ApiResponse({
     status: HttpStatus.FORBIDDEN,
     description:
-      '🚫 Permissions insuffisantes - BUSINESS_OWNER/BUSINESS_ADMIN requis',
+      "🚫 Permissions insuffisantes - BUSINESS_OWNER/BUSINESS_ADMIN requis",
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
-    description: '❌ Galerie ou business introuvable',
+    description: "❌ Galerie ou business introuvable",
   })
   @ApiResponse({
     status: HttpStatus.UNPROCESSABLE_ENTITY,
     description: "⚠️ Limite d'images atteinte ou contraintes métier violées",
     schema: {
-      type: 'object',
+      type: "object",
       properties: {
-        success: { type: 'boolean', example: false },
+        success: { type: "boolean", example: false },
         error: {
-          type: 'object',
+          type: "object",
           properties: {
-            code: { type: 'string', example: 'GALLERY_LIMIT_EXCEEDED' },
+            code: { type: "string", example: "GALLERY_LIMIT_EXCEEDED" },
             message: {
-              type: 'string',
-              example: 'Maximum 50 images per gallery allowed',
+              type: "string",
+              example: "Maximum 50 images per gallery allowed",
             },
             details: {
-              type: 'object',
+              type: "object",
               properties: {
-                currentCount: { type: 'number', example: 50 },
-                maxAllowed: { type: 'number', example: 50 },
-                upgradeRequired: { type: 'boolean', example: true },
+                currentCount: { type: "number", example: 50 },
+                maxAllowed: { type: "number", example: 50 },
+                upgradeRequired: { type: "boolean", example: true },
               },
             },
           },
@@ -733,10 +733,10 @@ export class BusinessGalleryController {
   })
   @ApiResponse({
     status: HttpStatus.INTERNAL_SERVER_ERROR,
-    description: '🔥 Erreur serveur lors du traitement',
+    description: "🔥 Erreur serveur lors du traitement",
   })
   async uploadImageToGallery(
-    @Param('galleryId') galleryId: string,
+    @Param("galleryId") galleryId: string,
     @Req() request: FastifyRequest,
     @GetUser() user: User,
   ): Promise<ImageUploadResponseDto> {
@@ -745,7 +745,7 @@ export class BusinessGalleryController {
       const data = await request.file();
 
       if (!data) {
-        throw new Error('No file uploaded');
+        throw new Error("No file uploaded");
       }
 
       // Lecture du buffer du fichier
@@ -765,19 +765,19 @@ export class BusinessGalleryController {
 
       // Extraction des champs additionnels avec typage correct
       const fields = (request.body as MultipartFormFields) || {};
-      const alt = fields.alt?.value || data.filename.replace(/.[^/]+$/, '');
+      const alt = fields.alt?.value || data.filename.replace(/.[^/]+$/, "");
       const caption = fields.caption?.value;
-      const category = fields.category?.value || 'GALLERY';
-      const isPublic = fields.isPublic?.value !== 'false';
+      const category = fields.category?.value || "GALLERY";
+      const isPublic = fields.isPublic?.value !== "false";
 
       // Validation du type de fichier
-      if (!data.mimetype.startsWith('image/')) {
-        throw new Error('File must be an image');
+      if (!data.mimetype.startsWith("image/")) {
+        throw new Error("File must be an image");
       }
 
       // Validation de la taille (10MB max)
       if (buffer.length > 10 * 1024 * 1024) {
-        throw new Error('File size cannot exceed 10MB');
+        throw new Error("File size cannot exceed 10MB");
       }
 
       // TODO: This should be a separate use case for file upload handling
@@ -785,7 +785,7 @@ export class BusinessGalleryController {
       const result = await this.addImageToBusinessGalleryUseCase.execute({
         businessId: galleryId, // TODO: Map gallery ID to business ID properly
         requestingUserId: user.id,
-        imageUrl: 'https://temp-placeholder.s3.amazonaws.com/processing', // Will be replaced by S3 upload
+        imageUrl: "https://temp-placeholder.s3.amazonaws.com/processing", // Will be replaced by S3 upload
         alt: alt,
         caption: caption || undefined,
         category: category as ImageCategory,
@@ -793,7 +793,7 @@ export class BusinessGalleryController {
           size: buffer.length,
           width: 0, // Will be extracted during S3 processing
           height: 0, // Will be extracted during S3 processing
-          format: data.mimetype.split('/')[1].toUpperCase(),
+          format: data.mimetype.split("/")[1].toUpperCase(),
           uploadedBy: user.id,
         },
         isPublic: isPublic,
@@ -819,7 +819,7 @@ export class BusinessGalleryController {
             size: buffer.length,
             width: 0, // TODO: Extract from image processing
             height: 0, // TODO: Extract from image processing
-            format: data.mimetype.split('/')[1].toUpperCase(),
+            format: data.mimetype.split("/")[1].toUpperCase(),
             uploadedAt: new Date().toISOString(),
           },
           galleryInfo: {
@@ -832,7 +832,7 @@ export class BusinessGalleryController {
       };
     } catch (error) {
       const errorMessage =
-        error instanceof Error ? error.message : 'Unknown error';
+        error instanceof Error ? error.message : "Unknown error";
       throw new Error(`File upload failed: ${errorMessage}`);
     }
   }

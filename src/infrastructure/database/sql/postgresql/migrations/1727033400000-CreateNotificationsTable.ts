@@ -1,12 +1,12 @@
-import { MigrationInterface, QueryRunner } from 'typeorm';
+import { MigrationInterface, QueryRunner } from "typeorm";
 
 export class CreateNotificationsTable1727033400000
   implements MigrationInterface
 {
-  name = 'CreateNotificationsTable1727033400000';
+  name = "CreateNotificationsTable1727033400000";
 
   private getSchemaName(): string {
-    const schema = process.env.DB_SCHEMA || 'public';
+    const schema = process.env.DB_SCHEMA || "public";
 
     // Validation du nom de schéma (sécurité)
     if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(schema)) {
@@ -123,7 +123,7 @@ export class CreateNotificationsTable1727033400000
     `);
 
     console.log(
-      '✅ Notifications table created successfully with indexes and triggers',
+      "✅ Notifications table created successfully with indexes and triggers",
     );
   }
 

@@ -14,8 +14,8 @@ import {
   Permission,
   ROLE_PERMISSIONS,
   UserRole,
-} from '../../shared/enums/user-role.enum';
-import { Email } from '../value-objects/email.vo';
+} from "../../shared/enums/user-role.enum";
+import { Email } from "../value-objects/email.vo";
 
 export class User {
   public readonly id: string;
@@ -302,7 +302,7 @@ export class User {
 
   private validateName(name: string): void {
     if (!name || name.trim().length === 0) {
-      throw new Error('Name cannot be empty');
+      throw new Error("Name cannot be empty");
     }
   }
 
@@ -311,5 +311,14 @@ export class User {
       Math.random().toString(36).substring(2, 15) +
       Math.random().toString(36).substring(2, 15)
     );
+  }
+
+  /**
+   * 🆔 GETTER ID
+   *
+   * Retourne l'ID unique de l'utilisateur.
+   */
+  getId(): string {
+    return this.id;
   }
 }

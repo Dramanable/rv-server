@@ -6,23 +6,23 @@
  */
 
 import {
-  Controller,
-  Post,
   Body,
-  UseGuards,
+  Controller,
   HttpCode,
   HttpStatus,
-} from '@nestjs/common';
+  Post,
+  UseGuards,
+} from "@nestjs/common";
 import {
-  ApiTags,
+  ApiBearerAuth,
   ApiOperation,
   ApiResponse,
-  ApiBearerAuth,
-} from '@nestjs/swagger';
-import { RoleBasedGuard } from '../security/guards/role-based.guard';
-import { RequirePractitioner } from '../security/decorators/roles.decorator';
-import { GetUser } from '../security/decorators/get-user.decorator';
-import { User } from '../../domain/entities/user.entity';
+  ApiTags,
+} from "@nestjs/swagger";
+import { User } from "../../domain/entities/user.entity";
+import { GetUser } from "../security/decorators/get-user.decorator";
+import { RequirePractitioner } from "../security/decorators/roles.decorator";
+import { RoleBasedGuard } from "../security/guards/role-based.guard";
 
 // Interfaces simplifiées pour éviter les problèmes de décorateurs
 interface SetAvailabilityRequest {
@@ -42,31 +42,31 @@ interface SetAvailabilityResponse {
   message: string;
 }
 
-@ApiTags('👨‍💼 Practitioner Management')
-@Controller('practitioners')
+@ApiTags("👨‍💼 Practitioner Management")
+@Controller("practitioners")
 @ApiBearerAuth()
 @UseGuards(RoleBasedGuard)
 export class PractitionerController {
   constructor() {} // Injection du use case sera fait plus tard après correction des DTOs
 
-  @Post('availability')
+  @Post("availability")
   @HttpCode(HttpStatus.OK)
   @RequirePractitioner()
   @ApiOperation({
-    summary: '⏰ Set Practitioner Availability',
+    summary: "⏰ Set Practitioner Availability",
     description: `
     **Configure availability for a practitioner with advanced permission checks.**
 
     ## 🔐 Permissions Required
     - **MANAGE_PRACTITIONERS** : Can manage practitioner settings
     - **SET_AVAILABILITY** : Can set availability schedules
-    
+
     ## 🎯 Business Logic
     - ✅ **Permission validation** : Role-based access control
     - ✅ **Conflict detection** : Check existing appointments
     - ✅ **Auto-rescheduling** : Handle conflicts automatically
     - ✅ **Notification system** : Notify affected clients
-    
+
     ## 🚨 Security Features
     - **JWT Authentication** : Valid token required
     - **Role Hierarchy** : Respects business context permissions
@@ -75,19 +75,19 @@ export class PractitionerController {
   })
   @ApiResponse({
     status: 200,
-    description: '✅ Availability configured successfully',
+    description: "✅ Availability configured successfully",
   })
   @ApiResponse({
     status: 401,
-    description: '🔐 Authentication required',
+    description: "🔐 Authentication required",
   })
   @ApiResponse({
     status: 403,
-    description: '🚫 Insufficient permissions',
+    description: "🚫 Insufficient permissions",
   })
   @ApiResponse({
     status: 400,
-    description: '❌ Invalid request data',
+    description: "❌ Invalid request data",
   })
   async setAvailability(
     @Body() request: SetAvailabilityRequest,
@@ -109,31 +109,31 @@ export class PractitionerController {
       conflictsDetected: 2, // Exemple : 2 conflits détectés
       conflictsResolved: 1, // Exemple : 1 conflit résolu automatiquement
       message:
-        'Practitioner availability updated successfully with permission validation',
+        "Practitioner availability updated successfully with permission validation",
     };
   }
 
-  @Post('test-permissions')
+  @Post("test-permissions")
   @HttpCode(HttpStatus.OK)
   @RequirePractitioner()
   @ApiOperation({
-    summary: '🧪 Test Permission System',
+    summary: "🧪 Test Permission System",
     description:
-      'Test endpoint to validate RBAC permission system is working correctly.',
+      "Test endpoint to validate RBAC permission system is working correctly.",
   })
   @ApiResponse({
     status: 200,
-    description: '✅ Permission test successful',
+    description: "✅ Permission test successful",
   })
   @ApiResponse({
     status: 403,
-    description: '🚫 Permission denied',
+    description: "🚫 Permission denied",
   })
   async testPermissions(
     @GetUser() user: User,
   ): Promise<{ message: string; userId: string; role: string }> {
     return {
-      message: 'Permission system working correctly!',
+      message: "Permission system working correctly!",
       userId: user.id,
       role: user.role,
     };

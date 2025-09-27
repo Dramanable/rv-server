@@ -1,15 +1,15 @@
-import { BusinessId } from '../value-objects/business-id.value-object';
-import { FileUrl } from '../value-objects/file-url.value-object';
-import { Money } from '../value-objects/money.value-object';
-import { PricingConfig } from '../value-objects/pricing-config.value-object';
-import { ServiceId } from '../value-objects/service-id.value-object';
-import { ServiceTypeId } from '../value-objects/service-type-id.value-object';
-import { UserId } from '../value-objects/user-id.value-object';
+import { BusinessId } from "../value-objects/business-id.value-object";
+import { FileUrl } from "../value-objects/file-url.value-object";
+import { Money } from "../value-objects/money.value-object";
+import { PricingConfig } from "../value-objects/pricing-config.value-object";
+import { ServiceId } from "../value-objects/service-id.value-object";
+import { ServiceTypeId } from "../value-objects/service-type-id.value-object";
+import { UserId } from "../value-objects/user-id.value-object";
 
 export enum ServiceStatus {
-  ACTIVE = 'ACTIVE',
-  INACTIVE = 'INACTIVE',
-  DRAFT = 'DRAFT',
+  ACTIVE = "ACTIVE",
+  INACTIVE = "INACTIVE",
+  DRAFT = "DRAFT",
 }
 
 // ServicePricing remplacé par PricingConfig pour plus de flexibilité
@@ -22,16 +22,16 @@ export interface ServicePackage {
 
 // ✅ Questionnaire dynamique pour infos supplémentaires à la prise de RDV
 export enum QuestionType {
-  TEXT = 'TEXT', // Texte libre
-  NUMBER = 'NUMBER', // Nombre
-  EMAIL = 'EMAIL', // Email
-  PHONE = 'PHONE', // Téléphone
-  DATE = 'DATE', // Date
-  BOOLEAN = 'BOOLEAN', // Oui/Non
-  SELECT = 'SELECT', // Liste déroulante
-  MULTISELECT = 'MULTISELECT', // Sélection multiple
-  TEXTAREA = 'TEXTAREA', // Texte long
-  FILE = 'FILE', // Upload de fichier
+  TEXT = "TEXT", // Texte libre
+  NUMBER = "NUMBER", // Nombre
+  EMAIL = "EMAIL", // Email
+  PHONE = "PHONE", // Téléphone
+  DATE = "DATE", // Date
+  BOOLEAN = "BOOLEAN", // Oui/Non
+  SELECT = "SELECT", // Liste déroulante
+  MULTISELECT = "MULTISELECT", // Sélection multiple
+  TEXTAREA = "TEXTAREA", // Texte long
+  FILE = "FILE", // Upload de fichier
 }
 
 export interface QuestionOption {
@@ -197,7 +197,7 @@ export class Service {
 
     // ✅ VALIDATION CRITIQUE : Service doit avoir au moins un ServiceType
     if (serviceTypeIds.length === 0) {
-      throw new Error('Service must have at least one ServiceType');
+      throw new Error("Service must have at least one ServiceType");
     }
 
     return new Service(
@@ -355,7 +355,7 @@ export class Service {
 
   public activate(): void {
     if (this._assignedStaffIds.length === 0) {
-      throw new Error('Cannot activate service without assigned staff');
+      throw new Error("Cannot activate service without assigned staff");
     }
     this._status = ServiceStatus.ACTIVE;
     this._updatedAt = new Date();
@@ -418,7 +418,7 @@ export class Service {
   public removeServiceType(serviceTypeId: ServiceTypeId): void {
     // Ne pas permettre de supprimer le dernier ServiceType
     if (this._serviceTypeIds.length <= 1) {
-      throw new Error('Service must have at least one ServiceType');
+      throw new Error("Service must have at least one ServiceType");
     }
 
     const index = this._serviceTypeIds.findIndex((id) =>
@@ -433,7 +433,7 @@ export class Service {
 
   public updateServiceTypes(newServiceTypeIds: ServiceTypeId[]): void {
     if (newServiceTypeIds.length === 0) {
-      throw new Error('Service must have at least one ServiceType');
+      throw new Error("Service must have at least one ServiceType");
     }
 
     this._serviceTypeIds = [...newServiceTypeIds];
@@ -453,7 +453,7 @@ export class Service {
     return this._requirements?.bookingQuestionnaire || [];
   }
 
-  public addBookingQuestion(question: Omit<BookingQuestion, 'id'>): void {
+  public addBookingQuestion(question: Omit<BookingQuestion, "id">): void {
     if (!this._requirements) {
       this._requirements = {};
     }
@@ -474,10 +474,10 @@ export class Service {
 
   public updateBookingQuestion(
     questionId: string,
-    updates: Partial<Omit<BookingQuestion, 'id'>>,
+    updates: Partial<Omit<BookingQuestion, "id">>,
   ): void {
     if (!this._requirements?.bookingQuestionnaire) {
-      throw new Error('Service has no booking questionnaire');
+      throw new Error("Service has no booking questionnaire");
     }
 
     const questionIndex = this._requirements.bookingQuestionnaire.findIndex(
@@ -502,7 +502,7 @@ export class Service {
 
   public removeBookingQuestion(questionId: string): void {
     if (!this._requirements?.bookingQuestionnaire) {
-      throw new Error('Service has no booking questionnaire');
+      throw new Error("Service has no booking questionnaire");
     }
 
     const initialLength = this._requirements.bookingQuestionnaire.length;
@@ -519,7 +519,7 @@ export class Service {
   }
 
   public setQuestionnaireSettings(
-    settings: ServiceRequirements['questionnaireSettings'],
+    settings: ServiceRequirements["questionnaireSettings"],
   ): void {
     if (!this._requirements) {
       this._requirements = {};
@@ -569,7 +569,7 @@ export class Service {
     const orders = questions.map((q) => q.order);
     const uniqueOrders = new Set(orders);
     if (orders.length !== uniqueOrders.size) {
-      errors.push('Questions must have unique order values');
+      errors.push("Questions must have unique order values");
     }
 
     return {

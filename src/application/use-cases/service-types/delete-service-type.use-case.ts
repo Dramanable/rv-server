@@ -16,16 +16,16 @@
  * @version 1.0.0
  */
 
-import { ApplicationValidationError } from '@application/exceptions/application.exceptions';
-import { I18nService } from '@application/ports/i18n.port';
-import { Logger } from '@application/ports/logger.port';
+import { ApplicationValidationError } from "@application/exceptions/application.exceptions";
+import { I18nService } from "@application/ports/i18n.port";
+import { Logger } from "@application/ports/logger.port";
 import {
   ServiceTypeInUseError,
   ServiceTypeNotFoundError,
-} from '@domain/exceptions/service-type.exceptions';
-import { IServiceTypeRepository } from '@domain/repositories/service-type.repository';
-import { BusinessId } from '@domain/value-objects/business-id.value-object';
-import { ServiceTypeId } from '@domain/value-objects/service-type-id.value-object';
+} from "@domain/exceptions/service-type.exceptions";
+import { IServiceTypeRepository } from "@domain/repositories/service-type.repository";
+import { BusinessId } from "@domain/value-objects/business-id.value-object";
+import { ServiceTypeId } from "@domain/value-objects/service-type-id.value-object";
 
 /**
  * Request DTO pour la suppression d'un ServiceType
@@ -76,9 +76,9 @@ export class DeleteServiceTypeUseCase {
   async execute(
     request: DeleteServiceTypeRequest,
   ): Promise<DeleteServiceTypeResponse> {
-    this.logger.info('Attempting to delete service type', {
-      serviceTypeId: request.serviceTypeId?.getValue?.() || 'invalid',
-      businessId: request.businessId?.getValue?.() || 'invalid',
+    this.logger.info("Attempting to delete service type", {
+      serviceTypeId: request.serviceTypeId?.getValue?.() || "invalid",
+      businessId: request.businessId?.getValue?.() || "invalid",
       requestingUserId: request.requestingUserId,
       correlationId: request.correlationId,
     });
@@ -93,7 +93,7 @@ export class DeleteServiceTypeUseCase {
       );
 
       if (!serviceType) {
-        this.logger.error('Service type not found for deletion', undefined, {
+        this.logger.error("Service type not found for deletion", undefined, {
           serviceTypeId: request.serviceTypeId.getValue(),
           businessId: request.businessId.getValue(),
         });
@@ -106,7 +106,7 @@ export class DeleteServiceTypeUseCase {
         serviceType.getBusinessId().getValue() !== request.businessId.getValue()
       ) {
         this.logger.error(
-          'Service type belongs to different business',
+          "Service type belongs to different business",
           undefined,
           {
             serviceTypeId: request.serviceTypeId.getValue(),
@@ -125,7 +125,7 @@ export class DeleteServiceTypeUseCase {
         );
       if (isReferenced) {
         this.logger.error(
-          'Cannot delete service type - it is referenced by services',
+          "Cannot delete service type - it is referenced by services",
           undefined,
           {
             serviceTypeId: request.serviceTypeId.getValue(),
@@ -135,7 +135,7 @@ export class DeleteServiceTypeUseCase {
 
         throw new ServiceTypeInUseError(
           request.serviceTypeId.getValue(),
-          'referenced by services',
+          "referenced by services",
         );
       }
 
@@ -144,10 +144,10 @@ export class DeleteServiceTypeUseCase {
 
       const deletedAt = new Date();
 
-      this.logger.info('Service type deleted successfully', {
-        serviceTypeId: request.serviceTypeId?.getValue?.() || 'invalid',
+      this.logger.info("Service type deleted successfully", {
+        serviceTypeId: request.serviceTypeId?.getValue?.() || "invalid",
         serviceTypeName: serviceType.getName(),
-        businessId: request.businessId?.getValue?.() || 'invalid',
+        businessId: request.businessId?.getValue?.() || "invalid",
         requestingUserId: request.requestingUserId,
         correlationId: request.correlationId,
         deletedAt: deletedAt.toISOString(),
@@ -156,7 +156,7 @@ export class DeleteServiceTypeUseCase {
       // 6. Construction de la réponse de succès
       return {
         success: true,
-        message: this.i18n.translate('serviceType.deletedSuccessfully', {
+        message: this.i18n.translate("serviceType.deletedSuccessfully", {
           name: serviceType.getName(),
         }),
         deletedServiceTypeId: request.serviceTypeId?.getValue?.(),
@@ -164,13 +164,13 @@ export class DeleteServiceTypeUseCase {
       };
     } catch (error) {
       this.logger.error(
-        'Failed to delete service type',
+        "Failed to delete service type",
         error instanceof Error ? error : undefined,
         {
-          serviceTypeId: request.serviceTypeId?.getValue?.() || 'invalid',
-          businessId: request.businessId?.getValue?.() || 'invalid',
+          serviceTypeId: request.serviceTypeId?.getValue?.() || "invalid",
+          businessId: request.businessId?.getValue?.() || "invalid",
           requestingUserId: request.requestingUserId,
-          error: error instanceof Error ? error.message : 'Unknown error',
+          error: error instanceof Error ? error.message : "Unknown error",
           correlationId: request.correlationId,
         },
       );
@@ -194,33 +194,33 @@ export class DeleteServiceTypeUseCase {
 
     if (!serviceTypeIdValue?.trim()) {
       throw new ApplicationValidationError(
-        'serviceTypeId',
+        "serviceTypeId",
         serviceTypeIdValue,
-        'required',
+        "required",
       );
     }
 
     if (!businessIdValue?.trim()) {
       throw new ApplicationValidationError(
-        'businessId',
+        "businessId",
         businessIdValue,
-        'required',
+        "required",
       );
     }
 
     if (!requestingUserIdValue?.trim()) {
       throw new ApplicationValidationError(
-        'requestingUserId',
+        "requestingUserId",
         requestingUserIdValue,
-        'required',
+        "required",
       );
     }
 
     if (!correlationIdValue?.trim()) {
       throw new ApplicationValidationError(
-        'correlationId',
+        "correlationId",
         correlationIdValue,
-        'required',
+        "required",
       );
     }
 
@@ -229,25 +229,25 @@ export class DeleteServiceTypeUseCase {
       /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
     if (!uuidRegex.test(serviceTypeIdValue)) {
       throw new ApplicationValidationError(
-        'serviceTypeId',
+        "serviceTypeId",
         serviceTypeIdValue,
-        'invalidUuid',
+        "invalidUuid",
       );
     }
 
     if (!uuidRegex.test(businessIdValue)) {
       throw new ApplicationValidationError(
-        'businessId',
+        "businessId",
         businessIdValue,
-        'invalidUuid',
+        "invalidUuid",
       );
     }
 
     if (!uuidRegex.test(requestingUserIdValue)) {
       throw new ApplicationValidationError(
-        'requestingUserId',
+        "requestingUserId",
         requestingUserIdValue,
-        'invalidUuid',
+        "invalidUuid",
       );
     }
   }

@@ -1,10 +1,10 @@
-import { ServiceRepository } from '../../../domain/repositories/service.repository.interface';
-import { ServiceNotFoundError } from '../../../domain/exceptions/service.exceptions';
-import { ApplicationValidationError } from '../../exceptions/application.exceptions';
-import { Logger } from '../../ports/logger.port';
-import { I18nService } from '../../ports/i18n.port';
-import { IPermissionService } from '../../ports/permission.service.interface';
-import { ServiceId } from '../../../domain/value-objects/service-id.value-object';
+import { ServiceNotFoundError } from "../../../domain/exceptions/service.exceptions";
+import { ServiceRepository } from "../../../domain/repositories/service.repository.interface";
+import { ServiceId } from "../../../domain/value-objects/service-id.value-object";
+import { ApplicationValidationError } from "../../exceptions/application.exceptions";
+import { I18nService } from "../../ports/i18n.port";
+import { Logger } from "../../ports/logger.port";
+import { IPermissionService } from "../../ports/permission.service.interface";
 
 export interface DeleteServiceRequest {
   readonly serviceId: string;
@@ -26,7 +26,7 @@ export class DeleteServiceUseCase {
 
   async execute(request: DeleteServiceRequest): Promise<DeleteServiceResponse> {
     try {
-      this.logger.info('Attempting to delete service', {
+      this.logger.info("Attempting to delete service", {
         serviceId: request.serviceId,
         requestingUserId: request.requestingUserId,
       });
@@ -34,9 +34,9 @@ export class DeleteServiceUseCase {
       // Parameter validation
       if (!request.serviceId || request.serviceId.trim().length === 0) {
         throw new ApplicationValidationError(
-          'serviceId',
+          "serviceId",
           request.serviceId,
-          'Service ID is required',
+          "Service ID is required",
         );
       }
 
@@ -45,9 +45,9 @@ export class DeleteServiceUseCase {
         request.requestingUserId.trim().length === 0
       ) {
         throw new ApplicationValidationError(
-          'requestingUserId',
+          "requestingUserId",
           request.requestingUserId,
-          'Requesting user ID is required',
+          "Requesting user ID is required",
         );
       }
 
@@ -61,7 +61,7 @@ export class DeleteServiceUseCase {
       // 🚨 CRITIQUE : TOUJOURS vérifier les permissions en PREMIER
       await this.permissionService.requirePermission(
         request.requestingUserId,
-        'MANAGE_SERVICES',
+        "MANAGE_SERVICES",
         {
           businessId: existingService.businessId.getValue(),
           resourceId: request.serviceId,
@@ -71,16 +71,16 @@ export class DeleteServiceUseCase {
       // Business rule: Cannot delete active service
       if (existingService.isActive()) {
         throw new ApplicationValidationError(
-          'serviceId',
+          "serviceId",
           request.serviceId,
-          'Cannot delete active service',
+          "Cannot delete active service",
         );
       }
 
       // Delete the service
       await this.serviceRepository.delete(serviceId);
 
-      this.logger.info('Service deleted successfully', {
+      this.logger.info("Service deleted successfully", {
         serviceId: request.serviceId,
         requestingUserId: request.requestingUserId,
         serviceName: existingService.name,
@@ -94,10 +94,10 @@ export class DeleteServiceUseCase {
       // Log permission errors with specific context
       if (
         error instanceof Error &&
-        error.constructor.name === 'InsufficientPermissionsError'
+        error.constructor.name === "InsufficientPermissionsError"
       ) {
         // Try to get business context from the service if it was found
-        let businessId = 'unknown';
+        let businessId = "unknown";
         try {
           const serviceId = new ServiceId(request.serviceId);
           const service = await this.serviceRepository.findById(serviceId);
@@ -109,14 +109,14 @@ export class DeleteServiceUseCase {
           businessId = request.serviceId;
         }
 
-        this.logger.error('Permission denied for service deletion', error, {
+        this.logger.error("Permission denied for service deletion", error, {
           serviceId: request.serviceId,
           requestingUserId: request.requestingUserId,
-          requiredPermission: 'MANAGE_SERVICES',
+          requiredPermission: "MANAGE_SERVICES",
           businessId: businessId,
         });
       } else {
-        this.logger.error('Error deleting service', error as Error, {
+        this.logger.error("Error deleting service", error as Error, {
           serviceId: request.serviceId,
           requestingUserId: request.requestingUserId,
         });

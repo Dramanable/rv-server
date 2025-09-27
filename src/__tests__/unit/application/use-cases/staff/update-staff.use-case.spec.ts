@@ -5,32 +5,32 @@
  * Couche Application - Tests d'orchestration métier
  */
 
-import { UpdateStaffUseCase } from '@application/use-cases/staff/update-staff.use-case';
-import { Staff, StaffStatus } from '@domain/entities/staff.entity';
-import { StaffNotFoundError } from '@domain/exceptions/staff.exceptions';
-import { BusinessId } from '@domain/value-objects/business-id.value-object';
-import { StaffRole } from '@shared/enums/staff-role.enum';
-import { ApplicationValidationError } from '../../../../../application/exceptions/application.exceptions';
-import { I18nService } from '../../../../../application/ports/i18n.port';
-import { Logger } from '../../../../../application/ports/logger.port';
-import { IPermissionService } from '../../../../../application/ports/permission.service.interface';
-import { StaffRepository } from '../../../../../domain/repositories/staff.repository.interface';
+import { UpdateStaffUseCase } from "@application/use-cases/staff/update-staff.use-case";
+import { Staff, StaffStatus } from "@domain/entities/staff.entity";
+import { StaffNotFoundError } from "@domain/exceptions/staff.exceptions";
+import { BusinessId } from "@domain/value-objects/business-id.value-object";
+import { StaffRole } from "@shared/enums/staff-role.enum";
+import { ApplicationValidationError } from "../../../../../application/exceptions/application.exceptions";
+import { I18nService } from "../../../../../application/ports/i18n.port";
+import { Logger } from "../../../../../application/ports/logger.port";
+import { IPermissionService } from "../../../../../application/ports/permission.service.interface";
+import { StaffRepository } from "../../../../../domain/repositories/staff.repository.interface";
 
-describe('UpdateStaffUseCase', () => {
+describe("UpdateStaffUseCase", () => {
   let useCase: UpdateStaffUseCase;
   let mockStaffRepository: jest.Mocked<StaffRepository>;
   let mockLogger: jest.Mocked<Logger>;
   let mockI18n: jest.Mocked<I18nService>;
 
   const mockStaff = Staff.create({
-    businessId: BusinessId.create('550e8400-e29b-41d4-a716-446655440000'),
+    businessId: BusinessId.create("550e8400-e29b-41d4-a716-446655440000"),
     profile: {
-      firstName: 'John',
-      lastName: 'Doe',
-      specialization: 'General Medicine',
+      firstName: "John",
+      lastName: "Doe",
+      specialization: "General Medicine",
     },
     role: StaffRole.DOCTOR,
-    email: 'john.doe@example.com',
+    email: "john.doe@example.com",
   });
 
   beforeEach(() => {
@@ -85,13 +85,13 @@ describe('UpdateStaffUseCase', () => {
     );
   });
 
-  describe('Parameter validation', () => {
-    it('should throw ApplicationValidationError when staffId is missing', async () => {
+  describe("Parameter validation", () => {
+    it("should throw ApplicationValidationError when staffId is missing", async () => {
       const request = {
-        staffId: '',
-        requestingUserId: '550e8400-e29b-41d4-a716-446655440001',
+        staffId: "",
+        requestingUserId: "550e8400-e29b-41d4-a716-446655440001",
         updates: {
-          profile: { firstName: 'Updated' },
+          profile: { firstName: "Updated" },
         },
       };
 
@@ -100,12 +100,12 @@ describe('UpdateStaffUseCase', () => {
       );
     });
 
-    it('should throw ApplicationValidationError when requestingUserId is missing', async () => {
+    it("should throw ApplicationValidationError when requestingUserId is missing", async () => {
       const request = {
-        staffId: '550e8400-e29b-41d4-a716-446655440002',
-        requestingUserId: '',
+        staffId: "550e8400-e29b-41d4-a716-446655440002",
+        requestingUserId: "",
         updates: {
-          profile: { firstName: 'Updated' },
+          profile: { firstName: "Updated" },
         },
       };
 
@@ -114,12 +114,12 @@ describe('UpdateStaffUseCase', () => {
       );
     });
 
-    it('should throw ApplicationValidationError when staffId is not a valid UUID', async () => {
+    it("should throw ApplicationValidationError when staffId is not a valid UUID", async () => {
       const request = {
-        staffId: 'invalid-uuid',
-        requestingUserId: '550e8400-e29b-41d4-a716-446655440001',
+        staffId: "invalid-uuid",
+        requestingUserId: "550e8400-e29b-41d4-a716-446655440001",
         updates: {
-          profile: { firstName: 'Updated' },
+          profile: { firstName: "Updated" },
         },
       };
 
@@ -128,10 +128,10 @@ describe('UpdateStaffUseCase', () => {
       );
     });
 
-    it('should throw ApplicationValidationError when updates are empty', async () => {
+    it("should throw ApplicationValidationError when updates are empty", async () => {
       const request = {
-        staffId: '550e8400-e29b-41d4-a716-446655440002',
-        requestingUserId: '550e8400-e29b-41d4-a716-446655440001',
+        staffId: "550e8400-e29b-41d4-a716-446655440002",
+        requestingUserId: "550e8400-e29b-41d4-a716-446655440001",
         updates: {},
       };
 
@@ -141,17 +141,17 @@ describe('UpdateStaffUseCase', () => {
     });
   });
 
-  describe('Business rules validation', () => {
+  describe("Business rules validation", () => {
     beforeEach(() => {
       mockStaffRepository.findById.mockResolvedValue(mockStaff);
     });
 
-    it('should throw ApplicationValidationError when firstName is too short', async () => {
+    it("should throw ApplicationValidationError when firstName is too short", async () => {
       const request = {
-        staffId: '550e8400-e29b-41d4-a716-446655440002',
-        requestingUserId: '550e8400-e29b-41d4-a716-446655440001',
+        staffId: "550e8400-e29b-41d4-a716-446655440002",
+        requestingUserId: "550e8400-e29b-41d4-a716-446655440001",
         updates: {
-          profile: { firstName: 'X' },
+          profile: { firstName: "X" },
         },
       };
 
@@ -160,12 +160,12 @@ describe('UpdateStaffUseCase', () => {
       );
     });
 
-    it('should throw ApplicationValidationError when lastName is too short', async () => {
+    it("should throw ApplicationValidationError when lastName is too short", async () => {
       const request = {
-        staffId: '550e8400-e29b-41d4-a716-446655440002',
-        requestingUserId: '550e8400-e29b-41d4-a716-446655440001',
+        staffId: "550e8400-e29b-41d4-a716-446655440002",
+        requestingUserId: "550e8400-e29b-41d4-a716-446655440001",
         updates: {
-          profile: { lastName: 'Y' },
+          profile: { lastName: "Y" },
         },
       };
 
@@ -174,12 +174,12 @@ describe('UpdateStaffUseCase', () => {
       );
     });
 
-    it('should throw ApplicationValidationError when email format is invalid', async () => {
+    it("should throw ApplicationValidationError when email format is invalid", async () => {
       const request = {
-        staffId: '550e8400-e29b-41d4-a716-446655440002',
-        requestingUserId: '550e8400-e29b-41d4-a716-446655440001',
+        staffId: "550e8400-e29b-41d4-a716-446655440002",
+        requestingUserId: "550e8400-e29b-41d4-a716-446655440001",
         updates: {
-          email: 'invalid-email',
+          email: "invalid-email",
         },
       };
 
@@ -188,14 +188,14 @@ describe('UpdateStaffUseCase', () => {
       );
     });
 
-    it('should throw ApplicationValidationError when email already exists', async () => {
+    it("should throw ApplicationValidationError when email already exists", async () => {
       mockStaffRepository.existsByEmail.mockResolvedValue(true);
 
       const request = {
-        staffId: '550e8400-e29b-41d4-a716-446655440002',
-        requestingUserId: '550e8400-e29b-41d4-a716-446655440001',
+        staffId: "550e8400-e29b-41d4-a716-446655440002",
+        requestingUserId: "550e8400-e29b-41d4-a716-446655440001",
         updates: {
-          email: 'existing@example.com',
+          email: "existing@example.com",
         },
       };
 
@@ -205,15 +205,15 @@ describe('UpdateStaffUseCase', () => {
     });
   });
 
-  describe('Staff not found', () => {
-    it('should throw StaffNotFoundError when staff does not exist', async () => {
+  describe("Staff not found", () => {
+    it("should throw StaffNotFoundError when staff does not exist", async () => {
       mockStaffRepository.findById.mockResolvedValue(null);
 
       const request = {
-        staffId: '550e8400-e29b-41d4-a716-446655440002',
-        requestingUserId: '550e8400-e29b-41d4-a716-446655440001',
+        staffId: "550e8400-e29b-41d4-a716-446655440002",
+        requestingUserId: "550e8400-e29b-41d4-a716-446655440001",
         updates: {
-          profile: { firstName: 'Updated' },
+          profile: { firstName: "Updated" },
         },
       };
 
@@ -223,24 +223,24 @@ describe('UpdateStaffUseCase', () => {
     });
   });
 
-  describe('Successful update', () => {
+  describe("Successful update", () => {
     beforeEach(() => {
       mockStaffRepository.findById.mockResolvedValue(mockStaff);
       mockStaffRepository.save.mockResolvedValue(undefined);
       mockStaffRepository.existsByEmail.mockResolvedValue(false);
     });
 
-    it('should update staff successfully with valid data', async () => {
+    it("should update staff successfully with valid data", async () => {
       const request = {
-        staffId: '550e8400-e29b-41d4-a716-446655440002',
-        requestingUserId: '550e8400-e29b-41d4-a716-446655440001',
+        staffId: "550e8400-e29b-41d4-a716-446655440002",
+        requestingUserId: "550e8400-e29b-41d4-a716-446655440001",
         updates: {
           profile: {
-            firstName: 'Updated John',
-            lastName: 'Updated Doe',
-            specialization: 'Cardiology',
+            firstName: "Updated John",
+            lastName: "Updated Doe",
+            specialization: "Cardiology",
           },
-          email: 'updated.john@example.com',
+          email: "updated.john@example.com",
         },
       };
 
@@ -251,12 +251,12 @@ describe('UpdateStaffUseCase', () => {
       expect(mockStaffRepository.save).toHaveBeenCalledWith(mockStaff);
     });
 
-    it('should update only provided fields (partial update)', async () => {
+    it("should update only provided fields (partial update)", async () => {
       const request = {
-        staffId: '550e8400-e29b-41d4-a716-446655440002',
-        requestingUserId: '550e8400-e29b-41d4-a716-446655440001',
+        staffId: "550e8400-e29b-41d4-a716-446655440002",
+        requestingUserId: "550e8400-e29b-41d4-a716-446655440001",
         updates: {
-          profile: { firstName: 'Only FirstName Updated' },
+          profile: { firstName: "Only FirstName Updated" },
         },
       };
 
@@ -267,10 +267,10 @@ describe('UpdateStaffUseCase', () => {
       expect(mockStaffRepository.save).toHaveBeenCalledWith(mockStaff);
     });
 
-    it('should handle status updates correctly', async () => {
+    it("should handle status updates correctly", async () => {
       const request = {
-        staffId: '550e8400-e29b-41d4-a716-446655440002',
-        requestingUserId: '550e8400-e29b-41d4-a716-446655440001',
+        staffId: "550e8400-e29b-41d4-a716-446655440002",
+        requestingUserId: "550e8400-e29b-41d4-a716-446655440001",
         updates: {
           status: StaffStatus.ON_LEAVE,
         },
@@ -284,74 +284,74 @@ describe('UpdateStaffUseCase', () => {
     });
   });
 
-  describe('Logging', () => {
+  describe("Logging", () => {
     beforeEach(() => {
       mockStaffRepository.findById.mockResolvedValue(mockStaff);
       mockStaffRepository.save.mockResolvedValue(undefined);
       mockStaffRepository.existsByEmail.mockResolvedValue(false);
     });
 
-    it('should log update attempt', async () => {
+    it("should log update attempt", async () => {
       const request = {
-        staffId: '550e8400-e29b-41d4-a716-446655440002',
-        requestingUserId: '550e8400-e29b-41d4-a716-446655440001',
+        staffId: "550e8400-e29b-41d4-a716-446655440002",
+        requestingUserId: "550e8400-e29b-41d4-a716-446655440001",
         updates: {
-          profile: { firstName: 'Updated' },
+          profile: { firstName: "Updated" },
         },
       };
 
       await useCase.execute(request);
 
       expect(mockLogger.info).toHaveBeenCalledWith(
-        'Attempting to update staff',
+        "Attempting to update staff",
         expect.objectContaining({
-          staffId: '550e8400-e29b-41d4-a716-446655440002',
-          requestingUserId: '550e8400-e29b-41d4-a716-446655440001',
+          staffId: "550e8400-e29b-41d4-a716-446655440002",
+          requestingUserId: "550e8400-e29b-41d4-a716-446655440001",
         }),
       );
     });
 
-    it('should log successful update', async () => {
+    it("should log successful update", async () => {
       const request = {
-        staffId: '550e8400-e29b-41d4-a716-446655440002',
-        requestingUserId: '550e8400-e29b-41d4-a716-446655440001',
+        staffId: "550e8400-e29b-41d4-a716-446655440002",
+        requestingUserId: "550e8400-e29b-41d4-a716-446655440001",
         updates: {
-          profile: { firstName: 'Updated' },
+          profile: { firstName: "Updated" },
         },
       };
 
       await useCase.execute(request);
 
       expect(mockLogger.info).toHaveBeenCalledWith(
-        'Staff updated successfully',
+        "Staff updated successfully",
         expect.objectContaining({
-          staffId: '550e8400-e29b-41d4-a716-446655440002',
-          requestingUserId: '550e8400-e29b-41d4-a716-446655440001',
+          staffId: "550e8400-e29b-41d4-a716-446655440002",
+          requestingUserId: "550e8400-e29b-41d4-a716-446655440001",
         }),
       );
     });
 
-    it('should log errors', async () => {
+    it("should log errors", async () => {
       mockStaffRepository.findById.mockRejectedValue(
-        new Error('Database error'),
+        new Error("Database error"),
       );
 
       const request = {
-        staffId: '550e8400-e29b-41d4-a716-446655440002',
-        requestingUserId: '550e8400-e29b-41d4-a716-446655440001',
+        staffId: "550e8400-e29b-41d4-a716-446655440002",
+        requestingUserId: "550e8400-e29b-41d4-a716-446655440001",
         updates: {
-          profile: { firstName: 'Updated' },
+          profile: { firstName: "Updated" },
         },
       };
 
       await expect(useCase.execute(request)).rejects.toThrow();
 
       expect(mockLogger.error).toHaveBeenCalledWith(
-        'Error updating staff',
+        "Error updating staff",
         expect.any(Error),
         expect.objectContaining({
-          staffId: '550e8400-e29b-41d4-a716-446655440002',
-          requestingUserId: '550e8400-e29b-41d4-a716-446655440001',
+          staffId: "550e8400-e29b-41d4-a716-446655440002",
+          requestingUserId: "550e8400-e29b-41d4-a716-446655440001",
         }),
       );
     });

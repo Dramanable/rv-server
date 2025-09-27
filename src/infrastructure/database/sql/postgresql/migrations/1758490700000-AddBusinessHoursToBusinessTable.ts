@@ -1,12 +1,12 @@
-import { MigrationInterface, QueryRunner } from 'typeorm';
+import { MigrationInterface, QueryRunner } from "typeorm";
 
 export class AddBusinessHoursToBusinessTable1758490700000
   implements MigrationInterface
 {
-  name = 'AddBusinessHoursToBusinessTable1758490700000';
+  name = "AddBusinessHoursToBusinessTable1758490700000";
 
   public async up(queryRunner: QueryRunner): Promise<void> {
-    const schema = process.env.DB_SCHEMA || 'public';
+    const schema = process.env.DB_SCHEMA || "public";
 
     // Ajouter la colonne business_hours avec une structure JSON par défaut
     await queryRunner.query(`
@@ -40,7 +40,7 @@ export class AddBusinessHoursToBusinessTable1758490700000
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    const schema = process.env.DB_SCHEMA || 'public';
+    const schema = process.env.DB_SCHEMA || "public";
 
     // Supprimer les index créés
     await queryRunner.query(

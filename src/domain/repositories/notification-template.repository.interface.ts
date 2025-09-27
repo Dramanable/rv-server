@@ -7,8 +7,8 @@
 import {
   NotificationEventType,
   NotificationTemplate,
-} from '../entities/notification-template.entity';
-import { NotificationChannel } from '../value-objects/notification-channel.value-object';
+} from "../entities/notification-template.entity";
+import { NotificationChannel } from "../value-objects/notification-channel.value-object";
 
 /**
  * Critères de recherche pour les templates de notification
@@ -29,7 +29,7 @@ export interface NotificationTemplatePaginationOptions {
   readonly page: number;
   readonly limit: number;
   readonly sortBy?: string;
-  readonly sortOrder?: 'asc' | 'desc';
+  readonly sortOrder?: "asc" | "desc";
 }
 
 /**

@@ -5,18 +5,18 @@
  * avec validation des permissions super-admin uniquement.
  */
 
-import { InsufficientPermissionsError } from '@application/exceptions/auth.exceptions';
+import { InsufficientPermissionsError } from "@application/exceptions/auth.exceptions";
 import {
   BusinessSectorNotFoundError,
   InvalidBusinessSectorDataError,
-} from '@application/exceptions/business-sector.exceptions';
-import { IBusinessSectorRepository } from '@application/ports/business-sector.repository.interface';
-import { I18nService } from '@application/ports/i18n.port';
-import { Logger } from '@application/ports/logger.port';
-import { IPermissionService } from '@application/ports/permission.service.interface';
-import { UpdateBusinessSectorUseCase } from '@application/use-cases/business-sectors/update-business-sector.use-case';
-import { BusinessSector } from '@domain/entities/business-sector.entity';
-import type { Mocked } from 'jest-mock';
+} from "@application/exceptions/business-sector.exceptions";
+import { IBusinessSectorRepository } from "@application/ports/business-sector.repository.interface";
+import { I18nService } from "@application/ports/i18n.port";
+import { Logger } from "@application/ports/logger.port";
+import { IPermissionService } from "@application/ports/permission.service.interface";
+import { UpdateBusinessSectorUseCase } from "@application/use-cases/business-sectors/update-business-sector.use-case";
+import { BusinessSector } from "@domain/entities/business-sector.entity";
+import type { Mocked } from "jest-mock";
 
 // Types pour les requêtes et réponses
 interface UpdateBusinessSectorRequest {
@@ -36,7 +36,7 @@ interface UpdateBusinessSectorResponse {
   updatedAt: Date;
 }
 
-describe('UpdateBusinessSectorUseCase', () => {
+describe("UpdateBusinessSectorUseCase", () => {
   let useCase: UpdateBusinessSectorUseCase;
   let mockRepository: Mocked<IBusinessSectorRepository>;
   let mockLogger: Mocked<Logger>;
@@ -44,10 +44,10 @@ describe('UpdateBusinessSectorUseCase', () => {
   let mockPermissionService: Mocked<IPermissionService>;
 
   const baseRequest: UpdateBusinessSectorRequest = {
-    id: 'sector-123',
-    requestingUserId: 'admin-123',
-    name: 'Updated Manufacturing',
-    description: 'Updated manufacturing and industrial services',
+    id: "sector-123",
+    requestingUserId: "admin-123",
+    name: "Updated Manufacturing",
+    description: "Updated manufacturing and industrial services",
   };
 
   beforeEach(() => {
@@ -105,42 +105,42 @@ describe('UpdateBusinessSectorUseCase', () => {
     );
   });
 
-  describe('🎯 Use Case Construction', () => {
-    it('should create use case with all dependencies', () => {
+  describe("🎯 Use Case Construction", () => {
+    it("should create use case with all dependencies", () => {
       expect(useCase).toBeDefined();
       expect(useCase).toBeInstanceOf(UpdateBusinessSectorUseCase);
     });
   });
 
-  describe('✅ Successful Business Sector Update', () => {
-    it('should update business sector successfully with valid data', async () => {
+  describe("✅ Successful Business Sector Update", () => {
+    it("should update business sector successfully with valid data", async () => {
       // Arrange
       const existingSector = BusinessSector.restore(
         baseRequest.id,
-        'Manufacturing',
-        'Original manufacturing description',
-        'MANUFACTURING',
+        "Manufacturing",
+        "Original manufacturing description",
+        "MANUFACTURING",
         true,
-        new Date('2024-01-01'),
-        'admin-123',
-        new Date('2024-01-01'),
+        new Date("2024-01-01"),
+        "admin-123",
+        new Date("2024-01-01"),
       );
 
       const updatedSector = BusinessSector.restore(
         baseRequest.id,
         baseRequest.name!,
         baseRequest.description!,
-        'MANUFACTURING',
+        "MANUFACTURING",
         true,
-        new Date('2024-01-01'),
-        'admin-123',
+        new Date("2024-01-01"),
+        "admin-123",
         new Date(),
       );
 
       mockPermissionService.hasPermission.mockResolvedValue(true);
       mockRepository.findById.mockResolvedValue(existingSector);
       mockRepository.save.mockResolvedValue(updatedSector);
-      mockI18n.t.mockReturnValue('Business sector updated successfully');
+      mockI18n.t.mockReturnValue("Business sector updated successfully");
 
       // Act
       const result = await useCase.execute(baseRequest);
@@ -155,7 +155,7 @@ describe('UpdateBusinessSectorUseCase', () => {
         expect.any(BusinessSector),
       );
       expect(mockLogger.info).toHaveBeenCalledWith(
-        expect.stringContaining('Business sector updated successfully'),
+        expect.stringContaining("Business sector updated successfully"),
         expect.objectContaining({
           sectorId: baseRequest.id,
           requestingUserId: baseRequest.requestingUserId,
@@ -163,23 +163,23 @@ describe('UpdateBusinessSectorUseCase', () => {
       );
     });
 
-    it('should update only provided fields (partial update)', async () => {
+    it("should update only provided fields (partial update)", async () => {
       // Arrange
       const existingSector = BusinessSector.restore(
         baseRequest.id,
-        'Manufacturing',
-        'Original description',
-        'MANUFACTURING',
+        "Manufacturing",
+        "Original description",
+        "MANUFACTURING",
         true,
-        new Date('2024-01-01'),
-        'admin-123',
-        new Date('2024-01-01'),
+        new Date("2024-01-01"),
+        "admin-123",
+        new Date("2024-01-01"),
       );
 
       const partialRequest: UpdateBusinessSectorRequest = {
         id: baseRequest.id,
         requestingUserId: baseRequest.requestingUserId,
-        name: 'New Manufacturing', // Seulement le nom
+        name: "New Manufacturing", // Seulement le nom
       };
 
       mockPermissionService.hasPermission.mockResolvedValue(true);
@@ -192,16 +192,16 @@ describe('UpdateBusinessSectorUseCase', () => {
       // Assert
       expect(result).toBeDefined();
       const savedSector = mockRepository.save.mock.calls[0][0];
-      expect(savedSector.name).toBe('New Manufacturing');
-      expect(savedSector.description).toBe('Original description');
+      expect(savedSector.name).toBe("New Manufacturing");
+      expect(savedSector.description).toBe("Original description");
     });
   });
 
-  describe('🚨 Permission Validation', () => {
-    it('should throw InsufficientPermissionsError when user lacks MANAGE_BUSINESS_SECTORS permission', async () => {
+  describe("🚨 Permission Validation", () => {
+    it("should throw InsufficientPermissionsError when user lacks MANAGE_BUSINESS_SECTORS permission", async () => {
       // Arrange
       mockPermissionService.hasPermission.mockResolvedValue(false);
-      mockI18n.t.mockReturnValue('Insufficient permissions');
+      mockI18n.t.mockReturnValue("Insufficient permissions");
 
       // Act & Assert
       await expect(useCase.execute(baseRequest)).rejects.toThrow(
@@ -210,14 +210,14 @@ describe('UpdateBusinessSectorUseCase', () => {
 
       expect(mockPermissionService.hasPermission).toHaveBeenCalledWith(
         baseRequest.requestingUserId,
-        'MANAGE_BUSINESS_SECTORS',
+        "MANAGE_BUSINESS_SECTORS",
       );
     });
 
-    it('should log permission denial attempt', async () => {
+    it("should log permission denial attempt", async () => {
       // Arrange
       mockPermissionService.hasPermission.mockResolvedValue(false);
-      mockI18n.t.mockReturnValue('Insufficient permissions');
+      mockI18n.t.mockReturnValue("Insufficient permissions");
 
       // Act
       try {
@@ -228,7 +228,7 @@ describe('UpdateBusinessSectorUseCase', () => {
 
       // Assert
       expect(mockLogger.warn).toHaveBeenCalledWith(
-        expect.stringContaining('Unauthorized attempt'),
+        expect.stringContaining("Unauthorized attempt"),
         expect.objectContaining({
           requestingUserId: baseRequest.requestingUserId,
           sectorId: baseRequest.id,
@@ -237,12 +237,12 @@ describe('UpdateBusinessSectorUseCase', () => {
     });
   });
 
-  describe('🔍 Business Sector Existence Validation', () => {
-    it('should throw BusinessSectorNotFoundError when sector does not exist', async () => {
+  describe("🔍 Business Sector Existence Validation", () => {
+    it("should throw BusinessSectorNotFoundError when sector does not exist", async () => {
       // Arrange
       mockPermissionService.hasPermission.mockResolvedValue(true);
       mockRepository.findById.mockResolvedValue(null);
-      mockI18n.t.mockReturnValue('Business sector not found');
+      mockI18n.t.mockReturnValue("Business sector not found");
 
       // Act & Assert
       await expect(useCase.execute(baseRequest)).rejects.toThrow(
@@ -252,11 +252,11 @@ describe('UpdateBusinessSectorUseCase', () => {
       expect(mockRepository.findById).toHaveBeenCalledWith(baseRequest.id);
     });
 
-    it('should log sector not found attempt', async () => {
+    it("should log sector not found attempt", async () => {
       // Arrange
       mockPermissionService.hasPermission.mockResolvedValue(true);
       mockRepository.findById.mockResolvedValue(null);
-      mockI18n.t.mockReturnValue('Business sector not found');
+      mockI18n.t.mockReturnValue("Business sector not found");
 
       // Act
       try {
@@ -267,7 +267,7 @@ describe('UpdateBusinessSectorUseCase', () => {
 
       // Assert
       expect(mockLogger.warn).toHaveBeenCalledWith(
-        expect.stringContaining('Business sector not found'),
+        expect.stringContaining("Business sector not found"),
         expect.objectContaining({
           sectorId: baseRequest.id,
           requestingUserId: baseRequest.requestingUserId,
@@ -276,8 +276,8 @@ describe('UpdateBusinessSectorUseCase', () => {
     });
   });
 
-  describe('❌ Input Validation', () => {
-    it('should throw InvalidBusinessSectorDataError for empty update', async () => {
+  describe("❌ Input Validation", () => {
+    it("should throw InvalidBusinessSectorDataError for empty update", async () => {
       // Arrange
       const emptyRequest: UpdateBusinessSectorRequest = {
         id: baseRequest.id,
@@ -285,7 +285,7 @@ describe('UpdateBusinessSectorUseCase', () => {
       };
 
       mockPermissionService.hasPermission.mockResolvedValue(true);
-      mockI18n.t.mockReturnValue('No fields to update');
+      mockI18n.t.mockReturnValue("No fields to update");
 
       // Act & Assert
       await expect(useCase.execute(emptyRequest)).rejects.toThrow(
@@ -293,17 +293,17 @@ describe('UpdateBusinessSectorUseCase', () => {
       );
     });
 
-    it('should throw InvalidBusinessSectorDataError for invalid name', async () => {
+    it("should throw InvalidBusinessSectorDataError for invalid name", async () => {
       // Arrange
       const invalidRequest: UpdateBusinessSectorRequest = {
         ...baseRequest,
-        name: '', // Nom vide
+        name: "", // Nom vide
       };
 
       mockPermissionService.hasPermission.mockResolvedValue(true);
       mockI18n.t
-        .mockReturnValueOnce('Business sector name cannot be empty')
-        .mockReturnValueOnce('Invalid business sector data');
+        .mockReturnValueOnce("Business sector name cannot be empty")
+        .mockReturnValueOnce("Invalid business sector data");
 
       // Act & Assert
       await expect(useCase.execute(invalidRequest)).rejects.toThrow(
@@ -311,17 +311,17 @@ describe('UpdateBusinessSectorUseCase', () => {
       );
     });
 
-    it('should throw InvalidBusinessSectorDataError for invalid description', async () => {
+    it("should throw InvalidBusinessSectorDataError for invalid description", async () => {
       // Arrange
       const invalidRequest: UpdateBusinessSectorRequest = {
         ...baseRequest,
-        description: 'short', // Description trop courte
+        description: "short", // Description trop courte
       };
 
       mockPermissionService.hasPermission.mockResolvedValue(true);
       mockI18n.t
-        .mockReturnValueOnce('Business sector description is too short')
-        .mockReturnValueOnce('Invalid business sector data');
+        .mockReturnValueOnce("Business sector description is too short")
+        .mockReturnValueOnce("Invalid business sector data");
 
       // Act & Assert
       await expect(useCase.execute(invalidRequest)).rejects.toThrow(
@@ -330,34 +330,34 @@ describe('UpdateBusinessSectorUseCase', () => {
     });
   });
 
-  describe('🔧 Error Handling', () => {
-    it('should handle repository save errors gracefully', async () => {
+  describe("🔧 Error Handling", () => {
+    it("should handle repository save errors gracefully", async () => {
       // Arrange
       const existingSector = BusinessSector.restore(
         baseRequest.id,
-        'Manufacturing',
-        'Original description',
-        'MANUFACTURING',
+        "Manufacturing",
+        "Original description",
+        "MANUFACTURING",
         true,
-        new Date('2024-01-01'),
-        'admin-123',
-        new Date('2024-01-01'),
+        new Date("2024-01-01"),
+        "admin-123",
+        new Date("2024-01-01"),
       );
 
       mockPermissionService.hasPermission.mockResolvedValue(true);
       mockRepository.findById.mockResolvedValue(existingSector);
       mockRepository.save.mockRejectedValue(
-        new Error('Database connection failed'),
+        new Error("Database connection failed"),
       );
-      mockI18n.t.mockReturnValue('Failed to update business sector');
+      mockI18n.t.mockReturnValue("Failed to update business sector");
 
       // Act & Assert
       await expect(useCase.execute(baseRequest)).rejects.toThrow(
-        'Database connection failed',
+        "Database connection failed",
       );
 
       expect(mockLogger.error).toHaveBeenCalledWith(
-        expect.stringContaining('Failed to update business sector'),
+        expect.stringContaining("Failed to update business sector"),
         expect.any(Error),
         expect.objectContaining({
           requestingUserId: baseRequest.requestingUserId,
@@ -366,19 +366,19 @@ describe('UpdateBusinessSectorUseCase', () => {
       );
     });
 
-    it('should handle permission service errors gracefully', async () => {
+    it("should handle permission service errors gracefully", async () => {
       // Arrange
       mockPermissionService.hasPermission.mockRejectedValue(
-        new Error('Permission service unavailable'),
+        new Error("Permission service unavailable"),
       );
 
       // Act & Assert
       await expect(useCase.execute(baseRequest)).rejects.toThrow(
-        'Permission service unavailable',
+        "Permission service unavailable",
       );
 
       expect(mockLogger.error).toHaveBeenCalledWith(
-        expect.stringContaining('Error checking permissions'),
+        expect.stringContaining("Error checking permissions"),
         expect.any(Error),
         expect.objectContaining({
           requestingUserId: baseRequest.requestingUserId,
@@ -387,31 +387,31 @@ describe('UpdateBusinessSectorUseCase', () => {
     });
   });
 
-  describe('📊 Logging', () => {
-    it('should log operation attempt and success', async () => {
+  describe("📊 Logging", () => {
+    it("should log operation attempt and success", async () => {
       // Arrange
       const existingSector = BusinessSector.restore(
         baseRequest.id,
-        'Manufacturing',
-        'Original description',
-        'MANUFACTURING',
+        "Manufacturing",
+        "Original description",
+        "MANUFACTURING",
         true,
-        new Date('2024-01-01'),
-        'admin-123',
-        new Date('2024-01-01'),
+        new Date("2024-01-01"),
+        "admin-123",
+        new Date("2024-01-01"),
       );
 
       mockPermissionService.hasPermission.mockResolvedValue(true);
       mockRepository.findById.mockResolvedValue(existingSector);
       mockRepository.save.mockResolvedValue(existingSector);
-      mockI18n.t.mockReturnValue('Business sector updated successfully');
+      mockI18n.t.mockReturnValue("Business sector updated successfully");
 
       // Act
       await useCase.execute(baseRequest);
 
       // Assert - Log de démarrage
       expect(mockLogger.info).toHaveBeenCalledWith(
-        expect.stringContaining('Updating business sector'),
+        expect.stringContaining("Updating business sector"),
         expect.objectContaining({
           sectorId: baseRequest.id,
           requestingUserId: baseRequest.requestingUserId,
@@ -420,7 +420,7 @@ describe('UpdateBusinessSectorUseCase', () => {
 
       // Assert - Log de succès
       expect(mockLogger.info).toHaveBeenCalledWith(
-        expect.stringContaining('Business sector updated successfully'),
+        expect.stringContaining("Business sector updated successfully"),
         expect.objectContaining({
           sectorId: baseRequest.id,
           requestingUserId: baseRequest.requestingUserId,

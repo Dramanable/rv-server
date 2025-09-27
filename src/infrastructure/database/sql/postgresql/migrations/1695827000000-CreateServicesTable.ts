@@ -1,95 +1,95 @@
-import { MigrationInterface, QueryRunner, Table } from 'typeorm';
+import { MigrationInterface, QueryRunner, Table } from "typeorm";
 
 export class CreateServicesTable1695827000000 implements MigrationInterface {
-  name = 'CreateServicesTable1695827000000';
+  name = "CreateServicesTable1695827000000";
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(
       new Table({
-        name: 'services',
+        name: "services",
         columns: [
           {
-            name: 'id',
-            type: 'uuid',
+            name: "id",
+            type: "uuid",
             isPrimary: true,
-            generationStrategy: 'uuid',
-            default: 'uuid_generate_v4()',
+            generationStrategy: "uuid",
+            default: "uuid_generate_v4()",
           },
           {
-            name: 'business_id',
-            type: 'uuid',
+            name: "business_id",
+            type: "uuid",
             isNullable: false,
           },
           {
-            name: 'name',
-            type: 'varchar',
-            length: '200',
+            name: "name",
+            type: "varchar",
+            length: "200",
             isNullable: false,
           },
           {
-            name: 'description',
-            type: 'text',
+            name: "description",
+            type: "text",
             isNullable: false,
           },
           {
-            name: 'category',
-            type: 'enum',
+            name: "category",
+            type: "enum",
             enum: [
-              'CONSULTATION',
-              'TREATMENT',
-              'PROCEDURE',
-              'EXAMINATION',
-              'THERAPY',
-              'MAINTENANCE',
-              'EMERGENCY',
-              'FOLLOWUP',
-              'OTHER',
+              "CONSULTATION",
+              "TREATMENT",
+              "PROCEDURE",
+              "EXAMINATION",
+              "THERAPY",
+              "MAINTENANCE",
+              "EMERGENCY",
+              "FOLLOWUP",
+              "OTHER",
             ],
             default: "'OTHER'",
           },
           {
-            name: 'status',
-            type: 'enum',
-            enum: ['ACTIVE', 'INACTIVE', 'DRAFT'],
+            name: "status",
+            type: "enum",
+            enum: ["ACTIVE", "INACTIVE", "DRAFT"],
             default: "'DRAFT'",
           },
           {
-            name: 'pricing',
-            type: 'jsonb',
+            name: "pricing",
+            type: "jsonb",
             isNullable: false,
           },
           {
-            name: 'scheduling',
-            type: 'jsonb',
+            name: "scheduling",
+            type: "jsonb",
             isNullable: false,
           },
           {
-            name: 'requirements',
-            type: 'jsonb',
+            name: "requirements",
+            type: "jsonb",
             isNullable: true,
           },
           {
-            name: 'image_url',
-            type: 'varchar',
-            length: '500',
+            name: "image_url",
+            type: "varchar",
+            length: "500",
             isNullable: true,
           },
           {
-            name: 'assigned_staff_ids',
-            type: 'jsonb',
+            name: "assigned_staff_ids",
+            type: "jsonb",
             isNullable: false,
             default: "'[]'",
           },
           {
-            name: 'created_at',
-            type: 'timestamptz',
-            default: 'CURRENT_TIMESTAMP',
+            name: "created_at",
+            type: "timestamptz",
+            default: "CURRENT_TIMESTAMP",
           },
           {
-            name: 'updated_at',
-            type: 'timestamptz',
-            default: 'CURRENT_TIMESTAMP',
-            onUpdate: 'CURRENT_TIMESTAMP',
+            name: "updated_at",
+            type: "timestamptz",
+            default: "CURRENT_TIMESTAMP",
+            onUpdate: "CURRENT_TIMESTAMP",
           },
         ],
       }),
@@ -122,6 +122,6 @@ export class CreateServicesTable1695827000000 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropTable('services');
+    await queryRunner.dropTable("services");
   }
 }

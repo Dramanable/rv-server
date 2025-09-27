@@ -17,60 +17,60 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
-} from 'typeorm';
-import { BusinessOrmEntity } from './business-orm.entity';
+} from "typeorm";
+import { BusinessOrmEntity } from "./business-orm.entity";
 
-@Entity('calendars')
-@Index(['business_id'])
-@Index(['name'])
-@Index(['type'])
-@Index(['status'])
-@Index(['created_at'])
+@Entity("calendars")
+@Index(["business_id"])
+@Index(["name"])
+@Index(["type"])
+@Index(["status"])
+@Index(["created_at"])
 export class CalendarOrmEntity {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryGeneratedColumn("uuid")
   id!: string;
 
-  @Column({ type: 'uuid', nullable: false })
+  @Column({ type: "uuid", nullable: false })
   @Index()
   business_id!: string;
 
   @Column({
-    type: 'enum',
-    enum: ['BUSINESS', 'PERSONAL', 'SHARED', 'RESOURCE'],
-    default: 'BUSINESS',
+    type: "enum",
+    enum: ["BUSINESS", "PERSONAL", "SHARED", "RESOURCE"],
+    default: "BUSINESS",
   })
   @Index()
   type!: string;
 
-  @Column({ type: 'varchar', length: 200, nullable: false })
+  @Column({ type: "varchar", length: 200, nullable: false })
   @Index()
   name!: string;
 
-  @Column({ type: 'text', nullable: false })
+  @Column({ type: "text", nullable: false })
   description!: string;
 
-  @Column({ type: 'uuid', nullable: true })
+  @Column({ type: "uuid", nullable: true })
   owner_id!: string | null;
 
   @Column({
-    type: 'enum',
-    enum: ['ACTIVE', 'INACTIVE', 'SUSPENDED', 'ARCHIVED'],
-    default: 'ACTIVE',
+    type: "enum",
+    enum: ["ACTIVE", "INACTIVE", "SUSPENDED", "ARCHIVED"],
+    default: "ACTIVE",
   })
   @Index()
   status!: string;
 
-  @Column({ type: 'varchar', length: 50, default: 'Europe/Paris' })
+  @Column({ type: "varchar", length: 50, default: "Europe/Paris" })
   timezone!: string;
 
-  @Column({ type: 'boolean', default: false })
+  @Column({ type: "boolean", default: false })
   is_default!: boolean;
 
-  @Column({ type: 'varchar', length: 7, default: '#007bff' })
+  @Column({ type: "varchar", length: 7, default: "#007bff" })
   color!: string;
 
   // Settings as JSON
-  @Column({ type: 'jsonb', nullable: false })
+  @Column({ type: "jsonb", nullable: false })
   settings!: {
     timezone: string;
     default_slot_duration: number;
@@ -86,7 +86,7 @@ export class CalendarOrmEntity {
   };
 
   // Availability as JSON
-  @Column({ type: 'jsonb', nullable: false })
+  @Column({ type: "jsonb", nullable: false })
   availability!: {
     working_hours: Array<{
       day_of_week: number;
@@ -107,15 +107,15 @@ export class CalendarOrmEntity {
     }>;
   };
 
-  @CreateDateColumn({ type: 'timestamptz' })
+  @CreateDateColumn({ type: "timestamptz" })
   created_at!: Date;
 
-  @UpdateDateColumn({ type: 'timestamptz' })
+  @UpdateDateColumn({ type: "timestamptz" })
   updated_at!: Date;
 
   // Relations
-  @ManyToOne(() => BusinessOrmEntity, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'business_id' })
+  @ManyToOne(() => BusinessOrmEntity, { onDelete: "CASCADE" })
+  @JoinColumn({ name: "business_id" })
   business!: BusinessOrmEntity;
 
   // ✅ NO MAPPING LOGIC HERE

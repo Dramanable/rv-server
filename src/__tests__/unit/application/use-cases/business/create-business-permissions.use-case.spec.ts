@@ -6,14 +6,14 @@
  * - Validation des contextes métier
  * - Gestion des erreurs de permissions
  */
-import { InsufficientPermissionsError } from '@application/exceptions/application.exceptions';
-import { I18nService } from '@application/ports/i18n.port';
-import { Logger } from '@application/ports/logger.port';
-import { IPermissionService } from '@application/ports/permission.service.interface';
-import { CreateBusinessUseCase } from '@application/use-cases/business/create-business.use-case';
-import { BusinessRepository } from '@domain/repositories/business.repository.interface';
+import { InsufficientPermissionsError } from "@application/exceptions/application.exceptions";
+import { I18nService } from "@application/ports/i18n.port";
+import { Logger } from "@application/ports/logger.port";
+import { IPermissionService } from "@application/ports/permission.service.interface";
+import { CreateBusinessUseCase } from "@application/use-cases/business/create-business.use-case";
+import { BusinessRepository } from "@domain/repositories/business.repository.interface";
 
-describe('CreateBusinessUseCase - Permissions TDD', () => {
+describe("CreateBusinessUseCase - Permissions TDD", () => {
   let useCase: CreateBusinessUseCase;
   let mockPermissionService: jest.Mocked<IPermissionService>;
   let mockBusinessRepository: jest.Mocked<BusinessRepository>;
@@ -21,20 +21,20 @@ describe('CreateBusinessUseCase - Permissions TDD', () => {
   let mockI18n: jest.Mocked<I18nService>;
 
   const validRequest = {
-    requestingUserId: '550e8400-e29b-41d4-a716-446655440001',
-    name: 'Test Business',
-    description: 'Test description',
-    slogan: 'Test slogan',
+    requestingUserId: "550e8400-e29b-41d4-a716-446655440001",
+    name: "Test Business",
+    description: "Test description",
+    slogan: "Test slogan",
     address: {
-      street: '123 Test St',
-      city: 'Test City',
-      postalCode: '12345',
-      country: 'France',
-      region: 'Île-de-France',
+      street: "123 Test St",
+      city: "Test City",
+      postalCode: "12345",
+      country: "France",
+      region: "Île-de-France",
     },
     contactInfo: {
-      primaryEmail: 'test@business.com',
-      primaryPhone: '+33123456789',
+      primaryEmail: "test@business.com",
+      primaryPhone: "+33123456789",
     },
   };
 
@@ -92,8 +92,8 @@ describe('CreateBusinessUseCase - Permissions TDD', () => {
     );
   });
 
-  describe('🔐 Permission Validation - RBAC avec IPermissionService', () => {
-    it('should require CREATE_BUSINESS permission', async () => {
+  describe("🔐 Permission Validation - RBAC avec IPermissionService", () => {
+    it("should require CREATE_BUSINESS permission", async () => {
       // � GREEN - Maintenant le use case utilise IPermissionService !
       mockPermissionService.requirePermission.mockResolvedValue();
       mockBusinessRepository.existsByName.mockResolvedValue(false);
@@ -111,21 +111,21 @@ describe('CreateBusinessUseCase - Permissions TDD', () => {
 
       expect(mockPermissionService.requirePermission).toHaveBeenCalledWith(
         validRequest.requestingUserId,
-        'CREATE_BUSINESS',
+        "CREATE_BUSINESS",
         expect.objectContaining({
-          operation: 'CREATE_BUSINESS',
-          resource: 'business',
+          operation: "CREATE_BUSINESS",
+          resource: "business",
           requestingUserId: validRequest.requestingUserId,
         }),
       );
     });
 
-    it('should reject users without CREATE_BUSINESS permission', async () => {
+    it("should reject users without CREATE_BUSINESS permission", async () => {
       // � GREEN - Test de rejet des permissions
       const permissionError = new InsufficientPermissionsError(
         validRequest.requestingUserId,
-        'CREATE_BUSINESS',
-        'business',
+        "CREATE_BUSINESS",
+        "business",
       );
 
       mockPermissionService.requirePermission.mockRejectedValue(
@@ -145,12 +145,12 @@ describe('CreateBusinessUseCase - Permissions TDD', () => {
 
       expect(mockPermissionService.requirePermission).toHaveBeenCalledWith(
         validRequest.requestingUserId,
-        'CREATE_BUSINESS',
+        "CREATE_BUSINESS",
         expect.any(Object),
       );
     });
 
-    it('should log permission validation attempts', async () => {
+    it("should log permission validation attempts", async () => {
       // � GREEN - Test de logging des permissions
       mockPermissionService.requirePermission.mockResolvedValue();
       mockBusinessRepository.existsByName.mockResolvedValue(false);
@@ -166,11 +166,11 @@ describe('CreateBusinessUseCase - Permissions TDD', () => {
       await useCase.execute(validRequest);
 
       expect(mockLogger.info).toHaveBeenCalledWith(
-        expect.stringContaining('success'),
+        expect.stringContaining("success"),
         expect.objectContaining({
           requestingUserId: validRequest.requestingUserId,
-          permission: 'CREATE_BUSINESS',
-          operation: 'CREATE_BUSINESS',
+          permission: "CREATE_BUSINESS",
+          operation: "CREATE_BUSINESS",
         }),
       );
     });

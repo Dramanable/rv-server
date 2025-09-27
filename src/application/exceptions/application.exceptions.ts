@@ -18,8 +18,8 @@ export abstract class ApplicationException extends Error {
   ) {
     super(message);
     this.name = this.constructor.name;
-    this.code = code || 'APPLICATION_ERROR';
-    this.i18nKey = i18nKey || 'errors.application.general_error';
+    this.code = code || "APPLICATION_ERROR";
+    this.i18nKey = i18nKey || "errors.application.general_error";
     this.context = context;
   }
 }
@@ -31,8 +31,8 @@ export class PasswordGenerationError extends ApplicationException {
   constructor(reason: string, context?: Record<string, any>) {
     super(
       `Password generation failed: ${reason}`,
-      'PASSWORD_GENERATION_FAILED',
-      'errors.application.password_generation_failed',
+      "PASSWORD_GENERATION_FAILED",
+      "errors.application.password_generation_failed",
       context,
     );
   }
@@ -45,8 +45,8 @@ export class EmailServiceUnavailableError extends ApplicationException {
   constructor(serviceName: string, error: Error) {
     super(
       `Email service ${serviceName} is unavailable: ${error.message}`,
-      'EMAIL_SERVICE_UNAVAILABLE',
-      'errors.application.email_service_unavailable',
+      "EMAIL_SERVICE_UNAVAILABLE",
+      "errors.application.email_service_unavailable",
       { serviceName, originalError: error.message },
     );
   }
@@ -58,9 +58,9 @@ export class EmailServiceUnavailableError extends ApplicationException {
 export class ServiceConfigurationError extends ApplicationException {
   constructor(serviceName: string, missingConfig: string[]) {
     super(
-      `Service ${serviceName} is misconfigured. Missing: ${missingConfig.join(', ')}`,
-      'SERVICE_CONFIGURATION_ERROR',
-      'errors.application.service_configuration_error',
+      `Service ${serviceName} is misconfigured. Missing: ${missingConfig.join(", ")}`,
+      "SERVICE_CONFIGURATION_ERROR",
+      "errors.application.service_configuration_error",
       { serviceName, missingConfig },
     );
   }
@@ -78,8 +78,8 @@ export class WorkflowOrchestrationError extends ApplicationException {
   ) {
     super(
       `Workflow ${workflowName} failed at step ${step}: ${reason}`,
-      'WORKFLOW_ORCHESTRATION_ERROR',
-      'errors.application.workflow_orchestration_error',
+      "WORKFLOW_ORCHESTRATION_ERROR",
+      "errors.application.workflow_orchestration_error",
       { workflowName, step, reason, ...context },
     );
   }
@@ -92,8 +92,8 @@ export class UseCaseExecutionError extends ApplicationException {
   constructor(useCaseName: string, reason: string, originalError?: Error) {
     super(
       `UseCase ${useCaseName} execution failed: ${reason}`,
-      'USE_CASE_EXECUTION_ERROR',
-      'errors.application.use_case_execution_error',
+      "USE_CASE_EXECUTION_ERROR",
+      "errors.application.use_case_execution_error",
       {
         useCaseName,
         reason,
@@ -116,8 +116,8 @@ export class ExternalServiceError extends ApplicationException {
   ) {
     super(
       `External service ${serviceName} failed during ${operation}: ${error.message}`,
-      'EXTERNAL_SERVICE_ERROR',
-      'errors.application.external_service_error',
+      "EXTERNAL_SERVICE_ERROR",
+      "errors.application.external_service_error",
       {
         serviceName,
         operation,
@@ -136,8 +136,8 @@ export class ApplicationValidationError extends ApplicationException {
     const valueStr = String(value);
     super(
       `Application validation failed for field ${field} with value ${valueStr}: ${rule}`,
-      'APPLICATION_VALIDATION_ERROR',
-      'errors.application.validation_error',
+      "APPLICATION_VALIDATION_ERROR",
+      "errors.application.validation_error",
       { field, value: valueStr, rule },
     );
   }
@@ -154,9 +154,9 @@ export class ApplicationAuthorizationError extends ApplicationException {
     reason?: string,
   ) {
     super(
-      `Application authorization failed: user ${userId} cannot ${action} on ${resource}${reason ? `: ${reason}` : ''}`,
-      'APPLICATION_AUTHORIZATION_ERROR',
-      'errors.application.authorization_error',
+      `Application authorization failed: user ${userId} cannot ${action} on ${resource}${reason ? `: ${reason}` : ""}`,
+      "APPLICATION_AUTHORIZATION_ERROR",
+      "errors.application.authorization_error",
       { resource, action, userId, reason },
     );
   }
@@ -169,8 +169,8 @@ export class DependencyInjectionError extends ApplicationException {
   constructor(dependencyName: string, reason: string) {
     super(
       `Dependency injection failed for ${dependencyName}: ${reason}`,
-      'DEPENDENCY_INJECTION_ERROR',
-      'errors.application.dependency_injection_error',
+      "DEPENDENCY_INJECTION_ERROR",
+      "errors.application.dependency_injection_error",
       { dependencyName, reason },
     );
   }
@@ -187,9 +187,9 @@ export class InsufficientPermissionsError extends ApplicationException {
     context?: Record<string, any>,
   ) {
     super(
-      `User ${userId} lacks permission ${requiredPermission}${resource ? ` for resource ${resource}` : ''}`,
-      'INSUFFICIENT_PERMISSIONS',
-      'errors.application.insufficient_permissions',
+      `User ${userId} lacks permission ${requiredPermission}${resource ? ` for resource ${resource}` : ""}`,
+      "INSUFFICIENT_PERMISSIONS",
+      "errors.application.insufficient_permissions",
       { userId, requiredPermission, resource, ...context },
     );
   }
@@ -208,8 +208,8 @@ export class BusinessValidationError extends ApplicationException {
     const valueStr = String(value);
     super(
       `Business validation failed for field ${field} with value ${valueStr}: ${rule}`,
-      'BUSINESS_VALIDATION_ERROR',
-      'errors.application.business_validation_error',
+      "BUSINESS_VALIDATION_ERROR",
+      "errors.application.business_validation_error",
       { field, value: valueStr, rule, businessId },
     );
   }
@@ -221,13 +221,13 @@ export class BusinessValidationError extends ApplicationException {
 export class BusinessNotFoundError extends ApplicationException {
   constructor(
     identifier: string,
-    identifierType: 'id' | 'name' | 'email' | 'other' = 'id',
+    identifierType: "id" | "name" | "email" | "other" = "id",
     context?: Record<string, any>,
   ) {
     super(
       `Business not found with ${identifierType}: ${identifier}`,
-      'BUSINESS_NOT_FOUND',
-      'errors.application.business_not_found',
+      "BUSINESS_NOT_FOUND",
+      "errors.application.business_not_found",
       { identifier, identifierType, ...context },
     );
   }
@@ -239,13 +239,13 @@ export class BusinessNotFoundError extends ApplicationException {
 export class BusinessAlreadyExistsError extends ApplicationException {
   constructor(
     identifier: string,
-    identifierType: 'email' | 'name' | 'siret' | 'other' = 'other',
+    identifierType: "email" | "name" | "siret" | "other" = "other",
     context?: Record<string, any>,
   ) {
     super(
       `Business already exists with ${identifierType}: ${identifier}`,
-      'BUSINESS_ALREADY_EXISTS',
-      'errors.application.business_already_exists',
+      "BUSINESS_ALREADY_EXISTS",
+      "errors.application.business_already_exists",
       { identifier, identifierType, ...context },
     );
   }
@@ -259,8 +259,8 @@ export class StaffValidationError extends ApplicationException {
     const valueStr = String(value);
     super(
       `Staff validation failed for field ${field} with value ${valueStr}: ${rule}`,
-      'STAFF_VALIDATION_ERROR',
-      'errors.application.staff_validation_error',
+      "STAFF_VALIDATION_ERROR",
+      "errors.application.staff_validation_error",
       { field, value: valueStr, rule, staffId },
     );
   }
@@ -274,8 +274,8 @@ export class ServiceValidationError extends ApplicationException {
     const valueStr = String(value);
     super(
       `Service validation failed for field ${field} with value ${valueStr}: ${rule}`,
-      'SERVICE_VALIDATION_ERROR',
-      'errors.application.service_validation_error',
+      "SERVICE_VALIDATION_ERROR",
+      "errors.application.service_validation_error",
       { field, value: valueStr, rule, serviceId },
     );
   }
@@ -287,13 +287,13 @@ export class ServiceValidationError extends ApplicationException {
 export class ServiceNotFoundError extends ApplicationException {
   constructor(
     identifier: string,
-    identifierType: 'id' | 'name' | 'other' = 'id',
+    identifierType: "id" | "name" | "other" = "id",
     context?: Record<string, any>,
   ) {
     super(
       `Service not found with ${identifierType}: ${identifier}`,
-      'SERVICE_NOT_FOUND',
-      'errors.application.service_not_found',
+      "SERVICE_NOT_FOUND",
+      "errors.application.service_not_found",
       { identifier, identifierType, ...context },
     );
   }
@@ -312,8 +312,8 @@ export class CalendarValidationError extends ApplicationException {
     const valueStr = String(value);
     super(
       `Calendar validation failed for field ${field} with value ${valueStr}: ${rule}`,
-      'CALENDAR_VALIDATION_ERROR',
-      'errors.application.calendar_validation_error',
+      "CALENDAR_VALIDATION_ERROR",
+      "errors.application.calendar_validation_error",
       { field, value: valueStr, rule, calendarId },
     );
   }
@@ -332,8 +332,8 @@ export class AppointmentValidationError extends ApplicationException {
     const valueStr = String(value);
     super(
       `Appointment validation failed for field ${field} with value ${valueStr}: ${rule}`,
-      'APPOINTMENT_VALIDATION_ERROR',
-      'errors.application.appointment_validation_error',
+      "APPOINTMENT_VALIDATION_ERROR",
+      "errors.application.appointment_validation_error",
       { field, value: valueStr, rule, appointmentId },
     );
   }
@@ -350,8 +350,8 @@ export class ResourceNotFoundError extends ApplicationException {
   ) {
     super(
       `${resourceType} with ID ${resourceId} not found`,
-      'RESOURCE_NOT_FOUND',
-      'errors.application.resource_not_found',
+      "RESOURCE_NOT_FOUND",
+      "errors.application.resource_not_found",
       { resourceType, resourceId, ...context },
     );
   }
@@ -369,8 +369,8 @@ export class ResourceConflictError extends ApplicationException {
   ) {
     super(
       `${resourceType} ${resourceId} conflict: ${conflictReason}`,
-      'RESOURCE_CONFLICT',
-      'errors.application.resource_conflict',
+      "RESOURCE_CONFLICT",
+      "errors.application.resource_conflict",
       { resourceType, resourceId, conflictReason, ...context },
     );
   }

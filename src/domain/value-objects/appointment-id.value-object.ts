@@ -1,5 +1,5 @@
-import { DomainError } from '../exceptions/domain.exceptions';
-import { v4 as uuidv4, validate, version } from 'uuid';
+import { v4 as uuidv4, validate, version } from "uuid";
+import { DomainError } from "../exceptions/domain.exceptions";
 
 /**
  * Value Object pour l'identifiant unique d'un rendez-vous
@@ -17,18 +17,18 @@ export class AppointmentId {
    */
   static create(value: string): AppointmentId {
     if (!value || value.trim().length === 0) {
-      throw new DomainError('AppointmentId cannot be empty');
+      throw new DomainError("AppointmentId cannot be empty");
     }
 
     const trimmedValue = value.trim();
 
     if (!validate(trimmedValue)) {
-      throw new DomainError('Appointment ID must be a valid UUID');
+      throw new DomainError("Appointment ID must be a valid UUID");
     }
 
     // Vérifier que c'est un UUID v4
     if (version(trimmedValue) !== 4) {
-      throw new DomainError('Appointment ID must be a UUID version 4');
+      throw new DomainError("Appointment ID must be a UUID version 4");
     }
 
     return new AppointmentId(trimmedValue);

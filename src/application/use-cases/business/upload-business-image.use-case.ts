@@ -6,14 +6,14 @@
  * ✅ TDD Implementation - GREEN phase
  */
 
-import { BusinessRepository } from '../../../domain/repositories/business.repository';
-import { BusinessId } from '../../../domain/value-objects/business-id.value-object';
+import { BusinessRepository } from "../../../domain/repositories/business.repository";
+import { BusinessId } from "../../../domain/value-objects/business-id.value-object";
 import {
   BusinessImage,
   ImageCategory,
-} from '../../../domain/value-objects/business-image.value-object';
-import { ImageUploadSettings } from '../../../domain/value-objects/image-upload-settings.value-object';
-import { AwsS3ImageService } from '../../../infrastructure/services/aws-s3-image.service';
+} from "../../../domain/value-objects/business-image.value-object";
+import { ImageUploadSettings } from "../../../domain/value-objects/image-upload-settings.value-object";
+import { AwsS3ImageService } from "../../../infrastructure/services/aws-s3-image.service";
 
 export interface UploadBusinessImageRequest {
   readonly businessId: string;
@@ -60,19 +60,19 @@ export class UploadBusinessImageUseCase {
     const business = await this.businessRepository.findById(businessId);
 
     if (!business) {
-      throw new Error('Business not found');
+      throw new Error("Business not found");
     }
 
     // 2. Validate permissions
     if (business.getOwnerId() !== request.requestingUserId) {
-      throw new Error('Insufficient permissions');
+      throw new Error("Insufficient permissions");
     }
 
     // 3. Validate image quota for gallery images
     if (request.metadata.category === ImageCategory.GALLERY) {
       const currentImageCount = business.getGallery().images.length;
       if (!request.uploadSettings.canBusinessAddMoreImages(currentImageCount)) {
-        throw new Error('Image quota exceeded');
+        throw new Error("Image quota exceeded");
       }
     }
 
@@ -99,7 +99,7 @@ export class UploadBusinessImageUseCase {
         category: request.metadata.category,
         metadata: {
           size: request.metadata.size,
-          format: request.metadata.contentType.split('/')[1] || 'unknown',
+          format: request.metadata.contentType.split("/")[1] || "unknown",
           dimensions: request.metadata.dimensions,
           uploadedAt: new Date(),
         },
@@ -163,18 +163,18 @@ export class UploadBusinessImageUseCase {
         signedUrl,
         thumbnailUrl: uploadResult.variants?.thumbnail,
         variants,
-        message: 'Image uploaded successfully',
+        message: "Image uploaded successfully",
       };
     } catch (error) {
       if (error instanceof Error) {
-        if (error.message.includes('Image validation failed')) {
+        if (error.message.includes("Image validation failed")) {
           throw error; // Re-throw validation errors
         }
-        if (error.message.includes('S3')) {
-          throw new Error('Failed to upload image');
+        if (error.message.includes("S3")) {
+          throw new Error("Failed to upload image");
         }
       }
-      throw new Error('Failed to upload image');
+      throw new Error("Failed to upload image");
     }
   }
 }

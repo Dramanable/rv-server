@@ -1,108 +1,108 @@
-import { MigrationInterface, QueryRunner, Table } from 'typeorm';
+import { MigrationInterface, QueryRunner, Table } from "typeorm";
 
 export class CreateBusinessTable1695826000000 implements MigrationInterface {
-  name = 'CreateBusinessTable1695826000000';
+  name = "CreateBusinessTable1695826000000";
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(
       new Table({
-        name: 'businesses',
+        name: "businesses",
         columns: [
           {
-            name: 'id',
-            type: 'uuid',
+            name: "id",
+            type: "uuid",
             isPrimary: true,
-            generationStrategy: 'uuid',
-            default: 'uuid_generate_v4()',
+            generationStrategy: "uuid",
+            default: "uuid_generate_v4()",
           },
           {
-            name: 'name',
-            type: 'varchar',
-            length: '200',
+            name: "name",
+            type: "varchar",
+            length: "200",
             isNullable: false,
           },
           {
-            name: 'description',
-            type: 'text',
+            name: "description",
+            type: "text",
             isNullable: false,
           },
           {
-            name: 'slogan',
-            type: 'varchar',
-            length: '100',
+            name: "slogan",
+            type: "varchar",
+            length: "100",
             isNullable: true,
           },
           {
-            name: 'sector',
-            type: 'enum',
+            name: "sector",
+            type: "enum",
             enum: [
-              'LEGAL',
-              'MEDICAL',
-              'HEALTH',
-              'BEAUTY',
-              'CONSULTING',
-              'FINANCE',
-              'EDUCATION',
-              'WELLNESS',
-              'AUTOMOTIVE',
-              'OTHER',
+              "LEGAL",
+              "MEDICAL",
+              "HEALTH",
+              "BEAUTY",
+              "CONSULTING",
+              "FINANCE",
+              "EDUCATION",
+              "WELLNESS",
+              "AUTOMOTIVE",
+              "OTHER",
             ],
             default: "'OTHER'",
           },
           {
-            name: 'status',
-            type: 'enum',
-            enum: ['ACTIVE', 'INACTIVE', 'SUSPENDED', 'PENDING_VERIFICATION'],
+            name: "status",
+            type: "enum",
+            enum: ["ACTIVE", "INACTIVE", "SUSPENDED", "PENDING_VERIFICATION"],
             default: "'PENDING_VERIFICATION'",
           },
           {
-            name: 'primary_email',
-            type: 'varchar',
-            length: '300',
+            name: "primary_email",
+            type: "varchar",
+            length: "300",
             isNullable: false,
           },
           {
-            name: 'primary_phone',
-            type: 'varchar',
-            length: '20',
+            name: "primary_phone",
+            type: "varchar",
+            length: "20",
             isNullable: false,
           },
           {
-            name: 'address',
-            type: 'jsonb',
+            name: "address",
+            type: "jsonb",
             isNullable: false,
           },
           {
-            name: 'contact_info',
-            type: 'jsonb',
+            name: "contact_info",
+            type: "jsonb",
             isNullable: false,
           },
           {
-            name: 'branding',
-            type: 'jsonb',
+            name: "branding",
+            type: "jsonb",
             isNullable: true,
           },
           {
-            name: 'settings',
-            type: 'jsonb',
+            name: "settings",
+            type: "jsonb",
             isNullable: false,
           },
           {
-            name: 'logo_url',
-            type: 'varchar',
-            length: '500',
+            name: "logo_url",
+            type: "varchar",
+            length: "500",
             isNullable: true,
           },
           {
-            name: 'created_at',
-            type: 'timestamptz',
-            default: 'CURRENT_TIMESTAMP',
+            name: "created_at",
+            type: "timestamptz",
+            default: "CURRENT_TIMESTAMP",
           },
           {
-            name: 'updated_at',
-            type: 'timestamptz',
-            default: 'CURRENT_TIMESTAMP',
-            onUpdate: 'CURRENT_TIMESTAMP',
+            name: "updated_at",
+            type: "timestamptz",
+            default: "CURRENT_TIMESTAMP",
+            onUpdate: "CURRENT_TIMESTAMP",
           },
         ],
       }),
@@ -128,6 +128,6 @@ export class CreateBusinessTable1695826000000 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropTable('businesses');
+    await queryRunner.dropTable("businesses");
   }
 }

@@ -4,9 +4,8 @@
  * ✅ Clean Architecture - Application Layer Testing
  */
 
-import { RescheduleAppointmentUseCase } from '../../../../../application/use-cases/appointments/reschedule-appointment.use-case';
-import { AppointmentRepository } from '../../../../../domain/repositories/appointment.repository.interface';
-import { AppointmentNotFoundError } from '../../../../../application/exceptions/appointment.exceptions';
+import { RescheduleAppointmentUseCase } from "../../../../../application/use-cases/appointments/reschedule-appointment.use-case";
+import { AppointmentRepository } from "../../../../../domain/repositories/appointment.repository.interface";
 
 // ===== MOCK REPOSITORY =====
 
@@ -40,7 +39,7 @@ const createMockAppointmentRepository =
 
 // ===== TESTS =====
 
-describe('RescheduleAppointmentUseCase', () => {
+describe("RescheduleAppointmentUseCase", () => {
   let useCase: RescheduleAppointmentUseCase;
   let mockRepository: jest.Mocked<AppointmentRepository>;
 
@@ -49,19 +48,27 @@ describe('RescheduleAppointmentUseCase', () => {
     useCase = new RescheduleAppointmentUseCase(mockRepository);
   });
 
-  describe('execute', () => {
+  describe("execute", () => {
     const validRequest = {
-      appointmentId: 'appointment-id-123',
-      requestingUserId: 'user-id-456',
-      newStartTime: new Date('2024-02-01T10:00:00Z'),
-      newEndTime: new Date('2024-02-01T11:00:00Z'),
-      reason: 'Client requested change',
+      appointmentId: "appointment-id-123",
+      requestingUserId: "user-id-456",
+      newStartTime: new Date("2024-02-01T10:00:00Z"),
+      newEndTime: new Date("2024-02-01T11:00:00Z"),
+      reason: "Client requested change",
     };
 
-    it('should be implemented later (placeholder test)', async () => {
-      // ✅ TEST TEMPORAIRE - En attendant l'implémentation complète
-      expect(() => useCase.execute(validRequest)).rejects.toThrow(
-        'RescheduleAppointmentUseCase not yet fully implemented',
+    it("should validate past time correctly", async () => {
+      // ✅ TEST - Validation des dates passées
+      const pastRequest = {
+        appointmentId: "appointment-id-123",
+        requestingUserId: "user-id-456",
+        newStartTime: new Date("2020-01-01T10:00:00Z"), // Date passée
+        newEndTime: new Date("2020-01-01T11:00:00Z"),
+        reason: "Client requested change",
+      };
+
+      expect(() => useCase.execute(pastRequest)).rejects.toThrow(
+        "Cannot reschedule appointment to a past time",
       );
     });
 

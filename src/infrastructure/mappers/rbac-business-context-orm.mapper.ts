@@ -15,8 +15,8 @@ import {
   RbacBusinessContext,
   RbacBusinessContextData,
   RbacContextType,
-} from '@domain/entities/rbac-business-context.entity';
-import { BusinessContextOrmEntity } from '../database/sql/postgresql/entities/business-context-orm.entity';
+} from "@domain/entities/rbac-business-context.entity";
+import { BusinessContextOrmEntity } from "../database/sql/postgresql/entities/business-context-orm.entity";
 
 export class RbacBusinessContextOrmMapper {
   /**

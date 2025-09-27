@@ -4,21 +4,21 @@
  * @version 1.0.0
  */
 
-import { DomainError } from '../exceptions/domain.exceptions';
+import { DomainError } from "../exceptions/domain.exceptions";
 
 /**
  * Types de templates supportés
  */
 export enum NotificationTemplateType {
-  APPOINTMENT_CONFIRMATION = 'APPOINTMENT_CONFIRMATION',
-  APPOINTMENT_REMINDER = 'APPOINTMENT_REMINDER',
-  APPOINTMENT_CANCELLATION = 'APPOINTMENT_CANCELLATION',
-  APPOINTMENT_RESCHEDULED = 'APPOINTMENT_RESCHEDULED',
-  WELCOME_MESSAGE = 'WELCOME_MESSAGE',
-  PASSWORD_RESET = 'PASSWORD_RESET',
-  ACCOUNT_VERIFICATION = 'ACCOUNT_VERIFICATION',
-  PAYMENT_CONFIRMATION = 'PAYMENT_CONFIRMATION',
-  CUSTOM = 'CUSTOM',
+  APPOINTMENT_CONFIRMATION = "APPOINTMENT_CONFIRMATION",
+  APPOINTMENT_REMINDER = "APPOINTMENT_REMINDER",
+  APPOINTMENT_CANCELLATION = "APPOINTMENT_CANCELLATION",
+  APPOINTMENT_RESCHEDULED = "APPOINTMENT_RESCHEDULED",
+  WELCOME_MESSAGE = "WELCOME_MESSAGE",
+  PASSWORD_RESET = "PASSWORD_RESET",
+  ACCOUNT_VERIFICATION = "ACCOUNT_VERIFICATION",
+  PAYMENT_CONFIRMATION = "PAYMENT_CONFIRMATION",
+  CUSTOM = "CUSTOM",
 }
 
 /**
@@ -37,7 +37,7 @@ export class NotificationTemplate {
     private readonly _subject: string,
     private readonly _bodyTemplate: string,
     private readonly _variables: TemplateVariables,
-    private readonly _language: string = 'fr',
+    private readonly _language: string = "fr",
   ) {
     this.validateTemplate();
   }
@@ -50,7 +50,7 @@ export class NotificationTemplate {
     subject: string,
     bodyTemplate: string,
     variables: TemplateVariables = {},
-    language: string = 'fr',
+    language: string = "fr",
   ): NotificationTemplate {
     return new NotificationTemplate(
       type,
@@ -67,7 +67,7 @@ export class NotificationTemplate {
   static fromType(
     type: NotificationTemplateType,
     variables: TemplateVariables = {},
-    language: string = 'fr',
+    language: string = "fr",
   ): NotificationTemplate {
     const predefinedTemplate = this.getPredefinedTemplate(type, language);
 
@@ -95,7 +95,7 @@ export class NotificationTemplate {
     > = {
       fr: {
         [NotificationTemplateType.APPOINTMENT_CONFIRMATION]: {
-          subject: 'Confirmation de rendez-vous - {{businessName}}',
+          subject: "Confirmation de rendez-vous - {{businessName}}",
           body: `
 Bonjour {{clientName}},
 
@@ -122,7 +122,7 @@ L'équipe {{businessName}}
           `,
         },
         [NotificationTemplateType.APPOINTMENT_REMINDER]: {
-          subject: 'Rappel : Votre rendez-vous demain - {{businessName}}',
+          subject: "Rappel : Votre rendez-vous demain - {{businessName}}",
           body: `
 Bonjour {{clientName}},
 
@@ -147,7 +147,7 @@ L'équipe {{businessName}}
           `,
         },
         [NotificationTemplateType.APPOINTMENT_CANCELLATION]: {
-          subject: 'Annulation de rendez-vous - {{businessName}}',
+          subject: "Annulation de rendez-vous - {{businessName}}",
           body: `
 Bonjour {{clientName}},
 
@@ -177,7 +177,7 @@ L'équipe {{businessName}}
           `,
         },
         [NotificationTemplateType.WELCOME_MESSAGE]: {
-          subject: 'Bienvenue chez {{businessName}} ! 🎉',
+          subject: "Bienvenue chez {{businessName}} ! 🎉",
           body: `
 Bonjour {{clientName}},
 
@@ -207,7 +207,7 @@ L'équipe {{businessName}}
       },
       en: {
         [NotificationTemplateType.APPOINTMENT_CONFIRMATION]: {
-          subject: 'Appointment Confirmation - {{businessName}}',
+          subject: "Appointment Confirmation - {{businessName}}",
           body: `
 Hello {{clientName}},
 
@@ -268,7 +268,7 @@ The {{businessName}} team
 
     // Remplacement des variables simples {{variable}}
     Object.entries(this._variables).forEach(([key, value]) => {
-      const regex = new RegExp(`{{${key}}}`, 'g');
+      const regex = new RegExp(`{{${key}}}`, "g");
       const stringValue = this.formatValue(value);
       result = result.replace(regex, stringValue);
     });
@@ -287,7 +287,7 @@ The {{businessName}} team
 
     return text.replace(conditionalRegex, (match, variable, content) => {
       const value = this._variables[variable];
-      return value ? content : '';
+      return value ? content : "";
     });
   }
 
@@ -298,21 +298,21 @@ The {{businessName}} team
     value: string | number | Date | boolean | undefined,
   ): string {
     if (value === undefined || value === null) {
-      return '';
+      return "";
     }
 
     if (value instanceof Date) {
-      return value.toLocaleString(this._language === 'fr' ? 'fr-FR' : 'en-US');
+      return value.toLocaleString(this._language === "fr" ? "fr-FR" : "en-US");
     }
 
-    if (typeof value === 'boolean') {
-      return this._language === 'fr'
+    if (typeof value === "boolean") {
+      return this._language === "fr"
         ? value
-          ? 'Oui'
-          : 'Non'
+          ? "Oui"
+          : "Non"
         : value
-          ? 'Yes'
-          : 'No';
+          ? "Yes"
+          : "No";
     }
 
     return String(value);
@@ -323,14 +323,14 @@ The {{businessName}} team
    */
   private validateTemplate(): void {
     if (!this._subject.trim()) {
-      throw new DomainError('Template subject cannot be empty');
+      throw new DomainError("Template subject cannot be empty");
     }
 
     if (!this._bodyTemplate.trim()) {
-      throw new DomainError('Template body cannot be empty');
+      throw new DomainError("Template body cannot be empty");
     }
 
-    if (!['fr', 'en', 'es', 'de', 'it'].includes(this._language)) {
+    if (!["fr", "en", "es", "de", "it"].includes(this._language)) {
       throw new DomainError(`Unsupported language: ${this._language}`);
     }
   }

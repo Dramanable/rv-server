@@ -1,13 +1,13 @@
-import { MigrationInterface, QueryRunner, Table } from 'typeorm';
+import { MigrationInterface, QueryRunner, Table } from "typeorm";
 
 export class CreateServiceCategoriesTable1703702000000
   implements MigrationInterface
 {
-  name = 'CreateServiceCategoriesTable1703702000000';
+  name = "CreateServiceCategoriesTable1703702000000";
 
   // 🎯 OBLIGATOIRE : Récupérer le schéma depuis l'environnement
   private getSchemaName(): string {
-    const schema = process.env.DB_SCHEMA || 'public';
+    const schema = process.env.DB_SCHEMA || "public";
 
     // Validation du nom de schéma (sécurité)
     if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(schema)) {
@@ -48,97 +48,97 @@ export class CreateServiceCategoriesTable1703702000000
         name: `${schema}.service_categories`,
         columns: [
           {
-            name: 'id',
-            type: 'uuid',
+            name: "id",
+            type: "uuid",
             isPrimary: true,
-            generationStrategy: 'uuid',
-            default: 'uuid_generate_v4()',
-            comment: 'Unique identifier for service category',
+            generationStrategy: "uuid",
+            default: "uuid_generate_v4()",
+            comment: "Unique identifier for service category",
           },
           {
-            name: 'business_id',
-            type: 'uuid',
+            name: "business_id",
+            type: "uuid",
             isNullable: false,
-            comment: 'Business that owns this service category',
+            comment: "Business that owns this service category",
           },
           {
-            name: 'name',
-            type: 'varchar',
-            length: '100',
+            name: "name",
+            type: "varchar",
+            length: "100",
             isNullable: false,
-            comment: 'Name of the service category',
+            comment: "Name of the service category",
           },
           {
-            name: 'code',
-            type: 'varchar',
-            length: '10',
+            name: "code",
+            type: "varchar",
+            length: "10",
             isNullable: false,
             isUnique: true,
-            comment: 'Unique code for the service category',
+            comment: "Unique code for the service category",
           },
           {
-            name: 'description',
-            type: 'text',
+            name: "description",
+            type: "text",
             isNullable: true,
-            comment: 'Optional description of the service category',
+            comment: "Optional description of the service category",
           },
           {
-            name: 'color',
-            type: 'varchar',
-            length: '50',
+            name: "color",
+            type: "varchar",
+            length: "50",
             isNullable: true,
-            comment: 'Color for UI display (hex, rgb, named)',
+            comment: "Color for UI display (hex, rgb, named)",
           },
           {
-            name: 'icon',
-            type: 'varchar',
-            length: '50',
+            name: "icon",
+            type: "varchar",
+            length: "50",
             isNullable: true,
-            comment: 'Icon identifier for UI display',
+            comment: "Icon identifier for UI display",
           },
           {
-            name: 'sort_order',
-            type: 'int',
+            name: "sort_order",
+            type: "int",
             default: 0,
-            comment: 'Order for sorting categories',
+            comment: "Order for sorting categories",
           },
           {
-            name: 'is_active',
-            type: 'boolean',
+            name: "is_active",
+            type: "boolean",
             default: true,
-            comment: 'Whether the category is active',
+            comment: "Whether the category is active",
           },
           {
-            name: 'parent_category_id',
-            type: 'uuid',
+            name: "parent_category_id",
+            type: "uuid",
             isNullable: true,
-            comment: 'Parent category for hierarchical structure',
+            comment: "Parent category for hierarchical structure",
           },
           // ⚠️ TRAÇABILITÉ OBLIGATOIRE - Colonnes d'audit (nullable)
           {
-            name: 'created_by',
-            type: 'uuid',
+            name: "created_by",
+            type: "uuid",
             isNullable: true,
-            comment: 'UUID of user who created this service category',
+            comment: "UUID of user who created this service category",
           },
           {
-            name: 'updated_by',
-            type: 'uuid',
+            name: "updated_by",
+            type: "uuid",
             isNullable: true,
-            comment: 'UUID of user who last updated this service category',
+            comment: "UUID of user who last updated this service category",
           },
           {
-            name: 'created_at',
-            type: 'timestamp',
-            default: 'CURRENT_TIMESTAMP',
-            comment: 'Creation timestamp',
+            name: "created_at",
+            type: "timestamp",
+            default: "CURRENT_TIMESTAMP",
+            comment: "Creation timestamp",
           },
           {
-            name: 'updated_at',
-            type: 'timestamp',
-            default: 'CURRENT_TIMESTAMP',
-            onUpdate: 'CURRENT_TIMESTAMP',
-            comment: 'Last update timestamp',
+            name: "updated_at",
+            type: "timestamp",
+            default: "CURRENT_TIMESTAMP",
+            onUpdate: "CURRENT_TIMESTAMP",
+            comment: "Last update timestamp",
           },
         ],
       }),
@@ -180,7 +180,7 @@ export class CreateServiceCategoriesTable1703702000000
     } catch (error) {
       // Si la table businesses n'existe pas encore, ignorer cette FK
       console.warn(
-        'Could not create FK to businesses table, it may not exist yet',
+        "Could not create FK to businesses table, it may not exist yet",
       );
     }
 

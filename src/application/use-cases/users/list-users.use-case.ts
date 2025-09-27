@@ -5,16 +5,16 @@
  * Optimisé pour Node.js 24 avec Clean Architecture stricte
  */
 
-import type { I18nService } from '../../../application/ports/i18n.port';
-import type { Logger } from '../../../application/ports/logger.port';
-import type { UserRepository } from '../../../domain/repositories/user.repository.interface';
-import { UserRole } from '../../../shared/enums/user-role.enum';
-import { type UserSortField } from '../../../shared/types/user-query.types';
-import { AppContextFactory } from '../../../shared/utils/app-context.factory';
+import type { I18nService } from "../../../application/ports/i18n.port";
+import type { Logger } from "../../../application/ports/logger.port";
+import type { UserRepository } from "../../../domain/repositories/user.repository.interface";
+import { UserRole } from "../../../shared/enums/user-role.enum";
+import { type UserSortField } from "../../../shared/types/user-query.types";
+import { AppContextFactory } from "../../../shared/utils/app-context.factory";
 import {
   ForbiddenError,
   UserNotFoundError,
-} from '../../exceptions/auth.exceptions';
+} from "../../exceptions/auth.exceptions";
 
 // ═══════════════════════════════════════════════════════════════
 // 📋 REQUEST & RESPONSE INTERFACES
@@ -26,8 +26,8 @@ export interface PaginationRequest {
 }
 
 export interface SortRequest {
-  readonly field: 'createdAt' | 'email' | 'name' | 'role';
-  readonly direction: 'ASC' | 'DESC';
+  readonly field: "createdAt" | "email" | "name" | "role";
+  readonly direction: "ASC" | "DESC";
 }
 
 export interface UserFiltersRequest {
@@ -89,12 +89,12 @@ export class ListUsersUseCase {
 
   async execute(request: ListUsersRequest): Promise<ListUsersResponse> {
     const context = AppContextFactory.create()
-      .operation('ListUsers')
+      .operation("ListUsers")
       .requestingUser(request.requestingUserId)
       .build();
 
     this.logger.info(
-      'list_attempt',
+      "list_attempt",
       context as unknown as Record<string, unknown>,
     );
 
@@ -114,7 +114,7 @@ export class ListUsersUseCase {
       // 4. Construction de la réponse avec métadonnées de pagination
       const response = this.buildResponse(searchResult, request);
 
-      this.logger.info('list_success', {
+      this.logger.info("list_success", {
         ...context,
         resultCount: response.data.length,
         totalItems: response.meta.totalItems,
@@ -124,7 +124,7 @@ export class ListUsersUseCase {
       return response;
     } catch (error) {
       this.logger.error(
-        'list_failed',
+        "list_failed",
         error as Error,
         context as unknown as Record<string, unknown>,
       );
@@ -148,7 +148,7 @@ export class ListUsersUseCase {
     const requestingUser = await this.userRepository.findById(requestingUserId);
     if (!requestingUser) {
       throw new UserNotFoundError(
-        this.i18n.t('errors.user.requesting_user_not_found'),
+        this.i18n.t("errors.user.requesting_user_not_found"),
       );
     }
 
@@ -169,7 +169,7 @@ export class ListUsersUseCase {
           filters?.roles?.includes(UserRole.PLATFORM_ADMIN)
         ) {
           throw new ForbiddenError(
-            this.i18n.t('errors.auth.cannot_view_higher_roles'),
+            this.i18n.t("errors.auth.cannot_view_higher_roles"),
           );
         }
         return {
@@ -189,7 +189,7 @@ export class ListUsersUseCase {
             UserRole.REGULAR_CLIENT,
             UserRole.GUEST_CLIENT,
           ],
-          businessId: 'business-1', // TODO: Extraire du requestingUser
+          businessId: "business-1", // TODO: Extraire du requestingUser
         };
 
       case UserRole.BUSINESS_ADMIN:
@@ -210,7 +210,7 @@ export class ListUsersUseCase {
             UserRole.REGULAR_CLIENT,
             UserRole.GUEST_CLIENT,
           ],
-          businessId: 'business-1', // TODO: Extraire du requestingUser
+          businessId: "business-1", // TODO: Extraire du requestingUser
         };
 
       case UserRole.LOCATION_MANAGER:
@@ -230,14 +230,14 @@ export class ListUsersUseCase {
             UserRole.REGULAR_CLIENT,
             UserRole.GUEST_CLIENT,
           ],
-          businessId: 'business-1',
-          locationId: 'location-1', // TODO: Extraire du requestingUser
+          businessId: "business-1",
+          locationId: "location-1", // TODO: Extraire du requestingUser
         };
 
       default:
         // Tous les autres rôles ne peuvent pas lister les utilisateurs
         throw new ForbiddenError(
-          this.i18n.t('errors.auth.insufficient_permissions_list_users'),
+          this.i18n.t("errors.auth.insufficient_permissions_list_users"),
         );
     }
   }
@@ -255,8 +255,8 @@ export class ListUsersUseCase {
     const queryParams: any = {
       page: request.pagination.page,
       limit: Math.min(100, Math.max(1, request.pagination.limit)), // Enforcer limite max de 100
-      sortBy: request.sort?.field || 'createdAt',
-      sortOrder: request.sort?.direction || 'DESC',
+      sortBy: request.sort?.field || "createdAt",
+      sortOrder: request.sort?.direction || "DESC",
       search: {},
       filters: {},
     };
@@ -323,7 +323,7 @@ export class ListUsersUseCase {
       }
 
       // Statut actif
-      if (typeof request.filters.isActive === 'boolean') {
+      if (typeof request.filters.isActive === "boolean") {
         filters.isActive = request.filters.isActive;
       }
 
@@ -345,15 +345,15 @@ export class ListUsersUseCase {
 
   private mapSortField(field: string): UserSortField {
     switch (field) {
-      case 'email':
-        return 'email';
-      case 'name':
-        return 'name';
-      case 'role':
-        return 'role';
-      case 'createdAt':
+      case "email":
+        return "email";
+      case "name":
+        return "name";
+      case "role":
+        return "role";
+      case "createdAt":
       default:
-        return 'createdAt';
+        return "createdAt";
     }
   }
 
@@ -374,9 +374,9 @@ export class ListUsersUseCase {
         id: user.id,
         email: user.email?.value || user.email,
         username: user.username,
-        firstName: user.firstName || user.name?.split(' ')[0] || '',
+        firstName: user.firstName || user.name?.split(" ")[0] || "",
         lastName:
-          user.lastName || user.name?.split(' ').slice(1).join(' ') || '',
+          user.lastName || user.name?.split(" ").slice(1).join(" ") || "",
         role: user.role,
         isActive: user.isActive ?? true,
         isVerified: user.isVerified ?? false,

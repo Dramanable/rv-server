@@ -4,16 +4,16 @@
  * Version GREEN simplifiée pour TDD - Phase GREEN
  */
 
-import { IPermissionService } from '@application/ports/permission.service.interface';
-import { Logger } from '@application/ports/logger.port';
-import { I18nService } from '@application/ports/i18n.port';
-import { StaffRepository } from '@domain/repositories/staff.repository.interface';
-import { IRoleAssignmentRepository } from '@domain/repositories/role-assignment.repository.interface';
-import { AppointmentRepository } from '@domain/repositories/appointment.repository.interface';
-import { Permission, UserRole } from '@shared/enums/user-role.enum';
-import { InsufficientPermissionsError } from '@application/exceptions/application.exceptions';
-import { UserId } from '@domain/value-objects/user-id.value-object';
-import { Appointment } from '@domain/entities/appointment.entity';
+import { InsufficientPermissionsError } from "@application/exceptions/application.exceptions";
+import { I18nService } from "@application/ports/i18n.port";
+import { Logger } from "@application/ports/logger.port";
+import { IPermissionService } from "@application/ports/permission.service.interface";
+import { Appointment } from "@domain/entities/appointment.entity";
+import { AppointmentRepository } from "@domain/repositories/appointment.repository.interface";
+import { IRoleAssignmentRepository } from "@domain/repositories/role-assignment.repository.interface";
+import { StaffRepository } from "@domain/repositories/staff.repository.interface";
+import { UserId } from "@domain/value-objects/user-id.value-object";
+import { Permission, UserRole } from "@shared/enums/user-role.enum";
 
 // === USE CASE INTERFACES ===
 
@@ -67,14 +67,14 @@ export interface ConflictingAppointment {
   readonly scheduledTime: Date;
   readonly reason: string;
   readonly status:
-    | 'REQUIRES_MANUAL_INTERVENTION'
-    | 'RESCHEDULED'
-    | 'AUTO_CANCELLED';
+    | "REQUIRES_MANUAL_INTERVENTION"
+    | "RESCHEDULED"
+    | "AUTO_CANCELLED";
   readonly newScheduledTime?: Date;
 }
 
 export interface NotificationResult {
-  readonly type: 'CLIENT_NOTIFIED' | 'STAFF_NOTIFIED' | 'ADMIN_NOTIFIED';
+  readonly type: "CLIENT_NOTIFIED" | "STAFF_NOTIFIED" | "ADMIN_NOTIFIED";
   readonly recipientId: string;
   readonly message: string;
   readonly sentAt: Date;
@@ -103,7 +103,7 @@ export class SetPractitionerAvailabilityUseCase {
   async execute(
     request: SetPractitionerAvailabilityRequest,
   ): Promise<SetPractitionerAvailabilityResponse> {
-    this.logger.info('Setting practitioner availability', {
+    this.logger.info("Setting practitioner availability", {
       requestingUserId: request.requestingUserId,
       practitionerId: request.practitionerId,
       businessId: request.businessId,
@@ -140,7 +140,7 @@ export class SetPractitionerAvailabilityUseCase {
         resolvedConflicts,
       );
 
-      this.logger.info('Practitioner availability set successfully', {
+      this.logger.info("Practitioner availability set successfully", {
         practitionerId: request.practitionerId,
         conflictsResolved: resolvedConflicts.length,
         notificationsSent: notificationsSent.length,
@@ -156,7 +156,7 @@ export class SetPractitionerAvailabilityUseCase {
       };
     } catch (error) {
       this.logger.error(
-        'Failed to set practitioner availability',
+        "Failed to set practitioner availability",
         error as Error,
         {
           requestingUserId: request.requestingUserId,
@@ -198,13 +198,13 @@ export class SetPractitionerAvailabilityUseCase {
 
     // Vérifications de base pour les tests
     if (!requestingUserRoles || requestingUserRoles.length === 0) {
-      throw new Error('Requesting user has no roles');
+      throw new Error("Requesting user has no roles");
     }
 
     if (!targetUserRoles || targetUserRoles.length === 0) {
       throw new InsufficientPermissionsError(
-        this.i18n.translate('availability.targetMustBePractitioner'),
-        'TARGET_MUST_BE_PRACTITIONER',
+        this.i18n.translate("availability.targetMustBePractitioner"),
+        "TARGET_MUST_BE_PRACTITIONER",
       );
     }
 
@@ -227,14 +227,14 @@ export class SetPractitionerAvailabilityUseCase {
 
     if (!hasSeniorRole) {
       throw new InsufficientPermissionsError(
-        this.i18n.translate('permissions.cannotManageOtherPractitioners'),
-        'CANNOT_MANAGE_OTHER_PRACTITIONERS',
+        this.i18n.translate("permissions.cannotManageOtherPractitioners"),
+        "CANNOT_MANAGE_OTHER_PRACTITIONERS",
       );
     }
 
     if (!targetIsPractitioner) {
       throw new Error(
-        this.i18n.translate('availability.targetMustBePractitioner'),
+        this.i18n.translate("availability.targetMustBePractitioner"),
       );
     }
   }
@@ -249,7 +249,7 @@ export class SetPractitionerAvailabilityUseCase {
 
     if (!practitioner) {
       throw new Error(
-        this.i18n.translate('staff.practitionerNotFound', {
+        this.i18n.translate("staff.practitionerNotFound", {
           id: request.practitionerId,
         }),
       );
@@ -257,7 +257,7 @@ export class SetPractitionerAvailabilityUseCase {
 
     if (!practitioner.isActive()) {
       throw new Error(
-        this.i18n.translate('staff.practitionerNotActive', {
+        this.i18n.translate("staff.practitionerNotActive", {
           id: request.practitionerId,
         }),
       );
@@ -270,7 +270,7 @@ export class SetPractitionerAvailabilityUseCase {
 
     if (!roleAssignments || roleAssignments.length === 0) {
       throw new Error(
-        this.i18n.translate('staff.notAPractitioner', {
+        this.i18n.translate("staff.notAPractitioner", {
           id: request.practitionerId,
         }),
       );
@@ -286,7 +286,7 @@ export class SetPractitionerAvailabilityUseCase {
 
     if (!isPractitioner) {
       throw new Error(
-        this.i18n.translate('staff.notAPractitioner', {
+        this.i18n.translate("staff.notAPractitioner", {
           id: request.practitionerId,
         }),
       );
@@ -298,7 +298,7 @@ export class SetPractitionerAvailabilityUseCase {
   private validateAvailabilityData(availability: AvailabilityPeriod): void {
     // 1. Validation des dates
     if (availability.startDate >= availability.endDate) {
-      throw new Error(this.i18n.translate('availability.invalidDateRange'));
+      throw new Error(this.i18n.translate("availability.invalidDateRange"));
     }
 
     // 2. Validation des disponibilités par jour
@@ -307,7 +307,7 @@ export class SetPractitionerAvailabilityUseCase {
       dayAvail.timeSlots.forEach((slot) => {
         if (slot.startTime >= slot.endTime) {
           throw new Error(
-            this.i18n.translate('availability.invalidTimeSlot', {
+            this.i18n.translate("availability.invalidTimeSlot", {
               day: index,
               startTime: slot.startTime,
               endTime: slot.endTime,
@@ -327,7 +327,7 @@ export class SetPractitionerAvailabilityUseCase {
 
         if (!isBreakInWorkingHours) {
           throw new Error(
-            this.i18n.translate('availability.breakOutsideWorkingHours', {
+            this.i18n.translate("availability.breakOutsideWorkingHours", {
               day: index,
               breakStart: breakPeriod.startTime,
               breakEnd: breakPeriod.endTime,
@@ -346,7 +346,7 @@ export class SetPractitionerAvailabilityUseCase {
       new UserId(request.practitionerId),
       {
         startDate: request.availability.startDate,
-        endDate: request.availability.endDate || new Date('2099-12-31'),
+        endDate: request.availability.endDate || new Date("2099-12-31"),
       },
     );
 
@@ -366,8 +366,8 @@ export class SetPractitionerAvailabilityUseCase {
           appointmentId: appointment.getId().getValue(),
           clientId: appointment.getClientInfo().email.getValue(),
           scheduledTime: appointmentDate,
-          reason: 'Practitioner not available on this day',
-          status: 'REQUIRES_MANUAL_INTERVENTION',
+          reason: "Practitioner not available on this day",
+          status: "REQUIRES_MANUAL_INTERVENTION",
         });
         return;
       }
@@ -391,9 +391,9 @@ export class SetPractitionerAvailabilityUseCase {
           clientId: appointment.getClientInfo().email.getValue(),
           scheduledTime: appointmentDate,
           reason: isDuringBreak
-            ? 'Appointment during break period'
-            : 'Appointment outside available time slots',
-          status: 'REQUIRES_MANUAL_INTERVENTION',
+            ? "Appointment during break period"
+            : "Appointment outside available time slots",
+          status: "REQUIRES_MANUAL_INTERVENTION",
         });
       }
     });
@@ -419,20 +419,20 @@ export class SetPractitionerAvailabilityUseCase {
         if (newSlot) {
           resolvedConflicts.push({
             ...conflict,
-            status: 'RESCHEDULED',
+            status: "RESCHEDULED",
             newScheduledTime: newSlot,
           });
         } else {
           resolvedConflicts.push({
             ...conflict,
-            status: 'REQUIRES_MANUAL_INTERVENTION',
+            status: "REQUIRES_MANUAL_INTERVENTION",
           });
         }
       } else {
         // Marquer pour intervention manuelle
         resolvedConflicts.push({
           ...conflict,
-          status: 'REQUIRES_MANUAL_INTERVENTION',
+          status: "REQUIRES_MANUAL_INTERVENTION",
         });
       }
     }
@@ -464,7 +464,7 @@ export class SetPractitionerAvailabilityUseCase {
       if (dayAvailability?.isAvailable) {
         for (const timeSlot of dayAvailability.timeSlots) {
           const proposedDateTime = new Date(checkDate);
-          const [hours, minutes] = timeSlot.startTime.split(':');
+          const [hours, minutes] = timeSlot.startTime.split(":");
           proposedDateTime.setHours(
             parseInt(hours, 10),
             parseInt(minutes, 10),
@@ -495,7 +495,7 @@ export class SetPractitionerAvailabilityUseCase {
   ): Promise<void> {
     // TODO: Implémenter la sauvegarde des disponibilités
     // Pour maintenant, on log juste l'action
-    this.logger.info('Availability data would be saved here', {
+    this.logger.info("Availability data would be saved here", {
       practitionerId: request.practitionerId,
       availability: request.availability,
       correlationId: request.correlationId,
@@ -510,7 +510,7 @@ export class SetPractitionerAvailabilityUseCase {
 
     if (request.notifyClients && conflicts.length > 0) {
       // TODO: Implémenter les notifications clients
-      this.logger.info('Would send notifications to affected clients', {
+      this.logger.info("Would send notifications to affected clients", {
         conflictCount: conflicts.length,
         correlationId: request.correlationId,
       });

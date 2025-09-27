@@ -8,7 +8,7 @@ export interface PaginationParams {
   page: number;
   limit: number;
   sortBy?: string;
-  sortOrder?: 'ASC' | 'DESC';
+  sortOrder?: "ASC" | "DESC";
 }
 
 export interface PaginationMeta {
@@ -48,7 +48,7 @@ export interface DateFilter {
  */
 export interface Filter {
   field: string;
-  operator: 'eq' | 'ne' | 'gt' | 'gte' | 'lt' | 'lte' | 'in' | 'like' | 'ilike';
+  operator: "eq" | "ne" | "gt" | "gte" | "lt" | "lte" | "in" | "like" | "ilike";
   value: string | number | boolean | string[] | number[];
 }
 
@@ -68,8 +68,8 @@ export class QueryBuilder {
   private params: QueryParams = {
     page: 1,
     limit: 10,
-    sortBy: 'createdAt',
-    sortOrder: 'DESC',
+    sortBy: "createdAt",
+    sortOrder: "DESC",
   };
 
   page(page: number): this {
@@ -82,7 +82,7 @@ export class QueryBuilder {
     return this;
   }
 
-  sortBy(field: string, order: 'ASC' | 'DESC' = 'ASC'): this {
+  sortBy(field: string, order: "ASC" | "DESC" = "ASC"): this {
     this.params.sortBy = field;
     this.params.sortOrder = order;
     return this;
@@ -95,7 +95,7 @@ export class QueryBuilder {
 
   filter(
     field: string,
-    operator: Filter['operator'],
+    operator: Filter["operator"],
     value: string | number | boolean | string[] | number[],
   ): this {
     if (!this.params.filters) {

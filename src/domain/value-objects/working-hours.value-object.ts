@@ -1,4 +1,4 @@
-import { WeekDay } from './time-slot.value-object';
+import { WeekDay } from "./time-slot.value-object";
 
 export class WorkingHours {
   constructor(
@@ -17,15 +17,15 @@ export class WorkingHours {
 
   private validate(): void {
     if (!this.isValidTimeFormat(this.startTime)) {
-      throw new Error('Invalid start time format. Use HH:MM');
+      throw new Error("Invalid start time format. Use HH:MM");
     }
 
     if (!this.isValidTimeFormat(this.endTime)) {
-      throw new Error('Invalid end time format. Use HH:MM');
+      throw new Error("Invalid end time format. Use HH:MM");
     }
 
     if (this.isWorkingDay && this.startTime >= this.endTime) {
-      throw new Error('Start time must be before end time');
+      throw new Error("Start time must be before end time");
     }
 
     // Valider les pauses
@@ -34,16 +34,16 @@ export class WorkingHours {
         !this.isValidTimeFormat(breakTime.start) ||
         !this.isValidTimeFormat(breakTime.end)
       ) {
-        throw new Error('Invalid break time format');
+        throw new Error("Invalid break time format");
       }
 
       if (breakTime.start >= breakTime.end) {
-        throw new Error('Break start time must be before end time');
+        throw new Error("Break start time must be before end time");
       }
 
       if (this.isWorkingDay) {
         if (breakTime.start < this.startTime || breakTime.end > this.endTime) {
-          throw new Error('Break must be within working hours');
+          throw new Error("Break must be within working hours");
         }
       }
     });
@@ -72,25 +72,25 @@ export class WorkingHours {
 
   // Factory methods for common schedules
   static createNonWorkingDay(dayOfWeek: WeekDay): WorkingHours {
-    return new WorkingHours(dayOfWeek, '00:00', '00:00', false, []);
+    return new WorkingHours(dayOfWeek, "00:00", "00:00", false, []);
   }
 
   static createFullDay(
     dayOfWeek: WeekDay,
-    startTime: string = '09:00',
-    endTime: string = '17:00',
+    startTime: string = "09:00",
+    endTime: string = "17:00",
   ): WorkingHours {
     return new WorkingHours(dayOfWeek, startTime, endTime, true, []);
   }
 
   static createWithLunchBreak(
     dayOfWeek: WeekDay,
-    startTime: string = '09:00',
-    endTime: string = '17:00',
-    lunchStart: string = '12:00',
-    lunchEnd: string = '13:00',
+    startTime: string = "09:00",
+    endTime: string = "17:00",
+    lunchStart: string = "12:00",
+    lunchEnd: string = "13:00",
   ): WorkingHours {
-    const breaks = [{ start: lunchStart, end: lunchEnd, name: 'Lunch' }];
+    const breaks = [{ start: lunchStart, end: lunchEnd, name: "Lunch" }];
     return new WorkingHours(dayOfWeek, startTime, endTime, true, breaks);
   }
 
@@ -134,14 +134,14 @@ export class WorkingHours {
   }
 
   private timeStringToMinutes(timeString: string): number {
-    const [hours, minutes] = timeString.split(':').map(Number);
+    const [hours, minutes] = timeString.split(":").map(Number);
     return hours * 60 + minutes;
   }
 
   private minutesToTimeString(minutes: number): string {
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;
-    return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
+    return `${hours.toString().padStart(2, "0")}:${mins.toString().padStart(2, "0")}`;
   }
 
   // Generate time slots for this working day
@@ -232,16 +232,16 @@ export class WorkingHours {
   // Formatting
   format(): string {
     if (!this.isWorkingDay) {
-      return 'Fermé';
+      return "Fermé";
     }
 
     let result = `${this.startTime} - ${this.endTime}`;
 
     if (this.breaks.length > 0) {
       const breakStrings = this.breaks.map(
-        (b) => `${b.name || 'Pause'}: ${b.start}-${b.end}`,
+        (b) => `${b.name || "Pause"}: ${b.start}-${b.end}`,
       );
-      result += ` (${breakStrings.join(', ')})`;
+      result += ` (${breakStrings.join(", ")})`;
     }
 
     return result;
@@ -249,13 +249,13 @@ export class WorkingHours {
 
   toString(): string {
     const dayNames = [
-      'Dimanche',
-      'Lundi',
-      'Mardi',
-      'Mercredi',
-      'Jeudi',
-      'Vendredi',
-      'Samedi',
+      "Dimanche",
+      "Lundi",
+      "Mardi",
+      "Mercredi",
+      "Jeudi",
+      "Vendredi",
+      "Samedi",
     ];
     return `${dayNames[this.dayOfWeek]}: ${this.format()}`;
   }

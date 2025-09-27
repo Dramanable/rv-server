@@ -8,14 +8,14 @@ import {
   Param,
   Post,
   Put,
-} from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { CreateSkillUseCase } from '../../application/use-cases/skills/create-skill.use-case';
-import { DeleteSkillUseCase } from '../../application/use-cases/skills/delete-skill.use-case';
-import { GetSkillByIdUseCase } from '../../application/use-cases/skills/get-skill-by-id.use-case';
-import { ListSkillsUseCase } from '../../application/use-cases/skills/list-skills.use-case';
-import { UpdateSkillUseCase } from '../../application/use-cases/skills/update-skill.use-case';
-import { BusinessId } from '../../domain/value-objects/business-id.value-object';
+} from "@nestjs/common";
+import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { CreateSkillUseCase } from "../../application/use-cases/skills/create-skill.use-case";
+import { DeleteSkillUseCase } from "../../application/use-cases/skills/delete-skill.use-case";
+import { GetSkillByIdUseCase } from "../../application/use-cases/skills/get-skill-by-id.use-case";
+import { ListSkillsUseCase } from "../../application/use-cases/skills/list-skills.use-case";
+import { UpdateSkillUseCase } from "../../application/use-cases/skills/update-skill.use-case";
+import { BusinessId } from "../../domain/value-objects/business-id.value-object";
 import {
   CreateSkillDto,
   CreateSkillResponseDto,
@@ -25,10 +25,10 @@ import {
   ListSkillsResponseDto,
   UpdateSkillDto,
   UpdateSkillResponseDto,
-} from '../dtos/skills.dto';
+} from "../dtos/skills.dto";
 
-@ApiTags('🎯 Skills Management')
-@Controller('api/v1/skills')
+@ApiTags("🎯 Skills Management")
+@Controller("api/v1/skills")
 export class SkillController {
   constructor(
     private readonly createSkillUseCase: CreateSkillUseCase,
@@ -43,9 +43,9 @@ export class SkillController {
    */
   @Post()
   @ApiOperation({
-    summary: '🎯 Create new skill',
+    summary: "🎯 Create new skill",
     description:
-      'Create a new skill for the business with validation and audit trail',
+      "Create a new skill for the business with validation and audit trail",
   })
   @ApiResponse({ status: 201, type: CreateSkillResponseDto })
   async create(@Body() dto: CreateSkillDto): Promise<CreateSkillResponseDto> {
@@ -56,7 +56,7 @@ export class SkillController {
         businessId: businessId.getValue(),
         name: dto.name,
         category: dto.category,
-        description: dto.description || '',
+        description: dto.description || "",
         isCritical: dto.isCritical || false,
         requestingUserId: dto.requestingUserId,
         correlationId: dto.correlationId,
@@ -82,17 +82,17 @@ export class SkillController {
     } catch (error) {
       const skillError = error as { code?: string; message?: string };
       if (
-        skillError.code === 'SKILL_NAME_REQUIRED' ||
-        skillError.code === 'SKILL_CATEGORY_REQUIRED'
+        skillError.code === "SKILL_NAME_REQUIRED" ||
+        skillError.code === "SKILL_CATEGORY_REQUIRED"
       ) {
         throw new HttpException(
           {
             success: false,
             error: {
               code: skillError.code,
-              message: skillError.message || 'Validation error',
+              message: skillError.message || "Validation error",
               field:
-                skillError.code === 'SKILL_NAME_REQUIRED' ? 'name' : 'category',
+                skillError.code === "SKILL_NAME_REQUIRED" ? "name" : "category",
             },
           },
           HttpStatus.BAD_REQUEST,
@@ -105,19 +105,19 @@ export class SkillController {
   /**
    * 📄 GET SKILL BY ID
    */
-  @Get(':id')
+  @Get(":id")
   @ApiOperation({
-    summary: '📄 Get skill by ID',
-    description: 'Retrieve a specific skill by its unique identifier',
+    summary: "📄 Get skill by ID",
+    description: "Retrieve a specific skill by its unique identifier",
   })
   @ApiResponse({ status: 200, type: GetSkillResponseDto })
-  async findById(@Param('id') id: string): Promise<GetSkillResponseDto> {
+  async findById(@Param("id") id: string): Promise<GetSkillResponseDto> {
     try {
       const response = await this.getSkillByIdUseCase.execute({
         skillId: id,
-        businessId: 'temp-business-id', // TODO: Get from context
-        requestingUserId: 'temp-user', // TODO: Get from JWT token
-        correlationId: 'temp-correlation', // TODO: Generate correlation ID
+        businessId: "temp-business-id", // TODO: Get from context
+        requestingUserId: "temp-user", // TODO: Get from JWT token
+        correlationId: "temp-correlation", // TODO: Generate correlation ID
         timestamp: new Date(),
       });
 
@@ -137,13 +137,13 @@ export class SkillController {
       };
     } catch (error) {
       const skillError = error as { code?: string; message?: string };
-      if (skillError.code === 'SKILL_NOT_FOUND') {
+      if (skillError.code === "SKILL_NOT_FOUND") {
         throw new HttpException(
           {
             success: false,
             error: {
               code: skillError.code,
-              message: skillError.message || 'Skill not found',
+              message: skillError.message || "Skill not found",
             },
           },
           HttpStatus.NOT_FOUND,
@@ -156,16 +156,16 @@ export class SkillController {
   /**
    * 🔍 LIST SKILLS
    */
-  @Post('list')
+  @Post("list")
   @ApiOperation({
-    summary: '🔍 Search skills with advanced filters',
+    summary: "🔍 Search skills with advanced filters",
     description:
-      'List skills with pagination, filtering, and search capabilities',
+      "List skills with pagination, filtering, and search capabilities",
   })
   @ApiResponse({ status: 200, type: ListSkillsResponseDto })
   async list(@Body() dto: ListSkillsDto): Promise<ListSkillsResponseDto> {
     const response = await this.listSkillsUseCase.execute({
-      businessId: 'temp-business-id', // TODO: Get from context
+      businessId: "temp-business-id", // TODO: Get from context
       requestingUserId: dto.requestingUserId,
       correlationId: dto.correlationId,
       timestamp: new Date(),
@@ -180,8 +180,8 @@ export class SkillController {
         isCritical: dto.isCritical,
       },
       sorting: {
-        sortBy: dto.sortBy || 'createdAt',
-        sortOrder: dto.sortOrder || 'desc',
+        sortBy: dto.sortBy || "createdAt",
+        sortOrder: dto.sortOrder || "desc",
       },
     });
 
@@ -213,22 +213,22 @@ export class SkillController {
   /**
    * ✏️ UPDATE SKILL
    */
-  @Put(':id')
+  @Put(":id")
   @ApiOperation({
-    summary: '✏️ Update skill',
-    description: 'Update an existing skill with new information',
+    summary: "✏️ Update skill",
+    description: "Update an existing skill with new information",
   })
   @ApiResponse({ status: 200, type: UpdateSkillResponseDto })
   async update(
-    @Param('id') id: string,
+    @Param("id") id: string,
     @Body() dto: UpdateSkillDto,
   ): Promise<UpdateSkillResponseDto> {
     try {
       const response = await this.updateSkillUseCase.execute({
         skillId: id,
-        businessId: 'temp-business-id', // TODO: Get from context
-        requestingUserId: 'temp-user', // TODO: Get from JWT token
-        correlationId: 'temp-correlation', // TODO: Generate correlation ID
+        businessId: "temp-business-id", // TODO: Get from context
+        requestingUserId: "temp-user", // TODO: Get from JWT token
+        correlationId: "temp-correlation", // TODO: Generate correlation ID
         timestamp: new Date(),
         updates: {
           name: dto.name,
@@ -255,25 +255,25 @@ export class SkillController {
       };
     } catch (error) {
       const skillError = error as { code?: string; message?: string };
-      if (skillError.code === 'SKILL_NOT_FOUND') {
+      if (skillError.code === "SKILL_NOT_FOUND") {
         throw new HttpException(
           {
             success: false,
             error: {
               code: skillError.code,
-              message: skillError.message || 'Skill not found',
+              message: skillError.message || "Skill not found",
             },
           },
           HttpStatus.NOT_FOUND,
         );
       }
-      if (skillError.code === 'SKILL_NAME_CONFLICT') {
+      if (skillError.code === "SKILL_NAME_CONFLICT") {
         throw new HttpException(
           {
             success: false,
             error: {
               code: skillError.code,
-              message: skillError.message || 'Skill name already exists',
+              message: skillError.message || "Skill name already exists",
             },
           },
           HttpStatus.CONFLICT,
@@ -286,41 +286,41 @@ export class SkillController {
   /**
    * 🗑️ DELETE SKILL
    */
-  @Delete(':id')
+  @Delete(":id")
   @ApiOperation({
-    summary: '🗑️ Delete skill',
-    description: 'Delete a skill from the system',
+    summary: "🗑️ Delete skill",
+    description: "Delete a skill from the system",
   })
   @ApiResponse({ status: 200, type: DeleteSkillResponseDto })
-  async delete(@Param('id') id: string): Promise<DeleteSkillResponseDto> {
+  async delete(@Param("id") id: string): Promise<DeleteSkillResponseDto> {
     try {
       await this.deleteSkillUseCase.execute({
         skillId: id,
-        businessId: 'temp-business-id', // TODO: Get from context
-        requestingUserId: 'temp-user', // TODO: Get from JWT token
-        correlationId: 'temp-correlation', // TODO: Generate correlation ID
+        businessId: "temp-business-id", // TODO: Get from context
+        requestingUserId: "temp-user", // TODO: Get from JWT token
+        correlationId: "temp-correlation", // TODO: Generate correlation ID
         timestamp: new Date(),
       });
 
       return {
         success: true,
-        message: 'Skill deleted successfully',
+        message: "Skill deleted successfully",
       };
     } catch (error) {
       const skillError = error as { code?: string; message?: string };
-      if (skillError.code === 'SKILL_NOT_FOUND') {
+      if (skillError.code === "SKILL_NOT_FOUND") {
         throw new HttpException(
           {
             success: false,
             error: {
               code: skillError.code,
-              message: skillError.message || 'Skill not found',
+              message: skillError.message || "Skill not found",
             },
           },
           HttpStatus.NOT_FOUND,
         );
       }
-      if (skillError.code === 'SKILL_IN_USE') {
+      if (skillError.code === "SKILL_IN_USE") {
         throw new HttpException(
           {
             success: false,
@@ -328,7 +328,7 @@ export class SkillController {
               code: skillError.code,
               message:
                 skillError.message ||
-                'Skill is currently in use and cannot be deleted',
+                "Skill is currently in use and cannot be deleted",
             },
           },
           HttpStatus.UNPROCESSABLE_ENTITY,

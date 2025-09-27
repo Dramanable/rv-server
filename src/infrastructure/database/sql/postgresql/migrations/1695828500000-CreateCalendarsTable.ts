@@ -1,90 +1,90 @@
-import { MigrationInterface, QueryRunner, Table } from 'typeorm';
+import { MigrationInterface, QueryRunner, Table } from "typeorm";
 
 export class CreateCalendarsTable1695828500000 implements MigrationInterface {
-  name = 'CreateCalendarsTable1695828500000';
+  name = "CreateCalendarsTable1695828500000";
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(
       new Table({
-        name: 'calendars',
+        name: "calendars",
         columns: [
           {
-            name: 'id',
-            type: 'uuid',
+            name: "id",
+            type: "uuid",
             isPrimary: true,
-            generationStrategy: 'uuid',
-            default: 'uuid_generate_v4()',
+            generationStrategy: "uuid",
+            default: "uuid_generate_v4()",
           },
           {
-            name: 'business_id',
-            type: 'uuid',
+            name: "business_id",
+            type: "uuid",
             isNullable: false,
           },
           {
-            name: 'type',
-            type: 'enum',
-            enum: ['BUSINESS', 'PERSONAL', 'SHARED', 'RESOURCE'],
+            name: "type",
+            type: "enum",
+            enum: ["BUSINESS", "PERSONAL", "SHARED", "RESOURCE"],
             default: "'BUSINESS'",
           },
           {
-            name: 'name',
-            type: 'varchar',
-            length: '200',
+            name: "name",
+            type: "varchar",
+            length: "200",
             isNullable: false,
           },
           {
-            name: 'description',
-            type: 'text',
+            name: "description",
+            type: "text",
             isNullable: false,
           },
           {
-            name: 'owner_id',
-            type: 'uuid',
+            name: "owner_id",
+            type: "uuid",
             isNullable: true,
           },
           {
-            name: 'status',
-            type: 'enum',
-            enum: ['ACTIVE', 'INACTIVE', 'SUSPENDED', 'ARCHIVED'],
+            name: "status",
+            type: "enum",
+            enum: ["ACTIVE", "INACTIVE", "SUSPENDED", "ARCHIVED"],
             default: "'ACTIVE'",
           },
           {
-            name: 'timezone',
-            type: 'varchar',
-            length: '50',
+            name: "timezone",
+            type: "varchar",
+            length: "50",
             default: "'Europe/Paris'",
           },
           {
-            name: 'is_default',
-            type: 'boolean',
+            name: "is_default",
+            type: "boolean",
             default: false,
           },
           {
-            name: 'color',
-            type: 'varchar',
-            length: '7',
+            name: "color",
+            type: "varchar",
+            length: "7",
             default: "'#007bff'",
           },
           {
-            name: 'settings',
-            type: 'jsonb',
+            name: "settings",
+            type: "jsonb",
             isNullable: false,
           },
           {
-            name: 'availability',
-            type: 'jsonb',
+            name: "availability",
+            type: "jsonb",
             isNullable: false,
           },
           {
-            name: 'created_at',
-            type: 'timestamptz',
-            default: 'CURRENT_TIMESTAMP',
+            name: "created_at",
+            type: "timestamptz",
+            default: "CURRENT_TIMESTAMP",
           },
           {
-            name: 'updated_at',
-            type: 'timestamptz',
-            default: 'CURRENT_TIMESTAMP',
-            onUpdate: 'CURRENT_TIMESTAMP',
+            name: "updated_at",
+            type: "timestamptz",
+            default: "CURRENT_TIMESTAMP",
+            onUpdate: "CURRENT_TIMESTAMP",
           },
         ],
       }),
@@ -127,6 +127,6 @@ export class CreateCalendarsTable1695828500000 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropTable('calendars');
+    await queryRunner.dropTable("calendars");
   }
 }
