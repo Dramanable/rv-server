@@ -4,14 +4,14 @@
  * Entité métier avec logique de validation
  */
 
-import { BusinessId } from '@domain/value-objects/business-id.value-object';
-import { ServiceId } from '@domain/value-objects/service-id.value-object';
-import { UserId } from '@domain/value-objects/user-id.value-object';
-import { Email } from '@domain/value-objects/email.value-object';
-import { Phone } from '@domain/value-objects/phone.value-object';
-import { Money } from '@domain/value-objects/money.value-object';
 import { AppointmentId } from '@domain/value-objects/appointment-id.value-object';
+import { BusinessId } from '@domain/value-objects/business-id.value-object';
+import { Email } from '@domain/value-objects/email.value-object';
+import { Money } from '@domain/value-objects/money.value-object';
+import { Phone } from '@domain/value-objects/phone.value-object';
+import { ServiceId } from '@domain/value-objects/service-id.value-object';
 import { TimeSlot } from '@domain/value-objects/time-slot.value-object';
+import { UserId } from '@domain/value-objects/user-id.value-object';
 import { generateId } from '@shared/utils/id.utils';
 
 // VALUE OBJECTS - Utilisation d'AppointmentId et TimeSlot depuis value-objects

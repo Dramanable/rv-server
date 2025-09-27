@@ -5,13 +5,13 @@
  * Clean Architecture - Application Layer
  */
 
-import { AppointmentId } from "../../../domain/value-objects/appointment-id.value-object";
-import { AppointmentStatus } from "../../../domain/entities/appointment.entity";
-import { AppointmentRepository } from "../../../domain/repositories/appointment.repository.interface";
+import { AppointmentStatus } from '../../../domain/entities/appointment.entity';
+import { AppointmentRepository } from '../../../domain/repositories/appointment.repository.interface';
+import { AppointmentId } from '../../../domain/value-objects/appointment-id.value-object';
 import {
   AppointmentAlreadyCancelledError,
   AppointmentNotFoundError,
-} from "../../exceptions/appointment.exceptions";
+} from '../../exceptions/appointment.exceptions';
 
 export interface CancelAppointmentRequest {
   readonly appointmentId: string;
@@ -67,7 +67,7 @@ export class CancelAppointmentUseCase {
 
     return {
       success: true,
-      message: "Rendez-vous annulé avec succès",
+      message: 'Rendez-vous annulé avec succès',
       appointment: appointment, // Return the cancelled appointment
       refundAmount,
     };

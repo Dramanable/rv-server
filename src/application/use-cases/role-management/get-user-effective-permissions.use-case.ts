@@ -17,8 +17,11 @@ import { IPermissionService } from '@application/ports/permission.service.interf
 import { RoleAssignmentContext } from '@domain/entities/role-assignment.entity';
 import { IBusinessContextRepository } from '@domain/repositories/business-context.repository.interface';
 import { IRoleAssignmentRepository } from '@domain/repositories/role-assignment.repository.interface';
-import { Permission, UserRole } from '@shared/enums/user-role.enum';
-import { ROLE_HIERARCHY } from '@shared/enums/user-role.enum';
+import {
+  Permission,
+  ROLE_HIERARCHY,
+  UserRole,
+} from '@shared/enums/user-role.enum';
 
 // === REQUEST & RESPONSE DTOs ===
 
@@ -51,10 +54,8 @@ export interface GetUserEffectivePermissionsResponse {
 export class GetUserEffectivePermissionsUseCase {
   constructor(
     private readonly roleAssignmentRepository: IRoleAssignmentRepository,
-    private readonly businessContextRepository: IBusinessContextRepository,
     private readonly permissionService: IPermissionService,
     private readonly logger: Logger,
-    private readonly i18n: I18nService,
   ) {}
 
   async execute(

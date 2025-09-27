@@ -1,34 +1,34 @@
 import {
-  Appointment,
-  ClientInfo,
-} from "../../domain/entities/appointment.entity";
-import {
-  BookAppointmentDto,
-  AppointmentResponseDto,
-  ClientInfoWithBookedByResponseDto,
-  BookAppointmentResponseDto,
-  ListAppointmentsResponseDto,
-  GetAvailableSlotsDto,
-  AvailableSlotResponseDto,
-  ListAppointmentsDto,
-  UpdateAppointmentDto,
-  CancelAppointmentDto,
-  CancelAppointmentResponseDto,
-} from "../dtos/appointments";
-import {
   BookAppointmentRequest,
   BookAppointmentResponse,
-} from "../../application/use-cases/appointments/book-appointment.use-case";
-import { GetAvailableSlotsRequest } from "../../application/use-cases/appointments/get-available-slots-simple.use-case";
-import {
-  ListAppointmentsRequest,
-  ListAppointmentsResponse,
-} from "../../application/use-cases/appointments/list-appointments.use-case";
-import { UpdateAppointmentRequest } from "../../application/use-cases/appointments/update-appointment.use-case";
+} from '../../application/use-cases/appointments/book-appointment.use-case';
 import {
   CancelAppointmentRequest,
   CancelAppointmentResponse,
-} from "../../application/use-cases/appointments/cancel-appointment.use-case";
+} from '../../application/use-cases/appointments/cancel-appointment.use-case';
+import { GetAvailableSlotsRequest } from '../../application/use-cases/appointments/get-available-slots-simple.use-case';
+import {
+  ListAppointmentsRequest,
+  ListAppointmentsResponse,
+} from '../../application/use-cases/appointments/list-appointments.use-case';
+import { UpdateAppointmentRequest } from '../../application/use-cases/appointments/update-appointment.use-case';
+import {
+  Appointment,
+  ClientInfo,
+} from '../../domain/entities/appointment.entity';
+import {
+  AppointmentResponseDto,
+  AvailableSlotResponseDto,
+  BookAppointmentDto,
+  BookAppointmentResponseDto,
+  CancelAppointmentDto,
+  CancelAppointmentResponseDto,
+  ClientInfoWithBookedByResponseDto,
+  GetAvailableSlotsDto,
+  ListAppointmentsDto,
+  ListAppointmentsResponseDto,
+  UpdateAppointmentDto,
+} from '../dtos/appointments';
 
 export class AppointmentMapper {
   /**
@@ -63,7 +63,7 @@ export class AppointmentMapper {
       },
       title: dto.title,
       description: dto.description,
-      source: "ONLINE" as const,
+      source: 'ONLINE' as const,
       staffId: dto.assignedStaffId,
     };
   }
@@ -76,18 +76,18 @@ export class AppointmentMapper {
   ): BookAppointmentResponseDto {
     const appointmentData: AppointmentResponseDto = {
       id: response.appointmentId,
-      businessId: "", // Not available in use case response
-      calendarId: "", // Not available in use case response
-      serviceId: "", // Not available in use case response
+      businessId: '', // Not available in use case response
+      calendarId: '', // Not available in use case response
+      serviceId: '', // Not available in use case response
       timeSlot: {
         startTime: response.appointmentDetails.startTime.toISOString(),
         endTime: response.appointmentDetails.endTime.toISOString(),
         durationInMinutes: response.appointmentDetails.duration,
       },
       clientInfo: {
-        firstName: response.clientInfo.fullName.split(" ")[0] || "",
+        firstName: response.clientInfo.fullName.split(' ')[0] || '',
         lastName:
-          response.clientInfo.fullName.split(" ").slice(1).join(" ") || "",
+          response.clientInfo.fullName.split(' ').slice(1).join(' ') || '',
         email: response.clientInfo.email,
         phone: response.clientInfo.phone,
         isNewClient: true, // Default
@@ -96,7 +96,7 @@ export class AppointmentMapper {
       status: response.status as any,
       assignedStaffId: undefined,
       title: response.message,
-      description: "",
+      description: '',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
@@ -121,13 +121,13 @@ export class AppointmentMapper {
     return {
       businessId: dto.businessId,
       serviceId: dto.serviceId,
-      calendarId: "", // Default calendar
+      calendarId: '', // Default calendar
       staffId: undefined,
-      viewMode: "DAY" as any, // Default
+      viewMode: 'DAY' as any, // Default
       referenceDate: new Date(dto.date),
       duration: undefined,
       includeUnavailableReasons: false,
-      timeZone: "UTC",
+      timeZone: 'UTC',
       requestingUserId,
     };
   }
@@ -161,8 +161,8 @@ export class AppointmentMapper {
         limit: dto.limit || 10,
       },
       sorting: {
-        sortBy: dto.sortBy || "createdAt",
-        sortOrder: dto.sortOrder || "desc",
+        sortBy: dto.sortBy || 'createdAt',
+        sortOrder: dto.sortOrder || 'desc',
       },
       filters: {
         search: dto.search,
@@ -225,7 +225,7 @@ export class AppointmentMapper {
     return {
       appointmentId,
       requestingUserId,
-      reason: dto.cancellationReason || "No reason provided",
+      reason: dto.cancellationReason || 'No reason provided',
       notifyClient: dto.notifyClient ?? true,
     };
   }
@@ -241,7 +241,7 @@ export class AppointmentMapper {
       success: true,
       data: AppointmentMapper.toAppointmentResponseDto(appointment),
       meta: {
-        operation: "CANCEL",
+        operation: 'CANCEL',
         cancellationReason: response.message,
         notificationSent: true,
         rebookingOffered: false,
@@ -289,8 +289,8 @@ export class AppointmentMapper {
       },
       status: appt.getStatus(),
       assignedStaffId: appt.getAssignedStaffId()?.getValue(),
-      title: appt.getTitle() || "Appointment",
-      description: appt.getDescription() || "",
+      title: appt.getTitle() || 'Appointment',
+      description: appt.getDescription() || '',
       createdAt: appt.getCreatedAt().toISOString(),
       updatedAt: appt.getUpdatedAt().toISOString(),
     };

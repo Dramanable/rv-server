@@ -8,16 +8,14 @@ import {
   Param,
   Post,
   Put,
-} from "@nestjs/common";
+} from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiOperation,
   ApiParam,
   ApiResponse,
   ApiTags,
-} from "@nestjs/swagger";
-import { GetUser } from "../security/decorators/get-user.decorator";
-import { TOKENS } from "../../shared/constants/injection-tokens";
+} from '@nestjs/swagger';
 import {
   CreateServiceTypeDto,
   CreateServiceTypeResponseDto,
@@ -26,16 +24,18 @@ import {
   ListServiceTypesResponseDto,
   UpdateServiceTypeDto,
   UpdateServiceTypeResponseDto,
-} from "@presentation/dtos/service-types/service-type.dto";
+} from '@presentation/dtos/service-types/service-type.dto';
+import { TOKENS } from '../../shared/constants/injection-tokens';
+import { GetUser } from '../security/decorators/get-user.decorator';
 
 // Import Use Cases avec alias TypeScript
-import { CreateServiceTypeUseCase } from "@application/use-cases/service-types/create-service-type.use-case";
-import { DeleteServiceTypeUseCase } from "@application/use-cases/service-types/delete-service-type.use-case";
+import { CreateServiceTypeUseCase } from '@application/use-cases/service-types/create-service-type.use-case';
+import { DeleteServiceTypeUseCase } from '@application/use-cases/service-types/delete-service-type.use-case';
 // import { GetServiceTypeByIdUseCase } from '@application/use-cases/service-types/get-service-type-by-id.use-case';
-import { ListServiceTypesUseCase } from "@application/use-cases/service-types/list-service-types.use-case";
-import { UpdateServiceTypeUseCase } from "@application/use-cases/service-types/update-service-type.use-case";
-import { BusinessId } from "@domain/value-objects/business-id.value-object";
-import { ServiceTypeId } from "@domain/value-objects/service-type-id.value-object";
+import { ListServiceTypesUseCase } from '@application/use-cases/service-types/list-service-types.use-case';
+import { UpdateServiceTypeUseCase } from '@application/use-cases/service-types/update-service-type.use-case';
+import { BusinessId } from '@domain/value-objects/business-id.value-object';
+import { ServiceTypeId } from '@domain/value-objects/service-type-id.value-object';
 
 /**
  * ✅ EXCELLENT - ServiceType Controller avec patterns enterprise
@@ -49,8 +49,8 @@ import { ServiceTypeId } from "@domain/value-objects/service-type-id.value-objec
  * - ✅ Gestion d'erreurs standardisée
  * - ✅ Logging et audit automatiques
  */
-@ApiTags("🏷️ Service Types Management")
-@Controller("service-types")
+@ApiTags('🏷️ Service Types Management')
+@Controller('service-types')
 @ApiBearerAuth()
 export class ServiceTypeController {
   constructor(
@@ -73,9 +73,9 @@ export class ServiceTypeController {
   /**
    * 🔍 RECHERCHE AVANCÉE PAGINÉE
    */
-  @Post("list")
+  @Post('list')
   @ApiOperation({
-    summary: "🔍 Search Service Types with Advanced Filters",
+    summary: '🔍 Search Service Types with Advanced Filters',
     description: `
     **Recherche avancée paginée** des types de service avec système de filtrage complet.
 
@@ -118,20 +118,20 @@ export class ServiceTypeController {
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: "✅ Service types found successfully",
+    description: '✅ Service types found successfully',
     type: ListServiceTypesResponseDto,
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
-    description: "❌ Invalid search parameters",
+    description: '❌ Invalid search parameters',
   })
   @ApiResponse({
     status: HttpStatus.UNAUTHORIZED,
-    description: "🔐 Authentication required",
+    description: '🔐 Authentication required',
   })
   @ApiResponse({
     status: HttpStatus.FORBIDDEN,
-    description: "🚫 Insufficient permissions",
+    description: '🚫 Insufficient permissions',
   })
   async list(
     @Body() dto: ListServiceTypesDto,
@@ -139,7 +139,7 @@ export class ServiceTypeController {
   ): Promise<ListServiceTypesResponseDto> {
     // TODO: Get businessId from user context or request parameter
     const businessId = BusinessId.fromString(
-      user.businessId || "123e4567-e89b-12d3-a456-426614174000",
+      user.businessId || '123e4567-e89b-12d3-a456-426614174000',
     );
 
     const request = {
@@ -156,10 +156,10 @@ export class ServiceTypeController {
       },
       sorting: {
         sortBy: dto.sortBy as
-          | "name"
-          | "code"
-          | "createdAt"
-          | "sortOrder"
+          | 'name'
+          | 'code'
+          | 'createdAt'
+          | 'sortOrder'
           | undefined,
         sortOrder: dto.sortOrder,
       },
@@ -173,7 +173,7 @@ export class ServiceTypeController {
       businessId: serviceType.getBusinessId().getValue(),
       name: serviceType.getName(),
       code: serviceType.getCode(),
-      description: serviceType.getDescription() || "",
+      description: serviceType.getDescription() || '',
       sortOrder: serviceType.getSortOrder(),
       isActive: serviceType.isActive(),
       createdAt: serviceType.getCreatedAt(),
@@ -252,7 +252,7 @@ export class ServiceTypeController {
    */
   @Post()
   @ApiOperation({
-    summary: "➕ Create New Service Type",
+    summary: '➕ Create New Service Type',
     description: `
     **Crée un nouveau type de service** avec validation stricte.
 
@@ -277,16 +277,16 @@ export class ServiceTypeController {
   })
   @ApiResponse({
     status: HttpStatus.CREATED,
-    description: "✅ Service type created successfully",
+    description: '✅ Service type created successfully',
     type: CreateServiceTypeResponseDto,
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
-    description: "❌ Invalid service type data",
+    description: '❌ Invalid service type data',
   })
   @ApiResponse({
     status: HttpStatus.CONFLICT,
-    description: "❌ Service type name/code already exists",
+    description: '❌ Service type name/code already exists',
   })
   async create(
     @Body() dto: CreateServiceTypeDto,
@@ -314,7 +314,7 @@ export class ServiceTypeController {
         businessId: response.businessId,
         name: response.name,
         code: response.code,
-        description: response.description || "",
+        description: response.description || '',
         sortOrder: response.sortOrder,
         isActive: response.isActive,
         createdAt: response.createdAt,
@@ -330,38 +330,38 @@ export class ServiceTypeController {
   /**
    * ✏️ MISE À JOUR
    */
-  @Put(":id")
+  @Put(':id')
   @ApiOperation({
-    summary: "✏️ Update Service Type",
-    description: "Met à jour un type de service existant",
+    summary: '✏️ Update Service Type',
+    description: 'Met à jour un type de service existant',
   })
   @ApiParam({
-    name: "id",
-    description: "Service Type UUID",
-    example: "987fcdeb-51d2-43e8-b456-789012345678",
+    name: 'id',
+    description: 'Service Type UUID',
+    example: '987fcdeb-51d2-43e8-b456-789012345678',
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: "✅ Service type updated successfully",
+    description: '✅ Service type updated successfully',
     type: UpdateServiceTypeResponseDto,
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
-    description: "❌ Service type not found",
+    description: '❌ Service type not found',
   })
   @ApiResponse({
     status: HttpStatus.CONFLICT,
-    description: "❌ Service type name/code already exists",
+    description: '❌ Service type name/code already exists',
   })
   async update(
-    @Param("id") id: string,
+    @Param('id') id: string,
     @Body() dto: UpdateServiceTypeDto,
     @GetUser() user: any,
   ): Promise<UpdateServiceTypeResponseDto> {
     const serviceTypeId = ServiceTypeId.fromString(id);
     // TODO: Get businessId from user context
     const businessId = BusinessId.fromString(
-      user.businessId || "123e4567-e89b-12d3-a456-426614174000",
+      user.businessId || '123e4567-e89b-12d3-a456-426614174000',
     );
 
     const request = {
@@ -385,7 +385,7 @@ export class ServiceTypeController {
         businessId: response.serviceType.getBusinessId().getValue(),
         name: response.serviceType.getName(),
         code: response.serviceType.getCode(),
-        description: response.serviceType.getDescription() || "",
+        description: response.serviceType.getDescription() || '',
         sortOrder: response.serviceType.getSortOrder(),
         isActive: response.serviceType.isActive(),
         createdAt: response.serviceType.getCreatedAt(),
@@ -401,9 +401,9 @@ export class ServiceTypeController {
   /**
    * 🗑️ SUPPRESSION
    */
-  @Delete(":id")
+  @Delete(':id')
   @ApiOperation({
-    summary: "🗑️ Delete Service Type",
+    summary: '🗑️ Delete Service Type',
     description: `
     **Supprime un type de service** avec vérifications de sécurité.
 
@@ -414,31 +414,31 @@ export class ServiceTypeController {
     `,
   })
   @ApiParam({
-    name: "id",
-    description: "Service Type UUID",
-    example: "987fcdeb-51d2-43e8-b456-789012345678",
+    name: 'id',
+    description: 'Service Type UUID',
+    example: '987fcdeb-51d2-43e8-b456-789012345678',
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: "✅ Service type deleted successfully",
+    description: '✅ Service type deleted successfully',
     type: DeleteServiceTypeResponseDto,
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
-    description: "❌ Service type not found",
+    description: '❌ Service type not found',
   })
   @ApiResponse({
     status: HttpStatus.UNPROCESSABLE_ENTITY,
-    description: "❌ Service type is in use and cannot be deleted",
+    description: '❌ Service type is in use and cannot be deleted',
   })
   async delete(
-    @Param("id") id: string,
+    @Param('id') id: string,
     @GetUser() user: any,
   ): Promise<DeleteServiceTypeResponseDto> {
     const serviceTypeId = ServiceTypeId.fromString(id);
     // TODO: Get businessId from user context
     const businessId = BusinessId.fromString(
-      user.businessId || "123e4567-e89b-12d3-a456-426614174000",
+      user.businessId || '123e4567-e89b-12d3-a456-426614174000',
     );
 
     const request = {
@@ -463,17 +463,17 @@ export class ServiceTypeController {
   /**
    * 📊 STATISTIQUES (Optionnel)
    */
-  @Get("stats")
+  @Get('stats')
   @ApiOperation({
-    summary: "📊 Get Service Types Statistics",
-    description: "Statistiques globales des types de service",
+    summary: '📊 Get Service Types Statistics',
+    description: 'Statistiques globales des types de service',
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: "✅ Statistics retrieved successfully",
+    description: '✅ Statistics retrieved successfully',
   })
   async getStats(): Promise<any> {
     // TODO: Implement stats use case
-    throw new Error("ServiceType stats use case not yet implemented");
+    throw new Error('ServiceType stats use case not yet implemented');
   }
 }
