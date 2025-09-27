@@ -25,6 +25,7 @@ export interface CancelAppointmentRequest {
 export interface CancelAppointmentResponse {
   readonly success: boolean;
   readonly message: string;
+  readonly appointment: any; // The cancelled appointment
   readonly refundAmount?: number;
 }
 
@@ -47,12 +48,12 @@ export class CancelAppointmentUseCase {
     }
 
     // 4. Vérification du statut (ne peut pas annuler un appointment déjà annulé)
-    if (appointment.status === AppointmentStatus.CANCELLED) {
+    if (appointment.getStatus() === AppointmentStatus.CANCELLED) {
       throw new AppointmentAlreadyCancelledError(request.appointmentId);
     }
 
     // 5. Annulation du rendez-vous
-    appointment.cancel(request.reason);
+    const cancelledAppointment = appointment.cancel();
 
     // 6. Sauvegarde
     await this.appointmentRepository.save(appointment);
@@ -69,6 +70,7 @@ export class CancelAppointmentUseCase {
     return {
       success: true,
       message: 'Rendez-vous annulé avec succès',
+      appointment: appointment, // Return the cancelled appointment
       refundAmount,
     };
   }

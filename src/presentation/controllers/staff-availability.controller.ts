@@ -17,7 +17,8 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 
-import { LegacyJwtAuthGuard } from '@presentation/security/auth.guard';
+import { RoleBasedGuard } from '../security/guards/role-based.guard';
+import { RequireStaff } from '../security/decorators/roles.decorator';
 import { GetUser } from '@presentation/security/decorators/get-user.decorator';
 import { TOKENS } from '@shared/constants/injection-tokens';
 
@@ -47,7 +48,7 @@ import { User } from '@domain/entities/user.entity';
 @ApiTags('👨‍💼 Staff Availability Management')
 @Controller('staff/availability')
 @ApiBearerAuth()
-@UseGuards(LegacyJwtAuthGuard)
+@UseGuards(RoleBasedGuard)
 export class StaffAvailabilityController {
   constructor(
     @Inject(TOKENS.SET_STAFF_AVAILABILITY_USE_CASE)

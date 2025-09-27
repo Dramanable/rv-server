@@ -3723,6 +3723,56 @@ npm run build
 npm test
 ```
 
+## 🚨 **RÈGLE CRITIQUE : CRÉATION DE FICHIERS DEPUIS L'HOST OBLIGATOIRE**
+
+### 🎯 **RÈGLE ABSOLUE NON-NÉGOCIABLE : CRÉER/ÉDITER FICHIERS DEPUIS L'HOST UNIQUEMENT**
+
+**⚠️ INTERDICTION TOTALE de créer ou éditer des fichiers directement dans les containers Docker**
+
+Pour éviter les problèmes de permissions et de synchronisation entre host et container, **TOUJOURS créer/éditer les fichiers depuis l'host** :
+
+#### **✅ APPROCHE CORRECTE OBLIGATOIRE**
+
+1. **Créer les fichiers sur l'host** : Utiliser `create_file` avec le path complet host
+2. **Vérifier la synchronisation** : S'assurer que le fichier est visible dans le container
+3. **Tester depuis le container** : Exécuter les commandes Docker pour build/test
+
+#### **❌ INTERDICTIONS ABSOLUES**
+
+- ❌ **JAMAIS** utiliser `docker compose exec app touch fichier.ts`
+- ❌ **JAMAIS** créer des fichiers directement dans `/app/src/` du container
+- ❌ **JAMAIS** éditer depuis le container avec vi/nano
+- ❌ **JAMAIS** ignorer les problèmes de synchronisation
+- ❌ **JAMAIS** utiliser `cat >`, `tee`, `heredoc` qui peuvent corrompre les fichiers
+
+#### **🔧 WORKFLOW OBLIGATOIRE**
+
+```bash
+# ✅ CORRECT - Créer depuis l'host avec create_file tool
+create_file("/home/amadou/Desktop/rvproject/server/src/path/file.ts", content)
+
+# ✅ CORRECT - Vérifier depuis l'host
+ls -la /home/amadou/Desktop/rvproject/server/src/path/file.ts
+
+# ✅ CORRECT - Tester depuis le container
+docker compose exec app npm run build
+docker compose exec app npm test
+```
+
+#### **🚨 MÉTHODES DE CRÉATION AUTORISÉES**
+
+**UNIQUEMENT :**
+- ✅ `create_file` tool avec path complet host
+- ✅ `replace_string_in_file` pour éditions
+
+**JAMAIS :**
+- ❌ `cat >` dans terminal (corruption garantie)
+- ❌ `tee` dans terminal (corruption garantie)
+- ❌ `heredoc` (corruption des caractères spéciaux)
+- ❌ Édition directe dans container
+
+**Cette règle évite 95% des problèmes de corruption de fichiers et de synchronisation !**
+
 ## 🚨 **CRITIQUE : COUCHES DOMAIN & APPLICATION LIBRES DE FRAMEWORKS**
 
 ### 🎯 **RÈGLE ABSOLUE : ZÉRO Dépendance Framework dans la Logique Métier**

@@ -1,11 +1,3 @@
-/**
- * 🎯 Service Controller - Clean Architecture Presentation Layer
- *
- * Contrôleur REST pour la gestion des services
- * ✅ Pattern CRUD standardisé avec recherche avancée
- * ✅ Alignement parfait avec les Use Cases
- * ✅ Validation, permissions, et documentation Swagger complètes
- */
 import { User } from '@domain/entities/user.entity';
 import {
   Body,
@@ -67,55 +59,15 @@ export class ServiceController {
     private readonly deleteServiceUseCase: DeleteServiceUseCase,
   ) {}
 
-  /**
-   * 🔍 LIST & SEARCH Services with Advanced Filtering
-   */
   @Post('list')
   @ApiOperation({
-    summary: '🔍 List Services with Advanced Search and Pagination',
-    description: `
-      **Recherche avancée paginée** avec système de tarification flexible.
-
-      ## ✨ Fonctionnalités
-      - 🔍 **Recherche textuelle** par nom ou description
-      - 🏷️ **Filtres avancés** : entreprise, catégorie, prix, durée
-      - 🔀 **Tri multi-critères** : nom, catégorie, durée, prix, date création
-      - 📄 **Pagination optimisée** avec métadonnées complètes
-      - 🛡️ **Contrôle d'accès** basé sur les rôles utilisateur
-      - 💰 **Pricing flexible** : gratuit, fixe, variable, masqué, sur demande
-
-      ## 🔐 Permissions requises
-      | Rôle | Accès |
-      |------|-------|
-      | PLATFORM_ADMIN | Tous les services système |
-      | BUSINESS_OWNER | Services de ses entreprises |
-      | BUSINESS_ADMIN | Services de son entreprise |
-      | LOCATION_MANAGER | Services de sa localisation |
-      | PRACTITIONER | Services qu'il/elle fournit |
-
-      ## 💡 Exemples d'utilisation
-      - **Recherche simple** : \`{ "search": "massage" }\`
-      - **Filtrage par prix** : \`{ "filters": { "priceRange": { "min": 50, "max": 200 } } }\`
-      - **Services gratuits** : \`{ "filters": { "pricingType": "FREE" } }\`
-      - **Réservation en ligne** : \`{ "filters": { "allowOnlineBooking": true } }\`
-    `,
+    summary: 'List Services with Advanced Search and Pagination',
+    description: 'Advanced paginated search with flexible pricing support',
   })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Services retrieved successfully with pagination metadata',
     type: ListServicesResponseDto,
-  })
-  @ApiResponse({
-    status: HttpStatus.BAD_REQUEST,
-    description: 'Invalid pagination, sorting, or filtering parameters',
-  })
-  @ApiResponse({
-    status: HttpStatus.UNAUTHORIZED,
-    description: 'Authentication required',
-  })
-  @ApiResponse({
-    status: HttpStatus.FORBIDDEN,
-    description: 'Insufficient permissions to list services',
   })
   async list(
     @Body() dto: ListServicesDto,
@@ -123,7 +75,7 @@ export class ServiceController {
   ): Promise<ListServicesResponseDto> {
     const request = {
       requestingUserId: user.id,
-      businessId: dto.businessId || '', // Will be handled by Use Case based on permissions
+      businessId: dto.businessId || '',
       pagination: {
         page: dto.page ?? 1,
         limit: dto.limit ?? 10,
@@ -146,41 +98,15 @@ export class ServiceController {
     const response = await this.listServicesUseCase.execute(request);
 
     return {
-      data: response.data.map(this.mapServiceToDto),
+      data: response.data.map((service) => this.mapServiceToDto(service)),
       meta: response.meta,
     };
   }
 
-  /**
-   * 📄 GET Service by ID
-   */
   @Get(':id')
   @ApiOperation({
-    summary: '📄 Get Service by ID',
-    description: `
-      **Récupération détaillée** d'un service avec sa configuration complète.
-
-      ## 📋 Informations retournées
-      - 🏷️ **Détails du service** : nom, description, catégorie
-      - 💰 **Configuration pricing** : type, prix, remises, forfaits
-      - ⏰ **Planification** : durée, créneaux, réservation en ligne
-      - 📋 **Prérequis** : âge, documents, préparation
-      - 👥 **Personnel assigné** : praticiens disponibles
-      - 🔄 **Historique** : dates de création et modification
-
-      ## 🔐 Contrôle d'accès
-      - ✅ **PLATFORM_ADMIN** : Accès à tous les services
-      - ✅ **BUSINESS_OWNER** : Services de ses entreprises
-      - ✅ **BUSINESS_ADMIN** : Services de son entreprise
-      - ✅ **LOCATION_MANAGER** : Services de sa localisation
-      - ✅ **PRACTITIONER** : Services qu'il/elle fournit
-
-      ## 💡 Cas d'usage typiques
-      - 🖥️ **Interface cliente** : Affichage détails avant réservation
-      - 📱 **App mobile** : Fiche service complète
-      - 🛠️ **Administration** : Gestion et modification
-      - 📊 **Reporting** : Analyse des configurations pricing
-    `,
+    summary: 'Get Service by ID with Complete Information',
+    description: 'Retrieve detailed service information',
   })
   @ApiParam({
     name: 'id',
@@ -193,18 +119,6 @@ export class ServiceController {
     description: 'Service retrieved successfully',
     type: ServiceDto,
   })
-  @ApiResponse({
-    status: HttpStatus.NOT_FOUND,
-    description: 'Service not found',
-  })
-  @ApiResponse({
-    status: HttpStatus.UNAUTHORIZED,
-    description: 'Authentication required',
-  })
-  @ApiResponse({
-    status: HttpStatus.FORBIDDEN,
-    description: 'Insufficient permissions to view this service',
-  })
   async findById(
     @Param('id', ParseUUIDPipe) id: string,
     @GetUser() user: User,
@@ -215,117 +129,18 @@ export class ServiceController {
     };
 
     const response = await this.getServiceUseCase.execute(request);
-
     return this.mapServiceToDto(response);
   }
 
-  /**
-   * ➕ CREATE New Service
-   */
   @Post()
   @ApiOperation({
-    summary: '➕ Create New Service with Flexible Pricing',
-    description: `
-      **Création complète** d'un service avec système de tarification avancé.
-
-      ## 🎯 Types de pricing supportés
-
-      ### 🆓 **Service GRATUIT**
-      \`\`\`json
-      {
-        "pricingConfig": {
-          "type": "FREE",
-          "visibility": "PUBLIC"
-        }
-      }
-      \`\`\`
-
-      ### 💰 **Prix FIXE avec remises**
-      \`\`\`json
-      {
-        "pricingConfig": {
-          "type": "FIXED",
-          "visibility": "PUBLIC",
-          "basePrice": { "amount": 85.00, "currency": "EUR" },
-          "discountRules": [
-            {
-              "type": "FIRST_TIME_CLIENT",
-              "discountType": "PERCENTAGE",
-              "value": 20
-            }
-          ]
-        }
-      }
-      \`\`\`
-
-      ### 🔧 **Prix VARIABLE**
-      \`\`\`json
-      {
-        "pricingConfig": {
-          "type": "VARIABLE",
-          "basePrice": { "amount": 80.00, "currency": "EUR" },
-          "variablePricing": {
-            "factors": [
-              {
-                "name": "Durée",
-                "options": [
-                  { "label": "30 min", "priceModifier": 0 },
-                  { "label": "60 min", "priceModifier": 40 }
-                ]
-              }
-            ]
-          }
-        }
-      }
-      \`\`\`
-
-      ### 🔒 **Prix MASQUÉ** (devis sur demande)
-      \`\`\`json
-      {
-        "pricingConfig": {
-          "type": "ON_DEMAND",
-          "visibility": "HIDDEN",
-          "onDemandPricing": {
-            "requiresQuote": true,
-            "estimationProcess": "Consultation préalable"
-          }
-        }
-      }
-      \`\`\`
-
-      ## 📋 Règles métier
-      - ✅ **Nom unique** par entreprise
-      - ✅ **Durée** : 15 minutes à 8 heures
-      - ✅ **Catégorie** recommandée pour le filtrage
-      - ✅ **Personnel assigné** optionnel
-      - ✅ **Prérequis** configurables (âge, documents)
-
-      ## 🔐 Permissions
-      - **PLATFORM_ADMIN** : Création pour toute entreprise
-      - **BUSINESS_OWNER** : Ses entreprises uniquement
-      - **BUSINESS_ADMIN** : Son entreprise uniquement
-    `,
+    summary: 'Create New Service with Flexible Pricing',
+    description: 'Create service with advanced pricing configuration',
   })
   @ApiResponse({
     status: HttpStatus.CREATED,
     description: 'Service created successfully',
     type: CreateServiceResponseDto,
-  })
-  @ApiResponse({
-    status: HttpStatus.BAD_REQUEST,
-    description: 'Invalid service data or validation errors',
-  })
-  @ApiResponse({
-    status: HttpStatus.UNAUTHORIZED,
-    description: 'Authentication required',
-  })
-  @ApiResponse({
-    status: HttpStatus.FORBIDDEN,
-    description: 'Insufficient permissions to create services',
-  })
-  @ApiResponse({
-    status: HttpStatus.CONFLICT,
-    description: 'Service with this name already exists in the business',
   })
   async create(
     @Body() dto: CreateServiceDto,
@@ -338,7 +153,6 @@ export class ServiceController {
       description: dto.description,
       serviceTypeIds: dto.serviceTypeIds,
       duration: dto.duration,
-      // ✅ Legacy price support - utiliser pricingConfig basePrice si price non fourni
       price: dto.price
         ? {
             amount: dto.price.amount,
@@ -349,8 +163,7 @@ export class ServiceController {
               amount: parseFloat(dto.pricingConfig.basePrice.amount),
               currency: dto.pricingConfig.basePrice.currency,
             }
-          : { amount: 0, currency: 'EUR' }, // Fallback pour FREE services
-      // TODO: Passer pricingConfig aux use cases après mise à jour interfaces
+          : { amount: 0, currency: 'EUR' },
       settings: dto.settings
         ? {
             isOnlineBookingEnabled: dto.settings.isOnlineBookingEnabled,
@@ -383,87 +196,10 @@ export class ServiceController {
     };
   }
 
-  /**
-   * ✏️ UPDATE Service
-   */
   @Put(':id')
   @ApiOperation({
-    summary: '✏️ Update Service with Flexible Pricing',
-    description: `
-      **Mise à jour complète** d'un service existant avec gestion avancée des prix.
-
-      ## 🔄 Modification du pricing
-
-      ### Passage de GRATUIT → PAYANT
-      \`\`\`json
-      {
-        "pricingConfig": {
-          "type": "FIXED",
-          "visibility": "PUBLIC",
-          "basePrice": { "amount": 50.00, "currency": "EUR" }
-        }
-      }
-      \`\`\`
-
-      ### Ajout de règles de remise
-      \`\`\`json
-      {
-        "pricingConfig": {
-          "type": "FIXED",
-          "discountRules": [
-            {
-              "type": "LOYALTY_PROGRAM",
-              "discountType": "FIXED_AMOUNT",
-              "value": 10,
-              "conditions": { "minimumVisits": 5 }
-            },
-            {
-              "type": "BULK_BOOKING",
-              "discountType": "PERCENTAGE",
-              "value": 15,
-              "conditions": { "minimumSessions": 3 }
-            }
-          ]
-        }
-      }
-      \`\`\`
-
-      ### Configuration pricing variable
-      \`\`\`json
-      {
-        "pricingConfig": {
-          "type": "VARIABLE",
-          "basePrice": { "amount": 60.00, "currency": "EUR" },
-          "variablePricing": {
-            "factors": [
-              {
-                "name": "Complexité",
-                "options": [
-                  { "label": "Standard", "priceModifier": 0 },
-                  { "label": "Avancé", "priceModifier": 25 },
-                  { "label": "Expert", "priceModifier": 50 }
-                ]
-              }
-            ]
-          }
-        }
-      }
-      \`\`\`
-
-      ## 📋 Champs modifiables
-      - ✅ **Nom** et description
-      - ✅ **Durée** et catégorie
-      - ✅ **Statut** (actif/inactif)
-      - ✅ **Visibilité** (public/privé)
-      - ✅ **Réservation en ligne** activée
-      - ✅ **Configuration pricing** complète
-      - ✅ **Personnel assigné**
-      - ✅ **Prérequis** et tags
-
-      ## 🔐 Permissions
-      - **PLATFORM_ADMIN** : Modification de tout service
-      - **BUSINESS_OWNER/ADMIN** : Services de leur entreprise uniquement
-    `,
+    summary: 'Update Service with Flexible Pricing',
+    description: 'Update existing service with pricing modification',
   })
   @ApiParam({
     name: 'id',
@@ -475,26 +211,6 @@ export class ServiceController {
     status: HttpStatus.OK,
     description: 'Service updated successfully',
     type: UpdateServiceResponseDto,
-  })
-  @ApiResponse({
-    status: HttpStatus.BAD_REQUEST,
-    description: 'Invalid update data or validation errors',
-  })
-  @ApiResponse({
-    status: HttpStatus.NOT_FOUND,
-    description: 'Service not found',
-  })
-  @ApiResponse({
-    status: HttpStatus.UNAUTHORIZED,
-    description: 'Authentication required',
-  })
-  @ApiResponse({
-    status: HttpStatus.FORBIDDEN,
-    description: 'Insufficient permissions to update this service',
-  })
-  @ApiResponse({
-    status: HttpStatus.CONFLICT,
-    description: 'Service name already exists in the business',
   })
   async update(
     @Param('id', ParseUUIDPipe) id: string,
@@ -509,7 +225,6 @@ export class ServiceController {
         description: dto.description,
         serviceTypeIds: dto.serviceTypeIds,
         duration: dto.duration,
-        // ✅ Legacy price support - utiliser pricingConfig basePrice si disponible
         price: dto.price
           ? {
               amount: dto.price.amount,
@@ -521,7 +236,6 @@ export class ServiceController {
                 currency: dto.pricingConfig.basePrice.currency,
               }
             : undefined,
-        // TODO: Passer pricingConfig aux use cases après mise à jour interfaces
         settings: dto.settings
           ? {
               isOnlineBookingEnabled: dto.settings.isOnlineBookingEnabled,
@@ -555,61 +269,10 @@ export class ServiceController {
     };
   }
 
-  /**
-   * 🗑️ DELETE Service
-   */
   @Delete(':id')
   @ApiOperation({
-    summary: '🗑️ Delete Service (Soft Delete)',
-    description: `
-      **Suppression sécurisée** d'un service avec préservation des données historiques.
-
-      ## 🛡️ Règles de protection
-
-      ### ❌ **Suppression BLOQUÉE si :**
-      - ✋ Rendez-vous **actifs** ou **futurs** liés au service
-      - ✋ Commandes ou **paiements en cours**
-      - ✋ Service référencé dans des **packages actifs**
-
-      ### ✅ **Suppression AUTORISÉE :**
-      - 🕒 Aucun rendez-vous futur programmé
-      - 💰 Tous les paiements soldés
-      - 📋 Service non utilisé dans des offres groupées
-
-      ## 🔄 Processus de suppression
-
-      1. **Vérification** des contraintes métier
-      2. **Soft delete** → Service marqué inactif
-      3. **Préservation** données historiques complètes
-      4. **Notification** aux administrateurs
-
-      ### ⚠️ Impact de la suppression
-
-      \`\`\`json
-      {
-        "service": {
-          "id": "uuid",
-          "isActive": false,
-          "deletedAt": "2024-01-15T10:30:00Z",
-          "deletedBy": "admin-user-id"
-        },
-        "impact": {
-          "futureAppointments": 0,
-          "historicalAppointments": 42,
-          "linkedStaff": 3,
-          "dataPreserved": true
-        }
-      }
-      \`\`\`
-
-      ## 🔐 Permissions
-      - **PLATFORM_ADMIN** : Suppression de tout service
-      - **BUSINESS_OWNER** : Services de ses entreprises
-      - **BUSINESS_ADMIN** : Services de son entreprise
-
-      ## 🔄 Restauration possible
-      Les services supprimés peuvent être **réactivés** par les administrateurs.
-    `,
+    summary: 'Delete Service (Soft Delete)',
+    description: 'Soft delete service with business rule validation',
   })
   @ApiParam({
     name: 'id',
@@ -621,22 +284,6 @@ export class ServiceController {
     status: HttpStatus.OK,
     description: 'Service deleted successfully',
     type: DeleteServiceResponseDto,
-  })
-  @ApiResponse({
-    status: HttpStatus.NOT_FOUND,
-    description: 'Service not found',
-  })
-  @ApiResponse({
-    status: HttpStatus.UNAUTHORIZED,
-    description: 'Authentication required',
-  })
-  @ApiResponse({
-    status: HttpStatus.FORBIDDEN,
-    description: 'Insufficient permissions to delete this service',
-  })
-  @ApiResponse({
-    status: HttpStatus.UNPROCESSABLE_ENTITY,
-    description: 'Cannot delete service with active appointments',
   })
   async delete(
     @Param('id', ParseUUIDPipe) id: string,
@@ -656,9 +303,22 @@ export class ServiceController {
     };
   }
 
-  /**
-   * 🔄 Private Helper: Map Service Entity to DTO
-   */
+  @Get('health')
+  @ApiOperation({
+    summary: 'Service Health Check',
+    description: 'Simple health check for the Service controller',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Service controller is healthy',
+  })
+  async health(): Promise<{ status: string; timestamp: string }> {
+    return {
+      status: 'healthy',
+      timestamp: new Date().toISOString(),
+    };
+  }
+
   private mapServiceToDto(service: any): ServiceDto {
     return {
       id: service.id,
@@ -669,14 +329,12 @@ export class ServiceController {
           st.getValue ? st.getValue() : st,
         ) || [],
       duration: service.duration,
-      // ✅ Legacy price support (null for FREE services)
       price: service.pricing
         ? {
             amount: service.pricing.basePrice?.amount || 0,
             currency: service.pricing.basePrice?.currency || 'EUR',
           }
         : undefined,
-      // ✅ NOUVEAU : PricingConfig flexible
       pricingConfig: {
         type: service.pricingConfig.type,
         visibility: service.pricingConfig.visibility,
@@ -689,7 +347,6 @@ export class ServiceController {
         rules: service.pricingConfig.rules || [],
         description: service.pricingConfig.description,
       },
-      // ✅ NOUVEAU : Support packages
       packages: service.packages?.map((pkg: any) => ({
         name: pkg.name,
         description: pkg.description,

@@ -70,19 +70,7 @@ export class AppointmentOrmEntity {
   is_new_client!: boolean;
 
   // Appointment details
-  @Column({
-    type: 'enum',
-    enum: [
-      'CONSULTATION',
-      'TREATMENT',
-      'FOLLOWUP',
-      'EMERGENCY',
-      'GROUP',
-      'ONLINE',
-    ],
-    default: 'CONSULTATION',
-  })
-  type!: string;
+  // ✅ Type removed - now determined by linked Service
 
   @Column({
     type: 'enum',

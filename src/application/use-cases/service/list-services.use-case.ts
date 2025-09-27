@@ -5,8 +5,8 @@ import {
   ApplicationValidationError,
   InsufficientPermissionsError,
 } from '../../exceptions/application.exceptions';
-import { Logger } from '../../ports/logger.port';
 import { I18nService } from '../../ports/i18n.port';
+import { Logger } from '../../ports/logger.port';
 import { IPermissionService } from '../../ports/permission.service.interface';
 
 export interface ListServicesRequest {
@@ -76,7 +76,7 @@ export class ListServicesUseCase {
     private readonly logger: Logger,
     private readonly i18n: I18nService,
   ) {
-    // Constructeur avec 4 paramètres pour permissions
+    // Constructeur avec 4 paramètres
   }
 
   async execute(request: ListServicesRequest): Promise<ListServicesResponse> {

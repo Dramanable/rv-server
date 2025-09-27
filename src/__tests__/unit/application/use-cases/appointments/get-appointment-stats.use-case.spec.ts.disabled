@@ -1,0 +1,385 @@
+/**
+ * 📅 GET APPOINTMENT STATS USE CASE - TDD TESTS
+ * ✅ Clean Architecture - Application Layer Tests
+ * ✅ TDD RED Phase - Tests qui échouent en premier
+ * ✅ Permissions obligatoires - IPermissionService
+ */
+
+import { GetAppointmentStatsUseCase } from '../../../../../application/use-cases/appointments/get-appointment-stats.use-case';
+import type { AppointmentRepository } from '../../../../../domain/repositories/appointment.repository.interface';
+import type { IPermissionService } from '../../../../../application/ports/permission.port';
+import type { Logger } from '../../../../../application/ports/logger.port';
+import type { I18nService } from '../../../../../application/ports/i18n.port';
+
+import { BusinessId } from '../../../../../domain/value-objects/business-id.value-object';
+import { AppointmentStatsError } from '../../../../../domain/exceptions/appointment.exceptions';
+
+describe('GetAppointmentStatsUseCase', () => {
+  let useCase: GetAppointmentStatsUseCase;
+  let mockAppointmentRepository: jest.Mocked<AppointmentRepository>;
+  let mockPermissionService: jest.Mocked<IPermissionService>;
+  let mockLogger: jest.Mocked<Logger>;
+  let mockI18n: jest.Mocked<I18nService>;
+
+  const validRequest = {
+    requestingUserId: 'user-123e4567-e89b-12d3-a456-426614174000',
+    businessId: 'biz-123e4567-e89b-12d3-a456-426614174001',
+    dateRange: {
+      startDate: new Date('2024-01-01'),
+      endDate: new Date('2024-12-31'),
+    },
+    correlationId: 'corr-123e4567-e89b-12d3-a456-426614174002',
+  };
+
+  beforeEach(() => {
+    // Mock AppointmentRepository
+    mockAppointmentRepository = {
+      getStatistics: jest.fn(),
+      save: jest.fn(),
+      findById: jest.fn(),
+      findAll: jest.fn(),
+      update: jest.fn(),
+      delete: jest.fn(),
+      findByBusinessId: jest.fn(),
+      findByClientEmail: jest.fn(),
+      findByStaffId: jest.fn(),
+      findByStatus: jest.fn(),
+      search: jest.fn(),
+      findAvailableSlots: jest.fn(),
+      getUpcomingAppointments: jest.fn(),
+      getOverdueAppointments: jest.fn(),
+      findRecurringAppointments: jest.fn(),
+      getAppointmentsForReminders: jest.fn(),
+      bulkUpdateStatus: jest.fn(),
+      bulkCancel: jest.fn(),
+      getClientHistory: jest.fn(),
+      findAppointmentsNeedingFollowUp: jest.fn(),
+      getCalendarUtilization: jest.fn(),
+      count: jest.fn(),
+      export: jest.fn(),
+    };
+
+    // Mock PermissionService
+    mockPermissionService = {
+      requirePermission: jest.fn().mockResolvedValue(undefined),
+      hasPermission: jest.fn().mockResolvedValue(true),
+      canActOnRole: jest.fn().mockResolvedValue(true),
+      canManageUser: jest.fn().mockResolvedValue(true),
+    };
+
+    // Mock Logger
+    mockLogger = {
+      log: jest.fn(),
+      error: jest.fn(),
+      warn: jest.fn(),
+      debug: jest.fn(),
+      info: jest.fn(),
+    };
+
+    // Mock I18nService
+    mockI18n = {
+      translate: jest.fn((key: string) => `translated_${key}`),
+    };
+
+    useCase = new GetAppointmentStatsUseCase(
+      mockAppointmentRepository,
+      mockPermissionService,
+      mockLogger,
+      mockI18n,
+    );
+  });
+
+  describe('🔐 Permission Enforcement', () => {
+    it('should require VIEW_APPOINTMENT_STATS permission', async () => {
+      // GIVEN
+      mockAppointmentRepository.getStatistics.mockResolvedValue({
+        totalAppointments: 150,
+        confirmedAppointments: 120,
+        cancelledAppointments: 20,
+        completedAppointments: 100,
+        noShowAppointments: 10,
+        utilizationRate: 0.85,
+        averageDuration: 60,
+        revenueGenerated: 15000,
+        topServices: [],
+        peakHours: [],
+      });
+
+      // WHEN
+      await useCase.execute(validRequest);
+
+      // THEN
+      expect(mockPermissionService.requirePermission).toHaveBeenCalledWith(
+        validRequest.requestingUserId,
+        'VIEW_APPOINTMENT_STATS',
+        { businessId: validRequest.businessId }
+      );
+    });
+
+    it('should throw error when user lacks VIEW_APPOINTMENT_STATS permission', async () => {
+      // GIVEN
+      mockPermissionService.requirePermission.mockRejectedValue(
+        new Error('Insufficient permissions')
+      );
+
+      // WHEN & THEN
+      await expect(useCase.execute(validRequest)).rejects.toThrow('Insufficient permissions');
+    });
+  });
+
+  describe('✅ Business Logic', () => {
+    beforeEach(() => {
+      mockAppointmentRepository.getStatistics.mockResolvedValue({
+        totalAppointments: 150,
+        confirmedAppointments: 120,
+        cancelledAppointments: 20,
+        completedAppointments: 100,
+        noShowAppointments: 10,
+        utilizationRate: 0.85,
+        averageDuration: 60,
+        revenueGenerated: 15000,
+        topServices: [
+          {
+            serviceId: { getValue: () => 'service-1' } as any,
+            count: 50,
+            revenue: 5000,
+          },
+        ],
+        peakHours: [
+          { hour: 14, appointmentCount: 25 },
+          { hour: 16, appointmentCount: 20 },
+        ],
+      });
+    });
+
+    it('should return appointment statistics successfully', async () => {
+      // WHEN
+      const result = await useCase.execute(validRequest);
+
+      // THEN
+      expect(result).toEqual({
+        success: true,
+        statistics: {
+          totalAppointments: 150,
+          confirmedAppointments: 120,
+          cancelledAppointments: 20,
+          completedAppointments: 100,
+          noShowAppointments: 10,
+          utilizationRate: 85, // Converted to percentage
+          averageDuration: 60,
+          revenueGenerated: 15000,
+          topServices: [
+            {
+              serviceId: 'service-1',
+              count: 50,
+              revenue: 5000,
+            },
+          ],
+          peakHours: [
+            { hour: 14, appointmentCount: 25 },
+            { hour: 16, appointmentCount: 20 },
+          ],
+        },
+        dateRange: validRequest.dateRange,
+        generatedAt: expect.any(Date),
+      });
+    });
+
+    it('should call repository with correct parameters', async () => {
+      // WHEN
+      await useCase.execute(validRequest);
+
+      // THEN
+      expect(mockAppointmentRepository.getStatistics).toHaveBeenCalledWith(
+        expect.any(BusinessId),
+        validRequest.dateRange.startDate,
+        validRequest.dateRange.endDate
+      );
+    });
+
+    it('should handle empty statistics gracefully', async () => {
+      // GIVEN
+      mockAppointmentRepository.getStatistics.mockResolvedValue({
+        totalAppointments: 0,
+        confirmedAppointments: 0,
+        cancelledAppointments: 0,
+        completedAppointments: 0,
+        noShowAppointments: 0,
+        utilizationRate: 0,
+        averageDuration: 0,
+        revenueGenerated: 0,
+        topServices: [],
+        peakHours: [],
+      });
+
+      // WHEN
+      const result = await useCase.execute(validRequest);
+
+      // THEN
+      expect(result.statistics.totalAppointments).toBe(0);
+      expect(result.statistics.topServices).toEqual([]);
+      expect(result.statistics.peakHours).toEqual([]);
+    });
+  });
+
+  describe('📊 Data Validation', () => {
+    it('should validate date range', async () => {
+      // GIVEN
+      const invalidRequest = {
+        ...validRequest,
+        dateRange: {
+          startDate: new Date('2024-12-31'),
+          endDate: new Date('2024-01-01'), // End before start
+        },
+      };
+
+      // WHEN & THEN
+      await expect(useCase.execute(invalidRequest)).rejects.toThrow(AppointmentStatsError);
+    });
+
+    it('should validate businessId format', async () => {
+      // GIVEN
+      const invalidRequest = {
+        ...validRequest,
+        businessId: 'invalid-uuid',
+      };
+
+      // WHEN & THEN
+      await expect(useCase.execute(invalidRequest)).rejects.toThrow();
+    });
+  });
+
+  describe('📝 Logging', () => {
+    beforeEach(() => {
+      mockAppointmentRepository.getStatistics.mockResolvedValue({
+        totalAppointments: 150,
+        confirmedAppointments: 120,
+        cancelledAppointments: 20,
+        completedAppointments: 100,
+        noShowAppointments: 10,
+        utilizationRate: 0.85,
+        averageDuration: 60,
+        revenueGenerated: 15000,
+        topServices: [],
+        peakHours: [],
+      });
+    });
+
+    it('should log stats retrieval attempt', async () => {
+      // WHEN
+      await useCase.execute(validRequest);
+
+      // THEN
+      expect(mockLogger.info).toHaveBeenCalledWith(
+        'translated_appointments.stats.retrieving',
+        {
+          requestingUserId: validRequest.requestingUserId,
+          businessId: validRequest.businessId,
+          correlationId: validRequest.correlationId,
+          dateRange: validRequest.dateRange,
+        }
+      );
+    });
+
+    it('should log successful stats retrieval', async () => {
+      // WHEN
+      await useCase.execute(validRequest);
+
+      // THEN
+      expect(mockLogger.info).toHaveBeenCalledWith(
+        'translated_appointments.stats.retrieved_successfully',
+        {
+          businessId: validRequest.businessId,
+          totalAppointments: 150,
+          revenueGenerated: 15000,
+          correlationId: validRequest.correlationId,
+        }
+      );
+    });
+
+    it('should log error on repository failure', async () => {
+      // GIVEN
+      const error = new Error('Database connection failed');
+      mockAppointmentRepository.getStatistics.mockRejectedValue(error);
+
+      // WHEN & THEN
+      await expect(useCase.execute(validRequest)).rejects.toThrow();
+      expect(mockLogger.error).toHaveBeenCalledWith(
+        'translated_appointments.stats.error_retrieving',
+        {
+          error: error.message,
+          businessId: validRequest.businessId,
+          correlationId: validRequest.correlationId,
+        }
+      );
+    });
+  });
+
+  describe('🌐 I18n Integration', () => {
+    it('should use translated messages for logging', async () => {
+      // GIVEN
+      mockAppointmentRepository.getStatistics.mockResolvedValue({
+        totalAppointments: 0,
+        confirmedAppointments: 0,
+        cancelledAppointments: 0,
+        completedAppointments: 0,
+        noShowAppointments: 0,
+        utilizationRate: 0,
+        averageDuration: 0,
+        revenueGenerated: 0,
+        topServices: [],
+        peakHours: [],
+      });
+
+      // WHEN
+      await useCase.execute(validRequest);
+
+      // THEN
+      expect(mockI18n.translate).toHaveBeenCalledWith('appointments.stats.retrieving');
+      expect(mockI18n.translate).toHaveBeenCalledWith('appointments.stats.retrieved_successfully');
+    });
+  });
+
+  describe('🔄 Edge Cases', () => {
+    it('should handle repository throwing AppointmentStatsError', async () => {
+      // GIVEN
+      mockAppointmentRepository.getStatistics.mockRejectedValue(
+        new AppointmentStatsError('Stats unavailable for this period')
+      );
+
+      // WHEN & THEN
+      await expect(useCase.execute(validRequest)).rejects.toThrow(AppointmentStatsError);
+    });
+
+    it('should handle very large date ranges', async () => {
+      // GIVEN
+      const largeRangeRequest = {
+        ...validRequest,
+        dateRange: {
+          startDate: new Date('2020-01-01'),
+          endDate: new Date('2030-12-31'),
+        },
+      };
+
+      mockAppointmentRepository.getStatistics.mockResolvedValue({
+        totalAppointments: 50000,
+        confirmedAppointments: 40000,
+        cancelledAppointments: 5000,
+        completedAppointments: 35000,
+        noShowAppointments: 5000,
+        utilizationRate: 0.95,
+        averageDuration: 45,
+        revenueGenerated: 2500000,
+        topServices: [],
+        peakHours: [],
+      });
+
+      // WHEN
+      const result = await useCase.execute(largeRangeRequest);
+
+      // THEN
+      expect(result.statistics.totalAppointments).toBe(50000);
+      expect(result.statistics.revenueGenerated).toBe(2500000);
+    });
+  });
+});

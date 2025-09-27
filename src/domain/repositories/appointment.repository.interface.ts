@@ -2,7 +2,6 @@ import {
   Appointment,
   AppointmentId,
   AppointmentStatus,
-  AppointmentType,
 } from '../entities/appointment.entity';
 import { BusinessId } from '../value-objects/business-id.value-object';
 import { CalendarId } from '../value-objects/calendar-id.value-object';
@@ -26,7 +25,7 @@ export interface AppointmentSearchCriteria {
   clientEmail?: Email;
   staffId?: UserId;
   status?: AppointmentStatus[];
-  type?: AppointmentType[];
+  // type retiré - le type est déterminé par le Service lié
   startDate?: Date;
   endDate?: Date;
   isRecurring?: boolean;

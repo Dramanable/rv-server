@@ -149,4 +149,19 @@ export class MockPermissionService implements IPermissionService {
     // Mock : toujours vrai pour permettre les tests
     return true;
   }
+
+  async hasAccessToBusiness(
+    userId: string,
+    businessId: string,
+  ): Promise<boolean> {
+    this.logger.debug('Business access check requested', {
+      userId,
+      businessId,
+      result: true, // Mock - toujours autorisé pour les tests
+      operation: 'hasAccessToBusiness',
+    });
+
+    // Mock : toujours vrai pour permettre les tests
+    return true;
+  }
 }

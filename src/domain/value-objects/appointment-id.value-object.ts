@@ -1,4 +1,4 @@
-import { DomainError } from '@domain/exceptions/domain.exceptions';
+import { DomainError } from '../exceptions/domain.exceptions';
 import { v4 as uuidv4, validate, version } from 'uuid';
 
 /**
@@ -17,7 +17,7 @@ export class AppointmentId {
    */
   static create(value: string): AppointmentId {
     if (!value || value.trim().length === 0) {
-      throw new DomainError('Appointment ID cannot be empty');
+      throw new DomainError('AppointmentId cannot be empty');
     }
 
     const trimmedValue = value.trim();

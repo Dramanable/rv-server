@@ -1,12 +1,8 @@
-import { Service } from '../../../domain/entities/service.entity';
-import { ServiceRepository } from '../../../domain/repositories/service.repository.interface';
-import { ServiceId } from '../../../domain/value-objects/service-id.value-object';
-import {
-  ApplicationValidationError,
-  ServiceNotFoundError,
-} from '../../exceptions/application.exceptions';
-import { I18nService } from '../../ports/i18n.port';
-import { Logger } from '../../ports/logger.port';
+import { Service } from '@domain/entities/service.entity';
+import { ServiceNotFoundError } from '@domain/exceptions/service.exceptions';
+import { ServiceRepository } from '@domain/repositories/service.repository.interface';
+import { ServiceId } from '@domain/value-objects/service-id.value-object';
+import { ApplicationValidationError } from '@application/exceptions/application.exceptions';
 
 export interface GetServiceRequest {
   readonly serviceId: string;
@@ -24,86 +20,31 @@ export interface GetServiceResponse {
       readonly amount: number;
       readonly currency: string;
     } | null;
-    readonly discountPrice?: {
+    readonly discountPrice: {
       readonly amount: number;
       readonly currency: string;
     } | null;
-    readonly packages?: ReadonlyArray<{
-      readonly name: string;
-      readonly sessions: number;
-      readonly price: {
-        readonly amount: number;
-        readonly currency: string;
-      };
-      readonly validityDays: number;
-    }>;
   };
-  readonly scheduling: {
-    readonly duration: number;
-    readonly bufferTimeBefore?: number;
-    readonly bufferTimeAfter?: number;
-    readonly allowOnlineBooking: boolean;
-    readonly requiresApproval: boolean;
-    readonly advanceBookingLimit?: number;
-    readonly cancellationDeadline?: number;
-  };
-  readonly requirements?: {
-    readonly preparationInstructions?: string;
-    readonly contraindications?: readonly string[];
-    readonly requiredDocuments?: readonly string[];
-    readonly minimumAge?: number;
-    readonly maximumAge?: number;
-    readonly specialRequirements?: string;
-  };
-  readonly imageUrl?: string;
-  readonly assignedStaffIds: readonly string[];
-  readonly status: string;
+  readonly duration: number;
+  readonly isActive: boolean;
   readonly createdAt: Date;
   readonly updatedAt: Date;
 }
 
 export class GetServiceUseCase {
-  constructor(
-    private readonly serviceRepository: ServiceRepository,
-    private readonly logger: Logger,
-    private readonly i18n: I18nService,
-  ) {}
+  constructor(private readonly serviceRepository: ServiceRepository) {}
 
   async execute(request: GetServiceRequest): Promise<GetServiceResponse> {
+    this.validateRequest(request);
+
     try {
-      // Validation des paramètres requis
-      this.validateRequest(request);
-
-      const { serviceId, requestingUserId } = request;
-
-      this.logger.info('Attempting to retrieve service', {
-        serviceId,
-        requestingUserId,
-      });
-
-      // Créer ServiceId value object
-      const serviceIdVO = ServiceId.create(serviceId);
-
-      // Récupérer le service
-      const service = await this.serviceRepository.findById(serviceIdVO);
+      const serviceId = new ServiceId(request.serviceId);
+      const service = await this.serviceRepository.findById(serviceId);
 
       if (!service) {
-        this.logger.warn('Service not found', {
-          serviceId,
-          requestingUserId,
-        });
-
-        throw new ServiceNotFoundError(serviceId, 'id', {
-          requestingUserId,
-        });
+        throw new ServiceNotFoundError(request.serviceId);
       }
 
-      this.logger.info('Service retrieved successfully', {
-        serviceId,
-        requestingUserId,
-      });
-
-      // Mapper vers response
       return this.mapServiceToResponse(service);
     } catch (error) {
       if (
@@ -113,21 +54,20 @@ export class GetServiceUseCase {
         throw error;
       }
 
-      this.logger.error(
-        'Error retrieving service',
-        error instanceof Error ? error : new Error(String(error)),
-        {
-          serviceId: request.serviceId,
-          requestingUserId: request.requestingUserId,
-        },
-      );
-
       throw error;
     }
   }
 
   private validateRequest(request: GetServiceRequest): void {
-    if (!request.serviceId || request.serviceId.trim() === '') {
+    if (!request) {
+      throw new ApplicationValidationError(
+        'request',
+        request,
+        'Request object cannot be null or undefined',
+      );
+    }
+
+    if (!request.serviceId || request.serviceId.trim().length === 0) {
       throw new ApplicationValidationError(
         'serviceId',
         request.serviceId,
@@ -135,16 +75,20 @@ export class GetServiceUseCase {
       );
     }
 
-    if (!request.requestingUserId || request.requestingUserId.trim() === '') {
+    if (
+      !request.requestingUserId ||
+      request.requestingUserId.trim().length === 0
+    ) {
       throw new ApplicationValidationError(
         'requestingUserId',
         request.requestingUserId,
-        'Requesting user ID is required and cannot be empty',
+        'User ID is required for authorization',
       );
     }
   }
 
   private mapServiceToResponse(service: Service): GetServiceResponse {
+    const basePrice = service.pricingConfig.getBasePrice();
     return {
       id: service.id.getValue(),
       name: service.name,
@@ -152,46 +96,16 @@ export class GetServiceUseCase {
       businessId: service.businessId.getValue(),
       serviceTypeIds: service.getServiceTypeIds().map((id) => id.getValue()),
       pricing: {
-        basePrice: service.getBasePrice()
+        basePrice: basePrice
           ? {
-              amount: service.getBasePrice()!.getAmount(),
-              currency: service.getBasePrice()!.getCurrency(),
+              amount: basePrice.getAmount(),
+              currency: basePrice.getCurrency(),
             }
           : null,
-        discountPrice: null, // Supprimé car remplacé par PricingConfig
-        packages: service.packages.map((pkg: any) => ({
-          name: pkg.name,
-          sessions: pkg.sessions,
-          price: {
-            amount: pkg.price.getAmount(),
-            currency: pkg.price.getCurrency(),
-          },
-          validityDays: pkg.validityDays,
-        })),
+        discountPrice: null, // PricingConfig ne semble pas avoir de discountPrice
       },
-      scheduling: {
-        duration: service.scheduling.duration,
-        bufferTimeBefore: service.scheduling.bufferTimeBefore,
-        bufferTimeAfter: service.scheduling.bufferTimeAfter,
-        allowOnlineBooking: service.scheduling.allowOnlineBooking,
-        requiresApproval: service.scheduling.requiresApproval,
-        advanceBookingLimit: service.scheduling.advanceBookingLimit,
-        cancellationDeadline: service.scheduling.cancellationDeadline,
-      },
-      requirements: service.requirements
-        ? {
-            preparationInstructions:
-              service.requirements.preparationInstructions,
-            contraindications: service.requirements.contraindications,
-            requiredDocuments: service.requirements.requiredDocuments,
-            minimumAge: service.requirements.minimumAge,
-            maximumAge: service.requirements.maximumAge,
-            specialRequirements: service.requirements.specialRequirements,
-          }
-        : undefined,
-      imageUrl: service.imageUrl?.getUrl(),
-      assignedStaffIds: service.assignedStaffIds.map((id) => id.getValue()),
-      status: service.status,
+      duration: service.scheduling.duration,
+      isActive: service.status === 'ACTIVE',
       createdAt: service.createdAt,
       updatedAt: service.updatedAt,
     };

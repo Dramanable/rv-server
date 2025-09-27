@@ -3,7 +3,7 @@ import {
   AppointmentId,
   AppointmentPricing,
   AppointmentStatus,
-  AppointmentType,
+  // AppointmentType removed - type now determined by Service
   ClientInfo,
 } from '@domain/entities/appointment.entity';
 import { BusinessId } from '@domain/value-objects/business-id.value-object';
@@ -98,7 +98,6 @@ describe('Appointment Entity', () => {
         serviceId: mockServiceId,
         timeSlot: mockTimeSlot,
         clientInfo: mockClientInfo,
-        type: AppointmentType.CONSULTATION,
         pricing: mockPricing,
       });
 
@@ -110,7 +109,6 @@ describe('Appointment Entity', () => {
       expect(appointment.serviceId).toBe(mockServiceId);
       expect(appointment.timeSlot).toBe(mockTimeSlot);
       expect(appointment.clientInfo).toBe(mockClientInfo);
-      expect(appointment.type).toBe(AppointmentType.CONSULTATION);
       expect(appointment.status).toBe(AppointmentStatus.REQUESTED);
       expect(appointment.pricing).toBe(mockPricing);
       expect(appointment.createdAt).toBeInstanceOf(Date);
@@ -129,7 +127,6 @@ describe('Appointment Entity', () => {
         serviceId: mockServiceId,
         timeSlot: mockTimeSlot,
         clientInfo: mockClientInfo,
-        type: AppointmentType.CONSULTATION,
         pricing: mockPricing,
         assignedStaffId,
         title,
@@ -153,7 +150,6 @@ describe('Appointment Entity', () => {
         serviceId: mockServiceId,
         timeSlot: mockTimeSlot,
         clientInfo: mockClientInfo,
-        type: AppointmentType.CONSULTATION,
         pricing: mockPricing,
       });
     });
@@ -259,7 +255,6 @@ describe('Appointment Entity', () => {
         serviceId: mockServiceId,
         timeSlot: mockTimeSlot,
         clientInfo: mockClientInfo,
-        type: AppointmentType.CONSULTATION,
         pricing: mockPricing,
       });
     });
@@ -353,7 +348,6 @@ describe('Appointment Entity', () => {
           serviceId: mockServiceId,
           timeSlot: pastTimeSlot,
           clientInfo: mockClientInfo,
-          type: AppointmentType.CONSULTATION,
           pricing: mockPricing,
         });
 
@@ -380,7 +374,6 @@ describe('Appointment Entity', () => {
           serviceId: mockServiceId,
           timeSlot: shortTimeSlot,
           clientInfo: mockClientInfo,
-          type: AppointmentType.CONSULTATION,
           pricing: mockPricing,
         });
 
@@ -399,7 +392,6 @@ describe('Appointment Entity', () => {
         serviceId: mockServiceId,
         timeSlot: mockTimeSlot,
         clientInfo: mockClientInfo,
-        type: AppointmentType.CONSULTATION,
         pricing: mockPricing,
       });
 
@@ -428,7 +420,6 @@ describe('Appointment Entity', () => {
         serviceId: mockServiceId,
         timeSlot: mockTimeSlot,
         clientInfo: clientInfoWithBookedBy,
-        type: AppointmentType.CONSULTATION,
         pricing: mockPricing,
       });
 
@@ -468,7 +459,6 @@ describe('Appointment Entity', () => {
           serviceId: mockServiceId,
           timeSlot: mockTimeSlot,
           clientInfo: clientInfoWithRelationship,
-          type: AppointmentType.CONSULTATION,
           pricing: mockPricing,
         });
 
@@ -497,7 +487,6 @@ describe('Appointment Entity', () => {
         serviceId: mockServiceId,
         timeSlot: mockTimeSlot,
         clientInfo: clientInfoWithOtherAndDescription,
-        type: AppointmentType.CONSULTATION,
         pricing: mockPricing,
       });
 
@@ -525,7 +514,6 @@ describe('Appointment Entity', () => {
         serviceId: mockServiceId,
         timeSlot: mockTimeSlot,
         clientInfo: clientInfoWithInvalidOther,
-        type: AppointmentType.CONSULTATION,
         pricing: mockPricing,
       });
 
@@ -554,7 +542,6 @@ describe('Appointment Entity', () => {
         serviceId: mockServiceId,
         timeSlot: mockTimeSlot,
         clientInfo: completeBookedByInfo,
-        type: AppointmentType.CONSULTATION,
         pricing: mockPricing,
       });
 
@@ -583,7 +570,6 @@ describe('Appointment Entity', () => {
         serviceId: mockServiceId,
         timeSlot: mockTimeSlot,
         clientInfo: mockClientInfo,
-        type: AppointmentType.CONSULTATION,
         pricing: mockPricing,
       });
 
@@ -604,7 +590,6 @@ describe('Appointment Entity', () => {
         serviceId: mockServiceId,
         timeSlot: mockTimeSlot,
         clientInfo: mockClientInfo,
-        type: AppointmentType.CONSULTATION,
         pricing: mockPricing,
       });
 

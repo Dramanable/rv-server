@@ -82,6 +82,9 @@ export const APPLICATION_TOKENS = {
   GET_STAFF_AVAILABILITY_USE_CASE: 'GetStaffAvailabilityUseCase',
   GET_AVAILABLE_STAFF_USE_CASE: 'GetAvailableStaffUseCase',
 
+  // 👨‍⚕️ Practitioner-specific Use Cases
+  SET_PRACTITIONER_AVAILABILITY_USE_CASE: 'SetPractitionerAvailabilityUseCase',
+
   // Appointment Use Cases
   BOOK_APPOINTMENT_USE_CASE: 'BookAppointmentUseCase',
   GET_APPOINTMENT_USE_CASE: 'GetAppointmentUseCase',

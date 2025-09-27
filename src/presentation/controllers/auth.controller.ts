@@ -52,7 +52,6 @@ import { UserResponseDto } from '../dtos/user.dto';
 import { PresentationCookieService } from '../services/cookie.service';
 // 🛡️ Security imports
 import { Public } from '../security/decorators/public.decorator';
-import { JwtAuthGuard } from '../security/guards/jwt-auth.guard';
 // import { CustomThrottlerGuard } from '../security/throttler.guard';
 import { SecurityValidationPipe } from '../security/validation.pipe';
 
@@ -381,7 +380,6 @@ export class AuthController {
   }
 
   @Get('me')
-  @UseGuards(JwtAuthGuard) // 🔐 Authentification requise pour accéder au profil
   @Throttle({ default: { limit: 60, ttl: 60000 } }) // 🛡️ 60 requêtes par minute
   @ApiSecurity('JWT') // 📄 Indique que l'endpoint nécessite JWT
   @ApiOperation({
@@ -436,7 +434,6 @@ export class AuthController {
   }
 
   @Post('logout')
-  @UseGuards(JwtAuthGuard) // 🔐 Authentification requise pour logout
   @Throttle({ default: { limit: 20, ttl: 300000 } }) // 🛡️ 20 logout max par 5 minutes
   @HttpCode(HttpStatus.OK)
   @ApiSecurity('JWT') // 📄 Indique que l'endpoint nécessite JWT

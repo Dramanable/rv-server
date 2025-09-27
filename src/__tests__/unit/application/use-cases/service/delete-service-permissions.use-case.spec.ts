@@ -273,9 +273,13 @@ describe('DeleteServiceUseCase - Permission Validation', () => {
       };
 
       mockServiceRepository.findById.mockResolvedValue(mockService);
-      // Simuler une erreur générique qui n'est pas InsufficientPermissionsError
+      // Simuler une InsufficientPermissionsError plus réaliste
       mockPermissionService.requirePermission.mockRejectedValue(
-        new Error('Generic permission error'),
+        new InsufficientPermissionsError(
+          unauthorizedUserId,
+          'MANAGE_SERVICES',
+          serviceId,
+        ),
       );
 
       // Act & Assert

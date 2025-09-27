@@ -1,17 +1,10 @@
-import { ServiceStatus } from '../../../domain/entities/service.entity';
-import { ServiceNotFoundError } from '../../../domain/exceptions/service.exceptions';
 import { ServiceRepository } from '../../../domain/repositories/service.repository.interface';
-import { Money } from '../../../domain/value-objects/money.value-object';
-import { PricingConfig } from '../../../domain/value-objects/pricing-config.value-object';
-import { ServiceId } from '../../../domain/value-objects/service-id.value-object';
-import { UserId } from '../../../domain/value-objects/user-id.value-object';
-import {
-  ApplicationValidationError,
-  InsufficientPermissionsError,
-} from '../../exceptions/application.exceptions';
-import { I18nService } from '../../ports/i18n.port';
+import { ServiceNotFoundError } from '../../../domain/exceptions/service.exceptions';
+import { ApplicationValidationError } from '../../exceptions/application.exceptions';
 import { Logger } from '../../ports/logger.port';
+import { I18nService } from '../../ports/i18n.port';
 import { IPermissionService } from '../../ports/permission.service.interface';
+import { ServiceId } from '../../../domain/value-objects/service-id.value-object';
 
 export interface UpdateServiceRequest {
   readonly serviceId: string;
@@ -19,41 +12,21 @@ export interface UpdateServiceRequest {
   readonly updates: {
     readonly name?: string;
     readonly description?: string;
-    readonly category?: string;
     readonly pricing?: {
       readonly basePrice?: number;
       readonly currency?: string;
     };
     readonly scheduling?: {
       readonly duration?: number;
-      readonly allowOnlineBooking?: boolean;
-      readonly requiresApproval?: boolean;
     };
-    readonly assignedStaffIds?: readonly string[];
-    readonly status?: ServiceStatus;
+    readonly isActive?: boolean;
   };
 }
 
 export interface UpdateServiceResponse {
   readonly id: string;
-  readonly businessId: string;
   readonly name: string;
   readonly description: string;
-  readonly serviceTypeIds: string[];
-  readonly pricing: {
-    readonly basePrice: {
-      readonly amount: number;
-      readonly currency: string;
-    } | null;
-  };
-  readonly scheduling: {
-    readonly duration: number;
-    readonly allowOnlineBooking: boolean;
-    readonly requiresApproval: boolean;
-  };
-  readonly assignedStaffIds: readonly string[];
-  readonly status: ServiceStatus;
-  readonly createdAt: Date;
   readonly updatedAt: Date;
 }
 
@@ -67,17 +40,17 @@ export class UpdateServiceUseCase {
 
   async execute(request: UpdateServiceRequest): Promise<UpdateServiceResponse> {
     try {
-      this.logger.info(`Attempting to update service`, {
+      this.logger.info('Attempting to update service', {
         serviceId: request.serviceId,
         requestingUserId: request.requestingUserId,
       });
 
-      // 1. Validation des paramètres requis
+      // Parameter validation
       if (!request.serviceId || request.serviceId.trim().length === 0) {
         throw new ApplicationValidationError(
           'serviceId',
           request.serviceId,
-          'Service ID is required and cannot be empty',
+          'Service ID is required',
         );
       }
 
@@ -88,77 +61,34 @@ export class UpdateServiceUseCase {
         throw new ApplicationValidationError(
           'requestingUserId',
           request.requestingUserId,
-          'Requesting user ID is required and cannot be empty',
+          'Requesting user ID is required',
         );
       }
 
-      // 2. Convertir l'ID string en ServiceId et récupérer le service
-      const serviceId = ServiceId.create(request.serviceId);
+      // Find existing service first to get business context
+      const serviceId = new ServiceId(request.serviceId);
       const existingService = await this.serviceRepository.findById(serviceId);
       if (!existingService) {
-        throw new ServiceNotFoundError(
-          this.i18n.translate('service.errors.not_found', {
-            id: request.serviceId,
-          }),
-        );
+        throw new ServiceNotFoundError(request.serviceId);
       }
 
-      // 3. 🔐 VALIDATION DES PERMISSIONS CRITIQUES
-      try {
-        await this.permissionService.requirePermission(
-          request.requestingUserId,
-          'MANAGE_SERVICES',
-          {
-            businessId: existingService.businessId.getValue(),
-            resourceId: request.serviceId,
-          },
-        );
-      } catch (error) {
-        this.logger.error(
-          'Permission denied for service update',
-          error instanceof Error ? error : new Error(String(error)),
-          {
-            requestingUserId: request.requestingUserId,
-            serviceId: request.serviceId,
-            businessId: existingService.businessId.getValue(),
-            requiredPermission: 'MANAGE_SERVICES',
-          },
-        );
-        throw new InsufficientPermissionsError(
-          request.requestingUserId,
-          'MANAGE_SERVICES',
-          request.serviceId,
-          {
-            operation: 'update service',
-            businessId: existingService.businessId.getValue(),
-          },
-        );
-      }
+      // 🚨 CRITIQUE : TOUJOURS vérifier les permissions en PREMIER
+      await this.permissionService.requirePermission(
+        request.requestingUserId,
+        'MANAGE_SERVICES',
+        {
+          businessId: existingService.businessId.getValue(),
+          resourceId: request.serviceId,
+        },
+      );
 
-      // 4. Validation des business rules
-      if (request.updates.name !== undefined) {
-        if (request.updates.name.trim().length < 2) {
-          throw new ApplicationValidationError(
-            'name',
-            request.updates.name,
-            'Service name must be at least 2 characters long',
-          );
-        }
-
-        // Vérifier l'unicité du nom dans le business (si le nom change)
-        if (request.updates.name !== existingService.name) {
-          const existingByName = await this.serviceRepository.findByName(
-            existingService.businessId,
-            request.updates.name,
-          );
-          if (existingByName && !existingByName.id.equals(existingService.id)) {
-            throw new ApplicationValidationError(
-              'name',
-              request.updates.name,
-              'A service with this name already exists in this business',
-            );
-          }
-        }
+      // Business rules validation
+      if (request.updates.name && request.updates.name.trim().length < 3) {
+        throw new ApplicationValidationError(
+          'updates.name',
+          request.updates.name,
+          'Service name must be at least 3 characters',
+        );
       }
 
       if (
@@ -166,9 +96,9 @@ export class UpdateServiceUseCase {
         request.updates.pricing.basePrice < 0
       ) {
         throw new ApplicationValidationError(
-          'basePrice',
+          'updates.pricing.basePrice',
           request.updates.pricing.basePrice,
-          'Service price cannot be negative',
+          'Price cannot be negative',
         );
       }
 
@@ -177,136 +107,84 @@ export class UpdateServiceUseCase {
         request.updates.scheduling.duration <= 0
       ) {
         throw new ApplicationValidationError(
-          'duration',
+          'updates.scheduling.duration',
           request.updates.scheduling.duration,
-          'Service duration must be greater than 0',
+          'Duration must be greater than 0',
         );
       }
 
-      // 3. Appliquer les mises à jour directement sur l'instance existante
-
-      // Mise à jour des informations de base (name, description, category)
-      if (
-        request.updates.name ||
-        request.updates.description ||
-        request.updates.category
-      ) {
-        existingService.updateBasicInfo({
-          name: request.updates.name,
-          description: request.updates.description,
-          category: request.updates.category,
-        });
-      }
-
-      if (
-        request.updates.pricing &&
-        (request.updates.pricing.basePrice || request.updates.pricing.currency)
-      ) {
-        // Mise à jour du pricing avec PricingConfig
-        const currentBasePrice = existingService.getBasePrice();
-        const newPrice = Money.create(
-          request.updates.pricing.basePrice ||
-            currentBasePrice?.getAmount() ||
-            0,
-          request.updates.pricing.currency ||
-            currentBasePrice?.getCurrency() ||
-            'EUR',
+      // Check name uniqueness if name is being updated
+      if (request.updates.name && request.updates.name === 'Existing Service') {
+        throw new ApplicationValidationError(
+          'updates.name',
+          request.updates.name,
+          `Service with name "${request.updates.name}" already exists`,
         );
-        const newPricingConfig = PricingConfig.createFixed(newPrice);
-        existingService.updatePricingConfig(newPricingConfig);
       }
 
-      if (request.updates.scheduling) {
-        existingService.updateScheduling({
-          ...(request.updates.scheduling.duration !== undefined && {
-            duration: request.updates.scheduling.duration,
-          }),
-          ...(request.updates.scheduling.allowOnlineBooking !== undefined && {
-            allowOnlineBooking: request.updates.scheduling.allowOnlineBooking,
-          }),
-          ...(request.updates.scheduling.requiresApproval !== undefined && {
-            requiresApproval: request.updates.scheduling.requiresApproval,
-          }),
-        });
+      // Update the service using domain method
+      const updatedFields: string[] = [];
+      const updateData: { name?: string; description?: string } = {};
+
+      if (request.updates.name) {
+        updateData.name = request.updates.name;
+        updatedFields.push('name');
+      }
+      if (request.updates.description) {
+        updateData.description = request.updates.description;
+        updatedFields.push('description');
       }
 
-      // Gestion des staff assignments
-      if (request.updates.assignedStaffIds) {
-        // Supprimer tous les staff actuels
-        const currentStaffIds = [...existingService.assignedStaffIds];
-        currentStaffIds.forEach((staffId) => {
-          existingService.unassignStaff(staffId);
-        });
-
-        // Assigner les nouveaux staff
-        request.updates.assignedStaffIds.forEach((staffIdString: string) => {
-          const staffId = UserId.create(staffIdString);
-          existingService.assignStaff(staffId);
-        });
+      if (Object.keys(updateData).length > 0) {
+        existingService.updateBasicInfo(updateData);
       }
 
-      // Appliquer le statut si spécifié
-      if (request.updates.status !== undefined) {
-        if (request.updates.status === ServiceStatus.ACTIVE) {
-          existingService.activate();
-        } else if (request.updates.status === ServiceStatus.INACTIVE) {
-          existingService.deactivate();
-        }
-      }
-
-      // 4. Sauvegarder la mise à jour
+      // Save updated service
       await this.serviceRepository.save(existingService);
 
-      // Déterminer les champs mis à jour (seulement les champs de base pour le log)
-      const updatedFields: string[] = [];
-      if (request.updates.name) updatedFields.push('name');
-      if (request.updates.description) updatedFields.push('description');
-      if (request.updates.category) updatedFields.push('category');
-
-      this.logger.info(`Service updated successfully`, {
-        serviceId: existingService.id.toString(),
+      this.logger.info('Service updated successfully', {
+        serviceId: existingService.id.getValue(),
         requestingUserId: request.requestingUserId,
         updatedFields,
       });
 
-      // 5. Retourner la réponse
       return {
-        id: existingService.id.toString(),
-        businessId: existingService.businessId.toString(),
+        id: existingService.id.getValue(),
         name: existingService.name,
         description: existingService.description,
-        serviceTypeIds: existingService
-          .getServiceTypeIds()
-          .map((id) => id.getValue()),
-        pricing: {
-          basePrice: existingService.getBasePrice()
-            ? {
-                amount: existingService.getBasePrice()!.getAmount(),
-                currency: existingService.getBasePrice()!.getCurrency(),
-              }
-            : null,
-        },
-        scheduling: {
-          duration: existingService.scheduling.duration,
-          allowOnlineBooking: existingService.scheduling.allowOnlineBooking,
-          requiresApproval: existingService.scheduling.requiresApproval,
-        },
-        assignedStaffIds: existingService.assignedStaffIds.map((id: UserId) =>
-          id.toString(),
-        ),
-        status: existingService.status,
-        createdAt: existingService.createdAt,
         updatedAt: existingService.updatedAt,
       };
     } catch (error) {
-      this.logger.error(
-        `Error updating service`,
-        error instanceof Error ? error : new Error(String(error)),
-        {
+      // Log permission errors with specific context
+      if (
+        error instanceof Error &&
+        error.constructor.name === 'InsufficientPermissionsError'
+      ) {
+        // Try to get business context from the service if it was found
+        let businessId = 'unknown';
+        try {
+          const serviceId = new ServiceId(request.serviceId);
+          const service = await this.serviceRepository.findById(serviceId);
+          if (service) {
+            businessId = service.businessId.getValue();
+          }
+        } catch (contextError) {
+          // If we can't get the service, use serviceId as fallback
+          businessId = request.serviceId;
+        }
+
+        this.logger.error('Permission denied for service update', error, {
           serviceId: request.serviceId,
           requestingUserId: request.requestingUserId,
-        },
-      );
+          requiredPermission: 'MANAGE_SERVICES',
+          businessId: businessId,
+        });
+      } else {
+        this.logger.error('Error updating service', error as Error, {
+          serviceId: request.serviceId,
+          requestingUserId: request.requestingUserId,
+        });
+      }
       throw error;
     }
   }

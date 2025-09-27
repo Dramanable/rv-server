@@ -15,7 +15,7 @@ import type { StaffRepository } from '@domain/repositories/staff.repository.inte
 import {
   Appointment,
   AppointmentStatus,
-  AppointmentType,
+  // AppointmentType removed - type now determined by Service
 } from '@domain/entities/appointment.entity';
 import { Business } from '@domain/entities/business.entity';
 import { Calendar } from '@domain/entities/calendar.entity';
@@ -57,7 +57,7 @@ describe('BookAppointmentUseCase', () => {
       phone: '+33123456789',
       isNewClient: false,
     },
-    type: AppointmentType.CONSULTATION,
+    // Type removed - now determined by linked Service
     source: 'ONLINE',
   };
 
@@ -74,6 +74,7 @@ describe('BookAppointmentUseCase', () => {
     isActive: () => true,
     isBookable: () => true, // ✅ Service autorise la prise de rendez-vous en ligne
     getDuration: () => 60, // 60 minutes
+    getDefaultDuration: () => 60, // ✅ AJOUTÉ pour BookAppointmentUseCase
     getPrice: () => Money.create(5000, 'EUR'), // 50.00 EUR
     getBasePrice: () => Money.create(5000, 'EUR'), // 50.00 EUR - ajouté pour le use case
   } as unknown as Service;

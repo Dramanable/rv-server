@@ -1,28 +1,10 @@
-/**
- * 🗑️ Delete Service Use Case - Application Layer
- *
- * Cas d'usage pour la suppression d'un service
- * Couche Application - Orchestration métier
- *
- * ✅ CLEAN ARCHITECTURE COMPLIANCE:
- * - Pas de dépendance vers les couches Infrastructure/Presentation
- * - Utilise uniquement les ports (interfaces)
- * - Validation des règles métier
- * - Gestion centralisée des erreurs
- * - Logging et audit trail
- */
-
-import { Service } from '../../../domain/entities/service.entity';
-import { ServiceNotFoundError } from '../../../domain/exceptions/service.exceptions';
 import { ServiceRepository } from '../../../domain/repositories/service.repository.interface';
-import { ServiceId } from '../../../domain/value-objects/service-id.value-object';
-import {
-  ApplicationValidationError,
-  InsufficientPermissionsError,
-} from '../../exceptions/application.exceptions';
-import { I18nService } from '../../ports/i18n.port';
+import { ServiceNotFoundError } from '../../../domain/exceptions/service.exceptions';
+import { ApplicationValidationError } from '../../exceptions/application.exceptions';
 import { Logger } from '../../ports/logger.port';
+import { I18nService } from '../../ports/i18n.port';
 import { IPermissionService } from '../../ports/permission.service.interface';
+import { ServiceId } from '../../../domain/value-objects/service-id.value-object';
 
 export interface DeleteServiceRequest {
   readonly serviceId: string;
@@ -32,7 +14,6 @@ export interface DeleteServiceRequest {
 export interface DeleteServiceResponse {
   readonly success: boolean;
   readonly serviceId: string;
-  readonly message?: string;
 }
 
 export class DeleteServiceUseCase {
@@ -50,12 +31,12 @@ export class DeleteServiceUseCase {
         requestingUserId: request.requestingUserId,
       });
 
-      // 1. Validation des paramètres requis
+      // Parameter validation
       if (!request.serviceId || request.serviceId.trim().length === 0) {
         throw new ApplicationValidationError(
           'serviceId',
           request.serviceId,
-          'Service ID is required and cannot be empty',
+          'Service ID is required',
         );
       }
 
@@ -66,60 +47,37 @@ export class DeleteServiceUseCase {
         throw new ApplicationValidationError(
           'requestingUserId',
           request.requestingUserId,
-          'Requesting user ID is required and cannot be empty',
+          'Requesting user ID is required',
         );
       }
 
-      // 2. Convertir l'ID string en ServiceId
-      const serviceId = ServiceId.create(request.serviceId);
-
-      // 3. Récupérer le service existant
+      // Find existing service first to get business context
+      const serviceId = new ServiceId(request.serviceId);
       const existingService = await this.serviceRepository.findById(serviceId);
       if (!existingService) {
-        throw new ServiceNotFoundError(
-          this.i18n.translate('service.errors.not_found', {
-            id: request.serviceId,
-          }),
-        );
+        throw new ServiceNotFoundError(request.serviceId);
       }
 
-      // 4. Vérification des permissions AVANT toute opération métier
-      try {
-        await this.permissionService.requirePermission(
-          request.requestingUserId,
-          'MANAGE_SERVICES',
-          {
-            businessId: existingService.businessId.getValue(),
-            resourceId: request.serviceId,
-          },
-        );
-      } catch (error) {
-        this.logger.error(
-          'Permission denied for service deletion',
-          error instanceof Error ? error : new Error(String(error)),
-          {
-            requestingUserId: request.requestingUserId,
-            serviceId: request.serviceId,
-            businessId: existingService.businessId.getValue(),
-            requiredPermission: 'MANAGE_SERVICES',
-          },
-        );
+      // 🚨 CRITIQUE : TOUJOURS vérifier les permissions en PREMIER
+      await this.permissionService.requirePermission(
+        request.requestingUserId,
+        'MANAGE_SERVICES',
+        {
+          businessId: existingService.businessId.getValue(),
+          resourceId: request.serviceId,
+        },
+      );
 
-        if (error instanceof InsufficientPermissionsError) {
-          throw error;
-        }
-
-        throw new InsufficientPermissionsError(
-          request.requestingUserId,
-          'MANAGE_SERVICES',
+      // Business rule: Cannot delete active service
+      if (existingService.isActive()) {
+        throw new ApplicationValidationError(
+          'serviceId',
           request.serviceId,
+          'Cannot delete active service',
         );
       }
 
-      // 5. Validation des règles métier
-      await this.validateBusinessRules(existingService, request.serviceId);
-
-      // 6. Supprimer le service
+      // Delete the service
       await this.serviceRepository.delete(serviceId);
 
       this.logger.info('Service deleted successfully', {
@@ -128,46 +86,42 @@ export class DeleteServiceUseCase {
         serviceName: existingService.name,
       });
 
-      // 7. Retourner la réponse
       return {
         success: true,
         serviceId: request.serviceId,
-        message: 'Service deleted successfully',
       };
     } catch (error) {
-      this.logger.error(
-        'Error deleting service',
-        error instanceof Error ? error : new Error(String(error)),
-        {
+      // Log permission errors with specific context
+      if (
+        error instanceof Error &&
+        error.constructor.name === 'InsufficientPermissionsError'
+      ) {
+        // Try to get business context from the service if it was found
+        let businessId = 'unknown';
+        try {
+          const serviceId = new ServiceId(request.serviceId);
+          const service = await this.serviceRepository.findById(serviceId);
+          if (service) {
+            businessId = service.businessId.getValue();
+          }
+        } catch (contextError) {
+          // If we can't get the service, use serviceId as fallback
+          businessId = request.serviceId;
+        }
+
+        this.logger.error('Permission denied for service deletion', error, {
           serviceId: request.serviceId,
           requestingUserId: request.requestingUserId,
-        },
-      );
+          requiredPermission: 'MANAGE_SERVICES',
+          businessId: businessId,
+        });
+      } else {
+        this.logger.error('Error deleting service', error as Error, {
+          serviceId: request.serviceId,
+          requestingUserId: request.requestingUserId,
+        });
+      }
       throw error;
     }
-  }
-
-  /**
-   * Valide les règles métier avant suppression
-   */
-  private async validateBusinessRules(
-    service: Service,
-    serviceId: string,
-  ): Promise<void> {
-    // Vérifier si le service peut être supprimé selon les règles métier
-    if (!service.canBeDeleted()) {
-      throw new ApplicationValidationError(
-        'service',
-        serviceId,
-        'Cannot delete active service. Please deactivate it first.',
-      );
-    }
-
-    // Autres règles métier peuvent être ajoutées ici
-    // - Vérifier si le service fait partie d'un package
-    // - Vérifier les rendez-vous existants
-    // - Etc.
-    //
-    // NOTE: Les permissions sont maintenant vérifiées via IPermissionService
   }
 }

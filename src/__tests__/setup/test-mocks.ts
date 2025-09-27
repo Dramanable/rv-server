@@ -202,6 +202,7 @@ export const createMockPermissionService =
     canManageUser: jest.fn(),
     requireSuperAdminPermission: jest.fn(),
     isSuperAdmin: jest.fn(),
+    hasAccessToBusiness: jest.fn(),
   });
 
 // 📊 Mock AuditService

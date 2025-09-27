@@ -14,10 +14,9 @@ import { IPermissionService } from '@application/ports/permission.service.interf
 import { Service, ServiceStatus } from '@domain/entities/service.entity';
 import { BusinessRepository } from '@domain/repositories/business.repository.interface';
 import { ServiceRepository } from '@domain/repositories/service.repository.interface';
+import { BusinessId } from '@domain/value-objects/business-id.value-object';
 import { ServiceTypeId } from '@domain/value-objects/service-type-id.value-object';
 import { AppContext, AppContextFactory } from '@shared/context/app-context';
-
-import { BusinessId } from '@domain/value-objects/business-id.value-object';
 
 export interface CreateServiceRequest {
   readonly requestingUserId: string;
@@ -183,6 +182,7 @@ export class CreateServiceUseCase {
       businessId,
     } as Record<string, unknown>);
   }
+
   private async validateBusinessRules(
     request: CreateServiceRequest,
     _context: AppContext,

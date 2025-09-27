@@ -20,6 +20,48 @@ export interface ServicePackage {
   validityDays: number;
 }
 
+// ✅ Questionnaire dynamique pour infos supplémentaires à la prise de RDV
+export enum QuestionType {
+  TEXT = 'TEXT', // Texte libre
+  NUMBER = 'NUMBER', // Nombre
+  EMAIL = 'EMAIL', // Email
+  PHONE = 'PHONE', // Téléphone
+  DATE = 'DATE', // Date
+  BOOLEAN = 'BOOLEAN', // Oui/Non
+  SELECT = 'SELECT', // Liste déroulante
+  MULTISELECT = 'MULTISELECT', // Sélection multiple
+  TEXTAREA = 'TEXTAREA', // Texte long
+  FILE = 'FILE', // Upload de fichier
+}
+
+export interface QuestionOption {
+  value: string;
+  label: string;
+}
+
+export interface BookingQuestion {
+  id: string; // UUID unique de la question
+  label: string; // Libellé de la question
+  type: QuestionType; // Type de question
+  required: boolean; // Obligatoire ou optionnel
+  options?: QuestionOption[]; // Options pour SELECT/MULTISELECT
+  placeholder?: string; // Texte d'aide
+  validation?: {
+    // Règles de validation
+    minLength?: number;
+    maxLength?: number;
+    pattern?: string; // Regex pour validation
+    minValue?: number;
+    maxValue?: number;
+  };
+  conditionalDisplay?: {
+    // Affichage conditionnel
+    dependsOn: string; // ID de la question parente
+    showWhen: string | string[]; // Valeur(s) qui déclenchent l'affichage
+  };
+  order: number; // Ordre d'affichage
+}
+
 export interface ServiceRequirements {
   preparationInstructions?: string;
   contraindications?: string[];
@@ -27,6 +69,18 @@ export interface ServiceRequirements {
   minimumAge?: number;
   maximumAge?: number;
   specialRequirements?: string;
+
+  // ✅ NOUVEAU - Questionnaire dynamique pour prise de RDV
+  bookingQuestionnaire?: BookingQuestion[];
+
+  // ✅ Paramètres du questionnaire
+  questionnaireSettings?: {
+    title?: string; // Titre du questionnaire
+    description?: string; // Description/instructions
+    showProgressBar: boolean; // Afficher barre de progression
+    allowSaveAndContinue: boolean; // Permettre sauvegarde partielle
+    submitButtonText?: string; // Texte bouton validation
+  };
 }
 
 export interface ServiceScheduling {
@@ -193,6 +247,10 @@ export class Service {
 
   public requiresStaffApproval(): boolean {
     return this._scheduling.requiresApproval;
+  }
+
+  public getDefaultDuration(): number {
+    return this._scheduling.duration;
   }
 
   public getTotalDuration(): number {
@@ -384,5 +442,143 @@ export class Service {
 
   public hasServiceType(serviceTypeId: ServiceTypeId): boolean {
     return this._serviceTypeIds.some((id) => id.equals(serviceTypeId));
+  }
+
+  // ✅ NOUVEAU - Gestion des questionnaires de prise de RDV
+  public hasBookingQuestionnaire(): boolean {
+    return Boolean(this._requirements?.bookingQuestionnaire?.length);
+  }
+
+  public getBookingQuestionnaire(): BookingQuestion[] {
+    return this._requirements?.bookingQuestionnaire || [];
+  }
+
+  public addBookingQuestion(question: Omit<BookingQuestion, 'id'>): void {
+    if (!this._requirements) {
+      this._requirements = {};
+    }
+
+    if (!this._requirements.bookingQuestionnaire) {
+      this._requirements.bookingQuestionnaire = [];
+    }
+
+    const newQuestion: BookingQuestion = {
+      ...question,
+      id: this.generateQuestionId(),
+    };
+
+    this._requirements.bookingQuestionnaire.push(newQuestion);
+    this._requirements.bookingQuestionnaire.sort((a, b) => a.order - b.order);
+    this._updatedAt = new Date();
+  }
+
+  public updateBookingQuestion(
+    questionId: string,
+    updates: Partial<Omit<BookingQuestion, 'id'>>,
+  ): void {
+    if (!this._requirements?.bookingQuestionnaire) {
+      throw new Error('Service has no booking questionnaire');
+    }
+
+    const questionIndex = this._requirements.bookingQuestionnaire.findIndex(
+      (q) => q.id === questionId,
+    );
+    if (questionIndex === -1) {
+      throw new Error(`Question ${questionId} not found`);
+    }
+
+    this._requirements.bookingQuestionnaire[questionIndex] = {
+      ...this._requirements.bookingQuestionnaire[questionIndex],
+      ...updates,
+    };
+
+    // Re-trier si l'ordre a changé
+    if (updates.order !== undefined) {
+      this._requirements.bookingQuestionnaire.sort((a, b) => a.order - b.order);
+    }
+
+    this._updatedAt = new Date();
+  }
+
+  public removeBookingQuestion(questionId: string): void {
+    if (!this._requirements?.bookingQuestionnaire) {
+      throw new Error('Service has no booking questionnaire');
+    }
+
+    const initialLength = this._requirements.bookingQuestionnaire.length;
+    this._requirements.bookingQuestionnaire =
+      this._requirements.bookingQuestionnaire.filter(
+        (q) => q.id !== questionId,
+      );
+
+    if (this._requirements.bookingQuestionnaire.length === initialLength) {
+      throw new Error(`Question ${questionId} not found`);
+    }
+
+    this._updatedAt = new Date();
+  }
+
+  public setQuestionnaireSettings(
+    settings: ServiceRequirements['questionnaireSettings'],
+  ): void {
+    if (!this._requirements) {
+      this._requirements = {};
+    }
+
+    this._requirements.questionnaireSettings = settings;
+    this._updatedAt = new Date();
+  }
+
+  public getRequiredQuestions(): BookingQuestion[] {
+    return this.getBookingQuestionnaire().filter((q) => q.required);
+  }
+
+  public validateQuestionnaireStructure(): {
+    isValid: boolean;
+    errors: string[];
+  } {
+    const questions = this.getBookingQuestionnaire();
+    const errors: string[] = [];
+
+    // Vérifier les dépendances conditionnelles
+    questions.forEach((question) => {
+      if (question.conditionalDisplay) {
+        const parentExists = questions.some(
+          (q) => q.id === question.conditionalDisplay!.dependsOn,
+        );
+        if (!parentExists) {
+          errors.push(
+            `Question "${question.label}" has invalid conditional dependency`,
+          );
+        }
+      }
+
+      // Vérifier les options pour SELECT/MULTISELECT
+      if (
+        (question.type === QuestionType.SELECT ||
+          question.type === QuestionType.MULTISELECT) &&
+        (!question.options || question.options.length === 0)
+      ) {
+        errors.push(
+          `Question "${question.label}" of type ${question.type} must have options`,
+        );
+      }
+    });
+
+    // Vérifier les ordres uniques
+    const orders = questions.map((q) => q.order);
+    const uniqueOrders = new Set(orders);
+    if (orders.length !== uniqueOrders.size) {
+      errors.push('Questions must have unique order values');
+    }
+
+    return {
+      isValid: errors.length === 0,
+      errors,
+    };
+  }
+
+  private generateQuestionId(): string {
+    return `q_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   }
 }

@@ -1,8 +1,8 @@
 /**
- * 📅 APPOINTMENT CONTROLLER
- * ✅ REST API pour la gestion des rendez-vous
- * ✅ Inspiré de Doctolib - Consultation et réservation
+ * 📅 APPOINTMENT CONTROLLER - CLEAN ARCHITECTURE
+ * ✅ REST API pour la gestion des rendez-vous avec Clean Architecture
  * ✅ Pattern standardisé avec recherche paginée
+ * ✅ Mapping Domain ↔ DTO avec AppointmentMapper
  */
 
 import {
@@ -26,30 +26,33 @@ import {
 } from '@nestjs/swagger';
 
 import { TOKENS } from '@shared/constants/injection-tokens';
-import { User } from '../../domain/entities/user.entity';
+import { User } from '@domain/entities/user.entity';
 import { GetUser } from '../security/decorators/get-user.decorator';
 
-import { BookAppointmentUseCase } from '../../application/use-cases/appointments/book-appointment.use-case';
-import { CancelAppointmentUseCase } from '../../application/use-cases/appointments/cancel-appointment.use-case';
-import { GetAppointmentByIdUseCase } from '../../application/use-cases/appointments/get-appointment-by-id.use-case';
-import { GetAvailableSlotsUseCase } from '../../application/use-cases/appointments/get-available-slots-simple.use-case';
-import { ListAppointmentsUseCase } from '../../application/use-cases/appointments/list-appointments.use-case';
-import { UpdateAppointmentUseCase } from '../../application/use-cases/appointments/update-appointment.use-case';
+// Use Cases
+import { BookAppointmentUseCase } from '@application/use-cases/appointments/book-appointment.use-case';
+import { GetAvailableSlotsUseCase } from '@application/use-cases/appointments/get-available-slots-simple.use-case';
+import { ListAppointmentsUseCase } from '@application/use-cases/appointments/list-appointments.use-case';
+import { GetAppointmentByIdUseCase } from '@application/use-cases/appointments/get-appointment-by-id.use-case';
+import { UpdateAppointmentUseCase } from '@application/use-cases/appointments/update-appointment.use-case';
+import { CancelAppointmentUseCase } from '@application/use-cases/appointments/cancel-appointment.use-case';
 
+// DTOs
 import {
-  AppointmentDto,
-  AppointmentStatsResponseDto,
-  AvailableSlotsResponseDto,
   BookAppointmentDto,
   BookAppointmentResponseDto,
-  CancelAppointmentDto,
-  CancelAppointmentResponseDto,
   GetAvailableSlotsDto,
+  AvailableSlotResponseDto,
   ListAppointmentsDto,
   ListAppointmentsResponseDto,
   UpdateAppointmentDto,
-  UpdateAppointmentResponseDto,
-} from '../dtos/appointment.dto';
+  CancelAppointmentDto,
+  CancelAppointmentResponseDto,
+  AppointmentResponseDto,
+} from '../dtos/appointments';
+
+// Mapper
+import { AppointmentMapper } from '../mappers/appointment.mapper';
 
 @ApiTags('📅 Appointments')
 @Controller('appointments')
@@ -71,120 +74,72 @@ export class AppointmentController {
   ) {}
 
   /**
-   * 🔍 GET AVAILABLE SLOTS - Inspired by Doctolib
-   * Récupère les créneaux disponibles par jour/semaine
+   * 🔍 GET AVAILABLE SLOTS
+   * Récupère les créneaux disponibles pour un service
    */
   @Post('available-slots')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
-    summary: '🔍 Get available appointment slots',
+    summary: '🔍 Get Available Time Slots',
     description: `
-    Récupère les créneaux disponibles pour la réservation.
-    Inspiré du système Doctolib avec navigation par jour/semaine.
+    Récupère les créneaux disponibles pour un service donné.
 
     ✅ Fonctionnalités :
-    - Consultation par jour, semaine actuelle, semaine suivante
-    - Filtrage par service, praticien, durée
-    - Affichage des créneaux libres uniquement
-    - Support des récurrences et exceptions
-    - Calcul automatique des heures d'ouverture
+    - Recherche par service et business
+    - Filtrage par calendrier spécifique
+    - Créneaux disponibles en temps réel
+    - Gestion des indisponibilités du staff
 
-    📱 Usage frontend :
-    - Calendrier interactif
-    - Navigation fluide entre les périodes
-    - Affichage temps réel de la disponibilité
+    🔐 Permissions requises :
+    - BOOK_APPOINTMENTS ou READ_APPOINTMENTS
+    - Scoping automatique selon contexte business
     `,
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: '✅ Available slots retrieved successfully',
-    type: AvailableSlotsResponseDto,
+    description: '✅ Available slots found successfully',
+    type: [AvailableSlotResponseDto],
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
     description: '❌ Invalid request parameters',
   })
-  @ApiResponse({
-    status: HttpStatus.UNAUTHORIZED,
-    description: '🔐 Authentication required',
-  })
   async getAvailableSlots(
     @Body() dto: GetAvailableSlotsDto,
     @GetUser() user: User,
-  ): Promise<AvailableSlotsResponseDto> {
-    const response = await this.getAvailableSlotsUseCase.execute({
-      businessId: dto.businessId,
-      serviceId: dto.serviceId,
-      calendarId: dto.calendarId,
-      staffId: dto.staffId,
-      viewMode: dto.viewMode,
-      referenceDate: dto.referenceDate,
-      duration: dto.duration,
-      includeUnavailableReasons: dto.includeUnavailableReasons,
-      timeZone: dto.timeZone,
-      requestingUserId: user.id,
-    });
-
-    return {
-      success: true,
-      data: {
-        viewMode: response.viewMode,
-        currentPeriod: response.currentPeriod,
-        availableSlots: response.availableSlots.map((slot) => ({
-          date: slot.date,
-          dayOfWeek: slot.dayOfWeek,
-          slots: slot.slots.map((timeSlot) => ({
-            startTime: timeSlot.startTime,
-            endTime: timeSlot.endTime,
-            isAvailable: timeSlot.isAvailable,
-            price: timeSlot.price,
-            staffName: timeSlot.staffName,
-            staffId: timeSlot.staffId,
-          })),
-        })),
-        navigation: response.navigation,
-        metadata: {
-          totalSlots: response.metadata.totalSlots,
-          availableSlots: response.metadata.availableSlots,
-          bookedSlots: response.metadata.bookedSlots,
-          utilizationRate: response.metadata.utilizationRate,
-        },
-      },
-      meta: {
-        timestamp: new Date().toISOString(),
-        requestId: `slots-${Date.now()}`,
-      },
-    };
+  ): Promise<AvailableSlotResponseDto[]> {
+    const request = AppointmentMapper.toGetAvailableSlotsRequest(dto, user.id);
+    const response = await this.getAvailableSlotsUseCase.execute(request);
+    return response.availableSlots.map((slot) =>
+      AppointmentMapper.toAvailableSlotResponseDto(slot),
+    );
   }
 
   /**
-   * 📝 BOOK APPOINTMENT - Inspired by Doctolib booking flow
-   * Réserve un rendez-vous avec toutes les validations
+   * 📅 BOOK APPOINTMENT
+   * Réservation d'un nouveau rendez-vous
    */
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
-    summary: '📝 Book a new appointment',
+    summary: '📅 Book New Appointment',
     description: `
-    Réserve un nouveau rendez-vous avec le flow complet Doctolib.
+    Réserve un nouveau rendez-vous avec validation complète.
 
-    ✅ Processus de réservation :
-    1. Validation du créneau et disponibilité
-    2. Collecte des informations client
-    3. Vérification des conflits en temps réel
-    4. Création du rendez-vous confirmé
-    5. Envoi des notifications (email/SMS)
-    6. Génération du numéro de confirmation
+    ✅ Fonctionnalités :
+    - Validation de disponibilité en temps réel
+    - Support des réservations familiales (bookedBy)
+    - Vérification des permissions de réservation
+    - Notifications automatiques
 
-    📧 Notifications automatiques :
-    - Email de confirmation immédiat
-    - SMS si numéro fourni
-    - Rappels programmés avant le RDV
+    📋 Règles métier :
+    - Service doit autoriser la réservation en ligne
+    - Créneaux validés côté serveur
+    - Informations client obligatoires
 
-    💳 Gestion des paiements :
-    - Pré-autorisation si requise
-    - Facturation différée
-    - Gestion des annulations
+    🔐 Permissions requises :
+    - BOOK_APPOINTMENTS
+    - Scoping par business context
     `,
   })
   @ApiResponse({
@@ -194,238 +149,161 @@ export class AppointmentController {
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
-    description: '❌ Invalid booking data or slot unavailable',
+    description: '❌ Invalid booking data or business rules violation',
   })
   @ApiResponse({
     status: HttpStatus.CONFLICT,
-    description: '⚠️ Time slot conflict detected',
+    description: '❌ Time slot no longer available',
   })
   async bookAppointment(
     @Body() dto: BookAppointmentDto,
+    @GetUser() user: User,
   ): Promise<BookAppointmentResponseDto> {
-    const response = await this.bookAppointmentUseCase.execute({
-      businessId: dto.businessId,
-      serviceId: dto.serviceId,
-      calendarId: dto.calendarId,
-      staffId: dto.staffId,
-      startTime: dto.startTime,
-      endTime: dto.endTime,
-      clientInfo: {
-        firstName: dto.clientInfo.firstName,
-        lastName: dto.clientInfo.lastName,
-        email: dto.clientInfo.email,
-        phone: dto.clientInfo.phone,
-        dateOfBirth: dto.clientInfo.dateOfBirth,
-        isNewClient: dto.clientInfo.isNewClient,
-        notes: dto.clientInfo.notes,
-      },
-      type: dto.type,
-      title: dto.title,
-      description: dto.description,
-      isUrgent: dto.isUrgent,
-      notificationPreferences: dto.notificationPreferences,
-      source: 'ONLINE',
-      userAgent: 'WebApp',
-      language: 'fr',
-    });
-
-    return {
-      success: response.success,
-      data: {
-        appointmentId: response.appointmentId,
-        confirmationNumber: response.confirmationNumber,
-        status: response.status,
-        message: response.message,
-        appointmentDetails: response.appointmentDetails,
-        clientInfo: response.clientInfo,
-        nextSteps: response.nextSteps,
-        notifications: response.notifications,
-      },
-      meta: {
-        timestamp: new Date().toISOString(),
-        requestId: `book-${Date.now()}`,
-      },
-    };
+    const request = AppointmentMapper.toBookAppointmentRequest(dto, user.id);
+    const response = await this.bookAppointmentUseCase.execute(request);
+    return AppointmentMapper.toBookAppointmentResponseDto(response);
   }
 
   /**
-   * 📋 LIST APPOINTMENTS - Pattern standardisé
-   * Liste paginée avec recherche et filtres avancés
+   * 📋 LIST APPOINTMENTS
+   * Recherche avancée paginée des rendez-vous
    */
   @Post('list')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
-    summary: '📋 List appointments with advanced search',
-    description:
-      'Provides comprehensive search, filtering, and pagination for appointments',
+    summary: '📋 List Appointments with Advanced Search',
+    description: `
+    Recherche avancée paginée des rendez-vous.
+
+    ✅ Fonctionnalités :
+    - Pagination (page, limit)
+    - Tri multi-critères
+    - Filtres par statut, date, service
+    - Recherche textuelle sur client
+    - Scoping automatique selon rôle
+
+    🔐 Permissions requises :
+    - VIEW_APPOINTMENTS (pour ses propres RDV)
+    - MANAGE_APPOINTMENTS (pour tous les RDV du business)
+    `,
   })
   @ApiResponse({
     status: HttpStatus.OK,
+    description: '✅ Appointments found successfully',
     type: ListAppointmentsResponseDto,
   })
   async listAppointments(
     @Body() dto: ListAppointmentsDto,
     @GetUser() user: User,
   ): Promise<ListAppointmentsResponseDto> {
-    const response = await this.listAppointmentsUseCase.execute({
-      requestingUserId: user.id,
-      pagination: {
-        page: dto.page || 1,
-        limit: dto.limit || 10,
-      },
-      sorting: {
-        sortBy: dto.sortBy || 'startTime',
-        sortOrder: dto.sortOrder || 'asc',
-      },
-      filters: {
-        search: dto.search,
-        businessId: dto.businessId,
-        status: dto.status,
-        fromDate: dto.fromDate,
-        toDate: dto.toDate,
-      },
-    });
-
-    return {
-      success: true,
-      data: response.appointments.map((appointment) => ({
-        id: appointment.id.getValue(),
-        confirmationNumber: 'RV-' + appointment.id.getValue().substring(0, 8),
-        status: appointment.status,
-        type: appointment.type,
-        startTime: appointment.timeSlot.getStartTime(),
-        endTime: appointment.timeSlot.getEndTime(),
-        clientName: `${appointment.clientInfo.firstName} ${appointment.clientInfo.lastName}`,
-        clientEmail: appointment.clientInfo.email.getValue(),
-        businessName: 'Business Name', // TODO: Récupérer depuis business
-        serviceName: 'Service Name', // TODO: Récupérer depuis service
-        staffName: undefined, // TODO: Récupérer depuis staff
-        price: 0, // TODO: Récupérer le prix du service
-        createdAt: appointment.createdAt || new Date(),
-        updatedAt: appointment.updatedAt || new Date(),
-      })),
-      meta: response.meta,
-    };
+    const request = AppointmentMapper.toListAppointmentsRequest(dto, user.id);
+    const response = await this.listAppointmentsUseCase.execute(request);
+    return AppointmentMapper.toListAppointmentsResponseDto(response);
   }
 
   /**
-   * 📄 GET APPOINTMENT BY ID
+   * 🔍 GET APPOINTMENT BY ID
+   * Récupère un rendez-vous par son ID
    */
   @Get(':id')
   @ApiOperation({
-    summary: '📄 Get appointment by ID',
-    description: 'Retrieve detailed appointment information',
+    summary: '🔍 Get Appointment by ID',
+    description:
+      "Récupère les détails complets d'un rendez-vous par son identifiant.",
   })
   @ApiParam({
     name: 'id',
-    description: 'Appointment UUID',
-    example: '123e4567-e89b-12d3-a456-426614174000',
+    description: "UUID de l'appointment",
+    format: 'uuid',
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: '✅ Appointment found',
-    type: AppointmentDto,
+    description: '✅ Appointment found successfully',
+    type: AppointmentResponseDto,
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
     description: '❌ Appointment not found',
   })
-  async getById(
+  async getAppointmentById(
     @Param('id') id: string,
     @GetUser() user: User,
-  ): Promise<AppointmentDto> {
+  ): Promise<AppointmentResponseDto> {
     const response = await this.getAppointmentByIdUseCase.execute({
       appointmentId: id,
       requestingUserId: user.id,
     });
-
-    const appointment = response.appointment;
-
-    return {
-      id: appointment.id.getValue(),
-      confirmationNumber: 'RV-' + appointment.id.getValue().substring(0, 8),
-      status: appointment.status,
-      type: appointment.type,
-      startTime: appointment.timeSlot.getStartTime(),
-      endTime: appointment.timeSlot.getEndTime(),
-      clientName: `${appointment.clientInfo.firstName} ${appointment.clientInfo.lastName}`,
-      clientEmail: appointment.clientInfo.email.getValue(),
-      businessName: 'Business Name', // TODO: Récupérer depuis business
-      serviceName: 'Service Name', // TODO: Récupérer depuis service
-      staffName: undefined, // TODO: Récupérer depuis staff
-      price: 0, // TODO: Récupérer le prix du service
-      createdAt: appointment.createdAt || new Date(),
-      updatedAt: appointment.updatedAt || new Date(),
-    };
+    return AppointmentMapper.toAppointmentResponseDto(response.appointment);
   }
 
   /**
    * ✏️ UPDATE APPOINTMENT
+   * Mise à jour d'un rendez-vous existant
    */
   @Put(':id')
   @ApiOperation({
-    summary: '✏️ Update appointment',
-    description: 'Update appointment details, time, or status',
+    summary: '✏️ Update Appointment',
+    description: `
+    Met à jour un rendez-vous existant avec validation des règles métier.
+
+    ✅ Modifications autorisées :
+    - Changement de créneaux horaires
+    - Modification des informations client
+    - Ajout/modification de notes
+    - Réassignation de staff
+
+    🔐 Permissions requises :
+    - MANAGE_APPOINTMENTS ou propriétaire du RDV
+    `,
   })
   @ApiParam({
     name: 'id',
-    description: 'Appointment UUID',
+    description: "UUID de l'appointment à modifier",
+    format: 'uuid',
   })
   @ApiResponse({
     status: HttpStatus.OK,
     description: '✅ Appointment updated successfully',
-    type: UpdateAppointmentResponseDto,
+    type: AppointmentResponseDto,
   })
   async updateAppointment(
     @Param('id') id: string,
     @Body() dto: UpdateAppointmentDto,
     @GetUser() user: User,
-  ): Promise<UpdateAppointmentResponseDto> {
-    const response = await this.updateAppointmentUseCase.execute({
-      appointmentId: id,
-      startTime: dto.startTime,
-      endTime: dto.endTime,
-      title: dto.title,
-      description: dto.description,
-      modificationReason: dto.modificationReason,
-      requestingUserId: user.id,
-    });
-
-    const appointment = response.appointment;
-
-    return {
-      success: true,
-      data: {
-        id: appointment.id.getValue(),
-        confirmationNumber: 'RV-' + appointment.id.getValue().substring(0, 8),
-        status: appointment.status,
-        type: appointment.type,
-        startTime: appointment.timeSlot.getStartTime(),
-        endTime: appointment.timeSlot.getEndTime(),
-        clientName: `${appointment.clientInfo.firstName} ${appointment.clientInfo.lastName}`,
-        clientEmail: appointment.clientInfo.email.getValue(),
-        businessName: 'Business Name', // TODO: Récupérer depuis business
-        serviceName: 'Service Name', // TODO: Récupérer depuis service
-        staffName: undefined, // TODO: Récupérer depuis staff
-        price: 0, // TODO: Récupérer le prix du service
-        createdAt: appointment.createdAt || new Date(),
-        updatedAt: appointment.updatedAt || new Date(),
-      },
-      message: response.message,
-    };
+  ): Promise<AppointmentResponseDto> {
+    const request = AppointmentMapper.toUpdateAppointmentRequest(
+      dto,
+      id,
+      user.id,
+    );
+    const response = await this.updateAppointmentUseCase.execute(request);
+    return AppointmentMapper.toAppointmentResponseDto(response.appointment);
   }
 
   /**
    * ❌ CANCEL APPOINTMENT
+   * Annulation d'un rendez-vous
    */
   @Delete(':id')
   @ApiOperation({
-    summary: '❌ Cancel appointment',
-    description: 'Cancel an appointment with reason',
+    summary: '❌ Cancel Appointment',
+    description: `
+    Annule un rendez-vous avec gestion des notifications.
+
+    ✅ Fonctionnalités :
+    - Annulation avec raison
+    - Notifications automatiques
+    - Libération du créneau
+    - Historique d'annulation
+
+    🔐 Permissions requises :
+    - CANCEL_APPOINTMENTS ou propriétaire du RDV
+    `,
   })
   @ApiParam({
     name: 'id',
-    description: 'Appointment UUID',
+    description: "UUID de l'appointment à annuler",
+    format: 'uuid',
   })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -437,60 +315,15 @@ export class AppointmentController {
     @Body() dto: CancelAppointmentDto,
     @GetUser() user: User,
   ): Promise<CancelAppointmentResponseDto> {
-    const response = await this.cancelAppointmentUseCase.execute({
-      appointmentId: id,
-      reason: dto.reason,
-      notifyClient: dto.notifyClient || false,
-      requestingUserId: user.id,
-    });
-
-    return {
-      success: response.success,
-      message: response.message,
-      refundAmount: response.refundAmount,
-    };
-  } /**
-   * 📊 APPOINTMENT STATISTICS
-   */
-  @Get('stats')
-  @ApiOperation({
-    summary: '📊 Get appointment statistics',
-    description: 'Retrieve comprehensive appointment statistics and metrics',
-  })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: '✅ Statistics retrieved successfully',
-    type: AppointmentStatsResponseDto,
-  })
-  async getStats(@GetUser() user: User): Promise<AppointmentStatsResponseDto> {
-    // TODO: Implémenter GetAppointmentStatsUseCase une fois créé
-    // Pour l'instant, retournons des statistiques temporaires
-    return {
-      success: true,
-      data: {
-        total: 0,
-        byStatus: {
-          CONFIRMED: 0,
-          PENDING: 0,
-          CANCELLED: 0,
-          COMPLETED: 0,
-          NO_SHOW: 0,
-        },
-        byPeriod: {
-          today: 0,
-          thisWeek: 0,
-          thisMonth: 0,
-          thisYear: 0,
-        },
-        revenue: {
-          total: 0,
-          thisMonth: 0,
-          averagePerAppointment: 0,
-        },
-        topServices: [],
-        recentActivity: [],
-      },
-      message: 'Statistics retrieved successfully',
-    };
+    const request = AppointmentMapper.toCancelAppointmentRequest(
+      dto,
+      id,
+      user.id,
+    );
+    const response = await this.cancelAppointmentUseCase.execute(request);
+    return AppointmentMapper.toCancelAppointmentResponseDto(
+      response,
+      response.appointment,
+    );
   }
 }

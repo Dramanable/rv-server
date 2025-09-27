@@ -20,5 +20,6 @@ export const createMockPermissionService =
       canManageUser: jest.fn().mockResolvedValue(true),
       requireSuperAdminPermission: jest.fn().mockResolvedValue(undefined),
       isSuperAdmin: jest.fn().mockResolvedValue(false),
+      hasAccessToBusiness: jest.fn().mockResolvedValue(true),
     } as jest.Mocked<IPermissionService>;
   };

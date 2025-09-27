@@ -465,6 +465,46 @@ export class RbacPermissionService implements IPermissionService {
   }
 
   /**
+   * 🏢 Vérifier si l'utilisateur a accès à un business spécifique
+   */
+  async hasAccessToBusiness(
+    userId: string,
+    businessId: string,
+  ): Promise<boolean> {
+    try {
+      this.logger.info('Checking business access', {
+        userId,
+        businessId,
+        context: 'hasAccessToBusiness',
+      });
+
+      // ✅ Super admin a accès à tout
+      if (await this.isSuperAdmin(userId)) {
+        return true;
+      }
+
+      // ✅ Vérifier les assignations de rôles dans ce contexte business
+      const assignments = await this.roleAssignmentRepository.findByCriteria({
+        userId,
+        businessId,
+        isActive: true,
+      });
+
+      return assignments.length > 0;
+    } catch (error) {
+      this.logger.error(
+        'Failed to check business access',
+        error instanceof Error ? error : new Error('Unknown error'),
+        {
+          userId,
+          businessId,
+        },
+      );
+      return false;
+    }
+  }
+
+  /**
    * 🔄 Vérifier s'il y a un contexte business commun entre acteur et cible
    */
   private hasCommonBusinessContext(

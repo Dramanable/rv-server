@@ -15,23 +15,26 @@ import type { Logger } from '../../ports/logger.port';
 
 import {
   Appointment,
-  AppointmentType,
+  AppointmentId,
+  AppointmentStatus,
   ClientInfo,
+  AppointmentPricing,
+  AppointmentQuestionnaire,
 } from '../../../domain/entities/appointment.entity';
+import { TimeSlot } from '../../../domain/value-objects/time-slot.value-object';
 import { BusinessId } from '../../../domain/value-objects/business-id.value-object';
 import { CalendarId } from '../../../domain/value-objects/calendar-id.value-object';
 import { Email } from '../../../domain/value-objects/email.value-object';
 import { Phone } from '../../../domain/value-objects/phone.value-object';
 import { ServiceId } from '../../../domain/value-objects/service-id.value-object';
-import { TimeSlot } from '../../../domain/value-objects/time-slot.value-object';
 import { UserId } from '../../../domain/value-objects/user-id.value-object';
 
-import { ServiceNotBookableOnlineError } from '../../exceptions/appointment.exceptions';
 import {
-  BusinessNotFoundError,
-  ServiceNotFoundError,
-  CalendarNotFoundError,
   AppointmentConflictError,
+  BusinessNotFoundError,
+  CalendarNotFoundError,
+  ServiceNotBookableOnlineError,
+  ServiceNotFoundError,
 } from '../../exceptions/appointment.exceptions';
 
 export interface BookAppointmentRequest {
@@ -70,8 +73,7 @@ export interface BookAppointmentRequest {
     };
   };
 
-  // Détails du rendez-vous
-  readonly type: AppointmentType;
+  // Détails du rendez-vous - type supprimé (déterminé par le service)
   readonly title?: string;
   readonly description?: string;
   readonly isUrgent?: boolean;
@@ -181,7 +183,7 @@ export class BookAppointmentUseCase {
       );
 
       this.logger.info(this.i18n.translate('operations.booking.completed'), {
-        appointmentId: savedAppointment.id.getValue(),
+        appointmentId: savedAppointment.getId().getValue(),
         confirmationNumber: response.confirmationNumber,
         clientEmail: request.clientInfo.email,
       });
@@ -296,7 +298,7 @@ export class BookAppointmentUseCase {
       if (request.staffId) {
         const staffConflict = conflictingAppointments.some(
           (apt: Appointment) =>
-            apt.assignedStaffId?.getValue() === request.staffId,
+            apt.getAssignedStaffId()?.getValue() === request.staffId,
         );
 
         if (staffConflict) {
@@ -392,42 +394,26 @@ export class BookAppointmentUseCase {
   ): Promise<Appointment> {
     const { business, service, staff } = entities;
 
-    // Création des informations client
+    // Création des informations client avec Value Objects
     const clientInfo: ClientInfo = {
       firstName: request.clientInfo.firstName.trim(),
       lastName: request.clientInfo.lastName.trim(),
-      email: Email.create(request.clientInfo.email),
+      email: Email.create(request.clientInfo.email.trim()),
       phone: request.clientInfo.phone
-        ? Phone.create(request.clientInfo.phone)
+        ? Phone.create(request.clientInfo.phone.trim())
         : undefined,
       dateOfBirth: request.clientInfo.dateOfBirth,
-      notes: request.clientInfo.notes?.trim(),
       isNewClient: request.clientInfo.isNewClient,
-      // 👨‍👩‍👧‍👦 Support pour rendez-vous pris pour un proche/famille
-      bookedBy: request.clientInfo.bookedBy
-        ? {
-            firstName: request.clientInfo.bookedBy.firstName.trim(),
-            lastName: request.clientInfo.bookedBy.lastName.trim(),
-            email: Email.create(request.clientInfo.bookedBy.email),
-            phone: request.clientInfo.bookedBy.phone
-              ? Phone.create(request.clientInfo.bookedBy.phone)
-              : undefined,
-            relationship: request.clientInfo.bookedBy.relationship,
-            relationshipDescription:
-              request.clientInfo.bookedBy.relationshipDescription?.trim(),
-          }
-        : undefined,
+      notes: request.clientInfo.notes,
     };
-
-    // Création du créneau horaire
-    const timeSlot = TimeSlot.create(request.startTime, request.endTime);
 
     // Calcul du prix (utiliser le prix du service)
     const basePrice = service.getBasePrice();
-    const pricing = {
+    const pricing: AppointmentPricing = {
       basePrice,
       totalAmount: basePrice, // Pas de réduction pour l'instant
       paymentStatus: 'PENDING' as const,
+      discounts: [], // Pas de réductions pour l'instant
     };
 
     // Métadonnées de la réservation
@@ -440,45 +426,40 @@ export class BookAppointmentUseCase {
       urgentRequest: request.isUrgent || false,
     };
 
-    // Création de l'appointment
+    // Création du créneau horaire
+    const timeSlot = new TimeSlot(request.startTime, request.endTime);
+
+    // Création de l'appointment (type déterminé par le service lié)
     const appointment = Appointment.create({
       businessId: business.getId(),
       calendarId: CalendarId.create(request.calendarId),
       serviceId: service.getId(),
-      timeSlot,
+      timeSlot: timeSlot,
       clientInfo,
-      type: request.type,
-      pricing,
+      pricing: {
+        basePrice: pricing.basePrice,
+        totalAmount: pricing.totalAmount,
+        paymentStatus: pricing.paymentStatus,
+        discounts: [], // Ajout des discounts requis par l'interface
+      },
       assignedStaffId: staff?.getId(),
       title: request.title,
       description: request.description,
-      metadata,
+      metadata: {
+        source: metadata.source,
+        userAgent: metadata.userAgent,
+        ipAddress: metadata.ipAddress,
+        referralSource: metadata.referralSource,
+        tags: [], // Ajout des tags requis par l'interface
+        customFields: {}, // Ajout des customFields requis par l'interface
+      },
     });
 
-    // 👨‍👩‍👧‍👦 Validation des relations familiales
-    if (!appointment.hasValidFamilyRelationship()) {
-      const error = new Error(
-        'Invalid family relationship. OTHER relationship requires description.',
-      );
-      this.logger.error(
-        'Invalid family relationship for appointment booking',
-        error,
-        {
-          clientName: `${clientInfo.firstName} ${clientInfo.lastName}`,
-          relationship: clientInfo.bookedBy?.relationship,
-          hasDescription: !!clientInfo.bookedBy?.relationshipDescription,
-        },
-      );
-      throw error;
-    }
-
-    if (appointment.isBookedForFamilyMember()) {
-      this.logger.info('Appointment booked for family member', {
-        clientName: `${clientInfo.firstName} ${clientInfo.lastName}`,
-        bookedByName: `${clientInfo.bookedBy?.firstName} ${clientInfo.bookedBy?.lastName}`,
-        relationship: clientInfo.bookedBy?.relationship,
-      });
-    }
+    // ✅ Appointment créé avec succès
+    this.logger.info('Appointment created successfully', {
+      appointmentId: appointment.getId().getValue(),
+      serviceId: request.serviceId,
+    });
 
     return appointment;
   }
@@ -511,9 +492,9 @@ export class BookAppointmentUseCase {
 
     return {
       success: true,
-      appointmentId: appointment.id.getValue(),
+      appointmentId: appointment.getId().getValue(),
       confirmationNumber,
-      status: appointment.status,
+      status: appointment.getStatus(),
       message: this.i18n.translate('success.booking.appointment_created'),
 
       appointmentDetails: {
@@ -522,18 +503,21 @@ export class BookAppointmentUseCase {
         staffName: staff
           ? `${staff.getProfile().firstName} ${staff.getProfile().lastName}`
           : undefined,
-        startTime: appointment.timeSlot.getStartTime(),
-        endTime: appointment.timeSlot.getEndTime(),
-        duration: appointment.getDurationMinutes(),
-        price: appointment.pricing.totalAmount.getAmount(),
-        currency: appointment.pricing.totalAmount.getCurrency(),
+        startTime: appointment.getScheduledAt(),
+        endTime: new Date(
+          appointment.getScheduledAt().getTime() +
+            appointment.getDuration() * 60000,
+        ),
+        duration: appointment.getDuration(),
+        price: appointment.getPricing().totalAmount.getAmount(),
+        currency: appointment.getPricing().totalAmount.getCurrency(),
         address: business.getAddress()?.toString(),
       },
 
       clientInfo: {
-        fullName: `${appointment.clientInfo.firstName} ${appointment.clientInfo.lastName}`,
-        email: appointment.clientInfo.email.getValue(),
-        phone: appointment.clientInfo.phone?.getValue(),
+        fullName: `${appointment.getClientInfo().firstName} ${appointment.getClientInfo().lastName}`,
+        email: appointment.getClientInfo().email.getValue(),
+        phone: appointment.getClientInfo().phone?.getValue(),
       },
 
       nextSteps: {
@@ -551,7 +535,7 @@ export class BookAppointmentUseCase {
 
   private generateConfirmationNumber(appointment: Appointment): string {
     // Format: RV-YYYYMMDD-XXXX (comme les références Doctolib)
-    const date = appointment.timeSlot.getStartTime();
+    const date = appointment.getScheduledAt();
     const dateStr = date.toISOString().slice(0, 10).replace(/-/g, '');
     const randomPart = Math.random().toString(36).substring(2, 6).toUpperCase();
 

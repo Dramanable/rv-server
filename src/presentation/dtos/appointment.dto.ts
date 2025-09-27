@@ -24,7 +24,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 
-import { AppointmentType } from '../../domain/entities/appointment.entity';
+// ✅ AppointmentType removed - type now determined by Service
 
 // =====================================
 // GET AVAILABLE SLOTS DTOs
@@ -420,13 +420,7 @@ export class BookAppointmentDto {
   @Type(() => ClientInfoDto)
   clientInfo!: ClientInfoDto;
 
-  @ApiProperty({
-    description: 'Appointment type',
-    enum: AppointmentType,
-    example: AppointmentType.CONSULTATION,
-  })
-  @IsEnum(AppointmentType)
-  type!: AppointmentType;
+  // ✅ Type removed - now determined by linked Service
 
   @ApiPropertyOptional({
     description: 'Appointment title',
@@ -770,11 +764,7 @@ export class AppointmentDto {
   })
   status!: string;
 
-  @ApiProperty({
-    description: 'Appointment type',
-    example: 'CONSULTATION',
-  })
-  type!: string;
+  // ✅ Type removed - now determined by linked Service
 
   @ApiProperty({
     description: 'Start time',

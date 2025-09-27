@@ -21,8 +21,9 @@ import {
 
 import { AssignRoleUseCase } from '@application/use-cases/role-management/assign-role.use-case';
 import { User } from '@domain/entities/user.entity';
-import { LegacyJwtAuthGuard } from '@presentation/security/auth.guard';
+import { RoleBasedGuard } from '@presentation/security/guards/role-based.guard';
 import { GetUser } from '@presentation/security/decorators/get-user.decorator';
+import { RequireRoles } from '@presentation/security/decorators/roles.decorator';
 import { TOKENS } from '@shared/constants/injection-tokens';
 import { UserRole } from '@shared/enums/user-role.enum';
 
@@ -60,7 +61,8 @@ import {
 @ApiTags('👤 Role Management')
 @Controller('role-assignments')
 @ApiBearerAuth()
-@UseGuards(LegacyJwtAuthGuard)
+@UseGuards(RoleBasedGuard)
+@RequireRoles(UserRole.SUPER_ADMIN)
 export class RoleManagementController {
   private readonly logger = new Logger(RoleManagementController.name);
 

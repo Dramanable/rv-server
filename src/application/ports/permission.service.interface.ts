@@ -83,4 +83,9 @@ export interface IPermissionService {
    * 🔍 Vérifier si l'utilisateur est super-admin
    */
   isSuperAdmin(userId: string): Promise<boolean>;
+
+  /**
+   * 🏢 Vérifier si l'utilisateur a accès à un business spécifique
+   */
+  hasAccessToBusiness(userId: string, businessId: string): Promise<boolean>;
 }
