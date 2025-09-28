@@ -11,72 +11,72 @@ import {
   Index,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
-} from "typeorm";
+} from 'typeorm';
 
-@Entity("business_sectors")
-@Index(["code"], { unique: true })
-@Index(["isActive"])
+@Entity('business_sectors')
+@Index(['code'], { unique: true })
+@Index(['isActive'])
 export class BusinessSectorOrmEntity {
-  @PrimaryGeneratedColumn("uuid")
+  @PrimaryGeneratedColumn('uuid')
   id!: string;
 
   @Column({
-    type: "varchar",
+    type: 'varchar',
     length: 100,
     unique: true,
     comment:
-      "Unique business sector code (uppercase, alphanumeric with underscores)",
+      'Unique business sector code (uppercase, alphanumeric with underscores)',
   })
   code!: string;
 
   @Column({
-    type: "varchar",
+    type: 'varchar',
     length: 255,
-    comment: "Human-readable business sector name",
+    comment: 'Human-readable business sector name',
   })
   name!: string;
 
   @Column({
-    type: "text",
+    type: 'text',
     nullable: true,
-    comment: "Optional detailed description of the business sector",
+    comment: 'Optional detailed description of the business sector',
   })
   description?: string;
 
   @Column({
-    type: "boolean",
+    type: 'boolean',
     default: true,
-    name: "is_active",
-    comment: "Whether this business sector is available for new businesses",
+    name: 'is_active',
+    comment: 'Whether this business sector is available for new businesses',
   })
   isActive!: boolean;
 
   @Column({
-    type: "uuid",
-    name: "created_by",
-    comment: "ID of the user (super admin) who created this sector",
+    type: 'uuid',
+    name: 'created_by',
+    comment: 'ID of the user (super admin) who created this sector',
   })
   createdBy!: string;
 
   @Column({
-    type: "uuid",
-    name: "updated_by",
+    type: 'uuid',
+    name: 'updated_by',
     nullable: true,
-    comment: "ID of the user who last updated this sector",
+    comment: 'ID of the user who last updated this sector',
   })
   updatedBy?: string;
 
   @CreateDateColumn({
-    name: "created_at",
-    type: "timestamp",
-    comment: "Timestamp when the business sector was created",
+    name: 'created_at',
+    type: 'timestamp',
+    comment: 'Timestamp when the business sector was created',
   })
   createdAt!: Date;
 
   @UpdateDateColumn({
-    name: "updated_at",
-    type: "timestamp",
-    comment: "Timestamp when the business sector was last updated",
+    name: 'updated_at',
+    type: 'timestamp',
+    comment: 'Timestamp when the business sector was last updated',
   })
   updatedAt!: Date;
 

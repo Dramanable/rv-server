@@ -5,9 +5,9 @@
  * Couche présentation/sécurité - contrôle d'accès HTTP
  */
 
-import { SetMetadata } from "@nestjs/common";
+import { SetMetadata } from '@nestjs/common';
 
-export const IS_PUBLIC_KEY = "isPublic";
+export const IS_PUBLIC_KEY = 'isPublic';
 
 /**
  * 🔓 Décorateur @Public()

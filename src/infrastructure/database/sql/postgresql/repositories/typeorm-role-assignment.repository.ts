@@ -12,23 +12,23 @@
  * - Messages i18n pour erreurs utilisateur
  */
 
-import { Injectable } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository, MoreThan, LessThan, Between } from "typeorm";
-import { RoleAssignmentOrmEntity } from "../entities/role-assignment-orm.entity";
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository, MoreThan, LessThan, Between } from 'typeorm';
+import { RoleAssignmentOrmEntity } from '../entities/role-assignment-orm.entity';
 import {
   RoleAssignment,
   RoleAssignmentContext,
-} from "@domain/entities/role-assignment.entity";
-import { IRoleAssignmentRepository } from "@domain/repositories/role-assignment.repository.interface";
+} from '@domain/entities/role-assignment.entity';
+import { IRoleAssignmentRepository } from '@domain/repositories/role-assignment.repository.interface';
 import {
   RoleAssignmentFilters,
   RoleAssignmentCriteria,
-} from "@domain/repositories/role-assignment.repository.interface";
-import { RoleAssignmentOrmMapper } from "@infrastructure/mappers/role-assignment-orm.mapper";
-import { UserRole } from "@shared/enums/user-role.enum";
-import { Logger } from "@application/ports/logger.port";
-import { I18nService } from "@application/ports/i18n.port";
+} from '@domain/repositories/role-assignment.repository.interface';
+import { RoleAssignmentOrmMapper } from '@infrastructure/mappers/role-assignment-orm.mapper';
+import { UserRole } from '@shared/enums/user-role.enum';
+import { Logger } from '@application/ports/logger.port';
+import { I18nService } from '@application/ports/i18n.port';
 
 @Injectable()
 export class TypeOrmRoleAssignmentRepository
@@ -46,7 +46,7 @@ export class TypeOrmRoleAssignmentRepository
    */
   async save(roleAssignment: RoleAssignment): Promise<RoleAssignment> {
     try {
-      this.logger.info("Saving role assignment", {
+      this.logger.info('Saving role assignment', {
         userId: roleAssignment.getUserId(),
         role: roleAssignment.getRole(),
       });
@@ -56,7 +56,7 @@ export class TypeOrmRoleAssignmentRepository
       const savedAssignment =
         RoleAssignmentOrmMapper.toDomainEntity(savedEntity);
 
-      this.logger.info("Role assignment saved successfully", {
+      this.logger.info('Role assignment saved successfully', {
         id: savedAssignment.getId(),
         userId: savedAssignment.getUserId(),
         role: savedAssignment.getRole(),
@@ -65,7 +65,7 @@ export class TypeOrmRoleAssignmentRepository
       return savedAssignment;
     } catch (error) {
       this.logger.error(
-        "Failed to save role assignment",
+        'Failed to save role assignment',
         error instanceof Error ? error : new Error(String(error)),
         {
           assignment: {
@@ -83,21 +83,21 @@ export class TypeOrmRoleAssignmentRepository
    */
   async findById(id: string): Promise<RoleAssignment | null> {
     try {
-      this.logger.info("Finding role assignment by ID", { id });
+      this.logger.info('Finding role assignment by ID', { id });
 
       const ormEntity = await this.ormRepository.findOne({
         where: { id },
-        relations: ["businessContext"],
+        relations: ['businessContext'],
       });
 
       if (!ormEntity) {
-        this.logger.info("Role assignment not found", { id });
+        this.logger.info('Role assignment not found', { id });
         return null;
       }
 
       const assignment = RoleAssignmentOrmMapper.toDomainEntity(ormEntity);
 
-      this.logger.info("Role assignment found", {
+      this.logger.info('Role assignment found', {
         id,
         userId: assignment.getUserId(),
         role: assignment.getRole(),
@@ -106,7 +106,7 @@ export class TypeOrmRoleAssignmentRepository
       return assignment;
     } catch (error) {
       this.logger.error(
-        "Failed to find role assignment by ID",
+        'Failed to find role assignment by ID',
         error instanceof Error ? error : new Error(String(error)),
         { id },
       );
@@ -119,18 +119,18 @@ export class TypeOrmRoleAssignmentRepository
    */
   async findByUserId(userId: string): Promise<RoleAssignment[]> {
     try {
-      this.logger.info("Finding role assignments by user ID", { userId });
+      this.logger.info('Finding role assignments by user ID', { userId });
 
       const ormAssignments = await this.ormRepository.find({
         where: { userId },
-        relations: ["businessContext"],
+        relations: ['businessContext'],
       });
 
       const assignments = ormAssignments.map((orm) =>
         RoleAssignmentOrmMapper.toDomainEntity(orm),
       );
 
-      this.logger.info("Found role assignments by user ID", {
+      this.logger.info('Found role assignments by user ID', {
         userId,
         count: assignments.length,
       });
@@ -138,7 +138,7 @@ export class TypeOrmRoleAssignmentRepository
       return assignments;
     } catch (error) {
       this.logger.error(
-        "Failed to find role assignments by user ID",
+        'Failed to find role assignments by user ID',
         error instanceof Error ? error : new Error(String(error)),
         { userId },
       );
@@ -151,7 +151,7 @@ export class TypeOrmRoleAssignmentRepository
    */
   async findActiveByUserId(userId: string): Promise<RoleAssignment[]> {
     try {
-      this.logger.info("Finding active role assignments by user ID", {
+      this.logger.info('Finding active role assignments by user ID', {
         userId,
       });
 
@@ -161,14 +161,14 @@ export class TypeOrmRoleAssignmentRepository
           isActive: true,
           expiresAt: MoreThan(new Date()),
         },
-        relations: ["businessContext"],
+        relations: ['businessContext'],
       });
 
       const assignments = ormAssignments.map((orm) =>
         RoleAssignmentOrmMapper.toDomainEntity(orm),
       );
 
-      this.logger.info("Found active role assignments", {
+      this.logger.info('Found active role assignments', {
         userId,
         count: assignments.length,
       });
@@ -176,7 +176,7 @@ export class TypeOrmRoleAssignmentRepository
       return assignments;
     } catch (error) {
       this.logger.error(
-        "Failed to find active role assignments",
+        'Failed to find active role assignments',
         error instanceof Error ? error : new Error(String(error)),
         { userId },
       );
@@ -192,7 +192,7 @@ export class TypeOrmRoleAssignmentRepository
     context: RoleAssignmentContext,
   ): Promise<RoleAssignment[]> {
     try {
-      this.logger.info("Finding active role assignments in context", {
+      this.logger.info('Finding active role assignments in context', {
         userId,
         context,
       });
@@ -209,14 +209,14 @@ export class TypeOrmRoleAssignmentRepository
 
       const ormAssignments = await this.ormRepository.find({
         where,
-        relations: ["businessContext"],
+        relations: ['businessContext'],
       });
 
       const assignments = ormAssignments.map((orm) =>
         RoleAssignmentOrmMapper.toDomainEntity(orm),
       );
 
-      this.logger.info("Found active role assignments in context", {
+      this.logger.info('Found active role assignments in context', {
         userId,
         context,
         count: assignments.length,
@@ -225,7 +225,7 @@ export class TypeOrmRoleAssignmentRepository
       return assignments;
     } catch (error) {
       this.logger.error(
-        "Failed to find active role assignments in context",
+        'Failed to find active role assignments in context',
         error instanceof Error ? error : new Error(String(error)),
         {
           userId,
@@ -243,7 +243,7 @@ export class TypeOrmRoleAssignmentRepository
     context: RoleAssignmentContext,
   ): Promise<RoleAssignment[]> {
     try {
-      this.logger.info("Finding role assignments by context", { context });
+      this.logger.info('Finding role assignments by context', { context });
 
       const where: any = {};
 
@@ -253,14 +253,14 @@ export class TypeOrmRoleAssignmentRepository
 
       const ormAssignments = await this.ormRepository.find({
         where,
-        relations: ["businessContext"],
+        relations: ['businessContext'],
       });
 
       const assignments = ormAssignments.map((orm) =>
         RoleAssignmentOrmMapper.toDomainEntity(orm),
       );
 
-      this.logger.info("Found role assignments by context", {
+      this.logger.info('Found role assignments by context', {
         context,
         count: assignments.length,
       });
@@ -268,7 +268,7 @@ export class TypeOrmRoleAssignmentRepository
       return assignments;
     } catch (error) {
       this.logger.error(
-        "Failed to find role assignments by context",
+        'Failed to find role assignments by context',
         error instanceof Error ? error : new Error(String(error)),
         { context },
       );
@@ -283,7 +283,7 @@ export class TypeOrmRoleAssignmentRepository
     criteria: RoleAssignmentCriteria,
   ): Promise<RoleAssignment[]> {
     try {
-      this.logger.info("Finding role assignments by criteria", { criteria });
+      this.logger.info('Finding role assignments by criteria', { criteria });
 
       const where: any = {};
 
@@ -301,14 +301,14 @@ export class TypeOrmRoleAssignmentRepository
 
       const ormAssignments = await this.ormRepository.find({
         where,
-        relations: ["businessContext"],
+        relations: ['businessContext'],
       });
 
       const assignments = ormAssignments.map((orm) =>
         RoleAssignmentOrmMapper.toDomainEntity(orm),
       );
 
-      this.logger.info("Found role assignments by criteria", {
+      this.logger.info('Found role assignments by criteria', {
         criteria,
         count: assignments.length,
       });
@@ -316,7 +316,7 @@ export class TypeOrmRoleAssignmentRepository
       return assignments;
     } catch (error) {
       this.logger.error(
-        "Failed to find role assignments by criteria",
+        'Failed to find role assignments by criteria',
         error instanceof Error ? error : new Error(String(error)),
         { criteria },
       );
@@ -333,7 +333,7 @@ export class TypeOrmRoleAssignmentRepository
       page: number;
       limit: number;
       sortBy?: string;
-      sortOrder?: "ASC" | "DESC";
+      sortOrder?: 'ASC' | 'DESC';
     },
   ): Promise<{
     data: RoleAssignment[];
@@ -342,48 +342,48 @@ export class TypeOrmRoleAssignmentRepository
     limit: number;
   }> {
     try {
-      this.logger.info("Finding role assignments with filters", {
+      this.logger.info('Finding role assignments with filters', {
         filters,
         pagination,
       });
 
       const queryBuilder = this.ormRepository
-        .createQueryBuilder("ra")
-        .leftJoinAndSelect("ra.businessContext", "bc");
+        .createQueryBuilder('ra')
+        .leftJoinAndSelect('ra.businessContext', 'bc');
 
       // Filtres
       if (filters.roles?.length) {
-        queryBuilder.andWhere("ra.role IN (:...roles)", {
+        queryBuilder.andWhere('ra.role IN (:...roles)', {
           roles: filters.roles,
         });
       }
 
       if (filters.businessIds?.length) {
-        queryBuilder.andWhere("ra.businessId IN (:...businessIds)", {
+        queryBuilder.andWhere('ra.businessId IN (:...businessIds)', {
           businessIds: filters.businessIds,
         });
       }
 
       if (filters.locationIds?.length) {
-        queryBuilder.andWhere("ra.locationId IN (:...locationIds)", {
+        queryBuilder.andWhere('ra.locationId IN (:...locationIds)', {
           locationIds: filters.locationIds,
         });
       }
 
       if (filters.departmentIds?.length) {
-        queryBuilder.andWhere("ra.departmentId IN (:...departmentIds)", {
+        queryBuilder.andWhere('ra.departmentId IN (:...departmentIds)', {
           departmentIds: filters.departmentIds,
         });
       }
 
       if (filters.isActive !== undefined) {
-        queryBuilder.andWhere("ra.isActive = :isActive", {
+        queryBuilder.andWhere('ra.isActive = :isActive', {
           isActive: filters.isActive,
         });
       }
 
       if (filters.assignmentScope) {
-        queryBuilder.andWhere("ra.assignmentScope = :scope", {
+        queryBuilder.andWhere('ra.assignmentScope = :scope', {
           scope: filters.assignmentScope,
         });
       }
@@ -393,14 +393,14 @@ export class TypeOrmRoleAssignmentRepository
         const soonDate = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000); // 7 jours
 
         switch (filters.expirationStatus) {
-          case "active":
-            queryBuilder.andWhere("ra.expiresAt > :now", { now });
+          case 'active':
+            queryBuilder.andWhere('ra.expiresAt > :now', { now });
             break;
-          case "expired":
-            queryBuilder.andWhere("ra.expiresAt <= :now", { now });
+          case 'expired':
+            queryBuilder.andWhere('ra.expiresAt <= :now', { now });
             break;
-          case "expiring_soon":
-            queryBuilder.andWhere("ra.expiresAt BETWEEN :now AND :soon", {
+          case 'expiring_soon':
+            queryBuilder.andWhere('ra.expiresAt BETWEEN :now AND :soon', {
               now,
               soon: soonDate,
             });
@@ -410,7 +410,7 @@ export class TypeOrmRoleAssignmentRepository
 
       if (filters.search) {
         queryBuilder.andWhere(
-          "(ra.assignedByName ILIKE :search OR ra.notes ILIKE :search)",
+          '(ra.assignedByName ILIKE :search OR ra.notes ILIKE :search)',
           { search: `%${filters.search}%` },
         );
       }
@@ -423,8 +423,8 @@ export class TypeOrmRoleAssignmentRepository
       const total = await queryBuilder.getCount();
 
       // Tri
-      const sortBy = pagination?.sortBy || "createdAt";
-      const sortOrder = pagination?.sortOrder || "DESC";
+      const sortBy = pagination?.sortBy || 'createdAt';
+      const sortOrder = pagination?.sortOrder || 'DESC';
       queryBuilder.orderBy(`ra.${sortBy}`, sortOrder);
 
       const ormAssignments = await queryBuilder
@@ -443,7 +443,7 @@ export class TypeOrmRoleAssignmentRepository
         limit,
       };
 
-      this.logger.info("Found role assignments with filters", {
+      this.logger.info('Found role assignments with filters', {
         filters,
         pagination,
         total,
@@ -453,7 +453,7 @@ export class TypeOrmRoleAssignmentRepository
       return result;
     } catch (error) {
       this.logger.error(
-        "Failed to find role assignments with filters",
+        'Failed to find role assignments with filters',
         error instanceof Error ? error : new Error(String(error)),
         {
           filters,
@@ -473,7 +473,7 @@ export class TypeOrmRoleAssignmentRepository
     context: RoleAssignmentContext,
   ): Promise<boolean> {
     try {
-      this.logger.info("Checking if user has role in context", {
+      this.logger.info('Checking if user has role in context', {
         userId,
         role,
         context,
@@ -493,7 +493,7 @@ export class TypeOrmRoleAssignmentRepository
       const count = await this.ormRepository.count({ where });
       const hasRole = count > 0;
 
-      this.logger.info("Checked if user has role in context", {
+      this.logger.info('Checked if user has role in context', {
         userId,
         role,
         context,
@@ -503,7 +503,7 @@ export class TypeOrmRoleAssignmentRepository
       return hasRole;
     } catch (error) {
       this.logger.error(
-        "Failed to check if user has role in context",
+        'Failed to check if user has role in context',
         error instanceof Error ? error : new Error(String(error)),
         {
           userId,
@@ -523,7 +523,7 @@ export class TypeOrmRoleAssignmentRepository
     context: RoleAssignmentContext,
   ): Promise<UserRole | null> {
     try {
-      this.logger.info("Getting effective role for user in context", {
+      this.logger.info('Getting effective role for user in context', {
         userId,
         context,
       });
@@ -542,13 +542,13 @@ export class TypeOrmRoleAssignmentRepository
       const assignment = await this.ormRepository.findOne({
         where,
         order: {
-          createdAt: "DESC", // Plus récent en premier
+          createdAt: 'DESC', // Plus récent en premier
         },
       });
 
       const effectiveRole = assignment ? (assignment.role as UserRole) : null;
 
-      this.logger.info("Got effective role for user in context", {
+      this.logger.info('Got effective role for user in context', {
         userId,
         context,
         effectiveRole,
@@ -557,7 +557,7 @@ export class TypeOrmRoleAssignmentRepository
       return effectiveRole;
     } catch (error) {
       this.logger.error(
-        "Failed to get effective role for user in context",
+        'Failed to get effective role for user in context',
         error instanceof Error ? error : new Error(String(error)),
         {
           userId,
@@ -573,7 +573,7 @@ export class TypeOrmRoleAssignmentRepository
    */
   async countByCriteria(criteria: RoleAssignmentCriteria): Promise<number> {
     try {
-      this.logger.info("Counting role assignments by criteria", { criteria });
+      this.logger.info('Counting role assignments by criteria', { criteria });
 
       const where: any = {};
 
@@ -591,7 +591,7 @@ export class TypeOrmRoleAssignmentRepository
 
       const count = await this.ormRepository.count({ where });
 
-      this.logger.info("Counted role assignments by criteria", {
+      this.logger.info('Counted role assignments by criteria', {
         criteria,
         count,
       });
@@ -599,7 +599,7 @@ export class TypeOrmRoleAssignmentRepository
       return count;
     } catch (error) {
       this.logger.error(
-        "Failed to count role assignments by criteria",
+        'Failed to count role assignments by criteria',
         error instanceof Error ? error : new Error(String(error)),
         { criteria },
       );
@@ -612,7 +612,7 @@ export class TypeOrmRoleAssignmentRepository
    */
   async findExpiringSoon(daysAhead: number): Promise<RoleAssignment[]> {
     try {
-      this.logger.info("Finding role assignments expiring soon", { daysAhead });
+      this.logger.info('Finding role assignments expiring soon', { daysAhead });
 
       const now = new Date();
       const futureDate = new Date(
@@ -624,14 +624,14 @@ export class TypeOrmRoleAssignmentRepository
           isActive: true,
           expiresAt: Between(now, futureDate),
         },
-        relations: ["businessContext"],
+        relations: ['businessContext'],
       });
 
       const assignments = ormAssignments.map((orm) =>
         RoleAssignmentOrmMapper.toDomainEntity(orm),
       );
 
-      this.logger.info("Found role assignments expiring soon", {
+      this.logger.info('Found role assignments expiring soon', {
         daysAhead,
         count: assignments.length,
       });
@@ -639,7 +639,7 @@ export class TypeOrmRoleAssignmentRepository
       return assignments;
     } catch (error) {
       this.logger.error(
-        "Failed to find role assignments expiring soon",
+        'Failed to find role assignments expiring soon',
         error instanceof Error ? error : new Error(String(error)),
         { daysAhead },
       );
@@ -652,7 +652,7 @@ export class TypeOrmRoleAssignmentRepository
    */
   async delete(id: string): Promise<boolean> {
     try {
-      this.logger.info("Deleting role assignment", { id });
+      this.logger.info('Deleting role assignment', { id });
 
       const assignment = await this.ormRepository.findOne({ where: { id } });
       if (!assignment) {
@@ -663,12 +663,12 @@ export class TypeOrmRoleAssignmentRepository
       assignment.updatedAt = new Date();
       await this.ormRepository.save(assignment);
 
-      this.logger.info("Deleted role assignment", { id });
+      this.logger.info('Deleted role assignment', { id });
 
       return true;
     } catch (error) {
       this.logger.error(
-        "Failed to delete role assignment",
+        'Failed to delete role assignment',
         error instanceof Error ? error : new Error(String(error)),
         { id },
       );
@@ -681,7 +681,7 @@ export class TypeOrmRoleAssignmentRepository
    */
   async deleteByUserId(userId: string): Promise<number> {
     try {
-      this.logger.info("Deleting role assignments by user ID", { userId });
+      this.logger.info('Deleting role assignments by user ID', { userId });
 
       const result = await this.ormRepository.update(
         { userId, isActive: true },
@@ -690,7 +690,7 @@ export class TypeOrmRoleAssignmentRepository
 
       const count = result.affected || 0;
 
-      this.logger.info("Deleted role assignments by user ID", {
+      this.logger.info('Deleted role assignments by user ID', {
         userId,
         count,
       });
@@ -698,7 +698,7 @@ export class TypeOrmRoleAssignmentRepository
       return count;
     } catch (error) {
       this.logger.error(
-        "Failed to delete role assignments by user ID",
+        'Failed to delete role assignments by user ID',
         error instanceof Error ? error : new Error(String(error)),
         { userId },
       );
@@ -711,7 +711,7 @@ export class TypeOrmRoleAssignmentRepository
    */
   async deleteByContext(context: RoleAssignmentContext): Promise<number> {
     try {
-      this.logger.info("Deleting role assignments by context", { context });
+      this.logger.info('Deleting role assignments by context', { context });
 
       const where: any = { isActive: true };
 
@@ -726,7 +726,7 @@ export class TypeOrmRoleAssignmentRepository
 
       const count = result.affected || 0;
 
-      this.logger.info("Deleted role assignments by context", {
+      this.logger.info('Deleted role assignments by context', {
         context,
         count,
       });
@@ -734,7 +734,7 @@ export class TypeOrmRoleAssignmentRepository
       return count;
     } catch (error) {
       this.logger.error(
-        "Failed to delete role assignments by context",
+        'Failed to delete role assignments by context',
         error instanceof Error ? error : new Error(String(error)),
         { context },
       );
@@ -747,7 +747,7 @@ export class TypeOrmRoleAssignmentRepository
    */
   async reactivate(id: string): Promise<RoleAssignment | null> {
     try {
-      this.logger.info("Reactivating role assignment", { id });
+      this.logger.info('Reactivating role assignment', { id });
 
       const assignment = await this.ormRepository.findOne({ where: { id } });
       if (!assignment) {
@@ -761,12 +761,12 @@ export class TypeOrmRoleAssignmentRepository
       const domainAssignment =
         RoleAssignmentOrmMapper.toDomainEntity(savedAssignment);
 
-      this.logger.info("Reactivated role assignment", { id });
+      this.logger.info('Reactivated role assignment', { id });
 
       return domainAssignment;
     } catch (error) {
       this.logger.error(
-        "Failed to reactivate role assignment",
+        'Failed to reactivate role assignment',
         error instanceof Error ? error : new Error(String(error)),
         { id },
       );
@@ -785,7 +785,7 @@ export class TypeOrmRoleAssignmentRepository
     assignmentsByScope: Record<string, number>;
   }> {
     try {
-      this.logger.info("Getting role assignment statistics", { businessId });
+      this.logger.info('Getting role assignment statistics', { businessId });
 
       const baseWhere: any = businessId ? { businessId } : {};
 
@@ -862,7 +862,7 @@ export class TypeOrmRoleAssignmentRepository
         assignmentsByScope,
       };
 
-      this.logger.info("Role assignment statistics calculated", {
+      this.logger.info('Role assignment statistics calculated', {
         businessId,
         stats,
       });
@@ -870,13 +870,13 @@ export class TypeOrmRoleAssignmentRepository
       return stats;
     } catch (error) {
       this.logger.error(
-        "Failed to get role assignment statistics",
+        'Failed to get role assignment statistics',
         error instanceof Error ? error : new Error(String(error)),
         { businessId },
       );
       throw new Error(
-        this.i18n.translate("rbac.assignment.stats.failed") ||
-          "Failed to get assignment statistics",
+        this.i18n.translate('rbac.assignment.stats.failed') ||
+          'Failed to get assignment statistics',
       );
     }
   }
@@ -889,7 +889,7 @@ export class TypeOrmRoleAssignmentRepository
     context: RoleAssignmentContext,
   ): Promise<string[]> {
     try {
-      this.logger.info("Finding users with role in context", { role, context });
+      this.logger.info('Finding users with role in context', { role, context });
 
       const where: any = {
         role,
@@ -903,13 +903,13 @@ export class TypeOrmRoleAssignmentRepository
 
       const assignments = await this.ormRepository.find({
         where,
-        select: ["userId"],
+        select: ['userId'],
       });
 
       const userIds = assignments.map((assignment) => assignment.userId);
       const uniqueUserIds = [...new Set(userIds)];
 
-      this.logger.info("Found users with role in context", {
+      this.logger.info('Found users with role in context', {
         role,
         context,
         count: uniqueUserIds.length,
@@ -918,7 +918,7 @@ export class TypeOrmRoleAssignmentRepository
       return uniqueUserIds;
     } catch (error) {
       this.logger.error(
-        "Failed to find users with role in context",
+        'Failed to find users with role in context',
         error instanceof Error ? error : new Error(String(error)),
         {
           role,
@@ -938,7 +938,7 @@ export class TypeOrmRoleAssignmentRepository
     transferredBy: string,
   ): Promise<RoleAssignment[]> {
     try {
-      this.logger.info("Transferring role assignments", {
+      this.logger.info('Transferring role assignments', {
         fromUserId,
         toUserId,
         transferredBy,
@@ -950,7 +950,7 @@ export class TypeOrmRoleAssignmentRepository
           isActive: true,
           expiresAt: MoreThan(new Date()),
         },
-        relations: ["businessContext"],
+        relations: ['businessContext'],
       });
 
       const transferredAssignments: RoleAssignment[] = [];
@@ -981,7 +981,7 @@ export class TypeOrmRoleAssignmentRepository
         transferredAssignments.push(domainAssignment);
       }
 
-      this.logger.info("Transferred role assignments", {
+      this.logger.info('Transferred role assignments', {
         fromUserId,
         toUserId,
         transferredBy,
@@ -991,7 +991,7 @@ export class TypeOrmRoleAssignmentRepository
       return transferredAssignments;
     } catch (error) {
       this.logger.error(
-        "Failed to transfer role assignments",
+        'Failed to transfer role assignments',
         error instanceof Error ? error : new Error(String(error)),
         {
           fromUserId,
@@ -1012,7 +1012,7 @@ export class TypeOrmRoleAssignmentRepository
     context: RoleAssignmentContext,
   ): Promise<RoleAssignment[]> {
     try {
-      this.logger.info("Checking assignment conflicts", {
+      this.logger.info('Checking assignment conflicts', {
         userId,
         role,
         context,
@@ -1031,14 +1031,14 @@ export class TypeOrmRoleAssignmentRepository
 
       const ormAssignments = await this.ormRepository.find({
         where,
-        relations: ["businessContext"],
+        relations: ['businessContext'],
       });
 
       const conflicts = ormAssignments.map((orm) =>
         RoleAssignmentOrmMapper.toDomainEntity(orm),
       );
 
-      this.logger.info("Checked assignment conflicts", {
+      this.logger.info('Checked assignment conflicts', {
         userId,
         role,
         context,
@@ -1048,7 +1048,7 @@ export class TypeOrmRoleAssignmentRepository
       return conflicts;
     } catch (error) {
       this.logger.error(
-        "Failed to check assignment conflicts",
+        'Failed to check assignment conflicts',
         error instanceof Error ? error : new Error(String(error)),
         {
           userId,
@@ -1068,7 +1068,7 @@ export class TypeOrmRoleAssignmentRepository
     includeCurrent?: boolean,
   ): Promise<RoleAssignment[]> {
     try {
-      this.logger.info("Getting assignment history", {
+      this.logger.info('Getting assignment history', {
         userId,
         includeCurrent,
       });
@@ -1081,15 +1081,15 @@ export class TypeOrmRoleAssignmentRepository
 
       const ormAssignments = await this.ormRepository.find({
         where,
-        relations: ["businessContext"],
-        order: { createdAt: "DESC" },
+        relations: ['businessContext'],
+        order: { createdAt: 'DESC' },
       });
 
       const history = ormAssignments.map((orm) =>
         RoleAssignmentOrmMapper.toDomainEntity(orm),
       );
 
-      this.logger.info("Got assignment history", {
+      this.logger.info('Got assignment history', {
         userId,
         includeCurrent,
         count: history.length,
@@ -1098,7 +1098,7 @@ export class TypeOrmRoleAssignmentRepository
       return history;
     } catch (error) {
       this.logger.error(
-        "Failed to get assignment history",
+        'Failed to get assignment history',
         error instanceof Error ? error : new Error(String(error)),
         {
           userId,
@@ -1117,41 +1117,41 @@ export class TypeOrmRoleAssignmentRepository
     context?: RoleAssignmentContext,
   ): Promise<RoleAssignment[]> {
     try {
-      this.logger.info("Searching role assignments", { searchQuery, context });
+      this.logger.info('Searching role assignments', { searchQuery, context });
 
       const queryBuilder = this.ormRepository
-        .createQueryBuilder("ra")
-        .leftJoinAndSelect("ra.businessContext", "bc")
+        .createQueryBuilder('ra')
+        .leftJoinAndSelect('ra.businessContext', 'bc')
         .where(
-          "(ra.assignedByName ILIKE :search OR ra.notes ILIKE :search OR ra.role ILIKE :search)",
+          '(ra.assignedByName ILIKE :search OR ra.notes ILIKE :search OR ra.role ILIKE :search)',
           { search: `%${searchQuery}%` },
         );
 
       if (context?.businessId) {
-        queryBuilder.andWhere("ra.businessId = :businessId", {
+        queryBuilder.andWhere('ra.businessId = :businessId', {
           businessId: context.businessId,
         });
       }
       if (context?.locationId) {
-        queryBuilder.andWhere("ra.locationId = :locationId", {
+        queryBuilder.andWhere('ra.locationId = :locationId', {
           locationId: context.locationId,
         });
       }
       if (context?.departmentId) {
-        queryBuilder.andWhere("ra.departmentId = :departmentId", {
+        queryBuilder.andWhere('ra.departmentId = :departmentId', {
           departmentId: context.departmentId,
         });
       }
 
       const ormAssignments = await queryBuilder
-        .orderBy("ra.createdAt", "DESC")
+        .orderBy('ra.createdAt', 'DESC')
         .getMany();
 
       const assignments = ormAssignments.map((orm) =>
         RoleAssignmentOrmMapper.toDomainEntity(orm),
       );
 
-      this.logger.info("Searched role assignments", {
+      this.logger.info('Searched role assignments', {
         searchQuery,
         context,
         count: assignments.length,
@@ -1160,7 +1160,7 @@ export class TypeOrmRoleAssignmentRepository
       return assignments;
     } catch (error) {
       this.logger.error(
-        "Failed to search role assignments",
+        'Failed to search role assignments',
         error instanceof Error ? error : new Error(String(error)),
         {
           searchQuery,

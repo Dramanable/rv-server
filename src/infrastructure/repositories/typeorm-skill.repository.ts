@@ -1,9 +1,9 @@
-import { Repository } from "typeorm";
-import { Skill } from "../../domain/entities/skill.entity";
-import { ISkillRepository } from "../../domain/repositories/skill.repository";
-import { BusinessId } from "../../domain/value-objects/business-id.value-object";
-import { SkillOrmEntity } from "../database/sql/postgresql/entities/skill-orm.entity";
-import { SkillOrmMapper } from "../mappers/skill-orm.mapper";
+import { Repository } from 'typeorm';
+import { Skill } from '../../domain/entities/skill.entity';
+import { ISkillRepository } from '../../domain/repositories/skill.repository';
+import { BusinessId } from '../../domain/value-objects/business-id.value-object';
+import { SkillOrmEntity } from '../database/sql/postgresql/entities/skill-orm.entity';
+import { SkillOrmMapper } from '../mappers/skill-orm.mapper';
 
 /**
  * ✅ OBLIGATOIRE - Repository TypeORM pour Skills
@@ -49,7 +49,7 @@ export class TypeOrmSkillRepository implements ISkillRepository {
     // 1. Requête ORM avec critères business
     const ormEntities = await this.repository.find({
       where: { businessId: businessId.getValue() },
-      order: { name: "ASC" },
+      order: { name: 'ASC' },
     });
 
     // 2. Conversion batch via Mapper
@@ -81,7 +81,7 @@ export class TypeOrmSkillRepository implements ISkillRepository {
         businessId: businessId.getValue(),
         isActive: true,
       },
-      order: { name: "ASC" },
+      order: { name: 'ASC' },
     });
 
     // 2. Conversion batch
@@ -96,7 +96,7 @@ export class TypeOrmSkillRepository implements ISkillRepository {
         isCritical: true,
         isActive: true, // Seulement les critiques actives
       },
-      order: { name: "ASC" },
+      order: { name: 'ASC' },
     });
 
     // 2. Conversion batch
@@ -113,7 +113,7 @@ export class TypeOrmSkillRepository implements ISkillRepository {
         businessId: businessId.getValue(),
         category: category.trim(),
       },
-      order: { name: "ASC" },
+      order: { name: 'ASC' },
     });
 
     // 2. Conversion batch
@@ -126,14 +126,14 @@ export class TypeOrmSkillRepository implements ISkillRepository {
   ): Promise<Skill[]> {
     // 1. Recherche textuelle avec ILIKE (PostgreSQL)
     const ormEntities = await this.repository
-      .createQueryBuilder("skill")
-      .where("skill.businessId = :businessId", {
+      .createQueryBuilder('skill')
+      .where('skill.businessId = :businessId', {
         businessId: businessId.getValue(),
       })
-      .andWhere("skill.name ILIKE :searchTerm", {
+      .andWhere('skill.name ILIKE :searchTerm', {
         searchTerm: `%${searchTerm.trim()}%`,
       })
-      .orderBy("skill.name", "ASC")
+      .orderBy('skill.name', 'ASC')
       .getMany();
 
     // 2. Conversion batch
@@ -176,22 +176,22 @@ export class TypeOrmSkillRepository implements ISkillRepository {
     },
   ): Promise<Skill[]> {
     const queryBuilder = this.repository
-      .createQueryBuilder("skill")
-      .where("skill.businessId = :businessId", {
+      .createQueryBuilder('skill')
+      .where('skill.businessId = :businessId', {
         businessId: businessId.getValue(),
       })
       .andWhere(
-        "(skill.name ILIKE :searchTerm OR skill.description ILIKE :searchTerm)",
+        '(skill.name ILIKE :searchTerm OR skill.description ILIKE :searchTerm)',
         {
           searchTerm: `%${searchTerm.trim()}%`,
         },
       );
 
     if (!options?.includeInactive) {
-      queryBuilder.andWhere("skill.isActive = :isActive", { isActive: true });
+      queryBuilder.andWhere('skill.isActive = :isActive', { isActive: true });
     }
 
-    queryBuilder.orderBy("skill.name", "ASC");
+    queryBuilder.orderBy('skill.name', 'ASC');
 
     if (options?.limit) {
       queryBuilder.take(options.limit);
@@ -203,13 +203,13 @@ export class TypeOrmSkillRepository implements ISkillRepository {
 
   async findDistinctCategories(businessId: BusinessId): Promise<string[]> {
     const result = await this.repository
-      .createQueryBuilder("skill")
-      .select("DISTINCT skill.category", "category")
-      .where("skill.businessId = :businessId", {
+      .createQueryBuilder('skill')
+      .select('DISTINCT skill.category', 'category')
+      .where('skill.businessId = :businessId', {
         businessId: businessId.getValue(),
       })
-      .andWhere("skill.isActive = :isActive", { isActive: true })
-      .orderBy("skill.category", "ASC")
+      .andWhere('skill.isActive = :isActive', { isActive: true })
+      .orderBy('skill.category', 'ASC')
       .getRawMany();
 
     return result.map((r) => r.category).filter(Boolean);
@@ -221,14 +221,14 @@ export class TypeOrmSkillRepository implements ISkillRepository {
     excludeSkillId?: string,
   ): Promise<boolean> {
     const queryBuilder = this.repository
-      .createQueryBuilder("skill")
-      .where("skill.businessId = :businessId", {
+      .createQueryBuilder('skill')
+      .where('skill.businessId = :businessId', {
         businessId: businessId.getValue(),
       })
-      .andWhere("skill.name = :name", { name: name.trim() });
+      .andWhere('skill.name = :name', { name: name.trim() });
 
     if (excludeSkillId) {
-      queryBuilder.andWhere("skill.id != :excludeSkillId", { excludeSkillId });
+      queryBuilder.andWhere('skill.id != :excludeSkillId', { excludeSkillId });
     }
 
     const count = await queryBuilder.getCount();
@@ -251,7 +251,7 @@ export class TypeOrmSkillRepository implements ISkillRepository {
         businessId: businessId.getValue(),
         isActive: true,
       },
-      order: { createdAt: "DESC" },
+      order: { createdAt: 'DESC' },
       take: limit || 10,
     });
 
@@ -272,8 +272,8 @@ export class TypeOrmSkillRepository implements ISkillRepository {
     isActive?: boolean;
     page: number;
     limit: number;
-    sortBy?: "name" | "category" | "createdAt" | "updatedAt";
-    sortOrder?: "asc" | "desc";
+    sortBy?: 'name' | 'category' | 'createdAt' | 'updatedAt';
+    sortOrder?: 'asc' | 'desc';
   }): Promise<{
     skills: Skill[];
     total: number;
@@ -281,15 +281,15 @@ export class TypeOrmSkillRepository implements ISkillRepository {
     currentPage: number;
   }> {
     const queryBuilder = this.repository
-      .createQueryBuilder("skill")
-      .where("skill.businessId = :businessId", {
+      .createQueryBuilder('skill')
+      .where('skill.businessId = :businessId', {
         businessId: request.businessId.getValue(),
       });
 
     // Filtres conditionnels
     if (request.search) {
       queryBuilder.andWhere(
-        "skill.name ILIKE :search OR skill.description ILIKE :search",
+        'skill.name ILIKE :search OR skill.description ILIKE :search',
         {
           search: `%${request.search.trim()}%`,
         },
@@ -297,29 +297,29 @@ export class TypeOrmSkillRepository implements ISkillRepository {
     }
 
     if (request.category) {
-      queryBuilder.andWhere("skill.category = :category", {
+      queryBuilder.andWhere('skill.category = :category', {
         category: request.category,
       });
     }
 
     if (request.isActive !== undefined) {
-      queryBuilder.andWhere("skill.isActive = :isActive", {
+      queryBuilder.andWhere('skill.isActive = :isActive', {
         isActive: request.isActive,
       });
     }
 
     if (request.isCritical !== undefined) {
-      queryBuilder.andWhere("skill.isCritical = :isCritical", {
+      queryBuilder.andWhere('skill.isCritical = :isCritical', {
         isCritical: request.isCritical,
       });
     }
 
     // Tri
-    const sortBy = request.sortBy || "name";
-    const sortOrder = request.sortOrder || "asc";
+    const sortBy = request.sortBy || 'name';
+    const sortOrder = request.sortOrder || 'asc';
     queryBuilder.orderBy(
       `skill.${sortBy}`,
-      sortOrder.toUpperCase() as "ASC" | "DESC",
+      sortOrder.toUpperCase() as 'ASC' | 'DESC',
     );
 
     // Pagination

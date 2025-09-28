@@ -5,7 +5,7 @@
  * Production-ready avec validation stricte et documentation complète
  */
 
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsBoolean,
   IsEmail,
@@ -14,68 +14,68 @@ import {
   Matches,
   MaxLength,
   MinLength,
-} from "class-validator";
-import { UserResponseDto } from "./user.dto";
+} from 'class-validator';
+import { UserResponseDto } from './user.dto';
 
 export class LoginDto {
   @ApiProperty({
-    description: "📧 User email address for authentication",
-    example: "user@example.com",
-    format: "email",
-    type: "string",
+    description: '📧 User email address for authentication',
+    example: 'user@example.com',
+    format: 'email',
+    type: 'string',
     maxLength: 255,
-    pattern: "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
-    title: "Email Address",
+    pattern: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$',
+    title: 'Email Address',
   })
   @IsEmail(
     { allow_utf8_local_part: false },
-    { message: "Please provide a valid email address" },
+    { message: 'Please provide a valid email address' },
   )
-  @MaxLength(255, { message: "Email must not exceed 255 characters" })
+  @MaxLength(255, { message: 'Email must not exceed 255 characters' })
   email!: string;
 
   @ApiProperty({
     description:
-      "🔒 User password with security requirements: 8+ chars, uppercase, lowercase, number, special char (@$!%*?&)",
-    example: "SecurePassword123!",
+      '🔒 User password with security requirements: 8+ chars, uppercase, lowercase, number, special char (@$!%*?&)',
+    example: 'SecurePassword123!',
     minLength: 8,
     maxLength: 128,
-    type: "string",
-    format: "password",
+    type: 'string',
+    format: 'password',
     pattern:
-      "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$",
-    title: "Password",
+      '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$',
+    title: 'Password',
   })
-  @IsString({ message: "Password must be a string" })
-  @MinLength(8, { message: "Password must be at least 8 characters long" })
-  @MaxLength(128, { message: "Password must not exceed 128 characters" })
+  @IsString({ message: 'Password must be a string' })
+  @MinLength(8, { message: 'Password must be at least 8 characters long' })
+  @MaxLength(128, { message: 'Password must not exceed 128 characters' })
   @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/, {
     message:
-      "Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character",
+      'Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character',
   })
   password!: string;
 
   @ApiPropertyOptional({
     description:
-      "⏰ Remember user login session (if true: refresh token valid for 30 days, if false: valid for 7 days)",
+      '⏰ Remember user login session (if true: refresh token valid for 30 days, if false: valid for 7 days)',
     default: false,
-    type: "boolean",
+    type: 'boolean',
     example: false,
-    title: "Remember Me Flag",
+    title: 'Remember Me Flag',
   })
   @IsOptional()
-  @IsBoolean({ message: "rememberMe must be a boolean" })
+  @IsBoolean({ message: 'rememberMe must be a boolean' })
   rememberMe?: boolean;
 }
 
 export class RefreshTokenDto {
   @ApiProperty({
     description:
-      "🔄 Refresh token is automatically extracted from secure HttpOnly cookies - no request body required. The refresh token is securely stored in HttpOnly cookies and automatically sent by the browser.",
+      '🔄 Refresh token is automatically extracted from secure HttpOnly cookies - no request body required. The refresh token is securely stored in HttpOnly cookies and automatically sent by the browser.',
     example: {},
-    type: "object",
+    type: 'object',
     additionalProperties: false,
-    title: "Refresh Token Request (Empty Body)",
+    title: 'Refresh Token Request (Empty Body)',
   })
   // Propriété fictive pour la documentation - le refresh token vient des cookies
   _note?: string;
@@ -83,84 +83,84 @@ export class RefreshTokenDto {
 
 export class RegisterDto {
   @ApiProperty({
-    description: "📧 User email address - must be unique in the system",
-    example: "newuser@example.com",
-    format: "email",
-    type: "string",
+    description: '📧 User email address - must be unique in the system',
+    example: 'newuser@example.com',
+    format: 'email',
+    type: 'string',
     maxLength: 255,
-    pattern: "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
-    title: "Email Address",
+    pattern: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$',
+    title: 'Email Address',
   })
   @IsEmail(
     { allow_utf8_local_part: false },
-    { message: "Please provide a valid email address" },
+    { message: 'Please provide a valid email address' },
   )
-  @MaxLength(255, { message: "Email must not exceed 255 characters" })
+  @MaxLength(255, { message: 'Email must not exceed 255 characters' })
   email!: string;
 
   @ApiProperty({
     description:
-      "👤 User full name for display purposes (minimum 2 characters, maximum 100 characters)",
-    example: "John Doe",
+      '👤 User full name for display purposes (minimum 2 characters, maximum 100 characters)',
+    example: 'John Doe',
     minLength: 2,
     maxLength: 100,
-    type: "string",
+    type: 'string',
     pattern: "^[a-zA-ZÀ-ÿ\\s\\-']{2,100}$",
-    title: "Full Name",
+    title: 'Full Name',
   })
-  @IsString({ message: "Name must be a string" })
-  @MinLength(2, { message: "Name must be at least 2 characters long" })
-  @MaxLength(100, { message: "Name must not exceed 100 characters" })
+  @IsString({ message: 'Name must be a string' })
+  @MinLength(2, { message: 'Name must be at least 2 characters long' })
+  @MaxLength(100, { message: 'Name must not exceed 100 characters' })
   @Matches(/^[a-zA-ZÀ-ÿ\s\-']{2,100}$/, {
-    message: "Name can only contain letters, spaces, hyphens, and apostrophes",
+    message: 'Name can only contain letters, spaces, hyphens, and apostrophes',
   })
   name!: string;
 
   @ApiProperty({
     description:
-      "🔒 User password with security requirements: 8+ chars, uppercase, lowercase, number, special char (@$!%*?&)",
-    example: "SecurePassword123!",
+      '🔒 User password with security requirements: 8+ chars, uppercase, lowercase, number, special char (@$!%*?&)',
+    example: 'SecurePassword123!',
     minLength: 8,
     maxLength: 128,
-    type: "string",
-    format: "password",
+    type: 'string',
+    format: 'password',
     pattern:
-      "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$",
-    title: "Password",
+      '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$',
+    title: 'Password',
   })
-  @IsString({ message: "Password must be a string" })
-  @MinLength(8, { message: "Password must be at least 8 characters long" })
-  @MaxLength(128, { message: "Password must not exceed 128 characters" })
+  @IsString({ message: 'Password must be a string' })
+  @MinLength(8, { message: 'Password must be at least 8 characters long' })
+  @MaxLength(128, { message: 'Password must not exceed 128 characters' })
   @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/, {
     message:
-      "Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character",
+      'Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character',
   })
   password!: string;
 
   @ApiPropertyOptional({
     description:
-      "⏰ Remember user login session after registration (if true: refresh token valid for 30 days, if false: valid for 7 days)",
+      '⏰ Remember user login session after registration (if true: refresh token valid for 30 days, if false: valid for 7 days)',
     default: false,
-    type: "boolean",
+    type: 'boolean',
     example: false,
-    title: "Remember Me Flag",
+    title: 'Remember Me Flag',
   })
   @IsOptional()
-  @IsBoolean({ message: "rememberMe must be a boolean" })
+  @IsBoolean({ message: 'rememberMe must be a boolean' })
   rememberMe?: boolean;
 }
 
 export class LogoutDto {
   @ApiPropertyOptional({
     description:
-      "🚪 Logout from all user devices and sessions (revokes all refresh tokens)",
+      '🚪 Logout from all user devices and sessions (revokes all refresh tokens)',
     default: false,
-    type: "boolean",
+    type: 'boolean',
     example: false,
-    title: "Logout All Devices Flag",
+    title: 'Logout All Devices Flag',
   })
   @IsOptional()
-  @IsBoolean({ message: "logoutAllDevices must be a boolean" })
+  @IsBoolean({ message: 'logoutAllDevices must be a boolean' })
   logoutAllDevices?: boolean;
 }
 
@@ -170,17 +170,17 @@ export class LogoutDto {
 
 export class LoginResponseDto {
   @ApiProperty({
-    description: "👤 Authenticated user information",
+    description: '👤 Authenticated user information',
     type: UserResponseDto,
-    title: "User Data",
+    title: 'User Data',
   })
   user!: UserResponseDto;
 
   @ApiProperty({
-    description: "✅ Success message confirming login",
-    example: "Login successful",
-    type: "string",
-    title: "Success Message",
+    description: '✅ Success message confirming login',
+    example: 'Login successful',
+    type: 'string',
+    title: 'Success Message',
   })
   message!: string;
 }
@@ -188,27 +188,27 @@ export class LoginResponseDto {
 export class RefreshResponseDto {
   @ApiProperty({
     description:
-      "✅ Success message confirming token refresh (new tokens set in secure cookies)",
-    example: "Tokens refreshed successfully",
-    type: "string",
-    title: "Success Message",
+      '✅ Success message confirming token refresh (new tokens set in secure cookies)',
+    example: 'Tokens refreshed successfully',
+    type: 'string',
+    title: 'Success Message',
   })
   message!: string;
 }
 
 export class RegisterResponseDto {
   @ApiProperty({
-    description: "👤 Newly created user information",
+    description: '👤 Newly created user information',
     type: UserResponseDto,
-    title: "User Data",
+    title: 'User Data',
   })
   user!: UserResponseDto;
 
   @ApiProperty({
-    description: "✅ Success message confirming registration and auto-login",
-    example: "Registration successful - user created and logged in",
-    type: "string",
-    title: "Success Message",
+    description: '✅ Success message confirming registration and auto-login',
+    example: 'Registration successful - user created and logged in',
+    type: 'string',
+    title: 'Success Message',
   })
   message!: string;
 }
@@ -216,10 +216,10 @@ export class RegisterResponseDto {
 export class LogoutResponseDto {
   @ApiProperty({
     description:
-      "✅ Success message confirming logout and cookie cleanup (all authentication cookies cleared)",
-    example: "Logout successful",
-    type: "string",
-    title: "Success Message",
+      '✅ Success message confirming logout and cookie cleanup (all authentication cookies cleared)',
+    example: 'Logout successful',
+    type: 'string',
+    title: 'Success Message',
   })
   message!: string;
 }
@@ -230,82 +230,82 @@ export class LogoutResponseDto {
 
 export class ValidationErrorDto {
   @ApiProperty({
-    description: "🚨 Error message describing the validation failure",
-    example: "Validation failed",
-    type: "string",
-    title: "Error Message",
+    description: '🚨 Error message describing the validation failure',
+    example: 'Validation failed',
+    type: 'string',
+    title: 'Error Message',
   })
   message!: string;
 
   @ApiProperty({
-    description: "📋 Array of detailed validation errors",
+    description: '📋 Array of detailed validation errors',
     example: [
-      "email must be a valid email address",
-      "password must be at least 8 characters long",
+      'email must be a valid email address',
+      'password must be at least 8 characters long',
     ],
-    type: "array",
-    items: { type: "string" },
-    title: "Validation Errors",
+    type: 'array',
+    items: { type: 'string' },
+    title: 'Validation Errors',
   })
   error!: string[];
 
   @ApiProperty({
-    description: "🔢 HTTP status code",
+    description: '🔢 HTTP status code',
     example: 400,
-    type: "number",
-    title: "Status Code",
+    type: 'number',
+    title: 'Status Code',
   })
   statusCode!: number;
 }
 
 export class UnauthorizedErrorDto {
   @ApiProperty({
-    description: "🚨 Error message for authentication failure",
-    example: "Invalid credentials",
-    type: "string",
-    title: "Error Message",
+    description: '🚨 Error message for authentication failure',
+    example: 'Invalid credentials',
+    type: 'string',
+    title: 'Error Message',
   })
   message!: string;
 
   @ApiProperty({
-    description: "🔒 Error type identifier",
-    example: "Unauthorized",
-    type: "string",
-    title: "Error Type",
+    description: '🔒 Error type identifier',
+    example: 'Unauthorized',
+    type: 'string',
+    title: 'Error Type',
   })
   error!: string;
 
   @ApiProperty({
-    description: "🔢 HTTP status code",
+    description: '🔢 HTTP status code',
     example: 401,
-    type: "number",
-    title: "Status Code",
+    type: 'number',
+    title: 'Status Code',
   })
   statusCode!: number;
 }
 
 export class ThrottleErrorDto {
   @ApiProperty({
-    description: "🚨 Rate limiting error message",
-    example: "Too many requests",
-    type: "string",
-    title: "Error Message",
+    description: '🚨 Rate limiting error message',
+    example: 'Too many requests',
+    type: 'string',
+    title: 'Error Message',
   })
   message!: string;
 
   @ApiProperty({
-    description: "⏱️ Seconds to wait before retry",
+    description: '⏱️ Seconds to wait before retry',
     example: 300,
-    type: "number",
-    title: "Retry After (seconds)",
+    type: 'number',
+    title: 'Retry After (seconds)',
   })
   retryAfter!: number;
 
   @ApiProperty({
-    description: "🔢 HTTP status code",
+    description: '🔢 HTTP status code',
     example: 429,
-    type: "number",
-    title: "Status Code",
+    type: 'number',
+    title: 'Status Code',
   })
   statusCode!: number;
 }

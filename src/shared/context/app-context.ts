@@ -112,7 +112,7 @@ class AppContextBuilderImpl implements AppContextBuilder {
 
   build(): AppContext {
     if (!this.context.operation) {
-      throw new Error("Operation name is required");
+      throw new Error('Operation name is required');
     }
     return this.context as AppContext;
   }
@@ -158,7 +158,7 @@ export class AppContextFactory {
   ): AppContext {
     const builder = new AppContextBuilderImpl()
       .operation(operation)
-      .metadata("email", email);
+      .metadata('email', email);
 
     if (clientInfo) {
       builder.clientInfo(

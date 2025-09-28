@@ -5,9 +5,9 @@
  * Support i18n et contexte Clean Architecture
  */
 
-import { Logger } from "@application/ports/logger.port";
-import { Inject, Injectable } from "@nestjs/common";
-import { PinoLogger } from "nestjs-pino";
+import { Logger } from '@application/ports/logger.port';
+import { Inject, Injectable } from '@nestjs/common';
+import { PinoLogger } from 'nestjs-pino';
 
 @Injectable()
 export class PinoLoggerService implements Logger {
@@ -64,21 +64,21 @@ export class PinoLoggerService implements Logger {
    * Permet de spécifier le niveau dynamiquement
    */
   log(
-    level: "info" | "debug" | "warn" | "error",
+    level: 'info' | 'debug' | 'warn' | 'error',
     message: string,
     context?: Record<string, any>,
   ): void {
     switch (level) {
-      case "info":
+      case 'info':
         this.info(message, context);
         break;
-      case "debug":
+      case 'debug':
         this.debug(message, context);
         break;
-      case "warn":
+      case 'warn':
         this.warn(message, context);
         break;
-      case "error":
+      case 'error':
         this.error(message, undefined, context);
         break;
     }
@@ -89,7 +89,7 @@ export class PinoLoggerService implements Logger {
    * Ajoute automatiquement le contexte d'opération
    */
   logWithOperation(
-    level: "info" | "debug" | "warn" | "error",
+    level: 'info' | 'debug' | 'warn' | 'error',
     message: string,
     operation: string,
     additionalContext?: Record<string, any>,
@@ -110,7 +110,7 @@ export class PinoLoggerService implements Logger {
   audit(action: string, userId: string, context?: Record<string, any>): void {
     const auditContext = {
       ...context,
-      type: "AUDIT",
+      type: 'AUDIT',
       action,
       userId,
       timestamp: new Date().toISOString(),
@@ -160,7 +160,7 @@ export class PinoLoggerService implements Logger {
       ) => {
         const auditContext = {
           ...additionalContext,
-          type: "AUDIT",
+          type: 'AUDIT',
           action,
           userId,
           timestamp: new Date().toISOString(),
@@ -184,10 +184,10 @@ export class PinoLoggerService implements Logger {
   ): void {
     const perfContext = {
       ...context,
-      type: "PERFORMANCE",
+      type: 'PERFORMANCE',
       operation,
       duration,
-      unit: "ms",
+      unit: 'ms',
       timestamp: new Date().toISOString(),
     };
 
@@ -205,7 +205,7 @@ export class PinoLoggerService implements Logger {
     const startContext = {
       ...context,
       operation,
-      phase: "START",
+      phase: 'START',
       timestamp: new Date().toISOString(),
     };
 
@@ -220,8 +220,8 @@ export class PinoLoggerService implements Logger {
     const endContext = {
       ...context,
       operation,
-      phase: "END",
-      status: "SUCCESS",
+      phase: 'END',
+      status: 'SUCCESS',
       timestamp: new Date().toISOString(),
     };
 
@@ -240,8 +240,8 @@ export class PinoLoggerService implements Logger {
     const failContext = {
       ...context,
       operation,
-      phase: "END",
-      status: "FAILURE",
+      phase: 'END',
+      status: 'FAILURE',
       timestamp: new Date().toISOString(),
     };
 

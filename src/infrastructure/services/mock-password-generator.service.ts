@@ -3,8 +3,8 @@
  * Simple implementation for testing and development
  */
 
-import { Injectable } from "@nestjs/common";
-import { IPasswordGenerator } from "../../application/ports/password-generator.port";
+import { Injectable } from '@nestjs/common';
+import { IPasswordGenerator } from '../../application/ports/password-generator.port';
 
 @Injectable()
 export class MockPasswordGenerator implements IPasswordGenerator {
@@ -12,16 +12,16 @@ export class MockPasswordGenerator implements IPasswordGenerator {
     length: number = 12,
     includeSpecialChars: boolean = true,
   ): Promise<string> {
-    const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-    const numbers = "0123456789";
-    const special = "!@#$%^&*";
+    const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+    const numbers = '0123456789';
+    const special = '!@#$%^&*';
 
     let charset = letters + numbers;
     if (includeSpecialChars) {
       charset += special;
     }
 
-    let password = "";
+    let password = '';
     for (let i = 0; i < length; i++) {
       password += charset.charAt(Math.floor(Math.random() * charset.length));
     }
@@ -31,8 +31,8 @@ export class MockPasswordGenerator implements IPasswordGenerator {
 
   async generateResetToken(length: number = 32): Promise<string> {
     const charset =
-      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    let token = "";
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let token = '';
 
     for (let i = 0; i < length; i++) {
       token += charset.charAt(Math.floor(Math.random() * charset.length));
@@ -57,11 +57,11 @@ export class MockPasswordGenerator implements IPasswordGenerator {
     if (/[!@#$%^&*]/.test(password)) score++;
 
     if (password.length < 8)
-      feedback.push("Password should be at least 8 characters");
-    if (!/[A-Z]/.test(password)) feedback.push("Add uppercase letters");
-    if (!/[a-z]/.test(password)) feedback.push("Add lowercase letters");
-    if (!/[0-9]/.test(password)) feedback.push("Add numbers");
-    if (!/[!@#$%^&*]/.test(password)) feedback.push("Add special characters");
+      feedback.push('Password should be at least 8 characters');
+    if (!/[A-Z]/.test(password)) feedback.push('Add uppercase letters');
+    if (!/[a-z]/.test(password)) feedback.push('Add lowercase letters');
+    if (!/[0-9]/.test(password)) feedback.push('Add numbers');
+    if (!/[!@#$%^&*]/.test(password)) feedback.push('Add special characters');
 
     return {
       isValid: score >= 4,

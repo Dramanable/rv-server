@@ -5,32 +5,32 @@
  * Couche Application - Tests d'orchestration métier
  */
 
-import { UpdateServiceUseCase } from "@application/use-cases/service/update-service.use-case";
-import { Service } from "@domain/entities/service.entity";
-import { ServiceNotFoundError } from "@domain/exceptions/service.exceptions";
-import { BusinessId } from "@domain/value-objects/business-id.value-object";
-import { ServiceTypeId } from "@domain/value-objects/service-type-id.value-object";
-import { ApplicationValidationError } from "../../../../../application/exceptions/application.exceptions";
-import { I18nService } from "../../../../../application/ports/i18n.port";
-import { Logger } from "../../../../../application/ports/logger.port";
-import { IPermissionService } from "../../../../../application/ports/permission.service.interface";
-import { ServiceRepository } from "../../../../../domain/repositories/service.repository.interface";
+import { UpdateServiceUseCase } from '@application/use-cases/service/update-service.use-case';
+import { Service } from '@domain/entities/service.entity';
+import { ServiceNotFoundError } from '@domain/exceptions/service.exceptions';
+import { BusinessId } from '@domain/value-objects/business-id.value-object';
+import { ServiceTypeId } from '@domain/value-objects/service-type-id.value-object';
+import { ApplicationValidationError } from '../../../../../application/exceptions/application.exceptions';
+import { I18nService } from '../../../../../application/ports/i18n.port';
+import { Logger } from '../../../../../application/ports/logger.port';
+import { IPermissionService } from '../../../../../application/ports/permission.service.interface';
+import { ServiceRepository } from '../../../../../domain/repositories/service.repository.interface';
 
-describe("UpdateServiceUseCase", () => {
+describe('UpdateServiceUseCase', () => {
   let useCase: UpdateServiceUseCase;
   let mockServiceRepository: jest.Mocked<ServiceRepository>;
   let mockLogger: jest.Mocked<Logger>;
   let mockI18n: jest.Mocked<I18nService>;
 
   const mockService = Service.create({
-    businessId: BusinessId.create("550e8400-e29b-41d4-a716-446655440000"),
-    name: "Original Service",
-    description: "Original description",
+    businessId: BusinessId.create('550e8400-e29b-41d4-a716-446655440000'),
+    name: 'Original Service',
+    description: 'Original description',
     serviceTypeIds: [
-      ServiceTypeId.fromString("550e8400-e29b-41d4-a716-446655440001"),
+      ServiceTypeId.fromString('550e8400-e29b-41d4-a716-446655440001'),
     ],
     basePrice: 100,
-    currency: "EUR",
+    currency: 'EUR',
     duration: 60,
     allowOnlineBooking: true,
     requiresApproval: false,
@@ -91,11 +91,11 @@ describe("UpdateServiceUseCase", () => {
     );
   });
 
-  describe("Parameter validation", () => {
-    it("should throw ApplicationValidationError when serviceId is missing", async () => {
+  describe('Parameter validation', () => {
+    it('should throw ApplicationValidationError when serviceId is missing', async () => {
       const request = {
-        serviceId: "",
-        requestingUserId: "550e8400-e29b-41d4-a716-446655440001",
+        serviceId: '',
+        requestingUserId: '550e8400-e29b-41d4-a716-446655440001',
         updates: {},
       };
 
@@ -104,10 +104,10 @@ describe("UpdateServiceUseCase", () => {
       );
     });
 
-    it("should throw ApplicationValidationError when requestingUserId is missing", async () => {
+    it('should throw ApplicationValidationError when requestingUserId is missing', async () => {
       const request = {
-        serviceId: "550e8400-e29b-41d4-a716-446655440002",
-        requestingUserId: "",
+        serviceId: '550e8400-e29b-41d4-a716-446655440002',
+        requestingUserId: '',
         updates: {},
       };
 
@@ -117,17 +117,17 @@ describe("UpdateServiceUseCase", () => {
     });
   });
 
-  describe("Business rules validation", () => {
+  describe('Business rules validation', () => {
     beforeEach(() => {
       mockServiceRepository.findById.mockResolvedValue(mockService);
       mockServiceRepository.findByName.mockResolvedValue(null);
     });
 
-    it("should throw ApplicationValidationError when name is too short", async () => {
+    it('should throw ApplicationValidationError when name is too short', async () => {
       const request = {
-        serviceId: "550e8400-e29b-41d4-a716-446655440002",
-        requestingUserId: "550e8400-e29b-41d4-a716-446655440001",
-        updates: { name: "A" },
+        serviceId: '550e8400-e29b-41d4-a716-446655440002',
+        requestingUserId: '550e8400-e29b-41d4-a716-446655440001',
+        updates: { name: 'A' },
       };
 
       await expect(useCase.execute(request)).rejects.toThrow(
@@ -135,12 +135,12 @@ describe("UpdateServiceUseCase", () => {
       );
     });
 
-    it("should throw ApplicationValidationError when price is negative", async () => {
+    it('should throw ApplicationValidationError when price is negative', async () => {
       const request = {
-        serviceId: "550e8400-e29b-41d4-a716-446655440002",
-        requestingUserId: "550e8400-e29b-41d4-a716-446655440001",
+        serviceId: '550e8400-e29b-41d4-a716-446655440002',
+        requestingUserId: '550e8400-e29b-41d4-a716-446655440001',
         updates: {
-          pricing: { basePrice: -10, currency: "EUR" },
+          pricing: { basePrice: -10, currency: 'EUR' },
         },
       };
 
@@ -149,10 +149,10 @@ describe("UpdateServiceUseCase", () => {
       );
     });
 
-    it("should throw ApplicationValidationError when duration is zero or negative", async () => {
+    it('should throw ApplicationValidationError when duration is zero or negative', async () => {
       const request = {
-        serviceId: "550e8400-e29b-41d4-a716-446655440002",
-        requestingUserId: "550e8400-e29b-41d4-a716-446655440001",
+        serviceId: '550e8400-e29b-41d4-a716-446655440002',
+        requestingUserId: '550e8400-e29b-41d4-a716-446655440001',
         updates: {
           scheduling: { duration: 0 },
         },
@@ -163,16 +163,16 @@ describe("UpdateServiceUseCase", () => {
       );
     });
 
-    it("should throw ApplicationValidationError when name already exists", async () => {
+    it('should throw ApplicationValidationError when name already exists', async () => {
       const existingService = Service.create({
-        businessId: BusinessId.create("550e8400-e29b-41d4-a716-446655440000"),
-        name: "Existing Service",
-        description: "description",
+        businessId: BusinessId.create('550e8400-e29b-41d4-a716-446655440000'),
+        name: 'Existing Service',
+        description: 'description',
         serviceTypeIds: [
-          ServiceTypeId.fromString("550e8400-e29b-41d4-a716-446655440002"),
+          ServiceTypeId.fromString('550e8400-e29b-41d4-a716-446655440002'),
         ],
         basePrice: 50,
-        currency: "EUR",
+        currency: 'EUR',
         duration: 30,
         allowOnlineBooking: true,
         requiresApproval: false,
@@ -181,9 +181,9 @@ describe("UpdateServiceUseCase", () => {
       mockServiceRepository.findByName.mockResolvedValue(existingService);
 
       const request = {
-        serviceId: "550e8400-e29b-41d4-a716-446655440002",
-        requestingUserId: "550e8400-e29b-41d4-a716-446655440001",
-        updates: { name: "Existing Service" },
+        serviceId: '550e8400-e29b-41d4-a716-446655440002',
+        requestingUserId: '550e8400-e29b-41d4-a716-446655440001',
+        updates: { name: 'Existing Service' },
       };
 
       await expect(useCase.execute(request)).rejects.toThrow(
@@ -192,14 +192,14 @@ describe("UpdateServiceUseCase", () => {
     });
   });
 
-  describe("Service not found", () => {
-    it("should throw ServiceNotFoundError when service does not exist", async () => {
+  describe('Service not found', () => {
+    it('should throw ServiceNotFoundError when service does not exist', async () => {
       mockServiceRepository.findById.mockResolvedValue(null);
-      mockI18n.translate.mockReturnValue("Service not found");
+      mockI18n.translate.mockReturnValue('Service not found');
 
       const request = {
-        serviceId: "550e8400-e29b-41d4-a716-446655440003",
-        requestingUserId: "550e8400-e29b-41d4-a716-446655440001",
+        serviceId: '550e8400-e29b-41d4-a716-446655440003',
+        requestingUserId: '550e8400-e29b-41d4-a716-446655440001',
         updates: {},
       };
 
@@ -209,94 +209,94 @@ describe("UpdateServiceUseCase", () => {
     });
   });
 
-  describe("Successful update", () => {
+  describe('Successful update', () => {
     beforeEach(() => {
       mockServiceRepository.findById.mockResolvedValue(mockService);
       mockServiceRepository.findByName.mockResolvedValue(null);
       mockServiceRepository.save.mockResolvedValue(undefined);
     });
 
-    it("should update service successfully with valid data", async () => {
+    it('should update service successfully with valid data', async () => {
       const request = {
-        serviceId: "550e8400-e29b-41d4-a716-446655440002",
-        requestingUserId: "550e8400-e29b-41d4-a716-446655440001",
+        serviceId: '550e8400-e29b-41d4-a716-446655440002',
+        requestingUserId: '550e8400-e29b-41d4-a716-446655440001',
         updates: {
-          name: "Updated Service Name",
-          description: "Updated description",
+          name: 'Updated Service Name',
+          description: 'Updated description',
         },
       };
 
       const result = await useCase.execute(request);
 
       expect(result).toBeDefined();
-      expect(result.name).toBe("Updated Service Name");
+      expect(result.name).toBe('Updated Service Name');
       expect(mockServiceRepository.save).toHaveBeenCalledWith(mockService);
     });
   });
 
-  describe("Logging", () => {
+  describe('Logging', () => {
     beforeEach(() => {
       mockServiceRepository.findById.mockResolvedValue(mockService);
       mockServiceRepository.findByName.mockResolvedValue(null);
       mockServiceRepository.save.mockResolvedValue(undefined);
     });
 
-    it("should log update attempt", async () => {
+    it('should log update attempt', async () => {
       const request = {
-        serviceId: "550e8400-e29b-41d4-a716-446655440002",
-        requestingUserId: "550e8400-e29b-41d4-a716-446655440001",
-        updates: { name: "Updated Name" },
+        serviceId: '550e8400-e29b-41d4-a716-446655440002',
+        requestingUserId: '550e8400-e29b-41d4-a716-446655440001',
+        updates: { name: 'Updated Name' },
       };
 
       await useCase.execute(request);
 
       expect(mockLogger.info).toHaveBeenCalledWith(
-        "Attempting to update service",
+        'Attempting to update service',
         {
-          serviceId: "550e8400-e29b-41d4-a716-446655440002",
-          requestingUserId: "550e8400-e29b-41d4-a716-446655440001",
+          serviceId: '550e8400-e29b-41d4-a716-446655440002',
+          requestingUserId: '550e8400-e29b-41d4-a716-446655440001',
         },
       );
     });
 
-    it("should log successful update", async () => {
+    it('should log successful update', async () => {
       const request = {
-        serviceId: "550e8400-e29b-41d4-a716-446655440002",
-        requestingUserId: "550e8400-e29b-41d4-a716-446655440001",
-        updates: { name: "Updated Name" },
+        serviceId: '550e8400-e29b-41d4-a716-446655440002',
+        requestingUserId: '550e8400-e29b-41d4-a716-446655440001',
+        updates: { name: 'Updated Name' },
       };
 
       await useCase.execute(request);
 
       expect(mockLogger.info).toHaveBeenCalledWith(
-        "Service updated successfully",
+        'Service updated successfully',
         expect.objectContaining({
           serviceId: expect.any(String),
-          requestingUserId: "550e8400-e29b-41d4-a716-446655440001",
-          updatedFields: ["name"],
+          requestingUserId: '550e8400-e29b-41d4-a716-446655440001',
+          updatedFields: ['name'],
         }),
       );
     });
 
-    it("should log errors", async () => {
+    it('should log errors', async () => {
       mockServiceRepository.findById.mockRejectedValue(
-        new Error("Database error"),
+        new Error('Database error'),
       );
 
       const request = {
-        serviceId: "550e8400-e29b-41d4-a716-446655440002",
-        requestingUserId: "550e8400-e29b-41d4-a716-446655440001",
+        serviceId: '550e8400-e29b-41d4-a716-446655440002',
+        requestingUserId: '550e8400-e29b-41d4-a716-446655440001',
         updates: {},
       };
 
       await expect(useCase.execute(request)).rejects.toThrow();
 
       expect(mockLogger.error).toHaveBeenCalledWith(
-        "Error updating service",
+        'Error updating service',
         expect.any(Error),
         {
-          serviceId: "550e8400-e29b-41d4-a716-446655440002",
-          requestingUserId: "550e8400-e29b-41d4-a716-446655440001",
+          serviceId: '550e8400-e29b-41d4-a716-446655440002',
+          requestingUserId: '550e8400-e29b-41d4-a716-446655440001',
         },
       );
     });

@@ -10,7 +10,7 @@
  * - Pas de dépendances techniques dans cette interface
  */
 
-import { BusinessContext } from "@domain/entities/business-context.entity";
+import { BusinessContext } from '@domain/entities/business-context.entity';
 
 export interface BusinessContextCriteria {
   readonly businessId?: string;
@@ -66,7 +66,7 @@ export interface IBusinessContextRepository {
       page: number;
       limit: number;
       sortBy?: string;
-      sortOrder?: "ASC" | "DESC";
+      sortOrder?: 'ASC' | 'DESC';
     },
   ): Promise<{
     data: BusinessContext[];
@@ -170,7 +170,7 @@ export interface IBusinessContextRepository {
       locationId?: string;
       departmentId?: string;
       fullPath: string;
-      level: "BUSINESS" | "LOCATION" | "DEPARTMENT";
+      level: 'BUSINESS' | 'LOCATION' | 'DEPARTMENT';
     }>
   >;
 

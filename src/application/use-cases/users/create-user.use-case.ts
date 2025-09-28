@@ -5,19 +5,19 @@
  * Application Layer : Orchestration de la logique métier sans dépendance framework
  */
 
-import { User } from "../../../domain/entities/user.entity";
-import { UserRepository } from "../../../domain/repositories/user.repository.interface";
-import { Email } from "../../../domain/value-objects/email.vo";
-import { AppContextFactory } from "../../../shared/context/app-context";
-import { UserRole } from "../../../shared/enums/user-role.enum";
+import { User } from '../../../domain/entities/user.entity';
+import { UserRepository } from '../../../domain/repositories/user.repository.interface';
+import { Email } from '../../../domain/value-objects/email.vo';
+import { AppContextFactory } from '../../../shared/context/app-context';
+import { UserRole } from '../../../shared/enums/user-role.enum';
 import {
   DuplicationError,
   UserNotFoundError,
   ValidationError,
-} from "../../exceptions/auth.exceptions";
-import { I18nService } from "../../ports/i18n.port";
-import { Logger } from "../../ports/logger.port";
-import { IPermissionService } from "../../ports/permission.service.interface";
+} from '../../exceptions/auth.exceptions';
+import { I18nService } from '../../ports/i18n.port';
+import { Logger } from '../../ports/logger.port';
+import { IPermissionService } from '../../ports/permission.service.interface';
 
 // ═══════════════════════════════════════════════════════════════
 // 📋 REQUEST & RESPONSE TYPES
@@ -60,11 +60,11 @@ export class CreateUserUseCase {
 
   async execute(request: CreateUserRequest): Promise<CreateUserResponse> {
     const context = AppContextFactory.userOperation(
-      "CreateUser",
+      'CreateUser',
       request.requestingUserId,
     );
 
-    this.logger.info("create_attempt", {
+    this.logger.info('create_attempt', {
       ...context,
       targetEmail: request.email,
       targetRole: request.role,
@@ -76,7 +76,7 @@ export class CreateUserUseCase {
         request.requestingUserId,
       );
       if (!requestingUser) {
-        throw new UserNotFoundError("Requesting user not found", {
+        throw new UserNotFoundError('Requesting user not found', {
           userId: request.requestingUserId,
         });
       }
@@ -84,7 +84,7 @@ export class CreateUserUseCase {
       // 2. Vérifier les permissions avec IPermissionService
       await this.permissionService.requirePermission(
         request.requestingUserId,
-        "MANAGE_USERS",
+        'MANAGE_USERS',
         { businessId: request.businessId },
       );
 
@@ -109,7 +109,7 @@ export class CreateUserUseCase {
 
       const response = this.buildResponse(savedUser);
 
-      this.logger.info("create_success", {
+      this.logger.info('create_success', {
         ...context,
         createdUserId: response.id,
         createdUserRole: response.role,
@@ -118,7 +118,7 @@ export class CreateUserUseCase {
       return response;
     } catch (error) {
       this.logger.error(
-        "create_failed",
+        'create_failed',
         error as Error,
         context as unknown as Record<string, unknown>,
       );
@@ -135,27 +135,27 @@ export class CreateUserUseCase {
     try {
       Email.create(request.email);
     } catch (error) {
-      throw new ValidationError("Invalid email format", {
+      throw new ValidationError('Invalid email format', {
         email: request.email,
       });
     }
 
     // Validation nom
     if (!request.name || request.name.trim().length === 0) {
-      throw new ValidationError("Name is required");
+      throw new ValidationError('Name is required');
     }
 
     if (request.name.trim().length < 2) {
-      throw new ValidationError("Name must be at least 2 characters long");
+      throw new ValidationError('Name must be at least 2 characters long');
     }
 
     if (request.name.length > 100) {
-      throw new ValidationError("Name must be less than 100 characters");
+      throw new ValidationError('Name must be less than 100 characters');
     }
 
     // Validation rôle
     if (!Object.values(UserRole).includes(request.role)) {
-      throw new ValidationError("Invalid user role", { role: request.role });
+      throw new ValidationError('Invalid user role', { role: request.role });
     }
   }
 
@@ -164,7 +164,7 @@ export class CreateUserUseCase {
     const exists = await this.userRepository.emailExists(emailVO);
 
     if (exists) {
-      throw new DuplicationError("Email already exists", { email });
+      throw new DuplicationError('Email already exists', { email });
     }
   }
 

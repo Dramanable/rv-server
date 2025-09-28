@@ -4,22 +4,22 @@
  * ✅ PostgreSQL with TypeORM
  */
 
-import { Injectable } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 // Domain interfaces
-import { UserRepository } from "@domain/repositories/user.repository.interface";
-import { Email } from "@domain/value-objects/email.vo";
-import { UserRole } from "@shared/enums/user-role.enum";
+import { UserRepository } from '@domain/repositories/user.repository.interface';
+import { Email } from '@domain/value-objects/email.vo';
+import { UserRole } from '@shared/enums/user-role.enum';
 
 // TypeORM Entity
-import { UserOrmEntity } from "../entities/user-orm.entity";
+import { UserOrmEntity } from '../entities/user-orm.entity';
 
 // Types
-import { User } from "@domain/entities/user.entity";
-import { PaginatedResult } from "@shared/types/pagination.types";
-import { UserQueryParams } from "@shared/types/user-query.types";
+import { User } from '@domain/entities/user.entity';
+import { PaginatedResult } from '@shared/types/pagination.types';
+import { UserQueryParams } from '@shared/types/user-query.types';
 
 /**
  * 🗄️ TypeORM User Repository Implementation
@@ -39,22 +39,22 @@ export class TypeOrmUserRepository implements UserRepository {
   async save(user: User): Promise<User> {
     // Extract values from domain objects
     const email =
-      typeof user.email === "string"
+      typeof user.email === 'string'
         ? user.email
         : (user.email as any)?.value || user.email;
     const hashedPassword =
-      typeof user.hashedPassword === "string"
+      typeof user.hashedPassword === 'string'
         ? user.hashedPassword
         : (user.hashedPassword as any)?.value || user.hashedPassword;
 
     const ormEntity = this.repository.create({
       id: user.id,
       email: email,
-      firstName: user.firstName || (user as any).name?.split(" ")[0] || "",
+      firstName: user.firstName || (user as any).name?.split(' ')[0] || '',
       lastName:
         user.lastName ||
-        (user as any).name?.split(" ").slice(1).join(" ") ||
-        "",
+        (user as any).name?.split(' ').slice(1).join(' ') ||
+        '',
       hashedPassword: hashedPassword,
       role: user.role,
       isActive: user.isActive ?? true,
@@ -77,16 +77,16 @@ export class TypeOrmUserRepository implements UserRepository {
    * 🔍 Find user by email
    */
   async findByEmail(email: Email | string): Promise<User | null> {
-    const emailValue = typeof email === "string" ? email : email.value;
-    console.log("🔍 DEBUG findByEmail - Searching for email:", emailValue);
+    const emailValue = typeof email === 'string' ? email : email.value;
+    console.log('🔍 DEBUG findByEmail - Searching for email:', emailValue);
 
     const user = await this.repository.findOne({
       where: { email: emailValue },
     });
 
-    console.log("🔍 DEBUG findByEmail - Found user:", user ? "YES" : "NO");
+    console.log('🔍 DEBUG findByEmail - Found user:', user ? 'YES' : 'NO');
     if (user) {
-      console.log("🔍 DEBUG findByEmail - User data:", {
+      console.log('🔍 DEBUG findByEmail - User data:', {
         id: user.id,
         email: user.email,
         firstName: user.firstName,
@@ -120,13 +120,13 @@ export class TypeOrmUserRepository implements UserRepository {
     const limit = Math.min(params?.limit || 20, 100); // Max 100 items
     const skip = (page - 1) * limit;
 
-    const query = this.repository.createQueryBuilder("user");
+    const query = this.repository.createQueryBuilder('user');
 
     // Apply sorting
     if (params?.sortBy && params?.sortOrder) {
       query.orderBy(`user.${params.sortBy}`, params.sortOrder);
     } else {
-      query.orderBy("user.createdAt", "DESC");
+      query.orderBy('user.createdAt', 'DESC');
     }
 
     // Apply pagination
@@ -172,7 +172,7 @@ export class TypeOrmUserRepository implements UserRepository {
       where: { role },
       skip,
       take: limit,
-      order: { createdAt: "DESC" },
+      order: { createdAt: 'DESC' },
     });
 
     const totalPages = Math.ceil(totalItems / limit);
@@ -196,7 +196,7 @@ export class TypeOrmUserRepository implements UserRepository {
    * ✅ Check if email exists
    */
   async emailExists(email: Email | string): Promise<boolean> {
-    const emailValue = typeof email === "string" ? email : email.value;
+    const emailValue = typeof email === 'string' ? email : email.value;
     const count = await this.repository.count({ where: { email: emailValue } });
     return count > 0;
   }
@@ -227,7 +227,7 @@ export class TypeOrmUserRepository implements UserRepository {
    * 📊 Count super admins
    */
   async countSuperAdmins(): Promise<number> {
-    return this.repository.count({ where: { role: "PLATFORM_ADMIN" } });
+    return this.repository.count({ where: { role: 'PLATFORM_ADMIN' } });
   }
 
   /**
@@ -241,17 +241,17 @@ export class TypeOrmUserRepository implements UserRepository {
    * 📊 Count with filters
    */
   async countWithFilters(params: UserQueryParams): Promise<number> {
-    const query = this.repository.createQueryBuilder("user");
+    const query = this.repository.createQueryBuilder('user');
 
     // Apply filters if provided
     if (params.filters?.role) {
       const roles = Array.isArray(params.filters.role)
         ? params.filters.role
         : [params.filters.role];
-      query.where("user.role IN (:...roles)", { roles });
+      query.where('user.role IN (:...roles)', { roles });
     }
     if (params.filters?.isActive !== undefined) {
-      query.andWhere("user.isActive = :isActive", {
+      query.andWhere('user.isActive = :isActive', {
         isActive: params.filters.isActive,
       });
     }
@@ -289,7 +289,7 @@ export class TypeOrmUserRepository implements UserRepository {
    */
   async export(params?: UserQueryParams): Promise<User[]> {
     const users = await this.repository.find({
-      order: { createdAt: "DESC" },
+      order: { createdAt: 'DESC' },
       take: params?.limit || 1000,
     });
     return users.map((user: UserOrmEntity) => this.toDomainUser(user));

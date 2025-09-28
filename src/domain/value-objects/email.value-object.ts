@@ -7,17 +7,17 @@ export class Email {
 
   private validate(value: string): void {
     if (!value || value.trim().length === 0) {
-      throw new Error("Email cannot be empty");
+      throw new Error('Email cannot be empty');
     }
 
     const trimmedValue = value.trim().toLowerCase();
 
     if (!Email.EMAIL_REGEX.test(trimmedValue)) {
-      throw new Error("Invalid email format");
+      throw new Error('Invalid email format');
     }
 
     if (trimmedValue.length > 254) {
-      throw new Error("Email is too long");
+      throw new Error('Email is too long');
     }
   }
 
@@ -30,11 +30,11 @@ export class Email {
   }
 
   getDomain(): string {
-    return this.value.split("@")[1];
+    return this.value.split('@')[1];
   }
 
   getLocalPart(): string {
-    return this.value.split("@")[0];
+    return this.value.split('@')[0];
   }
 
   equals(other: Email): boolean {

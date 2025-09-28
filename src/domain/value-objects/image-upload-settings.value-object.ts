@@ -7,10 +7,10 @@
  */
 
 export enum ImageFormat {
-  JPEG = "JPEG",
-  PNG = "PNG",
-  WEBP = "WEBP",
-  GIF = "GIF",
+  JPEG = 'JPEG',
+  PNG = 'PNG',
+  WEBP = 'WEBP',
+  GIF = 'GIF',
 }
 
 export interface ImagePolicy {
@@ -48,15 +48,15 @@ export class ImageUploadSettings {
   private constructor(data: ImageUploadSettingsData) {
     // Validation
     if (data.maxFileSize <= 0) {
-      throw new Error("Max file size must be positive");
+      throw new Error('Max file size must be positive');
     }
 
     if (data.allowedFormats.length === 0) {
-      throw new Error("At least one image format must be allowed");
+      throw new Error('At least one image format must be allowed');
     }
 
     if (data.maxImagesPerBusiness < 1) {
-      throw new Error("Max images per business must be at least 1");
+      throw new Error('Max images per business must be at least 1');
     }
 
     this._maxFileSize = data.maxFileSize;
@@ -182,8 +182,8 @@ export class ImageUploadSettings {
     );
 
     if (!policyFormatsNormalized.includes(formatNormalized)) {
-      if (policy.category === "LOGO") {
-        errors.push("Logo images must be in PNG format");
+      if (policy.category === 'LOGO') {
+        errors.push('Logo images must be in PNG format');
       } else {
         errors.push(`${policy.category} images must use allowed formats`);
       }

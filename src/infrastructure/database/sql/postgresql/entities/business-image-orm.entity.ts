@@ -13,77 +13,77 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
-} from "typeorm";
-import { BusinessOrmEntity } from "./business-orm.entity";
+} from 'typeorm';
+import { BusinessOrmEntity } from './business-orm.entity';
 
 export enum ImageCategoryOrm {
-  PROFILE = "PROFILE",
-  GALLERY = "GALLERY",
-  COVER = "COVER",
+  PROFILE = 'PROFILE',
+  GALLERY = 'GALLERY',
+  COVER = 'COVER',
 }
 
 export enum ImageFormatOrm {
-  JPEG = "JPEG",
-  PNG = "PNG",
-  WEBP = "WEBP",
+  JPEG = 'JPEG',
+  PNG = 'PNG',
+  WEBP = 'WEBP',
 }
 
-@Entity("business_images")
-@Index("IDX_business_images_business_id", ["businessId"])
-@Index("IDX_business_images_category", ["category"])
-@Index("IDX_business_images_created_at", ["createdAt"])
+@Entity('business_images')
+@Index('IDX_business_images_business_id', ['businessId'])
+@Index('IDX_business_images_category', ['category'])
+@Index('IDX_business_images_created_at', ['createdAt'])
 export class BusinessImageOrmEntity {
-  @PrimaryGeneratedColumn("uuid")
+  @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-  @Column({ name: "business_id", type: "uuid" })
+  @Column({ name: 'business_id', type: 'uuid' })
   businessId!: string;
 
-  @Column({ name: "gallery_id", type: "uuid", nullable: true })
+  @Column({ name: 'gallery_id', type: 'uuid', nullable: true })
   galleryId?: string;
 
-  @Column({ name: "s3_key", type: "varchar", length: 500 })
+  @Column({ name: 's3_key', type: 'varchar', length: 500 })
   s3Key!: string;
 
-  @Column({ name: "original_filename", type: "varchar", length: 255 })
+  @Column({ name: 'original_filename', type: 'varchar', length: 255 })
   originalFilename!: string;
 
   @Column({
-    name: "category",
-    type: "enum",
+    name: 'category',
+    type: 'enum',
     enum: ImageCategoryOrm,
     default: ImageCategoryOrm.GALLERY,
   })
   category!: ImageCategoryOrm;
 
   @Column({
-    name: "format",
-    type: "enum",
+    name: 'format',
+    type: 'enum',
     enum: ImageFormatOrm,
   })
   format!: ImageFormatOrm;
 
-  @Column({ name: "file_size", type: "integer" })
+  @Column({ name: 'file_size', type: 'integer' })
   fileSize!: number;
 
-  @Column({ name: "width", type: "integer", nullable: true })
+  @Column({ name: 'width', type: 'integer', nullable: true })
   width?: number;
 
-  @Column({ name: "height", type: "integer", nullable: true })
+  @Column({ name: 'height', type: 'integer', nullable: true })
   height?: number;
 
-  @Column({ name: "alt_text", type: "varchar", length: 255, nullable: true })
+  @Column({ name: 'alt_text', type: 'varchar', length: 255, nullable: true })
   altText?: string;
 
-  @Column({ name: "description", type: "text", nullable: true })
+  @Column({ name: 'description', type: 'text', nullable: true })
   description?: string;
 
   // JSON pour stocker les variants (thumbnail, medium, large)
   @Column({
-    name: "variants",
-    type: "jsonb",
+    name: 'variants',
+    type: 'jsonb',
     nullable: true,
-    default: "{}",
+    default: '{}',
   })
   variants?: {
     thumbnail?: string;
@@ -93,10 +93,10 @@ export class BusinessImageOrmEntity {
 
   // Métadonnées S3
   @Column({
-    name: "s3_metadata",
-    type: "jsonb",
+    name: 's3_metadata',
+    type: 'jsonb',
     nullable: true,
-    default: "{}",
+    default: '{}',
   })
   s3Metadata?: {
     etag?: string;
@@ -105,21 +105,21 @@ export class BusinessImageOrmEntity {
     signedUrlExpiry?: Date;
   };
 
-  @Column({ name: "is_active", type: "boolean", default: true })
+  @Column({ name: 'is_active', type: 'boolean', default: true })
   isActive!: boolean;
 
-  @CreateDateColumn({ name: "created_at", type: "timestamptz" })
+  @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
   createdAt!: Date;
 
-  @UpdateDateColumn({ name: "updated_at", type: "timestamptz" })
+  @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz' })
   updatedAt!: Date;
 
   // Relations
-  @ManyToOne(() => BusinessOrmEntity, { onDelete: "CASCADE" })
-  @JoinColumn({ name: "business_id" })
+  @ManyToOne(() => BusinessOrmEntity, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'business_id' })
   business!: BusinessOrmEntity;
 
-  @ManyToOne("BusinessGalleryOrmEntity", "images", { nullable: true })
-  @JoinColumn({ name: "gallery_id" })
+  @ManyToOne('BusinessGalleryOrmEntity', 'images', { nullable: true })
+  @JoinColumn({ name: 'gallery_id' })
   gallery?: any; // Optional relation to gallery
 }

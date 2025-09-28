@@ -4,12 +4,12 @@
  * ✅ Business logic for safely removing gallery with image cleanup
  */
 
-import { BusinessRepository } from "../../../domain/repositories/business.repository";
-import { BusinessGallery } from "../../../domain/value-objects/business-gallery.value-object";
-import { BusinessId } from "../../../domain/value-objects/business-id.value-object";
-import { I18nService } from "../../../shared/types/i18n.interface";
-import { ILogger } from "../../../shared/types/logger.interface";
-import { BusinessNotFoundError } from "../../exceptions/business.exceptions";
+import { BusinessRepository } from '../../../domain/repositories/business.repository';
+import { BusinessGallery } from '../../../domain/value-objects/business-gallery.value-object';
+import { BusinessId } from '../../../domain/value-objects/business-id.value-object';
+import { I18nService } from '../../../shared/types/i18n.interface';
+import { ILogger } from '../../../shared/types/logger.interface';
+import { BusinessNotFoundError } from '../../exceptions/business.exceptions';
 
 export interface DeleteBusinessGalleryRequest {
   readonly businessId: string;
@@ -44,7 +44,7 @@ export class DeleteBusinessGalleryUseCase {
   async execute(
     request: DeleteBusinessGalleryRequest,
   ): Promise<DeleteBusinessGalleryResponse> {
-    this.logger.log("Clearing business gallery", {
+    this.logger.log('Clearing business gallery', {
       businessId: request.businessId,
       requestingUserId: request.requestingUserId,
       removeAllImages: request.options?.removeAllImages ?? true,
@@ -57,8 +57,8 @@ export class DeleteBusinessGalleryUseCase {
       const business = await this.businessRepository.findById(businessId);
 
       if (!business) {
-        const errorMessage = this.i18n.t("error.business.not_found");
-        this.logger.error("Business not found for gallery deletion", {
+        const errorMessage = this.i18n.t('error.business.not_found');
+        this.logger.error('Business not found for gallery deletion', {
           businessId: request.businessId,
           requestingUserId: request.requestingUserId,
         });
@@ -70,7 +70,7 @@ export class DeleteBusinessGalleryUseCase {
       const imageCount = currentGallery.count;
 
       if (imageCount === 0) {
-        this.logger.log("Business gallery already empty", {
+        this.logger.log('Business gallery already empty', {
           businessId: request.businessId,
         });
 
@@ -80,7 +80,7 @@ export class DeleteBusinessGalleryUseCase {
           deletedImages: 0,
           orphanedImages: 0,
           s3FilesRemoved: 0,
-          message: this.i18n.t("gallery.already_empty"),
+          message: this.i18n.t('gallery.already_empty'),
         };
       }
 
@@ -98,13 +98,13 @@ export class DeleteBusinessGalleryUseCase {
       if (request.options?.deleteFromS3) {
         // TODO: Implement S3 cleanup
         // This would require injecting an S3 service
-        this.logger.log("S3 cleanup requested but not implemented yet", {
+        this.logger.log('S3 cleanup requested but not implemented yet', {
           businessId: request.businessId,
           imageUrls: imageUrls.length,
         });
       }
 
-      this.logger.log("Business gallery cleared successfully", {
+      this.logger.log('Business gallery cleared successfully', {
         businessId: request.businessId,
         deletedImages: imageCount,
         s3FilesRemoved,
@@ -116,14 +116,14 @@ export class DeleteBusinessGalleryUseCase {
         deletedImages: imageCount,
         orphanedImages: 0, // All images are removed, not orphaned
         s3FilesRemoved,
-        message: this.i18n.t("gallery.cleared_successfully", {
+        message: this.i18n.t('gallery.cleared_successfully', {
           count: imageCount,
         }),
       };
     } catch (error) {
       const errorMessage =
-        error instanceof Error ? error.message : "Unknown error";
-      this.logger.error("Failed to clear business gallery", {
+        error instanceof Error ? error.message : 'Unknown error';
+      this.logger.error('Failed to clear business gallery', {
         businessId: request.businessId,
         error: errorMessage,
         requestingUserId: request.requestingUserId,

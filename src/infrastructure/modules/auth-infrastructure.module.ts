@@ -5,41 +5,41 @@
  * Provides les implémentations concrètes des ports
  */
 
-import { Module } from "@nestjs/common";
-import { ConfigModule, ConfigService } from "@nestjs/config";
-import { JwtModule } from "@nestjs/jwt";
-import { PassportModule } from "@nestjs/passport";
+import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { JwtModule } from '@nestjs/jwt';
+import { PassportModule } from '@nestjs/passport';
 
 // Infrastructure Services
-import { NestJsConfigServiceAdapter } from "../config/nestjs-config.adapter";
-import { BcryptPasswordHasher } from "../services/bcrypt-password-hasher.service"; // ✅ NOUVEAU: Clean Architecture
-import { BcryptPasswordService } from "../services/bcrypt-password.service";
-import { JwtAuthenticationService } from "../services/jwt-authentication.service";
+import { NestJsConfigServiceAdapter } from '../config/nestjs-config.adapter';
+import { BcryptPasswordHasher } from '../services/bcrypt-password-hasher.service'; // ✅ NOUVEAU: Clean Architecture
+import { BcryptPasswordService } from '../services/bcrypt-password.service';
+import { JwtAuthenticationService } from '../services/jwt-authentication.service';
 
 // Application Ports
 
 // Note: Use Cases are imported and configured in PresentationModule
 
 // Shared Constants
-import { TOKENS } from "../../shared/constants/injection-tokens";
+import { TOKENS } from '../../shared/constants/injection-tokens';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: ".env",
+      envFilePath: '.env',
     }),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
-        secret: configService.get<string>("ACCESS_TOKEN_SECRET"),
+        secret: configService.get<string>('ACCESS_TOKEN_SECRET'),
         signOptions: {
-          expiresIn: `${configService.get<number>("ACCESS_TOKEN_EXPIRATION", 3600)}s`,
+          expiresIn: `${configService.get<number>('ACCESS_TOKEN_EXPIRATION', 3600)}s`,
         },
       }),
       inject: [ConfigService],
     }),
-    PassportModule.register({ defaultStrategy: "jwt" }),
+    PassportModule.register({ defaultStrategy: 'jwt' }),
   ],
   providers: [
     // Config Service Adapter

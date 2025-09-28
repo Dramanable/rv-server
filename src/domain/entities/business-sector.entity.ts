@@ -5,7 +5,7 @@
  * Respecte les principes de Clean Architecture - ZÉRO dépendance framework
  */
 
-import { DomainError } from "../exceptions/domain.exceptions";
+import { DomainError } from '../exceptions/domain.exceptions';
 
 export class BusinessSector {
   private constructor(
@@ -184,62 +184,62 @@ export class BusinessSector {
 
   private static validateName(name: string): void {
     if (!name || name.trim().length === 0) {
-      throw new DomainError("Business sector name cannot be empty");
+      throw new DomainError('Business sector name cannot be empty');
     }
 
     if (name.trim().length < 2) {
       throw new DomainError(
-        "Business sector name must be at least 2 characters long",
+        'Business sector name must be at least 2 characters long',
       );
     }
 
     if (name.length > 100) {
       throw new DomainError(
-        "Business sector name must be less than 100 characters",
+        'Business sector name must be less than 100 characters',
       );
     }
 
     // Vérifier les caractères autorisés (lettres, chiffres, espaces, tirets)
     const allowedPattern = /^[a-zA-Z0-9\s\-&'.(),]+$/;
     if (!allowedPattern.test(name)) {
-      throw new DomainError("Business sector name contains invalid characters");
+      throw new DomainError('Business sector name contains invalid characters');
     }
   }
 
   private static validateDescription(description: string): void {
     if (!description || description.trim().length === 0) {
-      throw new DomainError("Business sector description cannot be empty");
+      throw new DomainError('Business sector description cannot be empty');
     }
 
     if (description.trim().length < 10) {
       throw new DomainError(
-        "Business sector description must be at least 10 characters long",
+        'Business sector description must be at least 10 characters long',
       );
     }
 
     if (description.length > 500) {
       throw new DomainError(
-        "Business sector description must be less than 500 characters",
+        'Business sector description must be less than 500 characters',
       );
     }
   }
 
   private static validateCode(code: string): void {
     if (!code || code.trim().length === 0) {
-      throw new DomainError("Business sector code cannot be empty");
+      throw new DomainError('Business sector code cannot be empty');
     }
 
     const cleanCode = code.trim().toUpperCase();
 
     if (cleanCode.length < 2) {
       throw new DomainError(
-        "Business sector code must be at least 2 characters long",
+        'Business sector code must be at least 2 characters long',
       );
     }
 
     if (cleanCode.length > 20) {
       throw new DomainError(
-        "Business sector code must be less than 20 characters",
+        'Business sector code must be less than 20 characters',
       );
     }
 
@@ -247,14 +247,14 @@ export class BusinessSector {
     const allowedPattern = /^[A-Z0-9_]+$/;
     if (!allowedPattern.test(cleanCode)) {
       throw new DomainError(
-        "Business sector code must contain only uppercase letters, numbers and underscores",
+        'Business sector code must contain only uppercase letters, numbers and underscores',
       );
     }
   }
 
   private static validateCreatedBy(userId: string): void {
     if (!userId || userId.trim().length === 0) {
-      throw new DomainError("CreatedBy user ID cannot be empty");
+      throw new DomainError('CreatedBy user ID cannot be empty');
     }
   }
 

@@ -10,12 +10,12 @@ import {
   ProfessionalNotActiveError,
   ProfessionalNotVerifiedError,
   ProfessionalValidationError,
-} from "@domain/exceptions/professional.exceptions";
-import { BusinessId } from "@domain/value-objects/business-id.value-object";
-import { Email } from "@domain/value-objects/email.value-object";
-import { ProfessionalId } from "@domain/value-objects/professional-id.value-object";
+} from '@domain/exceptions/professional.exceptions';
+import { BusinessId } from '@domain/value-objects/business-id.value-object';
+import { Email } from '@domain/value-objects/email.value-object';
+import { ProfessionalId } from '@domain/value-objects/professional-id.value-object';
 
-export type ProfessionalStatus = "ACTIVE" | "INACTIVE" | "SUSPENDED";
+export type ProfessionalStatus = 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
 
 export interface ProfessionalProps {
   readonly id: ProfessionalId;
@@ -46,18 +46,18 @@ export class Professional {
     private _firstName: string,
     private _lastName: string,
     private _phone?: string,
-    private _status: ProfessionalStatus = "ACTIVE",
+    private _status: ProfessionalStatus = 'ACTIVE',
     private _isVerified: boolean = false,
     private _licenseNumber?: string,
-    private _speciality: string = "",
+    private _speciality: string = '',
     private _phoneNumber?: string,
     private _profileImage?: string,
     private _bio?: string,
     private _experience?: string,
     private readonly _createdAt: Date = new Date(),
     private _updatedAt: Date = new Date(),
-    private readonly _createdBy: string = "",
-    private _updatedBy: string = "",
+    private readonly _createdBy: string = '',
+    private _updatedBy: string = '',
   ) {}
 
   /**
@@ -79,35 +79,35 @@ export class Professional {
   }): Professional {
     // Validations métier
     if (!params.firstName?.trim()) {
-      throw new ProfessionalValidationError("First name is required");
+      throw new ProfessionalValidationError('First name is required');
     }
 
     if (!params.lastName?.trim()) {
-      throw new ProfessionalValidationError("Last name is required");
+      throw new ProfessionalValidationError('Last name is required');
     }
 
     if (params.firstName.trim().length < 2) {
       throw new ProfessionalValidationError(
-        "First name must be at least 2 characters",
+        'First name must be at least 2 characters',
       );
     }
 
     if (params.lastName.trim().length < 2) {
       throw new ProfessionalValidationError(
-        "Last name must be at least 2 characters",
+        'Last name must be at least 2 characters',
       );
     }
 
     if (!params.speciality?.trim()) {
-      throw new ProfessionalValidationError("Speciality is required");
+      throw new ProfessionalValidationError('Speciality is required');
     }
 
     if (!params.licenseNumber?.trim()) {
-      throw new ProfessionalValidationError("License number is required");
+      throw new ProfessionalValidationError('License number is required');
     }
 
     if (params.experience !== undefined && params.experience < 0) {
-      throw new ProfessionalValidationError("Experience cannot be negative");
+      throw new ProfessionalValidationError('Experience cannot be negative');
     }
 
     const now = new Date();
@@ -119,10 +119,10 @@ export class Professional {
       params.firstName.trim(),
       params.lastName.trim(),
       params.phone?.trim(),
-      "ACTIVE",
+      'ACTIVE',
       false, // Par défaut non vérifié
       params.licenseNumber?.trim(),
-      params.speciality?.trim() || "",
+      params.speciality?.trim() || '',
       params.phoneNumber?.trim(),
       params.profileImage?.trim(),
       params.bio?.trim(),
@@ -178,11 +178,11 @@ export class Professional {
   }): void {
     if (params.firstName !== undefined) {
       if (!params.firstName.trim()) {
-        throw new ProfessionalValidationError("First name is required");
+        throw new ProfessionalValidationError('First name is required');
       }
       if (params.firstName.trim().length < 2) {
         throw new ProfessionalValidationError(
-          "First name must be at least 2 characters",
+          'First name must be at least 2 characters',
         );
       }
       this._firstName = params.firstName.trim();
@@ -190,11 +190,11 @@ export class Professional {
 
     if (params.lastName !== undefined) {
       if (!params.lastName.trim()) {
-        throw new ProfessionalValidationError("Last name is required");
+        throw new ProfessionalValidationError('Last name is required');
       }
       if (params.lastName.trim().length < 2) {
         throw new ProfessionalValidationError(
-          "Last name must be at least 2 characters",
+          'Last name must be at least 2 characters',
         );
       }
       this._lastName = params.lastName.trim();
@@ -209,7 +209,7 @@ export class Professional {
     }
 
     if (params.speciality !== undefined) {
-      this._speciality = params.speciality.trim() || "";
+      this._speciality = params.speciality.trim() || '';
     }
 
     if (params.phoneNumber !== undefined) {
@@ -226,7 +226,7 @@ export class Professional {
 
     if (params.experience !== undefined) {
       if (params.experience < 0) {
-        throw new ProfessionalValidationError("Experience cannot be negative");
+        throw new ProfessionalValidationError('Experience cannot be negative');
       }
       this._experience = params.experience.toString();
     }
@@ -244,7 +244,7 @@ export class Professional {
    * Activer le professionnel
    */
   activate(updatedBy: string): void {
-    this._status = "ACTIVE";
+    this._status = 'ACTIVE';
     this._updatedBy = updatedBy;
     this._updatedAt = new Date();
   }
@@ -253,7 +253,7 @@ export class Professional {
    * Désactiver le professionnel
    */
   deactivate(updatedBy: string): void {
-    this._status = "INACTIVE";
+    this._status = 'INACTIVE';
     this._updatedBy = updatedBy;
     this._updatedAt = new Date();
   }
@@ -262,7 +262,7 @@ export class Professional {
    * Suspendre le professionnel
    */
   suspend(updatedBy: string): void {
-    this._status = "SUSPENDED";
+    this._status = 'SUSPENDED';
     this._updatedBy = updatedBy;
     this._updatedAt = new Date();
   }
@@ -314,7 +314,7 @@ export class Professional {
    * Vérifier si le professionnel est actif
    */
   isActive(): boolean {
-    return this._status === "ACTIVE";
+    return this._status === 'ACTIVE';
   }
 
   /**

@@ -1,88 +1,88 @@
-import { MigrationInterface, QueryRunner, Table } from "typeorm";
+import { MigrationInterface, QueryRunner, Table } from 'typeorm';
 
 export class CreateStaffTable1695828000000 implements MigrationInterface {
-  name = "CreateStaffTable1695828000000";
+  name = 'CreateStaffTable1695828000000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(
       new Table({
-        name: "staff",
+        name: 'staff',
         columns: [
           {
-            name: "id",
-            type: "uuid",
+            name: 'id',
+            type: 'uuid',
             isPrimary: true,
-            generationStrategy: "uuid",
-            default: "uuid_generate_v4()",
+            generationStrategy: 'uuid',
+            default: 'uuid_generate_v4()',
           },
           {
-            name: "business_id",
-            type: "uuid",
+            name: 'business_id',
+            type: 'uuid',
             isNullable: false,
           },
           {
-            name: "profile",
-            type: "jsonb",
+            name: 'profile',
+            type: 'jsonb',
             isNullable: false,
           },
           {
-            name: "role",
-            type: "enum",
+            name: 'role',
+            type: 'enum',
             enum: [
-              "MANAGER",
-              "SENIOR_PRACTITIONER",
-              "PRACTITIONER",
-              "JUNIOR_PRACTITIONER",
-              "ASSISTANT",
-              "RECEPTIONIST",
-              "SUPPORT_STAFF",
-              "ADMIN",
+              'MANAGER',
+              'SENIOR_PRACTITIONER',
+              'PRACTITIONER',
+              'JUNIOR_PRACTITIONER',
+              'ASSISTANT',
+              'RECEPTIONIST',
+              'SUPPORT_STAFF',
+              'ADMIN',
             ],
             isNullable: false,
           },
           {
-            name: "email",
-            type: "varchar",
-            length: "255",
+            name: 'email',
+            type: 'varchar',
+            length: '255',
             isNullable: false,
           },
           {
-            name: "phone",
-            type: "varchar",
-            length: "20",
+            name: 'phone',
+            type: 'varchar',
+            length: '20',
             isNullable: true,
           },
           {
-            name: "availability",
-            type: "jsonb",
+            name: 'availability',
+            type: 'jsonb',
             isNullable: true,
           },
           {
-            name: "status",
-            type: "enum",
-            enum: ["ACTIVE", "INACTIVE", "ON_LEAVE", "SUSPENDED"],
+            name: 'status',
+            type: 'enum',
+            enum: ['ACTIVE', 'INACTIVE', 'ON_LEAVE', 'SUSPENDED'],
             default: "'ACTIVE'",
           },
           {
-            name: "hire_date",
-            type: "timestamptz",
+            name: 'hire_date',
+            type: 'timestamptz',
             isNullable: false,
           },
           {
-            name: "calendar_integration",
-            type: "jsonb",
+            name: 'calendar_integration',
+            type: 'jsonb',
             isNullable: true,
           },
           {
-            name: "created_at",
-            type: "timestamptz",
-            default: "CURRENT_TIMESTAMP",
+            name: 'created_at',
+            type: 'timestamptz',
+            default: 'CURRENT_TIMESTAMP',
           },
           {
-            name: "updated_at",
-            type: "timestamptz",
-            default: "CURRENT_TIMESTAMP",
-            onUpdate: "CURRENT_TIMESTAMP",
+            name: 'updated_at',
+            type: 'timestamptz',
+            default: 'CURRENT_TIMESTAMP',
+            onUpdate: 'CURRENT_TIMESTAMP',
           },
         ],
       }),
@@ -120,6 +120,6 @@ export class CreateStaffTable1695828000000 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropTable("staff");
+    await queryRunner.dropTable('staff');
   }
 }

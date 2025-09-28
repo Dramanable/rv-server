@@ -5,16 +5,16 @@
  * Réservé aux SUPER_ADMIN uniquement
  */
 
-import type { I18nService } from "../../../application/ports/i18n.port";
-import type { Logger } from "../../../application/ports/logger.port";
-import type { IPermissionService } from "../../../application/ports/permission.service.interface";
-import type { UserRepository } from "../../../domain/repositories/user.repository.interface";
-import { UserRole } from "../../../shared/enums/user-role.enum";
+import type { I18nService } from '../../../application/ports/i18n.port';
+import type { Logger } from '../../../application/ports/logger.port';
+import type { IPermissionService } from '../../../application/ports/permission.service.interface';
+import type { UserRepository } from '../../../domain/repositories/user.repository.interface';
+import { UserRole } from '../../../shared/enums/user-role.enum';
 import type {
   UserQueryParams,
   UserSortField,
-} from "../../../shared/types/user-query.types";
-import { AppContextFactory } from "../../../shared/utils/app-context.factory";
+} from '../../../shared/types/user-query.types';
+import { AppContextFactory } from '../../../shared/utils/app-context.factory';
 
 /**
  * 📋 Request pour la recherche d'utilisateurs
@@ -29,7 +29,7 @@ export interface SearchUsersRequest {
   readonly page?: number;
   readonly limit?: number;
   readonly sortBy?: string;
-  readonly sortOrder?: "asc" | "desc";
+  readonly sortOrder?: 'asc' | 'desc';
 }
 
 /**
@@ -78,12 +78,12 @@ export class SearchUsersUseCase {
 
   async execute(request: SearchUsersRequest): Promise<SearchUsersResponse> {
     const context = AppContextFactory.create()
-      .operation("SearchUsers")
+      .operation('SearchUsers')
       .requestingUser(request.requestingUserId)
       .build();
 
     this.logger.info(
-      this.i18n.t("operations.user.search_attempt"),
+      this.i18n.t('operations.user.search_attempt'),
       context as unknown as Record<string, unknown>,
     );
 
@@ -91,7 +91,7 @@ export class SearchUsersUseCase {
       // 1. 🛡️ PERMISSIONS - Vérifier les droits utilisateur avec IPermissionService
       await this.permissionService.requirePermission(
         request.requestingUserId,
-        "MANAGE_USERS",
+        'MANAGE_USERS',
         {},
       );
 
@@ -124,7 +124,7 @@ export class SearchUsersUseCase {
         appliedFilters: this.buildAppliedFilters(request),
       };
 
-      this.logger.info(this.i18n.t("operations.user.search_success"), {
+      this.logger.info(this.i18n.t('operations.user.search_success'), {
         ...context,
         resultCount: response.users.length,
         totalItems: response.pagination.totalItems,
@@ -133,7 +133,7 @@ export class SearchUsersUseCase {
       return response;
     } catch (error) {
       this.logger.error(
-        this.i18n.t("operations.user.search_failed"),
+        this.i18n.t('operations.user.search_failed'),
         error as Error,
         context as unknown as Record<string, unknown>,
       );
@@ -147,8 +147,8 @@ export class SearchUsersUseCase {
     return {
       page: Math.max(request.page ?? 1, 1),
       limit: Math.min(Math.max(request.limit ?? 20, 1), 100),
-      sortBy: (request.sortBy as UserSortField | undefined) ?? "createdAt",
-      sortOrder: request.sortOrder === "asc" ? "ASC" : "DESC",
+      sortBy: (request.sortBy as UserSortField | undefined) ?? 'createdAt',
+      sortOrder: request.sortOrder === 'asc' ? 'ASC' : 'DESC',
       search: request.searchTerm?.trim()
         ? {
             query: request.searchTerm.trim(),

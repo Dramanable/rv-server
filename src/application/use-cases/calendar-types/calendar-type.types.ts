@@ -1,4 +1,4 @@
-import type { CalendarType } from "@domain/entities/calendar-type.entity";
+import type { CalendarType } from '@domain/entities/calendar-type.entity';
 
 /**
  * 🎯 Types centralisés pour CalendarType Use Cases
@@ -31,7 +31,7 @@ export interface ListCalendarTypesRequest {
   readonly page?: number;
   readonly limit?: number;
   readonly sortBy?: string;
-  readonly sortOrder?: "asc" | "desc";
+  readonly sortOrder?: 'asc' | 'desc';
   readonly search?: string;
   readonly isActive?: boolean;
   readonly requestingUserId: string;

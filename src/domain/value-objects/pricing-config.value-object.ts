@@ -4,21 +4,21 @@
  * ✅ Configuration flexible de tarification pour services
  */
 
-import { Money } from "./money.value-object";
+import { Money } from './money.value-object';
 
 export enum PricingType {
-  FREE = "FREE", // Service gratuit
-  FIXED = "FIXED", // Prix fixe
-  VARIABLE = "VARIABLE", // Prix variable selon durée/options
-  HIDDEN = "HIDDEN", // Prix non visible au public
-  ON_DEMAND = "ON_DEMAND", // Prix sur demande
+  FREE = 'FREE', // Service gratuit
+  FIXED = 'FIXED', // Prix fixe
+  VARIABLE = 'VARIABLE', // Prix variable selon durée/options
+  HIDDEN = 'HIDDEN', // Prix non visible au public
+  ON_DEMAND = 'ON_DEMAND', // Prix sur demande
 }
 
 export enum PricingVisibility {
-  PUBLIC = "PUBLIC", // Visible par tous
-  AUTHENTICATED = "AUTHENTICATED", // Visible par utilisateurs connectés
-  PRIVATE = "PRIVATE", // Visible seulement par staff/admin
-  HIDDEN = "HIDDEN", // Complètement masqué
+  PUBLIC = 'PUBLIC', // Visible par tous
+  AUTHENTICATED = 'AUTHENTICATED', // Visible par utilisateurs connectés
+  PRIVATE = 'PRIVATE', // Visible seulement par staff/admin
+  HIDDEN = 'HIDDEN', // Complètement masqué
 }
 
 export interface PricingRule {
@@ -46,7 +46,7 @@ export class PricingConfig {
     return new PricingConfig(
       PricingType.FREE,
       visibility,
-      Money.create(0, "EUR"),
+      Money.create(0, 'EUR'),
       [],
       description,
     );
@@ -72,7 +72,7 @@ export class PricingConfig {
     description?: string,
   ): PricingConfig {
     if (rules.length === 0) {
-      throw new Error("Variable pricing requires at least one rule");
+      throw new Error('Variable pricing requires at least one rule');
     }
 
     // Utiliser le prix de base de la première règle
@@ -114,25 +114,25 @@ export class PricingConfig {
     switch (this._type) {
       case PricingType.FREE:
         if (!this._basePrice || this._basePrice.getAmount() !== 0) {
-          throw new Error("Free pricing must have zero base price");
+          throw new Error('Free pricing must have zero base price');
         }
         break;
 
       case PricingType.FIXED:
         if (!this._basePrice || this._basePrice.getAmount() < 0) {
-          throw new Error("Fixed pricing requires valid base price");
+          throw new Error('Fixed pricing requires valid base price');
         }
         break;
 
       case PricingType.VARIABLE:
         if (this._rules.length === 0) {
-          throw new Error("Variable pricing requires pricing rules");
+          throw new Error('Variable pricing requires pricing rules');
         }
         break;
 
       case PricingType.HIDDEN:
         if (this._visibility !== PricingVisibility.HIDDEN) {
-          throw new Error("Hidden pricing must have hidden visibility");
+          throw new Error('Hidden pricing must have hidden visibility');
         }
         break;
     }
@@ -197,7 +197,7 @@ export class PricingConfig {
       case PricingType.HIDDEN:
       case PricingType.ON_DEMAND:
         throw new Error(
-          "Cannot calculate price for hidden or on-demand pricing",
+          'Cannot calculate price for hidden or on-demand pricing',
         );
 
       default:

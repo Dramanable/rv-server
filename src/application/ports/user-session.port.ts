@@ -2,7 +2,7 @@
  * 👤 USER SESSION PORT - Interface pour la gestion des sessions utilisateur
  */
 
-import { User } from "../../domain/entities/user.entity";
+import { User } from '../../domain/entities/user.entity';
 
 export interface IUserSessionService {
   /**

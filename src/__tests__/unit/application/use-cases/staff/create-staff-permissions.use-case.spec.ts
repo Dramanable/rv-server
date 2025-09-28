@@ -5,17 +5,17 @@
  * au lieu des patterns de permission legacy
  */
 
-import { I18nService } from "../../../../../application/ports/i18n.port";
-import { Logger } from "../../../../../application/ports/logger.port";
-import { IPermissionService } from "../../../../../application/ports/permission.service.interface";
+import { I18nService } from '../../../../../application/ports/i18n.port';
+import { Logger } from '../../../../../application/ports/logger.port';
+import { IPermissionService } from '../../../../../application/ports/permission.service.interface';
 import {
   CreateStaffRequest,
   CreateStaffUseCase,
-} from "../../../../../application/use-cases/staff/create-staff.use-case";
-import { BusinessRepository } from "../../../../../domain/repositories/business.repository.interface";
-import { StaffRepository } from "../../../../../domain/repositories/staff.repository.interface";
-import { Permission } from "../../../../../shared/enums/permission.enum";
-import { StaffRole } from "../../../../../shared/enums/staff-role.enum";
+} from '../../../../../application/use-cases/staff/create-staff.use-case';
+import { BusinessRepository } from '../../../../../domain/repositories/business.repository.interface';
+import { StaffRepository } from '../../../../../domain/repositories/staff.repository.interface';
+import { Permission } from '../../../../../shared/enums/permission.enum';
+import { StaffRole } from '../../../../../shared/enums/staff-role.enum';
 
 // Mocks centralisés
 const mockLogger = {
@@ -28,8 +28,8 @@ const mockLogger = {
 } as unknown as jest.Mocked<Logger>;
 
 const mockI18n = {
-  t: jest.fn().mockReturnValue("Mocked translation"),
-  translate: jest.fn().mockReturnValue("Mocked translation"),
+  t: jest.fn().mockReturnValue('Mocked translation'),
+  translate: jest.fn().mockReturnValue('Mocked translation'),
   setDefaultLanguage: jest.fn(),
   exists: jest.fn().mockReturnValue(true),
 } as jest.Mocked<I18nService>;
@@ -79,7 +79,7 @@ const mockBusinessRepository = {
   findNearLocation: jest.fn(),
 } as unknown as jest.Mocked<BusinessRepository>;
 
-describe("CreateStaffUseCase - Permissions Integration", () => {
+describe('CreateStaffUseCase - Permissions Integration', () => {
   let useCase: CreateStaffUseCase;
 
   beforeEach(() => {
@@ -95,14 +95,14 @@ describe("CreateStaffUseCase - Permissions Integration", () => {
     );
   });
 
-  it("should call IPermissionService.requirePermission with correct parameters", async () => {
+  it('should call IPermissionService.requirePermission with correct parameters', async () => {
     // Given - Mock Staff.create successful flow
     const mockStaff = {
-      id: { getValue: () => "staff-123" },
-      profile: { firstName: "John", lastName: "Doe" },
-      email: { getValue: () => "john.doe@example.com" },
+      id: { getValue: () => 'staff-123' },
+      profile: { firstName: 'John', lastName: 'Doe' },
+      email: { getValue: () => 'john.doe@example.com' },
       role: StaffRole.DOCTOR,
-      businessId: { getValue: () => "f47ac10b-58cc-4372-a567-0e02b2c3d478" },
+      businessId: { getValue: () => 'f47ac10b-58cc-4372-a567-0e02b2c3d478' },
       isActive: () => true,
       createdAt: new Date(),
     };
@@ -111,11 +111,11 @@ describe("CreateStaffUseCase - Permissions Integration", () => {
     mockStaffRepository.save.mockResolvedValue(mockStaff as any);
 
     const request: CreateStaffRequest = {
-      requestingUserId: "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-      businessId: "f47ac10b-58cc-4372-a567-0e02b2c3d478",
-      firstName: "John",
-      lastName: "Doe",
-      email: "john.doe@example.com",
+      requestingUserId: 'f47ac10b-58cc-4372-a567-0e02b2c3d479',
+      businessId: 'f47ac10b-58cc-4372-a567-0e02b2c3d478',
+      firstName: 'John',
+      lastName: 'Doe',
+      email: 'john.doe@example.com',
       role: StaffRole.DOCTOR,
     };
 
@@ -124,32 +124,32 @@ describe("CreateStaffUseCase - Permissions Integration", () => {
 
     // Then - Vérifier l'appel au service de permissions
     expect(mockPermissionService.requirePermission).toHaveBeenCalledWith(
-      "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+      'f47ac10b-58cc-4372-a567-0e02b2c3d479',
       Permission.MANAGE_STAFF,
-      { businessId: "f47ac10b-58cc-4372-a567-0e02b2c3d478" },
+      { businessId: 'f47ac10b-58cc-4372-a567-0e02b2c3d478' },
     );
     expect(mockPermissionService.requirePermission).toHaveBeenCalledTimes(1);
   });
 
-  it("should NOT use legacy validatePermissions or hasPermission patterns", async () => {
+  it('should NOT use legacy validatePermissions or hasPermission patterns', async () => {
     // Given - Pas de patterns legacy attendus dans le code
     const request: CreateStaffRequest = {
-      requestingUserId: "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-      businessId: "f47ac10b-58cc-4372-a567-0e02b2c3d478",
-      firstName: "John",
-      lastName: "Doe",
-      email: "john.doe@example.com",
+      requestingUserId: 'f47ac10b-58cc-4372-a567-0e02b2c3d479',
+      businessId: 'f47ac10b-58cc-4372-a567-0e02b2c3d478',
+      firstName: 'John',
+      lastName: 'Doe',
+      email: 'john.doe@example.com',
       role: StaffRole.DOCTOR,
     };
 
     // Mock des dépendances
     mockStaffRepository.findByEmail.mockResolvedValue(null);
     mockStaffRepository.save.mockResolvedValue({
-      id: { getValue: () => "staff-123" },
-      profile: { firstName: "John", lastName: "Doe" },
-      email: { getValue: () => "john.doe@example.com" },
+      id: { getValue: () => 'staff-123' },
+      profile: { firstName: 'John', lastName: 'Doe' },
+      email: { getValue: () => 'john.doe@example.com' },
       role: StaffRole.DOCTOR,
-      businessId: { getValue: () => "f47ac10b-58cc-4372-a567-0e02b2c3d478" },
+      businessId: { getValue: () => 'f47ac10b-58cc-4372-a567-0e02b2c3d478' },
       isActive: () => true,
       createdAt: new Date(),
     } as any);
@@ -163,32 +163,32 @@ describe("CreateStaffUseCase - Permissions Integration", () => {
 
     // Vérifier que les anciens patterns NE SONT PAS utilisés
     expect(mockLogger.warn).not.toHaveBeenCalledWith(
-      expect.stringContaining("permission"),
+      expect.stringContaining('permission'),
     );
   });
 
-  it("should handle permission denied correctly", async () => {
+  it('should handle permission denied correctly', async () => {
     // Given - Permission refusée
-    const permissionError = new Error("Permission denied");
+    const permissionError = new Error('Permission denied');
     mockPermissionService.requirePermission.mockRejectedValue(permissionError);
 
     const request: CreateStaffRequest = {
-      requestingUserId: "user-789",
-      businessId: "business-456",
-      firstName: "John",
-      lastName: "Doe",
-      email: "john.doe@example.com",
+      requestingUserId: 'user-789',
+      businessId: 'business-456',
+      firstName: 'John',
+      lastName: 'Doe',
+      email: 'john.doe@example.com',
       role: StaffRole.DOCTOR,
     };
 
     // When & Then
-    await expect(useCase.execute(request)).rejects.toThrow("Permission denied");
+    await expect(useCase.execute(request)).rejects.toThrow('Permission denied');
 
     // Vérifier que requirePermission a été appelée
     expect(mockPermissionService.requirePermission).toHaveBeenCalledWith(
-      "user-789",
+      'user-789',
       Permission.MANAGE_STAFF,
-      { businessId: "business-456" },
+      { businessId: 'business-456' },
     );
 
     // Vérifier qu'aucune opération métier n'a été effectuée

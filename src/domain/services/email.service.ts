@@ -9,7 +9,7 @@
  * - Sera implémentée dans la couche infrastructure
  */
 
-import { Email } from "../value-objects/email.vo";
+import { Email } from '../value-objects/email.vo';
 
 export interface EmailService {
   /**

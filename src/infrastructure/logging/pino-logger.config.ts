@@ -5,27 +5,27 @@
  * Logging structuré haute performance avec contexte d'application
  */
 
-import { Request } from "express";
-import { IncomingMessage, ServerResponse } from "http";
-import { Params } from "nestjs-pino";
+import { Request } from 'express';
+import { IncomingMessage, ServerResponse } from 'http';
+import { Params } from 'nestjs-pino';
 
 export const createPinoConfig = (configService: {
   get: (key: string, defaultValue?: any) => any;
 }): Params => ({
   pinoHttp: {
-    level: configService.get("LOG_LEVEL", "info"),
+    level: configService.get('LOG_LEVEL', 'info'),
 
     // 🎨 Pretty printing en développement
     transport:
-      configService.get("NODE_ENV", "development") !== "production"
+      configService.get('NODE_ENV', 'development') !== 'production'
         ? {
-            target: "pino-pretty",
+            target: 'pino-pretty',
             options: {
               colorize: true,
-              translateTime: "yyyy-mm-dd HH:MM:ss.l",
-              ignore: "pid,hostname,req,res",
-              messageFormat: "🚀 {operation} | {correlationId} | {msg}",
-              errorLikeObjectKeys: ["err", "error"],
+              translateTime: 'yyyy-mm-dd HH:MM:ss.l',
+              ignore: 'pid,hostname,req,res',
+              messageFormat: '🚀 {operation} | {correlationId} | {msg}',
+              errorLikeObjectKeys: ['err', 'error'],
               singleLine: false,
             },
           }
@@ -80,19 +80,19 @@ export const createPinoConfig = (configService: {
       err?: Error,
     ) => {
       if (res.statusCode >= 400 && res.statusCode < 500) {
-        return "warn";
+        return 'warn';
       } else if (res.statusCode >= 500 || err) {
-        return "error";
+        return 'error';
       } else if (res.statusCode >= 300 && res.statusCode < 400) {
-        return "silent";
+        return 'silent';
       }
-      return "info";
+      return 'info';
     },
 
     // 📝 Enrichissement automatique des logs de requêtes
     customReceivedMessage: (req: IncomingMessage) => {
       const request = req as Request;
-      return `🔗 ${request.method || "UNKNOWN"} ${request.url || "/"}`;
+      return `🔗 ${request.method || 'UNKNOWN'} ${request.url || '/'}`;
     },
 
     customSuccessMessage: (
@@ -100,7 +100,7 @@ export const createPinoConfig = (configService: {
       res: ServerResponse<IncomingMessage>,
     ) => {
       const request = req as Request;
-      return `✅ ${request.method || "UNKNOWN"} ${request.url || "/"} - ${res.statusCode}`;
+      return `✅ ${request.method || 'UNKNOWN'} ${request.url || '/'} - ${res.statusCode}`;
     },
 
     customErrorMessage: (
@@ -109,15 +109,15 @@ export const createPinoConfig = (configService: {
       err: Error,
     ) => {
       const request = req as Request;
-      return `❌ ${request.method || "UNKNOWN"} ${request.url || "/"} - ${res.statusCode} - ${err.message}`;
+      return `❌ ${request.method || 'UNKNOWN'} ${request.url || '/'} - ${res.statusCode} - ${err.message}`;
     },
 
     // 🎯 Ajout du correlationId aux logs de requêtes
     customAttributeKeys: {
-      req: "request",
-      res: "response",
-      err: "error",
-      responseTime: "duration",
+      req: 'request',
+      res: 'response',
+      err: 'error',
+      responseTime: 'duration',
     },
 
     // 🔧 Configuration de base
@@ -130,9 +130,9 @@ export const createPinoConfig = (configService: {
       ignore: (req: IncomingMessage) => {
         const request = req as Request;
         return (
-          request.url === "/health" ||
-          request.url === "/metrics" ||
-          request.url?.startsWith("/swagger")
+          request.url === '/health' ||
+          request.url === '/metrics' ||
+          request.url?.startsWith('/swagger')
         );
       },
     },
@@ -140,16 +140,16 @@ export const createPinoConfig = (configService: {
     // 🌍 Support de la redirection des logs
     redact: {
       paths: [
-        "request.headers.authorization",
-        "request.headers.cookie",
+        'request.headers.authorization',
+        'request.headers.cookie',
         'response.headers["set-cookie"]',
-        "password",
-        "hashedPassword",
-        "token",
-        "accessToken",
-        "refreshToken",
+        'password',
+        'hashedPassword',
+        'token',
+        'accessToken',
+        'refreshToken',
       ],
-      censor: "[REDACTED]",
+      censor: '[REDACTED]',
     },
   },
 });

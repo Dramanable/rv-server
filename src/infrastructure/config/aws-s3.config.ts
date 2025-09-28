@@ -5,8 +5,8 @@
  * ✅ Sécurité et performance optimisées
  */
 
-import { S3Client } from "@aws-sdk/client-s3";
-import { ConfigService } from "@nestjs/config";
+import { S3Client } from '@aws-sdk/client-s3';
+import { ConfigService } from '@nestjs/config';
 
 export interface AwsS3ConfigOptions {
   readonly region: string;
@@ -27,19 +27,19 @@ export class AwsS3Config {
 
   constructor(private readonly configService: ConfigService) {
     // Récupération depuis variables d'environnement
-    this._region = this.configService.get<string>("AWS_S3_REGION", "eu-west-1");
+    this._region = this.configService.get<string>('AWS_S3_REGION', 'eu-west-1');
     this._bucketName =
-      this.configService.get<string>("AWS_S3_BUCKET_NAME") ||
+      this.configService.get<string>('AWS_S3_BUCKET_NAME') ||
       this.getDefaultBucketName();
     this._accessKeyId =
-      this.configService.get<string>("AWS_ACCESS_KEY_ID") || "";
+      this.configService.get<string>('AWS_ACCESS_KEY_ID') || '';
     this._secretAccessKey =
-      this.configService.get<string>("AWS_SECRET_ACCESS_KEY") || "";
+      this.configService.get<string>('AWS_SECRET_ACCESS_KEY') || '';
 
     // Configuration pour développement local (LocalStack)
-    this._endpoint = this.configService.get<string>("AWS_S3_ENDPOINT");
+    this._endpoint = this.configService.get<string>('AWS_S3_ENDPOINT');
     this._forcePathStyle = this.configService.get<boolean>(
-      "AWS_S3_FORCE_PATH_STYLE",
+      'AWS_S3_FORCE_PATH_STYLE',
       false,
     );
 
@@ -47,21 +47,21 @@ export class AwsS3Config {
   }
 
   private getDefaultBucketName(): string {
-    const env = this.configService.get<string>("NODE_ENV", "development");
+    const env = this.configService.get<string>('NODE_ENV', 'development');
     return `business-images-${env}`;
   }
 
   private validateConfiguration(): void {
     const requiredFields = [
-      { key: "AWS_S3_REGION", value: this._region },
-      { key: "AWS_S3_BUCKET_NAME", value: this._bucketName },
+      { key: 'AWS_S3_REGION', value: this._region },
+      { key: 'AWS_S3_BUCKET_NAME', value: this._bucketName },
     ];
 
     // En production, les clés AWS sont obligatoires
-    if (this.configService.get<string>("NODE_ENV") === "production") {
+    if (this.configService.get<string>('NODE_ENV') === 'production') {
       requiredFields.push(
-        { key: "AWS_ACCESS_KEY_ID", value: this._accessKeyId },
-        { key: "AWS_SECRET_ACCESS_KEY", value: this._secretAccessKey },
+        { key: 'AWS_ACCESS_KEY_ID', value: this._accessKeyId },
+        { key: 'AWS_SECRET_ACCESS_KEY', value: this._secretAccessKey },
       );
     }
 
@@ -138,20 +138,20 @@ export class AwsS3Config {
   ): string {
     // Sanitization du nom de fichier
     const sanitizedFileName = fileName
-      .replace(/[^a-zA-Z0-9.-]/g, "_")
-      .replace(/\.+/g, ".")
-      .replace(/^\.+|\.+$/g, "");
+      .replace(/[^a-zA-Z0-9.-]/g, '_')
+      .replace(/\.+/g, '.')
+      .replace(/^\.+|\.+$/g, '');
 
     return `${businessId}/${category.toLowerCase()}/${sanitizedFileName}`;
   }
 
   // Configuration pour différents environnements
   isDevelopment(): boolean {
-    return this.configService.get<string>("NODE_ENV") === "development";
+    return this.configService.get<string>('NODE_ENV') === 'development';
   }
 
   isProduction(): boolean {
-    return this.configService.get<string>("NODE_ENV") === "production";
+    return this.configService.get<string>('NODE_ENV') === 'production';
   }
 
   // Paramètres de signature URL
@@ -166,8 +166,8 @@ export class AwsS3Config {
       CORSRules: [
         {
           AllowedOrigins: this.getAllowedOrigins(),
-          AllowedMethods: ["GET", "PUT", "POST", "DELETE"],
-          AllowedHeaders: ["*"],
+          AllowedMethods: ['GET', 'PUT', 'POST', 'DELETE'],
+          AllowedHeaders: ['*'],
           MaxAgeSeconds: 3600,
         },
       ],
@@ -175,17 +175,17 @@ export class AwsS3Config {
   }
 
   private getAllowedOrigins(): string[] {
-    const origins = this.configService.get<string>("CORS_ORIGINS", "");
+    const origins = this.configService.get<string>('CORS_ORIGINS', '');
 
     if (this.isDevelopment()) {
       return [
-        "http://localhost:3000",
-        "http://localhost:3001",
-        ...origins.split(","),
+        'http://localhost:3000',
+        'http://localhost:3001',
+        ...origins.split(','),
       ];
     }
 
-    return origins.split(",").filter((origin) => origin.trim());
+    return origins.split(',').filter((origin) => origin.trim());
   }
 
   // Logging configuration (sans exposer les secrets)
@@ -196,7 +196,7 @@ export class AwsS3Config {
       endpoint: this._endpoint,
       forcePathStyle: this._forcePathStyle,
       hasCredentials: !!(this._accessKeyId && this._secretAccessKey),
-      environment: this.configService.get<string>("NODE_ENV"),
+      environment: this.configService.get<string>('NODE_ENV'),
     };
   }
 }

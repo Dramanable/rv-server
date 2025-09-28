@@ -3,7 +3,7 @@
  * Récupère les informations de l'utilisateur connecté
  */
 
-import { User } from "../../../domain/entities/user.entity";
+import { User } from '../../../domain/entities/user.entity';
 
 export class GetMeUseCase {
   constructor() {

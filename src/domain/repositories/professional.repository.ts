@@ -4,10 +4,10 @@
  * @description Interface de repository pour l'entité Professional
  */
 
-import { Professional } from "@domain/entities/professional.entity";
-import { BusinessId } from "@domain/value-objects/business-id.value-object";
-import { Email } from "@domain/value-objects/email.value-object";
-import { ProfessionalId } from "@domain/value-objects/professional-id.value-object";
+import { Professional } from '@domain/entities/professional.entity';
+import { BusinessId } from '@domain/value-objects/business-id.value-object';
+import { Email } from '@domain/value-objects/email.value-object';
+import { ProfessionalId } from '@domain/value-objects/professional-id.value-object';
 
 /**
  * Interface de repository pour Professional
@@ -56,7 +56,7 @@ export interface IProfessionalRepository {
       };
       sorting: {
         sortBy: string;
-        sortOrder: "asc" | "desc";
+        sortOrder: 'asc' | 'desc';
       };
     },
   ): Promise<{ professionals: Professional[]; total: number }>;

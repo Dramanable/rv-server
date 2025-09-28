@@ -5,20 +5,20 @@ import {
   AppointmentStatus,
   // AppointmentType removed - type now determined by Service
   ClientInfo,
-} from "@domain/entities/appointment.entity";
-import { BusinessId } from "@domain/value-objects/business-id.value-object";
-import { CalendarId } from "@domain/value-objects/calendar-id.value-object";
-import { Email } from "@domain/value-objects/email.value-object";
-import { Money } from "@domain/value-objects/money.value-object";
-import { Phone } from "@domain/value-objects/phone.value-object";
-import { ServiceId } from "@domain/value-objects/service-id.value-object";
+} from '@domain/entities/appointment.entity';
+import { BusinessId } from '@domain/value-objects/business-id.value-object';
+import { CalendarId } from '@domain/value-objects/calendar-id.value-object';
+import { Email } from '@domain/value-objects/email.value-object';
+import { Money } from '@domain/value-objects/money.value-object';
+import { Phone } from '@domain/value-objects/phone.value-object';
+import { ServiceId } from '@domain/value-objects/service-id.value-object';
 import {
   TimeSlot,
   TimeSlotStatus,
-} from "@domain/value-objects/time-slot.value-object";
-import { UserId } from "@domain/value-objects/user-id.value-object";
+} from '@domain/value-objects/time-slot.value-object';
+import { UserId } from '@domain/value-objects/user-id.value-object';
 
-describe("Appointment Entity", () => {
+describe('Appointment Entity', () => {
   let mockBusinessId: BusinessId;
   let mockCalendarId: CalendarId;
   let mockServiceId: ServiceId;
@@ -41,22 +41,22 @@ describe("Appointment Entity", () => {
     );
 
     mockClientInfo = {
-      firstName: "Jean",
-      lastName: "Dupont",
-      email: Email.create("jean.dupont@example.com"),
-      phone: Phone.create("+33123456789"),
+      firstName: 'Jean',
+      lastName: 'Dupont',
+      email: Email.create('jean.dupont@example.com'),
+      phone: Phone.create('+33123456789'),
       isNewClient: false,
     };
 
     mockPricing = {
-      basePrice: Money.create(50, "EUR"),
-      totalAmount: Money.create(50, "EUR"),
-      paymentStatus: "PENDING" as const,
+      basePrice: Money.create(50, 'EUR'),
+      totalAmount: Money.create(50, 'EUR'),
+      paymentStatus: 'PENDING' as const,
     };
   });
 
-  describe("AppointmentId Value Object", () => {
-    it("should create valid AppointmentId", () => {
+  describe('AppointmentId Value Object', () => {
+    it('should create valid AppointmentId', () => {
       // WHEN
       const appointmentId = AppointmentId.generate();
 
@@ -67,21 +67,21 @@ describe("Appointment Entity", () => {
       );
     });
 
-    it("should throw error for empty AppointmentId", () => {
+    it('should throw error for empty AppointmentId', () => {
       // WHEN & THEN
-      expect(() => AppointmentId.create("")).toThrow(
-        "AppointmentId cannot be empty",
+      expect(() => AppointmentId.create('')).toThrow(
+        'AppointmentId cannot be empty',
       );
-      expect(() => AppointmentId.create("   ")).toThrow(
-        "AppointmentId cannot be empty",
+      expect(() => AppointmentId.create('   ')).toThrow(
+        'AppointmentId cannot be empty',
       );
     });
 
-    it("should support equality comparison", () => {
+    it('should support equality comparison', () => {
       // GIVEN
-      const id1 = AppointmentId.create("550e8400-e29b-41d4-a716-446655440000");
-      const id2 = AppointmentId.create("550e8400-e29b-41d4-a716-446655440000");
-      const id3 = AppointmentId.create("550e8400-e29b-41d4-a716-446655440001");
+      const id1 = AppointmentId.create('550e8400-e29b-41d4-a716-446655440000');
+      const id2 = AppointmentId.create('550e8400-e29b-41d4-a716-446655440000');
+      const id3 = AppointmentId.create('550e8400-e29b-41d4-a716-446655440001');
 
       // WHEN & THEN
       expect(id1.equals(id2)).toBe(true);
@@ -89,8 +89,8 @@ describe("Appointment Entity", () => {
     });
   });
 
-  describe("Appointment Entity Creation", () => {
-    it("should create appointment with valid data", () => {
+  describe('Appointment Entity Creation', () => {
+    it('should create appointment with valid data', () => {
       // WHEN
       const appointment = Appointment.create({
         businessId: mockBusinessId,
@@ -114,11 +114,11 @@ describe("Appointment Entity", () => {
       expect(appointment.createdAt).toBeInstanceOf(Date);
     });
 
-    it("should create appointment with optional fields", () => {
+    it('should create appointment with optional fields', () => {
       // GIVEN
       const assignedStaffId = UserId.generate();
-      const title = "Consultation de routine";
-      const description = "Contrôle annuel";
+      const title = 'Consultation de routine';
+      const description = 'Contrôle annuel';
 
       // WHEN
       const appointment = Appointment.create({
@@ -140,7 +140,7 @@ describe("Appointment Entity", () => {
     });
   });
 
-  describe("Appointment Status Transitions", () => {
+  describe('Appointment Status Transitions', () => {
     let appointment: Appointment;
 
     beforeEach(() => {
@@ -154,8 +154,8 @@ describe("Appointment Entity", () => {
       });
     });
 
-    describe("confirm()", () => {
-      it("should confirm requested appointment", () => {
+    describe('confirm()', () => {
+      it('should confirm requested appointment', () => {
         // WHEN
         const confirmedAppointment = appointment.confirm();
 
@@ -165,66 +165,66 @@ describe("Appointment Entity", () => {
         expect(confirmedAppointment.id).toBe(appointment.id);
       });
 
-      it("should throw error when confirming non-requested appointment", () => {
+      it('should throw error when confirming non-requested appointment', () => {
         // GIVEN
         const confirmedAppointment = appointment.confirm();
 
         // WHEN & THEN
         expect(() => confirmedAppointment.confirm()).toThrow(
-          "Cannot confirm appointment with status CONFIRMED",
+          'Cannot confirm appointment with status CONFIRMED',
         );
       });
     });
 
-    describe("cancel()", () => {
-      it("should cancel requested appointment", () => {
+    describe('cancel()', () => {
+      it('should cancel requested appointment', () => {
         // WHEN
-        const cancelledAppointment = appointment.cancel("Client annulé");
+        const cancelledAppointment = appointment.cancel('Client annulé');
 
         // THEN
         expect(cancelledAppointment.status).toBe(AppointmentStatus.CANCELLED);
         expect(cancelledAppointment.notes).toHaveLength(1);
         expect(cancelledAppointment.notes![0].content).toContain(
-          "Client annulé",
+          'Client annulé',
         );
         expect(cancelledAppointment.updatedAt).toBeInstanceOf(Date);
       });
 
-      it("should cancel confirmed appointment", () => {
+      it('should cancel confirmed appointment', () => {
         // GIVEN
         const confirmedAppointment = appointment.confirm();
 
         // WHEN
-        const cancelledAppointment = confirmedAppointment.cancel("Urgence");
+        const cancelledAppointment = confirmedAppointment.cancel('Urgence');
 
         // THEN
         expect(cancelledAppointment.status).toBe(AppointmentStatus.CANCELLED);
       });
 
-      it("should throw error when cancelling already cancelled appointment", () => {
+      it('should throw error when cancelling already cancelled appointment', () => {
         // GIVEN
         const cancelledAppointment = appointment.cancel();
 
         // WHEN & THEN
         expect(() => cancelledAppointment.cancel()).toThrow(
-          "Cannot cancel appointment with status CANCELLED",
+          'Cannot cancel appointment with status CANCELLED',
         );
       });
 
-      it("should throw error when cancelling completed appointment", () => {
+      it('should throw error when cancelling completed appointment', () => {
         // GIVEN
         const confirmedAppointment = appointment.confirm();
         const completedAppointment = confirmedAppointment.complete();
 
         // WHEN & THEN
         expect(() => completedAppointment.cancel()).toThrow(
-          "Cannot cancel appointment with status COMPLETED",
+          'Cannot cancel appointment with status COMPLETED',
         );
       });
     });
 
-    describe("complete()", () => {
-      it("should complete confirmed appointment", () => {
+    describe('complete()', () => {
+      it('should complete confirmed appointment', () => {
         // GIVEN
         const confirmedAppointment = appointment.confirm();
 
@@ -236,16 +236,16 @@ describe("Appointment Entity", () => {
         expect(completedAppointment.updatedAt).toBeInstanceOf(Date);
       });
 
-      it("should throw error when completing non-confirmed appointment", () => {
+      it('should throw error when completing non-confirmed appointment', () => {
         // WHEN & THEN
         expect(() => appointment.complete()).toThrow(
-          "Cannot complete appointment with status REQUESTED",
+          'Cannot complete appointment with status REQUESTED',
         );
       });
     });
   });
 
-  describe("Appointment Business Logic", () => {
+  describe('Appointment Business Logic', () => {
     let appointment: Appointment;
 
     beforeEach(() => {
@@ -259,11 +259,11 @@ describe("Appointment Entity", () => {
       });
     });
 
-    describe("addNote()", () => {
-      it("should add note to appointment", () => {
+    describe('addNote()', () => {
+      it('should add note to appointment', () => {
         // GIVEN
         const authorId = UserId.generate();
-        const noteContent = "Client très ponctuel";
+        const noteContent = 'Client très ponctuel';
 
         // WHEN
         const appointmentWithNote = appointment.addNote({
@@ -281,30 +281,30 @@ describe("Appointment Entity", () => {
         expect(appointmentWithNote.notes![0].createdAt).toBeInstanceOf(Date);
       });
 
-      it("should add multiple notes to appointment", () => {
+      it('should add multiple notes to appointment', () => {
         // GIVEN
         const authorId = UserId.generate();
-        const note1 = { authorId, content: "Première note", isPrivate: false };
-        const note2 = { authorId, content: "Deuxième note", isPrivate: true };
+        const note1 = { authorId, content: 'Première note', isPrivate: false };
+        const note2 = { authorId, content: 'Deuxième note', isPrivate: true };
 
         // WHEN
         const appointmentWith2Notes = appointment.addNote(note1).addNote(note2);
 
         // THEN
         expect(appointmentWith2Notes.notes).toHaveLength(2);
-        expect(appointmentWith2Notes.notes![0].content).toBe("Première note");
-        expect(appointmentWith2Notes.notes![1].content).toBe("Deuxième note");
+        expect(appointmentWith2Notes.notes![0].content).toBe('Première note');
+        expect(appointmentWith2Notes.notes![1].content).toBe('Deuxième note');
         expect(appointmentWith2Notes.notes![1].isPrivate).toBe(true);
       });
     });
 
-    describe("canBeModified()", () => {
-      it("should allow modification for REQUESTED status", () => {
+    describe('canBeModified()', () => {
+      it('should allow modification for REQUESTED status', () => {
         // WHEN & THEN
         expect(appointment.canBeModified()).toBe(true);
       });
 
-      it("should allow modification for CONFIRMED status", () => {
+      it('should allow modification for CONFIRMED status', () => {
         // GIVEN
         const confirmedAppointment = appointment.confirm();
 
@@ -312,7 +312,7 @@ describe("Appointment Entity", () => {
         expect(confirmedAppointment.canBeModified()).toBe(true);
       });
 
-      it("should not allow modification for CANCELLED status", () => {
+      it('should not allow modification for CANCELLED status', () => {
         // GIVEN
         const cancelledAppointment = appointment.cancel();
 
@@ -320,7 +320,7 @@ describe("Appointment Entity", () => {
         expect(cancelledAppointment.canBeModified()).toBe(false);
       });
 
-      it("should not allow modification for COMPLETED status", () => {
+      it('should not allow modification for COMPLETED status', () => {
         // GIVEN
         const confirmedAppointment = appointment.confirm();
         const completedAppointment = confirmedAppointment.complete();
@@ -330,13 +330,13 @@ describe("Appointment Entity", () => {
       });
     });
 
-    describe("isFuture()", () => {
-      it("should return true for future appointment", () => {
+    describe('isFuture()', () => {
+      it('should return true for future appointment', () => {
         // WHEN & THEN (mockTimeSlot is set to +24h in beforeEach)
         expect(appointment.isFuture()).toBe(true);
       });
 
-      it("should return false for past appointment", () => {
+      it('should return false for past appointment', () => {
         // GIVEN - Créer un créneau dans le passé
         const pastStart = new Date(Date.now() - 24 * 60 * 60 * 1000); // -24h
         const pastEnd = new Date(pastStart.getTime() + 60 * 60 * 1000); // +1h
@@ -356,13 +356,13 @@ describe("Appointment Entity", () => {
       });
     });
 
-    describe("getDurationMinutes()", () => {
-      it("should calculate duration correctly", () => {
+    describe('getDurationMinutes()', () => {
+      it('should calculate duration correctly', () => {
         // WHEN & THEN (mockTimeSlot is 1 hour duration)
         expect(appointment.getDurationMinutes()).toBe(60);
       });
 
-      it("should calculate duration for different time slots", () => {
+      it('should calculate duration for different time slots', () => {
         // GIVEN - Créer un créneau de 30 minutes
         const start = new Date();
         const end = new Date(start.getTime() + 30 * 60 * 1000); // +30min
@@ -383,8 +383,8 @@ describe("Appointment Entity", () => {
     });
   });
 
-  describe("👨‍👩‍👧‍👦 Family Member Booking", () => {
-    it("should identify appointment NOT booked for family member", () => {
+  describe('👨‍👩‍👧‍👦 Family Member Booking', () => {
+    it('should identify appointment NOT booked for family member', () => {
       // GIVEN - mockClientInfo n'a pas de bookedBy
       const appointment = Appointment.create({
         businessId: mockBusinessId,
@@ -401,16 +401,16 @@ describe("Appointment Entity", () => {
       expect(appointment.hasValidFamilyRelationship()).toBe(true); // Valide car pas de contrainte
     });
 
-    it("should identify appointment booked for family member", () => {
+    it('should identify appointment booked for family member', () => {
       // GIVEN
       const clientInfoWithBookedBy: ClientInfo = {
         ...mockClientInfo,
         bookedBy: {
-          firstName: "Marie",
-          lastName: "Dupont",
-          email: Email.create("marie.dupont@example.com"),
-          phone: Phone.create("+33987654321"),
-          relationship: "SPOUSE",
+          firstName: 'Marie',
+          lastName: 'Dupont',
+          email: Email.create('marie.dupont@example.com'),
+          phone: Phone.create('+33987654321'),
+          relationship: 'SPOUSE',
         },
       };
 
@@ -431,24 +431,24 @@ describe("Appointment Entity", () => {
       expect(appointment.hasValidFamilyRelationship()).toBe(true);
     });
 
-    it("should validate all family relationship types", () => {
+    it('should validate all family relationship types', () => {
       // GIVEN
       const validRelationships = [
-        "PARENT",
-        "SPOUSE",
-        "SIBLING",
-        "CHILD",
-        "GUARDIAN",
-        "FAMILY_MEMBER",
+        'PARENT',
+        'SPOUSE',
+        'SIBLING',
+        'CHILD',
+        'GUARDIAN',
+        'FAMILY_MEMBER',
       ];
 
       validRelationships.forEach((relationship) => {
         const clientInfoWithRelationship: ClientInfo = {
           ...mockClientInfo,
           bookedBy: {
-            firstName: "Marie",
-            lastName: "Test",
-            email: Email.create("marie.test@example.com"),
+            firstName: 'Marie',
+            lastName: 'Test',
+            email: Email.create('marie.test@example.com'),
             relationship: relationship as any,
           },
         };
@@ -468,16 +468,16 @@ describe("Appointment Entity", () => {
       });
     });
 
-    it("should require description for OTHER relationship", () => {
+    it('should require description for OTHER relationship', () => {
       // GIVEN
       const clientInfoWithOtherAndDescription: ClientInfo = {
         ...mockClientInfo,
         bookedBy: {
-          firstName: "Pierre",
-          lastName: "Voisin",
-          email: Email.create("pierre.voisin@example.com"),
-          relationship: "OTHER",
-          relationshipDescription: "Voisin proche qui aide",
+          firstName: 'Pierre',
+          lastName: 'Voisin',
+          email: Email.create('pierre.voisin@example.com'),
+          relationship: 'OTHER',
+          relationshipDescription: 'Voisin proche qui aide',
         },
       };
 
@@ -495,15 +495,15 @@ describe("Appointment Entity", () => {
       expect(appointment.isBookedForFamilyMember()).toBe(true);
     });
 
-    it("should reject OTHER relationship without description", () => {
+    it('should reject OTHER relationship without description', () => {
       // GIVEN
       const clientInfoWithInvalidOther: ClientInfo = {
         ...mockClientInfo,
         bookedBy: {
-          firstName: "Pierre",
-          lastName: "Voisin",
-          email: Email.create("pierre.voisin@example.com"),
-          relationship: "OTHER",
+          firstName: 'Pierre',
+          lastName: 'Voisin',
+          email: Email.create('pierre.voisin@example.com'),
+          relationship: 'OTHER',
           // relationshipDescription manquant
         },
       };
@@ -522,17 +522,17 @@ describe("Appointment Entity", () => {
       expect(appointment.isBookedForFamilyMember()).toBe(true); // Est pour famille mais relation invalide
     });
 
-    it("should handle complete bookedBy information", () => {
+    it('should handle complete bookedBy information', () => {
       // GIVEN
       const completeBookedByInfo: ClientInfo = {
         ...mockClientInfo,
         bookedBy: {
-          firstName: "Emma",
-          lastName: "Martin",
-          email: Email.create("emma.martin@example.com"),
-          phone: Phone.create("+33665554433"),
-          relationship: "PARENT",
-          relationshipDescription: "Maman de Julien (mineur)",
+          firstName: 'Emma',
+          lastName: 'Martin',
+          email: Email.create('emma.martin@example.com'),
+          phone: Phone.create('+33665554433'),
+          relationship: 'PARENT',
+          relationshipDescription: 'Maman de Julien (mineur)',
         },
       };
 
@@ -550,19 +550,19 @@ describe("Appointment Entity", () => {
       expect(appointment.hasValidFamilyRelationship()).toBe(true);
 
       const bookedByInfo = appointment.getBookedByInfo();
-      expect(bookedByInfo?.firstName).toBe("Emma");
-      expect(bookedByInfo?.lastName).toBe("Martin");
-      expect(bookedByInfo?.email.getValue()).toBe("emma.martin@example.com");
-      expect(bookedByInfo?.phone?.getValue()).toBe("+33665554433");
-      expect(bookedByInfo?.relationship).toBe("PARENT");
+      expect(bookedByInfo?.firstName).toBe('Emma');
+      expect(bookedByInfo?.lastName).toBe('Martin');
+      expect(bookedByInfo?.email.getValue()).toBe('emma.martin@example.com');
+      expect(bookedByInfo?.phone?.getValue()).toBe('+33665554433');
+      expect(bookedByInfo?.relationship).toBe('PARENT');
       expect(bookedByInfo?.relationshipDescription).toBe(
-        "Maman de Julien (mineur)",
+        'Maman de Julien (mineur)',
       );
     });
   });
 
-  describe("Appointment Immutability", () => {
-    it("should create new instance when confirming", () => {
+  describe('Appointment Immutability', () => {
+    it('should create new instance when confirming', () => {
       // GIVEN
       const originalAppointment = Appointment.create({
         businessId: mockBusinessId,
@@ -582,7 +582,7 @@ describe("Appointment Entity", () => {
       expect(confirmedAppointment.status).toBe(AppointmentStatus.CONFIRMED);
     });
 
-    it("should create new instance when adding note", () => {
+    it('should create new instance when adding note', () => {
       // GIVEN
       const originalAppointment = Appointment.create({
         businessId: mockBusinessId,
@@ -596,7 +596,7 @@ describe("Appointment Entity", () => {
       // WHEN
       const appointmentWithNote = originalAppointment.addNote({
         authorId: UserId.generate(),
-        content: "Test note",
+        content: 'Test note',
         isPrivate: false,
       });
 

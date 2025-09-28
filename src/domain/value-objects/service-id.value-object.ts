@@ -1,9 +1,9 @@
-import { v4 as uuidv4 } from "uuid";
+import { v4 as uuidv4 } from 'uuid';
 
 export class ServiceId {
   constructor(private readonly value: string) {
     if (!value || value.trim().length === 0) {
-      throw new Error("ServiceId cannot be empty");
+      throw new Error('ServiceId cannot be empty');
     }
     this.validateFormat(value);
   }
@@ -13,7 +13,7 @@ export class ServiceId {
     const uuidRegex =
       /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
     if (!uuidRegex.test(value)) {
-      throw new Error("ServiceId must be a valid UUID v4");
+      throw new Error('ServiceId must be a valid UUID v4');
     }
   }
 

@@ -1,9 +1,9 @@
-import { Staff } from "../entities/staff.entity";
-import { UserId } from "../value-objects/user-id.value-object";
-import { BusinessId } from "../value-objects/business-id.value-object";
-import { Email } from "../value-objects/email.value-object";
+import { Staff } from '../entities/staff.entity';
+import { UserId } from '../value-objects/user-id.value-object';
+import { BusinessId } from '../value-objects/business-id.value-object';
+import { Email } from '../value-objects/email.value-object';
 
-export const STAFF_REPOSITORY = "STAFF_REPOSITORY";
+export const STAFF_REPOSITORY = 'STAFF_REPOSITORY';
 
 export interface StaffRepository {
   /**

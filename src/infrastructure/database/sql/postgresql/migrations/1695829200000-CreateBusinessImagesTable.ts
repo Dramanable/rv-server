@@ -4,16 +4,16 @@
  * ✅ Support variants et métadonnées JSONB
  */
 
-import { MigrationInterface, QueryRunner, Table, TableIndex } from "typeorm";
+import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm';
 
 export class CreateBusinessImagesTable1695829200000
   implements MigrationInterface
 {
-  name = "CreateBusinessImagesTable1695829200000";
+  name = 'CreateBusinessImagesTable1695829200000';
 
   // 🎯 OBLIGATOIRE : Récupérer le schéma depuis l'environnement
   private getSchemaName(): string {
-    const schema = process.env.DB_SCHEMA || "public";
+    const schema = process.env.DB_SCHEMA || 'public';
 
     // Validation du nom de schéma (sécurité)
     if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(schema)) {
@@ -50,107 +50,107 @@ export class CreateBusinessImagesTable1695829200000
         name: `${schema}.business_images`,
         columns: [
           {
-            name: "id",
-            type: "uuid",
+            name: 'id',
+            type: 'uuid',
             isPrimary: true,
-            generationStrategy: "uuid",
-            default: "uuid_generate_v4()",
+            generationStrategy: 'uuid',
+            default: 'uuid_generate_v4()',
           },
           {
-            name: "business_id",
-            type: "uuid",
+            name: 'business_id',
+            type: 'uuid',
             isNullable: false,
           },
           {
-            name: "gallery_id",
-            type: "uuid",
+            name: 'gallery_id',
+            type: 'uuid',
             isNullable: true,
           },
           {
-            name: "s3_key",
-            type: "varchar",
-            length: "500",
+            name: 's3_key',
+            type: 'varchar',
+            length: '500',
             isNullable: false,
           },
           {
-            name: "original_filename",
-            type: "varchar",
-            length: "255",
+            name: 'original_filename',
+            type: 'varchar',
+            length: '255',
             isNullable: false,
           },
           {
-            name: "category",
-            type: "enum",
-            enum: ["PROFILE", "GALLERY", "COVER"],
+            name: 'category',
+            type: 'enum',
+            enum: ['PROFILE', 'GALLERY', 'COVER'],
             default: "'GALLERY'",
           },
           {
-            name: "format",
-            type: "enum",
-            enum: ["JPEG", "PNG", "WEBP"],
+            name: 'format',
+            type: 'enum',
+            enum: ['JPEG', 'PNG', 'WEBP'],
             isNullable: false,
           },
           {
-            name: "file_size",
-            type: "integer",
+            name: 'file_size',
+            type: 'integer',
             isNullable: false,
           },
           {
-            name: "width",
-            type: "integer",
+            name: 'width',
+            type: 'integer',
             isNullable: true,
           },
           {
-            name: "height",
-            type: "integer",
+            name: 'height',
+            type: 'integer',
             isNullable: true,
           },
           {
-            name: "alt_text",
-            type: "varchar",
-            length: "255",
+            name: 'alt_text',
+            type: 'varchar',
+            length: '255',
             isNullable: true,
           },
           {
-            name: "description",
-            type: "text",
+            name: 'description',
+            type: 'text',
             isNullable: true,
           },
           {
-            name: "variants",
-            type: "jsonb",
+            name: 'variants',
+            type: 'jsonb',
             isNullable: true,
             default: "'{}'",
           },
           {
-            name: "s3_metadata",
-            type: "jsonb",
+            name: 's3_metadata',
+            type: 'jsonb',
             isNullable: true,
             default: "'{}'",
           },
           {
-            name: "is_active",
-            type: "boolean",
+            name: 'is_active',
+            type: 'boolean',
             default: true,
           },
           {
-            name: "created_at",
-            type: "timestamptz",
-            default: "CURRENT_TIMESTAMP",
+            name: 'created_at',
+            type: 'timestamptz',
+            default: 'CURRENT_TIMESTAMP',
           },
           {
-            name: "updated_at",
-            type: "timestamptz",
-            default: "CURRENT_TIMESTAMP",
-            onUpdate: "CURRENT_TIMESTAMP",
+            name: 'updated_at',
+            type: 'timestamptz',
+            default: 'CURRENT_TIMESTAMP',
+            onUpdate: 'CURRENT_TIMESTAMP',
           },
         ],
         foreignKeys: [
           {
-            columnNames: ["business_id"],
+            columnNames: ['business_id'],
             referencedTableName: `${schema}.businesses`,
-            referencedColumnNames: ["id"],
-            onDelete: "CASCADE",
+            referencedColumnNames: ['id'],
+            onDelete: 'CASCADE',
           },
         ],
       }),
@@ -161,32 +161,32 @@ export class CreateBusinessImagesTable1695829200000
     await queryRunner.createIndex(
       `${schema}.business_images`,
       new TableIndex({
-        name: "IDX_business_images_business_id",
-        columnNames: ["business_id"],
+        name: 'IDX_business_images_business_id',
+        columnNames: ['business_id'],
       }),
     );
 
     await queryRunner.createIndex(
       `${schema}.business_images`,
       new TableIndex({
-        name: "IDX_business_images_category",
-        columnNames: ["category"],
+        name: 'IDX_business_images_category',
+        columnNames: ['category'],
       }),
     );
 
     await queryRunner.createIndex(
       `${schema}.business_images`,
       new TableIndex({
-        name: "IDX_business_images_created_at",
-        columnNames: ["created_at"],
+        name: 'IDX_business_images_created_at',
+        columnNames: ['created_at'],
       }),
     );
 
     await queryRunner.createIndex(
       `${schema}.business_images`,
       new TableIndex({
-        name: "IDX_business_images_s3_key",
-        columnNames: ["s3_key"],
+        name: 'IDX_business_images_s3_key',
+        columnNames: ['s3_key'],
       }),
     );
 
@@ -194,8 +194,8 @@ export class CreateBusinessImagesTable1695829200000
     await queryRunner.createIndex(
       `${schema}.business_images`,
       new TableIndex({
-        name: "IDX_business_images_business_category_active",
-        columnNames: ["business_id", "category", "is_active"],
+        name: 'IDX_business_images_business_category_active',
+        columnNames: ['business_id', 'category', 'is_active'],
       }),
     );
   }

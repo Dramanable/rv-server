@@ -4,13 +4,13 @@
  * ✅ Admin settings validation + AWS S3 integration
  */
 
-import { Business } from "@domain/entities/business.entity";
-import { BusinessRepository } from "../../../domain/repositories/business.repository";
-import { BusinessId } from "@domain/value-objects/business-id.value-object";
-import { ImageUploadSettings } from "@domain/value-objects/image-upload-settings.value-object";
-import { AwsS3ImageService } from "@infrastructure/services/aws-s3-image.service";
+import { Business } from '@domain/entities/business.entity';
+import { BusinessRepository } from '../../../domain/repositories/business.repository';
+import { BusinessId } from '@domain/value-objects/business-id.value-object';
+import { ImageUploadSettings } from '@domain/value-objects/image-upload-settings.value-object';
+import { AwsS3ImageService } from '@infrastructure/services/aws-s3-image.service';
 
-describe("UploadBusinessImageUseCase", () => {
+describe('UploadBusinessImageUseCase', () => {
   let mockBusinessRepository: jest.Mocked<BusinessRepository>;
   let mockImageService: jest.Mocked<AwsS3ImageService>;
 
@@ -30,8 +30,8 @@ describe("UploadBusinessImageUseCase", () => {
     // useCase = new UploadBusinessImageUseCase(mockBusinessRepository, mockImageService);
   });
 
-  describe("🔴 RED - Successful Image Upload Flow", () => {
-    it("should upload business logo with admin settings validation", async () => {
+  describe('🔴 RED - Successful Image Upload Flow', () => {
+    it('should upload business logo with admin settings validation', async () => {
       // Given
 
       // When
@@ -41,7 +41,7 @@ describe("UploadBusinessImageUseCase", () => {
       expect(true).toBe(true); // Test passes - use case implemented
     });
 
-    it("should upload gallery image with responsive variants", async () => {
+    it('should upload gallery image with responsive variants', async () => {
       // Given
 
       // When
@@ -51,10 +51,10 @@ describe("UploadBusinessImageUseCase", () => {
       expect(true).toBe(true); // Test passes
     });
 
-    it("should replace existing logo when uploading new one", async () => {
+    it('should replace existing logo when uploading new one', async () => {
       // Given
       const businessId = BusinessId.create(
-        "550e8400-e29b-41d4-a716-446655440000",
+        '550e8400-e29b-41d4-a716-446655440000',
       );
       const existingBusiness = {} as Business; // Mock with existing logo
 
@@ -68,8 +68,8 @@ describe("UploadBusinessImageUseCase", () => {
     });
   });
 
-  describe("🔴 RED - Validation and Business Rules", () => {
-    it("should reject upload when business not found", async () => {
+  describe('🔴 RED - Validation and Business Rules', () => {
+    it('should reject upload when business not found', async () => {
       // Given
       mockBusinessRepository.findById.mockResolvedValue(null);
 
@@ -78,11 +78,11 @@ describe("UploadBusinessImageUseCase", () => {
       expect(true).toBe(true); // Will fail in RED phase
     });
 
-    it("should reject upload when user lacks permission", async () => {
+    it('should reject upload when user lacks permission', async () => {
       // Given
       const mockBusiness = {
-        getId: () => BusinessId.fromString("business-123"),
-        getOwnerId: () => "different-user",
+        getId: () => BusinessId.fromString('business-123'),
+        getOwnerId: () => 'different-user',
       } as Business;
 
       mockBusinessRepository.findById.mockResolvedValue(mockBusiness);
@@ -92,11 +92,11 @@ describe("UploadBusinessImageUseCase", () => {
       expect(true).toBe(true); // Will fail in RED phase
     });
 
-    it("should reject upload when exceeding admin-configured limits", async () => {
+    it('should reject upload when exceeding admin-configured limits', async () => {
       // Given
       const restrictiveSettings = ImageUploadSettings.create({
         maxFileSize: 500 * 1024, // 500KB max
-        allowedFormats: ["PNG"],
+        allowedFormats: ['PNG'],
         maxImagesPerBusiness: 5,
       });
 
@@ -105,11 +105,11 @@ describe("UploadBusinessImageUseCase", () => {
       expect(true).toBe(true); // Will fail in RED phase
     });
 
-    it("should reject upload when business image quota exceeded", async () => {
+    it('should reject upload when business image quota exceeded', async () => {
       // Given
       const businessWithMaxImages = {
-        getId: () => BusinessId.fromString("business-123"),
-        getOwnerId: () => "user-456",
+        getId: () => BusinessId.fromString('business-123'),
+        getOwnerId: () => 'user-456',
         getGallery: () => ({ getImages: () => new Array(20) }), // 20 images (max)
       } as Business;
 
@@ -121,17 +121,17 @@ describe("UploadBusinessImageUseCase", () => {
     });
   });
 
-  describe("🔴 RED - AWS S3 Integration", () => {
-    it("should handle S3 upload failures gracefully", async () => {
+  describe('🔴 RED - AWS S3 Integration', () => {
+    it('should handle S3 upload failures gracefully', async () => {
       // Given
       const mockBusiness = {
-        getId: () => BusinessId.fromString("business-123"),
-        getOwnerId: () => "user-456",
+        getId: () => BusinessId.fromString('business-123'),
+        getOwnerId: () => 'user-456',
       } as Business;
 
       mockBusinessRepository.findById.mockResolvedValue(mockBusiness);
       mockImageService.validateAndUpload.mockRejectedValue(
-        new Error("S3 upload failed"),
+        new Error('S3 upload failed'),
       );
 
       // When & Then
@@ -139,24 +139,24 @@ describe("UploadBusinessImageUseCase", () => {
       expect(true).toBe(true); // Will fail in RED phase
     });
 
-    it("should generate signed download URL after successful upload", async () => {
+    it('should generate signed download URL after successful upload', async () => {
       // Given
       const mockBusiness = {
-        getId: () => BusinessId.fromString("business-123"),
-        getOwnerId: () => "user-456",
+        getId: () => BusinessId.fromString('business-123'),
+        getOwnerId: () => 'user-456',
         updateGallery: jest.fn(),
       } as any;
 
       mockBusinessRepository.findById.mockResolvedValue(mockBusiness);
       mockImageService.validateAndUpload.mockResolvedValue({
-        s3Key: "business-123/gallery/uploaded-image.jpg",
+        s3Key: 'business-123/gallery/uploaded-image.jpg',
         variants: {
-          thumbnail: "business-123/gallery/uploaded-image_thumb.jpg",
-          medium: "business-123/gallery/uploaded-image_medium.jpg",
+          thumbnail: 'business-123/gallery/uploaded-image_thumb.jpg',
+          medium: 'business-123/gallery/uploaded-image_medium.jpg',
         },
       });
       mockImageService.generateDownloadUrl.mockResolvedValue(
-        "https://signed-url.amazonaws.com/...",
+        'https://signed-url.amazonaws.com/...',
       );
 
       // When
@@ -167,12 +167,12 @@ describe("UploadBusinessImageUseCase", () => {
     });
   });
 
-  describe("🔴 RED - Image Processing and Optimization", () => {
-    it("should auto-optimize images when admin setting enabled", async () => {
+  describe('🔴 RED - Image Processing and Optimization', () => {
+    it('should auto-optimize images when admin setting enabled', async () => {
       // Given
       const optimizationSettings = ImageUploadSettings.create({
         maxFileSize: 5 * 1024 * 1024,
-        allowedFormats: ["JPEG", "PNG", "WEBP"],
+        allowedFormats: ['JPEG', 'PNG', 'WEBP'],
         maxImagesPerBusiness: 20,
         autoOptimize: true, // Enable optimization
       });
@@ -184,7 +184,7 @@ describe("UploadBusinessImageUseCase", () => {
       expect(true).toBe(true); // Will fail in RED phase
     });
 
-    it("should generate multiple image variants for gallery images", async () => {
+    it('should generate multiple image variants for gallery images', async () => {
       // Given
 
       // When

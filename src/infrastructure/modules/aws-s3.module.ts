@@ -4,11 +4,11 @@
  * ✅ Gestion du cycle de vie et configuration
  */
 
-import { Module, Provider } from "@nestjs/common";
-import { ConfigModule, ConfigService } from "@nestjs/config";
-import { TOKENS } from "../../shared/constants/injection-tokens";
-import { AwsS3Config } from "../config/aws-s3.config";
-import { AwsS3ImageService } from "../services/aws-s3-image.service";
+import { Module, Provider } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TOKENS } from '../../shared/constants/injection-tokens';
+import { AwsS3Config } from '../config/aws-s3.config';
+import { AwsS3ImageService } from '../services/aws-s3-image.service';
 
 const awsS3ConfigProvider: Provider = {
   provide: TOKENS.AWS_S3_CONFIG,

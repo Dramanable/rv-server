@@ -5,20 +5,20 @@
  * Couche Application - Tests d'orchestration métier
  */
 
-import { DeleteStaffUseCase } from "@application/use-cases/staff/delete-staff.use-case";
-import { Staff } from "@domain/entities/staff.entity";
-import { BusinessId } from "@domain/value-objects/business-id.value-object";
-import { StaffRole } from "@shared/enums/staff-role.enum";
+import { DeleteStaffUseCase } from '@application/use-cases/staff/delete-staff.use-case';
+import { Staff } from '@domain/entities/staff.entity';
+import { BusinessId } from '@domain/value-objects/business-id.value-object';
+import { StaffRole } from '@shared/enums/staff-role.enum';
 import {
   ApplicationValidationError,
   ResourceNotFoundError,
-} from "../../../../../application/exceptions/application.exceptions";
-import { I18nService } from "../../../../../application/ports/i18n.port";
-import { Logger } from "../../../../../application/ports/logger.port";
-import { IPermissionService } from "../../../../../application/ports/permission.service.interface";
-import { StaffRepository } from "../../../../../domain/repositories/staff.repository.interface";
+} from '../../../../../application/exceptions/application.exceptions';
+import { I18nService } from '../../../../../application/ports/i18n.port';
+import { Logger } from '../../../../../application/ports/logger.port';
+import { IPermissionService } from '../../../../../application/ports/permission.service.interface';
+import { StaffRepository } from '../../../../../domain/repositories/staff.repository.interface';
 
-describe("DeleteStaffUseCase", () => {
+describe('DeleteStaffUseCase', () => {
   let useCase: DeleteStaffUseCase;
   let mockStaffRepository: jest.Mocked<StaffRepository>;
   let mockLogger: jest.Mocked<Logger>;
@@ -85,47 +85,47 @@ describe("DeleteStaffUseCase", () => {
     );
   });
 
-  describe("Parameter validation", () => {
-    it("should throw ApplicationValidationError when staffId is missing", async () => {
+  describe('Parameter validation', () => {
+    it('should throw ApplicationValidationError when staffId is missing', async () => {
       const request = {
-        staffId: "",
-        requestingUserId: "550e8400-e29b-41d4-a716-446655440001",
+        staffId: '',
+        requestingUserId: '550e8400-e29b-41d4-a716-446655440001',
       };
 
       await expect(useCase.execute(request)).rejects.toThrow(
         ApplicationValidationError,
       );
       expect(mockLogger.error).toHaveBeenCalledWith(
-        "Error deleting staff",
+        'Error deleting staff',
         expect.any(ApplicationValidationError),
         expect.objectContaining({
-          staffId: "",
+          staffId: '',
         }),
       );
     });
 
-    it("should throw ApplicationValidationError when requestingUserId is missing", async () => {
+    it('should throw ApplicationValidationError when requestingUserId is missing', async () => {
       const request = {
-        staffId: "550e8400-e29b-41d4-a716-446655440002",
-        requestingUserId: "",
+        staffId: '550e8400-e29b-41d4-a716-446655440002',
+        requestingUserId: '',
       };
 
       await expect(useCase.execute(request)).rejects.toThrow(
         ApplicationValidationError,
       );
       expect(mockLogger.error).toHaveBeenCalledWith(
-        "Error deleting staff",
+        'Error deleting staff',
         expect.any(ApplicationValidationError),
         expect.objectContaining({
-          staffId: "550e8400-e29b-41d4-a716-446655440002",
+          staffId: '550e8400-e29b-41d4-a716-446655440002',
         }),
       );
     });
 
-    it("should throw ApplicationValidationError when staffId is not a valid UUID", async () => {
+    it('should throw ApplicationValidationError when staffId is not a valid UUID', async () => {
       const request = {
-        staffId: "invalid-uuid",
-        requestingUserId: "550e8400-e29b-41d4-a716-446655440001",
+        staffId: 'invalid-uuid',
+        requestingUserId: '550e8400-e29b-41d4-a716-446655440001',
       };
 
       await expect(useCase.execute(request)).rejects.toThrow(
@@ -134,29 +134,29 @@ describe("DeleteStaffUseCase", () => {
     });
   });
 
-  describe("Business rules validation", () => {
-    it("should throw ApplicationValidationError when staff cannot be deleted (has active appointments)", async () => {
+  describe('Business rules validation', () => {
+    it('should throw ApplicationValidationError when staff cannot be deleted (has active appointments)', async () => {
       const request = {
-        staffId: "550e8400-e29b-41d4-a716-446655440002",
-        requestingUserId: "550e8400-e29b-41d4-a716-446655440001",
+        staffId: '550e8400-e29b-41d4-a716-446655440002',
+        requestingUserId: '550e8400-e29b-41d4-a716-446655440001',
       };
 
       // Créer un Staff ACTIVE (canBeDeleted() === false)
       const mockStaff = Staff.create({
-        businessId: BusinessId.create("550e8400-e29b-41d4-a716-446655440003"),
+        businessId: BusinessId.create('550e8400-e29b-41d4-a716-446655440003'),
         profile: {
-          firstName: "Test",
-          lastName: "Staff",
-          bio: "Test staff member",
+          firstName: 'Test',
+          lastName: 'Staff',
+          bio: 'Test staff member',
         },
         role: StaffRole.DOCTOR,
-        email: "test.staff@example.com",
+        email: 'test.staff@example.com',
         availability: {
           workingHours: [
             {
               dayOfWeek: 1,
-              startTime: "09:00",
-              endTime: "17:00",
+              startTime: '09:00',
+              endTime: '17:00',
               isWorkingDay: true,
             },
           ],
@@ -170,16 +170,16 @@ describe("DeleteStaffUseCase", () => {
         ApplicationValidationError,
       );
       expect(mockI18n.translate).toHaveBeenCalledWith(
-        "staff.delete.hasActiveAppointments",
+        'staff.delete.hasActiveAppointments',
       );
     });
   });
 
-  describe("Staff not found", () => {
-    it("should throw ResourceNotFoundError when staff does not exist", async () => {
+  describe('Staff not found', () => {
+    it('should throw ResourceNotFoundError when staff does not exist', async () => {
       const request = {
-        staffId: "550e8400-e29b-41d4-a716-446655440002",
-        requestingUserId: "550e8400-e29b-41d4-a716-446655440001",
+        staffId: '550e8400-e29b-41d4-a716-446655440002',
+        requestingUserId: '550e8400-e29b-41d4-a716-446655440001',
       };
 
       mockStaffRepository.findById.mockResolvedValue(null);
@@ -188,7 +188,7 @@ describe("DeleteStaffUseCase", () => {
         ResourceNotFoundError,
       );
       expect(mockLogger.error).toHaveBeenCalledWith(
-        "Staff not found",
+        'Staff not found',
         expect.any(ResourceNotFoundError),
         expect.objectContaining({
           staffId: request.staffId,
@@ -197,25 +197,25 @@ describe("DeleteStaffUseCase", () => {
     });
   });
 
-  describe("Successful deletion", () => {
+  describe('Successful deletion', () => {
     let mockStaff: Staff;
 
     beforeEach(() => {
       mockStaff = Staff.create({
-        businessId: BusinessId.create("550e8400-e29b-41d4-a716-446655440003"),
+        businessId: BusinessId.create('550e8400-e29b-41d4-a716-446655440003'),
         profile: {
-          firstName: "Test",
-          lastName: "Staff",
-          bio: "Test staff member",
+          firstName: 'Test',
+          lastName: 'Staff',
+          bio: 'Test staff member',
         },
         role: StaffRole.DOCTOR,
-        email: "test.staff@example.com",
+        email: 'test.staff@example.com',
         availability: {
           workingHours: [
             {
               dayOfWeek: 1,
-              startTime: "09:00",
-              endTime: "17:00",
+              startTime: '09:00',
+              endTime: '17:00',
               isWorkingDay: true,
             },
           ],
@@ -229,10 +229,10 @@ describe("DeleteStaffUseCase", () => {
       mockStaffRepository.delete.mockResolvedValue();
     });
 
-    it("should delete staff successfully", async () => {
+    it('should delete staff successfully', async () => {
       const request = {
-        staffId: "550e8400-e29b-41d4-a716-446655440002",
-        requestingUserId: "550e8400-e29b-41d4-a716-446655440001",
+        staffId: '550e8400-e29b-41d4-a716-446655440002',
+        requestingUserId: '550e8400-e29b-41d4-a716-446655440001',
       };
 
       const result = await useCase.execute(request);
@@ -243,25 +243,25 @@ describe("DeleteStaffUseCase", () => {
     });
   });
 
-  describe("Logging", () => {
+  describe('Logging', () => {
     let mockStaff: Staff;
 
     beforeEach(() => {
       mockStaff = Staff.create({
-        businessId: BusinessId.create("550e8400-e29b-41d4-a716-446655440003"),
+        businessId: BusinessId.create('550e8400-e29b-41d4-a716-446655440003'),
         profile: {
-          firstName: "Test",
-          lastName: "Staff",
-          bio: "Test staff member",
+          firstName: 'Test',
+          lastName: 'Staff',
+          bio: 'Test staff member',
         },
         role: StaffRole.DOCTOR,
-        email: "test.staff@example.com",
+        email: 'test.staff@example.com',
         availability: {
           workingHours: [
             {
               dayOfWeek: 1,
-              startTime: "09:00",
-              endTime: "17:00",
+              startTime: '09:00',
+              endTime: '17:00',
               isWorkingDay: true,
             },
           ],
@@ -275,16 +275,16 @@ describe("DeleteStaffUseCase", () => {
       mockStaffRepository.delete.mockResolvedValue();
     });
 
-    it("should log deletion attempt", async () => {
+    it('should log deletion attempt', async () => {
       const request = {
-        staffId: "550e8400-e29b-41d4-a716-446655440002",
-        requestingUserId: "550e8400-e29b-41d4-a716-446655440001",
+        staffId: '550e8400-e29b-41d4-a716-446655440002',
+        requestingUserId: '550e8400-e29b-41d4-a716-446655440001',
       };
 
       await useCase.execute(request);
 
       expect(mockLogger.info).toHaveBeenCalledWith(
-        "Attempting to delete staff",
+        'Attempting to delete staff',
         expect.objectContaining({
           staffId: request.staffId,
           requestingUserId: request.requestingUserId,
@@ -292,16 +292,16 @@ describe("DeleteStaffUseCase", () => {
       );
     });
 
-    it("should log successful deletion", async () => {
+    it('should log successful deletion', async () => {
       const request = {
-        staffId: "550e8400-e29b-41d4-a716-446655440002",
-        requestingUserId: "550e8400-e29b-41d4-a716-446655440001",
+        staffId: '550e8400-e29b-41d4-a716-446655440002',
+        requestingUserId: '550e8400-e29b-41d4-a716-446655440001',
       };
 
       await useCase.execute(request);
 
       expect(mockLogger.info).toHaveBeenCalledWith(
-        "Staff deleted successfully",
+        'Staff deleted successfully',
         expect.objectContaining({
           staffId: request.staffId,
           staffName: mockStaff.fullName,
@@ -309,19 +309,19 @@ describe("DeleteStaffUseCase", () => {
       );
     });
 
-    it("should log errors", async () => {
+    it('should log errors', async () => {
       const request = {
-        staffId: "550e8400-e29b-41d4-a716-446655440002",
-        requestingUserId: "550e8400-e29b-41d4-a716-446655440001",
+        staffId: '550e8400-e29b-41d4-a716-446655440002',
+        requestingUserId: '550e8400-e29b-41d4-a716-446655440001',
       };
 
-      const error = new Error("Database error");
+      const error = new Error('Database error');
       mockStaffRepository.delete.mockRejectedValue(error);
 
       await expect(useCase.execute(request)).rejects.toThrow();
 
       expect(mockLogger.error).toHaveBeenCalledWith(
-        "Error deleting staff",
+        'Error deleting staff',
         expect.any(Error),
         expect.objectContaining({
           staffId: request.staffId,

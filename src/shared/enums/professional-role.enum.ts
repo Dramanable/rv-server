@@ -6,51 +6,51 @@
  */
 export enum ProfessionalRole {
   // 👨‍⚕️ Rôles Médicaux
-  DOCTOR = "DOCTOR",
-  SURGEON = "SURGEON",
-  SPECIALIST = "SPECIALIST",
-  NURSE = "NURSE",
-  ANESTHESIOLOGIST = "ANESTHESIOLOGIST",
+  DOCTOR = 'DOCTOR',
+  SURGEON = 'SURGEON',
+  SPECIALIST = 'SPECIALIST',
+  NURSE = 'NURSE',
+  ANESTHESIOLOGIST = 'ANESTHESIOLOGIST',
 
   // 🦷 Rôles Dentaires
-  DENTIST = "DENTIST",
-  ORTHODONTIST = "ORTHODONTIST",
-  DENTAL_HYGIENIST = "DENTAL_HYGIENIST",
-  DENTAL_ASSISTANT = "DENTAL_ASSISTANT",
+  DENTIST = 'DENTIST',
+  ORTHODONTIST = 'ORTHODONTIST',
+  DENTAL_HYGIENIST = 'DENTAL_HYGIENIST',
+  DENTAL_ASSISTANT = 'DENTAL_ASSISTANT',
 
   // 🧠 Rôles Psychologiques/Psychiatriques
-  PSYCHOLOGIST = "PSYCHOLOGIST",
-  PSYCHIATRIST = "PSYCHIATRIST",
-  THERAPIST = "THERAPIST",
-  COUNSELOR = "COUNSELOR",
+  PSYCHOLOGIST = 'PSYCHOLOGIST',
+  PSYCHIATRIST = 'PSYCHIATRIST',
+  THERAPIST = 'THERAPIST',
+  COUNSELOR = 'COUNSELOR',
 
   // 💪 Rôles Kinésithérapie/Réhabilitation
-  PHYSIOTHERAPIST = "PHYSIOTHERAPIST",
-  OCCUPATIONAL_THERAPIST = "OCCUPATIONAL_THERAPIST",
-  SPEECH_THERAPIST = "SPEECH_THERAPIST",
+  PHYSIOTHERAPIST = 'PHYSIOTHERAPIST',
+  OCCUPATIONAL_THERAPIST = 'OCCUPATIONAL_THERAPIST',
+  SPEECH_THERAPIST = 'SPEECH_THERAPIST',
 
   // ⚖️ Rôles Juridiques
-  LAWYER = "LAWYER",
-  PARALEGAL = "PARALEGAL",
-  LEGAL_ASSISTANT = "LEGAL_ASSISTANT",
-  NOTARY = "NOTARY",
+  LAWYER = 'LAWYER',
+  PARALEGAL = 'PARALEGAL',
+  LEGAL_ASSISTANT = 'LEGAL_ASSISTANT',
+  NOTARY = 'NOTARY',
 
   // 💼 Rôles Consultatifs
-  CONSULTANT = "CONSULTANT",
-  ADVISOR = "ADVISOR",
-  ANALYST = "ANALYST",
-  PROJECT_MANAGER = "PROJECT_MANAGER",
+  CONSULTANT = 'CONSULTANT',
+  ADVISOR = 'ADVISOR',
+  ANALYST = 'ANALYST',
+  PROJECT_MANAGER = 'PROJECT_MANAGER',
 
   // 🎓 Rôles Éducatifs
-  TEACHER = "TEACHER",
-  TUTOR = "TUTOR",
-  TRAINING_SPECIALIST = "TRAINING_SPECIALIST",
+  TEACHER = 'TEACHER',
+  TUTOR = 'TUTOR',
+  TRAINING_SPECIALIST = 'TRAINING_SPECIALIST',
 
   // 🔧 Rôles Techniques de Support
-  TECHNICIAN = "TECHNICIAN",
-  ASSISTANT = "ASSISTANT",
-  COORDINATOR = "COORDINATOR",
-  INTERPRETER = "INTERPRETER",
+  TECHNICIAN = 'TECHNICIAN',
+  ASSISTANT = 'ASSISTANT',
+  COORDINATOR = 'COORDINATOR',
+  INTERPRETER = 'INTERPRETER',
 }
 
 /**
@@ -62,44 +62,44 @@ export class ProfessionalRoleUtils {
    */
   static getDisplayName(role: ProfessionalRole): string {
     const displayNames: Record<ProfessionalRole, string> = {
-      [ProfessionalRole.DOCTOR]: "Médecin",
-      [ProfessionalRole.SURGEON]: "Chirurgien",
-      [ProfessionalRole.SPECIALIST]: "Spécialiste",
-      [ProfessionalRole.NURSE]: "Infirmier(ère)",
-      [ProfessionalRole.ANESTHESIOLOGIST]: "Anesthésiste",
+      [ProfessionalRole.DOCTOR]: 'Médecin',
+      [ProfessionalRole.SURGEON]: 'Chirurgien',
+      [ProfessionalRole.SPECIALIST]: 'Spécialiste',
+      [ProfessionalRole.NURSE]: 'Infirmier(ère)',
+      [ProfessionalRole.ANESTHESIOLOGIST]: 'Anesthésiste',
 
-      [ProfessionalRole.DENTIST]: "Dentiste",
-      [ProfessionalRole.ORTHODONTIST]: "Orthodontiste",
-      [ProfessionalRole.DENTAL_HYGIENIST]: "Hygiéniste Dentaire",
-      [ProfessionalRole.DENTAL_ASSISTANT]: "Assistant(e) Dentaire",
+      [ProfessionalRole.DENTIST]: 'Dentiste',
+      [ProfessionalRole.ORTHODONTIST]: 'Orthodontiste',
+      [ProfessionalRole.DENTAL_HYGIENIST]: 'Hygiéniste Dentaire',
+      [ProfessionalRole.DENTAL_ASSISTANT]: 'Assistant(e) Dentaire',
 
-      [ProfessionalRole.PSYCHOLOGIST]: "Psychologue",
-      [ProfessionalRole.PSYCHIATRIST]: "Psychiatre",
-      [ProfessionalRole.THERAPIST]: "Thérapeute",
-      [ProfessionalRole.COUNSELOR]: "Conseiller",
+      [ProfessionalRole.PSYCHOLOGIST]: 'Psychologue',
+      [ProfessionalRole.PSYCHIATRIST]: 'Psychiatre',
+      [ProfessionalRole.THERAPIST]: 'Thérapeute',
+      [ProfessionalRole.COUNSELOR]: 'Conseiller',
 
-      [ProfessionalRole.PHYSIOTHERAPIST]: "Kinésithérapeute",
-      [ProfessionalRole.OCCUPATIONAL_THERAPIST]: "Ergothérapeute",
-      [ProfessionalRole.SPEECH_THERAPIST]: "Orthophoniste",
+      [ProfessionalRole.PHYSIOTHERAPIST]: 'Kinésithérapeute',
+      [ProfessionalRole.OCCUPATIONAL_THERAPIST]: 'Ergothérapeute',
+      [ProfessionalRole.SPEECH_THERAPIST]: 'Orthophoniste',
 
-      [ProfessionalRole.LAWYER]: "Avocat",
-      [ProfessionalRole.PARALEGAL]: "Juriste",
-      [ProfessionalRole.LEGAL_ASSISTANT]: "Assistant(e) Juridique",
-      [ProfessionalRole.NOTARY]: "Notaire",
+      [ProfessionalRole.LAWYER]: 'Avocat',
+      [ProfessionalRole.PARALEGAL]: 'Juriste',
+      [ProfessionalRole.LEGAL_ASSISTANT]: 'Assistant(e) Juridique',
+      [ProfessionalRole.NOTARY]: 'Notaire',
 
-      [ProfessionalRole.CONSULTANT]: "Consultant",
-      [ProfessionalRole.ADVISOR]: "Conseiller",
-      [ProfessionalRole.ANALYST]: "Analyste",
-      [ProfessionalRole.PROJECT_MANAGER]: "Chef de Projet",
+      [ProfessionalRole.CONSULTANT]: 'Consultant',
+      [ProfessionalRole.ADVISOR]: 'Conseiller',
+      [ProfessionalRole.ANALYST]: 'Analyste',
+      [ProfessionalRole.PROJECT_MANAGER]: 'Chef de Projet',
 
-      [ProfessionalRole.TEACHER]: "Enseignant",
-      [ProfessionalRole.TUTOR]: "Tuteur",
-      [ProfessionalRole.TRAINING_SPECIALIST]: "Spécialiste Formation",
+      [ProfessionalRole.TEACHER]: 'Enseignant',
+      [ProfessionalRole.TUTOR]: 'Tuteur',
+      [ProfessionalRole.TRAINING_SPECIALIST]: 'Spécialiste Formation',
 
-      [ProfessionalRole.TECHNICIAN]: "Technicien",
-      [ProfessionalRole.ASSISTANT]: "Assistant(e)",
-      [ProfessionalRole.COORDINATOR]: "Coordinateur",
-      [ProfessionalRole.INTERPRETER]: "Interprète",
+      [ProfessionalRole.TECHNICIAN]: 'Technicien',
+      [ProfessionalRole.ASSISTANT]: 'Assistant(e)',
+      [ProfessionalRole.COORDINATOR]: 'Coordinateur',
+      [ProfessionalRole.INTERPRETER]: 'Interprète',
     };
 
     return displayNames[role] || role;

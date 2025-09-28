@@ -5,35 +5,35 @@
  * Focus sur la logique d'orchestration et validation métier.
  */
 
-import { InsufficientPermissionsError } from "@application/exceptions/auth.exceptions";
-import { IPermissionService } from "@application/ports/permission.service.interface";
+import { InsufficientPermissionsError } from '@application/exceptions/auth.exceptions';
+import { IPermissionService } from '@application/ports/permission.service.interface';
 import {
   AssignRoleRequest,
   AssignRoleUseCase,
-} from "@application/use-cases/role-management/assign-role.use-case";
-import { BusinessContext } from "@domain/entities/business-context.entity";
-import { RoleAssignment } from "@domain/entities/role-assignment.entity";
-import { IBusinessContextRepository } from "@domain/repositories/business-context.repository.interface";
-import { IRoleAssignmentRepository } from "@domain/repositories/role-assignment.repository.interface";
-import { UserRole } from "@shared/enums/user-role.enum";
+} from '@application/use-cases/role-management/assign-role.use-case';
+import { BusinessContext } from '@domain/entities/business-context.entity';
+import { RoleAssignment } from '@domain/entities/role-assignment.entity';
+import { IBusinessContextRepository } from '@domain/repositories/business-context.repository.interface';
+import { IRoleAssignmentRepository } from '@domain/repositories/role-assignment.repository.interface';
+import { UserRole } from '@shared/enums/user-role.enum';
 
-describe("AssignRoleUseCase", () => {
+describe('AssignRoleUseCase', () => {
   let useCase: AssignRoleUseCase;
   let mockRoleAssignmentRepository: jest.Mocked<IRoleAssignmentRepository>;
   let mockBusinessContextRepository: jest.Mocked<IBusinessContextRepository>;
   let mockPermissionService: jest.Mocked<IPermissionService>;
 
   const mockBusinessContext = BusinessContext.create(
-    "business-123",
-    "Test Business",
+    'business-123',
+    'Test Business',
     [
       {
-        locationId: "location-456",
-        locationName: "Main Office",
+        locationId: 'location-456',
+        locationName: 'Main Office',
         departments: [
           {
-            departmentId: "department-789",
-            departmentName: "Sales Department",
+            departmentId: 'department-789',
+            departmentName: 'Sales Department',
             isActive: true,
           },
         ],
@@ -118,40 +118,40 @@ describe("AssignRoleUseCase", () => {
     );
   });
 
-  describe("execute", () => {
+  describe('execute', () => {
     const validRequest: AssignRoleRequest = {
-      userId: "user-123",
+      userId: 'user-123',
       role: UserRole.LOCATION_MANAGER,
       context: {
-        businessId: "business-123",
-        locationId: "location-456",
+        businessId: 'business-123',
+        locationId: 'location-456',
       },
-      assignedBy: "admin-456",
-      correlationId: "correlation-123",
+      assignedBy: 'admin-456',
+      correlationId: 'correlation-123',
     };
 
-    it("should assign role successfully", async () => {
+    it('should assign role successfully', async () => {
       // ✅ Mock de permissions - OBLIGATOIRE pour passer les tests
       mockPermissionService.requirePermission.mockResolvedValue(undefined); // Pas d'erreur
       mockPermissionService.canActOnRole.mockResolvedValue(true); // Peut agir sur le rôle
 
       // Mock pour assigneur avec permissions
       const assignerRoleAssignment = RoleAssignment.create({
-        userId: "admin-456",
+        userId: 'admin-456',
         role: UserRole.BUSINESS_ADMIN,
-        context: { businessId: "business-123" },
-        assignedBy: "system",
+        context: { businessId: 'business-123' },
+        assignedBy: 'system',
       });
 
       // Mock pour sauvegarde réussie
       const mockSavedAssignment = RoleAssignment.create({
-        userId: "user-123",
+        userId: 'user-123',
         role: UserRole.LOCATION_MANAGER,
         context: {
-          businessId: "business-123",
-          locationId: "location-456",
+          businessId: 'business-123',
+          locationId: 'location-456',
         },
-        assignedBy: "admin-456",
+        assignedBy: 'admin-456',
       });
 
       mockBusinessContextRepository.findById.mockResolvedValue(
@@ -169,7 +169,7 @@ describe("AssignRoleUseCase", () => {
       expect(mockRoleAssignmentRepository.save).toHaveBeenCalledTimes(1);
     });
 
-    it("should fail when business context does not exist", async () => {
+    it('should fail when business context does not exist', async () => {
       // ✅ Mock de permissions - Autoriser permissions mais pas de contexte business
       mockPermissionService.requirePermission.mockResolvedValue(undefined); // Permission OK
       mockPermissionService.canActOnRole.mockResolvedValue(true); // Rôle OK
@@ -179,20 +179,20 @@ describe("AssignRoleUseCase", () => {
       const result = await useCase.execute(validRequest);
 
       expect(result.success).toBe(false);
-      expect(result.error).toContain("Business context not found");
+      expect(result.error).toContain('Business context not found');
     });
 
-    it("should fail when assigner has insufficient permissions", async () => {
+    it('should fail when assigner has insufficient permissions', async () => {
       // ✅ Mock de permissions - Réussir requirePermission mais échouer canActOnRole
       mockPermissionService.requirePermission.mockResolvedValue(undefined); // Permission OK
       mockPermissionService.canActOnRole.mockResolvedValue(false); // ❌ Pas le bon niveau de rôle
       mockPermissionService.canManageUser.mockResolvedValue(true);
 
       const insufficientAssignment = RoleAssignment.create({
-        userId: "insufficient-admin",
+        userId: 'insufficient-admin',
         role: UserRole.RECEPTIONIST,
-        context: { businessId: "business-123" },
-        assignedBy: "system",
+        context: { businessId: 'business-123' },
+        assignedBy: 'system',
       });
 
       mockBusinessContextRepository.findById.mockResolvedValue(
@@ -209,32 +209,32 @@ describe("AssignRoleUseCase", () => {
 
       // Vérifier que la méthode de permission a été appelée
       expect(mockPermissionService.canActOnRole).toHaveBeenCalledWith(
-        "admin-456",
+        'admin-456',
         UserRole.LOCATION_MANAGER,
         expect.any(Object),
       );
     });
 
-    it("should prevent duplicate role assignments", async () => {
+    it('should prevent duplicate role assignments', async () => {
       // ✅ Mock de permissions - Autoriser permissions pour passer les vérifications initiales
       mockPermissionService.requirePermission.mockResolvedValue(undefined); // Permission OK
       mockPermissionService.canActOnRole.mockResolvedValue(true); // Rôle OK
 
       const assignerRoleAssignment = RoleAssignment.create({
-        userId: "admin-456",
+        userId: 'admin-456',
         role: UserRole.BUSINESS_ADMIN,
-        context: { businessId: "business-123" },
-        assignedBy: "system",
+        context: { businessId: 'business-123' },
+        assignedBy: 'system',
       });
 
       const existingUserAssignment = RoleAssignment.create({
-        userId: "user-123",
+        userId: 'user-123',
         role: UserRole.LOCATION_MANAGER,
         context: {
-          businessId: "business-123",
-          locationId: "location-456",
+          businessId: 'business-123',
+          locationId: 'location-456',
         },
-        assignedBy: "admin-456",
+        assignedBy: 'admin-456',
       });
 
       mockBusinessContextRepository.findById.mockResolvedValue(
@@ -249,29 +249,29 @@ describe("AssignRoleUseCase", () => {
 
       expect(result.success).toBe(false);
       expect(result.error).toContain(
-        "User already has this role in the specified context",
+        'User already has this role in the specified context',
       );
     });
   });
 
-  describe("validation edge cases", () => {
-    it("should validate location exists when assigning location-level role", async () => {
+  describe('validation edge cases', () => {
+    it('should validate location exists when assigning location-level role', async () => {
       const locationRequest: AssignRoleRequest = {
-        userId: "user-123",
+        userId: 'user-123',
         role: UserRole.LOCATION_MANAGER,
         context: {
-          businessId: "business-123",
-          locationId: "non-existent-location",
+          businessId: 'business-123',
+          locationId: 'non-existent-location',
         },
-        assignedBy: "admin-456",
-        correlationId: "correlation-123",
+        assignedBy: 'admin-456',
+        correlationId: 'correlation-123',
       };
 
       const businessOwnerAssignment = RoleAssignment.create({
-        userId: "admin-456",
+        userId: 'admin-456',
         role: UserRole.BUSINESS_OWNER,
-        context: { businessId: "business-123" },
-        assignedBy: "super-admin",
+        context: { businessId: 'business-123' },
+        assignedBy: 'super-admin',
       });
 
       // Mock permission service
@@ -289,27 +289,27 @@ describe("AssignRoleUseCase", () => {
       const result = await useCase.execute(locationRequest);
 
       expect(result.success).toBe(false);
-      expect(result.error).toContain("Location not found in business context");
+      expect(result.error).toContain('Location not found in business context');
     });
 
-    it("should validate department exists when assigning department-level role", async () => {
+    it('should validate department exists when assigning department-level role', async () => {
       const departmentRequest: AssignRoleRequest = {
-        userId: "user-123",
+        userId: 'user-123',
         role: UserRole.DEPARTMENT_HEAD,
         context: {
-          businessId: "business-123",
-          locationId: "location-456",
-          departmentId: "non-existent-department",
+          businessId: 'business-123',
+          locationId: 'location-456',
+          departmentId: 'non-existent-department',
         },
-        assignedBy: "admin-456",
-        correlationId: "correlation-123",
+        assignedBy: 'admin-456',
+        correlationId: 'correlation-123',
       };
 
       const businessOwnerAssignment = RoleAssignment.create({
-        userId: "admin-456",
+        userId: 'admin-456',
         role: UserRole.BUSINESS_OWNER,
-        context: { businessId: "business-123" },
-        assignedBy: "super-admin",
+        context: { businessId: 'business-123' },
+        assignedBy: 'super-admin',
       });
 
       // Mock permission service
@@ -328,7 +328,7 @@ describe("AssignRoleUseCase", () => {
 
       expect(result.success).toBe(false);
       expect(result.error).toContain(
-        "Department not found in business context",
+        'Department not found in business context',
       );
     });
   });

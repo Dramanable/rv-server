@@ -5,8 +5,8 @@
  * ✅ Documentation Swagger complète
  */
 
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { Transform, Type } from "class-transformer";
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Transform, Type } from 'class-transformer';
 import {
   IsBoolean,
   IsDateString,
@@ -22,7 +22,7 @@ import {
   Max,
   Min,
   ValidateNested,
-} from "class-validator";
+} from 'class-validator';
 
 // ✅ AppointmentType removed - type now determined by Service
 
@@ -31,43 +31,43 @@ import {
 // =====================================
 
 export enum ViewMode {
-  DAY = "day",
-  WEEK = "week",
-  NEXT_WEEK = "next_week",
+  DAY = 'day',
+  WEEK = 'week',
+  NEXT_WEEK = 'next_week',
 }
 
 export class GetAvailableSlotsDto {
   @ApiProperty({
-    description: "Business UUID",
-    example: "123e4567-e89b-12d3-a456-426614174000",
+    description: 'Business UUID',
+    example: '123e4567-e89b-12d3-a456-426614174000',
   })
   @IsUUID()
   businessId!: string;
 
   @ApiProperty({
-    description: "Service UUID",
-    example: "123e4567-e89b-12d3-a456-426614174001",
+    description: 'Service UUID',
+    example: '123e4567-e89b-12d3-a456-426614174001',
   })
   @IsUUID()
   serviceId!: string;
 
   @ApiProperty({
-    description: "Calendar UUID",
-    example: "123e4567-e89b-12d3-a456-426614174002",
+    description: 'Calendar UUID',
+    example: '123e4567-e89b-12d3-a456-426614174002',
   })
   @IsUUID()
   calendarId!: string;
 
   @ApiPropertyOptional({
-    description: "Staff UUID (optional for specific practitioner)",
-    example: "123e4567-e89b-12d3-a456-426614174003",
+    description: 'Staff UUID (optional for specific practitioner)',
+    example: '123e4567-e89b-12d3-a456-426614174003',
   })
   @IsOptional()
   @IsUUID()
   readonly staffId?: string;
 
   @ApiProperty({
-    description: "View mode - day, week, or next_week (like Doctolib)",
+    description: 'View mode - day, week, or next_week (like Doctolib)',
     enum: ViewMode,
     example: ViewMode.WEEK,
   })
@@ -75,14 +75,14 @@ export class GetAvailableSlotsDto {
   viewMode!: ViewMode;
 
   @ApiProperty({
-    description: "Reference date for the view (ISO format)",
-    example: "2024-01-15T10:00:00Z",
+    description: 'Reference date for the view (ISO format)',
+    example: '2024-01-15T10:00:00Z',
   })
   @IsDateString()
   referenceDate!: Date;
 
   @ApiPropertyOptional({
-    description: "Appointment duration in minutes",
+    description: 'Appointment duration in minutes',
     example: 30,
     minimum: 15,
     maximum: 480,
@@ -94,7 +94,7 @@ export class GetAvailableSlotsDto {
   readonly duration?: number;
 
   @ApiPropertyOptional({
-    description: "Include reasons why slots are unavailable",
+    description: 'Include reasons why slots are unavailable',
     example: false,
   })
   @IsOptional()
@@ -102,8 +102,8 @@ export class GetAvailableSlotsDto {
   readonly includeUnavailableReasons?: boolean;
 
   @ApiPropertyOptional({
-    description: "Client timezone",
-    example: "Europe/Paris",
+    description: 'Client timezone',
+    example: 'Europe/Paris',
   })
   @IsOptional()
   @IsString()
@@ -112,57 +112,57 @@ export class GetAvailableSlotsDto {
 
 export class TimeSlotDto {
   @ApiProperty({
-    description: "Slot start time",
-    example: "2024-01-15T09:00:00Z",
+    description: 'Slot start time',
+    example: '2024-01-15T09:00:00Z',
   })
   startTime!: Date;
 
   @ApiProperty({
-    description: "Slot end time",
-    example: "2024-01-15T09:30:00Z",
+    description: 'Slot end time',
+    example: '2024-01-15T09:30:00Z',
   })
   endTime!: Date;
 
   @ApiProperty({
-    description: "Whether the slot is available",
+    description: 'Whether the slot is available',
     example: true,
   })
   isAvailable!: boolean;
 
   @ApiPropertyOptional({
-    description: "Price for this slot",
+    description: 'Price for this slot',
     example: 65.0,
   })
   readonly price?: number;
 
   @ApiPropertyOptional({
-    description: "Staff member name",
-    example: "Dr. Marie Dupont",
+    description: 'Staff member name',
+    example: 'Dr. Marie Dupont',
   })
   readonly staffName?: string;
 
   @ApiPropertyOptional({
-    description: "Staff member UUID",
-    example: "123e4567-e89b-12d3-a456-426614174003",
+    description: 'Staff member UUID',
+    example: '123e4567-e89b-12d3-a456-426614174003',
   })
   readonly staffId?: string;
 }
 
 export class DailySlotsDto {
   @ApiProperty({
-    description: "Date for this day",
-    example: "2024-01-15",
+    description: 'Date for this day',
+    example: '2024-01-15',
   })
   date!: string;
 
   @ApiProperty({
-    description: "Day of week (0=Sunday, 6=Saturday)",
+    description: 'Day of week (0=Sunday, 6=Saturday)',
     example: 1,
   })
   dayOfWeek!: number;
 
   @ApiProperty({
-    description: "Available time slots for this day",
+    description: 'Available time slots for this day',
     type: [TimeSlotDto],
   })
   slots!: TimeSlotDto[];
@@ -170,51 +170,51 @@ export class DailySlotsDto {
 
 export class NavigationDto {
   @ApiProperty({
-    description: "Previous period available",
+    description: 'Previous period available',
     example: true,
   })
   hasPrevious!: boolean;
 
   @ApiProperty({
-    description: "Next period available",
+    description: 'Next period available',
     example: true,
   })
   hasNext!: boolean;
 
   @ApiProperty({
-    description: "Previous period date",
-    example: "2024-01-08T00:00:00Z",
+    description: 'Previous period date',
+    example: '2024-01-08T00:00:00Z',
   })
   previousDate!: Date;
 
   @ApiProperty({
-    description: "Next period date",
-    example: "2024-01-22T00:00:00Z",
+    description: 'Next period date',
+    example: '2024-01-22T00:00:00Z',
   })
   nextDate!: Date;
 }
 
 export class SlotsMetadataDto {
   @ApiProperty({
-    description: "Total number of slots in period",
+    description: 'Total number of slots in period',
     example: 84,
   })
   totalSlots!: number;
 
   @ApiProperty({
-    description: "Number of available slots",
+    description: 'Number of available slots',
     example: 42,
   })
   availableSlots!: number;
 
   @ApiProperty({
-    description: "Number of booked slots",
+    description: 'Number of booked slots',
     example: 42,
   })
   bookedSlots!: number;
 
   @ApiProperty({
-    description: "Utilization rate percentage",
+    description: 'Utilization rate percentage',
     example: 50.0,
   })
   utilizationRate!: number;
@@ -222,31 +222,31 @@ export class SlotsMetadataDto {
 
 export class AvailableSlotsDataDto {
   @ApiProperty({
-    description: "Current view mode",
+    description: 'Current view mode',
     enum: ViewMode,
   })
   viewMode!: ViewMode;
 
   @ApiProperty({
-    description: "Current period being displayed",
-    example: "Semaine du 15 au 21 janvier 2024",
+    description: 'Current period being displayed',
+    example: 'Semaine du 15 au 21 janvier 2024',
   })
   currentPeriod!: string;
 
   @ApiProperty({
-    description: "Available slots by day",
+    description: 'Available slots by day',
     type: [DailySlotsDto],
   })
   availableSlots!: DailySlotsDto[];
 
   @ApiProperty({
-    description: "Navigation information",
+    description: 'Navigation information',
     type: NavigationDto,
   })
   navigation!: NavigationDto;
 
   @ApiProperty({
-    description: "Metadata about slots",
+    description: 'Metadata about slots',
     type: SlotsMetadataDto,
   })
   metadata!: SlotsMetadataDto;
@@ -254,22 +254,22 @@ export class AvailableSlotsDataDto {
 
 export class AvailableSlotsResponseDto {
   @ApiProperty({
-    description: "Operation success",
+    description: 'Operation success',
     example: true,
   })
   success!: boolean;
 
   @ApiProperty({
-    description: "Available slots data",
+    description: 'Available slots data',
     type: AvailableSlotsDataDto,
   })
   data!: AvailableSlotsDataDto;
 
   @ApiProperty({
-    description: "Response metadata",
+    description: 'Response metadata',
     example: {
-      timestamp: "2024-01-15T10:00:00Z",
-      requestId: "slots-1705320000000",
+      timestamp: '2024-01-15T10:00:00Z',
+      requestId: 'slots-1705320000000',
     },
   })
   readonly meta!: {
@@ -284,54 +284,54 @@ export class AvailableSlotsResponseDto {
 
 export class ClientInfoDto {
   @ApiProperty({
-    description: "Client first name",
-    example: "Marie",
+    description: 'Client first name',
+    example: 'Marie',
   })
   @IsString()
   @Length(2, 50)
   firstName!: string;
 
   @ApiProperty({
-    description: "Client last name",
-    example: "Dupont",
+    description: 'Client last name',
+    example: 'Dupont',
   })
   @IsString()
   @Length(2, 50)
   lastName!: string;
 
   @ApiProperty({
-    description: "Client email address",
-    example: "marie.dupont@email.com",
+    description: 'Client email address',
+    example: 'marie.dupont@email.com',
   })
   @IsEmail()
   email!: string;
 
   @ApiPropertyOptional({
-    description: "Client phone number",
-    example: "+33123456789",
+    description: 'Client phone number',
+    example: '+33123456789',
   })
   @IsOptional()
-  @IsPhoneNumber("FR")
+  @IsPhoneNumber('FR')
   readonly phone?: string;
 
   @ApiPropertyOptional({
-    description: "Client date of birth",
-    example: "1985-03-15",
+    description: 'Client date of birth',
+    example: '1985-03-15',
   })
   @IsOptional()
   @IsDateString()
   readonly dateOfBirth?: Date;
 
   @ApiProperty({
-    description: "Whether this is a new client",
+    description: 'Whether this is a new client',
     example: true,
   })
   @IsBoolean()
   isNewClient!: boolean;
 
   @ApiPropertyOptional({
-    description: "Additional notes about the client",
-    example: "Première consultation",
+    description: 'Additional notes about the client',
+    example: 'Première consultation',
   })
   @IsOptional()
   @IsString()
@@ -341,21 +341,21 @@ export class ClientInfoDto {
 
 export class NotificationPreferencesDto {
   @ApiProperty({
-    description: "Send email reminder",
+    description: 'Send email reminder',
     example: true,
   })
   @IsBoolean()
   emailReminder!: boolean;
 
   @ApiProperty({
-    description: "Send SMS reminder",
+    description: 'Send SMS reminder',
     example: false,
   })
   @IsBoolean()
   smsReminder!: boolean;
 
   @ApiProperty({
-    description: "Hours before appointment for reminder",
+    description: 'Hours before appointment for reminder',
     example: 24,
     minimum: 1,
     maximum: 168,
@@ -368,52 +368,52 @@ export class NotificationPreferencesDto {
 
 export class BookAppointmentDto {
   @ApiProperty({
-    description: "Business UUID",
-    example: "123e4567-e89b-12d3-a456-426614174000",
+    description: 'Business UUID',
+    example: '123e4567-e89b-12d3-a456-426614174000',
   })
   @IsUUID()
   businessId!: string;
 
   @ApiProperty({
-    description: "Service UUID",
-    example: "123e4567-e89b-12d3-a456-426614174001",
+    description: 'Service UUID',
+    example: '123e4567-e89b-12d3-a456-426614174001',
   })
   @IsUUID()
   serviceId!: string;
 
   @ApiProperty({
-    description: "Calendar UUID",
-    example: "123e4567-e89b-12d3-a456-426614174002",
+    description: 'Calendar UUID',
+    example: '123e4567-e89b-12d3-a456-426614174002',
   })
   @IsUUID()
   calendarId!: string;
 
   @ApiPropertyOptional({
-    description: "Staff UUID (optional)",
-    example: "123e4567-e89b-12d3-a456-426614174003",
+    description: 'Staff UUID (optional)',
+    example: '123e4567-e89b-12d3-a456-426614174003',
   })
   @IsOptional()
   @IsUUID()
   readonly staffId?: string;
 
   @ApiProperty({
-    description: "Appointment start time",
-    example: "2024-01-15T09:00:00Z",
+    description: 'Appointment start time',
+    example: '2024-01-15T09:00:00Z',
   })
   @IsDateString()
   @Transform(({ value }) => new Date(value))
   startTime!: Date;
 
   @ApiProperty({
-    description: "Appointment end time",
-    example: "2024-01-15T09:30:00Z",
+    description: 'Appointment end time',
+    example: '2024-01-15T09:30:00Z',
   })
   @IsDateString()
   @Transform(({ value }) => new Date(value))
   endTime!: Date;
 
   @ApiProperty({
-    description: "Client information",
+    description: 'Client information',
     type: ClientInfoDto,
   })
   @ValidateNested()
@@ -423,8 +423,8 @@ export class BookAppointmentDto {
   // ✅ Type removed - now determined by linked Service
 
   @ApiPropertyOptional({
-    description: "Appointment title",
-    example: "Consultation dentaire",
+    description: 'Appointment title',
+    example: 'Consultation dentaire',
   })
   @IsOptional()
   @IsString()
@@ -432,8 +432,8 @@ export class BookAppointmentDto {
   readonly title?: string;
 
   @ApiPropertyOptional({
-    description: "Appointment description",
-    example: "Contrôle de routine + détartrage",
+    description: 'Appointment description',
+    example: 'Contrôle de routine + détartrage',
   })
   @IsOptional()
   @IsString()
@@ -441,7 +441,7 @@ export class BookAppointmentDto {
   readonly description?: string;
 
   @ApiPropertyOptional({
-    description: "Mark as urgent appointment",
+    description: 'Mark as urgent appointment',
     example: false,
   })
   @IsOptional()
@@ -449,7 +449,7 @@ export class BookAppointmentDto {
   readonly isUrgent?: boolean;
 
   @ApiPropertyOptional({
-    description: "Notification preferences",
+    description: 'Notification preferences',
     type: NotificationPreferencesDto,
   })
   @IsOptional()
@@ -460,101 +460,101 @@ export class BookAppointmentDto {
 
 export class AppointmentDetailsDto {
   @ApiProperty({
-    description: "Business name",
-    example: "Cabinet Dentaire Dupont",
+    description: 'Business name',
+    example: 'Cabinet Dentaire Dupont',
   })
   businessName!: string;
 
   @ApiProperty({
-    description: "Service name",
-    example: "Consultation dentaire",
+    description: 'Service name',
+    example: 'Consultation dentaire',
   })
   serviceName!: string;
 
   @ApiPropertyOptional({
-    description: "Staff member name",
-    example: "Dr. Marie Dupont",
+    description: 'Staff member name',
+    example: 'Dr. Marie Dupont',
   })
   readonly staffName?: string;
 
   @ApiProperty({
-    description: "Appointment start time",
-    example: "2024-01-15T09:00:00Z",
+    description: 'Appointment start time',
+    example: '2024-01-15T09:00:00Z',
   })
   startTime!: Date;
 
   @ApiProperty({
-    description: "Appointment end time",
-    example: "2024-01-15T09:30:00Z",
+    description: 'Appointment end time',
+    example: '2024-01-15T09:30:00Z',
   })
   endTime!: Date;
 
   @ApiProperty({
-    description: "Duration in minutes",
+    description: 'Duration in minutes',
     example: 30,
   })
   duration!: number;
 
   @ApiProperty({
-    description: "Price amount",
+    description: 'Price amount',
     example: 65.0,
   })
   price!: number;
 
   @ApiProperty({
-    description: "Currency code",
-    example: "EUR",
+    description: 'Currency code',
+    example: 'EUR',
   })
   currency!: string;
 
   @ApiPropertyOptional({
-    description: "Business address",
-    example: "123 Rue de la Paix, 75001 Paris",
+    description: 'Business address',
+    example: '123 Rue de la Paix, 75001 Paris',
   })
   readonly address?: string;
 }
 
 export class ClientInfoResponseDto {
   @ApiProperty({
-    description: "Client full name",
-    example: "Marie Dupont",
+    description: 'Client full name',
+    example: 'Marie Dupont',
   })
   fullName!: string;
 
   @ApiProperty({
-    description: "Client email",
-    example: "marie.dupont@email.com",
+    description: 'Client email',
+    example: 'marie.dupont@email.com',
   })
   email!: string;
 
   @ApiPropertyOptional({
-    description: "Client phone",
-    example: "+33123456789",
+    description: 'Client phone',
+    example: '+33123456789',
   })
   readonly phone?: string;
 }
 
 export class NextStepsDto {
   @ApiProperty({
-    description: "Whether confirmation is required",
+    description: 'Whether confirmation is required',
     example: true,
   })
   confirmationRequired!: boolean;
 
   @ApiProperty({
-    description: "Whether payment is required",
+    description: 'Whether payment is required',
     example: false,
   })
   paymentRequired!: boolean;
 
   @ApiProperty({
-    description: "Required documents",
-    example: ["carte_vitale", "mutuelle"],
+    description: 'Required documents',
+    example: ['carte_vitale', 'mutuelle'],
   })
   documentsRequired!: string[];
 
   @ApiPropertyOptional({
-    description: "Arrival instructions",
+    description: 'Arrival instructions',
     example: "Merci d'arriver 10 minutes avant votre rendez-vous",
   })
   readonly arrivalInstructions?: string;
@@ -562,19 +562,19 @@ export class NextStepsDto {
 
 export class NotificationsDto {
   @ApiProperty({
-    description: "Confirmation email sent",
+    description: 'Confirmation email sent',
     example: true,
   })
   confirmationEmailSent!: boolean;
 
   @ApiProperty({
-    description: "Confirmation SMS sent",
+    description: 'Confirmation SMS sent',
     example: true,
   })
   confirmationSmsSent!: boolean;
 
   @ApiProperty({
-    description: "Reminder scheduled",
+    description: 'Reminder scheduled',
     example: true,
   })
   reminderScheduled!: boolean;
@@ -582,49 +582,49 @@ export class NotificationsDto {
 
 export class BookAppointmentDataDto {
   @ApiProperty({
-    description: "Appointment UUID",
-    example: "123e4567-e89b-12d3-a456-426614174000",
+    description: 'Appointment UUID',
+    example: '123e4567-e89b-12d3-a456-426614174000',
   })
   appointmentId!: string;
 
   @ApiProperty({
-    description: "Confirmation number",
-    example: "RV-20240115-A4B2",
+    description: 'Confirmation number',
+    example: 'RV-20240115-A4B2',
   })
   confirmationNumber!: string;
 
   @ApiProperty({
-    description: "Appointment status",
-    example: "CONFIRMED",
+    description: 'Appointment status',
+    example: 'CONFIRMED',
   })
   status!: string;
 
   @ApiProperty({
-    description: "Success message",
-    example: "Votre rendez-vous a été confirmé avec succès",
+    description: 'Success message',
+    example: 'Votre rendez-vous a été confirmé avec succès',
   })
   message!: string;
 
   @ApiProperty({
-    description: "Appointment details",
+    description: 'Appointment details',
     type: AppointmentDetailsDto,
   })
   appointmentDetails!: AppointmentDetailsDto;
 
   @ApiProperty({
-    description: "Client information",
+    description: 'Client information',
     type: ClientInfoResponseDto,
   })
   clientInfo!: ClientInfoResponseDto;
 
   @ApiProperty({
-    description: "Next steps for the client",
+    description: 'Next steps for the client',
     type: NextStepsDto,
   })
   nextSteps!: NextStepsDto;
 
   @ApiProperty({
-    description: "Notifications status",
+    description: 'Notifications status',
     type: NotificationsDto,
   })
   notifications!: NotificationsDto;
@@ -632,22 +632,22 @@ export class BookAppointmentDataDto {
 
 export class BookAppointmentResponseDto {
   @ApiProperty({
-    description: "Operation success",
+    description: 'Operation success',
     example: true,
   })
   success!: boolean;
 
   @ApiProperty({
-    description: "Booking data",
+    description: 'Booking data',
     type: BookAppointmentDataDto,
   })
   data!: BookAppointmentDataDto;
 
   @ApiProperty({
-    description: "Response metadata",
+    description: 'Response metadata',
     example: {
-      timestamp: "2024-01-15T10:00:00Z",
-      requestId: "book-1705320000000",
+      timestamp: '2024-01-15T10:00:00Z',
+      requestId: 'book-1705320000000',
     },
   })
   readonly meta!: {
@@ -662,7 +662,7 @@ export class BookAppointmentResponseDto {
 
 export class ListAppointmentsDto {
   @ApiPropertyOptional({
-    description: "Page number",
+    description: 'Page number',
     minimum: 1,
     default: 1,
     example: 1,
@@ -673,7 +673,7 @@ export class ListAppointmentsDto {
   readonly page?: number = 1;
 
   @ApiPropertyOptional({
-    description: "Items per page",
+    description: 'Items per page',
     minimum: 1,
     maximum: 100,
     default: 10,
@@ -686,26 +686,26 @@ export class ListAppointmentsDto {
   readonly limit?: number = 10;
 
   @ApiPropertyOptional({
-    description: "Sort by field",
-    enum: ["startTime", "status", "createdAt"],
-    default: "startTime",
+    description: 'Sort by field',
+    enum: ['startTime', 'status', 'createdAt'],
+    default: 'startTime',
   })
   @IsOptional()
-  @IsIn(["startTime", "status", "createdAt"])
-  readonly sortBy?: string = "startTime";
+  @IsIn(['startTime', 'status', 'createdAt'])
+  readonly sortBy?: string = 'startTime';
 
   @ApiPropertyOptional({
-    description: "Sort order",
-    enum: ["asc", "desc"],
-    default: "asc",
+    description: 'Sort order',
+    enum: ['asc', 'desc'],
+    default: 'asc',
   })
   @IsOptional()
-  @IsIn(["asc", "desc"])
-  readonly sortOrder?: "asc" | "desc" = "asc";
+  @IsIn(['asc', 'desc'])
+  readonly sortOrder?: 'asc' | 'desc' = 'asc';
 
   @ApiPropertyOptional({
-    description: "Search term",
-    example: "Marie Dupont",
+    description: 'Search term',
+    example: 'Marie Dupont',
   })
   @IsOptional()
   @IsString()
@@ -713,32 +713,32 @@ export class ListAppointmentsDto {
   readonly search?: string;
 
   @ApiPropertyOptional({
-    description: "Filter by business UUID",
-    example: "123e4567-e89b-12d3-a456-426614174000",
+    description: 'Filter by business UUID',
+    example: '123e4567-e89b-12d3-a456-426614174000',
   })
   @IsOptional()
   @IsUUID()
   readonly businessId?: string;
 
   @ApiPropertyOptional({
-    description: "Filter by appointment status",
-    example: "CONFIRMED",
+    description: 'Filter by appointment status',
+    example: 'CONFIRMED',
   })
   @IsOptional()
   @IsString()
   readonly status?: string;
 
   @ApiPropertyOptional({
-    description: "Filter from date",
-    example: "2024-01-01T00:00:00Z",
+    description: 'Filter from date',
+    example: '2024-01-01T00:00:00Z',
   })
   @IsOptional()
   @IsDateString()
   readonly fromDate?: Date;
 
   @ApiPropertyOptional({
-    description: "Filter to date",
-    example: "2024-01-31T23:59:59Z",
+    description: 'Filter to date',
+    example: '2024-01-31T23:59:59Z',
   })
   @IsOptional()
   @IsDateString()
@@ -747,101 +747,101 @@ export class ListAppointmentsDto {
 
 export class AppointmentDto {
   @ApiProperty({
-    description: "Appointment UUID",
-    example: "123e4567-e89b-12d3-a456-426614174000",
+    description: 'Appointment UUID',
+    example: '123e4567-e89b-12d3-a456-426614174000',
   })
   id!: string;
 
   @ApiProperty({
-    description: "Confirmation number",
-    example: "RV-20240115-A4B2",
+    description: 'Confirmation number',
+    example: 'RV-20240115-A4B2',
   })
   confirmationNumber!: string;
 
   @ApiProperty({
-    description: "Appointment status",
-    example: "CONFIRMED",
+    description: 'Appointment status',
+    example: 'CONFIRMED',
   })
   status!: string;
 
   // ✅ Type removed - now determined by linked Service
 
   @ApiProperty({
-    description: "Start time",
-    example: "2024-01-15T09:00:00Z",
+    description: 'Start time',
+    example: '2024-01-15T09:00:00Z',
   })
   startTime!: Date;
 
   @ApiProperty({
-    description: "End time",
-    example: "2024-01-15T09:30:00Z",
+    description: 'End time',
+    example: '2024-01-15T09:30:00Z',
   })
   endTime!: Date;
 
   @ApiProperty({
-    description: "Client full name",
-    example: "Marie Dupont",
+    description: 'Client full name',
+    example: 'Marie Dupont',
   })
   clientName!: string;
 
   @ApiProperty({
-    description: "Client email",
-    example: "marie.dupont@email.com",
+    description: 'Client email',
+    example: 'marie.dupont@email.com',
   })
   clientEmail!: string;
 
   @ApiProperty({
-    description: "Business name",
-    example: "Cabinet Dentaire Dupont",
+    description: 'Business name',
+    example: 'Cabinet Dentaire Dupont',
   })
   businessName!: string;
 
   @ApiProperty({
-    description: "Service name",
-    example: "Consultation dentaire",
+    description: 'Service name',
+    example: 'Consultation dentaire',
   })
   serviceName!: string;
 
   @ApiPropertyOptional({
-    description: "Staff name",
-    example: "Dr. Marie Dupont",
+    description: 'Staff name',
+    example: 'Dr. Marie Dupont',
   })
   readonly staffName?: string;
 
   @ApiProperty({
-    description: "Price amount",
+    description: 'Price amount',
     example: 65.0,
   })
   price!: number;
 
   @ApiProperty({
-    description: "Created at",
-    example: "2024-01-10T10:00:00Z",
+    description: 'Created at',
+    example: '2024-01-10T10:00:00Z',
   })
   createdAt!: Date;
 
   @ApiProperty({
-    description: "Updated at",
-    example: "2024-01-10T10:00:00Z",
+    description: 'Updated at',
+    example: '2024-01-10T10:00:00Z',
   })
   updatedAt!: Date;
 }
 
 export class ListAppointmentsResponseDto {
   @ApiProperty({
-    description: "Operation success",
+    description: 'Operation success',
     example: true,
   })
   success!: boolean;
 
   @ApiProperty({
-    description: "Appointments list",
+    description: 'Appointments list',
     type: [AppointmentDto],
   })
   data!: AppointmentDto[];
 
   @ApiProperty({
-    description: "Pagination metadata",
+    description: 'Pagination metadata',
     example: {
       currentPage: 1,
       totalPages: 5,
@@ -867,24 +867,24 @@ export class ListAppointmentsResponseDto {
 
 export class UpdateAppointmentDto {
   @ApiPropertyOptional({
-    description: "New start time",
-    example: "2024-01-15T10:00:00Z",
+    description: 'New start time',
+    example: '2024-01-15T10:00:00Z',
   })
   @IsOptional()
   @IsDateString()
   readonly startTime?: Date;
 
   @ApiPropertyOptional({
-    description: "New end time",
-    example: "2024-01-15T10:30:00Z",
+    description: 'New end time',
+    example: '2024-01-15T10:30:00Z',
   })
   @IsOptional()
   @IsDateString()
   readonly endTime?: Date;
 
   @ApiPropertyOptional({
-    description: "New title",
-    example: "Consultation de suivi",
+    description: 'New title',
+    example: 'Consultation de suivi',
   })
   @IsOptional()
   @IsString()
@@ -892,8 +892,8 @@ export class UpdateAppointmentDto {
   readonly title?: string;
 
   @ApiPropertyOptional({
-    description: "New description",
-    example: "Suivi post-traitement",
+    description: 'New description',
+    example: 'Suivi post-traitement',
   })
   @IsOptional()
   @IsString()
@@ -901,8 +901,8 @@ export class UpdateAppointmentDto {
   readonly description?: string;
 
   @ApiPropertyOptional({
-    description: "Reason for modification",
-    example: "Demande du patient",
+    description: 'Reason for modification',
+    example: 'Demande du patient',
   })
   @IsOptional()
   @IsString()
@@ -923,15 +923,15 @@ export class UpdateAppointmentResponseDto {
 
 export class CancelAppointmentDto {
   @ApiProperty({
-    description: "Reason for cancellation",
-    example: "Indisponibilité du patient",
+    description: 'Reason for cancellation',
+    example: 'Indisponibilité du patient',
   })
   @IsString()
   @Length(5, 200)
   reason!: string;
 
   @ApiPropertyOptional({
-    description: "Send notification to client",
+    description: 'Send notification to client',
     example: true,
   })
   @IsOptional()

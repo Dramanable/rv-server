@@ -7,27 +7,27 @@
 import {
   Calendar,
   CalendarType,
-} from "../../../domain/entities/calendar.entity";
-import type { CalendarRepository } from "../../../domain/repositories/calendar.repository.interface";
-import type { BusinessRepository } from "../../../domain/repositories/business.repository.interface";
-import type { Logger } from "../../../application/ports/logger.port";
-import type { I18nService } from "../../../application/ports/i18n.port";
+} from '../../../domain/entities/calendar.entity';
+import type { CalendarRepository } from '../../../domain/repositories/calendar.repository.interface';
+import type { BusinessRepository } from '../../../domain/repositories/business.repository.interface';
+import type { Logger } from '../../../application/ports/logger.port';
+import type { I18nService } from '../../../application/ports/i18n.port';
 import {
   AppContext,
   AppContextFactory,
-} from "../../../shared/context/app-context";
-import { UserRole, Permission } from "../../../shared/enums/user-role.enum";
-import { User } from "../../../domain/entities/user.entity";
-import type { UserRepository } from "../../../domain/repositories/user.repository.interface";
+} from '../../../shared/context/app-context';
+import { UserRole, Permission } from '../../../shared/enums/user-role.enum';
+import { User } from '../../../domain/entities/user.entity';
+import type { UserRepository } from '../../../domain/repositories/user.repository.interface';
 import {
   InsufficientPermissionsError,
   CalendarValidationError,
   BusinessNotFoundError,
-} from "../../../application/exceptions/application.exceptions";
-import { BusinessId } from "../../../domain/value-objects/business-id.value-object";
-import { UserId } from "../../../domain/value-objects/user-id.value-object";
-import { Address } from "../../../domain/value-objects/address.value-object";
-import { WorkingHours } from "../../../domain/value-objects/working-hours.value-object";
+} from '../../../application/exceptions/application.exceptions';
+import { BusinessId } from '../../../domain/value-objects/business-id.value-object';
+import { UserId } from '../../../domain/value-objects/user-id.value-object';
+import { Address } from '../../../domain/value-objects/address.value-object';
+import { WorkingHours } from '../../../domain/value-objects/working-hours.value-object';
 export interface CreateCalendarRequest {
   readonly requestingUserId: string;
   readonly businessId: string;
@@ -94,12 +94,12 @@ export class CreateCalendarUseCase {
   ): Promise<CreateCalendarResponse> {
     // 1. Context pour traçabilité
     const context: AppContext = AppContextFactory.create()
-      .operation("CreateCalendar")
+      .operation('CreateCalendar')
       .requestingUser(request.requestingUserId)
       .build();
 
     this.logger.info(
-      this.i18n.t("operations.calendar.creation_attempt"),
+      this.i18n.t('operations.calendar.creation_attempt'),
       context as unknown as Record<string, unknown>,
     );
 
@@ -129,7 +129,7 @@ export class CreateCalendarUseCase {
         businessId,
         type: request.type,
         name: request.name.trim(),
-        description: request.description || "",
+        description: request.description || '',
       });
 
       // 6. Persistance
@@ -153,7 +153,7 @@ export class CreateCalendarUseCase {
         createdAt: calendar.createdAt,
       };
 
-      this.logger.info(this.i18n.t("operations.calendar.creation_success"), {
+      this.logger.info(this.i18n.t('operations.calendar.creation_success'), {
         ...context,
         calendarId: calendar.id.getValue(),
         calendarName: calendar.name,
@@ -163,7 +163,7 @@ export class CreateCalendarUseCase {
       return response;
     } catch (error) {
       this.logger.error(
-        this.i18n.t("operations.calendar.creation_failed"),
+        this.i18n.t('operations.calendar.creation_failed'),
         error as Error,
         context as unknown as Record<string, unknown>,
       );
@@ -180,8 +180,8 @@ export class CreateCalendarUseCase {
     if (!requestingUser) {
       throw new InsufficientPermissionsError(
         requestingUserId,
-        "CREATE_CALENDAR",
-        "calendar",
+        'CREATE_CALENDAR',
+        'calendar',
       );
     }
 
@@ -204,16 +204,16 @@ export class CreateCalendarUseCase {
     const allowedRoles = [UserRole.BUSINESS_OWNER, UserRole.BUSINESS_ADMIN];
 
     if (!allowedRoles.includes(requestingUser.role)) {
-      this.logger.warn(this.i18n.t("warnings.permission.denied"), {
+      this.logger.warn(this.i18n.t('warnings.permission.denied'), {
         requestingUserId,
         requestingUserRole: requestingUser.role,
-        requiredPermissions: "CREATE_CALENDAR",
+        requiredPermissions: 'CREATE_CALENDAR',
         businessId,
       });
       throw new InsufficientPermissionsError(
         requestingUserId,
-        "CREATE_CALENDAR",
-        "calendar",
+        'CREATE_CALENDAR',
+        'calendar',
       );
     }
   }
@@ -225,17 +225,17 @@ export class CreateCalendarUseCase {
     // Validation du nom
     if (!request.name || request.name.trim().length < 3) {
       throw new CalendarValidationError(
-        "name",
+        'name',
         request.name,
-        "Calendar name must be at least 3 characters long",
+        'Calendar name must be at least 3 characters long',
       );
     }
 
     if (request.name.trim().length > 100) {
       throw new CalendarValidationError(
-        "name",
+        'name',
         request.name,
-        "Calendar name cannot exceed 100 characters",
+        'Calendar name cannot exceed 100 characters',
       );
     }
 
@@ -245,7 +245,7 @@ export class CreateCalendarUseCase {
     // Validation du type de calendrier
     if (!Object.values(CalendarType).includes(request.type)) {
       throw new CalendarValidationError(
-        "type",
+        'type',
         request.type,
         `Invalid calendar type: ${request.type}`,
       );
@@ -254,42 +254,42 @@ export class CreateCalendarUseCase {
     // Validation de la description si fournie
     if (request.description && request.description.trim().length > 500) {
       throw new CalendarValidationError(
-        "description",
+        'description',
         request.description,
-        "Calendar description cannot exceed 500 characters",
+        'Calendar description cannot exceed 500 characters',
       );
     }
 
     // Validation de l'adresse
     if (!request.address.street || request.address.street.trim().length < 5) {
       throw new CalendarValidationError(
-        "address.street",
+        'address.street',
         request.address.street,
-        "Street address must be at least 5 characters long",
+        'Street address must be at least 5 characters long',
       );
     }
 
     if (!request.address.city || request.address.city.trim().length < 2) {
       throw new CalendarValidationError(
-        "address.city",
+        'address.city',
         request.address.city,
-        "City must be at least 2 characters long",
+        'City must be at least 2 characters long',
       );
     }
 
     if (!request.address.zipCode || request.address.zipCode.trim().length < 3) {
       throw new CalendarValidationError(
-        "address.zipCode",
+        'address.zipCode',
         request.address.zipCode,
-        "Zip code must be at least 3 characters long",
+        'Zip code must be at least 3 characters long',
       );
     }
 
     if (!request.address.country || request.address.country.trim().length < 2) {
       throw new CalendarValidationError(
-        "address.country",
+        'address.country',
         request.address.country,
-        "Country must be at least 2 characters long",
+        'Country must be at least 2 characters long',
       );
     }
 
@@ -300,21 +300,21 @@ export class CreateCalendarUseCase {
 
     if (!hasAtLeastOneWorkingDay) {
       throw new CalendarValidationError(
-        "workingHours",
+        'workingHours',
         JSON.stringify(request.workingHours),
-        "Calendar must have at least one working day defined",
+        'Calendar must have at least one working day defined',
       );
     }
 
     // Validation des formats d'horaires
     const days = [
-      "monday",
-      "tuesday",
-      "wednesday",
-      "thursday",
-      "friday",
-      "saturday",
-      "sunday",
+      'monday',
+      'tuesday',
+      'wednesday',
+      'thursday',
+      'friday',
+      'saturday',
+      'sunday',
     ];
 
     for (const day of days) {
@@ -357,17 +357,17 @@ export class CreateCalendarUseCase {
         (slotDuration < 5 || slotDuration > 480)
       ) {
         throw new CalendarValidationError(
-          "settings.slotDuration",
+          'settings.slotDuration',
           slotDuration,
-          "Slot duration must be between 5 and 480 minutes",
+          'Slot duration must be between 5 and 480 minutes',
         );
       }
 
       if (bufferTime !== undefined && (bufferTime < 0 || bufferTime > 120)) {
         throw new CalendarValidationError(
-          "settings.bufferTime",
+          'settings.bufferTime',
           bufferTime,
-          "Buffer time must be between 0 and 120 minutes",
+          'Buffer time must be between 0 and 120 minutes',
         );
       }
 
@@ -376,9 +376,9 @@ export class CreateCalendarUseCase {
         (maxAdvanceBooking < 1 || maxAdvanceBooking > 365)
       ) {
         throw new CalendarValidationError(
-          "settings.maxAdvanceBooking",
+          'settings.maxAdvanceBooking',
           maxAdvanceBooking,
-          "Max advance booking must be between 1 and 365 days",
+          'Max advance booking must be between 1 and 365 days',
         );
       }
 
@@ -387,17 +387,17 @@ export class CreateCalendarUseCase {
         (minAdvanceBooking < 0 || minAdvanceBooking > 168)
       ) {
         throw new CalendarValidationError(
-          "settings.minAdvanceBooking",
+          'settings.minAdvanceBooking',
           minAdvanceBooking,
-          "Min advance booking must be between 0 and 168 hours (1 week)",
+          'Min advance booking must be between 0 and 168 hours (1 week)',
         );
       }
 
       if (color && !this.isValidHexColor(color)) {
         throw new CalendarValidationError(
-          "settings.color",
+          'settings.color',
           color,
-          "Color must be a valid hex color code",
+          'Color must be a valid hex color code',
         );
       }
     }

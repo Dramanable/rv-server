@@ -5,14 +5,14 @@
  * des erreurs selon les principes NestJS et Clean Architecture
  */
 
-import { DatabaseModule } from "@infrastructure/database/database.module";
-import { Module } from "@nestjs/common";
-import { APP_FILTER } from "@nestjs/core";
-import { ApplicationExceptionFilter } from "./application-exception.filter";
-import { DomainExceptionFilter } from "./domain-exception.filter";
-import { GlobalExceptionFilter } from "./global-exception.filter";
-import { InfrastructureExceptionFilter } from "./infrastructure-exception.filter";
-import { ValidationExceptionFilter } from "./validation-exception.filter";
+import { DatabaseModule } from '@infrastructure/database/database.module';
+import { Module } from '@nestjs/common';
+import { APP_FILTER } from '@nestjs/core';
+import { ApplicationExceptionFilter } from './application-exception.filter';
+import { DomainExceptionFilter } from './domain-exception.filter';
+import { GlobalExceptionFilter } from './global-exception.filter';
+import { InfrastructureExceptionFilter } from './infrastructure-exception.filter';
+import { ValidationExceptionFilter } from './validation-exception.filter';
 
 @Module({
   imports: [

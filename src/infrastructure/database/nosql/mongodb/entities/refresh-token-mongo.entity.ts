@@ -4,14 +4,14 @@
  * ✅ NoSQL optimized with TTL
  */
 
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { Document, Types } from "mongoose";
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document, Types } from 'mongoose';
 
 export type RefreshTokenDocument = RefreshTokenMongoEntity & Document;
 
 @Schema({
-  collection: "refresh_tokens",
-  timestamps: { createdAt: "created_at", updatedAt: "updated_at" },
+  collection: 'refresh_tokens',
+  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
   versionKey: false,
 })
 export class RefreshTokenMongoEntity {
@@ -20,7 +20,7 @@ export class RefreshTokenMongoEntity {
   @Prop({
     required: true,
     type: Types.ObjectId,
-    ref: "UserMongoEntity",
+    ref: 'UserMongoEntity',
     index: true,
   })
   userId!: Types.ObjectId;
@@ -90,7 +90,7 @@ RefreshTokenSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 
 // 🌍 Geospatial index pour la localisation (si utilisé)
 RefreshTokenSchema.index({
-  "sessionMetadata.location.coordinates": "2dsphere",
+  'sessionMetadata.location.coordinates': '2dsphere',
 });
 
 // 🔍 Query helpers avec typage simplifié pour éviter les erreurs TypeScript

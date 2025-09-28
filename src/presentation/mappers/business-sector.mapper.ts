@@ -8,20 +8,20 @@
 import {
   CreateBusinessSectorRequest,
   CreateBusinessSectorResponse,
-} from "@application/use-cases/business-sectors/create-business-sector.use-case";
+} from '@application/use-cases/business-sectors/create-business-sector.use-case';
 import {
   DeleteBusinessSectorRequest,
   DeleteBusinessSectorResponse,
-} from "@application/use-cases/business-sectors/delete-business-sector.use-case";
+} from '@application/use-cases/business-sectors/delete-business-sector.use-case';
 import {
   ListBusinessSectorsRequest,
   ListBusinessSectorsResponse,
-} from "@application/use-cases/business-sectors/list-business-sectors.use-case";
+} from '@application/use-cases/business-sectors/list-business-sectors.use-case';
 import {
   UpdateBusinessSectorRequest,
   UpdateBusinessSectorResponse,
-} from "@application/use-cases/business-sectors/update-business-sector.use-case";
-import { BusinessSector } from "@domain/entities/business-sector.entity";
+} from '@application/use-cases/business-sectors/update-business-sector.use-case';
+import { BusinessSector } from '@domain/entities/business-sector.entity';
 import {
   BusinessSectorFiltersDto,
   BusinessSectorPaginationDto,
@@ -36,7 +36,7 @@ import {
   ListBusinessSectorsResponseDto,
   UpdateBusinessSectorDto,
   UpdateBusinessSectorResponseDto,
-} from "@presentation/dtos/business-sector.dto";
+} from '@presentation/dtos/business-sector.dto';
 
 /**
  * 🔄 Mapper : Business Sector
@@ -120,11 +120,11 @@ export class BusinessSectorMapper {
   ): CreateBusinessSectorResponseDto {
     return {
       success: true,
-      message: "Business sector created successfully",
+      message: 'Business sector created successfully',
       data: {
         id: response.id,
         name: response.name,
-        description: response.description || "",
+        description: response.description || '',
         code: response.code,
         isActive: response.isActive,
         createdAt: response.createdAt,
@@ -143,15 +143,15 @@ export class BusinessSectorMapper {
   ): UpdateBusinessSectorResponseDto {
     return {
       success: true,
-      message: "Business sector updated successfully",
+      message: 'Business sector updated successfully',
       data: {
         id: response.id,
         name: response.name,
-        description: response.description || "",
+        description: response.description || '',
         code: response.code,
         isActive: response.isActive,
         createdAt: response.createdAt,
-        createdBy: "", // Pas disponible dans UpdateResponse
+        createdBy: '', // Pas disponible dans UpdateResponse
         updatedAt: response.updatedAt,
         updatedBy: undefined,
       },
@@ -298,16 +298,16 @@ export class BusinessSectorMapper {
   ): BusinessSectorSortDto | undefined {
     if (!sort) return undefined;
 
-    const validFields = ["name", "code", "createdAt", "updatedAt"];
-    const validDirections = ["ASC", "DESC"];
+    const validFields = ['name', 'code', 'createdAt', 'updatedAt'];
+    const validDirections = ['ASC', 'DESC'];
 
     return {
-      field: validFields.includes(sort.field || "")
-        ? (sort.field as "name" | "code" | "createdAt" | "updatedAt")
-        : "name",
-      direction: validDirections.includes(sort.direction || "")
-        ? (sort.direction as "ASC" | "DESC")
-        : "ASC",
+      field: validFields.includes(sort.field || '')
+        ? (sort.field as 'name' | 'code' | 'createdAt' | 'updatedAt')
+        : 'name',
+      direction: validDirections.includes(sort.direction || '')
+        ? (sort.direction as 'ASC' | 'DESC')
+        : 'ASC',
     };
   }
 
@@ -320,9 +320,9 @@ export class BusinessSectorMapper {
    */
   static createTestDto(): CreateBusinessSectorDto {
     return {
-      name: "Test Sector",
-      description: "Test sector description for unit testing",
-      code: "TEST_SECTOR",
+      name: 'Test Sector',
+      description: 'Test sector description for unit testing',
+      code: 'TEST_SECTOR',
     };
   }
 
@@ -331,8 +331,8 @@ export class BusinessSectorMapper {
    */
   static createTestUpdateDto(): UpdateBusinessSectorDto {
     return {
-      name: "Updated Test Sector",
-      description: "Updated test sector description",
+      name: 'Updated Test Sector',
+      description: 'Updated test sector description',
     };
   }
 
@@ -342,7 +342,7 @@ export class BusinessSectorMapper {
   static createTestListDto(): ListBusinessSectorsDto {
     return {
       pagination: { page: 1, limit: 20 },
-      sort: { field: "name", direction: "ASC" },
+      sort: { field: 'name', direction: 'ASC' },
       filters: { isActive: true },
     };
   }

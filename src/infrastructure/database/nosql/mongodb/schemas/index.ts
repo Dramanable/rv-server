@@ -7,8 +7,8 @@
 
 export const MONGODB_SCHEMAS = {
   // Authentication schemas
-  USER_SCHEMA: "UserMongoEntity",
-  REFRESH_TOKEN_SCHEMA: "RefreshTokenMongoEntity",
+  USER_SCHEMA: 'UserMongoEntity',
+  REFRESH_TOKEN_SCHEMA: 'RefreshTokenMongoEntity',
 
   // Future schemas (when needed)
   // BUSINESS_SCHEMA: 'BusinessMongoEntity',
@@ -16,8 +16,8 @@ export const MONGODB_SCHEMAS = {
 } as const;
 
 export const MONGODB_COLLECTIONS = {
-  USERS: "users",
-  REFRESH_TOKENS: "refresh_tokens",
+  USERS: 'users',
+  REFRESH_TOKENS: 'refresh_tokens',
 
   // Future collections
   // BUSINESSES: 'businesses',
@@ -31,7 +31,7 @@ export const MONGODB_INDEXES = {
     { key: { username: 1 }, options: { unique: true, sparse: true } },
     { key: { role: 1, isActive: 1 } },
     { key: { created_at: -1 } },
-    { key: { firstName: "text", lastName: "text", email: "text" } },
+    { key: { firstName: 'text', lastName: 'text', email: 'text' } },
   ],
   refresh_tokens: [
     { key: { userId: 1, isRevoked: 1 } },

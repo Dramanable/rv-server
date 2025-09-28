@@ -1,5 +1,5 @@
-import { Notification } from "../entities/notification.entity";
-import { NotificationStatus } from "../value-objects/notification-status.value-object";
+import { Notification } from '../entities/notification.entity';
+import { NotificationStatus } from '../value-objects/notification-status.value-object';
 
 /**
  * Interface du repository de notifications (PORT)

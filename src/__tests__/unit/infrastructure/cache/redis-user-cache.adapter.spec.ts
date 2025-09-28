@@ -7,8 +7,8 @@
  * Les vrais tests seront ajoutés plus tard avec les imports nécessaires.
  */
 
-describe("RedisUserCacheAdapter Unit Tests", () => {
-  it("should pass placeholder test", () => {
+describe('RedisUserCacheAdapter Unit Tests', () => {
+  it('should pass placeholder test', () => {
     expect(true).toBe(true);
   });
 });

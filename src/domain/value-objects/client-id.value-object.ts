@@ -3,7 +3,7 @@
  * ✅ Clean Architecture - Domain Layer
  */
 
-import { generateId } from "@shared/utils/id.utils";
+import { generateId } from '@shared/utils/id.utils';
 
 export class ClientId {
   constructor(private readonly value: string) {
@@ -11,15 +11,15 @@ export class ClientId {
   }
 
   private validate(value: string): void {
-    if (!value || value.trim() === "") {
-      throw new Error("Client ID cannot be empty");
+    if (!value || value.trim() === '') {
+      throw new Error('Client ID cannot be empty');
     }
 
     // UUID format validation (basic)
     const uuidRegex =
       /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
     if (!uuidRegex.test(value)) {
-      throw new Error("Client ID must be a valid UUID");
+      throw new Error('Client ID must be a valid UUID');
     }
   }
 

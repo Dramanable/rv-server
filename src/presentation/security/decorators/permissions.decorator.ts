@@ -20,10 +20,10 @@
  * async getStaff() { ... }
  */
 
-import { SetMetadata } from "@nestjs/common";
-import { Permission } from "../../../shared/enums/user-role.enum";
+import { SetMetadata } from '@nestjs/common';
+import { Permission } from '../../../shared/enums/user-role.enum';
 
-export const PERMISSIONS_KEY = "permissions";
+export const PERMISSIONS_KEY = 'permissions';
 
 export interface PermissionDecoratorOptions {
   /**
@@ -205,7 +205,7 @@ export const RequireClientAccess = () =>
  * @param resourceType - Type de ressource (staff, appointment, client, etc.)
  */
 export const RequireResourceAccess = (
-  resourceType: "staff" | "appointment" | "client" | "service",
+  resourceType: 'staff' | 'appointment' | 'client' | 'service',
 ) => {
   const permissionMap = {
     staff: [Permission.MANAGE_ALL_STAFF, Permission.VIEW_STAFF_PERFORMANCE],
@@ -244,7 +244,7 @@ export const RequireHierarchyLevel =
     propertyKey: string | symbol,
     descriptor: PropertyDescriptor,
   ) => {
-    SetMetadata("hierarchyLevel", minLevel)(target, propertyKey, descriptor);
+    SetMetadata('hierarchyLevel', minLevel)(target, propertyKey, descriptor);
   };
 
 /**

@@ -1,9 +1,9 @@
-import { INestApplication } from "@nestjs/common";
-import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
+import { INestApplication } from '@nestjs/common';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 export function setupSwagger(app: INestApplication): void {
   const config = new DocumentBuilder()
-    .setTitle("🏥 Complete Appointment Management API")
+    .setTitle('🏥 Complete Appointment Management API')
     .setDescription(
       `
 # 🎯 Clean Architecture Appointment System
@@ -195,107 +195,107 @@ All endpoints return consistent error responses:
 - **Service booking rules** - only public services can be booked online
     `,
     )
-    .setVersion("3.0.0")
-    .addTag("🔐 Authentication", "Login, Register, Refresh, Logout operations")
-    .addTag("👥 Users", "User management and profile operations")
-    .addTag("🔄 Password Reset", "Password recovery and reset operations")
+    .setVersion('3.0.0')
+    .addTag('🔐 Authentication', 'Login, Register, Refresh, Logout operations')
+    .addTag('👥 Users', 'User management and profile operations')
+    .addTag('🔄 Password Reset', 'Password recovery and reset operations')
     .addTag(
-      "🏢 Business Management",
-      "Business creation, updates, and multi-location management",
+      '🏢 Business Management',
+      'Business creation, updates, and multi-location management',
     )
     .addTag(
-      "� Business Sectors",
-      "Industry categories and business classification",
+      '� Business Sectors',
+      'Industry categories and business classification',
     )
     .addTag(
-      "👨‍💼 Staff Management",
-      "Personnel management, roles, and staff scheduling",
+      '👨‍💼 Staff Management',
+      'Personnel management, roles, and staff scheduling',
     )
     .addTag(
-      "💼 Services",
-      "Service management with flexible pricing and packages",
+      '💼 Services',
+      'Service management with flexible pricing and packages',
     )
     .addTag(
-      "📅 Appointments",
-      "Appointment booking, scheduling, and management",
+      '📅 Appointments',
+      'Appointment booking, scheduling, and management',
     )
-    .addTag("📊 Calendars", "Personal and business calendar management")
-    .addTag("⏰ Business Hours", "Working hours and availability management")
-    .addTag("🏥 Health", "System health checks and monitoring")
-    .addCookieAuth("accessToken", {
-      type: "http",
-      scheme: "bearer",
-      bearerFormat: "JWT",
+    .addTag('📊 Calendars', 'Personal and business calendar management')
+    .addTag('⏰ Business Hours', 'Working hours and availability management')
+    .addTag('🏥 Health', 'System health checks and monitoring')
+    .addCookieAuth('accessToken', {
+      type: 'http',
+      scheme: 'bearer',
+      bearerFormat: 'JWT',
       description:
-        "🔐 Access token stored in secure HttpOnly cookie (automatically handled by browser)",
+        '🔐 Access token stored in secure HttpOnly cookie (automatically handled by browser)',
     })
-    .addCookieAuth("refreshToken", {
-      type: "http",
-      scheme: "bearer",
-      bearerFormat: "JWT",
+    .addCookieAuth('refreshToken', {
+      type: 'http',
+      scheme: 'bearer',
+      bearerFormat: 'JWT',
       description:
-        "🔄 Refresh token stored in secure HttpOnly cookie (automatically handled by browser)",
+        '🔄 Refresh token stored in secure HttpOnly cookie (automatically handled by browser)',
     })
-    .addSecurity("JWT", {
-      type: "http",
-      scheme: "bearer",
-      bearerFormat: "JWT",
+    .addSecurity('JWT', {
+      type: 'http',
+      scheme: 'bearer',
+      bearerFormat: 'JWT',
       description:
-        "🔐 JWT Bearer token for API access (for testing only - production uses cookies)",
+        '🔐 JWT Bearer token for API access (for testing only - production uses cookies)',
     })
-    .addServer("http://localhost:3000", "🔧 Development server (local testing)")
-    .addServer("https://api.yourdomain.com", "🚀 Production server")
-    .addServer("https://staging-api.yourdomain.com", "🧪 Staging server")
+    .addServer('http://localhost:3000', '🔧 Development server (local testing)')
+    .addServer('https://api.yourdomain.com', '🚀 Production server')
+    .addServer('https://staging-api.yourdomain.com', '🧪 Staging server')
     .setContact(
-      "Development Team",
-      "https://yourdomain.com/support",
-      "dev-support@yourdomain.com",
+      'Development Team',
+      'https://yourdomain.com/support',
+      'dev-support@yourdomain.com',
     )
-    .setLicense("Proprietary", "https://yourdomain.com/license")
+    .setLicense('Proprietary', 'https://yourdomain.com/license')
     .setExternalDoc(
-      "Complete API Documentation",
-      "https://docs.yourdomain.com/api",
+      'Complete API Documentation',
+      'https://docs.yourdomain.com/api',
     )
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
 
-  SwaggerModule.setup("api/docs", app, document, {
+  SwaggerModule.setup('api/docs', app, document, {
     explorer: true,
     swaggerOptions: {
       filter: true,
       showRequestDuration: true,
-      docExpansion: "none", // Start collapsed for better UX
+      docExpansion: 'none', // Start collapsed for better UX
       persistAuthorization: true,
       displayOperationId: false,
       displayRequestDuration: true,
       defaultModelsExpandDepth: 3, // Show more model details
       defaultModelExpandDepth: 3,
       tryItOutEnabled: true,
-      supportedSubmitMethods: ["get", "post", "put", "delete", "patch"],
+      supportedSubmitMethods: ['get', 'post', 'put', 'delete', 'patch'],
       onComplete: () => {
-        console.log("📋 Swagger UI loaded successfully");
+        console.log('📋 Swagger UI loaded successfully');
       },
       presets: [
-        "SwaggerUIBundle.presets.apis",
-        "SwaggerUIBundle.presets.standalone",
+        'SwaggerUIBundle.presets.apis',
+        'SwaggerUIBundle.presets.standalone',
       ],
-      layout: "BaseLayout",
+      layout: 'BaseLayout',
       deepLinking: true,
       showExtensions: true,
       showCommonExtensions: true,
-      tagsSorter: "alpha",
-      operationsSorter: "alpha",
+      tagsSorter: 'alpha',
+      operationsSorter: 'alpha',
     },
-    customSiteTitle: "🚀 Enterprise Authentication API - Developer Portal",
-    customfavIcon: "/favicon.ico",
+    customSiteTitle: '🚀 Enterprise Authentication API - Developer Portal',
+    customfavIcon: '/favicon.ico',
     customJs: [
       // Ajout de JavaScript personnalisé pour améliorer l'UX
-      "/swagger-custom.js",
+      '/swagger-custom.js',
     ],
     customCssUrl: [
       // Ajout de CSS personnalisé pour le branding
-      "/swagger-custom.css",
+      '/swagger-custom.css',
     ],
     customCss: `
       .swagger-ui .topbar {

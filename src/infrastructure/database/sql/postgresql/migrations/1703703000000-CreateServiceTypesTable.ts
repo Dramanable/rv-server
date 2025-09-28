@@ -1,13 +1,13 @@
-import { MigrationInterface, QueryRunner, Table } from "typeorm";
+import { MigrationInterface, QueryRunner, Table } from 'typeorm';
 
 export class CreateServiceTypesTable1703703000000
   implements MigrationInterface
 {
-  name = "CreateServiceTypesTable1703703000000";
+  name = 'CreateServiceTypesTable1703703000000';
 
   // 🎯 OBLIGATORY: Récupérer le schéma depuis l'environnement
   private getSchemaName(): string {
-    const schema = process.env.DB_SCHEMA || "public";
+    const schema = process.env.DB_SCHEMA || 'public';
 
     // Validation du nom de schéma (sécurité)
     if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(schema)) {
@@ -45,68 +45,68 @@ export class CreateServiceTypesTable1703703000000
 
     await queryRunner.createTable(
       new Table({
-        name: "service_types",
+        name: 'service_types',
         schema: schema,
         columns: [
           {
-            name: "id",
-            type: "uuid",
+            name: 'id',
+            type: 'uuid',
             isPrimary: true,
-            generationStrategy: "uuid",
-            default: "uuid_generate_v4()",
-            comment: "Primary key - UUID v4",
+            generationStrategy: 'uuid',
+            default: 'uuid_generate_v4()',
+            comment: 'Primary key - UUID v4',
           },
           {
-            name: "name",
-            type: "varchar",
-            length: "100",
+            name: 'name',
+            type: 'varchar',
+            length: '100',
             isNullable: false,
             comment: 'Service type name (e.g., "Consultation", "Treatment")',
           },
           {
-            name: "description",
-            type: "text",
+            name: 'description',
+            type: 'text',
             isNullable: true,
-            comment: "Optional detailed description of the service type",
+            comment: 'Optional detailed description of the service type',
           },
           {
-            name: "service_category_id",
-            type: "uuid",
+            name: 'service_category_id',
+            type: 'uuid',
             isNullable: false,
-            comment: "Reference to service_categories table",
+            comment: 'Reference to service_categories table',
           },
           {
-            name: "is_active",
-            type: "boolean",
+            name: 'is_active',
+            type: 'boolean',
             default: true,
-            comment: "Indicates if service type is active and available",
+            comment: 'Indicates if service type is active and available',
           },
 
           // ✅ OBLIGATORY - Audit trail columns for traceability
           {
-            name: "created_by",
-            type: "uuid",
+            name: 'created_by',
+            type: 'uuid',
             isNullable: false,
-            comment: "UUID of user who created this service type",
+            comment: 'UUID of user who created this service type',
           },
           {
-            name: "updated_by",
-            type: "uuid",
+            name: 'updated_by',
+            type: 'uuid',
             isNullable: false,
-            comment: "UUID of user who last updated this service type",
+            comment: 'UUID of user who last updated this service type',
           },
           {
-            name: "created_at",
-            type: "timestamp",
-            default: "CURRENT_TIMESTAMP",
-            comment: "Creation timestamp",
+            name: 'created_at',
+            type: 'timestamp',
+            default: 'CURRENT_TIMESTAMP',
+            comment: 'Creation timestamp',
           },
           {
-            name: "updated_at",
-            type: "timestamp",
-            default: "CURRENT_TIMESTAMP",
-            onUpdate: "CURRENT_TIMESTAMP",
-            comment: "Last update timestamp",
+            name: 'updated_at',
+            type: 'timestamp',
+            default: 'CURRENT_TIMESTAMP',
+            onUpdate: 'CURRENT_TIMESTAMP',
+            comment: 'Last update timestamp',
           },
         ],
       }),

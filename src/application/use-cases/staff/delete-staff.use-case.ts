@@ -5,16 +5,16 @@
  * Couche Application - Orchestration métier
  */
 
-import { StaffRepository } from "../../../domain/repositories/staff.repository.interface";
-import { UserId } from "../../../domain/value-objects/user-id.value-object";
-import { Permission } from "../../../shared/enums/permission.enum";
+import { StaffRepository } from '../../../domain/repositories/staff.repository.interface';
+import { UserId } from '../../../domain/value-objects/user-id.value-object';
+import { Permission } from '../../../shared/enums/permission.enum';
 import {
   ApplicationValidationError,
   ResourceNotFoundError,
-} from "../../exceptions/application.exceptions";
-import { I18nService } from "../../ports/i18n.port";
-import { Logger } from "../../ports/logger.port";
-import { IPermissionService } from "../../ports/permission.service.interface";
+} from '../../exceptions/application.exceptions';
+import { I18nService } from '../../ports/i18n.port';
+import { Logger } from '../../ports/logger.port';
+import { IPermissionService } from '../../ports/permission.service.interface';
 
 export interface DeleteStaffRequest {
   readonly staffId: string;
@@ -38,7 +38,7 @@ export class DeleteStaffUseCase {
   async execute(request: DeleteStaffRequest): Promise<DeleteStaffResponse> {
     try {
       // Phase GREEN - Implémentation minimale qui fait passer les tests
-      this.logger.info("Attempting to delete staff", {
+      this.logger.info('Attempting to delete staff', {
         staffId: request.staffId,
         requestingUserId: request.requestingUserId,
       });
@@ -51,8 +51,8 @@ export class DeleteStaffUseCase {
         request.requestingUserId,
         Permission.MANAGE_STAFF,
         {
-          action: "delete",
-          resource: "staff",
+          action: 'delete',
+          resource: 'staff',
           staffId: request.staffId,
         },
       );
@@ -62,8 +62,8 @@ export class DeleteStaffUseCase {
         UserId.create(request.staffId),
       );
       if (!staff) {
-        const error = new ResourceNotFoundError("Staff", request.staffId);
-        this.logger.error("Staff not found", error, {
+        const error = new ResourceNotFoundError('Staff', request.staffId);
+        this.logger.error('Staff not found', error, {
           staffId: request.staffId,
         });
         throw error;
@@ -76,7 +76,7 @@ export class DeleteStaffUseCase {
       await this.staffRepository.delete(staff.id);
 
       // 6. Log du succès
-      this.logger.info("Staff deleted successfully", {
+      this.logger.info('Staff deleted successfully', {
         staffId: request.staffId,
         staffName: staff.fullName,
       });
@@ -84,10 +84,10 @@ export class DeleteStaffUseCase {
       return {
         success: true,
         staffId: request.staffId,
-        message: this.i18n.translate("staff.deleted.success"),
+        message: this.i18n.translate('staff.deleted.success'),
       };
     } catch (error) {
-      this.logger.error("Error deleting staff", error as Error, {
+      this.logger.error('Error deleting staff', error as Error, {
         staffId: request.staffId,
       });
       throw error;
@@ -95,19 +95,19 @@ export class DeleteStaffUseCase {
   }
 
   private async validateParameters(request: DeleteStaffRequest): Promise<void> {
-    if (!request.staffId || request.staffId.trim() === "") {
+    if (!request.staffId || request.staffId.trim() === '') {
       throw new ApplicationValidationError(
-        "staff",
+        'staff',
         request.staffId,
-        this.i18n.translate("validation.staffId.required"),
+        this.i18n.translate('validation.staffId.required'),
       );
     }
 
-    if (!request.requestingUserId || request.requestingUserId.trim() === "") {
+    if (!request.requestingUserId || request.requestingUserId.trim() === '') {
       throw new ApplicationValidationError(
-        "staff",
+        'staff',
         request.requestingUserId,
-        this.i18n.translate("validation.requestingUserId.required"),
+        this.i18n.translate('validation.requestingUserId.required'),
       );
     }
 
@@ -116,9 +116,9 @@ export class DeleteStaffUseCase {
       /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
     if (!uuidRegex.test(request.staffId)) {
       throw new ApplicationValidationError(
-        "staff",
+        'staff',
         request.staffId,
-        this.i18n.translate("validation.staffId.invalid"),
+        this.i18n.translate('validation.staffId.invalid'),
       );
     }
   }
@@ -130,9 +130,9 @@ export class DeleteStaffUseCase {
     // Vérifier si le staff peut être supprimé selon les règles métier
     if (!staff.canBeDeleted()) {
       throw new ApplicationValidationError(
-        "staff",
+        'staff',
         staffId,
-        this.i18n.translate("staff.delete.hasActiveAppointments"),
+        this.i18n.translate('staff.delete.hasActiveAppointments'),
       );
     }
   }

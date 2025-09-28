@@ -4,12 +4,12 @@ import {
   Table,
   TableForeignKey,
   TableIndex,
-} from "typeorm";
+} from 'typeorm';
 
 export class RemoveServiceCategoryAndAddManyToManyServiceTypes1758748293996
   implements MigrationInterface
 {
-  name = "RemoveServiceCategoryAndAddManyToManyServiceTypes1758748293997";
+  name = 'RemoveServiceCategoryAndAddManyToManyServiceTypes1758748293997';
 
   /**
    * PLAN DE MIGRATION SÉCURISÉ - SERVICE CATEGORY → SERVICE TYPES MANY-TO-MANY
@@ -40,14 +40,14 @@ export class RemoveServiceCategoryAndAddManyToManyServiceTypes1758748293996
    */
 
   private getSchemaName(): string {
-    return process.env.DB_SCHEMA || "public";
+    return process.env.DB_SCHEMA || 'public';
   }
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     const schema = this.getSchemaName();
 
     // ✅ ÉTAPE 1 - Sauvegarder les données existantes de category
-    console.log("🔄 Sauvegarde des données category existantes...");
+    console.log('🔄 Sauvegarde des données category existantes...');
     await queryRunner.query(`
       CREATE TABLE IF NOT EXISTS "${schema}"."services_category_backup" AS
       SELECT id, category, business_id, created_at
@@ -56,25 +56,25 @@ export class RemoveServiceCategoryAndAddManyToManyServiceTypes1758748293996
     `);
 
     // ✅ ÉTAPE 2 - Créer la table de liaison many-to-many
-    console.log("🔄 Création de la table de liaison service_service_types...");
+    console.log('🔄 Création de la table de liaison service_service_types...');
     await queryRunner.createTable(
       new Table({
-        name: "service_service_types",
+        name: 'service_service_types',
         columns: [
           {
-            name: "service_id",
-            type: "uuid",
+            name: 'service_id',
+            type: 'uuid',
             isPrimary: true,
           },
           {
-            name: "service_type_id",
-            type: "uuid",
+            name: 'service_type_id',
+            type: 'uuid',
             isPrimary: true,
           },
           {
-            name: "created_at",
-            type: "timestamptz",
-            default: "CURRENT_TIMESTAMP",
+            name: 'created_at',
+            type: 'timestamptz',
+            default: 'CURRENT_TIMESTAMP',
           },
         ],
       }),
@@ -83,46 +83,46 @@ export class RemoveServiceCategoryAndAddManyToManyServiceTypes1758748293996
 
     // ✅ ÉTAPE 3 - Foreign Keys pour intégrité référentielle
     await queryRunner.createForeignKey(
-      "service_service_types",
+      'service_service_types',
       new TableForeignKey({
-        columnNames: ["service_id"],
-        referencedTableName: "services",
-        referencedColumnNames: ["id"],
-        onDelete: "CASCADE",
+        columnNames: ['service_id'],
+        referencedTableName: 'services',
+        referencedColumnNames: ['id'],
+        onDelete: 'CASCADE',
       }),
     );
 
     await queryRunner.createForeignKey(
-      "service_service_types",
+      'service_service_types',
       new TableForeignKey({
-        columnNames: ["service_type_id"],
-        referencedTableName: "service_types",
-        referencedColumnNames: ["id"],
-        onDelete: "CASCADE",
+        columnNames: ['service_type_id'],
+        referencedTableName: 'service_types',
+        referencedColumnNames: ['id'],
+        onDelete: 'CASCADE',
       }),
     );
 
     // ✅ ÉTAPE 4 - Index pour optimiser les requêtes many-to-many
     await queryRunner.createIndex(
-      "service_service_types",
+      'service_service_types',
       new TableIndex({
-        name: "IDX_service_service_types_service_id",
-        columnNames: ["service_id"],
+        name: 'IDX_service_service_types_service_id',
+        columnNames: ['service_id'],
       }),
     );
 
     await queryRunner.createIndex(
-      "service_service_types",
+      'service_service_types',
       new TableIndex({
-        name: "IDX_service_service_types_service_type_id",
-        columnNames: ["service_type_id"],
+        name: 'IDX_service_service_types_service_type_id',
+        columnNames: ['service_type_id'],
       }),
     );
 
     // ✅ ÉTAPE 5 - Migrer les données existantes vers la relation many-to-many
     // Pour chaque service avec une category, l'associer à un ServiceType par défaut
     console.log(
-      "🔄 Migration des données category vers relations many-to-many...",
+      '🔄 Migration des données category vers relations many-to-many...',
     );
 
     // Créer un ServiceType "General" par défaut pour chaque business si nécessaire
@@ -175,10 +175,10 @@ export class RemoveServiceCategoryAndAddManyToManyServiceTypes1758748293996
     }
 
     // ✅ ÉTAPE 7 - Supprimer la colonne category
-    console.log("🔄 Suppression de la colonne category...");
+    console.log('🔄 Suppression de la colonne category...');
     const columnExists = await queryRunner.hasColumn(
       `${schema}.services`,
-      "category",
+      'category',
     );
 
     if (columnExists) {
@@ -188,14 +188,14 @@ export class RemoveServiceCategoryAndAddManyToManyServiceTypes1758748293996
     }
 
     console.log(
-      "✅ Migration terminée avec succès - Service Category → ServiceTypes Many-to-Many",
+      '✅ Migration terminée avec succès - Service Category → ServiceTypes Many-to-Many',
     );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
     const schema = this.getSchemaName();
 
-    console.log("🔄 Rollback - Restauration de la colonne category...");
+    console.log('🔄 Rollback - Restauration de la colonne category...');
 
     // ✅ ÉTAPE 1 - Recréer la colonne category
     await queryRunner.query(`
@@ -228,10 +228,10 @@ export class RemoveServiceCategoryAndAddManyToManyServiceTypes1758748293996
     );
 
     // ✅ ÉTAPE 4 - Supprimer la table de liaison many-to-many
-    await queryRunner.dropTable("service_service_types");
+    await queryRunner.dropTable('service_service_types');
 
     console.log(
-      "✅ Rollback terminé - Category restaurée et relations many-to-many supprimées",
+      '✅ Rollback terminé - Category restaurée et relations many-to-many supprimées',
     );
   }
 }

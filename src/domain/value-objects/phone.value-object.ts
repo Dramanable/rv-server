@@ -7,18 +7,18 @@ export class Phone {
 
   private validate(value: string): void {
     if (!value || value.trim().length === 0) {
-      throw new Error("Phone number cannot be empty");
+      throw new Error('Phone number cannot be empty');
     }
 
     const cleanValue = this.cleanPhoneNumber(value);
 
     if (!Phone.PHONE_REGEX.test(cleanValue)) {
-      throw new Error("Invalid phone number format");
+      throw new Error('Invalid phone number format');
     }
   }
 
   private cleanPhoneNumber(phone: string): string {
-    return phone.replace(/[\s-().]/g, "");
+    return phone.replace(/[\s-().]/g, '');
   }
 
   static create(value: string): Phone {
@@ -35,13 +35,13 @@ export class Phone {
 
   getInternationalFormat(): string {
     const clean = this.getCleanValue();
-    if (clean.startsWith("+")) {
+    if (clean.startsWith('+')) {
       return clean;
     }
-    if (clean.startsWith("0")) {
-      return "+33" + clean.substring(1);
+    if (clean.startsWith('0')) {
+      return '+33' + clean.substring(1);
     }
-    return "+" + clean;
+    return '+' + clean;
   }
 
   equals(other: Phone): boolean {

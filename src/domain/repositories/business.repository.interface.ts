@@ -1,8 +1,8 @@
-import { Business } from "../entities/business.entity";
-import { BusinessId } from "../value-objects/business-id.value-object";
-import { BusinessName } from "../value-objects/business-name.value-object";
+import { Business } from '../entities/business.entity';
+import { BusinessId } from '../value-objects/business-id.value-object';
+import { BusinessName } from '../value-objects/business-name.value-object';
 
-export const BUSINESS_REPOSITORY = "BUSINESS_REPOSITORY";
+export const BUSINESS_REPOSITORY = 'BUSINESS_REPOSITORY';
 
 export interface BusinessRepository {
   /**

@@ -1,8 +1,8 @@
-import { MigrationInterface, QueryRunner } from "typeorm";
-import { getSchemaName } from "../utils/migration-utils";
+import { MigrationInterface, QueryRunner } from 'typeorm';
+import { getSchemaName } from '../utils/migration-utils';
 
 export class CreateCustomSchema1695825500000 implements MigrationInterface {
-  name = "CreateCustomSchema1695825500000";
+  name = 'CreateCustomSchema1695825500000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     const schemaName = getSchemaName();

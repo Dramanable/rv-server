@@ -10,19 +10,19 @@
  * - Convertit entre entités Domain et ORM
  */
 
-import { Injectable } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import {
   Service,
   ServiceStatus,
-} from "../../../../../domain/entities/service.entity";
-import { ServiceRepository } from "../../../../../domain/repositories/service.repository.interface";
-import { BusinessId } from "../../../../../domain/value-objects/business-id.value-object";
-import { ServiceId } from "../../../../../domain/value-objects/service-id.value-object";
-import { UserId } from "../../../../../domain/value-objects/user-id.value-object";
-import { ServiceMapper } from "../../../../mappers/domain-mappers";
-import { ServiceOrmEntity } from "../entities/service-orm.entity";
+} from '../../../../../domain/entities/service.entity';
+import { ServiceRepository } from '../../../../../domain/repositories/service.repository.interface';
+import { BusinessId } from '../../../../../domain/value-objects/business-id.value-object';
+import { ServiceId } from '../../../../../domain/value-objects/service-id.value-object';
+import { UserId } from '../../../../../domain/value-objects/user-id.value-object';
+import { ServiceMapper } from '../../../../mappers/domain-mappers';
+import { ServiceOrmEntity } from '../entities/service-orm.entity';
 
 @Injectable()
 export class TypeOrmServiceRepository implements ServiceRepository {
@@ -42,7 +42,7 @@ export class TypeOrmServiceRepository implements ServiceRepository {
   async findByBusinessId(businessId: BusinessId): Promise<Service[]> {
     const ormEntities = await this.repository.find({
       where: { business_id: businessId.getValue() },
-      order: { created_at: "DESC" },
+      order: { created_at: 'DESC' },
     });
 
     return ormEntities.map((entity: ServiceOrmEntity) =>
@@ -56,7 +56,7 @@ export class TypeOrmServiceRepository implements ServiceRepository {
         business_id: businessId.getValue(),
         status: ServiceStatus.ACTIVE,
       },
-      order: { name: "ASC" },
+      order: { name: 'ASC' },
     });
 
     return ormEntities.map((entity: ServiceOrmEntity) =>
@@ -73,7 +73,7 @@ export class TypeOrmServiceRepository implements ServiceRepository {
         business_id: businessId.getValue(),
         category,
       },
-      order: { name: "ASC" },
+      order: { name: 'ASC' },
     });
 
     return ormEntities.map((entity: ServiceOrmEntity) =>
@@ -83,12 +83,12 @@ export class TypeOrmServiceRepository implements ServiceRepository {
 
   async findByStaffId(staffId: UserId): Promise<Service[]> {
     const qb = this.repository
-      .createQueryBuilder("service")
-      .where("service.assigned_staff_ids @> :staffIds", {
+      .createQueryBuilder('service')
+      .where('service.assigned_staff_ids @> :staffIds', {
         staffIds: JSON.stringify([staffId.getValue()]),
       });
 
-    const ormEntities = await qb.orderBy("service.name", "ASC").getMany();
+    const ormEntities = await qb.orderBy('service.name', 'ASC').getMany();
 
     return ormEntities.map((entity: ServiceOrmEntity) =>
       ServiceMapper.fromTypeOrmEntity(entity),
@@ -107,22 +107,22 @@ export class TypeOrmServiceRepository implements ServiceRepository {
     limit?: number;
     offset?: number;
   }): Promise<{ services: Service[]; total: number }> {
-    const qb = this.repository.createQueryBuilder("service");
+    const qb = this.repository.createQueryBuilder('service');
 
     if (criteria.businessId) {
-      qb.andWhere("service.business_id = :businessId", {
+      qb.andWhere('service.business_id = :businessId', {
         businessId: criteria.businessId.getValue(),
       });
     }
 
     if (criteria.name) {
-      qb.andWhere("LOWER(service.name) LIKE LOWER(:name)", {
+      qb.andWhere('LOWER(service.name) LIKE LOWER(:name)', {
         name: `%${criteria.name}%`,
       });
     }
 
     if (criteria.isActive !== undefined) {
-      qb.andWhere("service.status = :status", {
+      qb.andWhere('service.status = :status', {
         status: criteria.isActive
           ? ServiceStatus.ACTIVE
           : ServiceStatus.INACTIVE,
@@ -133,7 +133,7 @@ export class TypeOrmServiceRepository implements ServiceRepository {
       qb.andWhere(
         "service.scheduling->>'allow_online_booking' = :allowBooking",
         {
-          allowBooking: criteria.allowOnlineBooking ? "true" : "false",
+          allowBooking: criteria.allowOnlineBooking ? 'true' : 'false',
         },
       );
     }
@@ -172,7 +172,7 @@ export class TypeOrmServiceRepository implements ServiceRepository {
       qb.offset(criteria.offset);
     }
 
-    qb.orderBy("service.name", "ASC");
+    qb.orderBy('service.name', 'ASC');
 
     const ormEntities = await qb.getMany();
     const services = ormEntities.map((entity: ServiceOrmEntity) =>
@@ -211,14 +211,14 @@ export class TypeOrmServiceRepository implements ServiceRepository {
     excludeId?: ServiceId,
   ): Promise<boolean> {
     const queryBuilder = this.repository
-      .createQueryBuilder("service")
-      .where("service.businessId = :businessId", {
+      .createQueryBuilder('service')
+      .where('service.businessId = :businessId', {
         businessId: businessId.toString(),
       })
-      .andWhere("service.name = :name", { name });
+      .andWhere('service.name = :name', { name });
 
     if (excludeId) {
-      queryBuilder.andWhere("service.id != :excludeId", {
+      queryBuilder.andWhere('service.id != :excludeId', {
         excludeId: excludeId.toString(),
       });
     }
@@ -238,7 +238,7 @@ export class TypeOrmServiceRepository implements ServiceRepository {
         business_id: businessId.getValue(),
         status: ServiceStatus.ACTIVE,
       },
-      order: { created_at: "DESC" },
+      order: { created_at: 'DESC' },
       take: limit,
     });
 
@@ -283,21 +283,21 @@ export class TypeOrmServiceRepository implements ServiceRepository {
 
     // Prix moyen
     const avgPriceResult = await this.repository
-      .createQueryBuilder("service")
+      .createQueryBuilder('service')
       .select(
         "AVG((service.pricing->'base_price'->>'amount')::numeric)",
-        "avgPrice",
+        'avgPrice',
       )
-      .where("service.business_id = :businessId", {
+      .where('service.business_id = :businessId', {
         businessId: businessId.getValue(),
       })
       .getRawOne();
 
     // Durée moyenne
     const avgDurationResult = await this.repository
-      .createQueryBuilder("service")
-      .select("AVG((service.scheduling->>'duration')::integer)", "avgDuration")
-      .where("service.business_id = :businessId", {
+      .createQueryBuilder('service')
+      .select("AVG((service.scheduling->>'duration')::integer)", 'avgDuration')
+      .where('service.business_id = :businessId', {
         businessId: businessId.getValue(),
       })
       .getRawOne();
@@ -305,8 +305,8 @@ export class TypeOrmServiceRepository implements ServiceRepository {
     return {
       totalServices,
       activeServices,
-      averagePrice: parseFloat(avgPriceResult?.avgPrice || "0"),
-      averageDuration: parseFloat(avgDurationResult?.avgDuration || "0"),
+      averagePrice: parseFloat(avgPriceResult?.avgPrice || '0'),
+      averageDuration: parseFloat(avgDurationResult?.avgDuration || '0'),
     };
   }
 }

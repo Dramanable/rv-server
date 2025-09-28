@@ -30,7 +30,7 @@ import {
   DEFAULT_REMINDER_CONFIGS,
   isModifiableStatus,
   isValidStatusTransition,
-} from "../enums/appointment.enums";
+} from '../enums/appointment.enums';
 
 /**
  * 🕐 Time and Duration Management Utilities
@@ -88,10 +88,10 @@ export class AppointmentTimeUtils {
       appointmentEnd.getHours() + appointmentEnd.getMinutes() / 60;
 
     const [businessStartHour, businessStartMin] = businessHours.start
-      .split(":")
+      .split(':')
       .map(Number);
     const [businessEndHour, businessEndMin] = businessHours.end
-      .split(":")
+      .split(':')
       .map(Number);
 
     const businessStart = businessStartHour + businessStartMin / 60;
@@ -275,20 +275,20 @@ export class AppointmentRecurrenceUtils {
     const errors: string[] = [];
 
     if (config.interval <= 0) {
-      errors.push("Recurrence interval must be greater than 0");
+      errors.push('Recurrence interval must be greater than 0');
     }
 
     if (config.endDate && config.endDate <= new Date()) {
-      errors.push("Recurrence end date must be in the future");
+      errors.push('Recurrence end date must be in the future');
     }
 
     if (config.maxOccurrences && config.maxOccurrences <= 0) {
-      errors.push("Max occurrences must be greater than 0");
+      errors.push('Max occurrences must be greater than 0');
     }
 
     if (config.type === AppointmentRecurrenceType.CUSTOM) {
       if (!config.daysOfWeek || config.daysOfWeek.length === 0) {
-        errors.push("Custom recurrence requires days of week specification");
+        errors.push('Custom recurrence requires days of week specification');
       }
     }
 
@@ -324,12 +324,12 @@ export class AppointmentPricingUtils {
     totalAmount += taxAmount;
 
     return {
-      basePrice: pricing.basePrice || { amount: 0, currency: "EUR" },
+      basePrice: pricing.basePrice || { amount: 0, currency: 'EUR' },
       discounts: pricing.discounts || [],
       taxes: pricing.taxes || [],
       totalAmount: {
         amount: Math.max(0, totalAmount), // Prevent negative amounts
-        currency: pricing.basePrice?.currency || "EUR",
+        currency: pricing.basePrice?.currency || 'EUR',
       },
       paymentStatus:
         pricing.paymentStatus || AppointmentPaymentStatus.NOT_REQUIRED,
@@ -357,7 +357,7 @@ export class AppointmentPricingUtils {
       return {
         fee: 0,
         refund: appointmentPrice,
-        reason: "Cancelled within policy - no fee",
+        reason: 'Cancelled within policy - no fee',
       };
     }
 
@@ -380,7 +380,7 @@ export class AppointmentPricingUtils {
     basePrice: number,
     demandFactor: number, // 0.5-2.0 (low to high demand)
     availabilityFactor: number, // 0.5-2.0 (high to low availability)
-    timeOfDay?: "peak" | "off-peak" | "normal",
+    timeOfDay?: 'peak' | 'off-peak' | 'normal',
   ): number {
     let price = basePrice;
 
@@ -393,7 +393,7 @@ export class AppointmentPricingUtils {
     // Apply time-of-day pricing
     const timeMultipliers = {
       peak: 1.2,
-      "off-peak": 0.8,
+      'off-peak': 0.8,
       normal: 1.0,
     };
 
@@ -425,11 +425,11 @@ export class AppointmentValidationUtils {
 
     // Time validation
     if (appointmentData.startTime >= appointmentData.endTime) {
-      errors.push("End time must be after start time");
+      errors.push('End time must be after start time');
     }
 
     if (AppointmentTimeUtils.isInPast(appointmentData.startTime)) {
-      errors.push("Appointment cannot be scheduled in the past");
+      errors.push('Appointment cannot be scheduled in the past');
     }
 
     // Duration validation (minimum 5 minutes, maximum 8 hours)
@@ -439,24 +439,24 @@ export class AppointmentValidationUtils {
     );
 
     if (duration < 5) {
-      errors.push("Appointment must be at least 5 minutes long");
+      errors.push('Appointment must be at least 5 minutes long');
     }
 
     if (duration > 480) {
-      errors.push("Appointment cannot exceed 8 hours");
+      errors.push('Appointment cannot exceed 8 hours');
     }
 
     // Required field validation
     if (!appointmentData.businessId?.trim()) {
-      errors.push("Business ID is required");
+      errors.push('Business ID is required');
     }
 
     if (!appointmentData.serviceId?.trim()) {
-      errors.push("Service ID is required");
+      errors.push('Service ID is required');
     }
 
     if (!appointmentData.calendarId?.trim()) {
-      errors.push("Calendar ID is required");
+      errors.push('Calendar ID is required');
     }
 
     // Client info validation
@@ -483,19 +483,19 @@ export class AppointmentValidationUtils {
     const errors: string[] = [];
 
     if (!clientInfo.firstName?.trim()) {
-      errors.push("Client first name is required");
+      errors.push('Client first name is required');
     }
 
     if (!clientInfo.lastName?.trim()) {
-      errors.push("Client last name is required");
+      errors.push('Client last name is required');
     }
 
     if (clientInfo.email && !this.isValidEmail(clientInfo.email)) {
-      errors.push("Invalid email format");
+      errors.push('Invalid email format');
     }
 
     if (clientInfo.phone && !this.isValidPhone(clientInfo.phone)) {
-      errors.push("Invalid phone number format");
+      errors.push('Invalid phone number format');
     }
 
     return errors;
@@ -514,7 +514,7 @@ export class AppointmentValidationUtils {
    */
   private static isValidPhone(phone: string): boolean {
     const phoneRegex = /^\+?[\d\s-()]{10,}$/;
-    return phoneRegex.test(phone.replace(/\s/g, ""));
+    return phoneRegex.test(phone.replace(/\s/g, ''));
   }
 
   /**
@@ -541,7 +541,7 @@ export class AppointmentValidationUtils {
 
     if (updateData.startTime && updateData.endTime) {
       if (new Date(updateData.startTime) >= new Date(updateData.endTime)) {
-        errors.push("End time must be after start time");
+        errors.push('End time must be after start time');
       }
     }
 
@@ -623,16 +623,16 @@ export class AppointmentNotificationUtils {
       location?: string;
     },
     reminderType: AppointmentReminderType,
-    language: string = "fr",
+    language: string = 'fr',
   ): string {
     const formatTime = (date: Date) => {
       return date.toLocaleString(language, {
-        weekday: "long",
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
       });
     };
 
@@ -645,7 +645,7 @@ export class AppointmentNotificationUtils {
           prévu le ${formatTime(appointmentData.appointmentTime)}
           chez ${appointmentData.businessName}.
 
-          ${appointmentData.location ? `Adresse: ${appointmentData.location}` : ""}
+          ${appointmentData.location ? `Adresse: ${appointmentData.location}` : ''}
 
           Cordialement,
           L'équipe ${appointmentData.businessName}
@@ -664,7 +664,7 @@ export class AppointmentNotificationUtils {
           scheduled on ${formatTime(appointmentData.appointmentTime)}
           at ${appointmentData.businessName}.
 
-          ${appointmentData.location ? `Location: ${appointmentData.location}` : ""}
+          ${appointmentData.location ? `Location: ${appointmentData.location}` : ''}
 
           Best regards,
           ${appointmentData.businessName} Team
@@ -819,46 +819,46 @@ export class AppointmentUIUtils {
   } {
     const displays = {
       [AppointmentStatus.PENDING]: {
-        label: "En attente",
+        label: 'En attente',
         color: APPOINTMENT_STATUS_COLORS[AppointmentStatus.PENDING],
-        icon: "🕐",
-        description: "Rendez-vous en attente de confirmation",
+        icon: '🕐',
+        description: 'Rendez-vous en attente de confirmation',
       },
       [AppointmentStatus.CONFIRMED]: {
-        label: "Confirmé",
+        label: 'Confirmé',
         color: APPOINTMENT_STATUS_COLORS[AppointmentStatus.CONFIRMED],
-        icon: "✅",
-        description: "Rendez-vous confirmé et planifié",
+        icon: '✅',
+        description: 'Rendez-vous confirmé et planifié',
       },
       [AppointmentStatus.IN_PROGRESS]: {
-        label: "En cours",
+        label: 'En cours',
         color: APPOINTMENT_STATUS_COLORS[AppointmentStatus.IN_PROGRESS],
-        icon: "🏃",
-        description: "Rendez-vous actuellement en cours",
+        icon: '🏃',
+        description: 'Rendez-vous actuellement en cours',
       },
       [AppointmentStatus.COMPLETED]: {
-        label: "Terminé",
+        label: 'Terminé',
         color: APPOINTMENT_STATUS_COLORS[AppointmentStatus.COMPLETED],
-        icon: "🏁",
-        description: "Rendez-vous terminé avec succès",
+        icon: '🏁',
+        description: 'Rendez-vous terminé avec succès',
       },
       [AppointmentStatus.CANCELLED]: {
-        label: "Annulé",
+        label: 'Annulé',
         color: APPOINTMENT_STATUS_COLORS[AppointmentStatus.CANCELLED],
-        icon: "❌",
-        description: "Rendez-vous annulé",
+        icon: '❌',
+        description: 'Rendez-vous annulé',
       },
       [AppointmentStatus.NO_SHOW]: {
-        label: "Absence",
+        label: 'Absence',
         color: APPOINTMENT_STATUS_COLORS[AppointmentStatus.NO_SHOW],
-        icon: "👻",
-        description: "Client non présenté",
+        icon: '👻',
+        description: 'Client non présenté',
       },
       [AppointmentStatus.RESCHEDULED]: {
-        label: "Reporté",
+        label: 'Reporté',
         color: APPOINTMENT_STATUS_COLORS[AppointmentStatus.RESCHEDULED],
-        icon: "📅",
-        description: "Rendez-vous reporté",
+        icon: '📅',
+        description: 'Rendez-vous reporté',
       },
     };
 
@@ -876,27 +876,27 @@ export class AppointmentUIUtils {
   } {
     const displays = {
       [AppointmentPriority.EMERGENCY]: {
-        label: "Urgence",
+        label: 'Urgence',
         color: APPOINTMENT_PRIORITY_COLORS[AppointmentPriority.EMERGENCY],
-        icon: "🚨",
+        icon: '🚨',
         weight: 4,
       },
       [AppointmentPriority.HIGH]: {
-        label: "Haute",
+        label: 'Haute',
         color: APPOINTMENT_PRIORITY_COLORS[AppointmentPriority.HIGH],
-        icon: "🔴",
+        icon: '🔴',
         weight: 3,
       },
       [AppointmentPriority.NORMAL]: {
-        label: "Normale",
+        label: 'Normale',
         color: APPOINTMENT_PRIORITY_COLORS[AppointmentPriority.NORMAL],
-        icon: "🔵",
+        icon: '🔵',
         weight: 2,
       },
       [AppointmentPriority.LOW]: {
-        label: "Faible",
+        label: 'Faible',
         color: APPOINTMENT_PRIORITY_COLORS[AppointmentPriority.LOW],
-        icon: "🟢",
+        icon: '🟢',
         weight: 1,
       },
     };
@@ -938,7 +938,7 @@ export class AppointmentUIUtils {
 
     return {
       id: appointment.id,
-      title: `${appointment.service?.name || "Appointment"} - ${appointment.clientInfo?.firstName} ${appointment.clientInfo?.lastName}`,
+      title: `${appointment.service?.name || 'Appointment'} - ${appointment.clientInfo?.firstName} ${appointment.clientInfo?.lastName}`,
       start: new Date(appointment.startTime),
       end: new Date(appointment.endTime),
       color: statusDisplay.color,

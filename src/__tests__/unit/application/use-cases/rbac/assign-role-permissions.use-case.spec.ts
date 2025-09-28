@@ -8,18 +8,18 @@
  * SÉCURITÉ CRITIQUE : RBAC doit être ultra-sécurisé
  */
 
-import { InsufficientPermissionsError } from "@application/exceptions/auth.exceptions";
-import { IPermissionService } from "@application/ports/permission.service.interface";
+import { InsufficientPermissionsError } from '@application/exceptions/auth.exceptions';
+import { IPermissionService } from '@application/ports/permission.service.interface';
 import {
   AssignRoleRequest,
   AssignRoleUseCase,
-} from "@application/use-cases/role-management/assign-role.use-case";
-import { RoleAssignmentContext } from "@domain/entities/role-assignment.entity";
-import { IBusinessContextRepository } from "@domain/repositories/business-context.repository.interface";
-import { IRoleAssignmentRepository } from "@domain/repositories/role-assignment.repository.interface";
-import { UserRole } from "@shared/enums/user-role.enum";
+} from '@application/use-cases/role-management/assign-role.use-case';
+import { RoleAssignmentContext } from '@domain/entities/role-assignment.entity';
+import { IBusinessContextRepository } from '@domain/repositories/business-context.repository.interface';
+import { IRoleAssignmentRepository } from '@domain/repositories/role-assignment.repository.interface';
+import { UserRole } from '@shared/enums/user-role.enum';
 
-describe("🧪 TDD - AssignRoleUseCase RBAC Permissions", () => {
+describe('🧪 TDD - AssignRoleUseCase RBAC Permissions', () => {
   let useCase: AssignRoleUseCase;
   let mockPermissionService: jest.Mocked<IPermissionService>;
   let mockRoleAssignmentRepository: jest.Mocked<IRoleAssignmentRepository>;
@@ -98,22 +98,22 @@ describe("🧪 TDD - AssignRoleUseCase RBAC Permissions", () => {
     );
   });
 
-  describe("🛡️ RBAC Permission Checks - CRITIQUE", () => {
-    it("🚨 RED - should require ASSIGN_ROLES permission before assigning role", async () => {
+  describe('🛡️ RBAC Permission Checks - CRITIQUE', () => {
+    it('🚨 RED - should require ASSIGN_ROLES permission before assigning role', async () => {
       // Given
       const request: AssignRoleRequest = {
-        userId: "target-user-id",
+        userId: 'target-user-id',
         role: UserRole.PRACTITIONER,
         context: {
-          businessId: "business-123",
+          businessId: 'business-123',
         } as RoleAssignmentContext,
-        assignedBy: "admin-user-id",
-        correlationId: "test-correlation-id",
+        assignedBy: 'admin-user-id',
+        correlationId: 'test-correlation-id',
       };
 
       // Mock business context exists
       mockBusinessContextRepository.findById.mockResolvedValueOnce({
-        id: "business-123",
+        id: 'business-123',
       } as any);
 
       // 🚨 TDD RED : Cette méthode n'est pas encore appelée dans le Use Case !
@@ -125,26 +125,26 @@ describe("🧪 TDD - AssignRoleUseCase RBAC Permissions", () => {
 
       // Then - 🎯 TDD Assertion : Ces vérifications vont échouer (RED)
       expect(mockPermissionService.requirePermission).toHaveBeenCalledWith(
-        "admin-user-id",
-        "ASSIGN_ROLES",
-        { businessId: "business-123", userId: "target-user-id" },
+        'admin-user-id',
+        'ASSIGN_ROLES',
+        { businessId: 'business-123', userId: 'target-user-id' },
       );
     });
 
-    it("🚨 RED - should verify admin can act on target role level", async () => {
+    it('🚨 RED - should verify admin can act on target role level', async () => {
       // Given
       const request: AssignRoleRequest = {
-        userId: "target-user-id",
+        userId: 'target-user-id',
         role: UserRole.BUSINESS_OWNER, // Rôle élevé
         context: {
-          businessId: "business-123",
+          businessId: 'business-123',
         } as RoleAssignmentContext,
-        assignedBy: "lower-admin-id",
-        correlationId: "test-correlation-id",
+        assignedBy: 'lower-admin-id',
+        correlationId: 'test-correlation-id',
       };
 
       mockBusinessContextRepository.findById.mockResolvedValueOnce({
-        id: "business-123",
+        id: 'business-123',
       } as any);
 
       mockPermissionService.requirePermission.mockResolvedValueOnce(undefined);
@@ -158,27 +158,27 @@ describe("🧪 TDD - AssignRoleUseCase RBAC Permissions", () => {
       );
 
       expect(mockPermissionService.canActOnRole).toHaveBeenCalledWith(
-        "lower-admin-id",
+        'lower-admin-id',
         UserRole.BUSINESS_OWNER,
-        { businessId: "business-123" },
+        { businessId: 'business-123' },
       );
     });
 
-    it("🚨 RED - should throw InsufficientPermissionsError when lacking ASSIGN_ROLES", async () => {
+    it('🚨 RED - should throw InsufficientPermissionsError when lacking ASSIGN_ROLES', async () => {
       // Given
       const request: AssignRoleRequest = {
-        userId: "target-user-id",
+        userId: 'target-user-id',
         role: UserRole.PRACTITIONER,
         context: {
-          businessId: "business-123",
+          businessId: 'business-123',
         } as RoleAssignmentContext,
-        assignedBy: "unauthorized-user-id",
-        correlationId: "test-correlation-id",
+        assignedBy: 'unauthorized-user-id',
+        correlationId: 'test-correlation-id',
       };
 
       // 🚨 TDD RED : L'exception de permission ne sera pas propagée
       mockPermissionService.requirePermission.mockRejectedValueOnce(
-        new InsufficientPermissionsError("ASSIGN_ROLES_DENIED"),
+        new InsufficientPermissionsError('ASSIGN_ROLES_DENIED'),
       );
 
       // When & Then - Le test va échouer car l'exception n'est pas propagée
@@ -187,28 +187,28 @@ describe("🧪 TDD - AssignRoleUseCase RBAC Permissions", () => {
       );
 
       expect(mockPermissionService.requirePermission).toHaveBeenCalledWith(
-        "unauthorized-user-id",
-        "ASSIGN_ROLES",
+        'unauthorized-user-id',
+        'ASSIGN_ROLES',
         expect.any(Object),
       );
     });
   });
 
-  describe("🎭 Role Hierarchy Enforcement - CRITIQUE", () => {
-    it("🚨 RED - should prevent PRACTITIONER from assigning BUSINESS_OWNER role", async () => {
+  describe('🎭 Role Hierarchy Enforcement - CRITIQUE', () => {
+    it('🚨 RED - should prevent PRACTITIONER from assigning BUSINESS_OWNER role', async () => {
       // Given
       const request: AssignRoleRequest = {
-        userId: "target-user-id",
+        userId: 'target-user-id',
         role: UserRole.BUSINESS_OWNER,
         context: {
-          businessId: "business-123",
+          businessId: 'business-123',
         } as RoleAssignmentContext,
-        assignedBy: "practitioner-user-id",
-        correlationId: "test-correlation-id",
+        assignedBy: 'practitioner-user-id',
+        correlationId: 'test-correlation-id',
       };
 
       mockBusinessContextRepository.findById.mockResolvedValueOnce({
-        id: "business-123",
+        id: 'business-123',
       } as any);
 
       mockPermissionService.requirePermission.mockResolvedValueOnce(undefined);
@@ -222,26 +222,26 @@ describe("🧪 TDD - AssignRoleUseCase RBAC Permissions", () => {
       );
 
       expect(mockPermissionService.canActOnRole).toHaveBeenCalledWith(
-        "practitioner-user-id",
+        'practitioner-user-id',
         UserRole.BUSINESS_OWNER,
-        { businessId: "business-123" },
+        { businessId: 'business-123' },
       );
     });
 
-    it("🚨 RED - should allow PLATFORM_ADMIN to assign any role", async () => {
+    it('🚨 RED - should allow PLATFORM_ADMIN to assign any role', async () => {
       // Given
       const request: AssignRoleRequest = {
-        userId: "target-user-id",
+        userId: 'target-user-id',
         role: UserRole.BUSINESS_OWNER,
         context: {
-          businessId: "business-123",
+          businessId: 'business-123',
         } as RoleAssignmentContext,
-        assignedBy: "platform-admin-id",
-        correlationId: "test-correlation-id",
+        assignedBy: 'platform-admin-id',
+        correlationId: 'test-correlation-id',
       };
 
       const mockBusinessContext = {
-        id: "business-123",
+        id: 'business-123',
         isValidContext: jest.fn().mockReturnValue(true), // Mock la validation de contexte
       };
       mockBusinessContextRepository.findById.mockResolvedValueOnce(
@@ -251,11 +251,11 @@ describe("🧪 TDD - AssignRoleUseCase RBAC Permissions", () => {
         false,
       );
       const mockSavedRoleAssignment = {
-        getId: () => "role-assignment-id",
-        getUserId: () => "target-user-id",
+        getId: () => 'role-assignment-id',
+        getUserId: () => 'target-user-id',
         getRole: () => UserRole.BUSINESS_OWNER,
-        getContext: () => ({ businessId: "business-123" }),
-        getAssignedBy: () => "platform-admin-id",
+        getContext: () => ({ businessId: 'business-123' }),
+        getAssignedBy: () => 'platform-admin-id',
         getAssignedAt: () => new Date(),
         getExpiresAt: () => undefined, // Pas d'expiration
         getNotes: () => undefined, // Pas de notes
@@ -274,35 +274,35 @@ describe("🧪 TDD - AssignRoleUseCase RBAC Permissions", () => {
 
       // Then
       expect(result.success).toBe(true);
-      expect(result.roleAssignmentId).toBe("role-assignment-id");
+      expect(result.roleAssignmentId).toBe('role-assignment-id');
       expect(mockPermissionService.canActOnRole).toHaveBeenCalledWith(
-        "platform-admin-id",
+        'platform-admin-id',
         UserRole.BUSINESS_OWNER,
-        { businessId: "business-123" },
+        { businessId: 'business-123' },
       );
     });
   });
 
-  describe("🏢 Business Context Security", () => {
-    it("🚨 RED - should verify admin has permissions in target business", async () => {
+  describe('🏢 Business Context Security', () => {
+    it('🚨 RED - should verify admin has permissions in target business', async () => {
       // Given
       const request: AssignRoleRequest = {
-        userId: "target-user-id",
+        userId: 'target-user-id',
         role: UserRole.PRACTITIONER,
         context: {
-          businessId: "foreign-business-456", // Business différent
+          businessId: 'foreign-business-456', // Business différent
         } as RoleAssignmentContext,
-        assignedBy: "business-admin-123", // Admin d'un autre business
-        correlationId: "test-correlation-id",
+        assignedBy: 'business-admin-123', // Admin d'un autre business
+        correlationId: 'test-correlation-id',
       };
 
       mockBusinessContextRepository.findById.mockResolvedValueOnce({
-        id: "foreign-business-456",
+        id: 'foreign-business-456',
       } as any);
 
       // Admin n'a pas de permissions dans ce business
       mockPermissionService.requirePermission.mockRejectedValueOnce(
-        new InsufficientPermissionsError("CROSS_BUSINESS_ASSIGN_DENIED"),
+        new InsufficientPermissionsError('CROSS_BUSINESS_ASSIGN_DENIED'),
       );
 
       // When & Then
@@ -311,28 +311,28 @@ describe("🧪 TDD - AssignRoleUseCase RBAC Permissions", () => {
       );
 
       expect(mockPermissionService.requirePermission).toHaveBeenCalledWith(
-        "business-admin-123",
-        "ASSIGN_ROLES",
-        { businessId: "foreign-business-456", userId: "target-user-id" },
+        'business-admin-123',
+        'ASSIGN_ROLES',
+        { businessId: 'foreign-business-456', userId: 'target-user-id' },
       );
     });
   });
 
-  describe("🚨 Error Handling & Logging", () => {
-    it("🚨 RED - should log security violations with full context", async () => {
+  describe('🚨 Error Handling & Logging', () => {
+    it('🚨 RED - should log security violations with full context', async () => {
       // Given
       const request: AssignRoleRequest = {
-        userId: "target-user-id",
+        userId: 'target-user-id',
         role: UserRole.BUSINESS_OWNER,
         context: {
-          businessId: "business-123",
+          businessId: 'business-123',
         } as RoleAssignmentContext,
-        assignedBy: "malicious-user-id",
-        correlationId: "test-correlation-id",
+        assignedBy: 'malicious-user-id',
+        correlationId: 'test-correlation-id',
       };
 
       const securityError = new InsufficientPermissionsError(
-        "Attempt to assign elevated role without permissions",
+        'Attempt to assign elevated role without permissions',
       );
 
       mockPermissionService.requirePermission.mockRejectedValueOnce(

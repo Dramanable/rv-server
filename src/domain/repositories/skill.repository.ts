@@ -1,5 +1,5 @@
-import { BusinessId } from "../value-objects/business-id.value-object";
-import { Skill } from "../entities/skill.entity";
+import { BusinessId } from '../value-objects/business-id.value-object';
+import { Skill } from '../entities/skill.entity';
 
 /**
  * 🎯 Skill Repository Interface
@@ -82,8 +82,8 @@ export interface ISkillRepository {
     isActive?: boolean;
     page: number;
     limit: number;
-    sortBy?: "name" | "category" | "createdAt" | "updatedAt";
-    sortOrder?: "asc" | "desc";
+    sortBy?: 'name' | 'category' | 'createdAt' | 'updatedAt';
+    sortOrder?: 'asc' | 'desc';
   }): Promise<{
     skills: Skill[];
     total: number;

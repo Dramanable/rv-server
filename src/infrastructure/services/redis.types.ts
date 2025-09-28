@@ -2,7 +2,7 @@
  * 🔧 Types Redis - Configuration stricte pour éviter any
  */
 
-import type { Redis } from "ioredis";
+import type { Redis } from 'ioredis';
 
 export interface RedisConfig {
   host: string;

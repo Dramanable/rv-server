@@ -1,15 +1,15 @@
-import { StaffRole } from "../../shared/enums/staff-role.enum";
-import { BusinessId } from "../value-objects/business-id.value-object";
-import { Email } from "../value-objects/email.value-object";
-import { FileUrl } from "../value-objects/file-url.value-object";
-import { Phone } from "../value-objects/phone.value-object";
-import { UserId } from "../value-objects/user-id.value-object";
+import { StaffRole } from '../../shared/enums/staff-role.enum';
+import { BusinessId } from '../value-objects/business-id.value-object';
+import { Email } from '../value-objects/email.value-object';
+import { FileUrl } from '../value-objects/file-url.value-object';
+import { Phone } from '../value-objects/phone.value-object';
+import { UserId } from '../value-objects/user-id.value-object';
 
 export enum StaffStatus {
-  ACTIVE = "ACTIVE",
-  INACTIVE = "INACTIVE",
-  ON_LEAVE = "ON_LEAVE",
-  SUSPENDED = "SUSPENDED",
+  ACTIVE = 'ACTIVE',
+  INACTIVE = 'INACTIVE',
+  ON_LEAVE = 'ON_LEAVE',
+  SUSPENDED = 'SUSPENDED',
 }
 
 export interface StaffProfile {
@@ -122,7 +122,7 @@ export class Staff {
   }
 
   get fullName(): string {
-    return `${this._profile.title || ""} ${this._profile.firstName} ${this._profile.lastName}`.trim();
+    return `${this._profile.title || ''} ${this._profile.firstName} ${this._profile.lastName}`.trim();
   }
 
   // Factory method
@@ -195,7 +195,7 @@ export class Staff {
       case StaffRole.SITE_MANAGER:
       case StaffRole.DEPARTMENT_HEAD:
       case StaffRole.TEAM_LEAD:
-        return !permission.includes("owner"); // Toutes sauf propriétaire
+        return !permission.includes('owner'); // Toutes sauf propriétaire
       case StaffRole.SENIOR_DOCTOR:
       case StaffRole.DOCTOR:
       case StaffRole.SENIOR_DENTIST:
@@ -203,22 +203,22 @@ export class Staff {
       case StaffRole.SENIOR_LAWYER:
       case StaffRole.LAWYER:
         return [
-          "view_appointments",
-          "manage_own_appointments",
-          "view_clients",
+          'view_appointments',
+          'manage_own_appointments',
+          'view_clients',
         ].includes(permission);
       case StaffRole.SENIOR_ASSISTANT:
       case StaffRole.ASSISTANT:
         return [
-          "view_appointments",
-          "create_appointments",
-          "view_clients",
+          'view_appointments',
+          'create_appointments',
+          'view_clients',
         ].includes(permission);
       case StaffRole.RECEPTIONIST:
         return [
-          "view_appointments",
-          "create_appointments",
-          "manage_clients",
+          'view_appointments',
+          'create_appointments',
+          'manage_clients',
         ].includes(permission);
       default:
         return false;
@@ -318,7 +318,7 @@ export class Staff {
     return this._status !== StaffStatus.ACTIVE;
   }
 
-  public getPersonalBookingRules(): StaffCalendarIntegration["personalBookingRules"] {
+  public getPersonalBookingRules(): StaffCalendarIntegration['personalBookingRules'] {
     return this._calendarIntegration?.personalBookingRules;
   }
 }

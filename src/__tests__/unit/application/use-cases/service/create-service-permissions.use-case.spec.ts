@@ -13,18 +13,18 @@
  * 3. REFACTOR : Amélioration du code tout en gardant les tests verts
  */
 
-import { InsufficientPermissionsError } from "@application/exceptions/auth.exceptions";
-import { I18nService } from "@application/ports/i18n.port";
-import { Logger } from "@application/ports/logger.port";
-import { IPermissionService } from "@application/ports/permission.service.interface";
+import { InsufficientPermissionsError } from '@application/exceptions/auth.exceptions';
+import { I18nService } from '@application/ports/i18n.port';
+import { Logger } from '@application/ports/logger.port';
+import { IPermissionService } from '@application/ports/permission.service.interface';
 import {
   CreateServiceRequest,
   CreateServiceUseCase,
-} from "@application/use-cases/service/create-service.use-case";
-import { BusinessRepository } from "@domain/repositories/business.repository.interface";
-import { ServiceRepository } from "@domain/repositories/service.repository.interface";
+} from '@application/use-cases/service/create-service.use-case';
+import { BusinessRepository } from '@domain/repositories/business.repository.interface';
+import { ServiceRepository } from '@domain/repositories/service.repository.interface';
 
-describe("CreateServiceUseCase - TDD Permission Enforcement", () => {
+describe('CreateServiceUseCase - TDD Permission Enforcement', () => {
   let createServiceUseCase: CreateServiceUseCase;
   let mockPermissionService: jest.Mocked<IPermissionService>;
   let mockServiceRepository: jest.Mocked<ServiceRepository>;
@@ -89,7 +89,7 @@ describe("CreateServiceUseCase - TDD Permission Enforcement", () => {
     } as unknown as jest.Mocked<Logger>;
 
     mockI18n = {
-      t: jest.fn().mockReturnValue("mocked translation"),
+      t: jest.fn().mockReturnValue('mocked translation'),
     } as unknown as jest.Mocked<I18nService>;
 
     // Instancier le Use Case avec le constructeur complet (5 arguments)
@@ -102,19 +102,19 @@ describe("CreateServiceUseCase - TDD Permission Enforcement", () => {
     );
   });
 
-  describe("🚨 TDD RED Phase - Permission Enforcement Tests", () => {
-    it("should enforce business permissions for service creation", async () => {
+  describe('🚨 TDD RED Phase - Permission Enforcement Tests', () => {
+    it('should enforce business permissions for service creation', async () => {
       // Given - Données de test valides avec UUID corrects selon CreateServiceRequest
       const request: CreateServiceRequest = {
-        requestingUserId: "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-        businessId: "f47ac10b-58cc-4372-a567-0e02b2c3d480",
-        name: "Professional Service",
-        description: "A service for professionals",
-        serviceTypeIds: ["f47ac10b-58cc-4372-a567-0e02b2c3d481"],
+        requestingUserId: 'f47ac10b-58cc-4372-a567-0e02b2c3d479',
+        businessId: 'f47ac10b-58cc-4372-a567-0e02b2c3d480',
+        name: 'Professional Service',
+        description: 'A service for professionals',
+        serviceTypeIds: ['f47ac10b-58cc-4372-a567-0e02b2c3d481'],
         duration: 60,
         price: {
           amount: 80.0,
-          currency: "EUR",
+          currency: 'EUR',
         },
         settings: {
           isOnlineBookingEnabled: true,
@@ -125,9 +125,9 @@ describe("CreateServiceUseCase - TDD Permission Enforcement", () => {
 
       // Mock business repository
       const mockBusiness = {
-        id: "f47ac10b-58cc-4372-a567-0e02b2c3d480",
-        name: "Test Business",
-        ownerId: "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+        id: 'f47ac10b-58cc-4372-a567-0e02b2c3d480',
+        name: 'Test Business',
+        ownerId: 'f47ac10b-58cc-4372-a567-0e02b2c3d479',
       } as any;
 
       mockBusinessRepository.findById.mockResolvedValueOnce(mockBusiness);
@@ -136,8 +136,8 @@ describe("CreateServiceUseCase - TDD Permission Enforcement", () => {
       // ne sont pas encore vérifiées avec IPermissionService !
       mockPermissionService.requirePermission.mockRejectedValueOnce(
         new InsufficientPermissionsError(
-          "Insufficient permissions to create service",
-          { businessId: "f47ac10b-58cc-4372-a567-0e02b2c3d480" },
+          'Insufficient permissions to create service',
+          { businessId: 'f47ac10b-58cc-4372-a567-0e02b2c3d480' },
         ),
       );
 
@@ -147,27 +147,27 @@ describe("CreateServiceUseCase - TDD Permission Enforcement", () => {
       );
 
       expect(mockPermissionService.requirePermission).toHaveBeenCalledWith(
-        "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-        "CREATE_SERVICE",
+        'f47ac10b-58cc-4372-a567-0e02b2c3d479',
+        'CREATE_SERVICE',
         {
-          businessId: "f47ac10b-58cc-4372-a567-0e02b2c3d480",
-          targetResource: "SERVICE",
+          businessId: 'f47ac10b-58cc-4372-a567-0e02b2c3d480',
+          targetResource: 'SERVICE',
         },
       );
     });
 
-    it("should reject service creation by non-business-owner without permissions", async () => {
+    it('should reject service creation by non-business-owner without permissions', async () => {
       // Given
       const request: CreateServiceRequest = {
-        requestingUserId: "f47ac10b-58cc-4372-a567-0e02b2c3d484",
-        businessId: "f47ac10b-58cc-4372-a567-0e02b2c3d480",
-        name: "Unauthorized Service",
-        description: "Service by unauthorized user",
-        serviceTypeIds: ["f47ac10b-58cc-4372-a567-0e02b2c3d481"],
+        requestingUserId: 'f47ac10b-58cc-4372-a567-0e02b2c3d484',
+        businessId: 'f47ac10b-58cc-4372-a567-0e02b2c3d480',
+        name: 'Unauthorized Service',
+        description: 'Service by unauthorized user',
+        serviceTypeIds: ['f47ac10b-58cc-4372-a567-0e02b2c3d481'],
         duration: 30,
         price: {
           amount: 50.0,
-          currency: "EUR",
+          currency: 'EUR',
         },
         settings: {
           isOnlineBookingEnabled: false,
@@ -176,9 +176,9 @@ describe("CreateServiceUseCase - TDD Permission Enforcement", () => {
       };
 
       const mockBusiness = {
-        id: "f47ac10b-58cc-4372-a567-0e02b2c3d480",
-        name: "Target Business",
-        ownerId: "f47ac10b-58cc-4372-a567-0e02b2c3d483",
+        id: 'f47ac10b-58cc-4372-a567-0e02b2c3d480',
+        name: 'Target Business',
+        ownerId: 'f47ac10b-58cc-4372-a567-0e02b2c3d483',
       } as any;
 
       mockBusinessRepository.findById.mockResolvedValueOnce(mockBusiness);
@@ -187,8 +187,8 @@ describe("CreateServiceUseCase - TDD Permission Enforcement", () => {
       // avec IPermissionService.requirePermission !
       mockPermissionService.requirePermission.mockRejectedValueOnce(
         new InsufficientPermissionsError(
-          "User does not have permission to create services for this business",
-          { businessId: "f47ac10b-58cc-4372-a567-0e02b2c3d480" },
+          'User does not have permission to create services for this business',
+          { businessId: 'f47ac10b-58cc-4372-a567-0e02b2c3d480' },
         ),
       );
 
@@ -198,27 +198,27 @@ describe("CreateServiceUseCase - TDD Permission Enforcement", () => {
       );
 
       expect(mockPermissionService.requirePermission).toHaveBeenCalledWith(
-        "f47ac10b-58cc-4372-a567-0e02b2c3d484",
-        "CREATE_SERVICE",
+        'f47ac10b-58cc-4372-a567-0e02b2c3d484',
+        'CREATE_SERVICE',
         {
-          businessId: "f47ac10b-58cc-4372-a567-0e02b2c3d480",
-          targetResource: "SERVICE",
+          businessId: 'f47ac10b-58cc-4372-a567-0e02b2c3d480',
+          targetResource: 'SERVICE',
         },
       );
     });
 
-    it("should pass business context validation for proper permissions", async () => {
+    it('should pass business context validation for proper permissions', async () => {
       // Given
       const request: CreateServiceRequest = {
-        requestingUserId: "f47ac10b-58cc-4372-a567-0e02b2c3d486",
-        businessId: "f47ac10b-58cc-4372-a567-0e02b2c3d480",
-        name: "Valid Service",
-        description: "Service with proper permissions",
-        serviceTypeIds: ["f47ac10b-58cc-4372-a567-0e02b2c3d481"],
+        requestingUserId: 'f47ac10b-58cc-4372-a567-0e02b2c3d486',
+        businessId: 'f47ac10b-58cc-4372-a567-0e02b2c3d480',
+        name: 'Valid Service',
+        description: 'Service with proper permissions',
+        serviceTypeIds: ['f47ac10b-58cc-4372-a567-0e02b2c3d481'],
         duration: 45,
         price: {
           amount: 75.0,
-          currency: "EUR",
+          currency: 'EUR',
         },
         settings: {
           isOnlineBookingEnabled: true,
@@ -228,16 +228,16 @@ describe("CreateServiceUseCase - TDD Permission Enforcement", () => {
       };
 
       const mockBusiness = {
-        id: "f47ac10b-58cc-4372-a567-0e02b2c3d480",
-        name: "Test Business",
-        ownerId: "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+        id: 'f47ac10b-58cc-4372-a567-0e02b2c3d480',
+        name: 'Test Business',
+        ownerId: 'f47ac10b-58cc-4372-a567-0e02b2c3d479',
       } as any;
 
       mockBusinessRepository.findById.mockResolvedValueOnce(mockBusiness);
       mockServiceRepository.save.mockResolvedValueOnce({
-        id: { getValue: () => "f47ac10b-58cc-4372-a567-0e02b2c3d487" },
-        businessId: { getValue: () => "f47ac10b-58cc-4372-a567-0e02b2c3d480" },
-        name: "Test Service",
+        id: { getValue: () => 'f47ac10b-58cc-4372-a567-0e02b2c3d487' },
+        businessId: { getValue: () => 'f47ac10b-58cc-4372-a567-0e02b2c3d480' },
+        name: 'Test Service',
       } as any);
 
       mockPermissionService.requirePermission.mockResolvedValueOnce(undefined);
@@ -247,42 +247,42 @@ describe("CreateServiceUseCase - TDD Permission Enforcement", () => {
 
       // Then - Vérifier que le contexte business est passé correctement
       expect(mockPermissionService.requirePermission).toHaveBeenCalledWith(
-        "f47ac10b-58cc-4372-a567-0e02b2c3d486",
-        "CREATE_SERVICE",
+        'f47ac10b-58cc-4372-a567-0e02b2c3d486',
+        'CREATE_SERVICE',
         {
-          businessId: "f47ac10b-58cc-4372-a567-0e02b2c3d480",
-          targetResource: "SERVICE",
+          businessId: 'f47ac10b-58cc-4372-a567-0e02b2c3d480',
+          targetResource: 'SERVICE',
         },
       );
     });
 
-    it("should handle permission errors correctly", async () => {
+    it('should handle permission errors correctly', async () => {
       // Given
       const request: CreateServiceRequest = {
-        requestingUserId: "f47ac10b-58cc-4372-a567-0e02b2c3d488",
-        businessId: "f47ac10b-58cc-4372-a567-0e02b2c3d480",
-        name: "Error Test Service",
-        description: "Service to test error handling",
-        serviceTypeIds: ["f47ac10b-58cc-4372-a567-0e02b2c3d481"],
+        requestingUserId: 'f47ac10b-58cc-4372-a567-0e02b2c3d488',
+        businessId: 'f47ac10b-58cc-4372-a567-0e02b2c3d480',
+        name: 'Error Test Service',
+        description: 'Service to test error handling',
+        serviceTypeIds: ['f47ac10b-58cc-4372-a567-0e02b2c3d481'],
         duration: 60,
         price: {
           amount: 100.0,
-          currency: "EUR",
+          currency: 'EUR',
         },
         isActive: true,
       };
 
       const mockBusiness = {
-        id: "f47ac10b-58cc-4372-a567-0e02b2c3d480",
-        name: "Test Business",
-        ownerId: "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+        id: 'f47ac10b-58cc-4372-a567-0e02b2c3d480',
+        name: 'Test Business',
+        ownerId: 'f47ac10b-58cc-4372-a567-0e02b2c3d479',
       } as any;
 
       mockBusinessRepository.findById.mockResolvedValueOnce(mockBusiness);
 
       const permissionError = new InsufficientPermissionsError(
-        "User does not have CREATE_SERVICE permission",
-        { businessId: "f47ac10b-58cc-4372-a567-0e02b2c3d480" },
+        'User does not have CREATE_SERVICE permission',
+        { businessId: 'f47ac10b-58cc-4372-a567-0e02b2c3d480' },
       );
 
       mockPermissionService.requirePermission.mockRejectedValueOnce(
@@ -295,26 +295,26 @@ describe("CreateServiceUseCase - TDD Permission Enforcement", () => {
       );
 
       expect(mockPermissionService.requirePermission).toHaveBeenCalledWith(
-        "f47ac10b-58cc-4372-a567-0e02b2c3d488",
-        "CREATE_SERVICE",
+        'f47ac10b-58cc-4372-a567-0e02b2c3d488',
+        'CREATE_SERVICE',
         {
-          businessId: "f47ac10b-58cc-4372-a567-0e02b2c3d480",
-          targetResource: "SERVICE",
+          businessId: 'f47ac10b-58cc-4372-a567-0e02b2c3d480',
+          targetResource: 'SERVICE',
         },
       );
     });
   });
 
-  describe("✅ TDD GREEN Phase - Placeholder for Implementation Tests", () => {
-    it("should be implemented after CreateServiceUseCase refactoring", () => {
+  describe('✅ TDD GREEN Phase - Placeholder for Implementation Tests', () => {
+    it('should be implemented after CreateServiceUseCase refactoring', () => {
       // 📝 NOTE : Ces tests passeront au VERT une fois que CreateServiceUseCase
       // aura été refactorisé pour utiliser IPermissionService.requirePermission()
       expect(mockPermissionService).toBeDefined();
     });
   });
 
-  describe("🔵 TDD REFACTOR Phase - Enhanced Permission Logic Tests", () => {
-    it("should be implemented after GREEN phase completion", () => {
+  describe('🔵 TDD REFACTOR Phase - Enhanced Permission Logic Tests', () => {
+    it('should be implemented after GREEN phase completion', () => {
       // 📝 NOTE : Cette phase interviendra après que tous les tests RED
       // soient passés au VERT avec l'implémentation de base
       expect(true).toBe(true);

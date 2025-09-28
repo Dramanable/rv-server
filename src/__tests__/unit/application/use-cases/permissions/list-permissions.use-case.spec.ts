@@ -27,6 +27,7 @@ describe('ListPermissionsUseCase', () => {
       const request = {
         requestingUserId: 'user-123',
         correlationId: 'req-123',
+        timestamp: new Date(),
       };
 
       const permissions = [
@@ -260,6 +261,7 @@ describe('ListPermissionsUseCase', () => {
       const request = {
         requestingUserId: 'user-123',
         correlationId: 'req-123',
+        timestamp: new Date(),
       };
 
       mockPermissionRepository.findAll.mockRejectedValue(

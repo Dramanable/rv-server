@@ -1,15 +1,15 @@
 // 🧪 ListServiceTypesUseCase - Test Spec avec TDD Strict
 // Suit le pattern Clean Architecture + TDD de l'équipe
 
-import { ApplicationValidationError } from "@application/exceptions/application.exceptions";
-import { I18nService } from "@application/ports/i18n.port";
-import { Logger } from "@application/ports/logger.port";
-import { ListServiceTypesUseCase } from "@application/use-cases/service-types/list-service-types.use-case";
-import { ServiceType } from "@domain/entities/service-type.entity";
-import { IServiceTypeRepository } from "@domain/repositories/service-type.repository";
-import { BusinessId } from "@domain/value-objects/business-id.value-object";
+import { ApplicationValidationError } from '@application/exceptions/application.exceptions';
+import { I18nService } from '@application/ports/i18n.port';
+import { Logger } from '@application/ports/logger.port';
+import { ListServiceTypesUseCase } from '@application/use-cases/service-types/list-service-types.use-case';
+import { ServiceType } from '@domain/entities/service-type.entity';
+import { IServiceTypeRepository } from '@domain/repositories/service-type.repository';
+import { BusinessId } from '@domain/value-objects/business-id.value-object';
 
-describe("ListServiceTypesUseCase", () => {
+describe('ListServiceTypesUseCase', () => {
   let useCase: ListServiceTypesUseCase;
   let mockRepository: jest.Mocked<IServiceTypeRepository>;
   let mockLogger: jest.Mocked<Logger>;
@@ -17,10 +17,10 @@ describe("ListServiceTypesUseCase", () => {
 
   // Test data constants with valid UUIDs
   const validBusinessId = BusinessId.fromString(
-    "550e8400-e29b-41d4-a716-446655440000",
+    '550e8400-e29b-41d4-a716-446655440000',
   );
-  const validRequestingUserId = "550e8400-e29b-41d4-a716-446655440001";
-  const correlationId = "550e8400-e29b-41d4-a716-446655440002";
+  const validRequestingUserId = '550e8400-e29b-41d4-a716-446655440001';
+  const correlationId = '550e8400-e29b-41d4-a716-446655440002';
 
   beforeEach(() => {
     // Arrange: Mock dependencies
@@ -64,22 +64,22 @@ describe("ListServiceTypesUseCase", () => {
     useCase = new ListServiceTypesUseCase(mockRepository, mockLogger, mockI18n);
   });
 
-  describe("🎯 Use Case Execution", () => {
-    it("should list service types successfully", async () => {
+  describe('🎯 Use Case Execution', () => {
+    it('should list service types successfully', async () => {
       // Arrange
       const serviceTypes = [
         ServiceType.create({
           businessId: validBusinessId,
-          name: "Standard Appointment",
-          code: "STANDARD",
-          description: "Standard appointment type",
+          name: 'Standard Appointment',
+          code: 'STANDARD',
+          description: 'Standard appointment type',
           createdBy: validRequestingUserId,
         }),
         ServiceType.create({
           businessId: validBusinessId,
-          name: "Emergency Appointment",
-          code: "EMERGENCY",
-          description: "Emergency appointment type",
+          name: 'Emergency Appointment',
+          code: 'EMERGENCY',
+          description: 'Emergency appointment type',
           createdBy: validRequestingUserId,
         }),
       ];
@@ -97,12 +97,12 @@ describe("ListServiceTypesUseCase", () => {
 
       // Assert
       expect(result.serviceTypes).toHaveLength(2);
-      expect(result.serviceTypes[0].getName()).toBe("Standard Appointment");
-      expect(result.serviceTypes[1].getName()).toBe("Emergency Appointment");
+      expect(result.serviceTypes[0].getName()).toBe('Standard Appointment');
+      expect(result.serviceTypes[1].getName()).toBe('Emergency Appointment');
       expect(result.totalCount).toBe(2);
     });
 
-    it("should return empty list when no service types exist", async () => {
+    it('should return empty list when no service types exist', async () => {
       // Arrange
       mockRepository.findByBusinessId.mockResolvedValue([]);
 
@@ -120,14 +120,14 @@ describe("ListServiceTypesUseCase", () => {
       expect(result.totalCount).toBe(0);
     });
 
-    it("should filter only active service types when specified", async () => {
+    it('should filter only active service types when specified', async () => {
       // Arrange
       const serviceTypes = [
         ServiceType.create({
           businessId: validBusinessId,
-          name: "Active Type",
-          code: "ACTIVE",
-          description: "Active type",
+          name: 'Active Type',
+          code: 'ACTIVE',
+          description: 'Active type',
           createdBy: validRequestingUserId,
         }),
       ];
@@ -135,9 +135,9 @@ describe("ListServiceTypesUseCase", () => {
       // Make one inactive
       const inactiveType = ServiceType.create({
         businessId: validBusinessId,
-        name: "Inactive Type",
-        code: "INACTIVE",
-        description: "Inactive type",
+        name: 'Inactive Type',
+        code: 'INACTIVE',
+        description: 'Inactive type',
         createdBy: validRequestingUserId,
       });
       inactiveType.deactivate(validRequestingUserId);
@@ -161,16 +161,16 @@ describe("ListServiceTypesUseCase", () => {
 
       // Assert
       expect(result.serviceTypes).toHaveLength(1);
-      expect(result.serviceTypes[0].getName()).toBe("Active Type");
+      expect(result.serviceTypes[0].getName()).toBe('Active Type');
       expect(result.totalCount).toBe(1);
     });
   });
 
-  describe("🔍 Input Validation", () => {
-    it("should throw error for invalid business ID", async () => {
+  describe('🔍 Input Validation', () => {
+    it('should throw error for invalid business ID', async () => {
       // Arrange
       const request = {
-        businessId: "invalid-uuid" as any,
+        businessId: 'invalid-uuid' as any,
         requestingUserId: validRequestingUserId,
         correlationId,
       };
@@ -181,11 +181,11 @@ describe("ListServiceTypesUseCase", () => {
       );
     });
 
-    it("should throw error for empty requesting user ID", async () => {
+    it('should throw error for empty requesting user ID', async () => {
       // Arrange
       const request = {
         businessId: validBusinessId,
-        requestingUserId: "",
+        requestingUserId: '',
         correlationId,
       };
 
@@ -195,12 +195,12 @@ describe("ListServiceTypesUseCase", () => {
       );
     });
 
-    it("should throw error for empty correlation ID", async () => {
+    it('should throw error for empty correlation ID', async () => {
       // Arrange
       const request = {
         businessId: validBusinessId,
         requestingUserId: validRequestingUserId,
-        correlationId: "",
+        correlationId: '',
       };
 
       // Act & Assert
@@ -210,8 +210,8 @@ describe("ListServiceTypesUseCase", () => {
     });
   });
 
-  describe("📊 Logging & Audit", () => {
-    it("should log successful retrieval", async () => {
+  describe('📊 Logging & Audit', () => {
+    it('should log successful retrieval', async () => {
       // Arrange
       mockRepository.findByBusinessId.mockResolvedValue([]);
 
@@ -226,7 +226,7 @@ describe("ListServiceTypesUseCase", () => {
 
       // Assert
       expect(mockLogger.info).toHaveBeenCalledWith(
-        "Listing service types for business",
+        'Listing service types for business',
         {
           businessId: validBusinessId.getValue(),
           requestingUserId: validRequestingUserId,
@@ -235,14 +235,14 @@ describe("ListServiceTypesUseCase", () => {
       );
     });
 
-    it("should log successful completion with count", async () => {
+    it('should log successful completion with count', async () => {
       // Arrange
       const serviceTypes = [
         ServiceType.create({
           businessId: validBusinessId,
-          name: "Test Type",
-          code: "TEST",
-          description: "Test type",
+          name: 'Test Type',
+          code: 'TEST',
+          description: 'Test type',
           createdBy: validRequestingUserId,
         }),
       ];
@@ -260,7 +260,7 @@ describe("ListServiceTypesUseCase", () => {
 
       // Assert
       expect(mockLogger.info).toHaveBeenCalledWith(
-        "Service types listed successfully",
+        'Service types listed successfully',
         {
           businessId: validBusinessId.getValue(),
           count: 1,
@@ -269,9 +269,9 @@ describe("ListServiceTypesUseCase", () => {
       );
     });
 
-    it("should log repository errors", async () => {
+    it('should log repository errors', async () => {
       // Arrange
-      const error = new Error("Repository error");
+      const error = new Error('Repository error');
       mockRepository.findByBusinessId.mockRejectedValue(error);
 
       const request = {
@@ -283,7 +283,7 @@ describe("ListServiceTypesUseCase", () => {
       // Act & Assert
       await expect(useCase.execute(request)).rejects.toThrow(error);
       expect(mockLogger.error).toHaveBeenCalledWith(
-        "Failed to list service types",
+        'Failed to list service types',
         error,
         {
           businessId: validBusinessId.getValue(),
@@ -294,8 +294,8 @@ describe("ListServiceTypesUseCase", () => {
     });
   });
 
-  describe("🌐 Repository Interaction", () => {
-    it("should call repository with correct business ID", async () => {
+  describe('🌐 Repository Interaction', () => {
+    it('should call repository with correct business ID', async () => {
       // Arrange
       mockRepository.findByBusinessId.mockResolvedValue([]);
 
@@ -314,9 +314,9 @@ describe("ListServiceTypesUseCase", () => {
       );
     });
 
-    it("should handle repository errors gracefully", async () => {
+    it('should handle repository errors gracefully', async () => {
       // Arrange
-      const repositoryError = new Error("Database connection failed");
+      const repositoryError = new Error('Database connection failed');
       mockRepository.findByBusinessId.mockRejectedValue(repositoryError);
 
       const request = {
@@ -330,8 +330,8 @@ describe("ListServiceTypesUseCase", () => {
     });
   });
 
-  describe("🔄 Edge Cases", () => {
-    it("should handle null response from repository", async () => {
+  describe('🔄 Edge Cases', () => {
+    it('should handle null response from repository', async () => {
       // Arrange
       mockRepository.findByBusinessId.mockResolvedValue(null as any);
 
@@ -349,7 +349,7 @@ describe("ListServiceTypesUseCase", () => {
       expect(result.totalCount).toBe(0);
     });
 
-    it("should handle undefined response from repository", async () => {
+    it('should handle undefined response from repository', async () => {
       // Arrange
       mockRepository.findByBusinessId.mockResolvedValue(undefined as any);
 
@@ -367,13 +367,13 @@ describe("ListServiceTypesUseCase", () => {
       expect(result.totalCount).toBe(0);
     });
 
-    it("should handle service types with missing data gracefully", async () => {
+    it('should handle service types with missing data gracefully', async () => {
       // Arrange
       const serviceType = ServiceType.create({
         businessId: validBusinessId,
-        name: "Test Type",
-        code: "TEST",
-        description: "Test type",
+        name: 'Test Type',
+        code: 'TEST',
+        description: 'Test type',
         createdBy: validRequestingUserId,
       });
 
@@ -390,7 +390,7 @@ describe("ListServiceTypesUseCase", () => {
 
       // Assert
       expect(result.serviceTypes).toHaveLength(1);
-      expect(result.serviceTypes[0].getName()).toBe("Test Type");
+      expect(result.serviceTypes[0].getName()).toBe('Test Type');
       expect(result.totalCount).toBe(1);
     });
   });

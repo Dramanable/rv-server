@@ -5,17 +5,17 @@
  * Couche Application - Tests d'orchestration métier
  */
 
-import { ListStaffUseCase } from "@application/use-cases/staff/list-staff.use-case";
-import { Staff } from "@domain/entities/staff.entity";
-import { BusinessId } from "@domain/value-objects/business-id.value-object";
-import { StaffRole } from "@shared/enums/staff-role.enum";
-import { ApplicationValidationError } from "../../../../../application/exceptions/application.exceptions";
-import { I18nService } from "../../../../../application/ports/i18n.port";
-import { Logger } from "../../../../../application/ports/logger.port";
-import { IPermissionService } from "../../../../../application/ports/permission.service.interface";
-import { StaffRepository } from "../../../../../domain/repositories/staff.repository.interface";
+import { ListStaffUseCase } from '@application/use-cases/staff/list-staff.use-case';
+import { Staff } from '@domain/entities/staff.entity';
+import { BusinessId } from '@domain/value-objects/business-id.value-object';
+import { StaffRole } from '@shared/enums/staff-role.enum';
+import { ApplicationValidationError } from '../../../../../application/exceptions/application.exceptions';
+import { I18nService } from '../../../../../application/ports/i18n.port';
+import { Logger } from '../../../../../application/ports/logger.port';
+import { IPermissionService } from '../../../../../application/ports/permission.service.interface';
+import { StaffRepository } from '../../../../../domain/repositories/staff.repository.interface';
 
-describe("ListStaffUseCase", () => {
+describe('ListStaffUseCase', () => {
   let useCase: ListStaffUseCase;
   let mockStaffRepository: jest.Mocked<StaffRepository>;
   let mockPermissionService: jest.Mocked<IPermissionService>;
@@ -23,25 +23,25 @@ describe("ListStaffUseCase", () => {
   let mockI18n: jest.Mocked<I18nService>;
 
   const mockStaff1 = Staff.create({
-    businessId: BusinessId.create("550e8400-e29b-41d4-a716-446655440000"),
+    businessId: BusinessId.create('550e8400-e29b-41d4-a716-446655440000'),
     profile: {
-      firstName: "John",
-      lastName: "Doe",
-      specialization: "General Medicine",
+      firstName: 'John',
+      lastName: 'Doe',
+      specialization: 'General Medicine',
     },
     role: StaffRole.DOCTOR,
-    email: "john.doe@example.com",
+    email: 'john.doe@example.com',
   });
 
   const mockStaff2 = Staff.create({
-    businessId: BusinessId.create("550e8400-e29b-41d4-a716-446655440000"),
+    businessId: BusinessId.create('550e8400-e29b-41d4-a716-446655440000'),
     profile: {
-      firstName: "Jane",
-      lastName: "Smith",
-      specialization: "Dentistry",
+      firstName: 'Jane',
+      lastName: 'Smith',
+      specialization: 'Dentistry',
     },
     role: StaffRole.DENTIST,
-    email: "jane.smith@example.com",
+    email: 'jane.smith@example.com',
   });
 
   const mockStaffList = [mockStaff1, mockStaff2];
@@ -97,12 +97,12 @@ describe("ListStaffUseCase", () => {
     );
   });
 
-  describe("Parameter validation", () => {
-    it("should throw ApplicationValidationError when requestingUserId is missing", async () => {
+  describe('Parameter validation', () => {
+    it('should throw ApplicationValidationError when requestingUserId is missing', async () => {
       const request = {
-        requestingUserId: "",
+        requestingUserId: '',
         pagination: { page: 1, limit: 10 },
-        sorting: { sortBy: "createdAt", sortOrder: "desc" as const },
+        sorting: { sortBy: 'createdAt', sortOrder: 'desc' as const },
         filters: {},
       };
 
@@ -111,11 +111,11 @@ describe("ListStaffUseCase", () => {
       );
     });
 
-    it("should throw ApplicationValidationError when page is less than 1", async () => {
+    it('should throw ApplicationValidationError when page is less than 1', async () => {
       const request = {
-        requestingUserId: "550e8400-e29b-41d4-a716-446655440001",
+        requestingUserId: '550e8400-e29b-41d4-a716-446655440001',
         pagination: { page: 0, limit: 10 },
-        sorting: { sortBy: "createdAt", sortOrder: "desc" as const },
+        sorting: { sortBy: 'createdAt', sortOrder: 'desc' as const },
         filters: {},
       };
 
@@ -124,11 +124,11 @@ describe("ListStaffUseCase", () => {
       );
     });
 
-    it("should throw ApplicationValidationError when limit exceeds maximum", async () => {
+    it('should throw ApplicationValidationError when limit exceeds maximum', async () => {
       const request = {
-        requestingUserId: "550e8400-e29b-41d4-a716-446655440001",
+        requestingUserId: '550e8400-e29b-41d4-a716-446655440001',
         pagination: { page: 1, limit: 150 },
-        sorting: { sortBy: "createdAt", sortOrder: "desc" as const },
+        sorting: { sortBy: 'createdAt', sortOrder: 'desc' as const },
         filters: {},
       };
 
@@ -137,11 +137,11 @@ describe("ListStaffUseCase", () => {
       );
     });
 
-    it("should throw ApplicationValidationError for invalid sort field", async () => {
+    it('should throw ApplicationValidationError for invalid sort field', async () => {
       const request = {
-        requestingUserId: "550e8400-e29b-41d4-a716-446655440001",
+        requestingUserId: '550e8400-e29b-41d4-a716-446655440001',
         pagination: { page: 1, limit: 10 },
-        sorting: { sortBy: "invalidField", sortOrder: "desc" as const },
+        sorting: { sortBy: 'invalidField', sortOrder: 'desc' as const },
         filters: {},
       };
 
@@ -151,7 +151,7 @@ describe("ListStaffUseCase", () => {
     });
   });
 
-  describe("Successful listing", () => {
+  describe('Successful listing', () => {
     beforeEach(() => {
       mockStaffRepository.search.mockResolvedValue({
         staff: mockStaffList,
@@ -159,11 +159,11 @@ describe("ListStaffUseCase", () => {
       });
     });
 
-    it("should return paginated staff list with default parameters", async () => {
+    it('should return paginated staff list with default parameters', async () => {
       const request = {
-        requestingUserId: "550e8400-e29b-41d4-a716-446655440001",
+        requestingUserId: '550e8400-e29b-41d4-a716-446655440001',
         pagination: { page: 1, limit: 10 },
-        sorting: { sortBy: "createdAt", sortOrder: "desc" as const },
+        sorting: { sortBy: 'createdAt', sortOrder: 'desc' as const },
         filters: {},
       };
 
@@ -181,13 +181,13 @@ describe("ListStaffUseCase", () => {
       });
     });
 
-    it("should apply search filters correctly", async () => {
+    it('should apply search filters correctly', async () => {
       const request = {
-        requestingUserId: "550e8400-e29b-41d4-a716-446655440001",
+        requestingUserId: '550e8400-e29b-41d4-a716-446655440001',
         pagination: { page: 1, limit: 10 },
-        sorting: { sortBy: "createdAt", sortOrder: "desc" as const },
+        sorting: { sortBy: 'createdAt', sortOrder: 'desc' as const },
         filters: {
-          search: "John",
+          search: 'John',
           role: StaffRole.DOCTOR,
           isActive: true,
         },
@@ -196,7 +196,7 @@ describe("ListStaffUseCase", () => {
       await useCase.execute(request);
 
       expect(mockStaffRepository.search).toHaveBeenCalledWith({
-        name: "John",
+        name: 'John',
         role: StaffRole.DOCTOR,
         isActive: true,
         limit: 10,
@@ -204,11 +204,11 @@ describe("ListStaffUseCase", () => {
       });
     });
 
-    it("should return staff with all required properties", async () => {
+    it('should return staff with all required properties', async () => {
       const request = {
-        requestingUserId: "550e8400-e29b-41d4-a716-446655440001",
+        requestingUserId: '550e8400-e29b-41d4-a716-446655440001',
         pagination: { page: 1, limit: 10 },
-        sorting: { sortBy: "createdAt", sortOrder: "desc" as const },
+        sorting: { sortBy: 'createdAt', sortOrder: 'desc' as const },
         filters: {},
       };
 
@@ -218,9 +218,9 @@ describe("ListStaffUseCase", () => {
         id: expect.any(String),
         businessId: expect.any(String),
         profile: expect.objectContaining({
-          firstName: "John",
-          lastName: "Doe",
-          specialization: "General Medicine",
+          firstName: 'John',
+          lastName: 'Doe',
+          specialization: 'General Medicine',
         }),
         role: StaffRole.DOCTOR,
         email: expect.any(String),
@@ -230,16 +230,16 @@ describe("ListStaffUseCase", () => {
       });
     });
 
-    it("should handle pagination correctly for multiple pages", async () => {
+    it('should handle pagination correctly for multiple pages', async () => {
       mockStaffRepository.search.mockResolvedValue({
         staff: [mockStaff1],
         total: 25,
       });
 
       const request = {
-        requestingUserId: "550e8400-e29b-41d4-a716-446655440001",
+        requestingUserId: '550e8400-e29b-41d4-a716-446655440001',
         pagination: { page: 2, limit: 10 },
-        sorting: { sortBy: "createdAt", sortOrder: "desc" as const },
+        sorting: { sortBy: 'createdAt', sortOrder: 'desc' as const },
         filters: {},
       };
 
@@ -261,7 +261,7 @@ describe("ListStaffUseCase", () => {
     });
   });
 
-  describe("Logging", () => {
+  describe('Logging', () => {
     beforeEach(() => {
       mockStaffRepository.search.mockResolvedValue({
         staff: mockStaffList,
@@ -269,64 +269,64 @@ describe("ListStaffUseCase", () => {
       });
     });
 
-    it("should log search attempt", async () => {
+    it('should log search attempt', async () => {
       const request = {
-        requestingUserId: "550e8400-e29b-41d4-a716-446655440001",
+        requestingUserId: '550e8400-e29b-41d4-a716-446655440001',
         pagination: { page: 1, limit: 10 },
-        sorting: { sortBy: "createdAt", sortOrder: "desc" as const },
-        filters: { search: "John" },
+        sorting: { sortBy: 'createdAt', sortOrder: 'desc' as const },
+        filters: { search: 'John' },
       };
 
       await useCase.execute(request);
 
       expect(mockLogger.info).toHaveBeenCalledWith(
-        "Attempting to list staff",
+        'Attempting to list staff',
         expect.objectContaining({
-          requestingUserId: "550e8400-e29b-41d4-a716-446655440001",
+          requestingUserId: '550e8400-e29b-41d4-a716-446655440001',
           page: 1,
           limit: 10,
-          filters: { search: "John" },
+          filters: { search: 'John' },
         }),
       );
     });
 
-    it("should log successful search", async () => {
+    it('should log successful search', async () => {
       const request = {
-        requestingUserId: "550e8400-e29b-41d4-a716-446655440001",
+        requestingUserId: '550e8400-e29b-41d4-a716-446655440001',
         pagination: { page: 1, limit: 10 },
-        sorting: { sortBy: "createdAt", sortOrder: "desc" as const },
+        sorting: { sortBy: 'createdAt', sortOrder: 'desc' as const },
         filters: {},
       };
 
       await useCase.execute(request);
 
       expect(mockLogger.info).toHaveBeenCalledWith(
-        "Staff list retrieved successfully",
+        'Staff list retrieved successfully',
         expect.objectContaining({
-          requestingUserId: "550e8400-e29b-41d4-a716-446655440001",
+          requestingUserId: '550e8400-e29b-41d4-a716-446655440001',
           totalItems: 2,
           returnedItems: 2,
         }),
       );
     });
 
-    it("should log errors", async () => {
-      mockStaffRepository.search.mockRejectedValue(new Error("Database error"));
+    it('should log errors', async () => {
+      mockStaffRepository.search.mockRejectedValue(new Error('Database error'));
 
       const request = {
-        requestingUserId: "550e8400-e29b-41d4-a716-446655440001",
+        requestingUserId: '550e8400-e29b-41d4-a716-446655440001',
         pagination: { page: 1, limit: 10 },
-        sorting: { sortBy: "createdAt", sortOrder: "desc" as const },
+        sorting: { sortBy: 'createdAt', sortOrder: 'desc' as const },
         filters: {},
       };
 
       await expect(useCase.execute(request)).rejects.toThrow();
 
       expect(mockLogger.error).toHaveBeenCalledWith(
-        "Error listing staff",
+        'Error listing staff',
         expect.any(Error),
         expect.objectContaining({
-          requestingUserId: "550e8400-e29b-41d4-a716-446655440001",
+          requestingUserId: '550e8400-e29b-41d4-a716-446655440001',
         }),
       );
     });

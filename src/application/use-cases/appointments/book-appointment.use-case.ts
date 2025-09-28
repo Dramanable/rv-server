@@ -5,26 +5,26 @@
  * ✅ Gestion complète de la réservation
  */
 
-import type { AppointmentRepository } from "../../../domain/repositories/appointment.repository.interface";
-import type { BusinessRepository } from "../../../domain/repositories/business.repository.interface";
-import type { CalendarRepository } from "../../../domain/repositories/calendar.repository.interface";
-import type { ServiceRepository } from "../../../domain/repositories/service.repository.interface";
-import type { StaffRepository } from "../../../domain/repositories/staff.repository.interface";
-import type { I18nService } from "../../ports/i18n.port";
-import type { Logger } from "../../ports/logger.port";
+import type { AppointmentRepository } from '../../../domain/repositories/appointment.repository.interface';
+import type { BusinessRepository } from '../../../domain/repositories/business.repository.interface';
+import type { CalendarRepository } from '../../../domain/repositories/calendar.repository.interface';
+import type { ServiceRepository } from '../../../domain/repositories/service.repository.interface';
+import type { StaffRepository } from '../../../domain/repositories/staff.repository.interface';
+import type { I18nService } from '../../ports/i18n.port';
+import type { Logger } from '../../ports/logger.port';
 
 import {
   Appointment,
   AppointmentPricing,
   ClientInfo,
-} from "../../../domain/entities/appointment.entity";
-import { BusinessId } from "../../../domain/value-objects/business-id.value-object";
-import { CalendarId } from "../../../domain/value-objects/calendar-id.value-object";
-import { Email } from "../../../domain/value-objects/email.value-object";
-import { Phone } from "../../../domain/value-objects/phone.value-object";
-import { ServiceId } from "../../../domain/value-objects/service-id.value-object";
-import { TimeSlot } from "../../../domain/value-objects/time-slot.value-object";
-import { UserId } from "../../../domain/value-objects/user-id.value-object";
+} from '../../../domain/entities/appointment.entity';
+import { BusinessId } from '../../../domain/value-objects/business-id.value-object';
+import { CalendarId } from '../../../domain/value-objects/calendar-id.value-object';
+import { Email } from '../../../domain/value-objects/email.value-object';
+import { Phone } from '../../../domain/value-objects/phone.value-object';
+import { ServiceId } from '../../../domain/value-objects/service-id.value-object';
+import { TimeSlot } from '../../../domain/value-objects/time-slot.value-object';
+import { UserId } from '../../../domain/value-objects/user-id.value-object';
 
 import {
   AppointmentConflictError,
@@ -32,7 +32,7 @@ import {
   CalendarNotFoundError,
   ServiceNotBookableOnlineError,
   ServiceNotFoundError,
-} from "../../exceptions/appointment.exceptions";
+} from '../../exceptions/appointment.exceptions';
 
 export interface BookAppointmentRequest {
   // Informations du créneau
@@ -59,13 +59,13 @@ export interface BookAppointmentRequest {
       readonly email: string;
       readonly phone?: string;
       readonly relationship:
-        | "PARENT"
-        | "SPOUSE"
-        | "SIBLING"
-        | "CHILD"
-        | "GUARDIAN"
-        | "FAMILY_MEMBER"
-        | "OTHER";
+        | 'PARENT'
+        | 'SPOUSE'
+        | 'SIBLING'
+        | 'CHILD'
+        | 'GUARDIAN'
+        | 'FAMILY_MEMBER'
+        | 'OTHER';
       readonly relationshipDescription?: string; // Pour 'OTHER'
     };
   };
@@ -83,7 +83,7 @@ export interface BookAppointmentRequest {
   };
 
   // Métadonnées de la réservation
-  readonly source: "ONLINE" | "PHONE" | "WALK_IN" | "ADMIN";
+  readonly source: 'ONLINE' | 'PHONE' | 'WALK_IN' | 'ADMIN';
   readonly userAgent?: string;
   readonly ipAddress?: string;
   readonly referralSource?: string;
@@ -143,7 +143,7 @@ export class BookAppointmentUseCase {
   async execute(
     request: BookAppointmentRequest,
   ): Promise<BookAppointmentResponse> {
-    this.logger.info(this.i18n.translate("operations.booking.starting"), {
+    this.logger.info(this.i18n.translate('operations.booking.starting'), {
       businessId: request.businessId,
       serviceId: request.serviceId,
       startTime: request.startTime.toISOString(),
@@ -179,7 +179,7 @@ export class BookAppointmentUseCase {
         notifications,
       );
 
-      this.logger.info(this.i18n.translate("operations.booking.completed"), {
+      this.logger.info(this.i18n.translate('operations.booking.completed'), {
         appointmentId: savedAppointment.getId().getValue(),
         confirmationNumber: response.confirmationNumber,
         clientEmail: request.clientInfo.email,
@@ -188,7 +188,7 @@ export class BookAppointmentUseCase {
       return response;
     } catch (error) {
       this.logger.error(
-        this.i18n.translate("operations.booking.failed"),
+        this.i18n.translate('operations.booking.failed'),
         error instanceof Error ? error : new Error(String(error)),
         {
           businessId: request.businessId,
@@ -206,38 +206,38 @@ export class BookAppointmentUseCase {
     // Validation des IDs
     if (!request.businessId?.trim()) {
       throw new Error(
-        this.i18n.translate("errors.validation.business_id_required"),
+        this.i18n.translate('errors.validation.business_id_required'),
       );
     }
 
     if (!request.serviceId?.trim()) {
       throw new Error(
-        this.i18n.translate("errors.validation.service_id_required"),
+        this.i18n.translate('errors.validation.service_id_required'),
       );
     }
 
     if (!request.calendarId?.trim()) {
       throw new Error(
-        this.i18n.translate("errors.validation.calendar_id_required"),
+        this.i18n.translate('errors.validation.calendar_id_required'),
       );
     }
 
     // Validation du créneau horaire
     if (!request.startTime || !request.endTime) {
       throw new Error(
-        this.i18n.translate("errors.validation.time_slot_required"),
+        this.i18n.translate('errors.validation.time_slot_required'),
       );
     }
 
     if (request.startTime >= request.endTime) {
       throw new Error(
-        this.i18n.translate("errors.validation.invalid_time_slot"),
+        this.i18n.translate('errors.validation.invalid_time_slot'),
       );
     }
 
     if (request.startTime <= new Date()) {
       throw new Error(
-        this.i18n.translate("errors.validation.time_slot_in_past"),
+        this.i18n.translate('errors.validation.time_slot_in_past'),
       );
     }
 
@@ -246,25 +246,25 @@ export class BookAppointmentUseCase {
 
     if (!clientInfo.firstName?.trim()) {
       throw new Error(
-        this.i18n.translate("errors.validation.first_name_required"),
+        this.i18n.translate('errors.validation.first_name_required'),
       );
     }
 
     if (!clientInfo.lastName?.trim()) {
       throw new Error(
-        this.i18n.translate("errors.validation.last_name_required"),
+        this.i18n.translate('errors.validation.last_name_required'),
       );
     }
 
     if (!clientInfo.email?.trim()) {
-      throw new Error(this.i18n.translate("errors.validation.email_required"));
+      throw new Error(this.i18n.translate('errors.validation.email_required'));
     }
 
     // Validation de l'email avec le Value Object
     try {
       Email.create(clientInfo.email);
     } catch {
-      throw new Error(this.i18n.translate("errors.validation.invalid_email"));
+      throw new Error(this.i18n.translate('errors.validation.invalid_email'));
     }
 
     // Validation du téléphone si fourni
@@ -272,7 +272,7 @@ export class BookAppointmentUseCase {
       try {
         Phone.create(clientInfo.phone);
       } catch {
-        throw new Error(this.i18n.translate("errors.validation.invalid_phone"));
+        throw new Error(this.i18n.translate('errors.validation.invalid_phone'));
       }
     }
   }
@@ -299,7 +299,7 @@ export class BookAppointmentUseCase {
 
         if (staffConflict) {
           throw new Error(
-            this.i18n.translate("errors.booking.slot_not_available_staff"),
+            this.i18n.translate('errors.booking.slot_not_available_staff'),
           );
         }
       } else {
@@ -346,20 +346,20 @@ export class BookAppointmentUseCase {
     }
 
     if (!calendar) {
-      throw new Error(this.i18n.translate("errors.calendar.not_found"));
+      throw new Error(this.i18n.translate('errors.calendar.not_found'));
     }
 
     if (request.staffId && !staff) {
-      throw new Error(this.i18n.translate("errors.staff.not_found"));
+      throw new Error(this.i18n.translate('errors.staff.not_found'));
     }
 
     // ✅ Validations d'état métier
     if (!business.isActive()) {
-      throw new Error(this.i18n.translate("errors.business.inactive"));
+      throw new Error(this.i18n.translate('errors.business.inactive'));
     }
 
     if (!service.isActive()) {
-      throw new Error(this.i18n.translate("errors.service.inactive"));
+      throw new Error(this.i18n.translate('errors.service.inactive'));
     }
 
     // ✅ RÈGLE MÉTIER CRITIQUE : Seuls les services avec réservation en ligne publique
@@ -370,14 +370,14 @@ export class BookAppointmentUseCase {
     // ✅ Validations temporelles
     const now = new Date();
     if (request.startTime <= now) {
-      throw new Error(this.i18n.translate("errors.booking.past_time"));
+      throw new Error(this.i18n.translate('errors.booking.past_time'));
     }
 
     // ✅ Préavis minimum de 2 heures
     const twoHoursFromNow = new Date(now.getTime() + 2 * 60 * 60 * 1000);
     if (request.startTime < twoHoursFromNow) {
       throw new Error(
-        this.i18n.translate("errors.booking.insufficient_notice"),
+        this.i18n.translate('errors.booking.insufficient_notice'),
       );
     }
 
@@ -409,7 +409,7 @@ export class BookAppointmentUseCase {
       basePrice,
       finalPrice: basePrice, // ✅ Ajout finalPrice requis par interface
       totalAmount: basePrice, // Pas de réduction pour l'instant
-      paymentStatus: "PENDING" as const,
+      paymentStatus: 'PENDING' as const,
       discounts: [], // Pas de réductions pour l'instant
     };
 
@@ -419,7 +419,7 @@ export class BookAppointmentUseCase {
       userAgent: request.userAgent,
       ipAddress: request.ipAddress,
       referralSource: request.referralSource,
-      language: request.language || "fr",
+      language: request.language || 'fr',
       urgentRequest: request.isUrgent || false,
     };
 
@@ -442,7 +442,7 @@ export class BookAppointmentUseCase {
     });
 
     // ✅ Appointment créé avec succès
-    this.logger.info("Appointment created successfully", {
+    this.logger.info('Appointment created successfully', {
       appointmentId: appointment.getId().getValue(),
       serviceId: request.serviceId,
     });
@@ -481,7 +481,7 @@ export class BookAppointmentUseCase {
       appointmentId: appointment.getId().getValue(),
       confirmationNumber,
       status: appointment.getStatus(),
-      message: this.i18n.translate("success.booking.appointment_created"),
+      message: this.i18n.translate('success.booking.appointment_created'),
 
       appointmentDetails: {
         businessName: business.getName(),
@@ -511,7 +511,7 @@ export class BookAppointmentUseCase {
         paymentRequired: false, // À adapter selon la logique métier
         documentsRequired: [],
         arrivalInstructions: this.i18n.translate(
-          "instructions.appointment.arrival",
+          'instructions.appointment.arrival',
         ),
       },
 
@@ -522,7 +522,7 @@ export class BookAppointmentUseCase {
   private generateConfirmationNumber(appointment: Appointment): string {
     // Format: RV-YYYYMMDD-XXXX (comme les références Doctolib)
     const date = appointment.getScheduledAt();
-    const dateStr = date.toISOString().slice(0, 10).replace(/-/g, "");
+    const dateStr = date.toISOString().slice(0, 10).replace(/-/g, '');
     const randomPart = Math.random().toString(36).substring(2, 6).toUpperCase();
 
     return `RV-${dateStr}-${randomPart}`;

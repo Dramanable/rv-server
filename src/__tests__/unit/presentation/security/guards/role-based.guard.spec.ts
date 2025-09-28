@@ -9,10 +9,10 @@ import {
   ExecutionContext,
   ForbiddenException,
   UnauthorizedException,
-} from "@nestjs/common";
-import { Reflector } from "@nestjs/core";
-import { RoleBasedGuard } from "../../../../../presentation/security/guards/role-based.guard";
-import { UserRole } from "../../../../../shared/enums/user-role.enum";
+} from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
+import { RoleBasedGuard } from '../../../../../presentation/security/guards/role-based.guard';
+import { UserRole } from '../../../../../shared/enums/user-role.enum';
 
 // Mock du contexte d'exécution et requête
 const createMockExecutionContext = (request: any): ExecutionContext =>
@@ -27,16 +27,16 @@ const createMockExecutionContext = (request: any): ExecutionContext =>
 
 // Helper pour créer un utilisateur mock simple
 const createAuthenticatedUser = (overrides: any = {}) => ({
-  id: "user-123",
-  email: "test@example.com",
+  id: 'user-123',
+  email: 'test@example.com',
   role: UserRole.RECEPTIONIST,
-  businessId: "business-123",
+  businessId: 'business-123',
   isActive: true,
   isVerified: true,
   ...overrides,
 });
 
-describe("RoleBasedGuard - TDD", () => {
+describe('RoleBasedGuard - TDD', () => {
   let guard: RoleBasedGuard;
   let mockReflector: jest.Mocked<Reflector>;
   let mockRequest: any;
@@ -58,8 +58,8 @@ describe("RoleBasedGuard - TDD", () => {
     mockExecutionContext = createMockExecutionContext(mockRequest);
   });
 
-  describe("🔴 RED Phase - Authentication Requirements", () => {
-    it("should reject requests without user (no JWT)", () => {
+  describe('🔴 RED Phase - Authentication Requirements', () => {
+    it('should reject requests without user (no JWT)', () => {
       // Given: Pas d'utilisateur authentifié
       mockRequest.user = null;
       mockReflector.getAllAndOverride.mockReturnValue([UserRole.RECEPTIONIST]);
@@ -70,7 +70,7 @@ describe("RoleBasedGuard - TDD", () => {
       );
     });
 
-    it("should reject requests with invalid user object", () => {
+    it('should reject requests with invalid user object', () => {
       // Given: Utilisateur inactif
       mockRequest.user = createAuthenticatedUser({ isActive: false });
       mockReflector.getAllAndOverride.mockReturnValue([UserRole.RECEPTIONIST]);
@@ -82,8 +82,8 @@ describe("RoleBasedGuard - TDD", () => {
     });
   });
 
-  describe("🔴 RED Phase - Role Authorization", () => {
-    it("should reject user with insufficient role", () => {
+  describe('🔴 RED Phase - Role Authorization', () => {
+    it('should reject user with insufficient role', () => {
       // Given: Utilisateur RECEPTIONIST, endpoint requiert BUSINESS_OWNER
       mockRequest.user = createAuthenticatedUser({
         role: UserRole.RECEPTIONIST,
@@ -98,7 +98,7 @@ describe("RoleBasedGuard - TDD", () => {
       );
     });
 
-    it("should accept user with exact required role", () => {
+    it('should accept user with exact required role', () => {
       // Given: Utilisateur RECEPTIONIST, endpoint requiert RECEPTIONIST
       mockRequest.user = createAuthenticatedUser({
         role: UserRole.RECEPTIONIST,
@@ -112,7 +112,7 @@ describe("RoleBasedGuard - TDD", () => {
       expect(result).toBe(true);
     });
 
-    it("should accept user with higher privilege role", () => {
+    it('should accept user with higher privilege role', () => {
       // Given: Utilisateur BUSINESS_OWNER, endpoint requiert RECEPTIONIST
       mockRequest.user = createAuthenticatedUser({
         role: UserRole.BUSINESS_OWNER,
@@ -126,7 +126,7 @@ describe("RoleBasedGuard - TDD", () => {
       expect(result).toBe(true);
     });
 
-    it("should accept user with any of multiple allowed roles", () => {
+    it('should accept user with any of multiple allowed roles', () => {
       // Given: Utilisateur BUSINESS_ADMIN, endpoint autorise BUSINESS_ADMIN ou LOCATION_MANAGER
       mockRequest.user = createAuthenticatedUser({
         role: UserRole.BUSINESS_ADMIN,
@@ -144,14 +144,14 @@ describe("RoleBasedGuard - TDD", () => {
     });
   });
 
-  describe("🔴 RED Phase - Multi-tenant Context", () => {
-    it("should validate business context when businessId in params", () => {
+  describe('🔴 RED Phase - Multi-tenant Context', () => {
+    it('should validate business context when businessId in params', () => {
       // Given: Utilisateur business-123, endpoint pour business-456
       mockRequest.user = createAuthenticatedUser({
         role: UserRole.BUSINESS_ADMIN,
-        businessId: "business-123",
+        businessId: 'business-123',
       });
-      mockRequest.params = { businessId: "business-456" };
+      mockRequest.params = { businessId: 'business-456' };
       mockReflector.getAllAndOverride.mockReturnValue([
         UserRole.BUSINESS_ADMIN,
       ]);
@@ -162,13 +162,13 @@ describe("RoleBasedGuard - TDD", () => {
       );
     });
 
-    it("should validate business context when businessId in body", () => {
+    it('should validate business context when businessId in body', () => {
       // Given: Utilisateur business-123, opération sur business-456
       mockRequest.user = createAuthenticatedUser({
         role: UserRole.BUSINESS_ADMIN,
-        businessId: "business-123",
+        businessId: 'business-123',
       });
-      mockRequest.params = { businessId: "business-456" };
+      mockRequest.params = { businessId: 'business-456' };
       mockReflector.getAllAndOverride.mockReturnValue([
         UserRole.BUSINESS_ADMIN,
       ]);
@@ -179,7 +179,7 @@ describe("RoleBasedGuard - TDD", () => {
       );
     });
 
-    it("should work without business context for platform-level operations", () => {
+    it('should work without business context for platform-level operations', () => {
       // Given: Super Admin, pas de contexte business spécifique
       mockRequest.user = createAuthenticatedUser({
         role: UserRole.SUPER_ADMIN,
@@ -196,8 +196,8 @@ describe("RoleBasedGuard - TDD", () => {
     });
   });
 
-  describe("🔴 RED Phase - Public Endpoints (No Roles Required)", () => {
-    it("should allow access to public endpoints", () => {
+  describe('🔴 RED Phase - Public Endpoints (No Roles Required)', () => {
+    it('should allow access to public endpoints', () => {
       // Given: Endpoint sans rôles requis
       mockReflector.getAllAndOverride.mockReturnValue(null);
 
@@ -208,7 +208,7 @@ describe("RoleBasedGuard - TDD", () => {
       expect(result).toBe(true);
     });
 
-    it("should allow access to endpoints with empty roles array", () => {
+    it('should allow access to endpoints with empty roles array', () => {
       // Given: Endpoint avec tableau de rôles vide
       mockReflector.getAllAndOverride.mockReturnValue([]);
 
@@ -220,8 +220,8 @@ describe("RoleBasedGuard - TDD", () => {
     });
   });
 
-  describe("🔴 RED Phase - Role Hierarchy Logic", () => {
-    it("should respect role hierarchy - SUPER_ADMIN can access everything", () => {
+  describe('🔴 RED Phase - Role Hierarchy Logic', () => {
+    it('should respect role hierarchy - SUPER_ADMIN can access everything', () => {
       // Given: Super Admin, endpoint pour staff seulement
       mockRequest.user = createAuthenticatedUser({
         role: UserRole.SUPER_ADMIN,
@@ -235,7 +235,7 @@ describe("RoleBasedGuard - TDD", () => {
       expect(result).toBe(true);
     });
 
-    it("should respect role hierarchy - BUSINESS_OWNER can access staff operations", () => {
+    it('should respect role hierarchy - BUSINESS_OWNER can access staff operations', () => {
       // Given: Business Owner, endpoint pour réceptionniste
       mockRequest.user = createAuthenticatedUser({
         role: UserRole.BUSINESS_OWNER,
@@ -249,7 +249,7 @@ describe("RoleBasedGuard - TDD", () => {
       expect(result).toBe(true);
     });
 
-    it("should respect role hierarchy - RECEPTIONIST cannot access admin operations", () => {
+    it('should respect role hierarchy - RECEPTIONIST cannot access admin operations', () => {
       // Given: Réceptionniste, endpoint pour admin
       mockRequest.user = createAuthenticatedUser({
         role: UserRole.RECEPTIONIST,
@@ -264,7 +264,7 @@ describe("RoleBasedGuard - TDD", () => {
       );
     });
 
-    it("should respect role hierarchy - CLIENT cannot access staff operations", () => {
+    it('should respect role hierarchy - CLIENT cannot access staff operations', () => {
       // Given: Client, endpoint pour staff
       mockRequest.user = createAuthenticatedUser({
         role: UserRole.REGULAR_CLIENT,
@@ -278,19 +278,19 @@ describe("RoleBasedGuard - TDD", () => {
     });
   });
 
-  describe("🔴 RED Phase - Error Handling", () => {
-    it("should throw UnauthorizedException for missing user with specific message", () => {
+  describe('🔴 RED Phase - Error Handling', () => {
+    it('should throw UnauthorizedException for missing user with specific message', () => {
       // Given: Pas d'utilisateur
       mockRequest.user = null;
       mockReflector.getAllAndOverride.mockReturnValue([UserRole.RECEPTIONIST]);
 
       // When & Then: Vérifier message d'erreur
       expect(() => guard.canActivate(mockExecutionContext)).toThrow(
-        new UnauthorizedException("Authentication required"),
+        new UnauthorizedException('Authentication required'),
       );
     });
 
-    it("should throw ForbiddenException for insufficient role with specific message", () => {
+    it('should throw ForbiddenException for insufficient role with specific message', () => {
       // Given: Rôle insuffisant
       mockRequest.user = createAuthenticatedUser({
         role: UserRole.REGULAR_CLIENT,

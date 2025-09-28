@@ -5,8 +5,8 @@
  * en réponses HTTP appropriées avec messages i18n
  */
 
-import type { I18nService } from "@application/ports/i18n.port";
-import { DomainException } from "@domain/exceptions/domain.exception";
+import type { I18nService } from '@application/ports/i18n.port';
+import { DomainException } from '@domain/exceptions/domain.exception';
 import {
   ArgumentsHost,
   Catch,
@@ -14,9 +14,9 @@ import {
   HttpStatus,
   Inject,
   Logger,
-} from "@nestjs/common";
-import { TOKENS } from "@shared/constants/injection-tokens";
-import { Request, Response } from "express";
+} from '@nestjs/common';
+import { TOKENS } from '@shared/constants/injection-tokens';
+import { Request, Response } from 'express';
 
 @Catch(DomainException)
 export class DomainExceptionFilter implements ExceptionFilter {
@@ -50,7 +50,7 @@ export class DomainExceptionFilter implements ExceptionFilter {
         timestamp: new Date().toISOString(),
         path: request.url,
         correlationId: this.getCorrelationId(request),
-        ...(process.env.NODE_ENV === "development" && {
+        ...(process.env.NODE_ENV === 'development' && {
           domainDetails: {
             exceptionName: exception.name,
             originalTimestamp: exception.timestamp,
@@ -98,7 +98,7 @@ export class DomainExceptionFilter implements ExceptionFilter {
 
   private getI18nMessage(exception: DomainException): string {
     // Construire la clé i18n à partir du code d'erreur
-    const i18nKey = `errors.${exception.code.toLowerCase().replace(/_/g, ".")}`;
+    const i18nKey = `errors.${exception.code.toLowerCase().replace(/_/g, '.')}`;
 
     // Essayer d'obtenir la traduction, sinon utiliser le message par défaut
     const translatedMessage = this.i18n.t(i18nKey);
@@ -111,8 +111,8 @@ export class DomainExceptionFilter implements ExceptionFilter {
 
   private getCorrelationId(request: Request): string {
     return (
-      (request.headers["x-correlation-id"] as string) ||
-      (request.headers["x-request-id"] as string) ||
+      (request.headers['x-correlation-id'] as string) ||
+      (request.headers['x-request-id'] as string) ||
       `domain-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
     );
   }
@@ -124,7 +124,7 @@ export class DomainExceptionFilter implements ExceptionFilter {
       timestamp: exception.timestamp,
       method: request.method,
       url: request.url,
-      userAgent: request.headers["user-agent"],
+      userAgent: request.headers['user-agent'],
       ip: request.ip,
       correlationId: this.getCorrelationId(request),
     };

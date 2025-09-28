@@ -1,19 +1,19 @@
-import type { IAuditService } from "@application/ports/audit.port";
-import type { I18nService } from "@application/ports/i18n.port";
-import type { Logger } from "@application/ports/logger.port";
-import { CalendarType } from "@domain/entities/calendar-type.entity";
+import type { IAuditService } from '@application/ports/audit.port';
+import type { I18nService } from '@application/ports/i18n.port';
+import type { Logger } from '@application/ports/logger.port';
+import { CalendarType } from '@domain/entities/calendar-type.entity';
 import {
   CalendarTypeAlreadyExistsError,
   CalendarTypeNotFoundError,
   CalendarTypeValidationError,
-} from "@domain/exceptions/calendar-type.exceptions";
-import type { ICalendarTypeRepository } from "@domain/repositories/calendar-type.repository";
-import { CalendarTypeId } from "@domain/value-objects/calendar-type-id.value-object";
+} from '@domain/exceptions/calendar-type.exceptions';
+import type { ICalendarTypeRepository } from '@domain/repositories/calendar-type.repository';
+import { CalendarTypeId } from '@domain/value-objects/calendar-type-id.value-object';
 
 import {
   UpdateCalendarTypeRequest,
   UpdateCalendarTypeResponse,
-} from "./calendar-type.types";
+} from './calendar-type.types';
 
 /**
  * Use Case pour mettre à jour un type de calendrier existant
@@ -32,9 +32,9 @@ export class UpdateCalendarTypeUseCase {
   async execute(
     request: UpdateCalendarTypeRequest,
   ): Promise<UpdateCalendarTypeResponse> {
-    this.logger.info("Updating calendar type", {
+    this.logger.info('Updating calendar type', {
       calendarTypeId: request.calendarTypeId,
-      correlationId: request.correlationId ?? "no-correlation-id",
+      correlationId: request.correlationId ?? 'no-correlation-id',
     });
 
     try {
@@ -96,12 +96,12 @@ export class UpdateCalendarTypeUseCase {
 
       // Audit trail
       await this.auditService.logOperation({
-        operation: "UPDATE_CALENDAR_TYPE",
-        entityType: "CALENDAR_TYPE",
+        operation: 'UPDATE_CALENDAR_TYPE',
+        entityType: 'CALENDAR_TYPE',
         entityId: updatedCalendarType.getId().getValue(),
         businessId: updatedCalendarType.getBusinessId().getValue(),
         userId: request.requestingUserId,
-        correlationId: request.correlationId ?? "no-correlation-id",
+        correlationId: request.correlationId ?? 'no-correlation-id',
         changes: {
           updated: {
             before: beforeState,
@@ -111,27 +111,27 @@ export class UpdateCalendarTypeUseCase {
         timestamp: new Date(),
       });
 
-      this.logger.info("Calendar type updated successfully", {
+      this.logger.info('Calendar type updated successfully', {
         calendarTypeId: request.calendarTypeId,
         calendarTypeName: updatedCalendarType.getName(),
-        correlationId: request.correlationId ?? "no-correlation-id",
+        correlationId: request.correlationId ?? 'no-correlation-id',
       });
 
       return {
         calendarType: updatedCalendarType,
         success: true,
-        message: this.i18n.translate("calendarTypes.updated.success"),
+        message: this.i18n.translate('calendarTypes.updated.success'),
       };
     } catch (error) {
       const errorMessage =
-        error instanceof Error ? error.message : "Unknown error occurred";
+        error instanceof Error ? error.message : 'Unknown error occurred';
 
       this.logger.error(
-        "Failed to update calendar type",
+        'Failed to update calendar type',
         error instanceof Error ? error : new Error(errorMessage),
         {
           calendarTypeId: request.calendarTypeId,
-          correlationId: request.correlationId ?? "no-correlation-id",
+          correlationId: request.correlationId ?? 'no-correlation-id',
         },
       );
 
@@ -146,26 +146,26 @@ export class UpdateCalendarTypeUseCase {
 
     // Validation calendarTypeId (obligatoire)
     if (!request.calendarTypeId?.trim()) {
-      errors.push(this.i18n.translate("calendarTypes.validation.idRequired"));
+      errors.push(this.i18n.translate('calendarTypes.validation.idRequired'));
     } else {
       const uuidRegex =
         /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
       if (!uuidRegex.test(request.calendarTypeId)) {
-        errors.push(this.i18n.translate("calendarTypes.validation.idInvalid"));
+        errors.push(this.i18n.translate('calendarTypes.validation.idInvalid'));
       }
     }
 
     // Validation requestingUserId
     if (!request.requestingUserId?.trim()) {
       errors.push(
-        this.i18n.translate("calendarTypes.validation.requestingUserRequired"),
+        this.i18n.translate('calendarTypes.validation.requestingUserRequired'),
       );
     } else {
       const uuidRegex =
         /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
       if (!uuidRegex.test(request.requestingUserId)) {
         errors.push(
-          this.i18n.translate("calendarTypes.validation.requestingUserInvalid"),
+          this.i18n.translate('calendarTypes.validation.requestingUserInvalid'),
         );
       }
     }
@@ -173,7 +173,7 @@ export class UpdateCalendarTypeUseCase {
     // Validation correlationId
     if (!request.correlationId?.trim()) {
       errors.push(
-        this.i18n.translate("calendarTypes.validation.correlationIdRequired"),
+        this.i18n.translate('calendarTypes.validation.correlationIdRequired'),
       );
     }
 
@@ -184,31 +184,31 @@ export class UpdateCalendarTypeUseCase {
         request.name.trim().length < 2 ||
         request.name.trim().length > 100
       ) {
-        errors.push(this.i18n.translate("calendarTypes.validation.nameLength"));
+        errors.push(this.i18n.translate('calendarTypes.validation.nameLength'));
       }
     }
 
     if (request.description !== undefined && request.description.length > 500) {
       errors.push(
-        this.i18n.translate("calendarTypes.validation.descriptionLength"),
+        this.i18n.translate('calendarTypes.validation.descriptionLength'),
       );
     }
 
     if (request.icon !== undefined) {
       if (request.icon.trim().length < 1 || request.icon.trim().length > 50) {
-        errors.push(this.i18n.translate("calendarTypes.validation.iconLength"));
+        errors.push(this.i18n.translate('calendarTypes.validation.iconLength'));
       }
     }
 
     if (request.sortOrder !== undefined && request.sortOrder < 1) {
       errors.push(
-        this.i18n.translate("calendarTypes.validation.sortOrderMinimum"),
+        this.i18n.translate('calendarTypes.validation.sortOrderMinimum'),
       );
     }
 
     if (errors.length > 0) {
       throw new CalendarTypeValidationError(
-        this.i18n.translate("calendarTypes.validation.failed"),
+        this.i18n.translate('calendarTypes.validation.failed'),
         { errors },
       );
     }
@@ -234,7 +234,7 @@ export class UpdateCalendarTypeUseCase {
       if (existsByName) {
         throw new CalendarTypeAlreadyExistsError(
           request.name,
-          this.i18n.translate("calendarTypes.validation.nameAlreadyExists", {
+          this.i18n.translate('calendarTypes.validation.nameAlreadyExists', {
             name: request.name,
           }),
         );

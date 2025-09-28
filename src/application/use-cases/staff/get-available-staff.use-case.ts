@@ -1,6 +1,6 @@
-import { Staff } from "../../../domain/entities/staff.entity";
-import { StaffRepository } from "../../../domain/repositories/staff.repository.interface";
-import { BusinessId } from "../../../domain/value-objects/business-id.value-object";
+import { Staff } from '../../../domain/entities/staff.entity';
+import { StaffRepository } from '../../../domain/repositories/staff.repository.interface';
+import { BusinessId } from '../../../domain/value-objects/business-id.value-object';
 
 export interface GetAvailableStaffRequest {
   readonly businessId: string;
@@ -93,15 +93,15 @@ export class GetAvailableStaffUseCase {
 
   private validateRequest(request: GetAvailableStaffRequest): void {
     if (request.durationMinutes <= 0) {
-      throw new Error("Duration must be positive");
+      throw new Error('Duration must be positive');
     }
 
     if (request.durationMinutes > 8 * 60) {
-      throw new Error("Duration cannot exceed 8 hours");
+      throw new Error('Duration cannot exceed 8 hours');
     }
 
     if (request.dateTime < new Date()) {
-      throw new Error("Cannot search for availability in the past");
+      throw new Error('Cannot search for availability in the past');
     }
   }
 
@@ -160,8 +160,8 @@ export class GetAvailableStaffUseCase {
     if (!staff.availability?.workingHours) {
       return {
         dayOfWeek,
-        startTime: "09:00",
-        endTime: "17:00",
+        startTime: '09:00',
+        endTime: '17:00',
         isWorkingDay: false,
       };
     }
@@ -173,8 +173,8 @@ export class GetAvailableStaffUseCase {
     return (
       workingDay || {
         dayOfWeek,
-        startTime: "09:00",
-        endTime: "17:00",
+        startTime: '09:00',
+        endTime: '17:00',
         isWorkingDay: false,
       }
     );

@@ -3,10 +3,10 @@ import {
   AuditOperation,
   AuditQuery,
   IAuditService,
-} from "@application/ports/audit.port";
-import { Logger } from "@application/ports/logger.port";
-import { Inject, Injectable } from "@nestjs/common";
-import { TOKENS } from "@shared/constants/injection-tokens";
+} from '@application/ports/audit.port';
+import { Logger } from '@application/ports/logger.port';
+import { Inject, Injectable } from '@nestjs/common';
+import { TOKENS } from '@shared/constants/injection-tokens';
 
 /**
  * Service d'audit pour tracer les opérations critiques
@@ -17,7 +17,7 @@ export class AuditService implements IAuditService {
   constructor(@Inject(TOKENS.LOGGER) private readonly logger: Logger) {}
 
   async logOperation(operation: AuditOperation): Promise<void> {
-    this.logger.info("Audit operation", {
+    this.logger.info('Audit operation', {
       operation: operation.operation,
       entityType: operation.entityType,
       entityId: operation.entityId,
@@ -38,7 +38,7 @@ export class AuditService implements IAuditService {
     hasMore: boolean;
   }> {
     // TODO: Implémentation avec base de données d'audit
-    this.logger.info("Audit query requested", { query });
+    this.logger.info('Audit query requested', { query });
 
     return {
       entries: [],
@@ -52,7 +52,7 @@ export class AuditService implements IAuditService {
     entityId: string,
   ): Promise<AuditEntry[]> {
     // TODO: Implémentation avec base de données d'audit
-    this.logger.info("Entity history requested", { entityType, entityId });
+    this.logger.info('Entity history requested', { entityType, entityId });
 
     return [];
   }
@@ -67,7 +67,7 @@ export class AuditService implements IAuditService {
     },
   ): Promise<AuditEntry[]> {
     // TODO: Implémentation avec base de données d'audit
-    this.logger.info("User actions requested", { userId, options });
+    this.logger.info('User actions requested', { userId, options });
 
     return [];
   }
@@ -86,7 +86,7 @@ export class AuditService implements IAuditService {
     }>;
   }> {
     // TODO: Implémentation vérification d'intégrité
-    this.logger.info("Integrity verification requested", { options });
+    this.logger.info('Integrity verification requested', { options });
 
     return {
       isValid: true,
@@ -99,7 +99,7 @@ export class AuditService implements IAuditService {
     remainingCount: number;
   }> {
     // TODO: Implémentation archivage
-    this.logger.info("Archive old entries requested", { olderThan });
+    this.logger.info('Archive old entries requested', { olderThan });
 
     return {
       archivedCount: 0,
@@ -109,16 +109,16 @@ export class AuditService implements IAuditService {
 
   async exportAuditData(query: AuditQuery): Promise<{
     data: AuditEntry[];
-    format: "json" | "csv";
+    format: 'json' | 'csv';
     checksum: string;
   }> {
     // TODO: Implémentation export d'audit
-    this.logger.info("Audit data export requested", { query });
+    this.logger.info('Audit data export requested', { query });
 
     return {
       data: [],
-      format: "json",
-      checksum: "",
+      format: 'json',
+      checksum: '',
     };
   }
 }

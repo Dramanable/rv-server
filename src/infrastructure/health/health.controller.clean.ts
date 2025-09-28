@@ -1,13 +1,13 @@
-import { Controller, Get, Logger } from "@nestjs/common";
+import { Controller, Get, Logger } from '@nestjs/common';
 import {
   HealthCheck,
   HealthCheckService,
   TypeOrmHealthIndicator,
   MongooseHealthIndicator,
   MemoryHealthIndicator,
-} from "@nestjs/terminus";
-import { ApiTags, ApiOperation, ApiResponse } from "@nestjs/swagger";
-import { ConfigService } from "@nestjs/config";
+} from '@nestjs/terminus';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ConfigService } from '@nestjs/config';
 
 /**
  * 🏥 Health Check Controller
@@ -18,8 +18,8 @@ import { ConfigService } from "@nestjs/config";
  * - Mémoire système
  * - Informations système
  */
-@ApiTags("🏥 Health")
-@Controller("health")
+@ApiTags('🏥 Health')
+@Controller('health')
 export class HealthController {
   private readonly logger = new Logger(HealthController.name);
 
@@ -36,59 +36,59 @@ export class HealthController {
    * Vérification rapide de tous les services critiques
    */
   @Get()
-  @ApiOperation({ summary: "Global health check" })
-  @ApiResponse({ status: 200, description: "Service healthy" })
-  @ApiResponse({ status: 503, description: "Service unhealthy" })
+  @ApiOperation({ summary: 'Global health check' })
+  @ApiResponse({ status: 200, description: 'Service healthy' })
+  @ApiResponse({ status: 503, description: 'Service unhealthy' })
   @HealthCheck()
   check() {
     return this.health.check([
       // PostgreSQL Database
-      () => this.db.pingCheck("database"),
+      () => this.db.pingCheck('database'),
 
       // MongoDB Database
-      () => this.mongo.pingCheck("mongodb"),
+      () => this.mongo.pingCheck('mongodb'),
 
       // Memory usage (max 512MB)
-      () => this.memory.checkHeap("memory_heap", 512 * 1024 * 1024),
+      () => this.memory.checkHeap('memory_heap', 512 * 1024 * 1024),
 
       // RSS Memory (max 1GB)
-      () => this.memory.checkRSS("memory_rss", 1024 * 1024 * 1024),
+      () => this.memory.checkRSS('memory_rss', 1024 * 1024 * 1024),
     ]);
   }
 
   /**
    * 🗄️ Database Health Check détaillé
    */
-  @Get("database")
-  @ApiOperation({ summary: "Database health check" })
+  @Get('database')
+  @ApiOperation({ summary: 'Database health check' })
   @HealthCheck()
   checkDatabase() {
     return this.health.check([
-      () => this.db.pingCheck("postgresql"),
-      () => this.mongo.pingCheck("mongodb"),
+      () => this.db.pingCheck('postgresql'),
+      () => this.mongo.pingCheck('mongodb'),
     ]);
   }
 
   /**
    * 💾 Memory Health Check
    */
-  @Get("memory")
-  @ApiOperation({ summary: "Memory health check" })
+  @Get('memory')
+  @ApiOperation({ summary: 'Memory health check' })
   @HealthCheck()
   checkMemory() {
     return this.health.check([
       // Heap memory (max 512MB)
-      () => this.memory.checkHeap("memory_heap", 512 * 1024 * 1024),
+      () => this.memory.checkHeap('memory_heap', 512 * 1024 * 1024),
       // RSS memory (max 1GB)
-      () => this.memory.checkRSS("memory_rss", 1024 * 1024 * 1024),
+      () => this.memory.checkRSS('memory_rss', 1024 * 1024 * 1024),
     ]);
   }
 
   /**
    * 📊 Health Check avec métriques détaillées
    */
-  @Get("detailed")
-  @ApiOperation({ summary: "Detailed health check with metrics" })
+  @Get('detailed')
+  @ApiOperation({ summary: 'Detailed health check with metrics' })
   async getDetailedHealth() {
     try {
       const startTime = Date.now();
@@ -103,12 +103,12 @@ export class HealthController {
       const responseTime = Date.now() - startTime;
 
       const healthStatus = {
-        status: "ok",
+        status: 'ok',
         timestamp: new Date().toISOString(),
         uptime: process.uptime(),
         responseTime: `${responseTime}ms`,
-        version: this.configService.get<string>("npm_package_version", "1.0.0"),
-        environment: this.configService.get<string>("NODE_ENV", "development"),
+        version: this.configService.get<string>('npm_package_version', '1.0.0'),
+        environment: this.configService.get<string>('NODE_ENV', 'development'),
         services: {
           database: dbCheck,
         },
@@ -120,12 +120,12 @@ export class HealthController {
 
       this.logger.log(
         `Health check completed in ${responseTime}ms`,
-        "HealthController",
+        'HealthController',
       );
 
       return healthStatus;
     } catch (error) {
-      this.logger.error("Health check failed", error, "HealthController");
+      this.logger.error('Health check failed', error, 'HealthController');
       throw error;
     }
   }
@@ -133,24 +133,24 @@ export class HealthController {
   /**
    * ⚡ Readiness Probe (pour Kubernetes)
    */
-  @Get("ready")
-  @ApiOperation({ summary: "Readiness probe for Kubernetes" })
+  @Get('ready')
+  @ApiOperation({ summary: 'Readiness probe for Kubernetes' })
   @HealthCheck()
   checkReadiness() {
     return this.health.check([
-      () => this.db.pingCheck("database"),
-      () => this.mongo.pingCheck("mongodb"),
+      () => this.db.pingCheck('database'),
+      () => this.mongo.pingCheck('mongodb'),
     ]);
   }
 
   /**
    * 💓 Liveness Probe (pour Kubernetes)
    */
-  @Get("live")
-  @ApiOperation({ summary: "Liveness probe for Kubernetes" })
+  @Get('live')
+  @ApiOperation({ summary: 'Liveness probe for Kubernetes' })
   checkLiveness() {
     return {
-      status: "ok",
+      status: 'ok',
       timestamp: new Date().toISOString(),
       uptime: process.uptime(),
     };
@@ -163,14 +163,14 @@ export class HealthController {
     try {
       // Ici vous pouvez ajouter des vérifications spécifiques à votre DB
       return Promise.resolve({
-        postgresql: { status: "up", connections: "active" },
-        mongodb: { status: "up", connections: "active" },
+        postgresql: { status: 'up', connections: 'active' },
+        mongodb: { status: 'up', connections: 'active' },
       });
     } catch (error) {
-      this.logger.error("Database status check failed", error);
+      this.logger.error('Database status check failed', error);
       return Promise.resolve({
-        postgresql: { status: "down", error: (error as Error).message },
-        mongodb: { status: "down", error: (error as Error).message },
+        postgresql: { status: 'down', error: (error as Error).message },
+        mongodb: { status: 'down', error: (error as Error).message },
       });
     }
   }

@@ -5,7 +5,7 @@
  * Utilisé pour le logging, l'audit trail et le tracing
  */
 
-import { v4 as uuidv4 } from "uuid";
+import { v4 as uuidv4 } from 'uuid';
 
 export interface AppContext {
   correlationId: string;
@@ -65,7 +65,7 @@ export class AppContextFactory {
 
   build(): AppContext {
     if (!this.context.operation) {
-      throw new Error("Operation is required for AppContext");
+      throw new Error('Operation is required for AppContext');
     }
 
     return {

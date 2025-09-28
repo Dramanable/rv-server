@@ -2,7 +2,7 @@
  * 🍪 COOKIE PORT - Interface pour la gestion des cookies
  */
 
-import { Request, Response } from "express";
+import { Request, Response } from 'express';
 
 export interface CookieOptions {
   domain?: string;
@@ -12,7 +12,7 @@ export interface CookieOptions {
   path?: string;
   secure?: boolean;
   signed?: boolean;
-  sameSite?: boolean | "lax" | "strict" | "none";
+  sameSite?: boolean | 'lax' | 'strict' | 'none';
 }
 
 export interface ICookieService {

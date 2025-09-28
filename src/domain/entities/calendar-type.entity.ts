@@ -1,9 +1,9 @@
 import {
   CalendarTypeBuiltInModificationError,
   CalendarTypeValidationError,
-} from "@domain/exceptions/calendar-type.exceptions";
-import { BusinessId } from "@domain/value-objects/business-id.value-object";
-import { CalendarTypeId } from "@domain/value-objects/calendar-type-id.value-object";
+} from '@domain/exceptions/calendar-type.exceptions';
+import { BusinessId } from '@domain/value-objects/business-id.value-object';
+import { CalendarTypeId } from '@domain/value-objects/calendar-type-id.value-object';
 
 /**
  * 📅 CalendarType Entity
@@ -47,34 +47,34 @@ export class CalendarType {
   }): CalendarType {
     // Validate required fields
     if (!params.name?.trim()) {
-      throw new CalendarTypeValidationError("CalendarType name is required");
+      throw new CalendarTypeValidationError('CalendarType name is required');
     }
 
     if (!params.code?.trim()) {
-      throw new CalendarTypeValidationError("CalendarType code is required");
+      throw new CalendarTypeValidationError('CalendarType code is required');
     }
 
     // Validate code format (uppercase alphanumeric with underscores)
     if (!/^[A-Z][A-Z0-9_]*$/.test(params.code)) {
       throw new CalendarTypeValidationError(
-        "CalendarType code must be uppercase alphanumeric with underscores, starting with a letter",
+        'CalendarType code must be uppercase alphanumeric with underscores, starting with a letter',
       );
     }
 
     if (!params.description?.trim()) {
       throw new CalendarTypeValidationError(
-        "CalendarType description is required",
+        'CalendarType description is required',
       );
     }
 
     if (!params.color?.trim()) {
-      throw new CalendarTypeValidationError("CalendarType color is required");
+      throw new CalendarTypeValidationError('CalendarType color is required');
     }
 
     // Validate color format (hex color)
     if (!/^#[0-9A-Fa-f]{6}$/.test(params.color)) {
       throw new CalendarTypeValidationError(
-        "CalendarType color must be a valid hex color",
+        'CalendarType color must be a valid hex color',
       );
     }
 
@@ -87,7 +87,7 @@ export class CalendarType {
       params.name.trim(),
       params.code.trim().toUpperCase(),
       params.description.trim(),
-      (params.icon || "calendar").trim(), // ✅ Valeur par défaut 'calendar'
+      (params.icon || 'calendar').trim(), // ✅ Valeur par défaut 'calendar'
       params.color.trim(),
       params.isBuiltIn ?? false,
       params.isActive ?? true,
@@ -157,7 +157,7 @@ export class CalendarType {
     if (params.name !== undefined) {
       if (!params.name.trim()) {
         throw new CalendarTypeValidationError(
-          "CalendarType name cannot be empty",
+          'CalendarType name cannot be empty',
         );
       }
       this._name = params.name.trim();
@@ -166,7 +166,7 @@ export class CalendarType {
     if (params.description !== undefined) {
       if (!params.description.trim()) {
         throw new CalendarTypeValidationError(
-          "CalendarType description cannot be empty",
+          'CalendarType description cannot be empty',
         );
       }
       this._description = params.description.trim();
@@ -175,7 +175,7 @@ export class CalendarType {
     if (params.icon !== undefined) {
       if (!params.icon.trim()) {
         throw new CalendarTypeValidationError(
-          "CalendarType icon cannot be empty",
+          'CalendarType icon cannot be empty',
         );
       }
       this._icon = params.icon.trim();
@@ -184,12 +184,12 @@ export class CalendarType {
     if (params.color !== undefined) {
       if (!params.color.trim()) {
         throw new CalendarTypeValidationError(
-          "CalendarType color cannot be empty",
+          'CalendarType color cannot be empty',
         );
       }
       if (!/^#[0-9A-Fa-f]{6}$/.test(params.color)) {
         throw new CalendarTypeValidationError(
-          "CalendarType color must be a valid hex color",
+          'CalendarType color must be a valid hex color',
         );
       }
       this._color = params.color.trim();

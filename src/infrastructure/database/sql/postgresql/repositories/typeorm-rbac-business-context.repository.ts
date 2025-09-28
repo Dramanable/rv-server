@@ -8,20 +8,20 @@
  * INFRASTRUCTURE LAYER - Clean Architecture
  */
 
-import { Injectable } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
-import type { I18nService } from "@application/ports/i18n.port";
-import type { Logger } from "@application/ports/logger.port";
-import { BusinessContext } from "@domain/entities/business-context.entity";
+import type { I18nService } from '@application/ports/i18n.port';
+import type { Logger } from '@application/ports/logger.port';
+import { BusinessContext } from '@domain/entities/business-context.entity';
 import {
   BusinessContextCriteria,
   BusinessContextFilters,
   IBusinessContextRepository,
-} from "@domain/repositories/business-context.repository.interface";
+} from '@domain/repositories/business-context.repository.interface';
 
-import { BusinessContextOrmEntity } from "../entities/business-context-orm.entity";
+import { BusinessContextOrmEntity } from '../entities/business-context-orm.entity';
 
 @Injectable()
 export class TypeOrmRbacBusinessContextRepository
@@ -35,7 +35,7 @@ export class TypeOrmRbacBusinessContextRepository
   ) {}
 
   async save(businessContext: BusinessContext): Promise<BusinessContext> {
-    this.logger.info("Saving business context", {
+    this.logger.info('Saving business context', {
       businessId: businessContext.getBusinessId(),
     });
 
@@ -45,12 +45,12 @@ export class TypeOrmRbacBusinessContextRepository
       const ormEntity = new BusinessContextOrmEntity();
       ormEntity.businessId = businessContext.getBusinessId();
       ormEntity.name = businessContext.getBusinessName();
-      ormEntity.type = "BUSINESS"; // Par défaut
+      ormEntity.type = 'BUSINESS'; // Par défaut
       ormEntity.isActive = businessContext.isActiveContext();
 
       const savedOrm = await this.repository.save(ormEntity);
 
-      this.logger.info("Business context saved successfully", {
+      this.logger.info('Business context saved successfully', {
         businessId: savedOrm.businessId,
       });
 
@@ -61,15 +61,15 @@ export class TypeOrmRbacBusinessContextRepository
         businessContext.getLocations(),
       );
     } catch (error) {
-      this.logger.error("Failed to save business context", error as Error, {
+      this.logger.error('Failed to save business context', error as Error, {
         businessId: businessContext.getBusinessId(),
       });
-      throw new Error(this.i18n.translate("rbac.businessContext.saveError"));
+      throw new Error(this.i18n.translate('rbac.businessContext.saveError'));
     }
   }
 
   async findByBusinessId(businessId: string): Promise<BusinessContext | null> {
-    this.logger.debug("Finding business context by business ID", {
+    this.logger.debug('Finding business context by business ID', {
       businessId,
     });
 
@@ -79,7 +79,7 @@ export class TypeOrmRbacBusinessContextRepository
       });
 
       if (!ormEntity) {
-        this.logger.debug("Business context not found", { businessId });
+        this.logger.debug('Business context not found', { businessId });
         return null;
       }
 
@@ -91,13 +91,13 @@ export class TypeOrmRbacBusinessContextRepository
       );
     } catch (error) {
       this.logger.error(
-        "Failed to find business context by ID",
+        'Failed to find business context by ID',
         error as Error,
         {
           businessId,
         },
       );
-      throw new Error(this.i18n.translate("rbac.businessContext.findError"));
+      throw new Error(this.i18n.translate('rbac.businessContext.findError'));
     }
   }
 
@@ -106,7 +106,7 @@ export class TypeOrmRbacBusinessContextRepository
   }
 
   async findAllActive(): Promise<BusinessContext[]> {
-    this.logger.debug("Finding all active business contexts");
+    this.logger.debug('Finding all active business contexts');
 
     try {
       const ormEntities = await this.repository.find({
@@ -122,10 +122,10 @@ export class TypeOrmRbacBusinessContextRepository
       );
     } catch (error) {
       this.logger.error(
-        "Failed to find active business contexts",
+        'Failed to find active business contexts',
         error as Error,
       );
-      throw new Error(this.i18n.translate("rbac.businessContext.findAllError"));
+      throw new Error(this.i18n.translate('rbac.businessContext.findAllError'));
     }
   }
 
@@ -133,7 +133,7 @@ export class TypeOrmRbacBusinessContextRepository
   async findByCriteria(
     criteria: BusinessContextCriteria,
   ): Promise<BusinessContext[]> {
-    this.logger.debug("Finding by criteria - not implemented yet", {
+    this.logger.debug('Finding by criteria - not implemented yet', {
       criteria,
     });
     return []; // TODO: implémenter si nécessaire
@@ -145,7 +145,7 @@ export class TypeOrmRbacBusinessContextRepository
       page: number;
       limit: number;
       sortBy?: string;
-      sortOrder?: "ASC" | "DESC";
+      sortOrder?: 'ASC' | 'DESC';
     },
   ): Promise<{
     data: BusinessContext[];
@@ -153,7 +153,7 @@ export class TypeOrmRbacBusinessContextRepository
     page: number;
     limit: number;
   }> {
-    this.logger.debug("Finding with filters - not implemented yet", {
+    this.logger.debug('Finding with filters - not implemented yet', {
       filters,
       pagination,
     });
@@ -166,7 +166,7 @@ export class TypeOrmRbacBusinessContextRepository
   }
 
   async exists(businessId: string): Promise<boolean> {
-    this.logger.debug("Checking if business context exists", {
+    this.logger.debug('Checking if business context exists', {
       businessId,
     });
 
@@ -178,13 +178,13 @@ export class TypeOrmRbacBusinessContextRepository
       return count > 0;
     } catch (error) {
       this.logger.error(
-        "Failed to check business context existence",
+        'Failed to check business context existence',
         error as Error,
         {
           businessId,
         },
       );
-      throw new Error(this.i18n.translate("rbac.businessContext.existsError"));
+      throw new Error(this.i18n.translate('rbac.businessContext.existsError'));
     }
   }
 
@@ -193,7 +193,7 @@ export class TypeOrmRbacBusinessContextRepository
     locationId: string,
   ): Promise<boolean> {
     // Dans le contexte RBAC simple, pas de gestion des locations
-    this.logger.debug("Location check - not implemented for RBAC", {
+    this.logger.debug('Location check - not implemented for RBAC', {
       businessId,
       locationId,
     });
@@ -206,7 +206,7 @@ export class TypeOrmRbacBusinessContextRepository
     departmentId: string,
   ): Promise<boolean> {
     // Dans le contexte RBAC simple, pas de gestion des departments
-    this.logger.debug("Department check - not implemented for RBAC", {
+    this.logger.debug('Department check - not implemented for RBAC', {
       businessId,
       locationId,
       departmentId,
@@ -215,29 +215,29 @@ export class TypeOrmRbacBusinessContextRepository
   }
 
   async countByCriteria(criteria: BusinessContextCriteria): Promise<number> {
-    this.logger.debug("Count by criteria - not implemented yet", { criteria });
+    this.logger.debug('Count by criteria - not implemented yet', { criteria });
     return 0; // TODO: implémenter si nécessaire
   }
 
   async delete(businessId: string): Promise<boolean> {
-    this.logger.info("Deleting business context", { businessId });
+    this.logger.info('Deleting business context', { businessId });
 
     try {
       const result = await this.repository.delete({ businessId });
 
       const deleted = (result.affected ?? 0) > 0;
 
-      this.logger.info("Business context deletion completed", {
+      this.logger.info('Business context deletion completed', {
         businessId,
         deleted,
       });
 
       return deleted;
     } catch (error) {
-      this.logger.error("Failed to delete business context", error as Error, {
+      this.logger.error('Failed to delete business context', error as Error, {
         businessId,
       });
-      throw new Error(this.i18n.translate("rbac.businessContext.deleteError"));
+      throw new Error(this.i18n.translate('rbac.businessContext.deleteError'));
     }
   }
 
@@ -249,7 +249,7 @@ export class TypeOrmRbacBusinessContextRepository
     averageLocationsPerBusiness: number;
     averageDepartmentsPerLocation: number;
   }> {
-    this.logger.debug("Getting context stats");
+    this.logger.debug('Getting context stats');
 
     try {
       const totalBusinesses = await this.repository.count();
@@ -266,26 +266,26 @@ export class TypeOrmRbacBusinessContextRepository
         averageDepartmentsPerLocation: 0,
       };
     } catch (error) {
-      this.logger.error("Failed to get context stats", error as Error);
-      throw new Error(this.i18n.translate("rbac.businessContext.statsError"));
+      this.logger.error('Failed to get context stats', error as Error);
+      throw new Error(this.i18n.translate('rbac.businessContext.statsError'));
     }
   }
 
   // 🚧 Méthodes complexes pas encore implémentées (YAGNI)
   async searchByName(searchTerm: string): Promise<BusinessContext[]> {
-    this.logger.debug("Search by name - not implemented yet", { searchTerm });
+    this.logger.debug('Search by name - not implemented yet', { searchTerm });
     return [];
   }
 
   async findByLocationId(locationId: string): Promise<BusinessContext[]> {
-    this.logger.debug("Find by location - not implemented for RBAC", {
+    this.logger.debug('Find by location - not implemented for RBAC', {
       locationId,
     });
     return [];
   }
 
   async findByDepartmentId(departmentId: string): Promise<BusinessContext[]> {
-    this.logger.debug("Find by department - not implemented for RBAC", {
+    this.logger.debug('Find by department - not implemented for RBAC', {
       departmentId,
     });
     return [];
@@ -323,7 +323,7 @@ export class TypeOrmRbacBusinessContextRepository
   }
 
   async synchronizeWithBusiness(businessId: string): Promise<BusinessContext> {
-    this.logger.debug("Sync with business - not implemented yet", {
+    this.logger.debug('Sync with business - not implemented yet', {
       businessId,
     });
     const context = await this.findByBusinessId(businessId);
@@ -341,7 +341,7 @@ export class TypeOrmRbacBusinessContextRepository
       locationId?: string;
       departmentId?: string;
       fullPath: string;
-      level: "BUSINESS" | "LOCATION" | "DEPARTMENT";
+      level: 'BUSINESS' | 'LOCATION' | 'DEPARTMENT';
     }>
   > {
     const context = await this.findByBusinessId(businessId);
@@ -351,7 +351,7 @@ export class TypeOrmRbacBusinessContextRepository
       {
         businessId,
         fullPath: context.getBusinessName(),
-        level: "BUSINESS",
+        level: 'BUSINESS',
       },
     ];
   }
@@ -364,7 +364,7 @@ export class TypeOrmRbacBusinessContextRepository
       await this.repository.update({ businessId }, { name: newName });
       return this.findByBusinessId(businessId);
     } catch (error) {
-      this.logger.error("Failed to update business name", error as Error, {
+      this.logger.error('Failed to update business name', error as Error, {
         businessId,
         newName,
       });
@@ -374,32 +374,32 @@ export class TypeOrmRbacBusinessContextRepository
 
   // Méthodes de hiérarchie pas implémentées pour RBAC simple
   async addLocation(): Promise<BusinessContext | null> {
-    this.logger.debug("Add location - not supported in RBAC");
+    this.logger.debug('Add location - not supported in RBAC');
     return null;
   }
 
   async addDepartment(): Promise<BusinessContext | null> {
-    this.logger.debug("Add department - not supported in RBAC");
+    this.logger.debug('Add department - not supported in RBAC');
     return null;
   }
 
   async deactivateLocation(): Promise<boolean> {
-    this.logger.debug("Deactivate location - not supported in RBAC");
+    this.logger.debug('Deactivate location - not supported in RBAC');
     return false;
   }
 
   async deactivateDepartment(): Promise<boolean> {
-    this.logger.debug("Deactivate department - not supported in RBAC");
+    this.logger.debug('Deactivate department - not supported in RBAC');
     return false;
   }
 
   async reactivateLocation(): Promise<boolean> {
-    this.logger.debug("Reactivate location - not supported in RBAC");
+    this.logger.debug('Reactivate location - not supported in RBAC');
     return false;
   }
 
   async reactivateDepartment(): Promise<boolean> {
-    this.logger.debug("Reactivate department - not supported in RBAC");
+    this.logger.debug('Reactivate department - not supported in RBAC');
     return false;
   }
 }

@@ -6,20 +6,20 @@
  * non autorisées avec les bonnes exceptions.
  */
 
-import { InsufficientPermissionsError } from "@application/exceptions/application.exceptions";
-import { I18nService } from "@application/ports/i18n.port";
-import { Logger } from "@application/ports/logger.port";
-import { IPermissionService } from "@application/ports/permission.service.interface";
+import { InsufficientPermissionsError } from '@application/exceptions/application.exceptions';
+import { I18nService } from '@application/ports/i18n.port';
+import { Logger } from '@application/ports/logger.port';
+import { IPermissionService } from '@application/ports/permission.service.interface';
 import {
   UpdateServiceRequest,
   UpdateServiceUseCase,
-} from "@application/use-cases/service/update-service.use-case";
-import { Service, ServiceStatus } from "@domain/entities/service.entity";
-import { ServiceRepository } from "@domain/repositories/service.repository.interface";
-import { BusinessId } from "@domain/value-objects/business-id.value-object";
-import { ServiceTypeId } from "@domain/value-objects/service-type-id.value-object";
+} from '@application/use-cases/service/update-service.use-case';
+import { Service, ServiceStatus } from '@domain/entities/service.entity';
+import { ServiceRepository } from '@domain/repositories/service.repository.interface';
+import { BusinessId } from '@domain/value-objects/business-id.value-object';
+import { ServiceTypeId } from '@domain/value-objects/service-type-id.value-object';
 
-describe("UpdateServiceUseCase - Permission Validation", () => {
+describe('UpdateServiceUseCase - Permission Validation', () => {
   let updateServiceUseCase: UpdateServiceUseCase;
   let mockServiceRepository: jest.Mocked<ServiceRepository>;
   let mockPermissionService: jest.Mocked<IPermissionService>;
@@ -27,20 +27,20 @@ describe("UpdateServiceUseCase - Permission Validation", () => {
   let mockI18n: jest.Mocked<I18nService>;
 
   // Test data
-  const serviceId = "550e8400-e29b-41d4-a716-446655440001";
-  const businessId = "550e8400-e29b-41d4-a716-446655440002";
-  const requestingUserId = "550e8400-e29b-41d4-a716-446655440003";
-  const unauthorizedUserId = "550e8400-e29b-41d4-a716-446655440004";
+  const serviceId = '550e8400-e29b-41d4-a716-446655440001';
+  const businessId = '550e8400-e29b-41d4-a716-446655440002';
+  const requestingUserId = '550e8400-e29b-41d4-a716-446655440003';
+  const unauthorizedUserId = '550e8400-e29b-41d4-a716-446655440004';
 
   const mockService = Service.create({
     businessId: BusinessId.create(businessId),
-    name: "Test Service",
+    name: 'Test Service',
     serviceTypeIds: [
-      ServiceTypeId.fromString("550e8400-e29b-41d4-a716-446655440005"),
+      ServiceTypeId.fromString('550e8400-e29b-41d4-a716-446655440005'),
     ],
-    description: "Test service description",
+    description: 'Test service description',
     basePrice: 50,
-    currency: "EUR",
+    currency: 'EUR',
     duration: 60,
     allowOnlineBooking: true,
     requiresApproval: false,
@@ -80,8 +80,8 @@ describe("UpdateServiceUseCase - Permission Validation", () => {
     mockI18n = {
       translate: jest.fn((key: string, params?: any) => {
         const translations: Record<string, string> = {
-          "service.errors.not_found": `Service with ID ${params?.id} not found`,
-          "permissions.insufficient": `Insufficient permissions for ${params?.operation}`,
+          'service.errors.not_found': `Service with ID ${params?.id} not found`,
+          'permissions.insufficient': `Insufficient permissions for ${params?.operation}`,
         };
         return translations[key] || key;
       }),
@@ -98,14 +98,14 @@ describe("UpdateServiceUseCase - Permission Validation", () => {
     );
   });
 
-  describe("🔐 Permission Checks - MANAGE_SERVICES Permission", () => {
-    it("🚨 RED - should call requirePermission before updating service", async () => {
+  describe('🔐 Permission Checks - MANAGE_SERVICES Permission', () => {
+    it('🚨 RED - should call requirePermission before updating service', async () => {
       // Arrange
       const updateRequest: UpdateServiceRequest = {
         serviceId,
         requestingUserId,
         updates: {
-          name: "Updated Service Name",
+          name: 'Updated Service Name',
         },
       };
 
@@ -119,7 +119,7 @@ describe("UpdateServiceUseCase - Permission Validation", () => {
       // Assert
       expect(mockPermissionService.requirePermission).toHaveBeenCalledWith(
         requestingUserId,
-        "MANAGE_SERVICES",
+        'MANAGE_SERVICES',
         {
           businessId,
           resourceId: serviceId,
@@ -127,13 +127,13 @@ describe("UpdateServiceUseCase - Permission Validation", () => {
       );
     });
 
-    it("🚨 RED - should throw InsufficientPermissionsError when user cannot manage services", async () => {
+    it('🚨 RED - should throw InsufficientPermissionsError when user cannot manage services', async () => {
       // Arrange
       const updateRequest: UpdateServiceRequest = {
         serviceId,
         requestingUserId: unauthorizedUserId,
         updates: {
-          name: "Updated Service Name",
+          name: 'Updated Service Name',
         },
       };
 
@@ -141,7 +141,7 @@ describe("UpdateServiceUseCase - Permission Validation", () => {
       mockPermissionService.requirePermission.mockRejectedValue(
         new InsufficientPermissionsError(
           unauthorizedUserId,
-          "MANAGE_SERVICES",
+          'MANAGE_SERVICES',
           serviceId,
         ),
       );
@@ -153,7 +153,7 @@ describe("UpdateServiceUseCase - Permission Validation", () => {
 
       expect(mockPermissionService.requirePermission).toHaveBeenCalledWith(
         unauthorizedUserId,
-        "MANAGE_SERVICES",
+        'MANAGE_SERVICES',
         {
           businessId,
           resourceId: serviceId,
@@ -164,13 +164,13 @@ describe("UpdateServiceUseCase - Permission Validation", () => {
       expect(mockServiceRepository.save).not.toHaveBeenCalled();
     });
 
-    it("🚨 RED - should pass business context in permission validation", async () => {
+    it('🚨 RED - should pass business context in permission validation', async () => {
       // Arrange
       const updateRequest: UpdateServiceRequest = {
         serviceId,
         requestingUserId,
         updates: {
-          description: "Updated description",
+          description: 'Updated description',
         },
       };
 
@@ -184,7 +184,7 @@ describe("UpdateServiceUseCase - Permission Validation", () => {
       // Assert
       expect(mockPermissionService.requirePermission).toHaveBeenCalledWith(
         requestingUserId,
-        "MANAGE_SERVICES",
+        'MANAGE_SERVICES',
         expect.objectContaining({
           businessId,
           resourceId: serviceId,
@@ -193,8 +193,8 @@ describe("UpdateServiceUseCase - Permission Validation", () => {
     });
   });
 
-  describe("🔍 Error Handling & Logging", () => {
-    it("🚨 RED - should log permission denial with context", async () => {
+  describe('🔍 Error Handling & Logging', () => {
+    it('🚨 RED - should log permission denial with context', async () => {
       // Arrange
       const updateRequest: UpdateServiceRequest = {
         serviceId,
@@ -206,7 +206,7 @@ describe("UpdateServiceUseCase - Permission Validation", () => {
 
       const permissionError = new InsufficientPermissionsError(
         unauthorizedUserId,
-        "MANAGE_SERVICES",
+        'MANAGE_SERVICES',
         serviceId,
       );
 
@@ -224,20 +224,20 @@ describe("UpdateServiceUseCase - Permission Validation", () => {
 
       // Assert
       expect(mockLogger.error).toHaveBeenCalledWith(
-        "Permission denied for service update",
+        'Permission denied for service update',
         expect.any(Error),
         expect.objectContaining({
           requestingUserId: unauthorizedUserId,
           serviceId,
           businessId,
-          requiredPermission: "MANAGE_SERVICES",
+          requiredPermission: 'MANAGE_SERVICES',
         }),
       );
     });
   });
 
-  describe("🎯 Business Rules - Service-Specific Updates", () => {
-    it("🚨 RED - should require permissions for pricing updates", async () => {
+  describe('🎯 Business Rules - Service-Specific Updates', () => {
+    it('🚨 RED - should require permissions for pricing updates', async () => {
       // Arrange
       const updateRequest: UpdateServiceRequest = {
         serviceId,
@@ -245,7 +245,7 @@ describe("UpdateServiceUseCase - Permission Validation", () => {
         updates: {
           pricing: {
             basePrice: 100,
-            currency: "EUR",
+            currency: 'EUR',
           },
         },
       };
@@ -260,7 +260,7 @@ describe("UpdateServiceUseCase - Permission Validation", () => {
       // Assert
       expect(mockPermissionService.requirePermission).toHaveBeenCalledWith(
         requestingUserId,
-        "MANAGE_SERVICES",
+        'MANAGE_SERVICES',
         expect.objectContaining({
           businessId,
           resourceId: serviceId,
@@ -268,9 +268,9 @@ describe("UpdateServiceUseCase - Permission Validation", () => {
       );
     });
 
-    it("🚨 RED - should require permissions for staff assignments", async () => {
+    it('🚨 RED - should require permissions for staff assignments', async () => {
       // Arrange
-      const staffId = "550e8400-e29b-41d4-a716-446655440006";
+      const staffId = '550e8400-e29b-41d4-a716-446655440006';
       const updateRequest: UpdateServiceRequest = {
         serviceId,
         requestingUserId,
@@ -289,7 +289,7 @@ describe("UpdateServiceUseCase - Permission Validation", () => {
       // Assert
       expect(mockPermissionService.requirePermission).toHaveBeenCalledWith(
         requestingUserId,
-        "MANAGE_SERVICES",
+        'MANAGE_SERVICES',
         expect.objectContaining({
           businessId,
           resourceId: serviceId,
@@ -298,15 +298,15 @@ describe("UpdateServiceUseCase - Permission Validation", () => {
     });
   });
 
-  describe("✅ TDD GREEN Phase - Placeholder for Implementation Tests", () => {
-    it("should be implemented after UpdateServiceUseCase refactoring", () => {
+  describe('✅ TDD GREEN Phase - Placeholder for Implementation Tests', () => {
+    it('should be implemented after UpdateServiceUseCase refactoring', () => {
       // Ce test sera développé après implémentation complète du refactoring
       expect(true).toBe(true);
     });
   });
 
-  describe("🔵 TDD REFACTOR Phase - Enhanced Permission Logic Tests", () => {
-    it("should be implemented after GREEN phase completion", () => {
+  describe('🔵 TDD REFACTOR Phase - Enhanced Permission Logic Tests', () => {
+    it('should be implemented after GREEN phase completion', () => {
       // Ce test sera développé dans la phase REFACTOR
       expect(true).toBe(true);
     });

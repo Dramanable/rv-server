@@ -70,7 +70,7 @@ export interface CookieConfig {
     maxAge: number;
     httpOnly: boolean;
     secure: boolean;
-    sameSite: "strict" | "lax" | "none";
+    sameSite: 'strict' | 'lax' | 'none';
     domain?: string;
     path: string;
   };
@@ -79,7 +79,7 @@ export interface CookieConfig {
     maxAge: number;
     httpOnly: boolean;
     secure: boolean;
-    sameSite: "strict" | "lax" | "none";
+    sameSite: 'strict' | 'lax' | 'none';
     domain?: string;
     path: string;
   };
@@ -113,6 +113,6 @@ export interface SecurityContext {
   userAgent?: string;
   ip?: string;
   timestamp: Date;
-  environment: "development" | "staging" | "production";
+  environment: 'development' | 'staging' | 'production';
   securityHeaders?: Record<string, string>;
 }

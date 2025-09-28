@@ -8,9 +8,9 @@
 import {
   Appointment,
   AppointmentStatus,
-} from "../../../domain/entities/appointment.entity";
-import { AppointmentRepository } from "../../../domain/repositories/appointment.repository.interface";
-import { BusinessId } from "../../../domain/value-objects/business-id.value-object";
+} from '../../../domain/entities/appointment.entity';
+import { AppointmentRepository } from '../../../domain/repositories/appointment.repository.interface';
+import { BusinessId } from '../../../domain/value-objects/business-id.value-object';
 
 export interface ListAppointmentsRequest {
   readonly requestingUserId: string;
@@ -20,7 +20,7 @@ export interface ListAppointmentsRequest {
   };
   readonly sorting: {
     readonly sortBy: string;
-    readonly sortOrder: "asc" | "desc";
+    readonly sortOrder: 'asc' | 'desc';
   };
   readonly filters: {
     readonly search?: string;

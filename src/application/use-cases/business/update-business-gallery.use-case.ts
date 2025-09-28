@@ -4,11 +4,11 @@
  * ✅ Business logic for updating gallery metadata and organization
  */
 
-import { BusinessRepository } from "../../../domain/repositories/business.repository";
-import { BusinessId } from "../../../domain/value-objects/business-id.value-object";
-import { I18nService } from "../../../shared/types/i18n.interface";
-import { ILogger } from "../../../shared/types/logger.interface";
-import { BusinessNotFoundError } from "../../exceptions/business.exceptions";
+import { BusinessRepository } from '../../../domain/repositories/business.repository';
+import { BusinessId } from '../../../domain/value-objects/business-id.value-object';
+import { I18nService } from '../../../shared/types/i18n.interface';
+import { ILogger } from '../../../shared/types/logger.interface';
+import { BusinessNotFoundError } from '../../exceptions/business.exceptions';
 
 export interface UpdateBusinessGalleryRequest {
   readonly businessId: string;
@@ -50,7 +50,7 @@ export class UpdateBusinessGalleryUseCase {
   async execute(
     request: UpdateBusinessGalleryRequest,
   ): Promise<UpdateBusinessGalleryResponse> {
-    this.logger.log("Updating business gallery", {
+    this.logger.log('Updating business gallery', {
       businessId: request.businessId,
       requestingUserId: request.requestingUserId,
       updatesCount: {
@@ -66,8 +66,8 @@ export class UpdateBusinessGalleryUseCase {
       const business = await this.businessRepository.findById(businessId);
 
       if (!business) {
-        const errorMessage = this.i18n.t("error.business.not_found");
-        this.logger.error("Business not found for gallery update", {
+        const errorMessage = this.i18n.t('error.business.not_found');
+        this.logger.error('Business not found for gallery update', {
           businessId: request.businessId,
           requestingUserId: request.requestingUserId,
         });
@@ -117,7 +117,7 @@ export class UpdateBusinessGalleryUseCase {
       // 7. Save business
       await this.businessRepository.save(business);
 
-      this.logger.log("Business gallery updated successfully", {
+      this.logger.log('Business gallery updated successfully', {
         businessId: request.businessId,
         updatedImagesCount,
         totalImages: updatedGallery.count,
@@ -127,14 +127,14 @@ export class UpdateBusinessGalleryUseCase {
         success: true,
         businessId: request.businessId,
         updatedImages: updatedImagesCount,
-        message: this.i18n.t("gallery.updated_successfully", {
+        message: this.i18n.t('gallery.updated_successfully', {
           count: updatedImagesCount,
         }),
       };
     } catch (error) {
       const errorMessage =
-        error instanceof Error ? error.message : "Unknown error";
-      this.logger.error("Failed to update business gallery", {
+        error instanceof Error ? error.message : 'Unknown error';
+      this.logger.error('Failed to update business gallery', {
         businessId: request.businessId,
         error: errorMessage,
         requestingUserId: request.requestingUserId,

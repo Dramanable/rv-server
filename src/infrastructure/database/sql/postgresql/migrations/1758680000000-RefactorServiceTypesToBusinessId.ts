@@ -1,12 +1,12 @@
-import { MigrationInterface, QueryRunner } from "typeorm";
+import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class RefactorServiceTypesToBusinessId1758680000000
   implements MigrationInterface
 {
-  name = "RefactorServiceTypesToBusinessId1758680000000";
+  name = 'RefactorServiceTypesToBusinessId1758680000000';
 
   private getSchemaName(): string {
-    return process.env.DB_SCHEMA || "public";
+    return process.env.DB_SCHEMA || 'public';
   }
 
   public async up(queryRunner: QueryRunner): Promise<void> {
@@ -30,15 +30,15 @@ export class RefactorServiceTypesToBusinessId1758680000000
     // 1. Add new columns to service_types - AVEC VÉRIFICATION D'EXISTENCE
     const businessIdExists = await queryRunner.hasColumn(
       `${schema}.service_types`,
-      "business_id",
+      'business_id',
     );
     const codeExists = await queryRunner.hasColumn(
       `${schema}.service_types`,
-      "code",
+      'code',
     );
     const sortOrderExists = await queryRunner.hasColumn(
       `${schema}.service_types`,
-      "sort_order",
+      'sort_order',
     );
 
     if (!businessIdExists) {
@@ -46,9 +46,9 @@ export class RefactorServiceTypesToBusinessId1758680000000
         ALTER TABLE "${schema}"."service_types"
         ADD COLUMN "business_id" uuid
       `);
-      console.log("✅ Added business_id column");
+      console.log('✅ Added business_id column');
     } else {
-      console.log("ℹ️  business_id column already exists, skipping");
+      console.log('ℹ️  business_id column already exists, skipping');
     }
 
     if (!codeExists) {
@@ -56,9 +56,9 @@ export class RefactorServiceTypesToBusinessId1758680000000
         ALTER TABLE "${schema}"."service_types"
         ADD COLUMN "code" varchar(20)
       `);
-      console.log("✅ Added code column");
+      console.log('✅ Added code column');
     } else {
-      console.log("ℹ️  code column already exists, skipping");
+      console.log('ℹ️  code column already exists, skipping');
     }
 
     if (!sortOrderExists) {
@@ -66,9 +66,9 @@ export class RefactorServiceTypesToBusinessId1758680000000
         ALTER TABLE "${schema}"."service_types"
         ADD COLUMN "sort_order" integer DEFAULT 0
       `);
-      console.log("✅ Added sort_order column");
+      console.log('✅ Added sort_order column');
     } else {
-      console.log("ℹ️  sort_order column already exists, skipping");
+      console.log('ℹ️  sort_order column already exists, skipping');
     }
 
     // 2. Update business_id from service_category_id - SEULEMENT SI NÉCESSAIRE
@@ -85,10 +85,10 @@ export class RefactorServiceTypesToBusinessId1758680000000
           FROM "${schema}"."service_categories" sc
           WHERE st."service_category_id" = sc."id"
         `);
-        console.log("✅ Updated business_id from service_categories");
+        console.log('✅ Updated business_id from service_categories');
       } else {
         console.log(
-          "⚠️  service_categories table not found, skipping business_id update",
+          '⚠️  service_categories table not found, skipping business_id update',
         );
       }
     }
@@ -110,7 +110,7 @@ export class RefactorServiceTypesToBusinessId1758680000000
           ALTER TABLE "${schema}"."service_types"
           ALTER COLUMN "business_id" SET NOT NULL
         `);
-        console.log("✅ Set business_id as NOT NULL");
+        console.log('✅ Set business_id as NOT NULL');
       }
     }
 
@@ -126,7 +126,7 @@ export class RefactorServiceTypesToBusinessId1758680000000
         ALTER TABLE "${schema}"."service_types"
         ALTER COLUMN "code" SET NOT NULL
       `);
-      console.log("✅ Set code as NOT NULL with generated values");
+      console.log('✅ Set code as NOT NULL with generated values');
     }
 
     // 5. Make audit columns nullable - TOUJOURS NÉCESSAIRE
@@ -141,7 +141,7 @@ export class RefactorServiceTypesToBusinessId1758680000000
     `);
 
     const needsAuditUpdate = auditColumnsResult.some(
-      (col: any) => col.is_nullable === "NO",
+      (col: any) => col.is_nullable === 'NO',
     );
 
     if (needsAuditUpdate) {
@@ -150,9 +150,9 @@ export class RefactorServiceTypesToBusinessId1758680000000
         ALTER COLUMN "created_by" DROP NOT NULL,
         ALTER COLUMN "updated_by" DROP NOT NULL
       `);
-      console.log("✅ Made audit columns nullable");
+      console.log('✅ Made audit columns nullable');
     } else {
-      console.log("ℹ️  Audit columns already nullable");
+      console.log('ℹ️  Audit columns already nullable');
     }
 
     // 6. Create indexes - SEULEMENT SI PAS DÉJÀ CRÉÉS
@@ -161,10 +161,10 @@ export class RefactorServiceTypesToBusinessId1758680000000
         CREATE UNIQUE INDEX IF NOT EXISTS "IDX_service_types_business_code"
         ON "${schema}"."service_types" ("business_id", "code")
       `);
-      console.log("✅ Created business_code unique index");
+      console.log('✅ Created business_code unique index');
     } catch (error) {
       console.log(
-        "ℹ️  business_code index already exists or could not be created",
+        'ℹ️  business_code index already exists or could not be created',
       );
     }
 
@@ -173,18 +173,18 @@ export class RefactorServiceTypesToBusinessId1758680000000
         CREATE INDEX IF NOT EXISTS "IDX_service_types_business_active"
         ON "${schema}"."service_types" ("business_id", "is_active")
       `);
-      console.log("✅ Created business_active index");
+      console.log('✅ Created business_active index');
     } catch (error) {
       console.log(
-        "ℹ️  business_active index already exists or could not be created",
+        'ℹ️  business_active index already exists or could not be created',
       );
     }
 
     console.log(
-      "✅ ServiceTypes refactored to use business_id instead of service_category_id",
+      '✅ ServiceTypes refactored to use business_id instead of service_category_id',
     );
     console.log(
-      "⚠️  service_category_id column kept for now - will be removed in next migration after updating dependencies",
+      '⚠️  service_category_id column kept for now - will be removed in next migration after updating dependencies',
     );
   }
 

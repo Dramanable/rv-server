@@ -1,7 +1,7 @@
-import { MigrationInterface, QueryRunner } from "typeorm";
+import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class InitialMigration1695825600000 implements MigrationInterface {
-  name = "InitialMigration1695825600000";
+  name = 'InitialMigration1695825600000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     // Create users table
@@ -137,8 +137,8 @@ export class InitialMigration1695825600000 implements MigrationInterface {
 
     // Add foreign key constraints only if they don't exist
     const hasBusinessSectorCreatedByFK = await queryRunner.hasColumn(
-      "business_sectors",
-      "created_by",
+      'business_sectors',
+      'created_by',
     );
     if (hasBusinessSectorCreatedByFK) {
       try {
@@ -149,13 +149,13 @@ export class InitialMigration1695825600000 implements MigrationInterface {
         `);
       } catch (error) {
         // FK might already exist, ignore error
-        console.log("FK_business_sectors_created_by might already exist");
+        console.log('FK_business_sectors_created_by might already exist');
       }
     }
 
     const hasBusinessSectorUpdatedByFK = await queryRunner.hasColumn(
-      "business_sectors",
-      "updated_by",
+      'business_sectors',
+      'updated_by',
     );
     if (hasBusinessSectorUpdatedByFK) {
       try {
@@ -166,13 +166,13 @@ export class InitialMigration1695825600000 implements MigrationInterface {
         `);
       } catch (error) {
         // FK might already exist, ignore error
-        console.log("FK_business_sectors_updated_by might already exist");
+        console.log('FK_business_sectors_updated_by might already exist');
       }
     }
 
     const hasRefreshTokenUserFK = await queryRunner.hasColumn(
-      "refresh_tokens",
-      "user_id",
+      'refresh_tokens',
+      'user_id',
     );
     if (hasRefreshTokenUserFK) {
       try {
@@ -183,7 +183,7 @@ export class InitialMigration1695825600000 implements MigrationInterface {
         `);
       } catch (error) {
         // FK might already exist, ignore error
-        console.log("FK_refresh_tokens_user_id might already exist");
+        console.log('FK_refresh_tokens_user_id might already exist');
       }
     }
   }
@@ -204,7 +204,7 @@ export class InitialMigration1695825600000 implements MigrationInterface {
         `ALTER TABLE "business_sectors" DROP CONSTRAINT IF EXISTS "FK_business_sectors_created_by"`,
       );
     } catch (error) {
-      console.log("Some foreign keys might not exist");
+      console.log('Some foreign keys might not exist');
     }
 
     // Drop indexes

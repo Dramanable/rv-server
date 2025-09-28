@@ -80,7 +80,7 @@ export interface IConfigService {
   /**
    * Type de base de données (postgresql, mongodb, mysql, sqlite)
    */
-  getDatabaseType(): "postgresql" | "mongodb" | "mysql" | "sqlite";
+  getDatabaseType(): 'postgresql' | 'mongodb' | 'mysql' | 'sqlite';
 
   /**
    * Configuration Database PostgreSQL

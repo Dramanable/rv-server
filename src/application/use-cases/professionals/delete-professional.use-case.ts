@@ -4,14 +4,14 @@
  * @description Use case pour supprimer un professionnel selon la Clean Architecture
  */
 
-import { I18nService } from "@application/ports/i18n.port";
-import { Logger } from "@application/ports/logger.port";
+import { I18nService } from '@application/ports/i18n.port';
+import { Logger } from '@application/ports/logger.port';
 import {
   ProfessionalNotFoundError,
   ProfessionalValidationError,
-} from "@domain/exceptions/professional.exceptions";
-import { IProfessionalRepository } from "@domain/repositories/professional.repository";
-import { ProfessionalId } from "@domain/value-objects/professional-id.value-object";
+} from '@domain/exceptions/professional.exceptions';
+import { IProfessionalRepository } from '@domain/repositories/professional.repository';
+import { ProfessionalId } from '@domain/value-objects/professional-id.value-object';
 
 /**
  * ✅ OBLIGATOIRE - Interface de requête avec contexte complet
@@ -55,12 +55,12 @@ export class DeleteProfessionalUseCase {
     // ✅ OBLIGATOIRE - Validation des champs requis
     if (!request.correlationId) {
       throw new ProfessionalValidationError(
-        "Correlation ID is required for deletion",
+        'Correlation ID is required for deletion',
       );
     }
 
     // ✅ OBLIGATOIRE - Logging de début avec contexte complet
-    this.logger.info("Deleting professional", {
+    this.logger.info('Deleting professional', {
       professionalId: request.professionalId,
       requestingUserId: request.requestingUserId,
       correlationId: request.correlationId,
@@ -74,13 +74,13 @@ export class DeleteProfessionalUseCase {
         professionalId = ProfessionalId.fromString(request.professionalId);
       } catch (error) {
         const errorMessage = this.i18n.translate(
-          "professional.errors.invalidId",
+          'professional.errors.invalidId',
           {
             professionalId: request.professionalId,
           },
         );
 
-        this.logger.error("Invalid professional ID format", error as Error, {
+        this.logger.error('Invalid professional ID format', error as Error, {
           professionalId: request.professionalId,
           correlationId: request.correlationId,
         });
@@ -94,14 +94,14 @@ export class DeleteProfessionalUseCase {
 
       if (!existingProfessional) {
         const errorMessage = this.i18n.translate(
-          "professional.errors.notFound",
+          'professional.errors.notFound',
           {
             professionalId: request.professionalId,
           },
         );
 
         this.logger.error(
-          "Professional not found for deletion",
+          'Professional not found for deletion',
           new Error(errorMessage),
           {
             professionalId: request.professionalId,
@@ -114,18 +114,18 @@ export class DeleteProfessionalUseCase {
 
       // ✅ ÉTAPE 3 - Validation des règles métier
       if (
-        existingProfessional.getStatus() === "ACTIVE" &&
+        existingProfessional.getStatus() === 'ACTIVE' &&
         (existingProfessional as any).hasActiveAppointments
       ) {
         const errorMessage = this.i18n.translate(
-          "professional.errors.cannotDeleteWithAppointments",
+          'professional.errors.cannotDeleteWithAppointments',
           {
             professionalId: request.professionalId,
           },
         );
 
         this.logger.error(
-          "Cannot delete professional with active appointments",
+          'Cannot delete professional with active appointments',
           undefined,
           {
             professionalId: request.professionalId,
@@ -140,7 +140,7 @@ export class DeleteProfessionalUseCase {
       await this.professionalRepository.deleteById(professionalId);
 
       // ✅ OBLIGATOIRE - Logging de succès
-      this.logger.info("Professional deleted successfully", {
+      this.logger.info('Professional deleted successfully', {
         professionalId: request.professionalId,
         deletedBy: request.requestingUserId,
         correlationId: request.correlationId,
@@ -161,7 +161,7 @@ export class DeleteProfessionalUseCase {
         !(error instanceof ProfessionalValidationError)
       ) {
         this.logger.error(
-          "Repository error during professional deletion",
+          'Repository error during professional deletion',
           error as Error,
           {
             professionalId: request.professionalId,

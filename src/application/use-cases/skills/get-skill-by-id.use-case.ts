@@ -1,8 +1,8 @@
-import { ISkillRepository } from "../../../domain/repositories/skill.repository";
-import { Logger } from "../../ports/logger.port";
-import { I18nService } from "../../ports/i18n.port";
-import { Skill } from "../../../domain/entities/skill.entity";
-import { SkillNotFoundException } from "../../../domain/exceptions/skill.exceptions";
+import { ISkillRepository } from '../../../domain/repositories/skill.repository';
+import { Logger } from '../../ports/logger.port';
+import { I18nService } from '../../ports/i18n.port';
+import { Skill } from '../../../domain/entities/skill.entity';
+import { SkillNotFoundException } from '../../../domain/exceptions/skill.exceptions';
 
 export interface GetSkillByIdRequest {
   readonly skillId: string;
@@ -31,7 +31,7 @@ export class GetSkillByIdUseCase {
   ) {}
 
   async execute(request: GetSkillByIdRequest): Promise<GetSkillByIdResponse> {
-    this.logger.info("Getting skill by ID", {
+    this.logger.info('Getting skill by ID', {
       skillId: request.skillId,
       businessId: request.businessId,
       requestingUserId: request.requestingUserId,
@@ -46,7 +46,7 @@ export class GetSkillByIdUseCase {
       const skill = await this.skillRepository.findById(request.skillId);
 
       if (!skill) {
-        this.logger.warn("Skill not found", {
+        this.logger.warn('Skill not found', {
           skillId: request.skillId,
           businessId: request.businessId,
           correlationId: request.correlationId,
@@ -56,7 +56,7 @@ export class GetSkillByIdUseCase {
 
       // Validate business ownership
       if (skill.getBusinessId().getValue() !== request.businessId) {
-        this.logger.warn("Skill access denied - wrong business", {
+        this.logger.warn('Skill access denied - wrong business', {
           skillId: request.skillId,
           skillBusinessId: skill.getBusinessId().getValue(),
           requestingBusinessId: request.businessId,
@@ -65,7 +65,7 @@ export class GetSkillByIdUseCase {
         throw new SkillNotFoundException(request.skillId);
       }
 
-      this.logger.info("Skill retrieved successfully", {
+      this.logger.info('Skill retrieved successfully', {
         skillId: request.skillId,
         skillName: skill.getName(),
         businessId: request.businessId,
@@ -82,8 +82,8 @@ export class GetSkillByIdUseCase {
       };
     } catch (error) {
       this.logger.error(
-        "Failed to get skill by ID",
-        error instanceof Error ? error : new Error("Unknown error"),
+        'Failed to get skill by ID',
+        error instanceof Error ? error : new Error('Unknown error'),
         {
           skillId: request.skillId,
           businessId: request.businessId,
@@ -97,36 +97,36 @@ export class GetSkillByIdUseCase {
   private validateRequest(request: GetSkillByIdRequest): void {
     if (!request.correlationId) {
       throw new Error(
-        this.i18n.translate("skill.validation.correlationIdRequired"),
+        this.i18n.translate('skill.validation.correlationIdRequired'),
       );
     }
 
     if (!request.requestingUserId) {
       throw new Error(
-        this.i18n.translate("skill.validation.requestingUserIdRequired"),
+        this.i18n.translate('skill.validation.requestingUserIdRequired'),
       );
     }
 
     if (!request.timestamp) {
       throw new Error(
-        this.i18n.translate("skill.validation.timestampRequired"),
+        this.i18n.translate('skill.validation.timestampRequired'),
       );
     }
 
     if (!request.businessId) {
       throw new Error(
-        this.i18n.translate("skill.validation.businessIdRequired"),
+        this.i18n.translate('skill.validation.businessIdRequired'),
       );
     }
 
     if (!request.skillId) {
-      throw new Error("Skill ID is required");
+      throw new Error('Skill ID is required');
     }
 
     // Check if request is not too old (5 minutes)
     const requestAge = Date.now() - request.timestamp.getTime();
     if (requestAge > 5 * 60 * 1000) {
-      throw new Error(this.i18n.translate("skill.validation.requestTooOld"));
+      throw new Error(this.i18n.translate('skill.validation.requestTooOld'));
     }
   }
 }

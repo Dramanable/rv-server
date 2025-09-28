@@ -5,14 +5,14 @@
  * ✅ Security guards et pipes globaux
  */
 
-import { InfrastructureModule } from "@infrastructure/infrastructure.module";
-import { Module } from "@nestjs/common";
-import { ConfigModule } from "@nestjs/config";
-import { APP_GUARD, APP_PIPE } from "@nestjs/core";
-import { ExceptionFiltersModule } from "@presentation/filters/exception-filters.module";
-import { PresentationModule } from "@presentation/presentation.module";
-import { JwtAuthGuard } from "@presentation/security/guards/jwt-auth.guard";
-import { SecurityValidationPipe } from "@presentation/security/validation.pipe";
+import { InfrastructureModule } from '@infrastructure/infrastructure.module';
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { APP_GUARD, APP_PIPE } from '@nestjs/core';
+import { ExceptionFiltersModule } from '@presentation/filters/exception-filters.module';
+import { PresentationModule } from '@presentation/presentation.module';
+import { JwtAuthGuard } from '@presentation/security/guards/jwt-auth.guard';
+import { SecurityValidationPipe } from '@presentation/security/validation.pipe';
 
 @Module({
   imports: [
@@ -20,8 +20,8 @@ import { SecurityValidationPipe } from "@presentation/security/validation.pipe";
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: [
-        `.env.${process.env.NODE_ENV || "development"}`,
-        ".env", // Fallback
+        `.env.${process.env.NODE_ENV || 'development'}`,
+        '.env', // Fallback
       ],
       expandVariables: true,
       cache: true, // Performance optimization

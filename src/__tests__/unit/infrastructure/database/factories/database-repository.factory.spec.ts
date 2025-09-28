@@ -4,8 +4,8 @@
  * Tests pour le pattern Factory multi-database
  */
 
-describe("DatabaseRepositoryFactory", () => {
-  it("should be tested", () => {
+describe('DatabaseRepositoryFactory', () => {
+  it('should be tested', () => {
     expect(true).toBe(true);
   });
 });

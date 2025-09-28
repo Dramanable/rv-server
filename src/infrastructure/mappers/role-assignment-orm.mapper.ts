@@ -1,5 +1,5 @@
-import { RoleAssignment } from "@domain/entities/role-assignment.entity";
-import { RoleAssignmentOrmEntity } from "@infrastructure/database/sql/postgresql/entities/role-assignment-orm.entity";
+import { RoleAssignment } from '@domain/entities/role-assignment.entity';
+import { RoleAssignmentOrmEntity } from '@infrastructure/database/sql/postgresql/entities/role-assignment-orm.entity';
 
 /**
  * 🔄 RoleAssignment ORM Mapper
@@ -55,7 +55,7 @@ export class RoleAssignmentOrmMapper {
 
     // 🔄 Versioning et métadonnées techniques
     ormEntity.version = 1; // Version initiale
-    ormEntity.assignmentSource = "MANUAL"; // Valeur par défaut
+    ormEntity.assignmentSource = 'MANUAL'; // Valeur par défaut
     ormEntity.priorityLevel = 0; // Valeur par défaut
 
     return ormEntity;

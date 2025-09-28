@@ -1,13 +1,13 @@
-import { IAuditService } from "@application/ports/audit.port";
-import { I18nService } from "@application/ports/i18n.port";
-import { Logger } from "@application/ports/logger.port";
-import { ProfessionalValidationError } from "@domain/exceptions/professional.exceptions";
-import { IProfessionalRepository } from "@domain/repositories/professional.repository";
-import { BusinessId } from "@domain/value-objects/business-id.value-object";
+import { IAuditService } from '@application/ports/audit.port';
+import { I18nService } from '@application/ports/i18n.port';
+import { Logger } from '@application/ports/logger.port';
+import { ProfessionalValidationError } from '@domain/exceptions/professional.exceptions';
+import { IProfessionalRepository } from '@domain/repositories/professional.repository';
+import { BusinessId } from '@domain/value-objects/business-id.value-object';
 import {
   ListProfessionalsRequest,
   ListProfessionalsResponse,
-} from "./list-professionals.types";
+} from './list-professionals.types';
 
 export class ListProfessionalsUseCase {
   constructor(
@@ -23,28 +23,28 @@ export class ListProfessionalsUseCase {
   private validateRequest(request: ListProfessionalsRequest): void {
     if (!request.businessId) {
       throw new ProfessionalValidationError(
-        this.i18n.translate("professional.validation.businessIdRequired"),
+        this.i18n.translate('professional.validation.businessIdRequired'),
         { businessId: request.businessId },
       );
     }
 
     if (!request.requestingUserId) {
       throw new ProfessionalValidationError(
-        this.i18n.translate("professional.validation.contextRequired"),
+        this.i18n.translate('professional.validation.contextRequired'),
         { requestingUserId: request.requestingUserId },
       );
     }
 
     if (request.pagination.page < 1) {
       throw new ProfessionalValidationError(
-        this.i18n.translate("professional.validation.pageInvalid"),
+        this.i18n.translate('professional.validation.pageInvalid'),
         { page: request.pagination.page },
       );
     }
 
     if (request.pagination.limit < 1 || request.pagination.limit > 100) {
       throw new ProfessionalValidationError(
-        this.i18n.translate("professional.validation.limitInvalid"),
+        this.i18n.translate('professional.validation.limitInvalid'),
         { limit: request.pagination.limit },
       );
     }
@@ -53,7 +53,7 @@ export class ListProfessionalsUseCase {
   async execute(
     request: ListProfessionalsRequest,
   ): Promise<ListProfessionalsResponse> {
-    this.logger.info("Listing professionals", {
+    this.logger.info('Listing professionals', {
       businessId: request.businessId,
       correlationId: request.correlationId,
       requestingUserId: request.requestingUserId,
@@ -65,14 +65,14 @@ export class ListProfessionalsUseCase {
       // Validate required context fields
       if (!request.businessId || !request.businessId.trim()) {
         throw new ProfessionalValidationError(
-          this.i18n.translate("professional.validation.businessIdRequired"),
+          this.i18n.translate('professional.validation.businessIdRequired'),
           { businessId: request.businessId },
         );
       }
 
       if (!request.requestingUserId || !request.requestingUserId.trim()) {
         throw new ProfessionalValidationError(
-          this.i18n.translate("professional.validation.context"),
+          this.i18n.translate('professional.validation.context'),
           { requestingUserId: request.requestingUserId },
         );
       }
@@ -83,7 +83,7 @@ export class ListProfessionalsUseCase {
         request.pagination.page < 1
       ) {
         throw new ProfessionalValidationError(
-          this.i18n.translate("professional.validation.page"),
+          this.i18n.translate('professional.validation.page'),
           { page: request.pagination.page },
         );
       }
@@ -93,7 +93,7 @@ export class ListProfessionalsUseCase {
         (request.pagination.limit < 1 || request.pagination.limit > 100)
       ) {
         throw new ProfessionalValidationError(
-          this.i18n.translate("professional.validation.limit"),
+          this.i18n.translate('professional.validation.limit'),
           { limit: request.pagination.limit },
         );
       }
@@ -104,7 +104,7 @@ export class ListProfessionalsUseCase {
         businessId = BusinessId.fromString(request.businessId);
       } catch (error) {
         throw new ProfessionalValidationError(
-          this.i18n.translate("professional.validation.businessIdRequired"),
+          this.i18n.translate('professional.validation.businessIdRequired'),
           { businessId: request.businessId },
         );
       }
@@ -117,8 +117,8 @@ export class ListProfessionalsUseCase {
             limit: request.pagination?.limit ?? 10,
           },
           sorting: {
-            sortBy: request.sorting?.sortBy ?? "createdAt",
-            sortOrder: request.sorting?.sortOrder ?? "desc",
+            sortBy: request.sorting?.sortBy ?? 'createdAt',
+            sortOrder: request.sorting?.sortOrder ?? 'desc',
           },
           search: request.filters?.search,
           filters: {
@@ -131,7 +131,7 @@ export class ListProfessionalsUseCase {
       const totalPages = Math.ceil(total / (request.pagination?.limit ?? 10));
       const currentPage = request.pagination?.page ?? 1;
 
-      this.logger.info("Successfully listed professionals", {
+      this.logger.info('Successfully listed professionals', {
         businessId: request.businessId,
         correlationId: request.correlationId,
         count: safeCount,
@@ -139,8 +139,8 @@ export class ListProfessionalsUseCase {
 
       // Log operation for audit
       await this.auditService.logOperation({
-        operation: "LIST_PROFESSIONALS",
-        entityType: "PROFESSIONAL",
+        operation: 'LIST_PROFESSIONALS',
+        entityType: 'PROFESSIONAL',
         entityId: businessId.getValue(),
         userId: request.requestingUserId,
         correlationId: request.correlationId,
@@ -169,10 +169,10 @@ export class ListProfessionalsUseCase {
       };
     } catch (error) {
       const errorMessage =
-        error instanceof Error ? error.message : "Unknown error";
+        error instanceof Error ? error.message : 'Unknown error';
 
       this.logger.error(
-        "Failed to list professionals",
+        'Failed to list professionals',
         error instanceof Error ? error : new Error(errorMessage),
         {
           correlationId: request.correlationId,
@@ -187,7 +187,7 @@ export class ListProfessionalsUseCase {
 
       // For other errors, throw a generic error message
       throw new Error(
-        error instanceof Error ? error.message : "Unknown error occurred",
+        error instanceof Error ? error.message : 'Unknown error occurred',
       );
     }
   }

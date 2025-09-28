@@ -17,26 +17,26 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
-} from "typeorm";
-import { StaffRole } from "../../../../../shared/enums/staff-role.enum";
-import { BusinessOrmEntity } from "./business-orm.entity";
+} from 'typeorm';
+import { StaffRole } from '../../../../../shared/enums/staff-role.enum';
+import { BusinessOrmEntity } from './business-orm.entity';
 
-@Entity("staff")
-@Index(["business_id"])
-@Index(["role"])
-@Index(["status"])
-@Index(["email"])
-@Index(["created_at"])
+@Entity('staff')
+@Index(['business_id'])
+@Index(['role'])
+@Index(['status'])
+@Index(['email'])
+@Index(['created_at'])
 export class StaffOrmEntity {
-  @PrimaryGeneratedColumn("uuid")
+  @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-  @Column({ type: "uuid", nullable: false })
+  @Column({ type: 'uuid', nullable: false })
   @Index()
   business_id!: string;
 
   // Profile as JSON
-  @Column({ type: "jsonb", nullable: false })
+  @Column({ type: 'jsonb', nullable: false })
   profile!: {
     first_name: string;
     last_name: string;
@@ -49,22 +49,22 @@ export class StaffOrmEntity {
   };
 
   @Column({
-    type: "enum",
+    type: 'enum',
     enum: StaffRole,
     nullable: false,
   })
   @Index()
   role!: StaffRole;
 
-  @Column({ type: "varchar", length: 255, nullable: false })
+  @Column({ type: 'varchar', length: 255, nullable: false })
   @Index()
   email!: string;
 
-  @Column({ type: "varchar", length: 20, nullable: true })
+  @Column({ type: 'varchar', length: 20, nullable: true })
   phone!: string | null;
 
   // Availability as JSON
-  @Column({ type: "jsonb", nullable: true })
+  @Column({ type: 'jsonb', nullable: true })
   availability!: {
     working_hours: Array<{
       day_of_week: number;
@@ -86,24 +86,24 @@ export class StaffOrmEntity {
   } | null;
 
   @Column({
-    type: "enum",
-    enum: ["ACTIVE", "INACTIVE", "ON_LEAVE", "SUSPENDED"],
-    default: "ACTIVE",
+    type: 'enum',
+    enum: ['ACTIVE', 'INACTIVE', 'ON_LEAVE', 'SUSPENDED'],
+    default: 'ACTIVE',
   })
   @Index()
   status!: string;
 
-  @Column({ type: "timestamptz", nullable: false })
+  @Column({ type: 'timestamptz', nullable: false })
   hire_date!: Date;
 
-  @CreateDateColumn({ type: "timestamptz" })
+  @CreateDateColumn({ type: 'timestamptz' })
   created_at!: Date;
 
-  @UpdateDateColumn({ type: "timestamptz" })
+  @UpdateDateColumn({ type: 'timestamptz' })
   updated_at!: Date;
 
   // Calendar integration as JSON
-  @Column({ type: "jsonb", nullable: true })
+  @Column({ type: 'jsonb', nullable: true })
   calendar_integration!: {
     calendar_id?: string;
     sync_with_business_calendar: boolean;
@@ -116,7 +116,7 @@ export class StaffOrmEntity {
   } | null;
 
   // Relations
-  @ManyToOne(() => BusinessOrmEntity, { onDelete: "CASCADE" })
-  @JoinColumn({ name: "business_id" })
+  @ManyToOne(() => BusinessOrmEntity, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'business_id' })
   business!: BusinessOrmEntity;
 }

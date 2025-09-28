@@ -5,7 +5,7 @@
  * en réponses HTTP structurées avec détails de validation
  */
 
-import type { I18nService } from "@application/ports/i18n.port";
+import type { I18nService } from '@application/ports/i18n.port';
 import {
   ArgumentsHost,
   BadRequestException,
@@ -14,9 +14,9 @@ import {
   HttpStatus,
   Inject,
   Logger,
-} from "@nestjs/common";
-import { TOKENS } from "@shared/constants/injection-tokens";
-import type { FastifyReply, FastifyRequest } from "fastify";
+} from '@nestjs/common';
+import { TOKENS } from '@shared/constants/injection-tokens';
+import type { FastifyReply, FastifyRequest } from 'fastify';
 
 @Catch(BadRequestException)
 export class ValidationExceptionFilter implements ExceptionFilter {
@@ -48,13 +48,13 @@ export class ValidationExceptionFilter implements ExceptionFilter {
 
   private isValidationError(response: unknown): boolean {
     return (
-      typeof response === "object" &&
+      typeof response === 'object' &&
       response !== null &&
-      "message" in response &&
-      "error" in response &&
+      'message' in response &&
+      'error' in response &&
       Array.isArray((response as { message: unknown }).message) &&
-      typeof (response as { error: unknown }).error === "string" &&
-      (response as { error: string }).error === "Bad Request"
+      typeof (response as { error: unknown }).error === 'string' &&
+      (response as { error: string }).error === 'Bad Request'
     );
   }
 
@@ -72,8 +72,8 @@ export class ValidationExceptionFilter implements ExceptionFilter {
     const errorResponse = {
       success: false,
       error: {
-        code: "VALIDATION_FAILED",
-        message: this.i18n.t("errors.validation.failed"),
+        code: 'VALIDATION_FAILED',
+        message: this.i18n.t('errors.validation.failed'),
         timestamp: new Date().toISOString(),
         path: request.url,
         correlationId: this.getCorrelationId(request),
@@ -100,7 +100,7 @@ export class ValidationExceptionFilter implements ExceptionFilter {
     const errorResponse = {
       success: false,
       error: {
-        code: "BAD_REQUEST",
+        code: 'BAD_REQUEST',
         message: message,
         timestamp: new Date().toISOString(),
         path: request.url,
@@ -121,7 +121,7 @@ export class ValidationExceptionFilter implements ExceptionFilter {
     return validationMessages.map((message) => {
       // Essayer d'extraire le nom du champ de message d'erreur
       const fieldMatch = message.match(/^(\w+)\s/);
-      const field = fieldMatch ? fieldMatch[1] : "unknown";
+      const field = fieldMatch ? fieldMatch[1] : 'unknown';
 
       return {
         field: field,
@@ -136,14 +136,14 @@ export class ValidationExceptionFilter implements ExceptionFilter {
   private getLocalizedValidationMessage(originalMessage: string): string {
     // Mapper les messages de validation courants vers les clés i18n
     const validationMessageMap: Record<string, string> = {
-      "should not be empty": "errors.validation.required",
-      "must be an email": "errors.validation.invalid_email",
-      "must be a string": "errors.validation.must_be_string",
-      "must be a number": "errors.validation.must_be_number",
-      "must be a boolean": "errors.validation.must_be_boolean",
-      "must be a UUID": "errors.validation.must_be_uuid",
-      "must be shorter than or equal to": "errors.validation.max_length",
-      "must be longer than or equal to": "errors.validation.min_length",
+      'should not be empty': 'errors.validation.required',
+      'must be an email': 'errors.validation.invalid_email',
+      'must be a string': 'errors.validation.must_be_string',
+      'must be a number': 'errors.validation.must_be_number',
+      'must be a boolean': 'errors.validation.must_be_boolean',
+      'must be a UUID': 'errors.validation.must_be_uuid',
+      'must be shorter than or equal to': 'errors.validation.max_length',
+      'must be longer than or equal to': 'errors.validation.min_length',
     };
 
     // Chercher une correspondance
@@ -161,24 +161,24 @@ export class ValidationExceptionFilter implements ExceptionFilter {
   }
 
   private extractMessage(response: any): string {
-    if (typeof response === "string") {
+    if (typeof response === 'string') {
       return response;
     }
 
-    if (typeof response === "object" && response !== null) {
+    if (typeof response === 'object' && response !== null) {
       const obj = response as { message?: unknown; error?: unknown };
-      const message = typeof obj.message === "string" ? obj.message : "";
-      const error = typeof obj.error === "string" ? obj.error : "";
-      return message || error || "Bad Request";
+      const message = typeof obj.message === 'string' ? obj.message : '';
+      const error = typeof obj.error === 'string' ? obj.error : '';
+      return message || error || 'Bad Request';
     }
 
-    return "Bad Request";
+    return 'Bad Request';
   }
 
   private getCorrelationId(request: FastifyRequest): string {
     return (
-      (request.headers["x-correlation-id"] as string | undefined) ||
-      (request.headers["x-request-id"] as string | undefined) ||
+      (request.headers['x-correlation-id'] as string | undefined) ||
+      (request.headers['x-request-id'] as string | undefined) ||
       `validation-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
     );
   }
@@ -190,12 +190,12 @@ export class ValidationExceptionFilter implements ExceptionFilter {
     }>,
     request: FastifyRequest,
   ): void {
-    const fields = validationErrors.map((err) => err.field).join(", ");
+    const fields = validationErrors.map((err) => err.field).join(', ');
 
     this.logger.warn(`Validation Failed for fields: ${fields}`, {
       method: request.method,
       url: request.url,
-      userAgent: request.headers["user-agent"],
+      userAgent: request.headers['user-agent'],
       ip: request.ip,
       correlationId: this.getCorrelationId(request),
       validationErrors: validationErrors,

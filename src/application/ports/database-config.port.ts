@@ -1,6 +1,6 @@
 export enum DatabaseType {
-  SQL = "sql",
-  NOSQL = "nosql",
+  SQL = 'sql',
+  NOSQL = 'nosql',
 }
 
 export interface IDatabaseConfigService {
@@ -9,4 +9,4 @@ export interface IDatabaseConfigService {
   isNoSqlMode(): boolean;
 }
 
-export const DATABASE_CONFIG_SERVICE = "IDatabaseConfigService";
+export const DATABASE_CONFIG_SERVICE = 'IDatabaseConfigService';

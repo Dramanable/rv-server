@@ -4,8 +4,8 @@
  * Types spécifiques pour la recherche et filtrage des utilisateurs
  */
 
-import { UserRole } from "../enums/user-role.enum";
-import { DateFilter } from "./pagination.types";
+import { UserRole } from '../enums/user-role.enum';
+import { DateFilter } from './pagination.types';
 
 /**
  * Filtres spécifiques aux utilisateurs
@@ -35,7 +35,7 @@ export interface UserQueryParams {
   page: number;
   limit: number;
   sortBy?: UserSortField;
-  sortOrder?: "ASC" | "DESC";
+  sortOrder?: 'ASC' | 'DESC';
   search?: UserSearchParams;
   filters?: UserFilters;
 }
@@ -44,11 +44,11 @@ export interface UserQueryParams {
  * Options de tri spécifiques aux utilisateurs
  */
 export type UserSortField =
-  | "name"
-  | "email"
-  | "role"
-  | "createdAt"
-  | "lastLoginAt";
+  | 'name'
+  | 'email'
+  | 'role'
+  | 'createdAt'
+  | 'lastLoginAt';
 
 /**
  * Builder spécialisé pour les requêtes utilisateur
@@ -57,8 +57,8 @@ export class UserQueryBuilder {
   private params: UserQueryParams = {
     page: 1,
     limit: 20,
-    sortBy: "createdAt",
-    sortOrder: "DESC",
+    sortBy: 'createdAt',
+    sortOrder: 'DESC',
     search: {},
     filters: {},
   };
@@ -73,7 +73,7 @@ export class UserQueryBuilder {
     return this;
   }
 
-  sortBy(field: UserSortField, order: "ASC" | "DESC" = "ASC"): this {
+  sortBy(field: UserSortField, order: 'ASC' | 'DESC' = 'ASC'): this {
     this.params.sortBy = field;
     this.params.sortOrder = order;
     return this;

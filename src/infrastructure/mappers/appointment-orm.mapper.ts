@@ -1,5 +1,5 @@
-import { Appointment } from "@domain/entities/appointment.entity";
-import { AppointmentOrmEntity } from "@infrastructure/database/sql/postgresql/entities/appointment-orm.entity";
+import { Appointment } from '@domain/entities/appointment.entity';
+import { AppointmentOrmEntity } from '@infrastructure/database/sql/postgresql/entities/appointment-orm.entity';
 
 export class AppointmentOrmMapper {
   static toOrmEntity(domain: Appointment): AppointmentOrmEntity {
@@ -42,7 +42,7 @@ export class AppointmentOrmMapper {
   // Méthode temporairement simplifiée pour permettre le build
   static toDomainEntity(orm: AppointmentOrmEntity): Appointment {
     throw new Error(
-      "toDomainEntity needs to be implemented when interfaces are aligned",
+      'toDomainEntity needs to be implemented when interfaces are aligned',
     );
   }
 

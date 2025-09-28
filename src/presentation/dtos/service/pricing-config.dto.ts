@@ -3,7 +3,7 @@
  * Support de tous les types de pricing et visibilité
  */
 
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsString,
   IsOptional,
@@ -11,35 +11,35 @@ import {
   IsArray,
   ValidateNested,
   IsObject,
-} from "class-validator";
-import { Type } from "class-transformer";
+} from 'class-validator';
+import { Type } from 'class-transformer';
 
 // 🎯 Enums pour validation
 export enum PricingType {
-  FREE = "FREE",
-  FIXED = "FIXED",
-  VARIABLE = "VARIABLE",
-  HIDDEN = "HIDDEN",
-  ON_DEMAND = "ON_DEMAND",
+  FREE = 'FREE',
+  FIXED = 'FIXED',
+  VARIABLE = 'VARIABLE',
+  HIDDEN = 'HIDDEN',
+  ON_DEMAND = 'ON_DEMAND',
 }
 
 export enum PricingVisibility {
-  PUBLIC = "PUBLIC",
-  AUTHENTICATED = "AUTHENTICATED",
-  PRIVATE = "PRIVATE",
-  HIDDEN = "HIDDEN",
+  PUBLIC = 'PUBLIC',
+  AUTHENTICATED = 'AUTHENTICATED',
+  PRIVATE = 'PRIVATE',
+  HIDDEN = 'HIDDEN',
 }
 
 // 💰 Money DTO
 export class MoneyDto {
   @ApiProperty({
     example: 5000,
-    description: "Amount in cents (e.g., 5000 = 50.00 EUR)",
+    description: 'Amount in cents (e.g., 5000 = 50.00 EUR)',
   })
   @IsString()
   readonly amount!: string;
 
-  @ApiProperty({ example: "EUR", description: "ISO currency code" })
+  @ApiProperty({ example: 'EUR', description: 'ISO currency code' })
   @IsString()
   readonly currency!: string;
 }
@@ -47,22 +47,22 @@ export class MoneyDto {
 // 📋 Pricing Rule DTO
 export class PricingRuleDto {
   @ApiProperty({
-    example: "DURATION_MULTIPLIER",
-    description: "Type of pricing rule",
+    example: 'DURATION_MULTIPLIER',
+    description: 'Type of pricing rule',
   })
   @IsString()
   readonly type!: string;
 
   @ApiProperty({
     example: { multiplier: 1.5 },
-    description: "Rule configuration",
+    description: 'Rule configuration',
   })
   @IsObject()
   readonly config!: Record<string, any>;
 
   @ApiPropertyOptional({
-    example: "Prix majoré pour séances longues",
-    description: "Rule description",
+    example: 'Prix majoré pour séances longues',
+    description: 'Rule description',
   })
   @IsOptional()
   @IsString()
@@ -74,7 +74,7 @@ export class PricingConfigDto {
   @ApiProperty({
     enum: PricingType,
     example: PricingType.FIXED,
-    description: "Type de pricing du service",
+    description: 'Type de pricing du service',
   })
   @IsEnum(PricingType)
   readonly type!: PricingType;
@@ -82,14 +82,14 @@ export class PricingConfigDto {
   @ApiProperty({
     enum: PricingVisibility,
     example: PricingVisibility.PUBLIC,
-    description: "Visibilité du prix",
+    description: 'Visibilité du prix',
   })
   @IsEnum(PricingVisibility)
   readonly visibility!: PricingVisibility;
 
   @ApiPropertyOptional({
     type: MoneyDto,
-    description: "Prix de base (requis pour FIXED et VARIABLE)",
+    description: 'Prix de base (requis pour FIXED et VARIABLE)',
   })
   @IsOptional()
   @ValidateNested()
@@ -98,7 +98,7 @@ export class PricingConfigDto {
 
   @ApiPropertyOptional({
     type: [PricingRuleDto],
-    description: "Règles de calcul pour pricing VARIABLE",
+    description: 'Règles de calcul pour pricing VARIABLE',
   })
   @IsOptional()
   @IsArray()
@@ -107,8 +107,8 @@ export class PricingConfigDto {
   readonly rules?: PricingRuleDto[];
 
   @ApiPropertyOptional({
-    example: "Prix sur devis selon complexité",
-    description: "Description pour pricing ON_DEMAND ou HIDDEN",
+    example: 'Prix sur devis selon complexité',
+    description: 'Description pour pricing ON_DEMAND ou HIDDEN',
   })
   @IsOptional()
   @IsString()
@@ -117,31 +117,31 @@ export class PricingConfigDto {
 
 // 📦 Service Package DTO
 export class ServicePackageDto {
-  @ApiProperty({ example: "Forfait découverte", description: "Nom du forfait" })
+  @ApiProperty({ example: 'Forfait découverte', description: 'Nom du forfait' })
   @IsString()
   readonly name!: string;
 
   @ApiPropertyOptional({
-    example: "3 séances à tarif préférentiel",
-    description: "Description du forfait",
+    example: '3 séances à tarif préférentiel',
+    description: 'Description du forfait',
   })
   @IsOptional()
   @IsString()
   readonly description?: string;
 
-  @ApiProperty({ example: 3, description: "Nombre de séances incluses" })
+  @ApiProperty({ example: 3, description: 'Nombre de séances incluses' })
   @IsString()
   readonly sessionsIncluded!: string;
 
   @ApiProperty({
     type: MoneyDto,
-    description: "Prix du forfait",
+    description: 'Prix du forfait',
   })
   @ValidateNested()
   @Type(() => MoneyDto)
   readonly packagePrice!: MoneyDto;
 
-  @ApiPropertyOptional({ example: 30, description: "Validité en jours" })
+  @ApiPropertyOptional({ example: 30, description: 'Validité en jours' })
   @IsOptional()
   @IsString()
   readonly validityDays?: string;
@@ -156,7 +156,7 @@ export class PricingConfigDtoFactory {
     };
   }
 
-  static fixed(amount: string, currency = "EUR"): PricingConfigDto {
+  static fixed(amount: string, currency = 'EUR'): PricingConfigDto {
     return {
       type: PricingType.FIXED,
       visibility: PricingVisibility.PUBLIC,
@@ -167,7 +167,7 @@ export class PricingConfigDtoFactory {
   static variable(
     baseAmount: string,
     rules: PricingRuleDto[],
-    currency = "EUR",
+    currency = 'EUR',
   ): PricingConfigDto {
     return {
       type: PricingType.VARIABLE,
@@ -177,7 +177,7 @@ export class PricingConfigDtoFactory {
     };
   }
 
-  static hidden(amount: string, currency = "EUR"): PricingConfigDto {
+  static hidden(amount: string, currency = 'EUR'): PricingConfigDto {
     return {
       type: PricingType.HIDDEN,
       visibility: PricingVisibility.HIDDEN,

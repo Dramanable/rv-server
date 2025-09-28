@@ -10,15 +10,15 @@
     private readonly i18n: any, // TODO: Define interface
   ) {} */
 
-import { INotificationRepository } from "../../../domain/repositories/notification.repository.interface";
-import { NotificationChannel } from "../../../domain/value-objects/notification-channel.value-object";
-import { NotificationPriority } from "../../../domain/value-objects/notification-priority.value-object";
+import { INotificationRepository } from '../../../domain/repositories/notification.repository.interface';
+import { NotificationChannel } from '../../../domain/value-objects/notification-channel.value-object';
+import { NotificationPriority } from '../../../domain/value-objects/notification-priority.value-object';
 import {
   NotificationTemplate,
   NotificationTemplateType,
   TemplateVariables,
-} from "../../../domain/value-objects/notification-template.value-object";
-import { NotificationException } from "../../exceptions/notification.exceptions";
+} from '../../../domain/value-objects/notification-template.value-object';
+import { NotificationException } from '../../exceptions/notification.exceptions';
 // import { INotificationService } from '../../ports/notification-service.interface';
 // import { ILogger } from '../../ports/logger.interface';
 // import { II18nService } from '../../ports/i18n-service.interface';
@@ -73,7 +73,7 @@ export interface SendBulkNotificationResponse {
   readonly totalBatches: number;
   readonly estimatedDuration: number; // En minutes
   readonly scheduledFor?: Date;
-  readonly status: "QUEUED" | "PROCESSING" | "COMPLETED" | "FAILED";
+  readonly status: 'QUEUED' | 'PROCESSING' | 'COMPLETED' | 'FAILED';
   readonly preview: {
     readonly sampleSubject: string;
     readonly sampleContent: string;
@@ -88,11 +88,11 @@ export interface BulkCampaignStatus {
   readonly campaignId: string;
   readonly campaignName?: string;
   readonly status:
-    | "QUEUED"
-    | "PROCESSING"
-    | "COMPLETED"
-    | "FAILED"
-    | "CANCELLED";
+    | 'QUEUED'
+    | 'PROCESSING'
+    | 'COMPLETED'
+    | 'FAILED'
+    | 'CANCELLED';
   readonly progress: {
     readonly totalRecipients: number;
     readonly processedRecipients: number;
@@ -153,7 +153,7 @@ export class SendBulkNotificationUseCase {
     this.validateRequest(request);
 
     // 📊 Log de la tentative d'envoi en lot
-    this.logger.info("Starting bulk notification campaign", {
+    this.logger.info('Starting bulk notification campaign', {
       templateType: request.templateType,
       channel: request.defaultChannel,
       priority: request.priority,
@@ -167,9 +167,9 @@ export class SendBulkNotificationUseCase {
 
       if (recipients.length === 0) {
         throw new NotificationException(
-          "No recipients found for the specified criteria",
-          "NO_RECIPIENTS_FOUND",
-          "errors.notifications.no_recipients_found",
+          'No recipients found for the specified criteria',
+          'NO_RECIPIENTS_FOUND',
+          'errors.notifications.no_recipients_found',
         );
       }
 
@@ -211,7 +211,7 @@ export class SendBulkNotificationUseCase {
       }
 
       // 📊 Log de succès
-      this.logger.info("Bulk notification campaign created successfully", {
+      this.logger.info('Bulk notification campaign created successfully', {
         campaignId,
         totalRecipients: recipients.length,
         totalBatches,
@@ -224,7 +224,7 @@ export class SendBulkNotificationUseCase {
         totalBatches,
         estimatedDuration,
         scheduledFor: request.scheduledFor,
-        status: request.scheduledFor ? "QUEUED" : "PROCESSING",
+        status: request.scheduledFor ? 'QUEUED' : 'PROCESSING',
         preview: {
           sampleSubject: preview.subject,
           sampleContent: preview.body,
@@ -236,8 +236,8 @@ export class SendBulkNotificationUseCase {
       };
     } catch (error) {
       // 🚨 Log de l'erreur
-      this.logger.error("Failed to create bulk notification campaign", {
-        error: error instanceof Error ? error.message : "Unknown error",
+      this.logger.error('Failed to create bulk notification campaign', {
+        error: error instanceof Error ? error.message : 'Unknown error',
         templateType: request.templateType,
         requestingUserId: request.requestingUserId,
       });
@@ -247,12 +247,12 @@ export class SendBulkNotificationUseCase {
       }
 
       throw new NotificationException(
-        "Failed to create bulk notification campaign",
-        "BULK_CAMPAIGN_CREATION_FAILED",
-        "errors.notifications.bulk_campaign_creation_failed",
+        'Failed to create bulk notification campaign',
+        'BULK_CAMPAIGN_CREATION_FAILED',
+        'errors.notifications.bulk_campaign_creation_failed',
         {
           originalError:
-            error instanceof Error ? error.message : "Unknown error",
+            error instanceof Error ? error.message : 'Unknown error',
         },
       );
     }
@@ -265,7 +265,7 @@ export class SendBulkNotificationUseCase {
     campaignId: string,
     requestingUserId: string,
   ): Promise<BulkCampaignStatus> {
-    this.logger.info("Getting campaign status", {
+    this.logger.info('Getting campaign status', {
       campaignId,
       requestingUserId,
     });
@@ -274,8 +274,8 @@ export class SendBulkNotificationUseCase {
     if (!status) {
       throw new NotificationException(
         `Campaign not found: ${campaignId}`,
-        "CAMPAIGN_NOT_FOUND",
-        "errors.notifications.campaign_not_found",
+        'CAMPAIGN_NOT_FOUND',
+        'errors.notifications.campaign_not_found',
       );
     }
 
@@ -289,28 +289,28 @@ export class SendBulkNotificationUseCase {
     campaignId: string,
     requestingUserId: string,
   ): Promise<void> {
-    this.logger.info("Cancelling campaign", { campaignId, requestingUserId });
+    this.logger.info('Cancelling campaign', { campaignId, requestingUserId });
 
     const status = await this.campaignService.getCampaignStatus(campaignId);
     if (!status) {
       throw new NotificationException(
         `Campaign not found: ${campaignId}`,
-        "CAMPAIGN_NOT_FOUND",
-        "errors.notifications.campaign_not_found",
+        'CAMPAIGN_NOT_FOUND',
+        'errors.notifications.campaign_not_found',
       );
     }
 
-    if (status.status === "COMPLETED") {
+    if (status.status === 'COMPLETED') {
       throw new NotificationException(
-        "Cannot cancel completed campaign",
-        "CAMPAIGN_ALREADY_COMPLETED",
-        "errors.notifications.campaign_already_completed",
+        'Cannot cancel completed campaign',
+        'CAMPAIGN_ALREADY_COMPLETED',
+        'errors.notifications.campaign_already_completed',
       );
     }
 
     await this.campaignService.cancelCampaign(campaignId);
 
-    this.logger.info("Campaign cancelled successfully", { campaignId });
+    this.logger.info('Campaign cancelled successfully', { campaignId });
   }
 
   /**
@@ -319,41 +319,41 @@ export class SendBulkNotificationUseCase {
   private validateRequest(request: SendBulkNotificationRequest): void {
     if (!request.templateType) {
       throw new NotificationException(
-        "Template type is required",
-        "VALIDATION_ERROR",
-        "errors.notifications.template_type_required",
+        'Template type is required',
+        'VALIDATION_ERROR',
+        'errors.notifications.template_type_required',
       );
     }
 
     if (!request.defaultChannel) {
       throw new NotificationException(
-        "Default channel is required",
-        "VALIDATION_ERROR",
-        "errors.notifications.default_channel_required",
+        'Default channel is required',
+        'VALIDATION_ERROR',
+        'errors.notifications.default_channel_required',
       );
     }
 
     if (!request.requestingUserId?.trim()) {
       throw new NotificationException(
-        "Requesting user ID is required",
-        "VALIDATION_ERROR",
-        "errors.notifications.requesting_user_required",
+        'Requesting user ID is required',
+        'VALIDATION_ERROR',
+        'errors.notifications.requesting_user_required',
       );
     }
 
     if (!request.recipients && !request.segmentation) {
       throw new NotificationException(
-        "Either recipients list or segmentation criteria must be provided",
-        "VALIDATION_ERROR",
-        "errors.notifications.recipients_or_segmentation_required",
+        'Either recipients list or segmentation criteria must be provided',
+        'VALIDATION_ERROR',
+        'errors.notifications.recipients_or_segmentation_required',
       );
     }
 
     if (request.recipients && request.recipients.length > 10000) {
       throw new NotificationException(
-        "Maximum 10,000 recipients per campaign",
-        "VALIDATION_ERROR",
-        "errors.notifications.too_many_recipients",
+        'Maximum 10,000 recipients per campaign',
+        'VALIDATION_ERROR',
+        'errors.notifications.too_many_recipients',
       );
     }
 
@@ -362,18 +362,18 @@ export class SendBulkNotificationUseCase {
       const now = new Date();
       if (request.scheduledFor <= now) {
         throw new NotificationException(
-          "Scheduled time must be in the future",
-          "VALIDATION_ERROR",
-          "errors.notifications.invalid_scheduled_time",
+          'Scheduled time must be in the future',
+          'VALIDATION_ERROR',
+          'errors.notifications.invalid_scheduled_time',
         );
       }
 
       const maxFutureDate = new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000); // 1 an
       if (request.scheduledFor > maxFutureDate) {
         throw new NotificationException(
-          "Cannot schedule more than 1 year in advance",
-          "VALIDATION_ERROR",
-          "errors.notifications.scheduled_too_far",
+          'Cannot schedule more than 1 year in advance',
+          'VALIDATION_ERROR',
+          'errors.notifications.scheduled_too_far',
         );
       }
     }
@@ -419,9 +419,9 @@ export class SendBulkNotificationUseCase {
 
     if (!validation.valid) {
       throw new NotificationException(
-        `Missing template variables: ${validation.missingVariables.join(", ")}`,
-        "MISSING_TEMPLATE_VARIABLES",
-        "errors.notifications.missing_template_variables",
+        `Missing template variables: ${validation.missingVariables.join(', ')}`,
+        'MISSING_TEMPLATE_VARIABLES',
+        'errors.notifications.missing_template_variables',
         { missingVariables: validation.missingVariables },
       );
     }
@@ -469,7 +469,7 @@ export class SendBulkNotificationUseCase {
   ): Promise<void> {
     // Implementation dépendante du système de planification
     // Par exemple, ajouter à une queue Redis ou utiliser un scheduler
-    this.logger.info("Bulk notifications scheduled", {
+    this.logger.info('Bulk notifications scheduled', {
       campaignId,
       scheduledFor: request.scheduledFor,
       totalRecipients: recipients.length,
@@ -500,7 +500,7 @@ export class SendBulkNotificationUseCase {
     await this.campaignService.updateCampaignStatus(campaignId, {
       campaignId,
       campaignName: request.campaignName,
-      status: "PROCESSING",
+      status: 'PROCESSING',
       progress: {
         totalRecipients: recipients.length,
         processedRecipients: 0,
@@ -555,14 +555,14 @@ export class SendBulkNotificationUseCase {
             errorCount++;
             errors.push({
               recipientId: recipient.recipientId,
-              error: error instanceof Error ? error.message : "Unknown error",
+              error: error instanceof Error ? error.message : 'Unknown error',
               timestamp: new Date(),
             });
 
-            this.logger.error("Failed to send notification to recipient", {
+            this.logger.error('Failed to send notification to recipient', {
               campaignId,
               recipientId: recipient.recipientId,
-              error: error instanceof Error ? error.message : "Unknown error",
+              error: error instanceof Error ? error.message : 'Unknown error',
             });
           }
         });
@@ -574,7 +574,7 @@ export class SendBulkNotificationUseCase {
         await this.campaignService.updateCampaignStatus(campaignId, {
           campaignId,
           campaignName: request.campaignName,
-          status: "PROCESSING",
+          status: 'PROCESSING',
           progress: {
             totalRecipients: recipients.length,
             processedRecipients: processedCount,
@@ -597,7 +597,7 @@ export class SendBulkNotificationUseCase {
       await this.campaignService.updateCampaignStatus(campaignId, {
         campaignId,
         campaignName: request.campaignName,
-        status: "COMPLETED",
+        status: 'COMPLETED',
         progress: {
           totalRecipients: recipients.length,
           processedRecipients: processedCount,
@@ -610,7 +610,7 @@ export class SendBulkNotificationUseCase {
         errors: errors.slice(-10),
       });
 
-      this.logger.info("Bulk notification campaign completed", {
+      this.logger.info('Bulk notification campaign completed', {
         campaignId,
         totalRecipients: recipients.length,
         successCount,
@@ -622,7 +622,7 @@ export class SendBulkNotificationUseCase {
       await this.campaignService.updateCampaignStatus(campaignId, {
         campaignId,
         campaignName: request.campaignName,
-        status: "FAILED",
+        status: 'FAILED',
         progress: {
           totalRecipients: recipients.length,
           processedRecipients: processedCount,
@@ -634,17 +634,17 @@ export class SendBulkNotificationUseCase {
         errors: [
           ...errors.slice(-9),
           {
-            recipientId: "SYSTEM",
+            recipientId: 'SYSTEM',
             error:
-              error instanceof Error ? error.message : "Unknown system error",
+              error instanceof Error ? error.message : 'Unknown system error',
             timestamp: new Date(),
           },
         ],
       });
 
-      this.logger.error("Bulk notification campaign failed", {
+      this.logger.error('Bulk notification campaign failed', {
         campaignId,
-        error: error instanceof Error ? error.message : "Unknown error",
+        error: error instanceof Error ? error.message : 'Unknown error',
         processedCount,
         successCount,
         errorCount,

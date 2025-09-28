@@ -1,24 +1,24 @@
-import { BusinessId } from "../value-objects/business-id.value-object";
-import { CalendarId } from "../value-objects/calendar-id.value-object";
-import { RecurrencePattern } from "../value-objects/recurrence-pattern.value-object";
-import { TimeSlot } from "../value-objects/time-slot.value-object";
-import { UserId } from "../value-objects/user-id.value-object";
-import { WorkingHours } from "../value-objects/working-hours.value-object";
+import { BusinessId } from '../value-objects/business-id.value-object';
+import { CalendarId } from '../value-objects/calendar-id.value-object';
+import { RecurrencePattern } from '../value-objects/recurrence-pattern.value-object';
+import { TimeSlot } from '../value-objects/time-slot.value-object';
+import { UserId } from '../value-objects/user-id.value-object';
+import { WorkingHours } from '../value-objects/working-hours.value-object';
 
 // Re-export pour faciliter les imports
-export { CalendarId } from "../value-objects/calendar-id.value-object";
+export { CalendarId } from '../value-objects/calendar-id.value-object';
 
 export enum CalendarType {
-  BUSINESS = "BUSINESS", // Calendrier principal de l'entreprise
-  STAFF = "STAFF", // Calendrier personnel d'un membre du personnel
-  RESOURCE = "RESOURCE", // Calendrier pour une ressource (salle, équipement)
-  SERVICE = "SERVICE", // Calendrier spécifique à un service
+  BUSINESS = 'BUSINESS', // Calendrier principal de l'entreprise
+  STAFF = 'STAFF', // Calendrier personnel d'un membre du personnel
+  RESOURCE = 'RESOURCE', // Calendrier pour une ressource (salle, équipement)
+  SERVICE = 'SERVICE', // Calendrier spécifique à un service
 }
 
 export enum CalendarStatus {
-  ACTIVE = "ACTIVE",
-  INACTIVE = "INACTIVE",
-  MAINTENANCE = "MAINTENANCE",
+  ACTIVE = 'ACTIVE',
+  INACTIVE = 'INACTIVE',
+  MAINTENANCE = 'MAINTENANCE',
 }
 
 export interface CalendarSettings {
@@ -92,25 +92,25 @@ export class Calendar {
 
   private validate(): void {
     if (!this._name || this._name.trim().length === 0) {
-      throw new Error("Calendar name is required");
+      throw new Error('Calendar name is required');
     }
 
     if (this._type === CalendarType.STAFF && !this._ownerId) {
-      throw new Error("Staff calendar must have an owner");
+      throw new Error('Staff calendar must have an owner');
     }
 
     if (this._settings.defaultSlotDuration < 5) {
-      throw new Error("Default slot duration must be at least 5 minutes");
+      throw new Error('Default slot duration must be at least 5 minutes');
     }
 
     if (this._settings.minimumNotice < 0) {
-      throw new Error("Minimum notice cannot be negative");
+      throw new Error('Minimum notice cannot be negative');
     }
 
     // Valider les horaires de travail
     if (this._availability.workingHours.length !== 7) {
       throw new Error(
-        "Working hours must be defined for all 7 days of the week",
+        'Working hours must be defined for all 7 days of the week',
       );
     }
   }
@@ -180,7 +180,7 @@ export class Calendar {
     workingHours?: WorkingHours[];
   }): Calendar {
     const defaultSettings: CalendarSettings = {
-      timezone: "Europe/Paris",
+      timezone: 'Europe/Paris',
       defaultSlotDuration: 30,
       minimumNotice: 60,
       maximumAdvanceBooking: 30,
@@ -192,11 +192,11 @@ export class Calendar {
     // Horaires par défaut (9h-17h du lundi au vendredi)
     const defaultWorkingHours = data.workingHours || [
       WorkingHours.createNonWorkingDay(0), // Dimanche
-      WorkingHours.createWithLunchBreak(1, "09:00", "17:00"), // Lundi
-      WorkingHours.createWithLunchBreak(2, "09:00", "17:00"), // Mardi
-      WorkingHours.createWithLunchBreak(3, "09:00", "17:00"), // Mercredi
-      WorkingHours.createWithLunchBreak(4, "09:00", "17:00"), // Jeudi
-      WorkingHours.createWithLunchBreak(5, "09:00", "17:00"), // Vendredi
+      WorkingHours.createWithLunchBreak(1, '09:00', '17:00'), // Lundi
+      WorkingHours.createWithLunchBreak(2, '09:00', '17:00'), // Mardi
+      WorkingHours.createWithLunchBreak(3, '09:00', '17:00'), // Mercredi
+      WorkingHours.createWithLunchBreak(4, '09:00', '17:00'), // Jeudi
+      WorkingHours.createWithLunchBreak(5, '09:00', '17:00'), // Vendredi
       WorkingHours.createNonWorkingDay(6), // Samedi
     ];
 
@@ -341,7 +341,7 @@ export class Calendar {
       if (this.ruleApplies(rule, timeSlot)) {
         if (rule.actions.blockSlot) {
           isAllowed = false;
-          message = rule.actions.customMessage || "Créneau non disponible";
+          message = rule.actions.customMessage || 'Créneau non disponible';
           break;
         }
 
@@ -447,7 +447,7 @@ export class Calendar {
     workingHours: WorkingHours,
   ): void {
     if (dayOfWeek < 0 || dayOfWeek > 6) {
-      throw new Error("Day of week must be between 0 and 6");
+      throw new Error('Day of week must be between 0 and 6');
     }
 
     this._availability.workingHours[dayOfWeek] = workingHours;

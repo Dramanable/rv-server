@@ -4,11 +4,11 @@
  * Déconnexion utilisateur avec révocation des tokens et nettoyage des cookies
  */
 
-import type { AuthenticationService } from "../../ports/authentication.port";
-import type { Logger } from "../../ports/logger.port";
-import type { I18nService } from "../../ports/i18n.port";
-import type { IConfigService } from "../../ports/config.port";
-import { AppContextFactory } from "../../../shared/context/app-context";
+import type { AuthenticationService } from '../../ports/authentication.port';
+import type { Logger } from '../../ports/logger.port';
+import type { I18nService } from '../../ports/i18n.port';
+import type { IConfigService } from '../../ports/config.port';
+import { AppContextFactory } from '../../../shared/context/app-context';
 
 export interface LogoutRequest {
   readonly refreshToken?: string;
@@ -36,11 +36,11 @@ export class LogoutUseCase {
   async execute(request: LogoutRequest): Promise<LogoutResponse> {
     // 📝 Contexte d'audit
     const context = AppContextFactory.create()
-      .operation("Logout")
-      .clientInfo(request.ip || "unknown", request.userAgent || "unknown")
+      .operation('Logout')
+      .clientInfo(request.ip || 'unknown', request.userAgent || 'unknown')
       .build();
 
-    this.logger.info(this.i18n.t("operations.auth.logout_attempt"), {
+    this.logger.info(this.i18n.t('operations.auth.logout_attempt'), {
       context: context.correlationId,
     });
 
@@ -51,7 +51,7 @@ export class LogoutUseCase {
           // Révoquer tous les tokens de l'utilisateur
           await this.authService.revokeAllUserTokens(request.userId);
           this.logger.info(
-            this.i18n.t("operations.auth.all_tokens_revoked", {
+            this.i18n.t('operations.auth.all_tokens_revoked', {
               userId: request.userId,
             }),
             { context: context.correlationId },
@@ -60,14 +60,14 @@ export class LogoutUseCase {
           // Révoquer seulement le token actuel
           await this.authService.revokeRefreshToken(request.refreshToken);
           this.logger.info(
-            this.i18n.t("operations.auth.current_token_revoked"),
+            this.i18n.t('operations.auth.current_token_revoked'),
             { context: context.correlationId },
           );
         }
       }
 
       // 2. 📊 Audit de succès
-      this.logger.info(this.i18n.t("operations.auth.logout_success"), {
+      this.logger.info(this.i18n.t('operations.auth.logout_success'), {
         context: context.correlationId,
       });
 
@@ -76,12 +76,12 @@ export class LogoutUseCase {
         cookieSettings: {
           isProduction: this.configService.isProduction(),
         },
-        message: this.i18n.t("success.auth.logout_successful"),
+        message: this.i18n.t('success.auth.logout_successful'),
       };
     } catch (error) {
       this.logger.error(
-        this.i18n.t("operations.auth.logout_error", {
-          error: error instanceof Error ? error.message : "Unknown error",
+        this.i18n.t('operations.auth.logout_error', {
+          error: error instanceof Error ? error.message : 'Unknown error',
         }),
         error instanceof Error ? error : undefined,
         { context: context.correlationId },
@@ -92,7 +92,7 @@ export class LogoutUseCase {
         cookieSettings: {
           isProduction: this.configService.isProduction(),
         },
-        message: this.i18n.t("success.auth.logout_successful"),
+        message: this.i18n.t('success.auth.logout_successful'),
       };
     }
   }

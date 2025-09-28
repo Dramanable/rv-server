@@ -14,9 +14,9 @@
  */
 
 export enum RbacContextType {
-  BUSINESS = "BUSINESS",
-  LOCATION = "LOCATION",
-  DEPARTMENT = "DEPARTMENT",
+  BUSINESS = 'BUSINESS',
+  LOCATION = 'LOCATION',
+  DEPARTMENT = 'DEPARTMENT',
 }
 
 export interface RbacBusinessContextData {
@@ -194,7 +194,7 @@ export class RbacBusinessContext {
    */
   static reconstruct(data: RbacBusinessContextData): RbacBusinessContext {
     if (!data.id) {
-      throw new Error("Context ID is required for reconstruction");
+      throw new Error('Context ID is required for reconstruction');
     }
 
     return new RbacBusinessContext(
@@ -307,11 +307,11 @@ export class RbacBusinessContext {
   /**
    * 🎯 Construire le chemin hiérarchique complet
    */
-  buildHierarchicalPath(separator: string = " > "): string {
+  buildHierarchicalPath(separator: string = ' > '): string {
     if (!this._path) {
       return this._name;
     }
-    return this._path.split("/").join(separator);
+    return this._path.split('/').join(separator);
   }
 
   /**
@@ -395,13 +395,13 @@ export class RbacBusinessContext {
     parentContextId?: string;
   }): void {
     if (!params.name || params.name.trim().length === 0) {
-      throw new Error("Context name is required");
+      throw new Error('Context name is required');
     }
 
     this.validateName(params.name);
 
     if (!params.businessId || params.businessId.trim().length === 0) {
-      throw new Error("Business ID is required");
+      throw new Error('Business ID is required');
     }
 
     if (!Object.values(RbacContextType).includes(params.type)) {
@@ -410,7 +410,7 @@ export class RbacBusinessContext {
 
     // Validation hiérarchique
     if (params.type === RbacContextType.BUSINESS && params.parentContextId) {
-      throw new Error("Business context cannot have parent");
+      throw new Error('Business context cannot have parent');
     }
 
     if (params.type !== RbacContextType.BUSINESS && !params.parentContextId) {
@@ -420,11 +420,11 @@ export class RbacBusinessContext {
 
   private static validateName(name: string): void {
     if (name.trim().length < 2) {
-      throw new Error("Context name must be at least 2 characters long");
+      throw new Error('Context name must be at least 2 characters long');
     }
 
     if (name.trim().length > 200) {
-      throw new Error("Context name must be less than 200 characters");
+      throw new Error('Context name must be less than 200 characters');
     }
   }
 
@@ -440,9 +440,9 @@ export class RbacBusinessContext {
   private static generateId(): string {
     // Simulation d'un générateur UUID simple
     return (
-      "rbac-ctx-" +
+      'rbac-ctx-' +
       Date.now() +
-      "-" +
+      '-' +
       Math.random().toString(36).substring(2, 15)
     );
   }

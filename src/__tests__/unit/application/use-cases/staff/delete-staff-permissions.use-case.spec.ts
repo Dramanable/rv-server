@@ -1,11 +1,11 @@
-import { ResourceNotFoundError } from "@application/exceptions/application.exceptions";
-import { I18nService } from "@application/ports/i18n.port";
-import { Logger } from "@application/ports/logger.port";
-import { IPermissionService } from "@application/ports/permission.service.interface";
-import { DeleteStaffUseCase } from "@application/use-cases/staff/delete-staff.use-case";
-import { InsufficientPermissionsError } from "@domain/exceptions/user.exceptions";
-import { StaffRepository } from "@domain/repositories/staff.repository.interface";
-import { Permission } from "@shared/enums/permission.enum";
+import { ResourceNotFoundError } from '@application/exceptions/application.exceptions';
+import { I18nService } from '@application/ports/i18n.port';
+import { Logger } from '@application/ports/logger.port';
+import { IPermissionService } from '@application/ports/permission.service.interface';
+import { DeleteStaffUseCase } from '@application/use-cases/staff/delete-staff.use-case';
+import { InsufficientPermissionsError } from '@domain/exceptions/user.exceptions';
+import { StaffRepository } from '@domain/repositories/staff.repository.interface';
+import { Permission } from '@shared/enums/permission.enum';
 
 // Mocks centralisés
 const mockStaffRepository: jest.Mocked<StaffRepository> = {
@@ -50,7 +50,7 @@ const mockI18n: jest.Mocked<I18nService> = {
   exists: jest.fn(),
 };
 
-describe("DeleteStaffUseCase - Permissions TDD", () => {
+describe('DeleteStaffUseCase - Permissions TDD', () => {
   let useCase: DeleteStaffUseCase;
 
   beforeEach(() => {
@@ -63,15 +63,15 @@ describe("DeleteStaffUseCase - Permissions TDD", () => {
     );
   });
 
-  describe("Permission Enforcement", () => {
-    const validRequestingUserId = "123e4567-e89b-42d3-a456-426614174000";
-    const validStaffId = "123e4567-e89b-42d3-a456-426614174001";
+  describe('Permission Enforcement', () => {
+    const validRequestingUserId = '123e4567-e89b-42d3-a456-426614174000';
+    const validStaffId = '123e4567-e89b-42d3-a456-426614174001';
 
-    it("should require MANAGE_STAFF permission before deleting", async () => {
+    it('should require MANAGE_STAFF permission before deleting', async () => {
       // Given - Mock translations and user lacks permission
-      mockI18n.translate.mockReturnValue("Field is required");
+      mockI18n.translate.mockReturnValue('Field is required');
       mockPermissionService.requirePermission.mockRejectedValue(
-        new InsufficientPermissionsError("MANAGE_STAFF", "USER"),
+        new InsufficientPermissionsError('MANAGE_STAFF', 'USER'),
       );
 
       // When & Then
@@ -86,8 +86,8 @@ describe("DeleteStaffUseCase - Permissions TDD", () => {
         validRequestingUserId,
         Permission.MANAGE_STAFF,
         expect.objectContaining({
-          action: "delete",
-          resource: "staff",
+          action: 'delete',
+          resource: 'staff',
           staffId: validStaffId,
         }),
       );
@@ -97,18 +97,18 @@ describe("DeleteStaffUseCase - Permissions TDD", () => {
       expect(mockStaffRepository.delete).not.toHaveBeenCalled();
     });
 
-    it("should successfully delete staff when user has MANAGE_STAFF permission", async () => {
+    it('should successfully delete staff when user has MANAGE_STAFF permission', async () => {
       // Given - User has permission
       mockPermissionService.requirePermission.mockResolvedValue(undefined);
-      mockI18n.translate.mockReturnValue("Staff deleted successfully");
+      mockI18n.translate.mockReturnValue('Staff deleted successfully');
 
       const mockStaff = {
         getId: () => ({ getValue: () => validStaffId }),
-        getEmail: () => ({ getValue: () => "staff@example.com" }),
-        getName: () => "Staff Name",
+        getEmail: () => ({ getValue: () => 'staff@example.com' }),
+        getName: () => 'Staff Name',
         isActive: () => true,
         canBeDeleted: () => true,
-        fullName: "Staff Full Name",
+        fullName: 'Staff Full Name',
         id: { getValue: () => validStaffId },
       };
 
@@ -126,8 +126,8 @@ describe("DeleteStaffUseCase - Permissions TDD", () => {
         validRequestingUserId,
         Permission.MANAGE_STAFF,
         expect.objectContaining({
-          action: "delete",
-          resource: "staff",
+          action: 'delete',
+          resource: 'staff',
           staffId: validStaffId,
         }),
       );
@@ -138,21 +138,21 @@ describe("DeleteStaffUseCase - Permissions TDD", () => {
       expect(result).toEqual({
         success: true,
         staffId: validStaffId,
-        message: "Staff deleted successfully",
+        message: 'Staff deleted successfully',
       });
 
       expect(mockLogger.info).toHaveBeenCalledWith(
-        "Staff deleted successfully",
+        'Staff deleted successfully',
         expect.objectContaining({
           staffId: validStaffId,
-          staffName: "Staff Full Name",
+          staffName: 'Staff Full Name',
         }),
       );
     });
 
-    it("should throw ResourceNotFoundError when staff does not exist", async () => {
+    it('should throw ResourceNotFoundError when staff does not exist', async () => {
       // Given - User has permission but staff not found
-      mockI18n.translate.mockReturnValue("Field is required");
+      mockI18n.translate.mockReturnValue('Field is required');
       mockPermissionService.requirePermission.mockResolvedValue(undefined);
       mockStaffRepository.findById.mockResolvedValue(null);
 
@@ -168,8 +168,8 @@ describe("DeleteStaffUseCase - Permissions TDD", () => {
         validRequestingUserId,
         Permission.MANAGE_STAFF,
         expect.objectContaining({
-          action: "delete",
-          resource: "staff",
+          action: 'delete',
+          resource: 'staff',
           staffId: validStaffId,
         }),
       );
@@ -178,24 +178,24 @@ describe("DeleteStaffUseCase - Permissions TDD", () => {
       expect(mockStaffRepository.delete).not.toHaveBeenCalled();
     });
 
-    it("should log error when repository throws unexpected error", async () => {
+    it('should log error when repository throws unexpected error', async () => {
       // Given - User has permission but repository fails
-      mockI18n.translate.mockReturnValue("Field is required");
+      mockI18n.translate.mockReturnValue('Field is required');
       mockPermissionService.requirePermission.mockResolvedValue(undefined);
 
       const mockStaff = {
         getId: () => ({ getValue: () => validStaffId }),
-        getEmail: () => ({ getValue: () => "staff@example.com" }),
-        getName: () => "Staff Name",
+        getEmail: () => ({ getValue: () => 'staff@example.com' }),
+        getName: () => 'Staff Name',
         isActive: () => true,
         canBeDeleted: () => true,
-        fullName: "Staff Full Name",
+        fullName: 'Staff Full Name',
         id: { getValue: () => validStaffId },
       };
 
       mockStaffRepository.findById.mockResolvedValue(mockStaff as any);
 
-      const repositoryError = new Error("Database connection failed");
+      const repositoryError = new Error('Database connection failed');
       mockStaffRepository.delete.mockRejectedValue(repositoryError);
 
       // When & Then
@@ -204,10 +204,10 @@ describe("DeleteStaffUseCase - Permissions TDD", () => {
           staffId: validStaffId,
           requestingUserId: validRequestingUserId,
         }),
-      ).rejects.toThrow("Database connection failed");
+      ).rejects.toThrow('Database connection failed');
 
       expect(mockLogger.error).toHaveBeenCalledWith(
-        "Error deleting staff",
+        'Error deleting staff',
         repositoryError,
         expect.objectContaining({
           staffId: validStaffId,
@@ -216,37 +216,37 @@ describe("DeleteStaffUseCase - Permissions TDD", () => {
     });
   });
 
-  describe("Request Validation", () => {
-    it("should validate required fields", async () => {
+  describe('Request Validation', () => {
+    it('should validate required fields', async () => {
       mockPermissionService.requirePermission.mockResolvedValue(undefined);
-      mockI18n.translate.mockReturnValue("Field is required");
+      mockI18n.translate.mockReturnValue('Field is required');
 
       // Test missing staffId
       await expect(
         useCase.execute({
-          staffId: "",
-          requestingUserId: "123e4567-e89b-42d3-a456-426614174000",
+          staffId: '',
+          requestingUserId: '123e4567-e89b-42d3-a456-426614174000',
         }),
       ).rejects.toThrow();
 
       // Test missing requestingUserId
       await expect(
         useCase.execute({
-          staffId: "123e4567-e89b-42d3-a456-426614174001",
-          requestingUserId: "",
+          staffId: '123e4567-e89b-42d3-a456-426614174001',
+          requestingUserId: '',
         }),
       ).rejects.toThrow();
     });
 
-    it("should validate UUID format", async () => {
+    it('should validate UUID format', async () => {
       mockPermissionService.requirePermission.mockResolvedValue(undefined);
-      mockI18n.translate.mockReturnValue("Invalid UUID format");
+      mockI18n.translate.mockReturnValue('Invalid UUID format');
 
       // Test invalid staffId UUID
       await expect(
         useCase.execute({
-          staffId: "invalid-uuid",
-          requestingUserId: "123e4567-e89b-42d3-a456-426614174000",
+          staffId: 'invalid-uuid',
+          requestingUserId: '123e4567-e89b-42d3-a456-426614174000',
         }),
       ).rejects.toThrow();
     });

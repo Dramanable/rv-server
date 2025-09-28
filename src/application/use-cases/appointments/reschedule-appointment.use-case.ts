@@ -8,11 +8,11 @@
  * en attendant la correction des imports dans appointment.entity.ts
  */
 
-import { AppointmentRepository } from "../../../domain/repositories/appointment.repository.interface";
+import { AppointmentRepository } from '../../../domain/repositories/appointment.repository.interface';
 import {
   AppointmentNotFoundError,
   AppointmentException,
-} from "../../exceptions/appointment.exceptions";
+} from '../../exceptions/appointment.exceptions';
 
 // ===== TEMPORARY TYPES =====
 // TODO: Remplacer par les vrais types quand appointment.entity.ts sera corrigé
@@ -66,7 +66,7 @@ export class RescheduleAppointmentUseCase {
       // En production, cela serait: await this.appointmentRepository.findById(appointmentId);
       appointment = {
         id: request.appointmentId,
-        status: "CONFIRMED",
+        status: 'CONFIRMED',
         startTime: new Date(),
         endTime: new Date(Date.now() + 60 * 60 * 1000), // 1h plus tard
       };
@@ -91,8 +91,8 @@ export class RescheduleAppointmentUseCase {
 
     if (hasConflicts) {
       throw new AppointmentException(
-        "The requested time slot conflicts with existing appointments",
-        "TIME_SLOT_CONFLICT",
+        'The requested time slot conflicts with existing appointments',
+        'TIME_SLOT_CONFLICT',
       );
     }
 
@@ -103,7 +103,7 @@ export class RescheduleAppointmentUseCase {
     // 8. Simulation de sauvegarde (temporaire)
     // TODO: Remplacer par await this.appointmentRepository.save(appointment);
     // quand les types seront compatibles
-    console.log("Appointment rescheduled (simulation):", appointment.id);
+    console.log('Appointment rescheduled (simulation):', appointment.id);
 
     // 9. Gérer les notifications (optionnel)
     const notificationSent = await this.handleNotifications(
@@ -113,7 +113,7 @@ export class RescheduleAppointmentUseCase {
 
     return {
       appointment: appointment,
-      message: "Appointment successfully rescheduled",
+      message: 'Appointment successfully rescheduled',
       conflictsResolved: !hasConflicts,
       notificationSent,
     };
@@ -125,36 +125,36 @@ export class RescheduleAppointmentUseCase {
   private validateRequest(request: RescheduleAppointmentRequest): void {
     if (!request.appointmentId?.trim()) {
       throw new AppointmentException(
-        "Appointment ID is required",
-        "INVALID_APPOINTMENT_ID",
+        'Appointment ID is required',
+        'INVALID_APPOINTMENT_ID',
       );
     }
 
     if (!request.requestingUserId?.trim()) {
       throw new AppointmentException(
-        "Requesting user ID is required",
-        "INVALID_USER_ID",
+        'Requesting user ID is required',
+        'INVALID_USER_ID',
       );
     }
 
     if (!request.newStartTime || !request.newEndTime) {
       throw new AppointmentException(
-        "Start time and end time are required",
-        "INVALID_TIME_RANGE",
+        'Start time and end time are required',
+        'INVALID_TIME_RANGE',
       );
     }
 
     if (request.newStartTime >= request.newEndTime) {
       throw new AppointmentException(
-        "Start time must be before end time",
-        "INVALID_TIME_RANGE",
+        'Start time must be before end time',
+        'INVALID_TIME_RANGE',
       );
     }
 
     if (request.newStartTime < new Date()) {
       throw new AppointmentException(
-        "Cannot reschedule appointment to a past time",
-        "PAST_TIME_NOT_ALLOWED",
+        'Cannot reschedule appointment to a past time',
+        'PAST_TIME_NOT_ALLOWED',
       );
     }
   }

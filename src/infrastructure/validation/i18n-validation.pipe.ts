@@ -9,8 +9,8 @@ import {
   BadRequestException,
   Injectable,
   ValidationPipe,
-} from "@nestjs/common";
-import { ValidationError } from "class-validator";
+} from '@nestjs/common';
+import { ValidationError } from 'class-validator';
 
 @Injectable()
 export class I18nValidationPipe extends ValidationPipe {
@@ -27,9 +27,9 @@ export class I18nValidationPipe extends ValidationPipe {
         const translatedErrors = this.translateValidationErrors(errors);
         return new BadRequestException({
           statusCode: 400,
-          message: "Validation failed",
+          message: 'Validation failed',
           details: translatedErrors,
-          code: "VALIDATION_ERROR",
+          code: 'VALIDATION_ERROR',
           timestamp: new Date().toISOString(),
         });
       },
@@ -41,7 +41,7 @@ export class I18nValidationPipe extends ValidationPipe {
    */
   private translateValidationErrors(
     errors: ValidationError[],
-    parentPath = "",
+    parentPath = '',
   ): string[] {
     const translatedMessages: string[] = [];
 
@@ -87,33 +87,33 @@ export class I18nValidationPipe extends ValidationPipe {
     // Messages traduits pour chaque champ
     const translatedMessages: Record<string, Record<string, string>> = {
       email: {
-        "must be an email": "doit être une adresse email valide",
-        "should not be empty": "ne peut pas être vide",
-        "Please provide a valid email address":
-          "Veuillez fournir une adresse email valide",
-        "Email is required": "L'email est requis",
+        'must be an email': 'doit être une adresse email valide',
+        'should not be empty': 'ne peut pas être vide',
+        'Please provide a valid email address':
+          'Veuillez fournir une adresse email valide',
+        'Email is required': "L'email est requis",
       },
       password: {
-        "must be a string": "doit être une chaîne de caractères",
-        "must be longer than or equal to 6 characters":
-          "doit contenir au moins 6 caractères",
-        "should not be empty": "ne peut pas être vide",
-        "Password must be a string": "doit être une chaîne de caractères",
-        "Password is required": "est requis",
-        "Password must be at least 6 characters long":
-          "doit contenir au moins 6 caractères",
+        'must be a string': 'doit être une chaîne de caractères',
+        'must be longer than or equal to 6 characters':
+          'doit contenir au moins 6 caractères',
+        'should not be empty': 'ne peut pas être vide',
+        'Password must be a string': 'doit être une chaîne de caractères',
+        'Password is required': 'est requis',
+        'Password must be at least 6 characters long':
+          'doit contenir au moins 6 caractères',
       },
       rememberMe: {
-        "must be a boolean value": "doit être un booléen",
-        "Remember me must be a boolean": "doit être un booléen",
+        'must be a boolean value': 'doit être un booléen',
+        'Remember me must be a boolean': 'doit être un booléen',
       },
       logoutAll: {
-        "must be a boolean value": "doit être un booléen",
-        "Logout all must be a boolean": "doit être un booléen",
+        'must be a boolean value': 'doit être un booléen',
+        'Logout all must be a boolean': 'doit être un booléen',
       },
       refreshToken: {
-        "must be a string": "doit être une chaîne de caractères",
-        "Refresh token must be a string": "doit être une chaîne de caractères",
+        'must be a string': 'doit être une chaîne de caractères',
+        'Refresh token must be a string': 'doit être une chaîne de caractères',
       },
     };
 
@@ -125,11 +125,11 @@ export class I18nValidationPipe extends ValidationPipe {
 
     // Messages génériques traduits
     const genericTranslations: Record<string, string> = {
-      "must be an email": "doit être une adresse email valide",
-      "should not be empty": "ne peut pas être vide",
-      "must be a string": "doit être une chaîne de caractères",
-      "must be a boolean value": "doit être un booléen",
-      "must be longer than or equal to": "doit contenir au moins",
+      'must be an email': 'doit être une adresse email valide',
+      'should not be empty': 'ne peut pas être vide',
+      'must be a string': 'doit être une chaîne de caractères',
+      'must be a boolean value': 'doit être un booléen',
+      'must be longer than or equal to': 'doit contenir au moins',
     };
 
     // Recherche générique avec remplacement partiel
@@ -137,10 +137,10 @@ export class I18nValidationPipe extends ValidationPipe {
       genericTranslations,
     )) {
       if (originalMessage.includes(englishPattern)) {
-        if (englishPattern === "must be longer than or equal to") {
+        if (englishPattern === 'must be longer than or equal to') {
           // Extraire le nombre minimum
           const match = originalMessage.match(/(\d+)/);
-          const minLength = match ? match[1] : "";
+          const minLength = match ? match[1] : '';
           return `${frenchMessage} ${minLength} caractères`;
         }
         return frenchMessage;

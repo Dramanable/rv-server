@@ -14,16 +14,16 @@ import {
   QueryRunner,
   Table,
   TableForeignKey,
-} from "typeorm";
+} from 'typeorm';
 
 export class CreateBusinessGalleriesTable1695829210000
   implements MigrationInterface
 {
-  name = "CreateBusinessGalleriesTable1695829210000";
+  name = 'CreateBusinessGalleriesTable1695829210000';
 
   // 🎯 OBLIGATOIRE : Récupérer le schéma depuis l'environnement
   private getSchemaName(): string {
-    const schema = process.env.DB_SCHEMA || "public";
+    const schema = process.env.DB_SCHEMA || 'public';
 
     // Validation du nom de schéma (sécurité)
     if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(schema)) {
@@ -42,66 +42,66 @@ export class CreateBusinessGalleriesTable1695829210000
         name: `${schema}.business_galleries`,
         columns: [
           {
-            name: "id",
-            type: "uuid",
+            name: 'id',
+            type: 'uuid',
             isPrimary: true,
-            generationStrategy: "uuid",
-            default: "uuid_generate_v4()",
+            generationStrategy: 'uuid',
+            default: 'uuid_generate_v4()',
           },
           {
-            name: "business_id",
-            type: "uuid",
+            name: 'business_id',
+            type: 'uuid',
             isNullable: false,
           },
           {
-            name: "name",
-            type: "varchar",
-            length: "100",
+            name: 'name',
+            type: 'varchar',
+            length: '100',
             default: "'Main Gallery'",
           },
           {
-            name: "description",
-            type: "text",
+            name: 'description',
+            type: 'text',
             isNullable: true,
           },
           {
-            name: "display_order",
-            type: "integer",
+            name: 'display_order',
+            type: 'integer',
             default: 0,
           },
           {
-            name: "is_primary",
-            type: "boolean",
+            name: 'is_primary',
+            type: 'boolean',
             default: true,
           },
           {
-            name: "is_active",
-            type: "boolean",
+            name: 'is_active',
+            type: 'boolean',
             default: true,
           },
           {
-            name: "gallery_config",
-            type: "jsonb",
+            name: 'gallery_config',
+            type: 'jsonb',
             default: `'{"maxImages":50,"allowedFormats":["JPEG","PNG","WEBP"],"thumbnailSize":{"width":200,"height":200}}'`,
           },
           {
-            name: "created_at",
-            type: "timestamptz",
-            default: "CURRENT_TIMESTAMP",
+            name: 'created_at',
+            type: 'timestamptz',
+            default: 'CURRENT_TIMESTAMP',
           },
           {
-            name: "updated_at",
-            type: "timestamptz",
-            default: "CURRENT_TIMESTAMP",
-            onUpdate: "CURRENT_TIMESTAMP",
+            name: 'updated_at',
+            type: 'timestamptz',
+            default: 'CURRENT_TIMESTAMP',
+            onUpdate: 'CURRENT_TIMESTAMP',
           },
         ],
         foreignKeys: [
           {
-            columnNames: ["business_id"],
+            columnNames: ['business_id'],
             referencedTableName: `${schema}.businesses`,
-            referencedColumnNames: ["id"],
-            onDelete: "CASCADE",
+            referencedColumnNames: ['id'],
+            onDelete: 'CASCADE',
           },
         ],
       }),
@@ -128,10 +128,10 @@ export class CreateBusinessGalleriesTable1695829210000
     await queryRunner.createForeignKey(
       `${schema}.business_images`,
       new TableForeignKey({
-        columnNames: ["gallery_id"],
+        columnNames: ['gallery_id'],
         referencedTableName: `${schema}.business_galleries`,
-        referencedColumnNames: ["id"],
-        onDelete: "SET NULL",
+        referencedColumnNames: ['id'],
+        onDelete: 'SET NULL',
       }),
     );
   }
@@ -143,7 +143,7 @@ export class CreateBusinessGalleriesTable1695829210000
     const table = await queryRunner.getTable(`${schema}.business_images`);
     if (table) {
       const foreignKey = table.foreignKeys.find(
-        (fk) => fk.columnNames.indexOf("gallery_id") !== -1,
+        (fk) => fk.columnNames.indexOf('gallery_id') !== -1,
       );
       if (foreignKey) {
         await queryRunner.dropForeignKey(

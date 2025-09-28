@@ -9,7 +9,7 @@
  * @returns Le nom du schéma configuré ou 'public' par défaut
  */
 export function getSchemaName(): string {
-  return process.env.DB_SCHEMA || "public";
+  return process.env.DB_SCHEMA || 'public';
 }
 
 /**
@@ -17,7 +17,7 @@ export function getSchemaName(): string {
  * @returns Le nom de la base de données configurée
  */
 export function getDatabaseName(): string {
-  return process.env.DATABASE_NAME || process.env.DB_NAME || "rvproject_app";
+  return process.env.DATABASE_NAME || process.env.DB_NAME || 'rvproject_app';
 }
 
 /**
@@ -29,10 +29,10 @@ export function getDatabaseName(): string {
 export function withSchema(tableName: string, query?: string): string {
   const schema = getSchemaName();
   const qualifiedTableName =
-    schema !== "public" ? `"${schema}"."${tableName}"` : `"${tableName}"`;
+    schema !== 'public' ? `"${schema}"."${tableName}"` : `"${tableName}"`;
 
   if (query) {
-    return query.replace(new RegExp(`"${tableName}"`, "g"), qualifiedTableName);
+    return query.replace(new RegExp(`"${tableName}"`, 'g'), qualifiedTableName);
   }
 
   return qualifiedTableName;

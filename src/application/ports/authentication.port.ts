@@ -4,7 +4,7 @@
  * Interface pour l'authentification et gestion des tokens JWT
  */
 
-import { User } from "../../domain/entities/user.entity";
+import { User } from '../../domain/entities/user.entity';
 
 export interface TokenPayload {
   userId: string;

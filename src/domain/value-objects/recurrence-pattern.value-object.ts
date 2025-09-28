@@ -1,4 +1,4 @@
-import { RecurrenceType, WeekDay } from "./time-slot.value-object";
+import { RecurrenceType, WeekDay } from './time-slot.value-object';
 
 export interface RecurrenceRule {
   type: RecurrenceType;
@@ -18,21 +18,21 @@ export class RecurrencePattern {
 
   private validate(): void {
     if (this.rule.interval < 1) {
-      throw new Error("Interval must be at least 1");
+      throw new Error('Interval must be at least 1');
     }
 
     if (this.rule.occurrences && this.rule.occurrences < 1) {
-      throw new Error("Occurrences must be at least 1");
+      throw new Error('Occurrences must be at least 1');
     }
 
     if (this.rule.endDate && this.rule.occurrences) {
-      throw new Error("Cannot specify both endDate and occurrences");
+      throw new Error('Cannot specify both endDate and occurrences');
     }
 
     switch (this.rule.type) {
       case RecurrenceType.WEEKLY:
         if (!this.rule.daysOfWeek || this.rule.daysOfWeek.length === 0) {
-          throw new Error("Weekly recurrence requires daysOfWeek");
+          throw new Error('Weekly recurrence requires daysOfWeek');
         }
         break;
 
@@ -43,7 +43,7 @@ export class RecurrencePattern {
           this.rule.dayOfMonth > 31
         ) {
           throw new Error(
-            "Monthly recurrence requires valid dayOfMonth (1-31)",
+            'Monthly recurrence requires valid dayOfMonth (1-31)',
           );
         }
         break;
@@ -55,7 +55,7 @@ export class RecurrencePattern {
           this.rule.monthOfYear > 12
         ) {
           throw new Error(
-            "Yearly recurrence requires valid monthOfYear (1-12)",
+            'Yearly recurrence requires valid monthOfYear (1-12)',
           );
         }
         if (
@@ -63,7 +63,7 @@ export class RecurrencePattern {
           this.rule.dayOfMonth < 1 ||
           this.rule.dayOfMonth > 31
         ) {
-          throw new Error("Yearly recurrence requires valid dayOfMonth (1-31)");
+          throw new Error('Yearly recurrence requires valid dayOfMonth (1-31)');
         }
         break;
     }
@@ -152,7 +152,7 @@ export class RecurrencePattern {
 
       // Safety check to prevent infinite loops
       if (count > 1000) {
-        throw new Error("Recurrence pattern generated too many dates");
+        throw new Error('Recurrence pattern generated too many dates');
       }
     }
 
@@ -327,18 +327,18 @@ export class RecurrencePattern {
   describe(): string {
     switch (this.rule.type) {
       case RecurrenceType.NONE:
-        return "Une seule fois";
+        return 'Une seule fois';
 
       case RecurrenceType.DAILY:
         return this.rule.interval === 1
-          ? "Tous les jours"
+          ? 'Tous les jours'
           : `Tous les ${this.rule.interval} jours`;
 
       case RecurrenceType.WEEKLY: {
-        const dayNames = ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"];
+        const dayNames = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
         const days = this.rule
           .daysOfWeek!.map((day) => dayNames[day])
-          .join(", ");
+          .join(', ');
         return this.rule.interval === 1
           ? `Chaque semaine le ${days}`
           : `Toutes les ${this.rule.interval} semaines le ${days}`;
@@ -351,24 +351,24 @@ export class RecurrencePattern {
 
       case RecurrenceType.YEARLY: {
         const monthNames = [
-          "Janvier",
-          "Février",
-          "Mars",
-          "Avril",
-          "Mai",
-          "Juin",
-          "Juillet",
-          "Août",
-          "Septembre",
-          "Octobre",
-          "Novembre",
-          "Décembre",
+          'Janvier',
+          'Février',
+          'Mars',
+          'Avril',
+          'Mai',
+          'Juin',
+          'Juillet',
+          'Août',
+          'Septembre',
+          'Octobre',
+          'Novembre',
+          'Décembre',
         ];
         return `Le ${this.rule.dayOfMonth} ${monthNames[this.rule.monthOfYear! - 1]} chaque année`;
       }
 
       default:
-        return "Récurrence personnalisée";
+        return 'Récurrence personnalisée';
     }
   }
 }

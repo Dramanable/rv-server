@@ -8,9 +8,9 @@
 import {
   Appointment,
   AppointmentId,
-} from "../../../domain/entities/appointment.entity";
-import { AppointmentRepository } from "../../../domain/repositories/appointment.repository.interface";
-import { AppointmentNotFoundError } from "../../exceptions/appointment.exceptions";
+} from '../../../domain/entities/appointment.entity';
+import { AppointmentRepository } from '../../../domain/repositories/appointment.repository.interface';
+import { AppointmentNotFoundError } from '../../exceptions/appointment.exceptions';
 
 export interface GetAppointmentByIdRequest {
   readonly appointmentId: string;

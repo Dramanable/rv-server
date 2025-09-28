@@ -26,21 +26,21 @@ export class Email {
 
   private validateNotEmpty(email: string): void {
     if (!email || email.trim().length === 0) {
-      throw new Error("Email cannot be empty");
+      throw new Error('Email cannot be empty');
     }
   }
 
   private validateLength(email: string): void {
     if (email.length > 254) {
       // RFC 5321 limite
-      throw new Error("Email too long");
+      throw new Error('Email too long');
     }
   }
 
   private validateFormat(email: string): void {
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (!emailRegex.test(email.trim())) {
-      throw new Error("Invalid email format");
+      throw new Error('Invalid email format');
     }
   }
 
@@ -62,13 +62,13 @@ export class Email {
    * Extrait le domaine de l'email
    */
   getDomain(): string {
-    return this.value.split("@")[1];
+    return this.value.split('@')[1];
   }
 
   /**
    * Extrait la partie locale (avant @)
    */
   getLocalPart(): string {
-    return this.value.split("@")[0];
+    return this.value.split('@')[0];
   }
 }

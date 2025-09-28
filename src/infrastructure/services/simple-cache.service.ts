@@ -4,10 +4,10 @@
  * Service de cache simple pour remplacer temporairement RedisCacheService
  */
 
-import { Inject, Injectable } from "@nestjs/common";
-import type { ICacheService } from "../../application/ports/cache.port";
-import type { Logger } from "../../application/ports/logger.port";
-import { TOKENS } from "../../shared/constants/injection-tokens";
+import { Inject, Injectable } from '@nestjs/common';
+import type { ICacheService } from '../../application/ports/cache.port';
+import type { Logger } from '../../application/ports/logger.port';
+import { TOKENS } from '../../shared/constants/injection-tokens';
 
 @Injectable()
 export class SimpleCacheService implements ICacheService {
@@ -36,7 +36,7 @@ export class SimpleCacheService implements ICacheService {
   }
 
   async clear(): Promise<void> {
-    this.logger.debug("Cache CLEAR");
+    this.logger.debug('Cache CLEAR');
     this.cache.clear();
     return Promise.resolve();
   }

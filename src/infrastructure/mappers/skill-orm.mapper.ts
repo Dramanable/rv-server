@@ -1,6 +1,6 @@
-import { Skill } from "../../domain/entities/skill.entity";
-import { BusinessId } from "../../domain/value-objects/business-id.value-object";
-import { SkillOrmEntity } from "../database/sql/postgresql/entities/skill-orm.entity";
+import { Skill } from '../../domain/entities/skill.entity';
+import { BusinessId } from '../../domain/value-objects/business-id.value-object';
+import { SkillOrmEntity } from '../database/sql/postgresql/entities/skill-orm.entity';
 
 /**
  * ✅ OBLIGATOIRE - Mapper Skill : Domain ↔ ORM
@@ -46,7 +46,7 @@ export class SkillOrmMapper {
       businessId: businessId,
       name: orm.name,
       category: orm.category,
-      description: orm.description || "", // Gestion nullable
+      description: orm.description || '', // Gestion nullable
       isCritical: orm.isCritical,
       isActive: orm.isActive,
       // ⚠️ TRAÇABILITÉ OBLIGATOIRE

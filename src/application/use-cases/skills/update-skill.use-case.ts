@@ -1,14 +1,14 @@
-import { ISkillRepository } from "../../../domain/repositories/skill.repository";
-import { Logger } from "../../ports/logger.port";
-import { I18nService } from "../../ports/i18n.port";
-import { IAuditService } from "../../ports/audit.port";
-import { Skill } from "../../../domain/entities/skill.entity";
-import { BusinessId } from "../../../domain/value-objects/business-id.value-object";
+import { ISkillRepository } from '../../../domain/repositories/skill.repository';
+import { Logger } from '../../ports/logger.port';
+import { I18nService } from '../../ports/i18n.port';
+import { IAuditService } from '../../ports/audit.port';
+import { Skill } from '../../../domain/entities/skill.entity';
+import { BusinessId } from '../../../domain/value-objects/business-id.value-object';
 import {
   SkillNotFoundException,
   SkillNameConflictException,
   SkillValidationException,
-} from "../../../domain/exceptions/skill.exceptions";
+} from '../../../domain/exceptions/skill.exceptions';
 
 export interface UpdateSkillRequest {
   readonly skillId: string;
@@ -46,7 +46,7 @@ export class UpdateSkillUseCase {
   ) {}
 
   async execute(request: UpdateSkillRequest): Promise<UpdateSkillResponse> {
-    this.logger.info("Updating skill", {
+    this.logger.info('Updating skill', {
       skillId: request.skillId,
       businessId: request.businessId,
       requestingUserId: request.requestingUserId,
@@ -63,7 +63,7 @@ export class UpdateSkillUseCase {
         request.skillId,
       );
       if (!existingSkill) {
-        this.logger.warn("Skill not found for update", {
+        this.logger.warn('Skill not found for update', {
           skillId: request.skillId,
           businessId: request.businessId,
           correlationId: request.correlationId,
@@ -73,7 +73,7 @@ export class UpdateSkillUseCase {
 
       // Validate business ownership
       if (existingSkill.getBusinessId().getValue() !== request.businessId) {
-        this.logger.warn("Skill update denied - wrong business", {
+        this.logger.warn('Skill update denied - wrong business', {
           skillId: request.skillId,
           skillBusinessId: existingSkill.getBusinessId().getValue(),
           requestingBusinessId: request.businessId,
@@ -94,7 +94,7 @@ export class UpdateSkillUseCase {
         );
 
         if (nameExists) {
-          this.logger.warn("Skill name conflict during update", {
+          this.logger.warn('Skill name conflict during update', {
             skillId: request.skillId,
             newName: request.updates.name,
             businessId: request.businessId,
@@ -210,8 +210,8 @@ export class UpdateSkillUseCase {
 
       // Audit the operation
       await this.auditService.logOperation({
-        operation: "UPDATE_SKILL",
-        entityType: "SKILL",
+        operation: 'UPDATE_SKILL',
+        entityType: 'SKILL',
         entityId: request.skillId,
         businessId: request.businessId,
         userId: request.requestingUserId,
@@ -220,7 +220,7 @@ export class UpdateSkillUseCase {
         timestamp: new Date(),
       });
 
-      this.logger.info("Skill updated successfully", {
+      this.logger.info('Skill updated successfully', {
         skillId: request.skillId,
         skillName: savedSkill.getName(),
         businessId: request.businessId,
@@ -239,8 +239,8 @@ export class UpdateSkillUseCase {
       };
     } catch (error) {
       this.logger.error(
-        "Failed to update skill",
-        error instanceof Error ? error : new Error("Unknown error"),
+        'Failed to update skill',
+        error instanceof Error ? error : new Error('Unknown error'),
         {
           skillId: request.skillId,
           businessId: request.businessId,
@@ -254,40 +254,40 @@ export class UpdateSkillUseCase {
   private validateRequest(request: UpdateSkillRequest): void {
     if (!request.correlationId) {
       throw new SkillValidationException(
-        this.i18n.translate("skill.validation.correlationIdRequired"),
-        "CORRELATION_ID_REQUIRED",
+        this.i18n.translate('skill.validation.correlationIdRequired'),
+        'CORRELATION_ID_REQUIRED',
         { skillId: request.skillId },
       );
     }
 
     if (!request.requestingUserId) {
       throw new SkillValidationException(
-        this.i18n.translate("skill.validation.requestingUserIdRequired"),
-        "REQUESTING_USER_ID_REQUIRED",
+        this.i18n.translate('skill.validation.requestingUserIdRequired'),
+        'REQUESTING_USER_ID_REQUIRED',
         { skillId: request.skillId },
       );
     }
 
     if (!request.timestamp) {
       throw new SkillValidationException(
-        this.i18n.translate("skill.validation.timestampRequired"),
-        "TIMESTAMP_REQUIRED",
+        this.i18n.translate('skill.validation.timestampRequired'),
+        'TIMESTAMP_REQUIRED',
         { skillId: request.skillId },
       );
     }
 
     if (!request.businessId) {
       throw new SkillValidationException(
-        this.i18n.translate("skill.validation.businessIdRequired"),
-        "BUSINESS_ID_REQUIRED",
+        this.i18n.translate('skill.validation.businessIdRequired'),
+        'BUSINESS_ID_REQUIRED',
         { skillId: request.skillId },
       );
     }
 
     if (!request.skillId) {
       throw new SkillValidationException(
-        "Skill ID is required",
-        "SKILL_ID_REQUIRED",
+        'Skill ID is required',
+        'SKILL_ID_REQUIRED',
         {},
       );
     }
@@ -296,8 +296,8 @@ export class UpdateSkillUseCase {
     const requestAge = Date.now() - request.timestamp.getTime();
     if (requestAge > 5 * 60 * 1000) {
       throw new SkillValidationException(
-        this.i18n.translate("skill.validation.requestTooOld"),
-        "REQUEST_TOO_OLD",
+        this.i18n.translate('skill.validation.requestTooOld'),
+        'REQUEST_TOO_OLD',
         { skillId: request.skillId },
       );
     }
@@ -306,8 +306,8 @@ export class UpdateSkillUseCase {
     const updateFields = Object.keys(request.updates);
     if (updateFields.length === 0) {
       throw new SkillValidationException(
-        "At least one field must be provided for update",
-        "NO_UPDATE_FIELDS",
+        'At least one field must be provided for update',
+        'NO_UPDATE_FIELDS',
         { skillId: request.skillId },
       );
     }
@@ -316,15 +316,15 @@ export class UpdateSkillUseCase {
     if (request.updates.name !== undefined) {
       if (!request.updates.name || request.updates.name.trim().length < 2) {
         throw new SkillValidationException(
-          this.i18n.translate("skill.validation.nameRequired"),
-          "NAME_INVALID",
+          this.i18n.translate('skill.validation.nameRequired'),
+          'NAME_INVALID',
           { skillId: request.skillId, name: request.updates.name },
         );
       }
       if (request.updates.name.length > 100) {
         throw new SkillValidationException(
-          this.i18n.translate("skill.validation.nameTooLong"),
-          "NAME_TOO_LONG",
+          this.i18n.translate('skill.validation.nameTooLong'),
+          'NAME_TOO_LONG',
           { skillId: request.skillId, name: request.updates.name },
         );
       }
@@ -336,8 +336,8 @@ export class UpdateSkillUseCase {
         request.updates.category.trim().length < 2
       ) {
         throw new SkillValidationException(
-          this.i18n.translate("skill.validation.categoryRequired"),
-          "CATEGORY_INVALID",
+          this.i18n.translate('skill.validation.categoryRequired'),
+          'CATEGORY_INVALID',
           { skillId: request.skillId, category: request.updates.category },
         );
       }
@@ -349,8 +349,8 @@ export class UpdateSkillUseCase {
         request.updates.description.length > 500
       ) {
         throw new SkillValidationException(
-          this.i18n.translate("skill.validation.descriptionTooLong"),
-          "DESCRIPTION_TOO_LONG",
+          this.i18n.translate('skill.validation.descriptionTooLong'),
+          'DESCRIPTION_TOO_LONG',
           {
             skillId: request.skillId,
             description: request.updates.description,

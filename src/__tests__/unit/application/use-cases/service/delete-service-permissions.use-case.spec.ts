@@ -6,20 +6,20 @@
  * non autorisées avec les bonnes exceptions.
  */
 
-import { InsufficientPermissionsError } from "@application/exceptions/application.exceptions";
-import { I18nService } from "@application/ports/i18n.port";
-import { Logger } from "@application/ports/logger.port";
-import { IPermissionService } from "@application/ports/permission.service.interface";
+import { InsufficientPermissionsError } from '@application/exceptions/application.exceptions';
+import { I18nService } from '@application/ports/i18n.port';
+import { Logger } from '@application/ports/logger.port';
+import { IPermissionService } from '@application/ports/permission.service.interface';
 import {
   DeleteServiceRequest,
   DeleteServiceUseCase,
-} from "@application/use-cases/service/delete-service.use-case";
-import { Service } from "@domain/entities/service.entity";
-import { ServiceRepository } from "@domain/repositories/service.repository.interface";
-import { BusinessId } from "@domain/value-objects/business-id.value-object";
-import { ServiceTypeId } from "@domain/value-objects/service-type-id.value-object";
+} from '@application/use-cases/service/delete-service.use-case';
+import { Service } from '@domain/entities/service.entity';
+import { ServiceRepository } from '@domain/repositories/service.repository.interface';
+import { BusinessId } from '@domain/value-objects/business-id.value-object';
+import { ServiceTypeId } from '@domain/value-objects/service-type-id.value-object';
 
-describe("DeleteServiceUseCase - Permission Validation", () => {
+describe('DeleteServiceUseCase - Permission Validation', () => {
   let deleteServiceUseCase: DeleteServiceUseCase;
   let mockServiceRepository: jest.Mocked<ServiceRepository>;
   let mockPermissionService: jest.Mocked<IPermissionService>;
@@ -27,20 +27,20 @@ describe("DeleteServiceUseCase - Permission Validation", () => {
   let mockI18n: jest.Mocked<I18nService>;
 
   // Test data
-  const serviceId = "550e8400-e29b-41d4-a716-446655440001";
-  const businessId = "550e8400-e29b-41d4-a716-446655440002";
-  const requestingUserId = "550e8400-e29b-41d4-a716-446655440003";
-  const unauthorizedUserId = "550e8400-e29b-41d4-a716-446655440004";
+  const serviceId = '550e8400-e29b-41d4-a716-446655440001';
+  const businessId = '550e8400-e29b-41d4-a716-446655440002';
+  const requestingUserId = '550e8400-e29b-41d4-a716-446655440003';
+  const unauthorizedUserId = '550e8400-e29b-41d4-a716-446655440004';
 
   const mockService = Service.create({
     businessId: BusinessId.create(businessId),
-    name: "Service to Delete",
+    name: 'Service to Delete',
     serviceTypeIds: [
-      ServiceTypeId.fromString("550e8400-e29b-41d4-a716-446655440005"),
+      ServiceTypeId.fromString('550e8400-e29b-41d4-a716-446655440005'),
     ],
-    description: "Test service for deletion",
+    description: 'Test service for deletion',
     basePrice: 50,
-    currency: "EUR",
+    currency: 'EUR',
     duration: 60,
     allowOnlineBooking: false, // Inactive pour permettre la suppression
     requiresApproval: false,
@@ -80,8 +80,8 @@ describe("DeleteServiceUseCase - Permission Validation", () => {
     mockI18n = {
       translate: jest.fn((key: string, params?: any) => {
         const translations: Record<string, string> = {
-          "service.errors.not_found": `Service with ID ${params?.id} not found`,
-          "permissions.insufficient": `Insufficient permissions for ${params?.operation}`,
+          'service.errors.not_found': `Service with ID ${params?.id} not found`,
+          'permissions.insufficient': `Insufficient permissions for ${params?.operation}`,
         };
         return translations[key] || key;
       }),
@@ -98,8 +98,8 @@ describe("DeleteServiceUseCase - Permission Validation", () => {
     );
   });
 
-  describe("🔐 Permission Checks - MANAGE_SERVICES Permission", () => {
-    it("🚨 RED - should call requirePermission before deleting service", async () => {
+  describe('🔐 Permission Checks - MANAGE_SERVICES Permission', () => {
+    it('🚨 RED - should call requirePermission before deleting service', async () => {
       // Arrange
       const deleteRequest: DeleteServiceRequest = {
         serviceId,
@@ -116,7 +116,7 @@ describe("DeleteServiceUseCase - Permission Validation", () => {
       // Assert
       expect(mockPermissionService.requirePermission).toHaveBeenCalledWith(
         requestingUserId,
-        "MANAGE_SERVICES",
+        'MANAGE_SERVICES',
         {
           businessId,
           resourceId: serviceId,
@@ -124,7 +124,7 @@ describe("DeleteServiceUseCase - Permission Validation", () => {
       );
     });
 
-    it("🚨 RED - should throw InsufficientPermissionsError when user cannot manage services", async () => {
+    it('🚨 RED - should throw InsufficientPermissionsError when user cannot manage services', async () => {
       // Arrange
       const deleteRequest: DeleteServiceRequest = {
         serviceId,
@@ -135,7 +135,7 @@ describe("DeleteServiceUseCase - Permission Validation", () => {
       mockPermissionService.requirePermission.mockRejectedValue(
         new InsufficientPermissionsError(
           unauthorizedUserId,
-          "MANAGE_SERVICES",
+          'MANAGE_SERVICES',
           serviceId,
         ),
       );
@@ -147,7 +147,7 @@ describe("DeleteServiceUseCase - Permission Validation", () => {
 
       expect(mockPermissionService.requirePermission).toHaveBeenCalledWith(
         unauthorizedUserId,
-        "MANAGE_SERVICES",
+        'MANAGE_SERVICES',
         {
           businessId,
           resourceId: serviceId,
@@ -158,7 +158,7 @@ describe("DeleteServiceUseCase - Permission Validation", () => {
       expect(mockServiceRepository.delete).not.toHaveBeenCalled();
     });
 
-    it("🚨 RED - should pass business context in permission validation", async () => {
+    it('🚨 RED - should pass business context in permission validation', async () => {
       // Arrange
       const deleteRequest: DeleteServiceRequest = {
         serviceId,
@@ -175,7 +175,7 @@ describe("DeleteServiceUseCase - Permission Validation", () => {
       // Assert
       expect(mockPermissionService.requirePermission).toHaveBeenCalledWith(
         requestingUserId,
-        "MANAGE_SERVICES",
+        'MANAGE_SERVICES',
         expect.objectContaining({
           businessId,
           resourceId: serviceId,
@@ -183,7 +183,7 @@ describe("DeleteServiceUseCase - Permission Validation", () => {
       );
     });
 
-    it("🚨 RED - should verify permissions BEFORE business rule validation", async () => {
+    it('🚨 RED - should verify permissions BEFORE business rule validation', async () => {
       // Arrange
       const deleteRequest: DeleteServiceRequest = {
         serviceId,
@@ -193,13 +193,13 @@ describe("DeleteServiceUseCase - Permission Validation", () => {
       // Mock pour un service qui ne peut normalement pas être supprimé (actif)
       const activeService = Service.create({
         businessId: BusinessId.create(businessId),
-        name: "Active Service",
+        name: 'Active Service',
         serviceTypeIds: [
-          ServiceTypeId.fromString("550e8400-e29b-41d4-a716-446655440005"),
+          ServiceTypeId.fromString('550e8400-e29b-41d4-a716-446655440005'),
         ],
-        description: "Active service that cannot be deleted",
+        description: 'Active service that cannot be deleted',
         basePrice: 100,
-        currency: "EUR",
+        currency: 'EUR',
         duration: 90,
         allowOnlineBooking: true, // Actif = ne peut pas être supprimé normalement
         requiresApproval: false,
@@ -210,7 +210,7 @@ describe("DeleteServiceUseCase - Permission Validation", () => {
       mockPermissionService.requirePermission.mockRejectedValue(
         new InsufficientPermissionsError(
           unauthorizedUserId,
-          "MANAGE_SERVICES",
+          'MANAGE_SERVICES',
           serviceId,
         ),
       );
@@ -226,8 +226,8 @@ describe("DeleteServiceUseCase - Permission Validation", () => {
     });
   });
 
-  describe("🔍 Error Handling & Logging", () => {
-    it("🚨 RED - should log permission denial with context", async () => {
+  describe('🔍 Error Handling & Logging', () => {
+    it('🚨 RED - should log permission denial with context', async () => {
       // Arrange
       const deleteRequest: DeleteServiceRequest = {
         serviceId,
@@ -236,7 +236,7 @@ describe("DeleteServiceUseCase - Permission Validation", () => {
 
       const permissionError = new InsufficientPermissionsError(
         unauthorizedUserId,
-        "MANAGE_SERVICES",
+        'MANAGE_SERVICES',
         serviceId,
       );
 
@@ -254,18 +254,18 @@ describe("DeleteServiceUseCase - Permission Validation", () => {
 
       // Assert
       expect(mockLogger.error).toHaveBeenCalledWith(
-        "Permission denied for service deletion",
+        'Permission denied for service deletion',
         expect.any(Error),
         expect.objectContaining({
           requestingUserId: unauthorizedUserId,
           serviceId,
           businessId,
-          requiredPermission: "MANAGE_SERVICES",
+          requiredPermission: 'MANAGE_SERVICES',
         }),
       );
     });
 
-    it("🚨 RED - should handle generic permission errors", async () => {
+    it('🚨 RED - should handle generic permission errors', async () => {
       // Arrange
       const deleteRequest: DeleteServiceRequest = {
         serviceId,
@@ -277,7 +277,7 @@ describe("DeleteServiceUseCase - Permission Validation", () => {
       mockPermissionService.requirePermission.mockRejectedValue(
         new InsufficientPermissionsError(
           unauthorizedUserId,
-          "MANAGE_SERVICES",
+          'MANAGE_SERVICES',
           serviceId,
         ),
       );
@@ -288,30 +288,30 @@ describe("DeleteServiceUseCase - Permission Validation", () => {
       );
 
       expect(mockLogger.error).toHaveBeenCalledWith(
-        "Permission denied for service deletion",
+        'Permission denied for service deletion',
         expect.any(Error),
         expect.objectContaining({
           requestingUserId: unauthorizedUserId,
           serviceId,
           businessId,
-          requiredPermission: "MANAGE_SERVICES",
+          requiredPermission: 'MANAGE_SERVICES',
         }),
       );
     });
   });
 
-  describe("🎯 Business Rules - Service Deletion Constraints", () => {
-    it("🚨 RED - should require permissions even for services that cannot be deleted", async () => {
+  describe('🎯 Business Rules - Service Deletion Constraints', () => {
+    it('🚨 RED - should require permissions even for services that cannot be deleted', async () => {
       // Arrange
       const activeService = Service.create({
         businessId: BusinessId.create(businessId),
-        name: "Active Service",
+        name: 'Active Service',
         serviceTypeIds: [
-          ServiceTypeId.fromString("550e8400-e29b-41d4-a716-446655440005"),
+          ServiceTypeId.fromString('550e8400-e29b-41d4-a716-446655440005'),
         ],
-        description: "Active service with business constraints",
+        description: 'Active service with business constraints',
         basePrice: 100,
-        currency: "EUR",
+        currency: 'EUR',
         duration: 90,
         allowOnlineBooking: true, // Actif = contraintes métier pour suppression
         requiresApproval: false,
@@ -327,7 +327,7 @@ describe("DeleteServiceUseCase - Permission Validation", () => {
       mockPermissionService.requirePermission.mockRejectedValue(
         new InsufficientPermissionsError(
           unauthorizedUserId,
-          "MANAGE_SERVICES",
+          'MANAGE_SERVICES',
           serviceId,
         ),
       );
@@ -340,7 +340,7 @@ describe("DeleteServiceUseCase - Permission Validation", () => {
       // Permissions doivent être vérifiées AVANT les règles métier
       expect(mockPermissionService.requirePermission).toHaveBeenCalledWith(
         unauthorizedUserId,
-        "MANAGE_SERVICES",
+        'MANAGE_SERVICES',
         expect.objectContaining({
           businessId,
           resourceId: serviceId,
@@ -349,15 +349,15 @@ describe("DeleteServiceUseCase - Permission Validation", () => {
     });
   });
 
-  describe("✅ TDD GREEN Phase - Placeholder for Implementation Tests", () => {
-    it("should be implemented after DeleteServiceUseCase refactoring", () => {
+  describe('✅ TDD GREEN Phase - Placeholder for Implementation Tests', () => {
+    it('should be implemented after DeleteServiceUseCase refactoring', () => {
       // Ce test sera développé après implémentation complète du refactoring
       expect(true).toBe(true);
     });
   });
 
-  describe("🔵 TDD REFACTOR Phase - Enhanced Permission Logic Tests", () => {
-    it("should be implemented after GREEN phase completion", () => {
+  describe('🔵 TDD REFACTOR Phase - Enhanced Permission Logic Tests', () => {
+    it('should be implemented after GREEN phase completion', () => {
       // Ce test sera développé dans la phase REFACTOR
       expect(true).toBe(true);
     });

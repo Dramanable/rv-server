@@ -1,8 +1,8 @@
-import { Professional } from "@domain/entities/professional.entity";
-import { BusinessId } from "@domain/value-objects/business-id.value-object";
-import { Email } from "@domain/value-objects/email.value-object";
-import { ProfessionalId } from "@domain/value-objects/professional-id.value-object";
-import { ProfessionalOrmEntity } from "@infrastructure/database/sql/postgresql/entities/professional-orm.entity";
+import { Professional } from '@domain/entities/professional.entity';
+import { BusinessId } from '@domain/value-objects/business-id.value-object';
+import { Email } from '@domain/value-objects/email.value-object';
+import { ProfessionalId } from '@domain/value-objects/professional-id.value-object';
+import { ProfessionalOrmEntity } from '@infrastructure/database/sql/postgresql/entities/professional-orm.entity';
 
 /**
  * 🔄 PROFESSIONAL ORM MAPPER - Infrastructure Layer
@@ -50,10 +50,10 @@ export class ProfessionalOrmMapper {
       lastName: orm.last_name,
       email: email,
       phone: orm.phone,
-      status: "ACTIVE", // Default status since not stored in ORM
+      status: 'ACTIVE', // Default status since not stored in ORM
       isVerified: false, // Default since not stored in ORM
       licenseNumber: undefined, // Not stored in ORM
-      speciality: orm.specialization || "", // Required property with default
+      speciality: orm.specialization || '', // Required property with default
       phoneNumber: orm.phone, // Use phone as phoneNumber
       profileImage: orm.profile_image_url,
       bio: orm.bio,

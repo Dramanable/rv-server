@@ -360,15 +360,15 @@ export class BusinessContext {
     businessName: string,
   ): void {
     if (!businessId || businessId.trim().length === 0) {
-      throw new Error("Business ID is required");
+      throw new Error('Business ID is required');
     }
 
     if (!businessName || businessName.trim().length === 0) {
-      throw new Error("Business name is required");
+      throw new Error('Business name is required');
     }
 
     if (businessName.trim().length < 2) {
-      throw new Error("Business name must be at least 2 characters long");
+      throw new Error('Business name must be at least 2 characters long');
     }
   }
 }

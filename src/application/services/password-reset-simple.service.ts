@@ -4,10 +4,10 @@
  * Service minimal pour faire passer les tests TDD
  */
 
-import { TOKENS } from "../../shared/constants/injection-tokens";
-import type { UserRepository } from "../../domain/repositories/user.repository.interface";
-import type { EmailService } from "../../domain/services/email.service";
-import type { Logger } from "../ports/logger.port";
+import { TOKENS } from '../../shared/constants/injection-tokens';
+import type { UserRepository } from '../../domain/repositories/user.repository.interface';
+import type { EmailService } from '../../domain/services/email.service';
+import type { Logger } from '../ports/logger.port';
 
 export class PasswordResetService {
   constructor(
@@ -27,17 +27,17 @@ export class PasswordResetService {
       return {
         success: true,
         message:
-          "If this email exists, you will receive password reset instructions.",
+          'If this email exists, you will receive password reset instructions.',
       };
     } catch (error) {
       (this.logger as { error: (msg: string, err: unknown) => void }).error(
-        "Password reset request failed",
+        'Password reset request failed',
         error,
       );
       return {
         success: true, // Sécurité : ne pas révéler l'erreur
         message:
-          "If this email exists, you will receive password reset instructions.",
+          'If this email exists, you will receive password reset instructions.',
       };
     }
   }
@@ -50,7 +50,7 @@ export class PasswordResetService {
       if (newPassword.length < 8) {
         return {
           success: false,
-          message: "Password must be at least 8 characters long",
+          message: 'Password must be at least 8 characters long',
         };
       }
 
@@ -60,16 +60,16 @@ export class PasswordResetService {
 
       return {
         success: true,
-        message: "Password successfully reset.",
+        message: 'Password successfully reset.',
       };
     } catch (error) {
       (this.logger as { error: (msg: string, err: unknown) => void }).error(
-        "Password reset failed",
+        'Password reset failed',
         error,
       );
       return {
         success: false,
-        message: "Password reset failed. Please try again.",
+        message: 'Password reset failed. Please try again.',
       };
     }
   }

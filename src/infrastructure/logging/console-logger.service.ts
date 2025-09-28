@@ -5,8 +5,8 @@
  * Intégration avec le système de logging NestJS
  */
 
-import { Injectable, Logger as NestLogger } from "@nestjs/common";
-import { Logger } from "../../application/ports/logger.port";
+import { Injectable, Logger as NestLogger } from '@nestjs/common';
+import { Logger } from '../../application/ports/logger.port';
 
 @Injectable()
 export class ConsoleLoggerService implements Logger {
@@ -49,7 +49,7 @@ export class ConsoleLoggerService implements Logger {
       action,
       userId,
       timestamp: new Date().toISOString(),
-      type: "AUDIT",
+      type: 'AUDIT',
     };
     const message = `AUDIT: ${action} by user ${userId}`;
     this.info(message, auditContext);
@@ -73,7 +73,7 @@ export class ConsoleLoggerService implements Logger {
     // Format: "Message | operation=CreateUser | userId=123 | correlationId=abc"
     const contextParts = Object.entries(fullContext)
       .map(([key, value]) => `${key}=${value}`)
-      .join(" | ");
+      .join(' | ');
 
     return `${message} | ${contextParts}`;
   }

@@ -5,9 +5,9 @@
  * Couche présentation/sécurité - extraction de l'utilisateur authentifié
  */
 
-import { createParamDecorator, ExecutionContext } from "@nestjs/common";
-import type { Request } from "express";
-import { User } from "../../../domain/entities/user.entity";
+import { createParamDecorator, ExecutionContext } from '@nestjs/common';
+import type { Request } from 'express';
+import { User } from '../../../domain/entities/user.entity';
 
 /**
  * 👤 Décorateur @GetUser()
@@ -37,7 +37,7 @@ export const GetUser = createParamDecorator(
 
     if (!user) {
       throw new Error(
-        "User not found in request. Make sure JwtAuthGuard is applied.",
+        'User not found in request. Make sure JwtAuthGuard is applied.',
       );
     }
 

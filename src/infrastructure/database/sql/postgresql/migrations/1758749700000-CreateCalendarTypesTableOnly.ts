@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner } from "typeorm";
+import { MigrationInterface, QueryRunner } from 'typeorm';
 
 /**
  * ✅ MIGRATION SIMPLE - Créer UNIQUEMENT la table calendar_types
@@ -16,10 +16,10 @@ import { MigrationInterface, QueryRunner } from "typeorm";
 export class CreateCalendarTypesTableOnly1758749700000
   implements MigrationInterface
 {
-  name = "CreateCalendarTypesTableOnly1758749700000";
+  name = 'CreateCalendarTypesTableOnly1758749700000';
 
   private getSchemaName(): string {
-    const schema = process.env.DB_SCHEMA || "public";
+    const schema = process.env.DB_SCHEMA || 'public';
 
     // Validation du nom de schéma (sécurité)
     if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(schema)) {

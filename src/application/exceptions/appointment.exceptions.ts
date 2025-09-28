@@ -1,4 +1,4 @@
-import { ApplicationException } from "./application.exceptions";
+import { ApplicationException } from './application.exceptions';
 
 /**
  * 📅 APPOINTMENT EXCEPTIONS
@@ -9,34 +9,34 @@ import { ApplicationException } from "./application.exceptions";
 export class AppointmentException extends ApplicationException {
   constructor(message: string, code: string, context?: any) {
     super(message, code, context);
-    this.name = "AppointmentException";
+    this.name = 'AppointmentException';
   }
 }
 
 export class BusinessNotFoundError extends AppointmentException {
   constructor(businessId: string) {
-    super(`Business with ID ${businessId} not found`, "BUSINESS_NOT_FOUND", {
+    super(`Business with ID ${businessId} not found`, 'BUSINESS_NOT_FOUND', {
       businessId,
     });
-    this.name = "BusinessNotFoundError";
+    this.name = 'BusinessNotFoundError';
   }
 }
 
 export class ServiceNotFoundError extends AppointmentException {
   constructor(serviceId: string) {
-    super(`Service with ID ${serviceId} not found`, "SERVICE_NOT_FOUND", {
+    super(`Service with ID ${serviceId} not found`, 'SERVICE_NOT_FOUND', {
       serviceId,
     });
-    this.name = "ServiceNotFoundError";
+    this.name = 'ServiceNotFoundError';
   }
 }
 
 export class CalendarNotFoundError extends AppointmentException {
   constructor(calendarId: string) {
-    super(`Calendar with ID ${calendarId} not found`, "CALENDAR_NOT_FOUND", {
+    super(`Calendar with ID ${calendarId} not found`, 'CALENDAR_NOT_FOUND', {
       calendarId,
     });
-    this.name = "CalendarNotFoundError";
+    this.name = 'CalendarNotFoundError';
   }
 }
 
@@ -44,10 +44,10 @@ export class AppointmentNotFoundError extends AppointmentException {
   constructor(appointmentId: string) {
     super(
       `Appointment with ID ${appointmentId} not found`,
-      "APPOINTMENT_NOT_FOUND",
+      'APPOINTMENT_NOT_FOUND',
       { appointmentId },
     );
-    this.name = "AppointmentNotFoundError";
+    this.name = 'AppointmentNotFoundError';
   }
 }
 
@@ -55,10 +55,10 @@ export class AppointmentAlreadyCancelledError extends AppointmentException {
   constructor(appointmentId: string) {
     super(
       `Appointment with ID ${appointmentId} is already cancelled`,
-      "APPOINTMENT_ALREADY_CANCELLED",
+      'APPOINTMENT_ALREADY_CANCELLED',
       { appointmentId },
     );
-    this.name = "AppointmentAlreadyCancelledError";
+    this.name = 'AppointmentAlreadyCancelledError';
   }
 }
 
@@ -69,10 +69,10 @@ export class AppointmentConflictError extends AppointmentException {
   ) {
     super(
       `Time slot conflict: ${timeSlot.startTime.toISOString()} - ${timeSlot.endTime.toISOString()}`,
-      "APPOINTMENT_CONFLICT",
+      'APPOINTMENT_CONFLICT',
       { timeSlot, conflictingAppointmentId },
     );
-    this.name = "AppointmentConflictError";
+    this.name = 'AppointmentConflictError';
   }
 }
 
@@ -80,10 +80,10 @@ export class InvalidAppointmentStatusError extends AppointmentException {
   constructor(currentStatus: string, attemptedOperation: string) {
     super(
       `Cannot ${attemptedOperation} appointment with status ${currentStatus}`,
-      "INVALID_APPOINTMENT_STATUS",
+      'INVALID_APPOINTMENT_STATUS',
       { currentStatus, attemptedOperation },
     );
-    this.name = "InvalidAppointmentStatusError";
+    this.name = 'InvalidAppointmentStatusError';
   }
 }
 
@@ -91,10 +91,10 @@ export class AppointmentInPastError extends AppointmentException {
   constructor(appointmentTime: Date) {
     super(
       `Cannot book appointment in the past: ${appointmentTime.toISOString()}`,
-      "APPOINTMENT_IN_PAST",
+      'APPOINTMENT_IN_PAST',
       { appointmentTime },
     );
-    this.name = "AppointmentInPastError";
+    this.name = 'AppointmentInPastError';
   }
 }
 
@@ -102,10 +102,10 @@ export class MinimumBookingNoticeError extends AppointmentException {
   constructor(minimumHours: number, attemptedTime: Date) {
     super(
       `Minimum booking notice is ${minimumHours} hours. Attempted time: ${attemptedTime.toISOString()}`,
-      "MINIMUM_BOOKING_NOTICE",
+      'MINIMUM_BOOKING_NOTICE',
       { minimumHours, attemptedTime },
     );
-    this.name = "MinimumBookingNoticeError";
+    this.name = 'MinimumBookingNoticeError';
   }
 }
 
@@ -113,10 +113,10 @@ export class BusinessInactiveError extends AppointmentException {
   constructor(businessId: string) {
     super(
       `Business ${businessId} is inactive and cannot accept appointments`,
-      "BUSINESS_INACTIVE",
+      'BUSINESS_INACTIVE',
       { businessId },
     );
-    this.name = "BusinessInactiveError";
+    this.name = 'BusinessInactiveError';
   }
 }
 
@@ -124,10 +124,10 @@ export class ServiceInactiveError extends AppointmentException {
   constructor(serviceId: string) {
     super(
       `Service ${serviceId} is inactive and unavailable for booking`,
-      "SERVICE_INACTIVE",
+      'SERVICE_INACTIVE',
       { serviceId },
     );
-    this.name = "ServiceInactiveError";
+    this.name = 'ServiceInactiveError';
   }
 }
 
@@ -135,10 +135,10 @@ export class ServiceNotBookableOnlineError extends AppointmentException {
   constructor(serviceId: string) {
     super(
       `Service ${serviceId} does not allow online booking`,
-      "SERVICE_NOT_BOOKABLE_ONLINE",
+      'SERVICE_NOT_BOOKABLE_ONLINE',
       { serviceId },
     );
-    this.name = "ServiceNotBookableOnlineError";
+    this.name = 'ServiceNotBookableOnlineError';
   }
 }
 
@@ -146,10 +146,10 @@ export class CalendarInactiveError extends AppointmentException {
   constructor(calendarId: string) {
     super(
       `Calendar ${calendarId} is inactive and unavailable for booking`,
-      "CALENDAR_INACTIVE",
+      'CALENDAR_INACTIVE',
       { calendarId },
     );
-    this.name = "CalendarInactiveError";
+    this.name = 'CalendarInactiveError';
   }
 }
 
@@ -157,10 +157,10 @@ export class AppointmentValidationError extends AppointmentException {
   constructor(field: string, value: any, reason: string) {
     super(
       `Validation error for field '${field}': ${reason}`,
-      "APPOINTMENT_VALIDATION_ERROR",
+      'APPOINTMENT_VALIDATION_ERROR',
       { field, value, reason },
     );
-    this.name = "AppointmentValidationError";
+    this.name = 'AppointmentValidationError';
   }
 }
 
@@ -168,10 +168,10 @@ export class AppointmentCapacityExceededError extends AppointmentException {
   constructor(requestedCapacity: number, maxCapacity: number) {
     super(
       `Requested capacity ${requestedCapacity} exceeds maximum capacity ${maxCapacity}`,
-      "APPOINTMENT_CAPACITY_EXCEEDED",
+      'APPOINTMENT_CAPACITY_EXCEEDED',
       { requestedCapacity, maxCapacity },
     );
-    this.name = "AppointmentCapacityExceededError";
+    this.name = 'AppointmentCapacityExceededError';
   }
 }
 
@@ -179,9 +179,9 @@ export class StaffUnavailableError extends AppointmentException {
   constructor(staffId: string, timeSlot: { startTime: Date; endTime: Date }) {
     super(
       `Staff member ${staffId} is unavailable during ${timeSlot.startTime.toISOString()} - ${timeSlot.endTime.toISOString()}`,
-      "STAFF_UNAVAILABLE",
+      'STAFF_UNAVAILABLE',
       { staffId, timeSlot },
     );
-    this.name = "StaffUnavailableError";
+    this.name = 'StaffUnavailableError';
   }
 }

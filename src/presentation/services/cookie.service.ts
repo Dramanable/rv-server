@@ -6,11 +6,11 @@
  * ❌ Ne doit PAS être utilisé dans Domain/Application/Infrastructure
  */
 
-import { Inject, Injectable } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
-import { Request, Response } from "express";
-import type { Logger } from "../../application/ports/logger.port";
-import { TOKENS } from "../../shared/constants/injection-tokens";
+import { Inject, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { Request, Response } from 'express';
+import type { Logger } from '../../application/ports/logger.port';
+import { TOKENS } from '../../shared/constants/injection-tokens';
 
 /**
  * 🔧 Options pour la configuration des cookies
@@ -20,7 +20,7 @@ export interface CookieOptions {
   expires?: Date;
   httpOnly?: boolean;
   secure?: boolean;
-  sameSite?: "strict" | "lax" | "none";
+  sameSite?: 'strict' | 'lax' | 'none';
   path?: string;
   domain?: string;
 }
@@ -46,16 +46,16 @@ export class PresentationCookieService {
   ): void {
     const defaultOptions: CookieOptions = {
       httpOnly: true,
-      secure: this.configService.get<string>("NODE_ENV") === "production",
-      sameSite: "strict",
-      path: "/",
+      secure: this.configService.get<string>('NODE_ENV') === 'production',
+      sameSite: 'strict',
+      path: '/',
     };
 
     const finalOptions = { ...defaultOptions, ...options };
 
     response.cookie(name, value, finalOptions);
 
-    this.logger.debug("Cookie set", {
+    this.logger.debug('Cookie set', {
       name,
       secure: finalOptions.secure,
       httpOnly: finalOptions.httpOnly,
@@ -70,7 +70,7 @@ export class PresentationCookieService {
     const value = request.cookies?.[name];
 
     if (value) {
-      this.logger.debug("Cookie retrieved", { name });
+      this.logger.debug('Cookie retrieved', { name });
     }
 
     return value;
@@ -82,16 +82,16 @@ export class PresentationCookieService {
   clearCookie(response: Response, name: string, options?: CookieOptions): void {
     const defaultOptions: CookieOptions = {
       httpOnly: true,
-      secure: this.configService.get<string>("NODE_ENV") === "production",
-      sameSite: "strict",
-      path: "/",
+      secure: this.configService.get<string>('NODE_ENV') === 'production',
+      sameSite: 'strict',
+      path: '/',
     };
 
     const finalOptions = { ...defaultOptions, ...options };
 
     response.clearCookie(name, finalOptions);
 
-    this.logger.debug("Cookie cleared", { name });
+    this.logger.debug('Cookie cleared', { name });
   }
 
   /**
@@ -108,20 +108,20 @@ export class PresentationCookieService {
     rememberMe: boolean,
   ): void {
     const isProduction =
-      this.configService.get<string>("NODE_ENV") === "production";
+      this.configService.get<string>('NODE_ENV') === 'production';
 
     // Récupérer les noms et chemins depuis les variables d'environnement
     const accessTokenCookieName = this.configService.get<string>(
-      "ACCESS_TOKEN_COOKIE_NAME",
-      "accessToken",
+      'ACCESS_TOKEN_COOKIE_NAME',
+      'accessToken',
     );
     const refreshTokenCookieName = this.configService.get<string>(
-      "REFRESH_TOKEN_COOKIE_NAME",
-      "refreshToken",
+      'REFRESH_TOKEN_COOKIE_NAME',
+      'refreshToken',
     );
     const refreshTokenCookiePath = this.configService.get<string>(
-      "REFRESH_TOKEN_COOKIE_PATH",
-      "/api/v1/auth/refresh",
+      'REFRESH_TOKEN_COOKIE_PATH',
+      '/api/v1/auth/refresh',
     );
 
     // 🔑 Access Token Cookie - Même durée que le JWT
@@ -130,8 +130,8 @@ export class PresentationCookieService {
       maxAge: accessTokenMaxAge,
       httpOnly: true,
       secure: isProduction,
-      sameSite: "strict",
-      path: "/",
+      sameSite: 'strict',
+      path: '/',
     });
 
     // 🔄 Refresh Token Cookie - Durée selon rememberMe
@@ -143,13 +143,13 @@ export class PresentationCookieService {
       maxAge: refreshTokenMaxAge,
       httpOnly: true,
       secure: isProduction,
-      sameSite: "strict",
+      sameSite: 'strict',
       path: refreshTokenCookiePath, // Restreint aux endpoints de refresh
     });
 
-    this.logger.debug("Authentication cookies configured", {
+    this.logger.debug('Authentication cookies configured', {
       accessTokenMaxAge,
-      refreshTokenMaxAge: refreshTokenMaxAge || "session",
+      refreshTokenMaxAge: refreshTokenMaxAge || 'session',
       isProduction,
       rememberMe,
     });
@@ -160,23 +160,23 @@ export class PresentationCookieService {
    */
   clearAuthenticationCookies(response: Response): void {
     const accessTokenCookieName = this.configService.get<string>(
-      "ACCESS_TOKEN_COOKIE_NAME",
-      "accessToken",
+      'ACCESS_TOKEN_COOKIE_NAME',
+      'accessToken',
     );
     const refreshTokenCookieName = this.configService.get<string>(
-      "REFRESH_TOKEN_COOKIE_NAME",
-      "refreshToken",
+      'REFRESH_TOKEN_COOKIE_NAME',
+      'refreshToken',
     );
     const refreshTokenCookiePath = this.configService.get<string>(
-      "REFRESH_TOKEN_COOKIE_PATH",
-      "/api/v1/auth/refresh",
+      'REFRESH_TOKEN_COOKIE_PATH',
+      '/api/v1/auth/refresh',
     );
 
-    this.clearCookie(response, accessTokenCookieName, { path: "/" });
+    this.clearCookie(response, accessTokenCookieName, { path: '/' });
     this.clearCookie(response, refreshTokenCookieName, {
       path: refreshTokenCookiePath,
     });
 
-    this.logger.debug("Authentication cookies cleared");
+    this.logger.debug('Authentication cookies cleared');
   }
 }

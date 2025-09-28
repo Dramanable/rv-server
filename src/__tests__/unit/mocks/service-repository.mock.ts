@@ -5,7 +5,7 @@
  * Respecte exactement l'interface ServiceRepository
  */
 
-import type { ServiceRepository } from "@domain/repositories/service.repository.interface";
+import type { ServiceRepository } from '@domain/repositories/service.repository.interface';
 
 export const createMockServiceRepository =
   (): jest.Mocked<ServiceRepository> => {

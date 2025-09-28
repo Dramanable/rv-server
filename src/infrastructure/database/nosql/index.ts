@@ -4,4 +4,4 @@
  * ✅ Node.js 24 compatible
  */
 
-export * from "./mongodb";
+export * from './mongodb';

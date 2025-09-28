@@ -5,16 +5,16 @@
  * Application Layer : Orchestration de la logique métier sans dépendance framework
  */
 
-import { User } from "../../../domain/entities/user.entity";
-import { UserRepository } from "../../../domain/repositories/user.repository.interface";
-import { AppContextFactory } from "../../../shared/context/app-context";
-import { UserRole } from "../../../shared/enums/user-role.enum";
+import { User } from '../../../domain/entities/user.entity';
+import { UserRepository } from '../../../domain/repositories/user.repository.interface';
+import { AppContextFactory } from '../../../shared/context/app-context';
+import { UserRole } from '../../../shared/enums/user-role.enum';
 import {
   ForbiddenError,
   UserNotFoundError,
-} from "../../exceptions/auth.exceptions";
-import { I18nService } from "../../ports/i18n.port";
-import { Logger } from "../../ports/logger.port";
+} from '../../exceptions/auth.exceptions';
+import { I18nService } from '../../ports/i18n.port';
+import { Logger } from '../../ports/logger.port';
 
 // ═══════════════════════════════════════════════════════════════
 // 📋 REQUEST & RESPONSE TYPES
@@ -51,12 +51,12 @@ export class GetUserByIdUseCase {
 
   async execute(request: GetUserByIdRequest): Promise<GetUserByIdResponse> {
     const context = AppContextFactory.userOperation(
-      "GetUserById",
+      'GetUserById',
       request.requestingUserId,
       request.targetUserId,
     );
 
-    this.logger.info("get_user_attempt", {
+    this.logger.info('get_user_attempt', {
       ...context,
       targetUserId: request.targetUserId,
     });
@@ -67,7 +67,7 @@ export class GetUserByIdUseCase {
         request.requestingUserId,
       );
       if (!requestingUser) {
-        throw new UserNotFoundError("Requesting user not found", {
+        throw new UserNotFoundError('Requesting user not found', {
           userId: request.requestingUserId,
         });
       }
@@ -77,7 +77,7 @@ export class GetUserByIdUseCase {
         request.targetUserId,
       );
       if (!targetUser) {
-        throw new UserNotFoundError("Target user not found", {
+        throw new UserNotFoundError('Target user not found', {
           userId: request.targetUserId,
         });
       }
@@ -92,7 +92,7 @@ export class GetUserByIdUseCase {
         request.requestingUserId === request.targetUserId,
       );
 
-      this.logger.info("get_user_success", {
+      this.logger.info('get_user_success', {
         ...context,
         retrievedUserId: response.id,
         requestingUserId: request.requestingUserId,
@@ -101,7 +101,7 @@ export class GetUserByIdUseCase {
       return response;
     } catch (error) {
       this.logger.error(
-        "get_user_failed",
+        'get_user_failed',
         error as Error,
         context as unknown as Record<string, unknown>,
       );

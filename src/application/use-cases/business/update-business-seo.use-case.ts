@@ -4,13 +4,13 @@
  * ✅ Business rules for SEO optimization
  */
 
-import { BusinessRepository } from "../../../domain/repositories/business.repository.interface";
-import { BusinessId } from "../../../domain/value-objects/business-id.value-object";
+import { BusinessRepository } from '../../../domain/repositories/business.repository.interface';
+import { BusinessId } from '../../../domain/value-objects/business-id.value-object';
 import {
   BusinessSeoProfile,
   SchemaOrgBusiness,
-} from "../../../domain/value-objects/business-seo-profile.value-object";
-import { BusinessNotFoundError } from "../../exceptions/business.exceptions";
+} from '../../../domain/value-objects/business-seo-profile.value-object';
+import { BusinessNotFoundError } from '../../exceptions/business.exceptions';
 
 export interface UpdateBusinessSeoProfileRequest {
   readonly requestingUserId: string;
@@ -76,7 +76,7 @@ export class UpdateBusinessSeoProfileUseCase {
     // 4. Optimisation automatique pour la recherche locale
     if (request.autoOptimizeForLocal) {
       const cityName = business.address.getCity();
-      const businessType = business.sector?.name || "Service";
+      const businessType = business.sector?.name || 'Service';
 
       seoProfile = seoProfile.optimizeForLocalSearch(cityName, businessType);
     }
@@ -200,9 +200,9 @@ export class GenerateSitemapUseCase {
     } else {
       entries.push({
         url: request.baseUrl,
-        lastmod: business.updatedAt.toISOString().split("T")[0],
-        changefreq: "weekly",
-        priority: "1.0",
+        lastmod: business.updatedAt.toISOString().split('T')[0],
+        changefreq: 'weekly',
+        priority: '1.0',
       });
     }
 
@@ -211,9 +211,9 @@ export class GenerateSitemapUseCase {
       // TODO: Intégrer avec les services du business
       entries.push({
         url: `${request.baseUrl}/services`,
-        lastmod: business.updatedAt.toISOString().split("T")[0],
-        changefreq: "weekly",
-        priority: "0.8",
+        lastmod: business.updatedAt.toISOString().split('T')[0],
+        changefreq: 'weekly',
+        priority: '0.8',
       });
     }
 
@@ -221,9 +221,9 @@ export class GenerateSitemapUseCase {
     if (request.includeImages && business.gallery.count > 0) {
       entries.push({
         url: `${request.baseUrl}/gallery`,
-        lastmod: business.updatedAt.toISOString().split("T")[0],
-        changefreq: "monthly",
-        priority: "0.6",
+        lastmod: business.updatedAt.toISOString().split('T')[0],
+        changefreq: 'monthly',
+        priority: '0.6',
       });
     }
 
@@ -255,29 +255,29 @@ export class GenerateSitemapUseCase {
       '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n';
 
     entries.forEach((entry) => {
-      sitemap += "  <url>\n";
+      sitemap += '  <url>\n';
       sitemap += `    <loc>${entry.url}</loc>\n`;
       sitemap += `    <lastmod>${entry.lastmod}</lastmod>\n`;
       sitemap += `    <changefreq>${entry.changefreq}</changefreq>\n`;
       sitemap += `    <priority>${entry.priority}</priority>\n`;
 
       // Ajouter les images pour la page principale
-      if (entry.priority === "1.0") {
+      if (entry.priority === '1.0') {
         imageEntries.forEach((image) => {
-          sitemap += "    <image:image>\n";
+          sitemap += '    <image:image>\n';
           sitemap += `      <image:loc>${image.url}</image:loc>\n`;
           sitemap += `      <image:title>${image.title}</image:title>\n`;
           if (image.caption) {
             sitemap += `      <image:caption>${image.caption}</image:caption>\n`;
           }
-          sitemap += "    </image:image>\n";
+          sitemap += '    </image:image>\n';
         });
       }
 
-      sitemap += "  </url>\n";
+      sitemap += '  </url>\n';
     });
 
-    sitemap += "</urlset>";
+    sitemap += '</urlset>';
     return sitemap;
   }
 }

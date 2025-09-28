@@ -1,7 +1,7 @@
-import { CalendarType } from "@domain/entities/calendar-type.entity";
-import { BusinessId } from "@domain/value-objects/business-id.value-object";
-import { CalendarTypeId } from "@domain/value-objects/calendar-type-id.value-object";
-import { CalendarTypeOrmEntity } from "@infrastructure/database/sql/postgresql/entities/calendar-type-orm.entity";
+import { CalendarType } from '@domain/entities/calendar-type.entity';
+import { BusinessId } from '@domain/value-objects/business-id.value-object';
+import { CalendarTypeId } from '@domain/value-objects/calendar-type-id.value-object';
+import { CalendarTypeOrmEntity } from '@infrastructure/database/sql/postgresql/entities/calendar-type-orm.entity';
 
 export class CalendarTypeOrmMapper {
   /**
@@ -48,9 +48,9 @@ export class CalendarTypeOrmMapper {
       businessId,
       name: orm.name,
       code: orm.code,
-      description: orm.description || "",
-      icon: settings.icon || "calendar",
-      color: settings.color || "#007bff",
+      description: orm.description || '',
+      icon: settings.icon || 'calendar',
+      color: settings.color || '#007bff',
       isBuiltIn: settings.isBuiltIn || false,
       isActive: orm.is_active,
       sortOrder: settings.sortOrder || 0,

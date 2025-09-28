@@ -8,36 +8,36 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
-} from "typeorm";
+} from 'typeorm';
 
-@Entity("refresh_tokens")
+@Entity('refresh_tokens')
 export class RefreshTokenOrmEntity {
-  @PrimaryGeneratedColumn("uuid")
+  @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-  @Column({ type: "uuid", name: "user_id" })
+  @Column({ type: 'uuid', name: 'user_id' })
   userId!: string;
 
-  @Column({ type: "varchar", length: 500 })
+  @Column({ type: 'varchar', length: 500 })
   token!: string;
 
-  @Column({ type: "timestamp", name: "expires_at" })
+  @Column({ type: 'timestamp', name: 'expires_at' })
   expiresAt!: Date;
 
-  @Column({ type: "boolean", default: false, name: "is_revoked" })
+  @Column({ type: 'boolean', default: false, name: 'is_revoked' })
   isRevoked!: boolean;
 
   @CreateDateColumn({
-    name: "created_at",
-    type: "timestamp",
-    comment: "Timestamp when the refresh token was created",
+    name: 'created_at',
+    type: 'timestamp',
+    comment: 'Timestamp when the refresh token was created',
   })
   createdAt!: Date;
 
   @UpdateDateColumn({
-    name: "updated_at",
-    type: "timestamp",
-    comment: "Timestamp when the refresh token was last updated",
+    name: 'updated_at',
+    type: 'timestamp',
+    comment: 'Timestamp when the refresh token was last updated',
   })
   updatedAt!: Date;
 }

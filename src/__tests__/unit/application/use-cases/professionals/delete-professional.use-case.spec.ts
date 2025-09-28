@@ -4,23 +4,23 @@
  * @description Tests unitaires TDD pour DeleteProfessionalUseCase selon Clean Architecture
  */
 
-import { I18nService } from "@application/ports/i18n.port";
-import { Logger } from "@application/ports/logger.port";
-import { DeleteProfessionalUseCase } from "@application/use-cases/professionals/delete-professional.use-case";
+import { I18nService } from '@application/ports/i18n.port';
+import { Logger } from '@application/ports/logger.port';
+import { DeleteProfessionalUseCase } from '@application/use-cases/professionals/delete-professional.use-case';
 import {
   Professional,
   ProfessionalStatus,
-} from "@domain/entities/professional.entity";
+} from '@domain/entities/professional.entity';
 import {
   ProfessionalNotFoundError,
   ProfessionalValidationError,
-} from "@domain/exceptions/professional.exceptions";
-import { IProfessionalRepository } from "@domain/repositories/professional.repository";
-import { BusinessId } from "@domain/value-objects/business-id.value-object";
-import { Email } from "@domain/value-objects/email.value-object";
-import { ProfessionalId } from "@domain/value-objects/professional-id.value-object";
+} from '@domain/exceptions/professional.exceptions';
+import { IProfessionalRepository } from '@domain/repositories/professional.repository';
+import { BusinessId } from '@domain/value-objects/business-id.value-object';
+import { Email } from '@domain/value-objects/email.value-object';
+import { ProfessionalId } from '@domain/value-objects/professional-id.value-object';
 
-describe("DeleteProfessionalUseCase - TDD", () => {
+describe('DeleteProfessionalUseCase - TDD', () => {
   let useCase: DeleteProfessionalUseCase;
   let mockProfessionalRepository: jest.Mocked<IProfessionalRepository>;
   let mockLogger: jest.Mocked<Logger>;
@@ -70,8 +70,8 @@ describe("DeleteProfessionalUseCase - TDD", () => {
     jest.clearAllMocks();
   });
 
-  describe("🔴 RED - Professional Delete Success", () => {
-    it("should delete professional successfully", async () => {
+  describe('🔴 RED - Professional Delete Success', () => {
+    it('should delete professional successfully', async () => {
       // Given
       const request = createDeleteRequest();
       const existingProfessional = createExistingProfessional();
@@ -98,7 +98,7 @@ describe("DeleteProfessionalUseCase - TDD", () => {
       );
     });
 
-    it("should log delete operation with context", async () => {
+    it('should log delete operation with context', async () => {
       // Given
       const request = createDeleteRequest();
       const existingProfessional = createExistingProfessional();
@@ -113,7 +113,7 @@ describe("DeleteProfessionalUseCase - TDD", () => {
 
       // Then
       expect(mockLogger.info).toHaveBeenCalledWith(
-        "Deleting professional",
+        'Deleting professional',
         expect.objectContaining({
           professionalId: request.professionalId,
           correlationId: request.correlationId,
@@ -122,7 +122,7 @@ describe("DeleteProfessionalUseCase - TDD", () => {
       );
 
       expect(mockLogger.info).toHaveBeenCalledWith(
-        "Professional deleted successfully",
+        'Professional deleted successfully',
         expect.objectContaining({
           professionalId: request.professionalId,
           correlationId: request.correlationId,
@@ -132,8 +132,8 @@ describe("DeleteProfessionalUseCase - TDD", () => {
     });
   });
 
-  describe("🔴 RED - Professional Not Found", () => {
-    it("should throw error when professional does not exist", async () => {
+  describe('🔴 RED - Professional Not Found', () => {
+    it('should throw error when professional does not exist', async () => {
       // Given
       const request = createDeleteRequest();
       mockProfessionalRepository.findById.mockResolvedValue(null);
@@ -145,7 +145,7 @@ describe("DeleteProfessionalUseCase - TDD", () => {
 
       // Verify logging
       expect(mockLogger.error).toHaveBeenCalledWith(
-        "Professional not found for deletion",
+        'Professional not found for deletion',
         expect.any(Error),
         expect.objectContaining({
           professionalId: request.professionalId,
@@ -154,7 +154,7 @@ describe("DeleteProfessionalUseCase - TDD", () => {
       );
     });
 
-    it("should use i18n for not found error messages", async () => {
+    it('should use i18n for not found error messages', async () => {
       // Given
       const request = createDeleteRequest();
       mockProfessionalRepository.findById.mockResolvedValue(null);
@@ -165,37 +165,37 @@ describe("DeleteProfessionalUseCase - TDD", () => {
       } catch (error) {
         // Then
         expect(mockI18n.translate).toHaveBeenCalledWith(
-          "professional.errors.notFound",
+          'professional.errors.notFound',
           { professionalId: request.professionalId },
         );
       }
     });
   });
 
-  describe("🔴 RED - Input Validation", () => {
-    it("should throw error for invalid professional ID format", async () => {
+  describe('🔴 RED - Input Validation', () => {
+    it('should throw error for invalid professional ID format', async () => {
       // Given
-      const request = createDeleteRequest({ professionalId: "invalid-uuid" });
+      const request = createDeleteRequest({ professionalId: 'invalid-uuid' });
 
       // When & Then
       await expect(useCase.execute(request)).rejects.toThrow();
 
       // Verify error logging
       expect(mockLogger.error).toHaveBeenCalledWith(
-        "Invalid professional ID format",
+        'Invalid professional ID format',
         expect.any(Error),
         expect.objectContaining({
-          professionalId: "invalid-uuid",
+          professionalId: 'invalid-uuid',
           correlationId: request.correlationId,
         }),
       );
     });
 
-    it("should validate required context fields", async () => {
+    it('should validate required context fields', async () => {
       // Given
       const requestWithoutCorrelationId = {
-        professionalId: "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee",
-        requestingUserId: "admin-user-id",
+        professionalId: 'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee',
+        requestingUserId: 'admin-user-id',
         timestamp: new Date(),
       } as any; // Force type pour test validation
 
@@ -206,11 +206,11 @@ describe("DeleteProfessionalUseCase - TDD", () => {
     });
   });
 
-  describe("🔴 RED - Repository Error Handling", () => {
-    it("should handle repository errors gracefully", async () => {
+  describe('🔴 RED - Repository Error Handling', () => {
+    it('should handle repository errors gracefully', async () => {
       // Given
       const request = createDeleteRequest();
-      const repositoryError = new Error("Database connection failed");
+      const repositoryError = new Error('Database connection failed');
       mockProfessionalRepository.findById.mockRejectedValue(repositoryError);
 
       // When & Then
@@ -218,7 +218,7 @@ describe("DeleteProfessionalUseCase - TDD", () => {
 
       // Verify error logging
       expect(mockLogger.error).toHaveBeenCalledWith(
-        "Repository error during professional deletion",
+        'Repository error during professional deletion',
         repositoryError,
         expect.objectContaining({
           professionalId: request.professionalId,
@@ -227,11 +227,11 @@ describe("DeleteProfessionalUseCase - TDD", () => {
       );
     });
 
-    it("should handle delete operation errors", async () => {
+    it('should handle delete operation errors', async () => {
       // Given
       const request = createDeleteRequest();
       const existingProfessional = createExistingProfessional();
-      const deleteError = new Error("Delete operation failed");
+      const deleteError = new Error('Delete operation failed');
 
       mockProfessionalRepository.findById.mockResolvedValue(
         existingProfessional,
@@ -243,7 +243,7 @@ describe("DeleteProfessionalUseCase - TDD", () => {
 
       // Verify error logging
       expect(mockLogger.error).toHaveBeenCalledWith(
-        "Repository error during professional deletion",
+        'Repository error during professional deletion',
         deleteError,
         expect.objectContaining({
           professionalId: request.professionalId,
@@ -253,8 +253,8 @@ describe("DeleteProfessionalUseCase - TDD", () => {
     });
   });
 
-  describe("🔴 RED - Business Rules", () => {
-    it("should prevent deletion of active professionals with appointments", async () => {
+  describe('🔴 RED - Business Rules', () => {
+    it('should prevent deletion of active professionals with appointments', async () => {
       // Given
       const request = createDeleteRequest();
       const activeProfessional = createActiveProfessionalWithAppointments();
@@ -268,7 +268,7 @@ describe("DeleteProfessionalUseCase - TDD", () => {
 
       // Verify business rule logging
       expect(mockLogger.error).toHaveBeenCalledWith(
-        "Cannot delete professional with active appointments",
+        'Cannot delete professional with active appointments',
         undefined,
         expect.objectContaining({
           professionalId: request.professionalId,
@@ -277,7 +277,7 @@ describe("DeleteProfessionalUseCase - TDD", () => {
       );
     });
 
-    it("should use i18n for business rule violations", async () => {
+    it('should use i18n for business rule violations', async () => {
       // Given
       const request = createDeleteRequest();
       const activeProfessional = createActiveProfessionalWithAppointments();
@@ -290,7 +290,7 @@ describe("DeleteProfessionalUseCase - TDD", () => {
       } catch (error) {
         // Then
         expect(mockI18n.translate).toHaveBeenCalledWith(
-          "professional.errors.cannotDeleteWithAppointments",
+          'professional.errors.cannotDeleteWithAppointments',
           { professionalId: request.professionalId },
         );
       }
@@ -301,9 +301,9 @@ describe("DeleteProfessionalUseCase - TDD", () => {
 // ✅ OBLIGATOIRE - Helper functions pour tests cohérents
 function createDeleteRequest(overrides: any = {}): any {
   return {
-    professionalId: "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee",
-    requestingUserId: "admin-user-id",
-    correlationId: "delete-correlation-123",
+    professionalId: 'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee',
+    requestingUserId: 'admin-user-id',
+    correlationId: 'delete-correlation-123',
     timestamp: new Date(),
     ...overrides,
   };
@@ -311,43 +311,43 @@ function createDeleteRequest(overrides: any = {}): any {
 
 function createExistingProfessional(): Professional {
   return Professional.reconstruct({
-    id: ProfessionalId.fromString("aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee"),
-    businessId: BusinessId.fromString("bbbbbbbb-cccc-4ddd-8eee-ffffffffffff"),
-    email: Email.create("existing@clinic.com"),
-    firstName: "Dr. Existing",
-    lastName: "Professional",
-    speciality: "Cardiologie",
-    licenseNumber: "EXISTING-456",
-    phoneNumber: "0987654321",
-    bio: "Existing bio",
-    experience: "15",
-    status: "INACTIVE" as ProfessionalStatus,
+    id: ProfessionalId.fromString('aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee'),
+    businessId: BusinessId.fromString('bbbbbbbb-cccc-4ddd-8eee-ffffffffffff'),
+    email: Email.create('existing@clinic.com'),
+    firstName: 'Dr. Existing',
+    lastName: 'Professional',
+    speciality: 'Cardiologie',
+    licenseNumber: 'EXISTING-456',
+    phoneNumber: '0987654321',
+    bio: 'Existing bio',
+    experience: '15',
+    status: 'INACTIVE' as ProfessionalStatus,
     isVerified: true,
-    createdBy: "admin-user-id",
-    updatedBy: "admin-user-id",
-    createdAt: new Date("2023-09-24T16:35:11.143Z"),
-    updatedAt: new Date("2024-09-24T16:35:11.143Z"),
+    createdBy: 'admin-user-id',
+    updatedBy: 'admin-user-id',
+    createdAt: new Date('2023-09-24T16:35:11.143Z'),
+    updatedAt: new Date('2024-09-24T16:35:11.143Z'),
   });
 }
 
 function createActiveProfessionalWithAppointments(): Professional {
   const professional = Professional.reconstruct({
-    id: ProfessionalId.fromString("aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee"),
-    businessId: BusinessId.fromString("bbbbbbbb-cccc-4ddd-8eee-ffffffffffff"),
-    email: Email.create("active@clinic.com"),
-    firstName: "Dr. Active",
-    lastName: "Professional",
-    speciality: "Cardiologie",
-    licenseNumber: "ACTIVE-789",
-    phoneNumber: "0987654321",
-    bio: "Active professional",
-    experience: "20",
-    status: "ACTIVE" as ProfessionalStatus,
+    id: ProfessionalId.fromString('aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee'),
+    businessId: BusinessId.fromString('bbbbbbbb-cccc-4ddd-8eee-ffffffffffff'),
+    email: Email.create('active@clinic.com'),
+    firstName: 'Dr. Active',
+    lastName: 'Professional',
+    speciality: 'Cardiologie',
+    licenseNumber: 'ACTIVE-789',
+    phoneNumber: '0987654321',
+    bio: 'Active professional',
+    experience: '20',
+    status: 'ACTIVE' as ProfessionalStatus,
     isVerified: true,
-    createdBy: "admin-user-id",
-    updatedBy: "admin-user-id",
-    createdAt: new Date("2023-09-24T16:35:11.143Z"),
-    updatedAt: new Date("2024-09-24T16:35:11.143Z"),
+    createdBy: 'admin-user-id',
+    updatedBy: 'admin-user-id',
+    createdAt: new Date('2023-09-24T16:35:11.143Z'),
+    updatedAt: new Date('2024-09-24T16:35:11.143Z'),
   });
 
   // ✅ TODO : Simuler l'existence de rendez-vous actifs

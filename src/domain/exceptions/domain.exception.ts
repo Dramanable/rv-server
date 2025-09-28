@@ -38,18 +38,18 @@ export abstract class DomainException extends Error {
 
 export class InvalidEmailException extends DomainException {
   constructor(email: string) {
-    super(`Invalid email format: ${email}`, "INVALID_EMAIL");
+    super(`Invalid email format: ${email}`, 'INVALID_EMAIL');
   }
 }
 
 export class InvalidNameException extends DomainException {
   constructor(name: string) {
-    super(`Invalid name: ${name}`, "INVALID_NAME");
+    super(`Invalid name: ${name}`, 'INVALID_NAME');
   }
 }
 
 export class EmptyFieldException extends DomainException {
   constructor(fieldName: string) {
-    super(`${fieldName} cannot be empty`, "EMPTY_FIELD");
+    super(`${fieldName} cannot be empty`, 'EMPTY_FIELD');
   }
 }

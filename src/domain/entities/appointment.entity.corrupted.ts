@@ -4,23 +4,23 @@
  * Entité métier avec logique de validation
  */
 
-import { AppointmentId } from "@domain/value-objects/appointment-id.value-object";
-import { BusinessId } from "@domain/value-objects/business-id.value-object";
-import { ServiceId } from "@domain/value-objects/service-id.value-object";
-import { UserId } from "@domain/value-objects/user-id.value-object";
-import { Email } from "@domain/value-objects/email.value-object";
-import { Phone } from "@domain/value-objects/phone.value-object";
-import { TimeSlot } from "@domain/value-objects/time-slot.value-object";
+import { AppointmentId } from '@domain/value-objects/appointment-id.value-object';
+import { BusinessId } from '@domain/value-objects/business-id.value-object';
+import { ServiceId } from '@domain/value-objects/service-id.value-object';
+import { UserId } from '@domain/value-objects/user-id.value-object';
+import { Email } from '@domain/value-objects/email.value-object';
+import { Phone } from '@domain/value-objects/phone.value-object';
+import { TimeSlot } from '@domain/value-objects/time-slot.value-object';
 
 // ENUMS
 
 export enum AppointmentStatus {
-  REQUESTED = "REQUESTED",
-  CONFIRMED = "CONFIRMED",
-  IN_PROGRESS = "IN_PROGRESS",
-  COMPLETED = "COMPLETED",
-  CANCELLED = "CANCELLED",
-  NO_SHOW = "NO_SHOW",
+  REQUESTED = 'REQUESTED',
+  CONFIRMED = 'CONFIRMED',
+  IN_PROGRESS = 'IN_PROGRESS',
+  COMPLETED = 'COMPLETED',
+  CANCELLED = 'CANCELLED',
+  NO_SHOW = 'NO_SHOW',
 }
 
 // INTERFACES
@@ -36,7 +36,7 @@ export interface AppointmentPricing {
   readonly basePrice: { amount: number; currency: string };
   readonly finalPrice: { amount: number; currency: string };
   readonly totalAmount: { amount: number; currency: string };
-  readonly paymentStatus: "PENDING" | "PAID" | "PARTIALLY_PAID" | "REFUNDED";
+  readonly paymentStatus: 'PENDING' | 'PAID' | 'PARTIALLY_PAID' | 'REFUNDED';
 }
 
 // MAIN ENTITY
@@ -155,7 +155,7 @@ export class Appointment {
 
   confirm(): void {
     if (this._status !== AppointmentStatus.REQUESTED) {
-      throw new Error("Only requested appointments can be confirmed");
+      throw new Error('Only requested appointments can be confirmed');
     }
     this._status = AppointmentStatus.CONFIRMED;
     this._updatedAt = new Date();
@@ -163,7 +163,7 @@ export class Appointment {
 
   cancel(): void {
     if (!this.canBeModified()) {
-      throw new Error("Appointment cannot be cancelled in current status");
+      throw new Error('Appointment cannot be cancelled in current status');
     }
     this._status = AppointmentStatus.CANCELLED;
     this._updatedAt = new Date();
@@ -171,7 +171,7 @@ export class Appointment {
 
   reschedule(newTimeSlot: TimeSlot): void {
     if (!this.canBeRescheduled()) {
-      throw new Error("Appointment cannot be rescheduled");
+      throw new Error('Appointment cannot be rescheduled');
     }
 
     // Note: Dans une vraie implementation, on créerait un nouveau Appointment

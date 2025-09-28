@@ -1,5 +1,5 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { IsOptional, IsString, IsUUID } from "class-validator";
+import { ApiProperty } from '@nestjs/swagger';
+import { IsOptional, IsString, IsUUID } from 'class-validator';
 
 /**
  * 🗑️ DTO pour supprimer un type de calendrier
@@ -9,15 +9,15 @@ import { IsOptional, IsString, IsUUID } from "class-validator";
 export class DeleteCalendarTypeDto {
   @ApiProperty({
     description: "ID de l'entreprise pour validation des permissions",
-    example: "business-123-uuid",
+    example: 'business-123-uuid',
   })
   @IsString()
   @IsUUID()
   readonly businessId!: string;
 
   @ApiProperty({
-    description: "ID de corrélation pour le traçage (optionnel)",
-    example: "correlation-456-uuid",
+    description: 'ID de corrélation pour le traçage (optionnel)',
+    example: 'correlation-456-uuid',
     required: false,
   })
   @IsOptional()

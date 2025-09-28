@@ -4,13 +4,13 @@
  * ✅ Clean Architecture - Infrastructure Adapter
  */
 
-import type { Redis } from "ioredis";
-import type { IUserCache } from "../../application/ports/user-cache.port";
-import type { User } from "../../domain/entities/user.entity";
-import type { AppConfigService } from "../config/app-config.service";
+import type { Redis } from 'ioredis';
+import type { IUserCache } from '../../application/ports/user-cache.port';
+import type { User } from '../../domain/entities/user.entity';
+import type { AppConfigService } from '../config/app-config.service';
 
 export class RedisUserCacheAdapter implements IUserCache {
-  private readonly keyPrefix = "user:";
+  private readonly keyPrefix = 'user:';
 
   constructor(
     private readonly redisClient: Redis,

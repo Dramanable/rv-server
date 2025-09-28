@@ -20,21 +20,21 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
-} from "@nestjs/common";
+} from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiOperation,
   ApiParam,
   ApiResponse,
   ApiTags,
-} from "@nestjs/swagger";
+} from '@nestjs/swagger';
 
-import { ManageBusinessHoursUseCase } from "../../application/use-cases/business/manage-business-hours.use-case";
-import { User } from "../../domain/entities/user.entity";
-import { TOKENS } from "../../shared/constants/injection-tokens";
-import { UserRole } from "../../shared/enums/user-role.enum";
-import { GetUser } from "../security/decorators/get-user.decorator";
-import { Roles } from "../security/decorators/roles.decorator";
+import { ManageBusinessHoursUseCase } from '../../application/use-cases/business/manage-business-hours.use-case';
+import { User } from '../../domain/entities/user.entity';
+import { TOKENS } from '../../shared/constants/injection-tokens';
+import { UserRole } from '../../shared/enums/user-role.enum';
+import { GetUser } from '../security/decorators/get-user.decorator';
+import { Roles } from '../security/decorators/roles.decorator';
 
 // Import DTOs
 import {
@@ -45,13 +45,13 @@ import {
   CheckAvailabilityDto,
   UpdateBusinessHoursDto,
   UpsertBusinessHoursResponseDto,
-} from "../dtos/business-hours.dtos";
+} from '../dtos/business-hours.dtos';
 
 // Import exceptions
 
-@ApiTags("⏰ Business Hours")
+@ApiTags('⏰ Business Hours')
 @ApiBearerAuth()
-@Controller("businesses")
+@Controller('businesses')
 export class BusinessHoursController {
   constructor(
     @Inject(TOKENS.MANAGE_BUSINESS_HOURS_USE_CASE)
@@ -61,26 +61,26 @@ export class BusinessHoursController {
   /**
    * 📖 Consulter les horaires d'ouverture d'un business
    */
-  @Get(":businessId/hours")
+  @Get(':businessId/hours')
   @ApiOperation({
-    summary: "Get business opening hours",
+    summary: 'Get business opening hours',
     description:
-      "Retrieve complete business hours including weekly schedule, special dates, and current status",
+      'Retrieve complete business hours including weekly schedule, special dates, and current status',
   })
   @ApiParam({
-    name: "businessId",
-    description: "Business ID",
-    type: "string",
-    format: "uuid",
+    name: 'businessId',
+    description: 'Business ID',
+    type: 'string',
+    format: 'uuid',
   })
   @ApiResponse({
     status: 200,
-    description: "Business hours retrieved successfully",
+    description: 'Business hours retrieved successfully',
     type: BusinessHoursResponseDto,
   })
   @ApiResponse({
     status: 404,
-    description: "Business not found",
+    description: 'Business not found',
   })
   @Roles(
     UserRole.SUPER_ADMIN,
@@ -92,7 +92,7 @@ export class BusinessHoursController {
     UserRole.REGULAR_CLIENT,
   )
   async getBusinessHours(
-    @Param("businessId", ParseUUIDPipe) businessId: string,
+    @Param('businessId', ParseUUIDPipe) businessId: string,
     @GetUser() user: User,
   ): Promise<BusinessHoursResponseDto> {
     const result = await this.manageBusinessHoursUseCase.getBusinessHours({
@@ -114,7 +114,7 @@ export class BusinessHoursController {
         specialNote: (day as any).specialNote,
       })),
       specialDates: result.specialDates.map((date: unknown) => ({
-        date: (date as any).date.toISOString().split("T")[0], // Convert Date to string
+        date: (date as any).date.toISOString().split('T')[0], // Convert Date to string
         isOpen: (date as any).isOpen,
         timeSlots: (date as any).timeSlots?.map((slot: unknown) => ({
           start: (slot as any).start,
@@ -132,33 +132,33 @@ export class BusinessHoursController {
   /**
    * ✏️ Mettre à jour les horaires d'ouverture
    */
-  @Put(":businessId/hours")
+  @Put(':businessId/hours')
   @ApiOperation({
-    summary: "Update business opening hours",
-    description: "Update weekly schedule and special dates for a business",
+    summary: 'Update business opening hours',
+    description: 'Update weekly schedule and special dates for a business',
   })
   @ApiParam({
-    name: "businessId",
-    description: "Business ID",
-    type: "string",
-    format: "uuid",
+    name: 'businessId',
+    description: 'Business ID',
+    type: 'string',
+    format: 'uuid',
   })
   @ApiResponse({
     status: 200,
-    description: "Business hours updated successfully",
+    description: 'Business hours updated successfully',
     type: UpsertBusinessHoursResponseDto,
   })
   @ApiResponse({
     status: 400,
-    description: "Invalid business hours data",
+    description: 'Invalid business hours data',
   })
   @ApiResponse({
     status: 403,
-    description: "Insufficient permissions",
+    description: 'Insufficient permissions',
   })
   @ApiResponse({
     status: 404,
-    description: "Business not found",
+    description: 'Business not found',
   })
   @Roles(
     UserRole.SUPER_ADMIN,
@@ -167,8 +167,8 @@ export class BusinessHoursController {
     UserRole.BUSINESS_ADMIN,
   )
   async updateBusinessHours(
-    @Param("businessId", ParseUUIDPipe) businessId: string,
-    @Body() updateDto: Omit<UpdateBusinessHoursDto, "businessId">,
+    @Param('businessId', ParseUUIDPipe) businessId: string,
+    @Body() updateDto: Omit<UpdateBusinessHoursDto, 'businessId'>,
     @GetUser() user: User,
   ): Promise<UpsertBusinessHoursResponseDto> {
     const result = await this.manageBusinessHoursUseCase.updateBusinessHours({
@@ -207,34 +207,34 @@ export class BusinessHoursController {
   /**
    * ➕ Ajouter une date spéciale
    */
-  @Post(":businessId/hours/special-dates")
+  @Post(':businessId/hours/special-dates')
   @ApiOperation({
-    summary: "Add special date",
+    summary: 'Add special date',
     description:
-      "Add a special date (holiday, maintenance, etc.) with custom hours",
+      'Add a special date (holiday, maintenance, etc.) with custom hours',
   })
   @ApiParam({
-    name: "businessId",
-    description: "Business ID",
-    type: "string",
-    format: "uuid",
+    name: 'businessId',
+    description: 'Business ID',
+    type: 'string',
+    format: 'uuid',
   })
   @ApiResponse({
     status: 201,
-    description: "Special date added successfully",
+    description: 'Special date added successfully',
     type: AddSpecialDateResponseDto,
   })
   @ApiResponse({
     status: 400,
-    description: "Invalid special date data",
+    description: 'Invalid special date data',
   })
   @ApiResponse({
     status: 403,
-    description: "Insufficient permissions",
+    description: 'Insufficient permissions',
   })
   @ApiResponse({
     status: 404,
-    description: "Business not found",
+    description: 'Business not found',
   })
   @HttpCode(HttpStatus.CREATED)
   @Roles(
@@ -244,8 +244,8 @@ export class BusinessHoursController {
     UserRole.BUSINESS_ADMIN,
   )
   async addSpecialDate(
-    @Param("businessId", ParseUUIDPipe) businessId: string,
-    @Body() addDto: Omit<AddSpecialDateDto, "businessId">,
+    @Param('businessId', ParseUUIDPipe) businessId: string,
+    @Body() addDto: Omit<AddSpecialDateDto, 'businessId'>,
     @GetUser() user: User,
   ): Promise<AddSpecialDateResponseDto> {
     const result = await this.manageBusinessHoursUseCase.addSpecialDate({
@@ -264,7 +264,7 @@ export class BusinessHoursController {
     return {
       businessId: result.businessId,
       specialDate: {
-        date: result.specialDate.date.toISOString().split("T")[0],
+        date: result.specialDate.date.toISOString().split('T')[0],
         isOpen: result.specialDate.isOpen,
         timeSlots: result.specialDate.timeSlots?.map((slot: unknown) => ({
           start: (slot as any).start,
@@ -282,26 +282,26 @@ export class BusinessHoursController {
   /**
    * 🔍 Vérifier la disponibilité
    */
-  @Post(":businessId/hours/check-availability")
+  @Post(':businessId/hours/check-availability')
   @ApiOperation({
-    summary: "Check business availability",
+    summary: 'Check business availability',
     description:
-      "Check if business is open on a specific date/time and get available slots",
+      'Check if business is open on a specific date/time and get available slots',
   })
   @ApiParam({
-    name: "businessId",
-    description: "Business ID",
-    type: "string",
-    format: "uuid",
+    name: 'businessId',
+    description: 'Business ID',
+    type: 'string',
+    format: 'uuid',
   })
   @ApiResponse({
     status: 200,
-    description: "Availability checked successfully",
+    description: 'Availability checked successfully',
     type: AvailabilityResponseDto,
   })
   @ApiResponse({
     status: 404,
-    description: "Business not found",
+    description: 'Business not found',
   })
   @Roles(
     UserRole.SUPER_ADMIN,
@@ -313,8 +313,8 @@ export class BusinessHoursController {
     UserRole.REGULAR_CLIENT,
   )
   async checkAvailability(
-    @Param("businessId", ParseUUIDPipe) businessId: string,
-    @Body() checkDto: Omit<CheckAvailabilityDto, "businessId">,
+    @Param('businessId', ParseUUIDPipe) businessId: string,
+    @Body() checkDto: Omit<CheckAvailabilityDto, 'businessId'>,
     @GetUser() user: User,
   ): Promise<AvailabilityResponseDto> {
     const result = await this.manageBusinessHoursUseCase.checkAvailability({
@@ -325,7 +325,7 @@ export class BusinessHoursController {
 
     return {
       businessId: result.businessId,
-      date: result.date.toISOString().split("T")[0],
+      date: result.date.toISOString().split('T')[0],
       isOpenOnDate: result.isOpenOnDate,
       availableTimeSlots: result.availableTimeSlots.map((slot: unknown) => ({
         start: (slot as any).start,

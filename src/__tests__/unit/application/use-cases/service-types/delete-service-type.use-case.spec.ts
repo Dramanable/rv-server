@@ -12,18 +12,18 @@
  * 📊 Couverture : 100% des cas d'usage métier
  */
 
-import { ApplicationValidationError } from "@application/exceptions/application.exceptions";
-import { I18nService } from "@application/ports/i18n.port";
-import { Logger } from "@application/ports/logger.port";
-import { DeleteServiceTypeUseCase } from "@application/use-cases/service-types/delete-service-type.use-case";
-import { ServiceType } from "@domain/entities/service-type.entity";
+import { ApplicationValidationError } from '@application/exceptions/application.exceptions';
+import { I18nService } from '@application/ports/i18n.port';
+import { Logger } from '@application/ports/logger.port';
+import { DeleteServiceTypeUseCase } from '@application/use-cases/service-types/delete-service-type.use-case';
+import { ServiceType } from '@domain/entities/service-type.entity';
 import {
   ServiceTypeInUseError,
   ServiceTypeNotFoundError,
-} from "@domain/exceptions/service-type.exceptions";
-import { IServiceTypeRepository } from "@domain/repositories/service-type.repository";
-import { BusinessId } from "@domain/value-objects/business-id.value-object";
-import { ServiceTypeId } from "@domain/value-objects/service-type-id.value-object";
+} from '@domain/exceptions/service-type.exceptions';
+import { IServiceTypeRepository } from '@domain/repositories/service-type.repository';
+import { BusinessId } from '@domain/value-objects/business-id.value-object';
+import { ServiceTypeId } from '@domain/value-objects/service-type-id.value-object';
 
 /**
  * 📋 Interfaces de requête et réponse
@@ -41,7 +41,7 @@ interface DeleteServiceTypeResponse {
   readonly deletedAt: Date;
 }
 
-describe("DeleteServiceTypeUseCase", () => {
+describe('DeleteServiceTypeUseCase', () => {
   let useCase: DeleteServiceTypeUseCase;
   let mockRepository: jest.Mocked<IServiceTypeRepository>;
   let mockLogger: jest.Mocked<Logger>;
@@ -49,13 +49,13 @@ describe("DeleteServiceTypeUseCase", () => {
 
   // 🧪 Test data setup
   const validServiceTypeId = ServiceTypeId.fromString(
-    "e8f8c8c0-3b0a-4b8f-8c8c-0a4b8f8c8c0e",
+    'e8f8c8c0-3b0a-4b8f-8c8c-0a4b8f8c8c0e',
   );
   const validBusinessId = BusinessId.create(
-    "550e8400-e29b-41d4-a716-446655440000",
+    '550e8400-e29b-41d4-a716-446655440000',
   );
-  const validRequestingUserId = "a1b2c3d4-e5f6-4890-abcd-ef1234567890";
-  const validCorrelationId = "corr-456";
+  const validRequestingUserId = 'a1b2c3d4-e5f6-4890-abcd-ef1234567890';
+  const validCorrelationId = 'corr-456';
 
   beforeEach(() => {
     // 🎭 Mock repository
@@ -104,17 +104,17 @@ describe("DeleteServiceTypeUseCase", () => {
     );
   });
 
-  describe("🎯 Use Case Execution", () => {
-    it("should delete service type successfully when not in use", async () => {
+  describe('🎯 Use Case Execution', () => {
+    it('should delete service type successfully when not in use', async () => {
       // Given
       const mockServiceType = ServiceType.create({
         businessId: validBusinessId,
-        name: "Consultation Type",
-        code: "CONSULT",
-        description: "Standard consultation",
+        name: 'Consultation Type',
+        code: 'CONSULT',
+        description: 'Standard consultation',
         isActive: true,
         sortOrder: 1,
-        createdBy: "user-123",
+        createdBy: 'user-123',
       });
 
       const request: DeleteServiceTypeRequest = {
@@ -142,7 +142,7 @@ describe("DeleteServiceTypeUseCase", () => {
       expect(mockRepository.delete).toHaveBeenCalledWith(validServiceTypeId);
     });
 
-    it("should throw error when service type not found", async () => {
+    it('should throw error when service type not found', async () => {
       // Given
       const request: DeleteServiceTypeRequest = {
         serviceTypeId: validServiceTypeId,
@@ -162,16 +162,16 @@ describe("DeleteServiceTypeUseCase", () => {
       expect(mockRepository.delete).not.toHaveBeenCalled();
     });
 
-    it("should throw error when service type is in use", async () => {
+    it('should throw error when service type is in use', async () => {
       // Given
       const mockServiceType = ServiceType.create({
         businessId: validBusinessId,
-        name: "In Use Service Type",
-        code: "INUSE",
-        description: "Service type currently in use",
+        name: 'In Use Service Type',
+        code: 'INUSE',
+        description: 'Service type currently in use',
         isActive: true,
         sortOrder: 1,
-        createdBy: "user-123",
+        createdBy: 'user-123',
       });
 
       const request: DeleteServiceTypeRequest = {
@@ -195,19 +195,19 @@ describe("DeleteServiceTypeUseCase", () => {
       expect(mockRepository.delete).not.toHaveBeenCalled();
     });
 
-    it("should validate service type belongs to business", async () => {
+    it('should validate service type belongs to business', async () => {
       // Given
       const differentBusinessId = BusinessId.create(
-        "12345678-1234-4567-8901-234567890abc",
+        '12345678-1234-4567-8901-234567890abc',
       );
       const mockServiceType = ServiceType.create({
         businessId: differentBusinessId,
-        name: "Different Business Type",
-        code: "DIFFBIZ",
-        description: "Service type from different business",
+        name: 'Different Business Type',
+        code: 'DIFFBIZ',
+        description: 'Service type from different business',
         isActive: true,
         sortOrder: 1,
-        createdBy: "user-123",
+        createdBy: 'user-123',
       });
 
       const request: DeleteServiceTypeRequest = {
@@ -229,8 +229,8 @@ describe("DeleteServiceTypeUseCase", () => {
     });
   });
 
-  describe("🔍 Input Validation", () => {
-    it("should throw error for invalid service type ID", async () => {
+  describe('🔍 Input Validation', () => {
+    it('should throw error for invalid service type ID', async () => {
       // Given
       const request = {
         serviceTypeId: null as any,
@@ -246,7 +246,7 @@ describe("DeleteServiceTypeUseCase", () => {
       expect(mockRepository.findById).not.toHaveBeenCalled();
     });
 
-    it("should throw error for invalid business ID", async () => {
+    it('should throw error for invalid business ID', async () => {
       // Given
       const request = {
         serviceTypeId: validServiceTypeId,
@@ -262,12 +262,12 @@ describe("DeleteServiceTypeUseCase", () => {
       expect(mockRepository.findById).not.toHaveBeenCalled();
     });
 
-    it("should throw error for empty requesting user ID", async () => {
+    it('should throw error for empty requesting user ID', async () => {
       // Given
       const request: DeleteServiceTypeRequest = {
         serviceTypeId: validServiceTypeId,
         businessId: validBusinessId,
-        requestingUserId: "",
+        requestingUserId: '',
         correlationId: validCorrelationId,
       };
 
@@ -278,13 +278,13 @@ describe("DeleteServiceTypeUseCase", () => {
       expect(mockRepository.findById).not.toHaveBeenCalled();
     });
 
-    it("should throw error for empty correlation ID", async () => {
+    it('should throw error for empty correlation ID', async () => {
       // Given
       const request: DeleteServiceTypeRequest = {
         serviceTypeId: validServiceTypeId,
         businessId: validBusinessId,
         requestingUserId: validRequestingUserId,
-        correlationId: "",
+        correlationId: '',
       };
 
       // When & Then
@@ -295,17 +295,17 @@ describe("DeleteServiceTypeUseCase", () => {
     });
   });
 
-  describe("📊 Logging & Audit", () => {
-    it("should log deletion attempt", async () => {
+  describe('📊 Logging & Audit', () => {
+    it('should log deletion attempt', async () => {
       // Given
       const mockServiceType = ServiceType.create({
         businessId: validBusinessId,
-        name: "Test Service Type",
-        code: "TEST",
-        description: "Test description",
+        name: 'Test Service Type',
+        code: 'TEST',
+        description: 'Test description',
         isActive: true,
         sortOrder: 1,
-        createdBy: "user-123",
+        createdBy: 'user-123',
       });
 
       const request: DeleteServiceTypeRequest = {
@@ -324,7 +324,7 @@ describe("DeleteServiceTypeUseCase", () => {
 
       // Then
       expect(mockLogger.info).toHaveBeenCalledWith(
-        "Attempting to delete service type",
+        'Attempting to delete service type',
         expect.objectContaining({
           serviceTypeId: validServiceTypeId.getValue(),
           businessId: validBusinessId.getValue(),
@@ -334,16 +334,16 @@ describe("DeleteServiceTypeUseCase", () => {
       );
     });
 
-    it("should log successful deletion", async () => {
+    it('should log successful deletion', async () => {
       // Given
       const mockServiceType = ServiceType.create({
         businessId: validBusinessId,
-        name: "Test Service Type",
-        code: "TEST",
-        description: "Test description",
+        name: 'Test Service Type',
+        code: 'TEST',
+        description: 'Test description',
         isActive: true,
         sortOrder: 1,
-        createdBy: "user-123",
+        createdBy: 'user-123',
       });
 
       const request: DeleteServiceTypeRequest = {
@@ -362,7 +362,7 @@ describe("DeleteServiceTypeUseCase", () => {
 
       // Then
       expect(mockLogger.info).toHaveBeenCalledWith(
-        "Service type deleted successfully",
+        'Service type deleted successfully',
         expect.objectContaining({
           serviceTypeId: validServiceTypeId.getValue(),
           businessId: validBusinessId.getValue(),
@@ -371,7 +371,7 @@ describe("DeleteServiceTypeUseCase", () => {
       );
     });
 
-    it("should log errors when deletion fails", async () => {
+    it('should log errors when deletion fails', async () => {
       // Given
       const request: DeleteServiceTypeRequest = {
         serviceTypeId: validServiceTypeId,
@@ -380,13 +380,13 @@ describe("DeleteServiceTypeUseCase", () => {
         correlationId: validCorrelationId,
       };
 
-      const error = new Error("Repository error");
+      const error = new Error('Repository error');
       mockRepository.findById.mockRejectedValue(error);
 
       // When & Then
       await expect(useCase.execute(request)).rejects.toThrow();
       expect(mockLogger.error).toHaveBeenCalledWith(
-        "Failed to delete service type",
+        'Failed to delete service type',
         error,
         expect.objectContaining({
           serviceTypeId: validServiceTypeId.getValue(),
@@ -398,17 +398,17 @@ describe("DeleteServiceTypeUseCase", () => {
     });
   });
 
-  describe("🌐 Repository Interaction", () => {
-    it("should call repository methods with correct parameters", async () => {
+  describe('🌐 Repository Interaction', () => {
+    it('should call repository methods with correct parameters', async () => {
       // Given
       const mockServiceType = ServiceType.create({
         businessId: validBusinessId,
-        name: "Repository Test Type",
-        code: "REPOTEST",
-        description: "Testing repository interactions",
+        name: 'Repository Test Type',
+        code: 'REPOTEST',
+        description: 'Testing repository interactions',
         isActive: true,
         sortOrder: 1,
-        createdBy: "user-123",
+        createdBy: 'user-123',
       });
 
       const request: DeleteServiceTypeRequest = {
@@ -436,7 +436,7 @@ describe("DeleteServiceTypeUseCase", () => {
       expect(mockRepository.delete).toHaveBeenCalledWith(validServiceTypeId);
     });
 
-    it("should handle repository errors gracefully", async () => {
+    it('should handle repository errors gracefully', async () => {
       // Given
       const request: DeleteServiceTypeRequest = {
         serviceTypeId: validServiceTypeId,
@@ -445,13 +445,13 @@ describe("DeleteServiceTypeUseCase", () => {
         correlationId: validCorrelationId,
       };
 
-      const repositoryError = new Error("Database connection failed");
+      const repositoryError = new Error('Database connection failed');
       mockRepository.findById.mockRejectedValue(repositoryError);
 
       // When & Then
       await expect(useCase.execute(request)).rejects.toThrow(repositoryError);
       expect(mockLogger.error).toHaveBeenCalledWith(
-        "Failed to delete service type",
+        'Failed to delete service type',
         repositoryError,
         expect.objectContaining({
           error: repositoryError.message,
@@ -460,17 +460,17 @@ describe("DeleteServiceTypeUseCase", () => {
     });
   });
 
-  describe("🔄 Edge Cases", () => {
-    it("should handle concurrent deletion attempts gracefully", async () => {
+  describe('🔄 Edge Cases', () => {
+    it('should handle concurrent deletion attempts gracefully', async () => {
       // Given - Service type existe mais est supprimé entre la vérification et la suppression
       const mockServiceType = ServiceType.create({
         businessId: validBusinessId,
-        name: "Concurrent Test",
-        code: "CONCURRENT",
-        description: "Testing concurrent operations",
+        name: 'Concurrent Test',
+        code: 'CONCURRENT',
+        description: 'Testing concurrent operations',
         isActive: true,
         sortOrder: 1,
-        createdBy: "user-123",
+        createdBy: 'user-123',
       });
 
       const request: DeleteServiceTypeRequest = {
@@ -482,25 +482,25 @@ describe("DeleteServiceTypeUseCase", () => {
 
       mockRepository.findById.mockResolvedValue(mockServiceType);
       mockRepository.isReferencedByServices.mockResolvedValue(false);
-      mockRepository.delete.mockRejectedValue(new Error("Record not found")); // Concurrence
+      mockRepository.delete.mockRejectedValue(new Error('Record not found')); // Concurrence
 
       // When & Then
       await expect(useCase.execute(request)).rejects.toThrow(
-        "Record not found",
+        'Record not found',
       );
       expect(mockLogger.error).toHaveBeenCalled();
     });
 
-    it("should handle service type becoming in use during deletion process", async () => {
+    it('should handle service type becoming in use during deletion process', async () => {
       // Given
       const mockServiceType = ServiceType.create({
         businessId: validBusinessId,
-        name: "Race Condition Test",
-        code: "RACE",
-        description: "Testing race conditions",
+        name: 'Race Condition Test',
+        code: 'RACE',
+        description: 'Testing race conditions',
         isActive: true,
         sortOrder: 1,
-        createdBy: "user-123",
+        createdBy: 'user-123',
       });
 
       const request: DeleteServiceTypeRequest = {

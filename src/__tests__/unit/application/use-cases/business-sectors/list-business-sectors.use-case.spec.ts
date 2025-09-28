@@ -7,19 +7,19 @@
  * @since 2024
  */
 
-import { ForbiddenError } from "@application/exceptions/auth.exceptions";
-import { BusinessSectorOperationError } from "@application/exceptions/business-sector.exceptions";
+import { ForbiddenError } from '@application/exceptions/auth.exceptions';
+import { BusinessSectorOperationError } from '@application/exceptions/business-sector.exceptions';
 import {
   BusinessSectorListResult,
   IBusinessSectorRepository,
-} from "@application/ports/business-sector.repository.interface";
-import { I18nService } from "@application/ports/i18n.port";
-import { Logger } from "@application/ports/logger.port";
-import { IPermissionService } from "@application/ports/permission.service.interface";
-import { ListBusinessSectorsUseCase } from "@application/use-cases/business-sectors/list-business-sectors.use-case";
-import { BusinessSector } from "@domain/entities/business-sector.entity";
+} from '@application/ports/business-sector.repository.interface';
+import { I18nService } from '@application/ports/i18n.port';
+import { Logger } from '@application/ports/logger.port';
+import { IPermissionService } from '@application/ports/permission.service.interface';
+import { ListBusinessSectorsUseCase } from '@application/use-cases/business-sectors/list-business-sectors.use-case';
+import { BusinessSector } from '@domain/entities/business-sector.entity';
 
-describe("ListBusinessSectorsUseCase", () => {
+describe('ListBusinessSectorsUseCase', () => {
   let useCase: ListBusinessSectorsUseCase;
   let mockBusinessSectorRepository: jest.Mocked<IBusinessSectorRepository>;
   let mockPermissionService: jest.Mocked<IPermissionService>;
@@ -29,22 +29,22 @@ describe("ListBusinessSectorsUseCase", () => {
   // Test Data
   const mockBusinessSectors = [
     BusinessSector.restore(
-      "bs-1",
-      "Technology",
-      "Technology and Software",
-      "TECH",
+      'bs-1',
+      'Technology',
+      'Technology and Software',
+      'TECH',
       true,
-      new Date("2024-01-01"),
-      "admin-1",
+      new Date('2024-01-01'),
+      'admin-1',
     ),
     BusinessSector.restore(
-      "bs-2",
-      "Healthcare",
-      "Medical and Health Services",
-      "HEALTH",
+      'bs-2',
+      'Healthcare',
+      'Medical and Health Services',
+      'HEALTH',
       true,
-      new Date("2024-01-02"),
-      "admin-1",
+      new Date('2024-01-02'),
+      'admin-1',
     ),
   ];
 
@@ -113,28 +113,28 @@ describe("ListBusinessSectorsUseCase", () => {
     );
   });
 
-  describe("🚨 Permission Validation", () => {
-    it("should throw ForbiddenError when user is not super admin", async () => {
+  describe('🚨 Permission Validation', () => {
+    it('should throw ForbiddenError when user is not super admin', async () => {
       // Arrange
       const request = {
-        requestingUserId: "regular-user",
+        requestingUserId: 'regular-user',
       };
 
       mockPermissionService.isSuperAdmin.mockResolvedValue(false);
-      mockI18n.translate.mockReturnValue("Super admin permissions required");
+      mockI18n.translate.mockReturnValue('Super admin permissions required');
 
       // Act & Assert
       await expect(useCase.execute(request)).rejects.toThrow(ForbiddenError);
 
       expect(mockPermissionService.isSuperAdmin).toHaveBeenCalledWith(
-        "regular-user",
+        'regular-user',
       );
     });
 
-    it("should allow super admin to list business sectors", async () => {
+    it('should allow super admin to list business sectors', async () => {
       // Arrange
       const request = {
-        requestingUserId: "super-admin-1",
+        requestingUserId: 'super-admin-1',
         page: 1,
         limit: 10,
       };
@@ -153,7 +153,7 @@ describe("ListBusinessSectorsUseCase", () => {
       });
 
       expect(mockPermissionService.isSuperAdmin).toHaveBeenCalledWith(
-        "super-admin-1",
+        'super-admin-1',
       );
       expect(mockBusinessSectorRepository.findAll).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -166,19 +166,19 @@ describe("ListBusinessSectorsUseCase", () => {
     });
   });
 
-  describe("✅ Business Rules Validation", () => {
+  describe('✅ Business Rules Validation', () => {
     beforeEach(() => {
       mockPermissionService.isSuperAdmin.mockResolvedValue(true);
     });
 
-    it("should reject invalid page number", async () => {
+    it('should reject invalid page number', async () => {
       // Arrange
       const request = {
-        requestingUserId: "admin-1",
+        requestingUserId: 'admin-1',
         page: 0,
       };
 
-      mockI18n.translate.mockReturnValue("Page must be greater than 0");
+      mockI18n.translate.mockReturnValue('Page must be greater than 0');
 
       // Act & Assert
       await expect(useCase.execute(request)).rejects.toThrow(
@@ -186,14 +186,14 @@ describe("ListBusinessSectorsUseCase", () => {
       );
     });
 
-    it("should reject limit exceeding maximum", async () => {
+    it('should reject limit exceeding maximum', async () => {
       // Arrange
       const request = {
-        requestingUserId: "admin-1",
+        requestingUserId: 'admin-1',
         limit: 150,
       };
 
-      mockI18n.translate.mockReturnValue("Limit cannot exceed 100");
+      mockI18n.translate.mockReturnValue('Limit cannot exceed 100');
 
       // Act & Assert
       await expect(useCase.execute(request)).rejects.toThrow(
@@ -201,10 +201,10 @@ describe("ListBusinessSectorsUseCase", () => {
       );
     });
 
-    it("should apply default pagination when not specified", async () => {
+    it('should apply default pagination when not specified', async () => {
       // Arrange
       const request = {
-        requestingUserId: "admin-1",
+        requestingUserId: 'admin-1',
       };
 
       (mockBusinessSectorRepository.findAll as jest.Mock).mockResolvedValue(
@@ -227,7 +227,7 @@ describe("ListBusinessSectorsUseCase", () => {
     });
   });
 
-  describe("📊 Logging", () => {
+  describe('📊 Logging', () => {
     beforeEach(() => {
       mockPermissionService.isSuperAdmin.mockResolvedValue(true);
       (mockBusinessSectorRepository.findAll as jest.Mock).mockResolvedValue(
@@ -235,10 +235,10 @@ describe("ListBusinessSectorsUseCase", () => {
       );
     });
 
-    it("should log operation attempt and success", async () => {
+    it('should log operation attempt and success', async () => {
       // Arrange
       const request = {
-        requestingUserId: "admin-1",
+        requestingUserId: 'admin-1',
       };
 
       // Act
@@ -246,18 +246,18 @@ describe("ListBusinessSectorsUseCase", () => {
 
       // Assert
       expect(mockLogger.info).toHaveBeenCalledWith(
-        "Listing business sectors",
+        'Listing business sectors',
         expect.objectContaining({
-          userId: "admin-1",
-          operation: "list_business_sectors",
+          userId: 'admin-1',
+          operation: 'list_business_sectors',
         }),
       );
 
       expect(mockLogger.info).toHaveBeenCalledWith(
-        "Successfully listed 2 business sectors",
+        'Successfully listed 2 business sectors',
         expect.objectContaining({
-          userId: "admin-1",
-          operation: "list_business_sectors",
+          userId: 'admin-1',
+          operation: 'list_business_sectors',
           count: 2,
           totalItems: 2,
         }),

@@ -113,7 +113,7 @@ export interface IAuditService {
    */
   exportAuditData(query: AuditQuery): Promise<{
     data: AuditEntry[];
-    format: "json" | "csv";
+    format: 'json' | 'csv';
     checksum: string;
   }>;
 }

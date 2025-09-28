@@ -3,35 +3,35 @@
  *
  * Tests pour l'entité User avec Email VO et système de rôles
  */
-import { User } from "@domain/entities/user.entity";
-import { Email } from "@domain/value-objects/email.vo";
-import { UserRole } from "@shared/enums/user-role.enum";
-import { Permission } from "@shared/enums/user-role.enum";
+import { User } from '@domain/entities/user.entity';
+import { Email } from '@domain/value-objects/email.vo';
+import { UserRole } from '@shared/enums/user-role.enum';
+import { Permission } from '@shared/enums/user-role.enum';
 
-describe("User Entity with Roles", () => {
+describe('User Entity with Roles', () => {
   let validEmail: Email;
 
   beforeEach(() => {
-    validEmail = new Email("test@example.com");
+    validEmail = new Email('test@example.com');
   });
 
-  describe("User Creation", () => {
-    it("should create user with email, name and role", () => {
+  describe('User Creation', () => {
+    it('should create user with email, name and role', () => {
       // Arrange & Act
-      const user = new User(validEmail, "John Doe", UserRole.REGULAR_CLIENT);
+      const user = new User(validEmail, 'John Doe', UserRole.REGULAR_CLIENT);
 
       // Assert
       expect(user.email).toBe(validEmail);
-      expect(user.name).toBe("John Doe");
+      expect(user.name).toBe('John Doe');
       expect(user.role).toBe(UserRole.REGULAR_CLIENT);
       expect(user.id).toBeDefined();
       expect(user.createdAt).toBeInstanceOf(Date);
     });
 
-    it("should create platform admin user", () => {
+    it('should create platform admin user', () => {
       const user = new User(
         validEmail,
-        "Platform Admin",
+        'Platform Admin',
         UserRole.PLATFORM_ADMIN,
       );
 
@@ -39,10 +39,10 @@ describe("User Entity with Roles", () => {
       expect(user.isPlatformAdmin()).toBe(true);
     });
 
-    it("should create business owner user", () => {
+    it('should create business owner user', () => {
       const user = new User(
         validEmail,
-        "Business Owner",
+        'Business Owner',
         UserRole.BUSINESS_OWNER,
       );
 
@@ -51,27 +51,27 @@ describe("User Entity with Roles", () => {
       expect(user.isManager()).toBe(true);
     });
 
-    it("should create practitioner user", () => {
-      const user = new User(validEmail, "Doctor", UserRole.PRACTITIONER);
+    it('should create practitioner user', () => {
+      const user = new User(validEmail, 'Doctor', UserRole.PRACTITIONER);
 
       expect(user.role).toBe(UserRole.PRACTITIONER);
       expect(user.isPractitioner()).toBe(true);
     });
 
-    it("should create client user", () => {
-      const user = new User(validEmail, "Client", UserRole.REGULAR_CLIENT);
+    it('should create client user', () => {
+      const user = new User(validEmail, 'Client', UserRole.REGULAR_CLIENT);
 
       expect(user.role).toBe(UserRole.REGULAR_CLIENT);
       expect(user.isClient()).toBe(true);
     });
   });
 
-  describe("Permissions System", () => {
-    it("should allow platform admin to have all permissions", () => {
+  describe('Permissions System', () => {
+    it('should allow platform admin to have all permissions', () => {
       // Arrange
       const platformAdmin = new User(
         validEmail,
-        "Platform Admin",
+        'Platform Admin',
         UserRole.PLATFORM_ADMIN,
       );
 
@@ -90,10 +90,10 @@ describe("User Entity with Roles", () => {
       ).toBe(true);
     });
 
-    it("should allow business owner to manage business but not platform", () => {
+    it('should allow business owner to manage business but not platform', () => {
       const businessOwner = new User(
         validEmail,
-        "Business Owner",
+        'Business Owner',
         UserRole.BUSINESS_OWNER,
       );
 
@@ -117,10 +117,10 @@ describe("User Entity with Roles", () => {
       ).toBe(false);
     });
 
-    it("should allow practitioner to manage own schedule and view assigned clients", () => {
+    it('should allow practitioner to manage own schedule and view assigned clients', () => {
       const practitioner = new User(
         validEmail,
-        "Doctor",
+        'Doctor',
         UserRole.PRACTITIONER,
       );
 
@@ -147,10 +147,10 @@ describe("User Entity with Roles", () => {
       ).toBe(false);
     });
 
-    it("should allow client basic booking permissions only", () => {
+    it('should allow client basic booking permissions only', () => {
       const client = new User(
         validEmail,
-        "Regular Client",
+        'Regular Client',
         UserRole.REGULAR_CLIENT,
       );
 
@@ -172,21 +172,21 @@ describe("User Entity with Roles", () => {
     });
   });
 
-  describe("Business Rules - User Actions", () => {
-    it("should allow platform admin to act on any user", () => {
+  describe('Business Rules - User Actions', () => {
+    it('should allow platform admin to act on any user', () => {
       const platformAdmin = new User(
         validEmail,
-        "Platform Admin",
+        'Platform Admin',
         UserRole.PLATFORM_ADMIN,
       );
       const businessOwner = new User(
-        new Email("owner@example.com"),
-        "Business Owner",
+        new Email('owner@example.com'),
+        'Business Owner',
         UserRole.BUSINESS_OWNER,
       );
       const client = new User(
-        new Email("client@example.com"),
-        "Client",
+        new Email('client@example.com'),
+        'Client',
         UserRole.REGULAR_CLIENT,
       );
 
@@ -195,25 +195,25 @@ describe("User Entity with Roles", () => {
       expect(platformAdmin.canActOnUser(platformAdmin)).toBe(true);
     });
 
-    it("should allow business owner to act on lower hierarchy users only", () => {
+    it('should allow business owner to act on lower hierarchy users only', () => {
       const businessOwner = new User(
         validEmail,
-        "Business Owner",
+        'Business Owner',
         UserRole.BUSINESS_OWNER,
       );
       const practitioner = new User(
-        new Email("doctor@example.com"),
-        "Doctor",
+        new Email('doctor@example.com'),
+        'Doctor',
         UserRole.PRACTITIONER,
       );
       const anotherOwner = new User(
-        new Email("owner2@example.com"),
-        "Another Owner",
+        new Email('owner2@example.com'),
+        'Another Owner',
         UserRole.BUSINESS_OWNER,
       );
       const client = new User(
-        new Email("client@example.com"),
-        "Client",
+        new Email('client@example.com'),
+        'Client',
         UserRole.REGULAR_CLIENT,
       );
 
@@ -223,16 +223,16 @@ describe("User Entity with Roles", () => {
       expect(businessOwner.canActOnUser(businessOwner)).toBe(true); // Peut agir sur lui-même
     });
 
-    it("should allow clients to act only on themselves", () => {
-      const client = new User(validEmail, "Client", UserRole.REGULAR_CLIENT);
+    it('should allow clients to act only on themselves', () => {
+      const client = new User(validEmail, 'Client', UserRole.REGULAR_CLIENT);
       const anotherClient = new User(
-        new Email("other@example.com"),
-        "Other Client",
+        new Email('other@example.com'),
+        'Other Client',
         UserRole.REGULAR_CLIENT,
       );
       const practitioner = new User(
-        new Email("doctor@example.com"),
-        "Doctor",
+        new Email('doctor@example.com'),
+        'Doctor',
         UserRole.PRACTITIONER,
       );
 
@@ -242,35 +242,35 @@ describe("User Entity with Roles", () => {
     });
   });
 
-  describe("Role Validation", () => {
-    it("should reject invalid name", () => {
-      expect(() => new User(validEmail, "", UserRole.REGULAR_CLIENT)).toThrow(
-        "Name cannot be empty",
+  describe('Role Validation', () => {
+    it('should reject invalid name', () => {
+      expect(() => new User(validEmail, '', UserRole.REGULAR_CLIENT)).toThrow(
+        'Name cannot be empty',
       );
     });
 
-    it("should normalize name", () => {
+    it('should normalize name', () => {
       const user = new User(
         validEmail,
-        "  John Doe  ",
+        '  John Doe  ',
         UserRole.REGULAR_CLIENT,
       );
-      expect(user.name).toBe("John Doe");
+      expect(user.name).toBe('John Doe');
     });
   });
 
-  describe("User Comparison", () => {
-    it("should be equal when same email", () => {
-      const user1 = new User(validEmail, "John", UserRole.REGULAR_CLIENT);
-      const user2 = new User(validEmail, "Jane", UserRole.BUSINESS_OWNER);
+  describe('User Comparison', () => {
+    it('should be equal when same email', () => {
+      const user1 = new User(validEmail, 'John', UserRole.REGULAR_CLIENT);
+      const user2 = new User(validEmail, 'Jane', UserRole.BUSINESS_OWNER);
 
       expect(user1.hasSameEmail(user2)).toBe(true);
     });
 
-    it("should not be equal when different email", () => {
-      const email2 = new Email("other@example.com");
-      const user1 = new User(validEmail, "John", UserRole.REGULAR_CLIENT);
-      const user2 = new User(email2, "Jane", UserRole.REGULAR_CLIENT);
+    it('should not be equal when different email', () => {
+      const email2 = new Email('other@example.com');
+      const user1 = new User(validEmail, 'John', UserRole.REGULAR_CLIENT);
+      const user2 = new User(email2, 'Jane', UserRole.REGULAR_CLIENT);
 
       expect(user1.hasSameEmail(user2)).toBe(false);
     });

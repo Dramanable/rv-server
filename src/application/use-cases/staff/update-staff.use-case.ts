@@ -9,16 +9,16 @@ import {
   Staff,
   StaffProfile,
   StaffStatus,
-} from "../../../domain/entities/staff.entity";
-import { StaffNotFoundError } from "../../../domain/exceptions/staff.exceptions";
-import { StaffRepository } from "../../../domain/repositories/staff.repository.interface";
-import { Email } from "../../../domain/value-objects/email.value-object";
-import { UserId } from "../../../domain/value-objects/user-id.value-object";
-import { Permission } from "../../../shared/enums/permission.enum";
-import { ApplicationValidationError } from "../../exceptions/application.exceptions";
-import { I18nService } from "../../ports/i18n.port";
-import { Logger } from "../../ports/logger.port";
-import { IPermissionService } from "../../ports/permission.service.interface";
+} from '../../../domain/entities/staff.entity';
+import { StaffNotFoundError } from '../../../domain/exceptions/staff.exceptions';
+import { StaffRepository } from '../../../domain/repositories/staff.repository.interface';
+import { Email } from '../../../domain/value-objects/email.value-object';
+import { UserId } from '../../../domain/value-objects/user-id.value-object';
+import { Permission } from '../../../shared/enums/permission.enum';
+import { ApplicationValidationError } from '../../exceptions/application.exceptions';
+import { I18nService } from '../../ports/i18n.port';
+import { Logger } from '../../ports/logger.port';
+import { IPermissionService } from '../../ports/permission.service.interface';
 
 export interface UpdateStaffRequest {
   readonly staffId: string;
@@ -63,14 +63,14 @@ export class UpdateStaffUseCase {
         request.requestingUserId,
         Permission.MANAGE_STAFF,
         {
-          action: "update",
-          resource: "staff",
+          action: 'update',
+          resource: 'staff',
           staffId: request.staffId,
         },
       );
 
       // 3. Log de l'opération
-      this.logger.info("Attempting to update staff", {
+      this.logger.info('Attempting to update staff', {
         staffId: request.staffId,
         requestingUserId: request.requestingUserId,
       });
@@ -93,7 +93,7 @@ export class UpdateStaffUseCase {
       await this.staffRepository.save(staff);
 
       // 8. Log du succès
-      this.logger.info("Staff updated successfully", {
+      this.logger.info('Staff updated successfully', {
         staffId: request.staffId,
         requestingUserId: request.requestingUserId,
       });
@@ -101,7 +101,7 @@ export class UpdateStaffUseCase {
       // 9. Retourner la réponse
       return this.mapStaffToResponse(staff);
     } catch (error) {
-      this.logger.error("Error updating staff", error as Error, {
+      this.logger.error('Error updating staff', error as Error, {
         staffId: request.staffId,
         requestingUserId: request.requestingUserId,
       });
@@ -110,19 +110,19 @@ export class UpdateStaffUseCase {
   }
 
   private validateParameters(request: UpdateStaffRequest): void {
-    if (!request.staffId || request.staffId.trim() === "") {
+    if (!request.staffId || request.staffId.trim() === '') {
       throw new ApplicationValidationError(
-        "staffId",
+        'staffId',
         request.staffId,
-        "Staff ID is required",
+        'Staff ID is required',
       );
     }
 
-    if (!request.requestingUserId || request.requestingUserId.trim() === "") {
+    if (!request.requestingUserId || request.requestingUserId.trim() === '') {
       throw new ApplicationValidationError(
-        "requestingUserId",
+        'requestingUserId',
         request.requestingUserId,
-        "Requesting user ID is required",
+        'Requesting user ID is required',
       );
     }
 
@@ -131,18 +131,18 @@ export class UpdateStaffUseCase {
       /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
     if (!uuidRegex.test(request.staffId)) {
       throw new ApplicationValidationError(
-        "staffId",
+        'staffId',
         request.staffId,
-        "Staff ID must be a valid UUID",
+        'Staff ID must be a valid UUID',
       );
     }
 
     // Validate updates not empty
     if (!request.updates || Object.keys(request.updates).length === 0) {
       throw new ApplicationValidationError(
-        "updates",
-        "empty",
-        "At least one field must be updated",
+        'updates',
+        'empty',
+        'At least one field must be updated',
       );
     }
   }
@@ -158,9 +158,9 @@ export class UpdateStaffUseCase {
         request.updates.profile.firstName.length < 2
       ) {
         throw new ApplicationValidationError(
-          "firstName",
+          'firstName',
           request.updates.profile.firstName,
-          "First name must be at least 2 characters long",
+          'First name must be at least 2 characters long',
         );
       }
 
@@ -169,9 +169,9 @@ export class UpdateStaffUseCase {
         request.updates.profile.lastName.length < 2
       ) {
         throw new ApplicationValidationError(
-          "lastName",
+          'lastName',
           request.updates.profile.lastName,
-          "Last name must be at least 2 characters long",
+          'Last name must be at least 2 characters long',
         );
       }
     }
@@ -182,9 +182,9 @@ export class UpdateStaffUseCase {
         Email.create(request.updates.email);
       } catch (error) {
         throw new ApplicationValidationError(
-          "email",
+          'email',
           request.updates.email,
-          "Invalid email format",
+          'Invalid email format',
         );
       }
 
@@ -194,9 +194,9 @@ export class UpdateStaffUseCase {
       );
       if (existingEmail && request.updates.email !== staff.email.getValue()) {
         throw new ApplicationValidationError(
-          "email",
+          'email',
           request.updates.email,
-          "Email already exists",
+          'Email already exists',
         );
       }
     }
@@ -204,7 +204,7 @@ export class UpdateStaffUseCase {
 
   private applyUpdates(
     staff: Staff,
-    updates: UpdateStaffRequest["updates"],
+    updates: UpdateStaffRequest['updates'],
   ): void {
     // Apply profile updates
     if (updates.profile) {

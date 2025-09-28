@@ -8,11 +8,11 @@ import {
   ImageFormat,
   ImagePolicy,
   ImageUploadSettings,
-} from "@domain/value-objects/image-upload-settings.value-object";
+} from '@domain/value-objects/image-upload-settings.value-object';
 
-describe("ImageUploadSettings Value Object", () => {
-  describe("🔴 RED - Creation and Validation", () => {
-    it("should create default image upload settings", () => {
+describe('ImageUploadSettings Value Object', () => {
+  describe('🔴 RED - Creation and Validation', () => {
+    it('should create default image upload settings', () => {
       // When
       const settings = ImageUploadSettings.createDefault();
 
@@ -28,7 +28,7 @@ describe("ImageUploadSettings Value Object", () => {
       expect(settings.autoOptimize).toBe(true);
     });
 
-    it("should create custom image upload settings", () => {
+    it('should create custom image upload settings', () => {
       // Given
       const customSettings = {
         maxFileSize: 10 * 1024 * 1024, // 10MB
@@ -38,7 +38,7 @@ describe("ImageUploadSettings Value Object", () => {
         autoOptimize: false,
         policies: [
           {
-            category: "LOGO",
+            category: 'LOGO',
             maxSize: 2 * 1024 * 1024, // 2MB for logos
             requiredDimensions: { width: 200, height: 200 },
             allowedFormats: [ImageFormat.PNG],
@@ -61,7 +61,7 @@ describe("ImageUploadSettings Value Object", () => {
       expect(settings.policies).toHaveLength(1);
     });
 
-    it("should throw error for invalid max file size", () => {
+    it('should throw error for invalid max file size', () => {
       // Given
       const invalidSettings = {
         maxFileSize: -1,
@@ -71,11 +71,11 @@ describe("ImageUploadSettings Value Object", () => {
 
       // When & Then
       expect(() => ImageUploadSettings.create(invalidSettings)).toThrow(
-        "Max file size must be positive",
+        'Max file size must be positive',
       );
     });
 
-    it("should throw error for empty allowed formats", () => {
+    it('should throw error for empty allowed formats', () => {
       // Given
       const invalidSettings = {
         maxFileSize: 5 * 1024 * 1024,
@@ -85,11 +85,11 @@ describe("ImageUploadSettings Value Object", () => {
 
       // When & Then
       expect(() => ImageUploadSettings.create(invalidSettings)).toThrow(
-        "At least one image format must be allowed",
+        'At least one image format must be allowed',
       );
     });
 
-    it("should throw error for invalid max images per business", () => {
+    it('should throw error for invalid max images per business', () => {
       // Given
       const invalidSettings = {
         maxFileSize: 5 * 1024 * 1024,
@@ -99,20 +99,20 @@ describe("ImageUploadSettings Value Object", () => {
 
       // When & Then
       expect(() => ImageUploadSettings.create(invalidSettings)).toThrow(
-        "Max images per business must be at least 1",
+        'Max images per business must be at least 1',
       );
     });
   });
 
-  describe("🔴 RED - Image Validation Business Rules", () => {
-    it("should validate image against general settings", () => {
+  describe('🔴 RED - Image Validation Business Rules', () => {
+    it('should validate image against general settings', () => {
       // Given
       const settings = ImageUploadSettings.createDefault();
       const validImage = {
         size: 2 * 1024 * 1024, // 2MB
-        format: "jpeg",
+        format: 'jpeg',
         dimensions: { width: 800, height: 600 },
-        category: "GALLERY",
+        category: 'GALLERY',
       };
 
       // When
@@ -123,12 +123,12 @@ describe("ImageUploadSettings Value Object", () => {
       expect(isValid.errors).toHaveLength(0);
     });
 
-    it("should reject image that exceeds max file size", () => {
+    it('should reject image that exceeds max file size', () => {
       // Given
       const settings = ImageUploadSettings.createDefault(); // 5MB max
       const oversizedImage = {
         size: 10 * 1024 * 1024, // 10MB
-        format: "jpg",
+        format: 'jpg',
         dimensions: { width: 800, height: 600 },
       };
 
@@ -138,11 +138,11 @@ describe("ImageUploadSettings Value Object", () => {
       // Then
       expect(validation.isValid).toBe(false);
       expect(validation.errors).toContain(
-        "File size exceeds maximum allowed (5MB)",
+        'File size exceeds maximum allowed (5MB)',
       );
     });
 
-    it("should reject image with unsupported format", () => {
+    it('should reject image with unsupported format', () => {
       // Given
       const settings = ImageUploadSettings.create({
         maxFileSize: 5 * 1024 * 1024,
@@ -151,7 +151,7 @@ describe("ImageUploadSettings Value Object", () => {
       });
       const unsupportedImage = {
         size: 1 * 1024 * 1024,
-        format: "gif", // Not in allowed formats
+        format: 'gif', // Not in allowed formats
         dimensions: { width: 400, height: 300 },
       };
 
@@ -160,10 +160,10 @@ describe("ImageUploadSettings Value Object", () => {
 
       // Then
       expect(validation.isValid).toBe(false);
-      expect(validation.errors).toContain("Image format gif is not supported");
+      expect(validation.errors).toContain('Image format gif is not supported');
     });
 
-    it("should validate image against category-specific policy", () => {
+    it('should validate image against category-specific policy', () => {
       // Given
       const settings = ImageUploadSettings.create({
         maxFileSize: 5 * 1024 * 1024,
@@ -171,7 +171,7 @@ describe("ImageUploadSettings Value Object", () => {
         maxImagesPerBusiness: 20,
         policies: [
           {
-            category: "LOGO",
+            category: 'LOGO',
             maxSize: 1 * 1024 * 1024, // 1MB for logos
             requiredDimensions: { width: 200, height: 200 },
             allowedFormats: [ImageFormat.PNG],
@@ -180,9 +180,9 @@ describe("ImageUploadSettings Value Object", () => {
       });
       const logoImage = {
         size: 512 * 1024, // 512KB
-        format: "png",
+        format: 'png',
         dimensions: { width: 200, height: 200 },
-        category: "LOGO",
+        category: 'LOGO',
       };
 
       // When
@@ -193,7 +193,7 @@ describe("ImageUploadSettings Value Object", () => {
       expect(validation.errors).toHaveLength(0);
     });
 
-    it("should reject logo image that violates policy dimensions", () => {
+    it('should reject logo image that violates policy dimensions', () => {
       // Given
       const settings = ImageUploadSettings.create({
         maxFileSize: 5 * 1024 * 1024,
@@ -201,7 +201,7 @@ describe("ImageUploadSettings Value Object", () => {
         maxImagesPerBusiness: 20,
         policies: [
           {
-            category: "LOGO",
+            category: 'LOGO',
             maxSize: 1 * 1024 * 1024,
             requiredDimensions: { width: 200, height: 200 },
             allowedFormats: [ImageFormat.PNG],
@@ -210,9 +210,9 @@ describe("ImageUploadSettings Value Object", () => {
       });
       const invalidLogoImage = {
         size: 512 * 1024,
-        format: "png",
+        format: 'png',
         dimensions: { width: 300, height: 200 }, // Wrong dimensions
-        category: "LOGO",
+        category: 'LOGO',
       };
 
       // When
@@ -221,11 +221,11 @@ describe("ImageUploadSettings Value Object", () => {
       // Then
       expect(validation.isValid).toBe(false);
       expect(validation.errors).toContain(
-        "LOGO images must be exactly 200x200 pixels",
+        'LOGO images must be exactly 200x200 pixels',
       );
     });
 
-    it("should reject logo image with wrong format policy", () => {
+    it('should reject logo image with wrong format policy', () => {
       // Given
       const settings = ImageUploadSettings.create({
         maxFileSize: 5 * 1024 * 1024,
@@ -233,7 +233,7 @@ describe("ImageUploadSettings Value Object", () => {
         maxImagesPerBusiness: 20,
         policies: [
           {
-            category: "LOGO",
+            category: 'LOGO',
             maxSize: 1 * 1024 * 1024,
             requiredDimensions: { width: 200, height: 200 },
             allowedFormats: [ImageFormat.PNG],
@@ -242,9 +242,9 @@ describe("ImageUploadSettings Value Object", () => {
       });
       const invalidLogoImage = {
         size: 512 * 1024,
-        format: "jpg", // Should be PNG for logos
+        format: 'jpg', // Should be PNG for logos
         dimensions: { width: 200, height: 200 },
-        category: "LOGO",
+        category: 'LOGO',
       };
 
       // When
@@ -252,12 +252,12 @@ describe("ImageUploadSettings Value Object", () => {
 
       // Then
       expect(validation.isValid).toBe(false);
-      expect(validation.errors).toContain("Logo images must be in PNG format");
+      expect(validation.errors).toContain('Logo images must be in PNG format');
     });
   });
 
-  describe("🔴 RED - Business Quota Management", () => {
-    it("should check if business can add more images", () => {
+  describe('🔴 RED - Business Quota Management', () => {
+    it('should check if business can add more images', () => {
       // Given
       const settings = ImageUploadSettings.create({
         maxFileSize: 5 * 1024 * 1024,
@@ -273,7 +273,7 @@ describe("ImageUploadSettings Value Object", () => {
       expect(canAddMore).toBe(true);
     });
 
-    it("should prevent adding images when quota is reached", () => {
+    it('should prevent adding images when quota is reached', () => {
       // Given
       const settings = ImageUploadSettings.create({
         maxFileSize: 5 * 1024 * 1024,
@@ -289,7 +289,7 @@ describe("ImageUploadSettings Value Object", () => {
       expect(canAddMore).toBe(false);
     });
 
-    it("should calculate remaining image quota", () => {
+    it('should calculate remaining image quota', () => {
       // Given
       const settings = ImageUploadSettings.create({
         maxFileSize: 5 * 1024 * 1024,
@@ -306,8 +306,8 @@ describe("ImageUploadSettings Value Object", () => {
     });
   });
 
-  describe("🔴 RED - Admin Configuration Updates", () => {
-    it("should update max file size setting", () => {
+  describe('🔴 RED - Admin Configuration Updates', () => {
+    it('should update max file size setting', () => {
       // Given
       const settings = ImageUploadSettings.createDefault();
       const newMaxSize = 10 * 1024 * 1024; // 10MB
@@ -320,7 +320,7 @@ describe("ImageUploadSettings Value Object", () => {
       expect(updatedSettings.allowedFormats).toEqual(settings.allowedFormats); // Unchanged
     });
 
-    it("should update allowed formats setting", () => {
+    it('should update allowed formats setting', () => {
       // Given
       const settings = ImageUploadSettings.createDefault();
       const newFormats = [ImageFormat.WEBP, ImageFormat.PNG];
@@ -333,7 +333,7 @@ describe("ImageUploadSettings Value Object", () => {
       expect(updatedSettings.maxFileSize).toBe(settings.maxFileSize); // Unchanged
     });
 
-    it("should update max images per business setting", () => {
+    it('should update max images per business setting', () => {
       // Given
       const settings = ImageUploadSettings.createDefault();
       const newMaxImages = 100;
@@ -345,7 +345,7 @@ describe("ImageUploadSettings Value Object", () => {
       expect(updatedSettings.maxImagesPerBusiness).toBe(newMaxImages);
     });
 
-    it("should toggle moderation requirement", () => {
+    it('should toggle moderation requirement', () => {
       // Given
       const settings = ImageUploadSettings.createDefault(); // Default: false
 
@@ -358,11 +358,11 @@ describe("ImageUploadSettings Value Object", () => {
       expect(withoutModeration.requiresModeration).toBe(false);
     });
 
-    it("should add category-specific policy", () => {
+    it('should add category-specific policy', () => {
       // Given
       const settings = ImageUploadSettings.createDefault();
       const coverPolicy: ImagePolicy = {
-        category: "COVER",
+        category: 'COVER',
         maxSize: 3 * 1024 * 1024, // 3MB for covers
         requiredDimensions: { width: 1200, height: 600 },
         allowedFormats: [ImageFormat.JPEG, ImageFormat.WEBP],
@@ -377,8 +377,8 @@ describe("ImageUploadSettings Value Object", () => {
     });
   });
 
-  describe("🔴 RED - Serialization and Export", () => {
-    it("should serialize to JSON correctly", () => {
+  describe('🔴 RED - Serialization and Export', () => {
+    it('should serialize to JSON correctly', () => {
       // Given
       const settings = ImageUploadSettings.create({
         maxFileSize: 8 * 1024 * 1024,
@@ -394,7 +394,7 @@ describe("ImageUploadSettings Value Object", () => {
       // Then
       expect(json).toMatchObject({
         maxFileSize: 8 * 1024 * 1024,
-        allowedFormats: ["JPEG", "PNG"],
+        allowedFormats: ['JPEG', 'PNG'],
         maxImagesPerBusiness: 30,
         requiresModeration: true,
         autoOptimize: false,
@@ -402,20 +402,20 @@ describe("ImageUploadSettings Value Object", () => {
       });
     });
 
-    it("should create from JSON correctly", () => {
+    it('should create from JSON correctly', () => {
       // Given
       const json = {
         maxFileSize: 8 * 1024 * 1024,
-        allowedFormats: ["JPEG", "PNG"],
+        allowedFormats: ['JPEG', 'PNG'],
         maxImagesPerBusiness: 30,
         requiresModeration: true,
         autoOptimize: false,
         policies: [
           {
-            category: "LOGO",
+            category: 'LOGO',
             maxSize: 1 * 1024 * 1024,
             requiredDimensions: { width: 200, height: 200 },
-            allowedFormats: ["PNG"],
+            allowedFormats: ['PNG'],
           },
         ],
       };

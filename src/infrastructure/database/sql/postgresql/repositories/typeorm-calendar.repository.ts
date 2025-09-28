@@ -9,17 +9,17 @@
  * ✅ Gestion des erreurs et logging
  */
 
-import { Injectable } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { Calendar } from "../../../../../domain/entities/calendar.entity";
-import { CalendarRepository } from "../../../../../domain/repositories/calendar.repository.interface";
-import { BusinessId } from "../../../../../domain/value-objects/business-id.value-object";
-import { CalendarId } from "../../../../../domain/value-objects/calendar-id.value-object";
-import { TimeSlot } from "../../../../../domain/value-objects/time-slot.value-object";
-import { UserId } from "../../../../../domain/value-objects/user-id.value-object";
-import { CalendarOrmMapper } from "../../../../mappers/calendar-orm.mapper";
-import { CalendarOrmEntity } from "../entities/calendar-orm.entity";
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Calendar } from '../../../../../domain/entities/calendar.entity';
+import { CalendarRepository } from '../../../../../domain/repositories/calendar.repository.interface';
+import { BusinessId } from '../../../../../domain/value-objects/business-id.value-object';
+import { CalendarId } from '../../../../../domain/value-objects/calendar-id.value-object';
+import { TimeSlot } from '../../../../../domain/value-objects/time-slot.value-object';
+import { UserId } from '../../../../../domain/value-objects/user-id.value-object';
+import { CalendarOrmMapper } from '../../../../mappers/calendar-orm.mapper';
+import { CalendarOrmEntity } from '../entities/calendar-orm.entity';
 
 @Injectable()
 export class TypeOrmCalendarRepository implements CalendarRepository {
@@ -40,7 +40,7 @@ export class TypeOrmCalendarRepository implements CalendarRepository {
         : null;
     } catch (error) {
       throw new Error(
-        `Failed to find calendar by id: ${error instanceof Error ? error.message : "Unknown error"}`,
+        `Failed to find calendar by id: ${error instanceof Error ? error.message : 'Unknown error'}`,
       );
     }
   }
@@ -55,7 +55,7 @@ export class TypeOrmCalendarRepository implements CalendarRepository {
       return CalendarOrmMapper.toDomainPlainObjects(ormEntities);
     } catch (error) {
       throw new Error(
-        `Failed to find calendars by business id: ${error instanceof Error ? error.message : "Unknown error"}`,
+        `Failed to find calendars by business id: ${error instanceof Error ? error.message : 'Unknown error'}`,
       );
     }
   }
@@ -70,7 +70,7 @@ export class TypeOrmCalendarRepository implements CalendarRepository {
       return CalendarOrmMapper.toDomainPlainObjects(ormEntities);
     } catch (error) {
       throw new Error(
-        `Failed to find calendars by owner id: ${error instanceof Error ? error.message : "Unknown error"}`,
+        `Failed to find calendars by owner id: ${error instanceof Error ? error.message : 'Unknown error'}`,
       );
     }
   }
@@ -88,7 +88,7 @@ export class TypeOrmCalendarRepository implements CalendarRepository {
       return CalendarOrmMapper.toDomainPlainObjects(ormEntities);
     } catch (error) {
       throw new Error(
-        `Failed to find calendars by type: ${error instanceof Error ? error.message : "Unknown error"}`,
+        `Failed to find calendars by type: ${error instanceof Error ? error.message : 'Unknown error'}`,
       );
     }
   }
@@ -102,7 +102,7 @@ export class TypeOrmCalendarRepository implements CalendarRepository {
       await this.ormRepository.save(ormEntity);
     } catch (error) {
       throw new Error(
-        `Failed to save calendar: ${error instanceof Error ? error.message : "Unknown error"}`,
+        `Failed to save calendar: ${error instanceof Error ? error.message : 'Unknown error'}`,
       );
     }
   }
@@ -117,7 +117,7 @@ export class TypeOrmCalendarRepository implements CalendarRepository {
       }
     } catch (error) {
       throw new Error(
-        `Failed to delete calendar: ${error instanceof Error ? error.message : "Unknown error"}`,
+        `Failed to delete calendar: ${error instanceof Error ? error.message : 'Unknown error'}`,
       );
     }
   }
@@ -166,7 +166,7 @@ export class TypeOrmCalendarRepository implements CalendarRepository {
       return results;
     } catch (error) {
       throw new Error(
-        `Failed to find available slots: ${error instanceof Error ? error.message : "Unknown error"}`,
+        `Failed to find available slots: ${error instanceof Error ? error.message : 'Unknown error'}`,
       );
     }
   }
@@ -182,7 +182,7 @@ export class TypeOrmCalendarRepository implements CalendarRepository {
       return [];
     } catch (error) {
       throw new Error(
-        `Failed to get booked slots: ${error instanceof Error ? error.message : "Unknown error"}`,
+        `Failed to get booked slots: ${error instanceof Error ? error.message : 'Unknown error'}`,
       );
     }
   }
@@ -197,7 +197,7 @@ export class TypeOrmCalendarRepository implements CalendarRepository {
       return calendar !== null;
     } catch (error) {
       throw new Error(
-        `Failed to check slot availability: ${error instanceof Error ? error.message : "Unknown error"}`,
+        `Failed to check slot availability: ${error instanceof Error ? error.message : 'Unknown error'}`,
       );
     }
   }
@@ -210,14 +210,14 @@ export class TypeOrmCalendarRepository implements CalendarRepository {
     try {
       const businessIdValue = businessId.getValue();
       let query = this.ormRepository
-        .createQueryBuilder("calendar")
-        .where("calendar.business_id = :businessId", {
+        .createQueryBuilder('calendar')
+        .where('calendar.business_id = :businessId', {
           businessId: businessIdValue,
         });
 
       if (excludeCalendarIds && excludeCalendarIds.length > 0) {
         const excludeIds = excludeCalendarIds.map((id) => id.getValue());
-        query = query.andWhere("calendar.id NOT IN (:...excludeIds)", {
+        query = query.andWhere('calendar.id NOT IN (:...excludeIds)', {
           excludeIds,
         });
       }
@@ -226,7 +226,7 @@ export class TypeOrmCalendarRepository implements CalendarRepository {
       return CalendarOrmMapper.toDomainPlainObjects(ormEntities);
     } catch (error) {
       throw new Error(
-        `Failed to find overlapping calendars: ${error instanceof Error ? error.message : "Unknown error"}`,
+        `Failed to find overlapping calendars: ${error instanceof Error ? error.message : 'Unknown error'}`,
       );
     }
   }
@@ -253,7 +253,7 @@ export class TypeOrmCalendarRepository implements CalendarRepository {
       };
     } catch (error) {
       throw new Error(
-        `Failed to get utilization stats: ${error instanceof Error ? error.message : "Unknown error"}`,
+        `Failed to get utilization stats: ${error instanceof Error ? error.message : 'Unknown error'}`,
       );
     }
   }
@@ -275,7 +275,7 @@ export class TypeOrmCalendarRepository implements CalendarRepository {
       return CalendarOrmMapper.toDomainPlainObjects(ormEntities);
     } catch (error) {
       throw new Error(
-        `Failed to find calendars with availability: ${error instanceof Error ? error.message : "Unknown error"}`,
+        `Failed to find calendars with availability: ${error instanceof Error ? error.message : 'Unknown error'}`,
       );
     }
   }
@@ -296,7 +296,7 @@ export class TypeOrmCalendarRepository implements CalendarRepository {
       return [];
     } catch (error) {
       throw new Error(
-        `Failed to get recurring patterns: ${error instanceof Error ? error.message : "Unknown error"}`,
+        `Failed to get recurring patterns: ${error instanceof Error ? error.message : 'Unknown error'}`,
       );
     }
   }

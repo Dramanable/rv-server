@@ -2,15 +2,15 @@
  * 🍪 COOKIE SERVICE - Service pour la gestion des cookies
  */
 
-import { Inject, Injectable } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
-import { Request, Response } from "express";
+import { Inject, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { Request, Response } from 'express';
 import {
   CookieOptions,
   ICookieService,
-} from "../../application/ports/cookie.port";
-import type { Logger } from "../../application/ports/logger.port";
-import { TOKENS } from "../../shared/constants/injection-tokens";
+} from '../../application/ports/cookie.port';
+import type { Logger } from '../../application/ports/logger.port';
+import { TOKENS } from '../../shared/constants/injection-tokens';
 
 @Injectable()
 export class CookieService implements ICookieService {
@@ -27,9 +27,9 @@ export class CookieService implements ICookieService {
   ): void {
     const defaultOptions: CookieOptions = {
       httpOnly: true,
-      secure: this.configService.get<string>("NODE_ENV") === "production",
-      sameSite: "strict",
-      path: "/",
+      secure: this.configService.get<string>('NODE_ENV') === 'production',
+      sameSite: 'strict',
+      path: '/',
     };
 
     const finalOptions = { ...defaultOptions, ...options };
@@ -44,9 +44,9 @@ export class CookieService implements ICookieService {
   clearCookie(response: Response, name: string, options?: CookieOptions): void {
     const defaultOptions: CookieOptions = {
       httpOnly: true,
-      secure: this.configService.get<string>("NODE_ENV") === "production",
-      sameSite: "strict",
-      path: "/",
+      secure: this.configService.get<string>('NODE_ENV') === 'production',
+      sameSite: 'strict',
+      path: '/',
     };
 
     const finalOptions = { ...defaultOptions, ...options };
@@ -68,20 +68,20 @@ export class CookieService implements ICookieService {
     rememberMe: boolean,
   ): void {
     const isProduction =
-      this.configService.get<string>("NODE_ENV") === "production";
+      this.configService.get<string>('NODE_ENV') === 'production';
 
     // Récupérer les noms et chemins depuis les variables d'environnement
     const accessTokenCookieName = this.configService.get<string>(
-      "ACCESS_TOKEN_COOKIE_NAME",
-      "accessToken",
+      'ACCESS_TOKEN_COOKIE_NAME',
+      'accessToken',
     );
     const refreshTokenCookieName = this.configService.get<string>(
-      "REFRESH_TOKEN_COOKIE_NAME",
-      "refreshToken",
+      'REFRESH_TOKEN_COOKIE_NAME',
+      'refreshToken',
     );
     const refreshTokenCookiePath = this.configService.get<string>(
-      "REFRESH_TOKEN_COOKIE_PATH",
-      "/api/v1/auth/refresh",
+      'REFRESH_TOKEN_COOKIE_PATH',
+      '/api/v1/auth/refresh',
     );
 
     // 🔑 Access Token Cookie - Même durée que le JWT
@@ -90,8 +90,8 @@ export class CookieService implements ICookieService {
       maxAge: accessTokenMaxAge,
       httpOnly: true,
       secure: isProduction,
-      sameSite: "strict",
-      path: "/",
+      sameSite: 'strict',
+      path: '/',
     });
 
     // 🔄 Refresh Token Cookie - Durée selon rememberMe
@@ -103,13 +103,13 @@ export class CookieService implements ICookieService {
       maxAge: refreshTokenMaxAge,
       httpOnly: true,
       secure: isProduction,
-      sameSite: "strict",
+      sameSite: 'strict',
       path: refreshTokenCookiePath, // Restreint aux endpoints de refresh
     });
 
-    this.logger.debug("Authentication cookies configured", {
+    this.logger.debug('Authentication cookies configured', {
       accessTokenMaxAge,
-      refreshTokenMaxAge: refreshTokenMaxAge || "session",
+      refreshTokenMaxAge: refreshTokenMaxAge || 'session',
       isProduction,
       rememberMe,
     });
@@ -120,23 +120,23 @@ export class CookieService implements ICookieService {
    */
   clearAuthenticationCookies(response: Response): void {
     const accessTokenCookieName = this.configService.get<string>(
-      "ACCESS_TOKEN_COOKIE_NAME",
-      "accessToken",
+      'ACCESS_TOKEN_COOKIE_NAME',
+      'accessToken',
     );
     const refreshTokenCookieName = this.configService.get<string>(
-      "REFRESH_TOKEN_COOKIE_NAME",
-      "refreshToken",
+      'REFRESH_TOKEN_COOKIE_NAME',
+      'refreshToken',
     );
     const refreshTokenCookiePath = this.configService.get<string>(
-      "REFRESH_TOKEN_COOKIE_PATH",
-      "/api/v1/auth/refresh",
+      'REFRESH_TOKEN_COOKIE_PATH',
+      '/api/v1/auth/refresh',
     );
 
-    this.clearCookie(response, accessTokenCookieName, { path: "/" });
+    this.clearCookie(response, accessTokenCookieName, { path: '/' });
     this.clearCookie(response, refreshTokenCookieName, {
       path: refreshTokenCookiePath,
     });
 
-    this.logger.debug("Authentication cookies cleared");
+    this.logger.debug('Authentication cookies cleared');
   }
 }

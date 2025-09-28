@@ -5,11 +5,11 @@
  * ✅ TDD - Red/Green/Refactor
  */
 
-import { User } from "@domain/entities/user.entity";
-import { Email } from "@domain/value-objects/email.vo";
-import { RedisUserCacheAdapter } from "@infrastructure/cache/redis-user-cache.adapter";
-import { UserRole } from "@shared/enums/user-role.enum";
-import { Redis } from "ioredis";
+import { User } from '@domain/entities/user.entity';
+import { Email } from '@domain/value-objects/email.vo';
+import { RedisUserCacheAdapter } from '@infrastructure/cache/redis-user-cache.adapter';
+import { UserRole } from '@shared/enums/user-role.enum';
+import { Redis } from 'ioredis';
 
 // Configuration de test avec VRAI Redis
 interface TestConfig {
@@ -20,13 +20,13 @@ const testConfigService: TestConfig = {
   getUserCacheRetentionMinutes: () => 60, // 60 minutes pour les tests
 };
 
-describe.skip("🏗️ RedisUserCacheAdapter - Integration Tests (Infrastructure)", () => {
+describe.skip('🏗️ RedisUserCacheAdapter - Integration Tests (Infrastructure)', () => {
   let adapter: RedisUserCacheAdapter;
   let realRedisClient: Redis;
 
   beforeAll(async () => {
     // 🔗 Connexion au VRAI Redis pour l'intégration
-    const redisUrl = process.env.REDIS_URL || "redis://localhost:6379";
+    const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
     realRedisClient = new Redis(redisUrl);
 
     // ✅ Vérifier que Redis est disponible
@@ -54,14 +54,14 @@ describe.skip("🏗️ RedisUserCacheAdapter - Integration Tests (Infrastructure
   /**
    * 🔴 TDD RED - Tests qui échouent d'abord
    */
-  describe("🎯 TDD Integration - Store User in Real Redis", () => {
-    it("should store and retrieve user from real Redis with TTL", async () => {
+  describe('🎯 TDD Integration - Store User in Real Redis', () => {
+    it('should store and retrieve user from real Redis with TTL', async () => {
       // 🔴 TDD RED - Arrange
-      const email = Email.create("integration@test.com");
+      const email = Email.create('integration@test.com');
       const user = User.createWithHashedPassword(
         email,
-        "Integration Test User",
-        "hashed_password_123",
+        'Integration Test User',
+        'hashed_password_123',
         UserRole.CLIENT,
       );
 
@@ -76,7 +76,7 @@ describe.skip("🏗️ RedisUserCacheAdapter - Integration Tests (Infrastructure
 
       expect(storedData).toBeTruthy();
       expect(storedData).toContain(user.id);
-      expect(storedData).toContain("integration@test.com");
+      expect(storedData).toContain('integration@test.com');
 
       // ✅ Vérifier que le TTL est appliqué
       const ttlSeconds = await realRedisClient.ttl(redisKey);
@@ -84,13 +84,13 @@ describe.skip("🏗️ RedisUserCacheAdapter - Integration Tests (Infrastructure
       expect(ttlSeconds).toBeLessThanOrEqual(300); // Max 5 minutes
     });
 
-    it("should use default TTL from config when not specified", async () => {
+    it('should use default TTL from config when not specified', async () => {
       // 🔴 TDD RED - Arrange
-      const email = Email.create("default-ttl@test.com");
+      const email = Email.create('default-ttl@test.com');
       const user = User.createWithHashedPassword(
         email,
-        "Default TTL User",
-        "hashed_password_456",
+        'Default TTL User',
+        'hashed_password_456',
         UserRole.BUSINESS_OWNER,
       );
 
@@ -105,13 +105,13 @@ describe.skip("🏗️ RedisUserCacheAdapter - Integration Tests (Infrastructure
       expect(ttlSeconds).toBeLessThanOrEqual(3600); // Max 60 minutes
     });
 
-    it("should handle Redis storage errors gracefully", async () => {
+    it('should handle Redis storage errors gracefully', async () => {
       // 🔴 TDD RED - Tester la résilience
-      const email = Email.create("error@test.com");
+      const email = Email.create('error@test.com');
       const user = User.createWithHashedPassword(
         email,
-        "Error Test User",
-        "hashed_password_789",
+        'Error Test User',
+        'hashed_password_789',
         UserRole.PLATFORM_ADMIN,
       );
 
@@ -127,14 +127,14 @@ describe.skip("🏗️ RedisUserCacheAdapter - Integration Tests (Infrastructure
   /**
    * 🎯 TDD Integration - Retrieve User from Real Redis
    */
-  describe("🔍 TDD Integration - Get User from Real Redis", () => {
-    it("should retrieve existing user from Redis", async () => {
+  describe('🔍 TDD Integration - Get User from Real Redis', () => {
+    it('should retrieve existing user from Redis', async () => {
       // 🔴 TDD RED - Arrange: Stocker d'abord un utilisateur
-      const email = Email.create("retrieve@test.com");
+      const email = Email.create('retrieve@test.com');
       const user = User.createWithHashedPassword(
         email,
-        "Retrieve Test User",
-        "hashed_password_retrieve",
+        'Retrieve Test User',
+        'hashed_password_retrieve',
         UserRole.PRACTITIONER,
       );
 
@@ -146,14 +146,14 @@ describe.skip("🏗️ RedisUserCacheAdapter - Integration Tests (Infrastructure
       // ✅ Assert: Vérifier que l'utilisateur est correct
       expect(retrievedUser).toBeTruthy();
       expect(retrievedUser!.id).toBe(user.id);
-      expect(retrievedUser!.email.value).toBe("retrieve@test.com");
-      expect(retrievedUser!.name).toBe("Retrieve Test User");
+      expect(retrievedUser!.email.value).toBe('retrieve@test.com');
+      expect(retrievedUser!.name).toBe('Retrieve Test User');
       expect(retrievedUser!.role).toBe(UserRole.PRACTITIONER);
     });
 
-    it("should return null for non-existent user", async () => {
+    it('should return null for non-existent user', async () => {
       // 🔴 TDD RED - Test avec utilisateur inexistant
-      const nonExistentId = "non-existent-user-id";
+      const nonExistentId = 'non-existent-user-id';
 
       // 🟢 TDD GREEN - Act
       const result = await adapter.getUser(nonExistentId);
@@ -162,13 +162,13 @@ describe.skip("🏗️ RedisUserCacheAdapter - Integration Tests (Infrastructure
       expect(result).toBeNull();
     });
 
-    it("should handle expired keys gracefully", async () => {
+    it('should handle expired keys gracefully', async () => {
       // 🔴 TDD RED - Arrange: Créer une clé avec TTL très court
-      const email = Email.create("expired@test.com");
+      const email = Email.create('expired@test.com');
       const user = User.createWithHashedPassword(
         email,
-        "Expired User",
-        "hashed_password_expired",
+        'Expired User',
+        'hashed_password_expired',
         UserRole.CLIENT,
       );
 
@@ -189,14 +189,14 @@ describe.skip("🏗️ RedisUserCacheAdapter - Integration Tests (Infrastructure
   /**
    * 🎯 TDD Integration - Delete Operations
    */
-  describe("🗑️ TDD Integration - Delete User from Real Redis", () => {
-    it("should delete existing user from Redis", async () => {
+  describe('🗑️ TDD Integration - Delete User from Real Redis', () => {
+    it('should delete existing user from Redis', async () => {
       // 🔴 TDD RED - Arrange
-      const email = Email.create("delete@test.com");
+      const email = Email.create('delete@test.com');
       const user = User.createWithHashedPassword(
         email,
-        "Delete Test User",
-        "hashed_password_delete",
+        'Delete Test User',
+        'hashed_password_delete',
         UserRole.SUPPORT_AGENT,
       );
 
@@ -217,9 +217,9 @@ describe.skip("🏗️ RedisUserCacheAdapter - Integration Tests (Infrastructure
       expect(result).toBeNull();
     });
 
-    it("should handle deletion of non-existent user gracefully", async () => {
+    it('should handle deletion of non-existent user gracefully', async () => {
       // 🔴 TDD RED - Test suppression utilisateur inexistant
-      const nonExistentId = "non-existent-delete-id";
+      const nonExistentId = 'non-existent-delete-id';
 
       // 🟢 TDD GREEN - Act: Supprimer utilisateur inexistant
       await expect(adapter.removeUser(nonExistentId)).resolves.not.toThrow();
@@ -233,19 +233,19 @@ describe.skip("🏗️ RedisUserCacheAdapter - Integration Tests (Infrastructure
   /**
    * 🎯 TDD Integration - Cache Operations
    */
-  describe("🧹 TDD Integration - Cache Management", () => {
-    it("should clear all user cache", async () => {
+  describe('🧹 TDD Integration - Cache Management', () => {
+    it('should clear all user cache', async () => {
       // 🔴 TDD RED - Arrange: Stocker plusieurs utilisateurs
       const users = [
-        { email: "user1@test.com", name: "User 1", role: UserRole.CLIENT },
+        { email: 'user1@test.com', name: 'User 1', role: UserRole.CLIENT },
         {
-          email: "user2@test.com",
-          name: "User 2",
+          email: 'user2@test.com',
+          name: 'User 2',
           role: UserRole.BUSINESS_OWNER,
         },
         {
-          email: "user3@test.com",
-          name: "User 3",
+          email: 'user3@test.com',
+          name: 'User 3',
           role: UserRole.PRACTITIONER,
         },
       ];
@@ -256,7 +256,7 @@ describe.skip("🏗️ RedisUserCacheAdapter - Integration Tests (Infrastructure
         const user = User.createWithHashedPassword(
           email,
           userData.name,
-          "hashed_password",
+          'hashed_password',
           userData.role,
         );
         await adapter.storeUser(user.id, user, 30);
@@ -279,12 +279,12 @@ describe.skip("🏗️ RedisUserCacheAdapter - Integration Tests (Infrastructure
       }
     });
 
-    it("should verify Redis connection health", async () => {
+    it('should verify Redis connection health', async () => {
       // 🔴 TDD RED - Test de santé de la connexion
 
       // 🟢 TDD GREEN - Act & Assert
       const pingResult = await realRedisClient.ping();
-      expect(pingResult).toBe("PONG");
+      expect(pingResult).toBe('PONG');
 
       // ✅ Test de latence basique
       const startTime = Date.now();
@@ -298,14 +298,14 @@ describe.skip("🏗️ RedisUserCacheAdapter - Integration Tests (Infrastructure
   /**
    * 🎯 TDD Integration - Complex Scenarios
    */
-  describe("🔄 TDD Integration - Complex Cache Scenarios", () => {
-    it("should handle concurrent operations correctly", async () => {
+  describe('🔄 TDD Integration - Complex Cache Scenarios', () => {
+    it('should handle concurrent operations correctly', async () => {
       // 🔴 TDD RED - Test de concurrence
-      const email = Email.create("concurrent@test.com");
+      const email = Email.create('concurrent@test.com');
       const user = User.createWithHashedPassword(
         email,
-        "Concurrent User",
-        "hashed_password_concurrent",
+        'Concurrent User',
+        'hashed_password_concurrent',
         UserRole.CLIENT,
       );
 
@@ -324,13 +324,13 @@ describe.skip("🏗️ RedisUserCacheAdapter - Integration Tests (Infrastructure
       expect(result!.id).toBe(user.id);
     });
 
-    it("should maintain data consistency with TTL updates", async () => {
+    it('should maintain data consistency with TTL updates', async () => {
       // 🔴 TDD RED - Test de cohérence avec TTL
-      const email = Email.create("ttl-update@test.com");
+      const email = Email.create('ttl-update@test.com');
       const user = User.createWithHashedPassword(
         email,
-        "TTL Update User",
-        "hashed_password_ttl",
+        'TTL Update User',
+        'hashed_password_ttl',
         UserRole.BUSINESS_OWNER,
       );
 
@@ -350,7 +350,7 @@ describe.skip("🏗️ RedisUserCacheAdapter - Integration Tests (Infrastructure
       // ✅ Données toujours cohérentes
       const result = await adapter.getUser(user.id);
       expect(result).toBeTruthy();
-      expect(result!.name).toBe("TTL Update User");
+      expect(result!.name).toBe('TTL Update User');
     });
   });
 });

@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner, Table } from "typeorm";
+import { MigrationInterface, QueryRunner, Table } from 'typeorm';
 
 /**
  * 🗄️ MIGRATION : CREATE PROFESSIONALS TABLE
@@ -27,13 +27,13 @@ import { MigrationInterface, QueryRunner, Table } from "typeorm";
 export class CreateProfessionalsTable1727164800000
   implements MigrationInterface
 {
-  name = "CreateProfessionalsTable1727164800000";
+  name = 'CreateProfessionalsTable1727164800000';
 
   /**
    * ✅ OBLIGATOIRE : Récupérer le schéma depuis l'environnement
    */
   private getSchemaName(): string {
-    const schema = process.env.DB_SCHEMA || "public";
+    const schema = process.env.DB_SCHEMA || 'public';
 
     // Validation du nom de schéma (sécurité)
     if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(schema)) {
@@ -71,7 +71,7 @@ export class CreateProfessionalsTable1727164800000
     const schema = this.getSchemaName();
 
     // Vérifier si la table existe déjà
-    const exists = await this.tableExists(queryRunner, schema, "professionals");
+    const exists = await this.tableExists(queryRunner, schema, 'professionals');
     if (exists) {
       console.log(
         `Table "${schema}"."professionals" already exists, skipping creation`,
@@ -83,7 +83,7 @@ export class CreateProfessionalsTable1727164800000
     const businessExists = await this.tableExists(
       queryRunner,
       schema,
-      "businesses",
+      'businesses',
     );
     if (!businessExists) {
       throw new Error(
@@ -100,111 +100,111 @@ export class CreateProfessionalsTable1727164800000
         columns: [
           // ✅ Clé primaire UUID
           {
-            name: "id",
-            type: "uuid",
+            name: 'id',
+            type: 'uuid',
             isPrimary: true,
-            generationStrategy: "uuid",
-            default: "uuid_generate_v4()",
-            comment: "Professional unique identifier",
+            generationStrategy: 'uuid',
+            default: 'uuid_generate_v4()',
+            comment: 'Professional unique identifier',
           },
 
           // ✅ Référence vers l'entreprise (FK obligatoire)
           {
-            name: "business_id",
-            type: "uuid",
+            name: 'business_id',
+            type: 'uuid',
             isNullable: false,
-            comment: "Reference to business entity",
+            comment: 'Reference to business entity',
           },
 
           // ✅ Données personnelles
           {
-            name: "first_name",
-            type: "varchar",
-            length: "100",
+            name: 'first_name',
+            type: 'varchar',
+            length: '100',
             isNullable: false,
-            comment: "Professional first name",
+            comment: 'Professional first name',
           },
           {
-            name: "last_name",
-            type: "varchar",
-            length: "100",
+            name: 'last_name',
+            type: 'varchar',
+            length: '100',
             isNullable: false,
-            comment: "Professional last name",
+            comment: 'Professional last name',
           },
           {
-            name: "email",
-            type: "varchar",
-            length: "255",
+            name: 'email',
+            type: 'varchar',
+            length: '255',
             isNullable: false,
             isUnique: true,
-            comment: "Professional email address (unique)",
+            comment: 'Professional email address (unique)',
           },
           {
-            name: "phone",
-            type: "varchar",
-            length: "20",
+            name: 'phone',
+            type: 'varchar',
+            length: '20',
             isNullable: true,
-            comment: "Professional phone number",
+            comment: 'Professional phone number',
           },
 
           // ✅ Données professionnelles
           {
-            name: "specialization",
-            type: "varchar",
-            length: "200",
+            name: 'specialization',
+            type: 'varchar',
+            length: '200',
             isNullable: true,
-            comment: "Professional specialization/expertise",
+            comment: 'Professional specialization/expertise',
           },
           {
-            name: "bio",
-            type: "text",
+            name: 'bio',
+            type: 'text',
             isNullable: true,
-            comment: "Professional biography/description",
+            comment: 'Professional biography/description',
           },
           {
-            name: "profile_image_url",
-            type: "varchar",
-            length: "500",
+            name: 'profile_image_url',
+            type: 'varchar',
+            length: '500',
             isNullable: true,
-            comment: "URL to professional profile image",
+            comment: 'URL to professional profile image',
           },
 
           // ✅ Statut et activation
           {
-            name: "is_active",
-            type: "boolean",
+            name: 'is_active',
+            type: 'boolean',
             isNullable: false,
             default: true,
-            comment: "Whether the professional is active",
+            comment: 'Whether the professional is active',
           },
 
           // ⚠️ TRAÇABILITÉ OBLIGATOIRE selon Copilot instructions
           {
-            name: "created_by",
-            type: "uuid",
+            name: 'created_by',
+            type: 'uuid',
             isNullable: false,
-            comment: "UUID of user who created this professional",
+            comment: 'UUID of user who created this professional',
           },
           {
-            name: "updated_by",
-            type: "uuid",
+            name: 'updated_by',
+            type: 'uuid',
             isNullable: false,
-            comment: "UUID of user who last updated this professional",
+            comment: 'UUID of user who last updated this professional',
           },
           {
-            name: "created_at",
-            type: "timestamp",
-            default: "CURRENT_TIMESTAMP",
+            name: 'created_at',
+            type: 'timestamp',
+            default: 'CURRENT_TIMESTAMP',
             isNullable: false,
-            comment: "Creation timestamp",
+            comment: 'Creation timestamp',
           },
           {
-            name: "updated_at",
-            type: "timestamp",
-            default: "CURRENT_TIMESTAMP",
-            onUpdate: "CURRENT_TIMESTAMP",
+            name: 'updated_at',
+            type: 'timestamp',
+            default: 'CURRENT_TIMESTAMP',
+            onUpdate: 'CURRENT_TIMESTAMP',
             isNullable: false,
-            comment: "Last update timestamp",
+            comment: 'Last update timestamp',
           },
         ],
       }),
@@ -254,7 +254,7 @@ export class CreateProfessionalsTable1727164800000
     console.log(`Dropping table "${schema}"."professionals"...`);
 
     // Vérifier si la table existe avant suppression
-    const exists = await this.tableExists(queryRunner, schema, "professionals");
+    const exists = await this.tableExists(queryRunner, schema, 'professionals');
     if (!exists) {
       console.log(
         `Table "${schema}"."professionals" does not exist, skipping drop`,

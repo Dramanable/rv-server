@@ -5,22 +5,22 @@
  * ✅ Support environnements multiples
  */
 
-import { Injectable, Logger } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
-import { MongooseModuleOptions } from "@nestjs/mongoose";
-import { TypeOrmModuleOptions } from "@nestjs/typeorm";
+import { Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { MongooseModuleOptions } from '@nestjs/mongoose';
+import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 
 // Entities SQL
-import { AppointmentOrmEntity } from "./sql/postgresql/entities/appointment-orm.entity";
-import { BusinessOrmEntity } from "./sql/postgresql/entities/business-orm.entity";
-import { BusinessSectorOrmEntity } from "./sql/postgresql/entities/business-sector-orm.entity";
-import { CalendarOrmEntity } from "./sql/postgresql/entities/calendar-orm.entity";
-import { RefreshTokenOrmEntity } from "./sql/postgresql/entities/refresh-token-orm.entity";
-import { ServiceOrmEntity } from "./sql/postgresql/entities/service-orm.entity";
-import { StaffOrmEntity } from "./sql/postgresql/entities/staff-orm.entity";
-import { UserOrmEntity } from "./sql/postgresql/entities/user-orm.entity";
+import { AppointmentOrmEntity } from './sql/postgresql/entities/appointment-orm.entity';
+import { BusinessOrmEntity } from './sql/postgresql/entities/business-orm.entity';
+import { BusinessSectorOrmEntity } from './sql/postgresql/entities/business-sector-orm.entity';
+import { CalendarOrmEntity } from './sql/postgresql/entities/calendar-orm.entity';
+import { RefreshTokenOrmEntity } from './sql/postgresql/entities/refresh-token-orm.entity';
+import { ServiceOrmEntity } from './sql/postgresql/entities/service-orm.entity';
+import { StaffOrmEntity } from './sql/postgresql/entities/staff-orm.entity';
+import { UserOrmEntity } from './sql/postgresql/entities/user-orm.entity';
 
-export type DatabaseType = "postgresql" | "mongodb";
+export type DatabaseType = 'postgresql' | 'mongodb';
 
 export interface DatabaseConfig {
   type: DatabaseType;
@@ -43,15 +43,15 @@ export class DatabaseSwitchConfig {
     this.logger.log(`🔧 Configuration database type: ${dbType}`);
 
     switch (dbType) {
-      case "postgresql":
+      case 'postgresql':
         return {
-          type: "postgresql",
+          type: 'postgresql',
           sqlConfig: this.getPostgreSQLConfig(),
         };
 
-      case "mongodb":
+      case 'mongodb':
         return {
-          type: "mongodb",
+          type: 'mongodb',
           nosqlConfig: this.getMongoDBConfig(),
         };
 
@@ -66,22 +66,22 @@ export class DatabaseSwitchConfig {
    * 🐘 Configuration PostgreSQL
    */
   private getPostgreSQLConfig(): TypeOrmModuleOptions {
-    const env = this.configService.get<string>("NODE_ENV", "development");
-    const isProduction = env === "production";
+    const env = this.configService.get<string>('NODE_ENV', 'development');
+    const isProduction = env === 'production';
 
     return {
-      type: "postgres",
-      host: this.configService.get<string>("DATABASE_HOST", "localhost"),
-      port: this.configService.get<number>("DATABASE_PORT", 5432),
-      username: this.configService.get<string>("DATABASE_USERNAME", "postgres"),
-      password: this.configService.get<string>("DATABASE_PASSWORD", "postgres"),
+      type: 'postgres',
+      host: this.configService.get<string>('DATABASE_HOST', 'localhost'),
+      port: this.configService.get<number>('DATABASE_PORT', 5432),
+      username: this.configService.get<string>('DATABASE_USERNAME', 'postgres'),
+      password: this.configService.get<string>('DATABASE_PASSWORD', 'postgres'),
       database: this.configService.get<string>(
-        "DATABASE_NAME",
-        "cleanarchi_dev",
+        'DATABASE_NAME',
+        'cleanarchi_dev',
       ),
-      schema: this.configService.get<string>("DB_SCHEMA", "rvproject_app"),
+      schema: this.configService.get<string>('DB_SCHEMA', 'rvproject_app'),
       synchronize: !isProduction, // ⚠️ Seulement en développement
-      logging: env === "development",
+      logging: env === 'development',
       entities: [
         UserOrmEntity,
         RefreshTokenOrmEntity,
@@ -109,21 +109,21 @@ export class DatabaseSwitchConfig {
    */
   private getMongoDBConfig(): MongooseModuleOptions {
     const connectionString = this.configService.get<string>(
-      "MONGODB_CONNECTION_STRING",
+      'MONGODB_CONNECTION_STRING',
     );
     const username = this.configService.get<string>(
-      "MONGODB_USERNAME",
-      "admin",
+      'MONGODB_USERNAME',
+      'admin',
     );
     const password = this.configService.get<string>(
-      "MONGODB_PASSWORD",
-      "admin",
+      'MONGODB_PASSWORD',
+      'admin',
     );
-    const host = this.configService.get<string>("MONGODB_HOST", "localhost");
-    const port = this.configService.get<number>("MONGODB_PORT", 27017);
+    const host = this.configService.get<string>('MONGODB_HOST', 'localhost');
+    const port = this.configService.get<number>('MONGODB_PORT', 27017);
     const database = this.configService.get<string>(
-      "MONGODB_DATABASE",
-      "cleanarchi_dev",
+      'MONGODB_DATABASE',
+      'cleanarchi_dev',
     );
 
     const uri =
@@ -140,25 +140,25 @@ export class DatabaseSwitchConfig {
    */
   private getDatabaseType(): DatabaseType {
     // Priorité configurée explicitement
-    const configuredType = this.configService.get<string>("DATABASE_TYPE");
-    if (configuredType === "postgresql" || configuredType === "mongodb") {
+    const configuredType = this.configService.get<string>('DATABASE_TYPE');
+    if (configuredType === 'postgresql' || configuredType === 'mongodb') {
       return configuredType;
     }
 
     // Auto-détection basée sur les variables d'environnement disponibles
     if (this.hasPostgreSQLConfig()) {
-      return "postgresql";
+      return 'postgresql';
     }
 
     if (this.hasMongoDBConfig()) {
-      return "mongodb";
+      return 'mongodb';
     }
 
     // Défaut : PostgreSQL
     this.logger.warn(
-      "⚠️ Aucune configuration détectée, utilisation PostgreSQL par défaut",
+      '⚠️ Aucune configuration détectée, utilisation PostgreSQL par défaut',
     );
-    return "postgresql";
+    return 'postgresql';
   }
 
   /**
@@ -166,8 +166,8 @@ export class DatabaseSwitchConfig {
    */
   private hasPostgreSQLConfig(): boolean {
     return !!(
-      this.configService.get("DATABASE_HOST") &&
-      this.configService.get("DATABASE_USERNAME")
+      this.configService.get('DATABASE_HOST') &&
+      this.configService.get('DATABASE_USERNAME')
     );
   }
 
@@ -176,10 +176,10 @@ export class DatabaseSwitchConfig {
    */
   private hasMongoDBConfig(): boolean {
     const mongoConnectionString = this.configService.get<string>(
-      "MONGODB_CONNECTION_STRING",
+      'MONGODB_CONNECTION_STRING',
     );
-    const mongoHost = this.configService.get<string>("MONGODB_HOST");
-    const mongoDatabase = this.configService.get<string>("MONGODB_DATABASE");
+    const mongoHost = this.configService.get<string>('MONGODB_HOST');
+    const mongoDatabase = this.configService.get<string>('MONGODB_DATABASE');
 
     return !!(mongoConnectionString || (mongoHost && mongoDatabase));
   }
@@ -189,7 +189,7 @@ export class DatabaseSwitchConfig {
    */
   getConfigInfo() {
     const dbType = this.getDatabaseType();
-    const env = this.configService.get<string>("NODE_ENV", "development");
+    const env = this.configService.get<string>('NODE_ENV', 'development');
 
     return {
       databaseType: dbType,

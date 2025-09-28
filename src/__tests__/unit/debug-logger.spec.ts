@@ -2,10 +2,10 @@
  * 🧪 TEST DEBUG - Vérifier problème logger
  */
 
-import { GetServiceUseCase } from "@application/use-cases/service/get-service.use-case";
+import { GetServiceUseCase } from '@application/use-cases/service/get-service.use-case';
 
-describe("🔧 Debug Logger Problem", () => {
-  it("should instantiate with basic mocks", () => {
+describe('🔧 Debug Logger Problem', () => {
+  it('should instantiate with basic mocks', () => {
     const mockServiceRepository = {
       findById: jest.fn(),
       findByBusinessId: jest.fn(),
@@ -47,16 +47,16 @@ describe("🔧 Debug Logger Problem", () => {
     };
 
     const mockI18n = {
-      translate: jest.fn().mockReturnValue("Test message"),
-      t: jest.fn().mockReturnValue("Test message"),
+      translate: jest.fn().mockReturnValue('Test message'),
+      t: jest.fn().mockReturnValue('Test message'),
       setDefaultLanguage: jest.fn(),
       exists: jest.fn().mockReturnValue(true),
     };
 
     // Test instantiation - Vérifier chaque paramètre
-    console.log("Mock logger direct:", mockLogger);
-    console.log("Mock logger error:", mockLogger.error);
-    console.log("Mock permission service:", mockPermissionService);
+    console.log('Mock logger direct:', mockLogger);
+    console.log('Mock logger error:', mockLogger.error);
+    console.log('Mock permission service:', mockPermissionService);
 
     const useCase = new GetServiceUseCase(
       mockServiceRepository as any,
@@ -66,12 +66,12 @@ describe("🔧 Debug Logger Problem", () => {
     );
 
     expect(useCase).toBeDefined();
-    console.log("UseCase logger:", (useCase as any).logger);
+    console.log('UseCase logger:', (useCase as any).logger);
     console.log(
-      "UseCase permissionService:",
+      'UseCase permissionService:',
       (useCase as any).permissionService,
     );
-    console.log("Logger error method:", (useCase as any).logger?.error);
-    console.log("Logger type:", typeof (useCase as any).logger?.error);
+    console.log('Logger error method:', (useCase as any).logger?.error);
+    console.log('Logger type:', typeof (useCase as any).logger?.error);
   });
 });

@@ -5,8 +5,8 @@
  * Validation stricte avec class-validator et documentation Swagger
  */
 
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { Transform, Type } from "class-transformer";
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Transform, Type } from 'class-transformer';
 import {
   IsArray,
   IsBoolean,
@@ -19,23 +19,23 @@ import {
   Max,
   Min,
   ValidateNested,
-} from "class-validator";
+} from 'class-validator';
 
 // 🕐 DTO pour les créneaux horaires
 export class TimeSlotDto {
   @ApiProperty({
-    description: "Heure de début du créneau",
-    example: "09:00",
-    pattern: "^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$",
+    description: 'Heure de début du créneau',
+    example: '09:00',
+    pattern: '^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$',
   })
   @IsString()
   @IsNotEmpty()
   readonly startTime!: string;
 
   @ApiProperty({
-    description: "Heure de fin du créneau",
-    example: "12:00",
-    pattern: "^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$",
+    description: 'Heure de fin du créneau',
+    example: '12:00',
+    pattern: '^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$',
   })
   @IsString()
   @IsNotEmpty()
@@ -45,18 +45,18 @@ export class TimeSlotDto {
 // 🚫 DTO pour les périodes de pause
 export class BreakPeriodDto {
   @ApiProperty({
-    description: "Heure de début de la pause",
-    example: "10:30",
-    pattern: "^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$",
+    description: 'Heure de début de la pause',
+    example: '10:30',
+    pattern: '^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$',
   })
   @IsString()
   @IsNotEmpty()
   readonly startTime!: string;
 
   @ApiProperty({
-    description: "Heure de fin de la pause",
-    example: "10:45",
-    pattern: "^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$",
+    description: 'Heure de fin de la pause',
+    example: '10:45',
+    pattern: '^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$',
   })
   @IsString()
   @IsNotEmpty()
@@ -66,7 +66,7 @@ export class BreakPeriodDto {
 // 📅 DTO pour les disponibilités par jour
 export class DayAvailabilityDto {
   @ApiProperty({
-    description: "Jour de la semaine (0=Dimanche, 1=Lundi, ..., 6=Samedi)",
+    description: 'Jour de la semaine (0=Dimanche, 1=Lundi, ..., 6=Samedi)',
     example: 1,
     minimum: 0,
     maximum: 6,
@@ -77,18 +77,18 @@ export class DayAvailabilityDto {
   readonly dayOfWeek!: number;
 
   @ApiProperty({
-    description: "Le praticien est-il disponible ce jour-là",
+    description: 'Le praticien est-il disponible ce jour-là',
     example: true,
   })
   @IsBoolean()
   readonly isAvailable!: boolean;
 
   @ApiProperty({
-    description: "Créneaux horaires de travail pour cette journée",
+    description: 'Créneaux horaires de travail pour cette journée',
     type: [TimeSlotDto],
     example: [
-      { startTime: "09:00", endTime: "12:00" },
-      { startTime: "14:00", endTime: "17:00" },
+      { startTime: '09:00', endTime: '12:00' },
+      { startTime: '14:00', endTime: '17:00' },
     ],
   })
   @IsArray()
@@ -97,9 +97,9 @@ export class DayAvailabilityDto {
   readonly timeSlots!: TimeSlotDto[];
 
   @ApiPropertyOptional({
-    description: "Périodes de pause dans la journée",
+    description: 'Périodes de pause dans la journée',
     type: [BreakPeriodDto],
-    example: [{ startTime: "10:30", endTime: "10:45" }],
+    example: [{ startTime: '10:30', endTime: '10:45' }],
   })
   @IsOptional()
   @IsArray()
@@ -111,37 +111,37 @@ export class DayAvailabilityDto {
 // 📋 DTO principal pour définir la disponibilité
 export class AvailabilityConfigDto {
   @ApiProperty({
-    description: "Date de début de la période de disponibilité",
-    example: "2025-10-01",
+    description: 'Date de début de la période de disponibilité',
+    example: '2025-10-01',
     type: String,
-    format: "date",
+    format: 'date',
   })
   @IsDateString()
   @Transform(({ value }) => new Date(value))
   readonly startDate!: Date;
 
   @ApiProperty({
-    description: "Date de fin de la période de disponibilité",
-    example: "2025-12-31",
+    description: 'Date de fin de la période de disponibilité',
+    example: '2025-12-31',
     type: String,
-    format: "date",
+    format: 'date',
   })
   @IsDateString()
   @Transform(({ value }) => new Date(value))
   readonly endDate!: Date;
 
   @ApiProperty({
-    description: "Configuration de disponibilité par jour de la semaine",
+    description: 'Configuration de disponibilité par jour de la semaine',
     type: [DayAvailabilityDto],
     example: [
       {
         dayOfWeek: 1,
         isAvailable: true,
         timeSlots: [
-          { startTime: "09:00", endTime: "12:00" },
-          { startTime: "14:00", endTime: "17:00" },
+          { startTime: '09:00', endTime: '12:00' },
+          { startTime: '14:00', endTime: '17:00' },
         ],
-        breakPeriods: [{ startTime: "10:30", endTime: "10:45" }],
+        breakPeriods: [{ startTime: '10:30', endTime: '10:45' }],
       },
     ],
   })
@@ -151,9 +151,9 @@ export class AvailabilityConfigDto {
   readonly availabilities!: DayAvailabilityDto[];
 
   @ApiPropertyOptional({
-    description: "Exceptions et jours spéciaux (vacances, formations, etc.)",
-    type: "array",
-    items: { type: "object", additionalProperties: true },
+    description: 'Exceptions et jours spéciaux (vacances, formations, etc.)',
+    type: 'array',
+    items: { type: 'object', additionalProperties: true },
     example: [],
   })
   @IsOptional()
@@ -164,9 +164,9 @@ export class AvailabilityConfigDto {
 // 📝 DTO de requête pour définir la disponibilité
 export class SetPractitionerAvailabilityDto {
   @ApiProperty({
-    description: "ID du praticien dont on définit la disponibilité",
-    example: "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-    format: "uuid",
+    description: 'ID du praticien dont on définit la disponibilité',
+    example: 'f47ac10b-58cc-4372-a567-0e02b2c3d479',
+    format: 'uuid',
   })
   @IsUUID(4)
   @IsNotEmpty()
@@ -174,15 +174,15 @@ export class SetPractitionerAvailabilityDto {
 
   @ApiProperty({
     description: "ID de l'entreprise",
-    example: "f47ac10b-58cc-4372-a567-0e02b2c3d481",
-    format: "uuid",
+    example: 'f47ac10b-58cc-4372-a567-0e02b2c3d481',
+    format: 'uuid',
   })
   @IsUUID(4)
   @IsNotEmpty()
   readonly businessId!: string;
 
   @ApiProperty({
-    description: "Configuration complète de la disponibilité",
+    description: 'Configuration complète de la disponibilité',
     type: AvailabilityConfigDto,
   })
   @ValidateNested()
@@ -192,18 +192,18 @@ export class SetPractitionerAvailabilityDto {
   @ApiPropertyOptional({
     description:
       "ID de l'utilisateur qui fait la demande (optionnel, déduit du token JWT)",
-    example: "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-    format: "uuid",
+    example: 'f47ac10b-58cc-4372-a567-0e02b2c3d479',
+    format: 'uuid',
   })
   @IsOptional()
   @IsUUID(4)
   readonly requestingUserId?: string;
 
   @ApiPropertyOptional({
-    description: "Date effective de la nouvelle disponibilité",
-    example: "2025-10-01T00:00:00.000Z",
+    description: 'Date effective de la nouvelle disponibilité',
+    example: '2025-10-01T00:00:00.000Z',
     type: String,
-    format: "date-time",
+    format: 'date-time',
   })
   @IsOptional()
   @IsDateString()
@@ -211,7 +211,7 @@ export class SetPractitionerAvailabilityDto {
   readonly effectiveDate?: Date;
 
   @ApiPropertyOptional({
-    description: "Notifier les clients des changements de disponibilité",
+    description: 'Notifier les clients des changements de disponibilité',
     example: false,
     default: false,
   })
@@ -220,7 +220,7 @@ export class SetPractitionerAvailabilityDto {
   readonly notifyClients?: boolean = false;
 
   @ApiPropertyOptional({
-    description: "Reprogrammer automatiquement les conflits détectés",
+    description: 'Reprogrammer automatiquement les conflits détectés',
     example: false,
     default: false,
   })
@@ -229,18 +229,18 @@ export class SetPractitionerAvailabilityDto {
   readonly autoRescheduleConflicts?: boolean = false;
 
   @ApiProperty({
-    description: "ID de corrélation pour le suivi des logs",
-    example: "correlation-abc-123",
+    description: 'ID de corrélation pour le suivi des logs',
+    example: 'correlation-abc-123',
   })
   @IsString()
   @IsNotEmpty()
   readonly correlationId!: string;
 
   @ApiPropertyOptional({
-    description: "Timestamp de la requête",
-    example: "2025-09-26T10:00:00.000Z",
+    description: 'Timestamp de la requête',
+    example: '2025-09-26T10:00:00.000Z',
     type: String,
-    format: "date-time",
+    format: 'date-time',
   })
   @IsOptional()
   @IsDateString()
@@ -251,29 +251,29 @@ export class SetPractitionerAvailabilityDto {
 // 🎯 DTO de réponse - informations sur les conflits
 export class ConflictingAppointmentDto {
   @ApiProperty({
-    description: "ID du rendez-vous en conflit",
-    example: "appointment-123",
+    description: 'ID du rendez-vous en conflit',
+    example: 'appointment-123',
   })
   readonly appointmentId!: string;
 
   @ApiProperty({
-    description: "ID du client concerné",
-    example: "client-456",
+    description: 'ID du client concerné',
+    example: 'client-456',
   })
   readonly clientId!: string;
 
   @ApiProperty({
-    description: "Statut du conflit",
-    example: "RESCHEDULED",
-    enum: ["RESCHEDULED", "REQUIRES_MANUAL_INTERVENTION"],
+    description: 'Statut du conflit',
+    example: 'RESCHEDULED',
+    enum: ['RESCHEDULED', 'REQUIRES_MANUAL_INTERVENTION'],
   })
-  readonly status!: "RESCHEDULED" | "REQUIRES_MANUAL_INTERVENTION";
+  readonly status!: 'RESCHEDULED' | 'REQUIRES_MANUAL_INTERVENTION';
 
   @ApiPropertyOptional({
-    description: "Nouvelle heure programmée si reprogrammé automatiquement",
-    example: "2025-10-15T14:00:00.000Z",
+    description: 'Nouvelle heure programmée si reprogrammé automatiquement',
+    example: '2025-10-15T14:00:00.000Z',
     type: String,
-    format: "date-time",
+    format: 'date-time',
   })
   readonly newScheduledTime?: Date;
 }
@@ -287,53 +287,53 @@ export class SetPractitionerAvailabilityResponseDto {
   readonly success!: boolean;
 
   @ApiProperty({
-    description: "ID du praticien",
-    example: "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+    description: 'ID du praticien',
+    example: 'f47ac10b-58cc-4372-a567-0e02b2c3d479',
   })
   readonly practitionerId!: string;
 
   @ApiProperty({
-    description: "Nombre total de créneaux disponibles créés",
+    description: 'Nombre total de créneaux disponibles créés',
     example: 8,
   })
   readonly availableSlots!: number;
 
   @ApiProperty({
-    description: "Nombre de conflits détectés avec les rendez-vous existants",
+    description: 'Nombre de conflits détectés avec les rendez-vous existants',
     example: 2,
   })
   readonly conflictsDetected!: number;
 
   @ApiProperty({
-    description: "Nombre de conflits résolus automatiquement",
+    description: 'Nombre de conflits résolus automatiquement',
     example: 1,
   })
   readonly conflictsResolved!: number;
 
   @ApiPropertyOptional({
-    description: "Détails des rendez-vous en conflit",
+    description: 'Détails des rendez-vous en conflit',
     type: [ConflictingAppointmentDto],
     example: [
       {
-        appointmentId: "appointment-123",
-        clientId: "client-456",
-        status: "RESCHEDULED",
-        newScheduledTime: "2025-10-15T14:00:00.000Z",
+        appointmentId: 'appointment-123',
+        clientId: 'client-456',
+        status: 'RESCHEDULED',
+        newScheduledTime: '2025-10-15T14:00:00.000Z',
       },
     ],
   })
   readonly conflictingAppointments?: ConflictingAppointmentDto[];
 
   @ApiPropertyOptional({
-    description: "Liste des IDs des notifications envoyées",
+    description: 'Liste des IDs des notifications envoyées',
     type: [String],
-    example: ["notification-abc", "notification-def"],
+    example: ['notification-abc', 'notification-def'],
   })
   readonly notificationsSent?: string[];
 
   @ApiProperty({
-    description: "Message de confirmation",
-    example: "Availability updated successfully",
+    description: 'Message de confirmation',
+    example: 'Availability updated successfully',
   })
   readonly message!: string;
 }

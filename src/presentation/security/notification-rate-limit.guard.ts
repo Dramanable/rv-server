@@ -11,9 +11,9 @@ import {
   HttpStatus,
   Injectable,
   SetMetadata,
-} from "@nestjs/common";
-import { Reflector } from "@nestjs/core";
-import { Request } from "express";
+} from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
+import { Request } from 'express';
 
 /**
  * Interface pour la configuration du rate limiting
@@ -28,7 +28,7 @@ export interface RateLimitConfig {
 /**
  * Clé pour les métadonnées de rate limiting
  */
-export const RATE_LIMIT_KEY = "rateLimit";
+export const RATE_LIMIT_KEY = 'rateLimit';
 
 /**
  * Decorator pour définir les limites de taux
@@ -94,7 +94,7 @@ export class NotificationRateLimitGuard implements CanActivate {
         {
           success: false,
           error: {
-            code: "RATE_LIMIT_EXCEEDED",
+            code: 'RATE_LIMIT_EXCEEDED',
             message: `Rate limit exceeded: ${config.limit} requests per ${config.ttl} seconds`,
             retryAfter: this.getRetryAfter(identifier),
             timestamp: new Date().toISOString(),
@@ -127,11 +127,11 @@ export class NotificationRateLimitGuard implements CanActivate {
    */
   private getClientIp(request: Request): string {
     return (
-      (request.headers["x-forwarded-for"] as string)?.split(",")[0]?.trim() ||
-      (request.headers["x-real-ip"] as string) ||
+      (request.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim() ||
+      (request.headers['x-real-ip'] as string) ||
       request.connection.remoteAddress ||
       request.socket.remoteAddress ||
-      "unknown"
+      'unknown'
     );
   }
 

@@ -5,11 +5,11 @@
  * Respect des principes SOLID + Type Safety à 100%
  */
 
-import type { RefreshTokenRepository } from "../../domain/repositories/refresh-token.repository.interface";
-import { ServiceRepository } from "../../domain/repositories/service.repository.interface";
-import { UserRepository } from "../../domain/repositories/user.repository.interface";
-import { I18nService } from "../ports/i18n.port";
-import { Logger } from "../ports/logger.port";
+import type { RefreshTokenRepository } from '../../domain/repositories/refresh-token.repository.interface';
+import { ServiceRepository } from '../../domain/repositories/service.repository.interface';
+import { UserRepository } from '../../domain/repositories/user.repository.interface';
+import { I18nService } from '../ports/i18n.port';
+import { Logger } from '../ports/logger.port';
 
 export interface TokenService {
   generateAccessToken(
@@ -157,8 +157,8 @@ export function createMockLogger(): jest.Mocked<Logger> {
  */
 export function createMockI18nService(): jest.Mocked<I18nService> {
   return {
-    translate: jest.fn().mockReturnValue("Mock message"),
-    t: jest.fn().mockReturnValue("Mock message"),
+    translate: jest.fn().mockReturnValue('Mock message'),
+    t: jest.fn().mockReturnValue('Mock message'),
     setDefaultLanguage: jest.fn(),
     exists: jest.fn().mockReturnValue(true),
   } as jest.Mocked<I18nService>;
@@ -170,27 +170,27 @@ export function createMockI18nService(): jest.Mocked<I18nService> {
 export function createMockAppConfig(): AppConfig {
   return {
     jwtConfig: {
-      accessTokenSecret: "test-access-secret",
-      refreshTokenSecret: "test-refresh-secret",
-      accessTokenExpiration: "15m",
-      refreshTokenExpiration: "7d",
+      accessTokenSecret: 'test-access-secret',
+      refreshTokenSecret: 'test-refresh-secret',
+      accessTokenExpiration: '15m',
+      refreshTokenExpiration: '7d',
     },
     databaseConfig: {
-      type: "postgres",
-      host: "localhost",
+      type: 'postgres',
+      host: 'localhost',
       port: 5432,
-      username: "test",
-      password: "test",
-      database: "test",
+      username: 'test',
+      password: 'test',
+      database: 'test',
     },
     redisConfig: {
-      host: "localhost",
+      host: 'localhost',
       port: 6379,
       password: undefined,
     },
     appConfig: {
       port: 3000,
-      environment: "test",
+      environment: 'test',
     },
   };
 }

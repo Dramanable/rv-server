@@ -1,17 +1,17 @@
-import { Injectable } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
-import { CalendarType } from "@domain/entities/calendar-type.entity";
+import { CalendarType } from '@domain/entities/calendar-type.entity';
 import {
   CalendarTypeSearchCriteria,
   CalendarTypeSearchResult,
   ICalendarTypeRepository,
-} from "@domain/repositories/calendar-type.repository";
-import { BusinessId } from "@domain/value-objects/business-id.value-object";
-import { CalendarTypeId } from "@domain/value-objects/calendar-type-id.value-object";
-import { CalendarTypeOrmEntity } from "@infrastructure/database/sql/postgresql/entities/calendar-type-orm.entity";
-import { CalendarTypeOrmMapper } from "@infrastructure/mappers/calendar-type-orm.mapper";
+} from '@domain/repositories/calendar-type.repository';
+import { BusinessId } from '@domain/value-objects/business-id.value-object';
+import { CalendarTypeId } from '@domain/value-objects/calendar-type-id.value-object';
+import { CalendarTypeOrmEntity } from '@infrastructure/database/sql/postgresql/entities/calendar-type-orm.entity';
+import { CalendarTypeOrmMapper } from '@infrastructure/mappers/calendar-type-orm.mapper';
 
 @Injectable()
 export class TypeOrmCalendarTypeRepository implements ICalendarTypeRepository {
@@ -41,28 +41,28 @@ export class TypeOrmCalendarTypeRepository implements ICalendarTypeRepository {
   async findAll(
     criteria?: CalendarTypeSearchCriteria,
   ): Promise<CalendarType[]> {
-    const queryBuilder = this.repository.createQueryBuilder("calendar_type");
+    const queryBuilder = this.repository.createQueryBuilder('calendar_type');
 
     if (criteria?.businessId) {
-      queryBuilder.andWhere("calendar_type.business_id = :businessId", {
+      queryBuilder.andWhere('calendar_type.business_id = :businessId', {
         businessId: criteria.businessId.getValue(),
       });
     }
 
     if (criteria?.isActive !== undefined) {
-      queryBuilder.andWhere("calendar_type.is_active = :isActive", {
+      queryBuilder.andWhere('calendar_type.is_active = :isActive', {
         isActive: criteria.isActive,
       });
     }
 
     if (criteria?.search) {
       queryBuilder.andWhere(
-        "(calendar_type.name ILIKE :search OR calendar_type.description ILIKE :search)",
+        '(calendar_type.name ILIKE :search OR calendar_type.description ILIKE :search)',
         { search: `%${criteria.search}%` },
       );
     }
 
-    queryBuilder.orderBy("calendar_type.name", "ASC");
+    queryBuilder.orderBy('calendar_type.name', 'ASC');
 
     const ormEntities = await queryBuilder.getMany();
     return CalendarTypeOrmMapper.toDomainEntities(ormEntities);
@@ -71,7 +71,7 @@ export class TypeOrmCalendarTypeRepository implements ICalendarTypeRepository {
   async findByBusinessId(businessId: BusinessId): Promise<CalendarType[]> {
     const ormEntities = await this.repository.find({
       where: { business_id: businessId.getValue() },
-      order: { name: "ASC" },
+      order: { name: 'ASC' },
     });
 
     return CalendarTypeOrmMapper.toDomainEntities(ormEntities);
@@ -190,7 +190,7 @@ export class TypeOrmCalendarTypeRepository implements ICalendarTypeRepository {
   ): Promise<CalendarType[]> {
     const ormEntities = await this.repository.find({
       where: { business_id: businessId.getValue() },
-      order: { settings: "ASC" }, // This will need custom SQL for JSON sorting
+      order: { settings: 'ASC' }, // This will need custom SQL for JSON sorting
     });
 
     // Sort by sortOrder from JSON settings
@@ -212,23 +212,23 @@ export class TypeOrmCalendarTypeRepository implements ICalendarTypeRepository {
   async search(
     criteria: CalendarTypeSearchCriteria,
   ): Promise<CalendarTypeSearchResult> {
-    const queryBuilder = this.repository.createQueryBuilder("calendar_type");
+    const queryBuilder = this.repository.createQueryBuilder('calendar_type');
 
     if (criteria.businessId) {
-      queryBuilder.where("calendar_type.business_id = :businessId", {
+      queryBuilder.where('calendar_type.business_id = :businessId', {
         businessId: criteria.businessId.getValue(),
       });
     }
 
     if (criteria.isActive !== undefined) {
-      queryBuilder.andWhere("calendar_type.is_active = :isActive", {
+      queryBuilder.andWhere('calendar_type.is_active = :isActive', {
         isActive: criteria.isActive,
       });
     }
 
     if (criteria.search) {
       queryBuilder.andWhere(
-        "(calendar_type.name ILIKE :search OR calendar_type.description ILIKE :search)",
+        '(calendar_type.name ILIKE :search OR calendar_type.description ILIKE :search)',
         { search: `%${criteria.search}%` },
       );
     }
@@ -240,11 +240,11 @@ export class TypeOrmCalendarTypeRepository implements ICalendarTypeRepository {
     }
 
     // Sorting
-    const sortBy = criteria.sortBy || "name";
-    const sortOrder = criteria.sortOrder || "asc";
+    const sortBy = criteria.sortBy || 'name';
+    const sortOrder = criteria.sortOrder || 'asc';
     queryBuilder.orderBy(
       `calendar_type.${sortBy}`,
-      sortOrder.toUpperCase() as "ASC" | "DESC",
+      sortOrder.toUpperCase() as 'ASC' | 'DESC',
     );
 
     const total = await queryBuilder.getCount();

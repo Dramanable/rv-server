@@ -1,30 +1,30 @@
-import { ProductionI18nService } from "@infrastructure/i18n/production-i18n.service";
-import { Module } from "@nestjs/common";
-import { ConfigModule, ConfigService } from "@nestjs/config";
-import { TypeOrmModule } from "@nestjs/typeorm";
-import { TOKENS } from "@shared/constants/injection-tokens";
-import { AppConfigService } from "../config/app-config.service";
-import { PinoLoggerModule } from "../logging/pino-logger.module";
-import { TypeOrmRepositoriesModule } from "./typeorm-repositories.module";
+import { ProductionI18nService } from '@infrastructure/i18n/production-i18n.service';
+import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { TOKENS } from '@shared/constants/injection-tokens';
+import { AppConfigService } from '../config/app-config.service';
+import { PinoLoggerModule } from '../logging/pino-logger.module';
+import { TypeOrmRepositoriesModule } from './typeorm-repositories.module';
 
 // Import des entités TypeORM
-import { BusinessOrmEntity } from "./sql/postgresql/entities/business-orm.entity";
-import { BusinessSectorOrmEntity } from "./sql/postgresql/entities/business-sector-orm.entity";
-import { CalendarOrmEntity } from "./sql/postgresql/entities/calendar-orm.entity";
-import { NotificationOrmEntity } from "./sql/postgresql/entities/notification-orm.entity";
-import { ProfessionalOrmEntity } from "./sql/postgresql/entities/professional-orm.entity";
-import { RefreshTokenOrmEntity } from "./sql/postgresql/entities/refresh-token-orm.entity";
-import { ServiceOrmEntity } from "./sql/postgresql/entities/service-orm.entity";
-import { StaffOrmEntity } from "./sql/postgresql/entities/staff-orm.entity";
-import { UserOrmEntity } from "./sql/postgresql/entities/user-orm.entity";
+import { BusinessOrmEntity } from './sql/postgresql/entities/business-orm.entity';
+import { BusinessSectorOrmEntity } from './sql/postgresql/entities/business-sector-orm.entity';
+import { CalendarOrmEntity } from './sql/postgresql/entities/calendar-orm.entity';
+import { NotificationOrmEntity } from './sql/postgresql/entities/notification-orm.entity';
+import { ProfessionalOrmEntity } from './sql/postgresql/entities/professional-orm.entity';
+import { RefreshTokenOrmEntity } from './sql/postgresql/entities/refresh-token-orm.entity';
+import { ServiceOrmEntity } from './sql/postgresql/entities/service-orm.entity';
+import { StaffOrmEntity } from './sql/postgresql/entities/staff-orm.entity';
+import { UserOrmEntity } from './sql/postgresql/entities/user-orm.entity';
 
 // 🎭 RBAC Entities
-import { BusinessContextOrmEntity } from "./sql/postgresql/entities/business-context-orm.entity";
-import { RoleAssignmentOrmEntity } from "./sql/postgresql/entities/role-assignment-orm.entity";
+import { BusinessContextOrmEntity } from './sql/postgresql/entities/business-context-orm.entity';
+import { RoleAssignmentOrmEntity } from './sql/postgresql/entities/role-assignment-orm.entity';
 
 // 🖼️ Business Image & Gallery Entities
-import { BusinessGalleryOrmEntity } from "./sql/postgresql/entities/business-gallery-orm.entity";
-import { BusinessImageOrmEntity } from "./sql/postgresql/entities/business-image-orm.entity";
+import { BusinessGalleryOrmEntity } from './sql/postgresql/entities/business-gallery-orm.entity';
+import { BusinessImageOrmEntity } from './sql/postgresql/entities/business-image-orm.entity';
 
 /**
  * 🗄️ Simple Database Module
@@ -43,13 +43,13 @@ import { BusinessImageOrmEntity } from "./sql/postgresql/entities/business-image
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
-        type: "postgres",
-        host: configService.get("DATABASE_HOST", "localhost"),
-        port: configService.get("DATABASE_PORT", 5432),
-        username: configService.get("DATABASE_USERNAME", "rvproject_user"),
-        password: configService.get("DATABASE_PASSWORD", "rvproject_password"),
-        database: configService.get("DATABASE_NAME", "rvproject_app"),
-        schema: configService.get("DB_SCHEMA", "rvproject_schema"),
+        type: 'postgres',
+        host: configService.get('DATABASE_HOST', 'localhost'),
+        port: configService.get('DATABASE_PORT', 5432),
+        username: configService.get('DATABASE_USERNAME', 'rvproject_user'),
+        password: configService.get('DATABASE_PASSWORD', 'rvproject_password'),
+        database: configService.get('DATABASE_NAME', 'rvproject_app'),
+        schema: configService.get('DB_SCHEMA', 'rvproject_schema'),
         entities: [
           UserOrmEntity,
           RefreshTokenOrmEntity,
@@ -68,13 +68,13 @@ import { BusinessImageOrmEntity } from "./sql/postgresql/entities/business-image
           BusinessContextOrmEntity,
         ],
         migrations: [
-          "dist/infrastructure/database/sql/postgresql/migrations/*.js",
+          'dist/infrastructure/database/sql/postgresql/migrations/*.js',
         ],
         synchronize: false, // ✅ Always false - use migrations instead
         migrationsRun: true, // ✅ Run migrations automatically on startup
         logging: true, // ✅ Activer les logs SQL pour debug
         ssl:
-          configService.get("NODE_ENV") === "production"
+          configService.get('NODE_ENV') === 'production'
             ? { rejectUnauthorized: false }
             : false,
       }),
@@ -220,16 +220,16 @@ import { BusinessImageOrmEntity } from "./sql/postgresql/entities/business-image
       useValue: {
         async send() {
           return {
-            messageId: "mock-message-id",
+            messageId: 'mock-message-id',
             deliveryTime: new Date(),
-            status: "SENT",
+            status: 'SENT',
           };
         },
         async schedule() {
           return {
-            messageId: "mock-scheduled-id",
+            messageId: 'mock-scheduled-id',
             scheduledFor: new Date(),
-            status: "PENDING",
+            status: 'PENDING',
           };
         },
         async isDeliveryTimeValid() {

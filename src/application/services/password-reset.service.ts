@@ -15,12 +15,12 @@
  * - Utilise les interfaces domaine
  */
 
-import { PasswordResetTokenFactory } from "../../domain/entities/password-reset-token.entity";
-import { PasswordResetTokenRepository } from "../../domain/repositories/password-reset-token.repository.interface";
-import { UserRepository } from "../../domain/repositories/user.repository.interface";
-import { EmailService } from "../../domain/services/email.service";
-import { Email } from "../../domain/value-objects/email.vo";
-import type { Logger } from "../ports/logger.port";
+import { PasswordResetTokenFactory } from '../../domain/entities/password-reset-token.entity';
+import { PasswordResetTokenRepository } from '../../domain/repositories/password-reset-token.repository.interface';
+import { UserRepository } from '../../domain/repositories/user.repository.interface';
+import { EmailService } from '../../domain/services/email.service';
+import { Email } from '../../domain/value-objects/email.vo';
+import type { Logger } from '../ports/logger.port';
 
 export interface PasswordResetResult {
   success: boolean;
@@ -46,7 +46,7 @@ export class PasswordResetService {
    * Initie le processus de réinitialisation de mot de passe
    */
   async requestPasswordReset(email: Email): Promise<PasswordResetResult> {
-    this.logger.info("Attempting to initiate password reset");
+    this.logger.info('Attempting to initiate password reset');
 
     // Trouve l'utilisateur
     const _user = await this.userRepository.findByEmail(email);
@@ -54,17 +54,17 @@ export class PasswordResetService {
     // Pour des raisons de sécurité, on retourne toujours success
     // même si l'utilisateur n'existe pas
     if (!_user) {
-      this.logger.warn("Password reset failed: user not found");
+      this.logger.warn('Password reset failed: user not found');
       return {
         success: true,
-        message: "Password reset email sent successfully",
+        message: 'Password reset email sent successfully',
       };
     }
 
     // Nettoie les anciens tokens de cet utilisateur
     await this.tokenRepository.deleteByUserId(_user.id);
 
-    this.logger.info("Generating password reset token");
+    this.logger.info('Generating password reset token');
 
     // Génère un nouveau token
     const resetToken = PasswordResetTokenFactory.create(_user.id);
@@ -72,28 +72,28 @@ export class PasswordResetService {
     // Sauvegarde le token
     await this.tokenRepository.save(resetToken);
 
-    this.logger.info("Sending password reset email");
+    this.logger.info('Sending password reset email');
 
     try {
       // Envoie l'email
       await this.emailService.sendPasswordResetEmail(email, resetToken.token);
 
-      this.logger.info("Password reset email sent successfully");
+      this.logger.info('Password reset email sent successfully');
 
       return {
         success: true,
-        message: "Password reset initiated successfully",
+        message: 'Password reset initiated successfully',
       };
     } catch (error) {
       this.logger.error(
-        "Password reset failed: email sending failed",
+        'Password reset failed: email sending failed',
         error as Error,
       );
       // On retourne success même en cas d'erreur d'envoi
       // pour ne pas révéler l'existence du compte
       return {
         success: true,
-        message: "Password reset email sent successfully",
+        message: 'Password reset email sent successfully',
       };
     }
   }
@@ -107,14 +107,14 @@ export class PasswordResetService {
     if (!resetToken) {
       return {
         isValid: false,
-        error: "Token not found",
+        error: 'Token not found',
       };
     }
 
     if (PasswordResetTokenFactory.isExpired(resetToken)) {
       return {
         isValid: false,
-        error: "Token expired",
+        error: 'Token expired',
       };
     }
 
@@ -136,7 +136,7 @@ export class PasswordResetService {
     if (!validation.isValid) {
       return {
         success: false,
-        error: "Invalid or expired token",
+        error: 'Invalid or expired token',
       };
     }
 
@@ -144,7 +144,7 @@ export class PasswordResetService {
     if (!this.isPasswordSecure(newPassword)) {
       return {
         success: false,
-        error: "Password does not meet security requirements",
+        error: 'Password does not meet security requirements',
       };
     }
 
@@ -153,7 +153,7 @@ export class PasswordResetService {
     if (!_user) {
       return {
         success: false,
-        error: "User not found",
+        error: 'User not found',
       };
     }
 
@@ -168,7 +168,7 @@ export class PasswordResetService {
 
     return {
       success: true,
-      message: "Password reset successfully",
+      message: 'Password reset successfully',
     };
   }
 

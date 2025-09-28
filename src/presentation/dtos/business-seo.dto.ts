@@ -4,8 +4,8 @@
  * ✅ Types pour optimisation SEO et référencement
  */
 
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { Type } from "class-transformer";
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import {
   IsArray,
   IsNumber,
@@ -18,41 +18,41 @@ import {
   MaxLength,
   Min,
   ValidateNested,
-} from "class-validator";
+} from 'class-validator';
 
 // === SCHEMA.ORG ADDRESS DTO ===
 export class SchemaOrgAddressDto {
   @ApiProperty({
-    description: "Schema.org type",
-    example: "PostalAddress",
-    default: "PostalAddress",
+    description: 'Schema.org type',
+    example: 'PostalAddress',
+    default: 'PostalAddress',
   })
-  "@type"!: string;
+  '@type'!: string;
 
   @ApiProperty({
-    description: "Street address",
-    example: "123 Rue de la Paix",
+    description: 'Street address',
+    example: '123 Rue de la Paix',
   })
   @IsString()
   streetAddress!: string;
 
   @ApiProperty({
-    description: "City/Locality",
-    example: "Paris",
+    description: 'City/Locality',
+    example: 'Paris',
   })
   @IsString()
   addressLocality!: string;
 
   @ApiProperty({
-    description: "Postal code",
-    example: "75001",
+    description: 'Postal code',
+    example: '75001',
   })
   @IsString()
   postalCode!: string;
 
   @ApiProperty({
-    description: "Country",
-    example: "France",
+    description: 'Country',
+    example: 'France',
   })
   @IsString()
   addressCountry!: string;
@@ -61,14 +61,14 @@ export class SchemaOrgAddressDto {
 // === SCHEMA.ORG GEO DTO ===
 export class SchemaOrgGeoDto {
   @ApiProperty({
-    description: "Schema.org type",
-    example: "GeoCoordinates",
-    default: "GeoCoordinates",
+    description: 'Schema.org type',
+    example: 'GeoCoordinates',
+    default: 'GeoCoordinates',
   })
-  "@type"!: string;
+  '@type'!: string;
 
   @ApiProperty({
-    description: "Latitude",
+    description: 'Latitude',
     example: 48.8566,
   })
   @IsNumber()
@@ -77,7 +77,7 @@ export class SchemaOrgGeoDto {
   latitude!: number;
 
   @ApiProperty({
-    description: "Longitude",
+    description: 'Longitude',
     example: 2.3522,
   })
   @IsNumber()
@@ -89,14 +89,14 @@ export class SchemaOrgGeoDto {
 // === SCHEMA.ORG RATING DTO ===
 export class SchemaOrgRatingDto {
   @ApiProperty({
-    description: "Schema.org type",
-    example: "AggregateRating",
-    default: "AggregateRating",
+    description: 'Schema.org type',
+    example: 'AggregateRating',
+    default: 'AggregateRating',
   })
-  "@type"!: string;
+  '@type'!: string;
 
   @ApiProperty({
-    description: "Rating value",
+    description: 'Rating value',
     example: 4.5,
     minimum: 1,
     maximum: 5,
@@ -107,7 +107,7 @@ export class SchemaOrgRatingDto {
   ratingValue!: number;
 
   @ApiProperty({
-    description: "Number of reviews",
+    description: 'Number of reviews',
     example: 127,
     minimum: 1,
   })
@@ -119,61 +119,61 @@ export class SchemaOrgRatingDto {
 // === SCHEMA.ORG BUSINESS DTO ===
 export class SchemaOrgBusinessDto {
   @ApiProperty({
-    description: "Schema.org context",
-    example: "https://schema.org",
-    default: "https://schema.org",
+    description: 'Schema.org context',
+    example: 'https://schema.org',
+    default: 'https://schema.org',
   })
-  "@context"!: string;
+  '@context'!: string;
 
   @ApiProperty({
-    description: "Schema.org type",
-    example: "LocalBusiness",
-    default: "LocalBusiness",
+    description: 'Schema.org type',
+    example: 'LocalBusiness',
+    default: 'LocalBusiness',
   })
-  "@type"!: string;
+  '@type'!: string;
 
   @ApiProperty({
-    description: "Business name",
-    example: "Cabinet Médical Centre Ville",
+    description: 'Business name',
+    example: 'Cabinet Médical Centre Ville',
   })
   @IsString()
   @Length(3, 100)
   name!: string;
 
   @ApiProperty({
-    description: "Business description",
-    example: "Cabinet médical spécialisé en médecine générale et pédiatrie",
+    description: 'Business description',
+    example: 'Cabinet médical spécialisé en médecine générale et pédiatrie',
   })
   @IsString()
   @Length(50, 500)
   description!: string;
 
   @ApiPropertyOptional({
-    description: "Business website URL",
-    example: "https://www.cabinet-exemple.fr",
+    description: 'Business website URL',
+    example: 'https://www.cabinet-exemple.fr',
   })
   @IsOptional()
   @IsUrl()
   url?: string;
 
   @ApiPropertyOptional({
-    description: "Business phone number",
-    example: "+33123456789",
+    description: 'Business phone number',
+    example: '+33123456789',
   })
   @IsOptional()
   @IsString()
   telephone?: string;
 
   @ApiPropertyOptional({
-    description: "Business email",
-    example: "contact@cabinet-exemple.fr",
+    description: 'Business email',
+    example: 'contact@cabinet-exemple.fr',
   })
   @IsOptional()
   @IsString()
   email?: string;
 
   @ApiPropertyOptional({
-    description: "Business address",
+    description: 'Business address',
     type: SchemaOrgAddressDto,
   })
   @IsOptional()
@@ -182,7 +182,7 @@ export class SchemaOrgBusinessDto {
   address?: SchemaOrgAddressDto;
 
   @ApiPropertyOptional({
-    description: "Geographic coordinates",
+    description: 'Geographic coordinates',
     type: SchemaOrgGeoDto,
   })
   @IsOptional()
@@ -191,8 +191,8 @@ export class SchemaOrgBusinessDto {
   geo?: SchemaOrgGeoDto;
 
   @ApiPropertyOptional({
-    description: "Opening hours",
-    example: ["Mo-Fr 09:00-17:00", "Sa 09:00-12:00"],
+    description: 'Opening hours',
+    example: ['Mo-Fr 09:00-17:00', 'Sa 09:00-12:00'],
     type: [String],
   })
   @IsOptional()
@@ -201,10 +201,10 @@ export class SchemaOrgBusinessDto {
   openingHours?: string[];
 
   @ApiPropertyOptional({
-    description: "Business images",
+    description: 'Business images',
     example: [
-      "https://example.com/image1.jpg",
-      "https://example.com/image2.jpg",
+      'https://example.com/image1.jpg',
+      'https://example.com/image2.jpg',
     ],
     type: [String],
   })
@@ -214,15 +214,15 @@ export class SchemaOrgBusinessDto {
   image?: string[];
 
   @ApiPropertyOptional({
-    description: "Price range",
-    example: "€€",
+    description: 'Price range',
+    example: '€€',
   })
   @IsOptional()
   @IsString()
   priceRange?: string;
 
   @ApiPropertyOptional({
-    description: "Aggregate rating",
+    description: 'Aggregate rating',
     type: SchemaOrgRatingDto,
   })
   @IsOptional()
@@ -234,38 +234,38 @@ export class SchemaOrgBusinessDto {
 // === SEO METRICS DTO ===
 export class SeoMetricsDto {
   @ApiProperty({
-    description: "Meta title length",
+    description: 'Meta title length',
     example: 48,
   })
   readonly metaTitleLength!: number;
 
   @ApiProperty({
-    description: "Meta description length",
+    description: 'Meta description length',
     example: 142,
   })
   readonly metaDescriptionLength!: number;
 
   @ApiProperty({
-    description: "Keyword density percentage",
+    description: 'Keyword density percentage',
     example: 2.3,
   })
   readonly keywordDensity!: number;
 
   @ApiProperty({
-    description: "Number of images with alt text",
+    description: 'Number of images with alt text',
     example: 12,
   })
   readonly imageAltTexts!: number;
 
   @ApiProperty({
-    description: "Whether structured data is valid",
+    description: 'Whether structured data is valid',
     example: true,
   })
   readonly structuredDataValid!: boolean;
 
   @ApiProperty({
-    description: "Last optimization date",
-    example: "2024-01-15T10:30:00Z",
+    description: 'Last optimization date',
+    example: '2024-01-15T10:30:00Z',
   })
   readonly lastOptimized!: Date;
 }
@@ -273,37 +273,37 @@ export class SeoMetricsDto {
 // === CREATE SEO PROFILE DTO ===
 export class CreateBusinessSeoProfileDto {
   @ApiProperty({
-    description: "Meta title (30-60 characters)",
-    example: "Cabinet Médical Centre Ville - Médecin à Paris",
+    description: 'Meta title (30-60 characters)',
+    example: 'Cabinet Médical Centre Ville - Médecin à Paris',
     minLength: 30,
     maxLength: 60,
   })
   @IsString()
   @Length(30, 60, {
-    message: "Meta title must be between 30 and 60 characters",
+    message: 'Meta title must be between 30 and 60 characters',
   })
   readonly metaTitle!: string;
 
   @ApiProperty({
-    description: "Meta description (120-160 characters)",
+    description: 'Meta description (120-160 characters)',
     example:
-      "Cabinet médical spécialisé en médecine générale et pédiatrie. Consultation sur rendez-vous au cœur de Paris. Équipe médicale expérimentée.",
+      'Cabinet médical spécialisé en médecine générale et pédiatrie. Consultation sur rendez-vous au cœur de Paris. Équipe médicale expérimentée.',
     minLength: 120,
     maxLength: 160,
   })
   @IsString()
   @Length(120, 160, {
-    message: "Meta description must be between 120 and 160 characters",
+    message: 'Meta description must be between 120 and 160 characters',
   })
   readonly metaDescription!: string;
 
   @ApiProperty({
-    description: "SEO keywords (3-10 keywords)",
+    description: 'SEO keywords (3-10 keywords)',
     example: [
-      "médecin paris",
-      "cabinet médical",
-      "consultation médicale",
-      "pédiatre",
+      'médecin paris',
+      'cabinet médical',
+      'consultation médicale',
+      'pédiatre',
     ],
     minItems: 3,
     maxItems: 10,
@@ -313,21 +313,21 @@ export class CreateBusinessSeoProfileDto {
   @IsString({ each: true })
   @Length(2, 50, {
     each: true,
-    message: "Each keyword must be between 2 and 50 characters",
+    message: 'Each keyword must be between 2 and 50 characters',
   })
   readonly keywords!: string[];
 
   @ApiPropertyOptional({
-    description: "Canonical URL",
-    example: "https://www.cabinet-exemple.fr",
+    description: 'Canonical URL',
+    example: 'https://www.cabinet-exemple.fr',
   })
   @IsOptional()
-  @IsUrl({}, { message: "Canonical URL must be valid" })
+  @IsUrl({}, { message: 'Canonical URL must be valid' })
   readonly canonicalUrl?: string;
 
   @ApiPropertyOptional({
-    description: "Open Graph title",
-    example: "Cabinet Médical Centre Ville - Votre santé, notre priorité",
+    description: 'Open Graph title',
+    example: 'Cabinet Médical Centre Ville - Votre santé, notre priorité',
     maxLength: 60,
   })
   @IsOptional()
@@ -336,9 +336,9 @@ export class CreateBusinessSeoProfileDto {
   readonly openGraphTitle?: string;
 
   @ApiPropertyOptional({
-    description: "Open Graph description",
+    description: 'Open Graph description',
     example:
-      "Prenez rendez-vous avec nos médecins spécialisés. Cabinet moderne au cœur de Paris.",
+      'Prenez rendez-vous avec nos médecins spécialisés. Cabinet moderne au cœur de Paris.',
     maxLength: 160,
   })
   @IsOptional()
@@ -347,15 +347,15 @@ export class CreateBusinessSeoProfileDto {
   readonly openGraphDescription?: string;
 
   @ApiPropertyOptional({
-    description: "Open Graph image URL",
-    example: "https://www.cabinet-exemple.fr/images/og-image.jpg",
+    description: 'Open Graph image URL',
+    example: 'https://www.cabinet-exemple.fr/images/og-image.jpg',
   })
   @IsOptional()
   @IsUrl()
   readonly openGraphImage?: string;
 
   @ApiProperty({
-    description: "Structured data (Schema.org)",
+    description: 'Structured data (Schema.org)',
     type: SchemaOrgBusinessDto,
   })
   @ValidateNested()
@@ -363,13 +363,13 @@ export class CreateBusinessSeoProfileDto {
   readonly structuredData!: SchemaOrgBusinessDto;
 
   @ApiPropertyOptional({
-    description: "Custom meta tags",
+    description: 'Custom meta tags',
     example: {
-      "twitter:card": "summary_large_image",
-      "twitter:site": "@cabinet_exemple",
-      author: "Cabinet Médical Centre Ville",
+      'twitter:card': 'summary_large_image',
+      'twitter:site': '@cabinet_exemple',
+      author: 'Cabinet Médical Centre Ville',
     },
-    type: "object",
+    type: 'object',
     additionalProperties: true,
   })
   @IsOptional()
@@ -380,8 +380,8 @@ export class CreateBusinessSeoProfileDto {
 // === UPDATE SEO PROFILE DTO ===
 export class UpdateBusinessSeoProfileDto {
   @ApiPropertyOptional({
-    description: "Meta title (30-60 characters)",
-    example: "Cabinet Médical Centre Ville - Médecin à Paris 75001",
+    description: 'Meta title (30-60 characters)',
+    example: 'Cabinet Médical Centre Ville - Médecin à Paris 75001',
     minLength: 30,
     maxLength: 60,
   })
@@ -391,9 +391,9 @@ export class UpdateBusinessSeoProfileDto {
   readonly metaTitle?: string;
 
   @ApiPropertyOptional({
-    description: "Meta description (120-160 characters)",
+    description: 'Meta description (120-160 characters)',
     example:
-      "Cabinet médical spécialisé en médecine générale et pédiatrie. Consultation sur rendez-vous. Équipe médicale expérimentée à Paris.",
+      'Cabinet médical spécialisé en médecine générale et pédiatrie. Consultation sur rendez-vous. Équipe médicale expérimentée à Paris.',
     minLength: 120,
     maxLength: 160,
   })
@@ -403,11 +403,11 @@ export class UpdateBusinessSeoProfileDto {
   readonly metaDescription?: string;
 
   @ApiPropertyOptional({
-    description: "SEO keywords (3-10 keywords)",
+    description: 'SEO keywords (3-10 keywords)',
     example: [
-      "médecin paris 1er",
-      "cabinet médical louvre",
-      "consultation médicale",
+      'médecin paris 1er',
+      'cabinet médical louvre',
+      'consultation médicale',
     ],
     minItems: 3,
     maxItems: 10,
@@ -420,16 +420,16 @@ export class UpdateBusinessSeoProfileDto {
   readonly keywords?: string[];
 
   @ApiPropertyOptional({
-    description: "Canonical URL",
-    example: "https://www.cabinet-exemple.fr/paris-1er",
+    description: 'Canonical URL',
+    example: 'https://www.cabinet-exemple.fr/paris-1er',
   })
   @IsOptional()
   @IsUrl()
   readonly canonicalUrl?: string;
 
   @ApiPropertyOptional({
-    description: "Structured data updates",
-    type: "object",
+    description: 'Structured data updates',
+    type: 'object',
     additionalProperties: true,
   })
   @IsOptional()
@@ -440,67 +440,67 @@ export class UpdateBusinessSeoProfileDto {
 // === BUSINESS SEO PROFILE DTO ===
 export class BusinessSeoProfileDto {
   @ApiProperty({
-    description: "Meta title",
-    example: "Cabinet Médical Centre Ville - Médecin à Paris",
+    description: 'Meta title',
+    example: 'Cabinet Médical Centre Ville - Médecin à Paris',
   })
   readonly metaTitle!: string;
 
   @ApiProperty({
-    description: "Meta description",
-    example: "Cabinet médical spécialisé en médecine générale et pédiatrie...",
+    description: 'Meta description',
+    example: 'Cabinet médical spécialisé en médecine générale et pédiatrie...',
   })
   readonly metaDescription!: string;
 
   @ApiProperty({
-    description: "SEO keywords",
-    example: ["médecin paris", "cabinet médical", "consultation médicale"],
+    description: 'SEO keywords',
+    example: ['médecin paris', 'cabinet médical', 'consultation médicale'],
     type: [String],
   })
   readonly keywords!: string[];
 
   @ApiPropertyOptional({
-    description: "Canonical URL",
-    example: "https://www.cabinet-exemple.fr",
+    description: 'Canonical URL',
+    example: 'https://www.cabinet-exemple.fr',
   })
   readonly canonicalUrl?: string;
 
   @ApiProperty({
-    description: "Generated meta tags",
+    description: 'Generated meta tags',
     example: {
-      title: "Cabinet Médical Centre Ville - Médecin à Paris",
-      description: "Cabinet médical spécialisé...",
-      keywords: "médecin paris, cabinet médical",
+      title: 'Cabinet Médical Centre Ville - Médecin à Paris',
+      description: 'Cabinet médical spécialisé...',
+      keywords: 'médecin paris, cabinet médical',
     },
-    type: "object",
+    type: 'object',
     additionalProperties: true,
   })
   readonly metaTags!: Record<string, string>;
 
   @ApiProperty({
-    description: "Structured data (JSON-LD)",
+    description: 'Structured data (JSON-LD)',
     type: SchemaOrgBusinessDto,
   })
   readonly structuredData!: SchemaOrgBusinessDto;
 
   @ApiProperty({
-    description: "SEO metrics and analysis",
+    description: 'SEO metrics and analysis',
     type: SeoMetricsDto,
   })
   readonly metrics!: SeoMetricsDto;
 
   @ApiProperty({
-    description: "SEO optimization suggestions",
+    description: 'SEO optimization suggestions',
     example: [
-      "Add more relevant keywords for local search",
-      "Consider adding Open Graph image for better social sharing",
+      'Add more relevant keywords for local search',
+      'Consider adding Open Graph image for better social sharing',
     ],
     type: [String],
   })
   readonly optimizationSuggestions!: string[];
 
   @ApiProperty({
-    description: "Last optimization date",
-    example: "2024-01-15T10:30:00Z",
+    description: 'Last optimization date',
+    example: '2024-01-15T10:30:00Z',
   })
   readonly lastOptimized!: Date;
 }
@@ -508,20 +508,20 @@ export class BusinessSeoProfileDto {
 // === SEO PROFILE RESPONSE DTO ===
 export class BusinessSeoProfileResponseDto {
   @ApiProperty({
-    description: "Operation success status",
+    description: 'Operation success status',
     example: true,
   })
   readonly success!: boolean;
 
   @ApiProperty({
-    description: "SEO profile data",
+    description: 'SEO profile data',
     type: BusinessSeoProfileDto,
   })
   readonly data!: BusinessSeoProfileDto;
 
   @ApiProperty({
-    description: "Response message",
-    example: "SEO profile retrieved successfully",
+    description: 'Response message',
+    example: 'SEO profile retrieved successfully',
   })
   readonly message!: string;
 }
@@ -529,13 +529,13 @@ export class BusinessSeoProfileResponseDto {
 // === GENERATE SITEMAP RESPONSE DTO ===
 export class GenerateSitemapResponseDto {
   @ApiProperty({
-    description: "Operation success status",
+    description: 'Operation success status',
     example: true,
   })
   readonly success!: boolean;
 
   @ApiProperty({
-    description: "Generated sitemap XML",
+    description: 'Generated sitemap XML',
     example: '<?xml version="1.0" encoding="UTF-8"?>...',
   })
   readonly data!: {
@@ -549,8 +549,8 @@ export class GenerateSitemapResponseDto {
   };
 
   @ApiProperty({
-    description: "Response message",
-    example: "Sitemap generated successfully",
+    description: 'Response message',
+    example: 'Sitemap generated successfully',
   })
   readonly message!: string;
 }
@@ -558,8 +558,8 @@ export class GenerateSitemapResponseDto {
 // === UPDATE BUSINESS SEO DTO ===
 export class UpdateBusinessSeoDto {
   @ApiPropertyOptional({
-    description: "Meta title for SEO",
-    example: "Best Hair Salon in Paris | Expert Stylists",
+    description: 'Meta title for SEO',
+    example: 'Best Hair Salon in Paris | Expert Stylists',
     maxLength: 60,
   })
   @IsOptional()
@@ -568,9 +568,9 @@ export class UpdateBusinessSeoDto {
   readonly metaTitle?: string;
 
   @ApiPropertyOptional({
-    description: "Meta description for SEO",
+    description: 'Meta description for SEO',
     example:
-      "Professional hair styling and treatments by expert stylists in the heart of Paris.",
+      'Professional hair styling and treatments by expert stylists in the heart of Paris.',
     maxLength: 160,
   })
   @IsOptional()
@@ -579,8 +579,8 @@ export class UpdateBusinessSeoDto {
   readonly metaDescription?: string;
 
   @ApiPropertyOptional({
-    description: "SEO keywords",
-    example: ["hair salon", "paris", "styling", "treatments"],
+    description: 'SEO keywords',
+    example: ['hair salon', 'paris', 'styling', 'treatments'],
     type: [String],
   })
   @IsOptional()
@@ -589,8 +589,8 @@ export class UpdateBusinessSeoDto {
   readonly keywords?: string[];
 
   @ApiPropertyOptional({
-    description: "Canonical URL",
-    example: "https://example.com/salon",
+    description: 'Canonical URL',
+    example: 'https://example.com/salon',
   })
   @IsOptional()
   @IsUrl()
@@ -600,19 +600,19 @@ export class UpdateBusinessSeoDto {
 // === UPDATE BUSINESS SEO RESPONSE DTO ===
 export class UpdateBusinessSeoResponseDto {
   @ApiProperty({
-    description: "Operation success status",
+    description: 'Operation success status',
     example: true,
   })
   readonly success!: boolean;
 
   @ApiProperty({
-    description: "Updated business ID",
-    example: "business_123e4567-e89b-12d3-a456-426614174000",
+    description: 'Updated business ID',
+    example: 'business_123e4567-e89b-12d3-a456-426614174000',
   })
   readonly businessId!: string;
 
   @ApiProperty({
-    description: "SEO score after update",
+    description: 'SEO score after update',
     example: 85,
     minimum: 0,
     maximum: 100,
@@ -620,8 +620,8 @@ export class UpdateBusinessSeoResponseDto {
   readonly seoScore!: number;
 
   @ApiProperty({
-    description: "Response message",
-    example: "Business SEO updated successfully",
+    description: 'Response message',
+    example: 'Business SEO updated successfully',
   })
   readonly message!: string;
 }

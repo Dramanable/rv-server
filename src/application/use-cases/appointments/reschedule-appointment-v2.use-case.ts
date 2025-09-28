@@ -5,14 +5,14 @@
  * ✅ Business Logic: Validation des créneaux et permissions
  */
 
-import { AppointmentId } from "@domain/value-objects/appointment-id.value-object";
-import { Appointment } from "@domain/entities/appointment.entity";
-import { AppointmentRepository } from "@domain/repositories/appointment.repository.interface";
-import { TimeSlot } from "@domain/value-objects/time-slot.value-object";
+import { AppointmentId } from '@domain/value-objects/appointment-id.value-object';
+import { Appointment } from '@domain/entities/appointment.entity';
+import { AppointmentRepository } from '@domain/repositories/appointment.repository.interface';
+import { TimeSlot } from '@domain/value-objects/time-slot.value-object';
 import {
   AppointmentNotFoundError,
   AppointmentException,
-} from "@application/exceptions/appointment.exceptions";
+} from '@application/exceptions/appointment.exceptions';
 
 export interface RescheduleAppointmentRequest {
   readonly appointmentId: string;
@@ -58,7 +58,7 @@ export class RescheduleAppointmentUseCase {
     if (!canReschedule) {
       throw new AppointmentException(
         `Appointment ${request.appointmentId} cannot be rescheduled in its current state`,
-        "APPOINTMENT_CANNOT_BE_RESCHEDULED",
+        'APPOINTMENT_CANNOT_BE_RESCHEDULED',
       );
     }
 
@@ -87,7 +87,7 @@ export class RescheduleAppointmentUseCase {
         endTime: newTimeSlot.getEndTime(),
       },
       success: true,
-      message: "Appointment successfully rescheduled",
+      message: 'Appointment successfully rescheduled',
     };
   }
 
@@ -96,7 +96,7 @@ export class RescheduleAppointmentUseCase {
     try {
       // Simulation sécurisée du status check
       const status = appointment.getStatus();
-      const reschedulableStatuses = ["REQUESTED", "CONFIRMED"];
+      const reschedulableStatuses = ['REQUESTED', 'CONFIRMED'];
 
       if (!reschedulableStatuses.includes(status)) {
         return false;
@@ -115,7 +115,7 @@ export class RescheduleAppointmentUseCase {
       return true;
     } catch (error) {
       // Si une méthode n'existe pas, on considère que c'est non-reschedulable
-      console.warn("Error checking reschedule capability:", error);
+      console.warn('Error checking reschedule capability:', error);
       return false;
     }
   }
@@ -123,29 +123,29 @@ export class RescheduleAppointmentUseCase {
   private validateRequest(request: RescheduleAppointmentRequest): void {
     if (!request.appointmentId || request.appointmentId.trim().length === 0) {
       throw new AppointmentException(
-        "Appointment ID is required",
-        "INVALID_APPOINTMENT_ID",
+        'Appointment ID is required',
+        'INVALID_APPOINTMENT_ID',
       );
     }
 
     if (!request.newStartTime || !request.newEndTime) {
       throw new AppointmentException(
-        "New start time and end time are required",
-        "INVALID_TIME_SLOT",
+        'New start time and end time are required',
+        'INVALID_TIME_SLOT',
       );
     }
 
     if (request.newStartTime >= request.newEndTime) {
       throw new AppointmentException(
-        "Start time must be before end time",
-        "INVALID_TIME_SLOT",
+        'Start time must be before end time',
+        'INVALID_TIME_SLOT',
       );
     }
 
     if (request.newStartTime < new Date()) {
       throw new AppointmentException(
-        "Cannot reschedule to a past date",
-        "INVALID_TIME_SLOT",
+        'Cannot reschedule to a past date',
+        'INVALID_TIME_SLOT',
       );
     }
   }

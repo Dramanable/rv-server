@@ -1,5 +1,5 @@
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { Type } from "class-transformer";
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import {
   IsArray,
   IsDateString,
@@ -13,17 +13,17 @@ import {
   Max,
   Min,
   ValidateNested,
-} from "class-validator";
+} from 'class-validator';
 
 /**
  * Critères de segmentation pour cibler les destinataires
  */
 export class SegmentationCriteriaDto {
   @ApiPropertyOptional({
-    description: "Filtrer par rôles utilisateur",
-    enum: ["SUPER_ADMIN", "ADMIN", "BUSINESS_OWNER", "STAFF", "CLIENT"],
+    description: 'Filtrer par rôles utilisateur',
+    enum: ['SUPER_ADMIN', 'ADMIN', 'BUSINESS_OWNER', 'STAFF', 'CLIENT'],
     isArray: true,
-    example: ["CLIENT", "STAFF"],
+    example: ['CLIENT', 'STAFF'],
   })
   @IsOptional()
   @IsArray()
@@ -31,9 +31,9 @@ export class SegmentationCriteriaDto {
   readonly userRole?: string[];
 
   @ApiPropertyOptional({
-    description: "Filtrer par business ID spécifique",
+    description: 'Filtrer par business ID spécifique',
     type: [String],
-    example: ["business_123", "business_456"],
+    example: ['business_123', 'business_456'],
   })
   @IsOptional()
   @IsArray()
@@ -41,42 +41,42 @@ export class SegmentationCriteriaDto {
   readonly businessId?: string[];
 
   @ApiPropertyOptional({
-    description: "Utilisateurs actifs après cette date",
-    format: "date-time",
-    example: "2025-09-01T00:00:00.000Z",
+    description: 'Utilisateurs actifs après cette date',
+    format: 'date-time',
+    example: '2025-09-01T00:00:00.000Z',
   })
   @IsOptional()
   @IsDateString()
   readonly lastActivityAfter?: string;
 
   @ApiPropertyOptional({
-    description: "Utilisateurs actifs avant cette date",
-    format: "date-time",
-    example: "2025-09-22T23:59:59.999Z",
+    description: 'Utilisateurs actifs avant cette date',
+    format: 'date-time',
+    example: '2025-09-22T23:59:59.999Z',
   })
   @IsOptional()
   @IsDateString()
   readonly lastActivityBefore?: string;
 
   @ApiPropertyOptional({
-    description: "Filtrer par canal de communication préféré",
-    enum: ["EMAIL", "SMS", "PUSH", "IN_APP"],
-    example: "EMAIL",
+    description: 'Filtrer par canal de communication préféré',
+    enum: ['EMAIL', 'SMS', 'PUSH', 'IN_APP'],
+    example: 'EMAIL',
   })
   @IsOptional()
-  @IsEnum(["EMAIL", "SMS", "PUSH", "IN_APP"])
+  @IsEnum(['EMAIL', 'SMS', 'PUSH', 'IN_APP'])
   readonly preferredChannel?: string;
 
   @ApiPropertyOptional({
-    description: "Utilisateurs ayant des rendez-vous dans cette période",
-    type: "object",
+    description: 'Utilisateurs ayant des rendez-vous dans cette période',
+    type: 'object',
     properties: {
-      from: { type: "string", format: "date-time" },
-      to: { type: "string", format: "date-time" },
+      from: { type: 'string', format: 'date-time' },
+      to: { type: 'string', format: 'date-time' },
     },
     example: {
-      from: "2025-09-23T00:00:00.000Z",
-      to: "2025-09-23T23:59:59.999Z",
+      from: '2025-09-23T00:00:00.000Z',
+      to: '2025-09-23T23:59:59.999Z',
     },
   })
   @IsOptional()
@@ -87,7 +87,7 @@ export class SegmentationCriteriaDto {
   };
 
   @ApiPropertyOptional({
-    description: "Inclure/exclure les utilisateurs inactifs",
+    description: 'Inclure/exclure les utilisateurs inactifs',
     example: false,
   })
   @IsOptional()
@@ -99,22 +99,22 @@ export class SegmentationCriteriaDto {
  */
 export class BulkRecipientDto {
   @ApiProperty({
-    description: "ID unique du destinataire",
-    example: "user_123e4567-e89b-12d3-a456-426614174000",
+    description: 'ID unique du destinataire',
+    example: 'user_123e4567-e89b-12d3-a456-426614174000',
   })
   @IsString()
   @IsUUID(4)
   readonly recipientId!: string;
 
   @ApiPropertyOptional({
-    description: "Variables spécifiques à ce destinataire",
-    type: "object",
+    description: 'Variables spécifiques à ce destinataire',
+    type: 'object',
     additionalProperties: true,
     example: {
-      clientName: "Jean Dupont",
-      appointmentDate: "23/09/2025",
-      appointmentTime: "14h30",
-      serviceName: "Consultation médicale",
+      clientName: 'Jean Dupont',
+      appointmentDate: '23/09/2025',
+      appointmentTime: '14h30',
+      serviceName: 'Consultation médicale',
     },
   })
   @IsOptional()
@@ -125,21 +125,21 @@ export class BulkRecipientDto {
   >;
 
   @ApiPropertyOptional({
-    description: "Canal de communication spécifique pour ce destinataire",
-    enum: ["EMAIL", "SMS", "PUSH", "IN_APP"],
-    example: "SMS",
+    description: 'Canal de communication spécifique pour ce destinataire',
+    enum: ['EMAIL', 'SMS', 'PUSH', 'IN_APP'],
+    example: 'SMS',
   })
   @IsOptional()
-  @IsEnum(["EMAIL", "SMS", "PUSH", "IN_APP"])
+  @IsEnum(['EMAIL', 'SMS', 'PUSH', 'IN_APP'])
   readonly channel?: string;
 
   @ApiPropertyOptional({
-    description: "Priorité spécifique pour ce destinataire",
-    enum: ["LOW", "NORMAL", "HIGH", "URGENT"],
-    example: "HIGH",
+    description: 'Priorité spécifique pour ce destinataire',
+    enum: ['LOW', 'NORMAL', 'HIGH', 'URGENT'],
+    example: 'HIGH',
   })
   @IsOptional()
-  @IsEnum(["LOW", "NORMAL", "HIGH", "URGENT"])
+  @IsEnum(['LOW', 'NORMAL', 'HIGH', 'URGENT'])
   readonly priority?: string;
 }
 
@@ -148,58 +148,58 @@ export class BulkRecipientDto {
  */
 export class SendBulkNotificationDto {
   @ApiProperty({
-    description: "Type de template à utiliser",
+    description: 'Type de template à utiliser',
     enum: [
-      "APPOINTMENT_CONFIRMATION",
-      "APPOINTMENT_REMINDER",
-      "APPOINTMENT_CANCELLATION",
-      "WELCOME_MESSAGE",
-      "SYSTEM_MAINTENANCE",
-      "CUSTOM",
+      'APPOINTMENT_CONFIRMATION',
+      'APPOINTMENT_REMINDER',
+      'APPOINTMENT_CANCELLATION',
+      'WELCOME_MESSAGE',
+      'SYSTEM_MAINTENANCE',
+      'CUSTOM',
     ],
-    example: "APPOINTMENT_REMINDER",
+    example: 'APPOINTMENT_REMINDER',
   })
   @IsString()
   @IsEnum([
-    "APPOINTMENT_CONFIRMATION",
-    "APPOINTMENT_REMINDER",
-    "APPOINTMENT_CANCELLATION",
-    "WELCOME_MESSAGE",
-    "SYSTEM_MAINTENANCE",
-    "CUSTOM",
+    'APPOINTMENT_CONFIRMATION',
+    'APPOINTMENT_REMINDER',
+    'APPOINTMENT_CANCELLATION',
+    'WELCOME_MESSAGE',
+    'SYSTEM_MAINTENANCE',
+    'CUSTOM',
   ])
   readonly templateType!: string;
 
   @ApiProperty({
-    description: "Canal de communication par défaut",
-    enum: ["EMAIL", "SMS", "PUSH", "IN_APP"],
-    example: "EMAIL",
+    description: 'Canal de communication par défaut',
+    enum: ['EMAIL', 'SMS', 'PUSH', 'IN_APP'],
+    example: 'EMAIL',
   })
   @IsString()
-  @IsEnum(["EMAIL", "SMS", "PUSH", "IN_APP"])
+  @IsEnum(['EMAIL', 'SMS', 'PUSH', 'IN_APP'])
   readonly defaultChannel!: string;
 
   @ApiProperty({
-    description: "Priorité par défaut des notifications",
-    enum: ["LOW", "NORMAL", "HIGH", "URGENT"],
-    example: "NORMAL",
+    description: 'Priorité par défaut des notifications',
+    enum: ['LOW', 'NORMAL', 'HIGH', 'URGENT'],
+    example: 'NORMAL',
   })
   @IsString()
-  @IsEnum(["LOW", "NORMAL", "HIGH", "URGENT"])
+  @IsEnum(['LOW', 'NORMAL', 'HIGH', 'URGENT'])
   readonly priority!: string;
 
   @ApiProperty({
-    description: "Nom de la campagne (pour le suivi)",
+    description: 'Nom de la campagne (pour le suivi)',
     minLength: 3,
     maxLength: 100,
-    example: "Rappels de rendez-vous du 23/09/2025",
+    example: 'Rappels de rendez-vous du 23/09/2025',
   })
   @IsString()
   @Length(3, 100)
   readonly campaignName!: string;
 
   @ApiPropertyOptional({
-    description: "Critères de segmentation automatique",
+    description: 'Critères de segmentation automatique',
     type: SegmentationCriteriaDto,
   })
   @IsOptional()
@@ -209,7 +209,7 @@ export class SendBulkNotificationDto {
 
   @ApiPropertyOptional({
     description:
-      "Liste explicite de destinataires (alternative à la segmentation)",
+      'Liste explicite de destinataires (alternative à la segmentation)',
     type: [BulkRecipientDto],
     maxItems: 10000,
   })
@@ -220,14 +220,14 @@ export class SendBulkNotificationDto {
   readonly recipients?: BulkRecipientDto[];
 
   @ApiPropertyOptional({
-    description: "Variables communes à tous les destinataires",
-    type: "object",
+    description: 'Variables communes à tous les destinataires',
+    type: 'object',
     additionalProperties: true,
     example: {
-      businessName: "Cabinet Médical Dupont",
-      businessPhone: "+33 1 23 45 67 89",
-      businessAddress: "123 Rue de la Santé, 75013 Paris",
-      supportEmail: "support@cabinet-dupont.fr",
+      businessName: 'Cabinet Médical Dupont',
+      businessPhone: '+33 1 23 45 67 89',
+      businessAddress: '123 Rue de la Santé, 75013 Paris',
+      supportEmail: 'support@cabinet-dupont.fr',
     },
   })
   @IsOptional()
@@ -238,21 +238,21 @@ export class SendBulkNotificationDto {
   >;
 
   @ApiPropertyOptional({
-    description: "Template personnalisé (requis si templateType = CUSTOM)",
-    type: "object",
+    description: 'Template personnalisé (requis si templateType = CUSTOM)',
+    type: 'object',
     properties: {
-      subject: { type: "string", description: "Sujet du message" },
-      content: { type: "string", description: "Contenu du message" },
+      subject: { type: 'string', description: 'Sujet du message' },
+      content: { type: 'string', description: 'Contenu du message' },
       language: {
-        type: "string",
-        description: "Langue du template",
-        example: "fr",
+        type: 'string',
+        description: 'Langue du template',
+        example: 'fr',
       },
     },
     example: {
-      subject: "Message personnalisé - {{businessName}}",
-      content: "Bonjour {{clientName}}, nous vous informons que...",
-      language: "fr",
+      subject: 'Message personnalisé - {{businessName}}',
+      content: 'Bonjour {{clientName}}, nous vous informons que...',
+      language: 'fr',
     },
   })
   @IsOptional()
@@ -264,7 +264,7 @@ export class SendBulkNotificationDto {
   };
 
   @ApiPropertyOptional({
-    description: "Taille des lots pour le traitement (défaut: 100)",
+    description: 'Taille des lots pour le traitement (défaut: 100)',
     minimum: 1,
     maximum: 1000,
     example: 100,
@@ -289,15 +289,15 @@ export class SendBulkNotificationDto {
 
   @ApiPropertyOptional({
     description: "Programmer l'envoi à une date précise",
-    format: "date-time",
-    example: "2025-09-23T08:00:00.000Z",
+    format: 'date-time',
+    example: '2025-09-23T08:00:00.000Z',
   })
   @IsOptional()
   @IsDateString()
   readonly scheduledAt?: string;
 
   @ApiPropertyOptional({
-    description: "Mode prévisualisation uniquement (aucun envoi réel)",
+    description: 'Mode prévisualisation uniquement (aucun envoi réel)',
     example: false,
   })
   @IsOptional()

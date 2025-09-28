@@ -15,8 +15,8 @@ import {
   HttpStatus,
   Injectable,
   Logger,
-} from "@nestjs/common";
-import { HttpAdapterHost } from "@nestjs/core";
+} from '@nestjs/common';
+import { HttpAdapterHost } from '@nestjs/core';
 
 interface SafeRequest {
   headers?: Record<string, string | string[] | undefined>;
@@ -60,8 +60,8 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       path: httpAdapter.getRequestUrl(request),
       method: httpAdapter.getRequestMethod
         ? httpAdapter.getRequestMethod(request)
-        : "UNKNOWN",
-      ...(process.env.NODE_ENV === "development" && {
+        : 'UNKNOWN',
+      ...(process.env.NODE_ENV === 'development' && {
         details: errorDetails,
         stack: exception instanceof Error ? exception.stack : null,
       }),
@@ -80,14 +80,14 @@ export class GlobalExceptionFilter implements ExceptionFilter {
   private getErrorMessage(exception: unknown): string {
     if (exception instanceof HttpException) {
       const response = exception.getResponse();
-      if (typeof response === "string") {
+      if (typeof response === 'string') {
         return response;
       }
-      if (typeof response === "object" && response !== null) {
+      if (typeof response === 'object' && response !== null) {
         // Type guard for message property
         if (
-          "message" in response &&
-          typeof (response as { message?: unknown }).message === "string"
+          'message' in response &&
+          typeof (response as { message?: unknown }).message === 'string'
         ) {
           return (response as { message?: string }).message as string;
         }
@@ -99,7 +99,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       return exception.message;
     }
 
-    return "Internal server error";
+    return 'Internal server error';
   }
 
   private getErrorDetails(
@@ -107,10 +107,10 @@ export class GlobalExceptionFilter implements ExceptionFilter {
   ): string | Record<string, unknown> {
     if (exception instanceof HttpException) {
       const response = exception.getResponse();
-      if (typeof response === "string") {
+      if (typeof response === 'string') {
         return response;
       }
-      if (typeof response === "object" && response !== null) {
+      if (typeof response === 'object' && response !== null) {
         return response as Record<string, unknown>;
       }
     }
@@ -132,20 +132,20 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     const { httpAdapter } = this.httpAdapterHost;
 
     const userAgent =
-      request.headers && typeof request.headers["user-agent"] === "string"
-        ? request.headers["user-agent"]
-        : Array.isArray(request.headers?.["user-agent"])
-          ? request.headers?.["user-agent"][0]
-          : "Unknown";
+      request.headers && typeof request.headers['user-agent'] === 'string'
+        ? request.headers['user-agent']
+        : Array.isArray(request.headers?.['user-agent'])
+          ? request.headers?.['user-agent'][0]
+          : 'Unknown';
     const ip =
       request.ip ||
       (request.connection && request.connection.remoteAddress) ||
-      "Unknown";
+      'Unknown';
 
     const errorContext = {
       method: httpAdapter.getRequestMethod
         ? httpAdapter.getRequestMethod(request)
-        : "UNKNOWN",
+        : 'UNKNOWN',
       url: httpAdapter.getRequestUrl(request),
       userAgent,
       ip,

@@ -1,19 +1,19 @@
-import type { IAuditService } from "@application/ports/audit.port";
-import type { I18nService } from "@application/ports/i18n.port";
-import type { Logger } from "@application/ports/logger.port";
-import { CalendarType } from "@domain/entities/calendar-type.entity";
+import type { IAuditService } from '@application/ports/audit.port';
+import type { I18nService } from '@application/ports/i18n.port';
+import type { Logger } from '@application/ports/logger.port';
+import { CalendarType } from '@domain/entities/calendar-type.entity';
 import {
   CalendarTypeBuiltInModificationError,
   CalendarTypeNotFoundError,
   CalendarTypeValidationError,
-} from "@domain/exceptions/calendar-type.exceptions";
-import type { ICalendarTypeRepository } from "@domain/repositories/calendar-type.repository";
-import { CalendarTypeId } from "@domain/value-objects/calendar-type-id.value-object";
+} from '@domain/exceptions/calendar-type.exceptions';
+import type { ICalendarTypeRepository } from '@domain/repositories/calendar-type.repository';
+import { CalendarTypeId } from '@domain/value-objects/calendar-type-id.value-object';
 
 import {
   DeleteCalendarTypeRequest,
   DeleteCalendarTypeResponse,
-} from "./calendar-type.types";
+} from './calendar-type.types';
 
 /**
  * Use Case pour supprimer un type de calendrier existant
@@ -32,9 +32,9 @@ export class DeleteCalendarTypeUseCase {
   async execute(
     request: DeleteCalendarTypeRequest,
   ): Promise<DeleteCalendarTypeResponse> {
-    this.logger.info("Deleting calendar type", {
+    this.logger.info('Deleting calendar type', {
       calendarTypeId: request.calendarTypeId,
-      correlationId: request.correlationId ?? "no-correlation-id",
+      correlationId: request.correlationId ?? 'no-correlation-id',
     });
 
     try {
@@ -76,38 +76,38 @@ export class DeleteCalendarTypeUseCase {
 
       // Audit trail
       await this.auditService.logOperation({
-        operation: "DELETE_CALENDAR_TYPE",
-        entityType: "CALENDAR_TYPE",
+        operation: 'DELETE_CALENDAR_TYPE',
+        entityType: 'CALENDAR_TYPE',
         entityId: existingCalendarType.getId().getValue(),
         businessId: existingCalendarType.getBusinessId().getValue(),
         userId: request.requestingUserId,
-        correlationId: request.correlationId ?? "no-correlation-id",
+        correlationId: request.correlationId ?? 'no-correlation-id',
         changes: {
           deleted: deletedData,
         },
         timestamp: new Date(),
       });
 
-      this.logger.info("Calendar type deleted successfully", {
+      this.logger.info('Calendar type deleted successfully', {
         calendarTypeId: request.calendarTypeId,
         calendarTypeName: existingCalendarType.getName(),
-        correlationId: request.correlationId ?? "no-correlation-id",
+        correlationId: request.correlationId ?? 'no-correlation-id',
       });
 
       return {
         success: true,
-        message: this.i18n.translate("calendarTypes.deleted.success"),
+        message: this.i18n.translate('calendarTypes.deleted.success'),
       };
     } catch (error) {
       const errorMessage =
-        error instanceof Error ? error.message : "Unknown error occurred";
+        error instanceof Error ? error.message : 'Unknown error occurred';
 
       this.logger.error(
-        "Failed to delete calendar type",
+        'Failed to delete calendar type',
         error instanceof Error ? error : new Error(errorMessage),
         {
           calendarTypeId: request.calendarTypeId,
-          correlationId: request.correlationId ?? "no-correlation-id",
+          correlationId: request.correlationId ?? 'no-correlation-id',
         },
       );
 
@@ -122,26 +122,26 @@ export class DeleteCalendarTypeUseCase {
 
     // Validation calendarTypeId (obligatoire)
     if (!request.calendarTypeId?.trim()) {
-      errors.push(this.i18n.translate("calendarTypes.validation.idRequired"));
+      errors.push(this.i18n.translate('calendarTypes.validation.idRequired'));
     } else {
       const uuidRegex =
         /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
       if (!uuidRegex.test(request.calendarTypeId)) {
-        errors.push(this.i18n.translate("calendarTypes.validation.idInvalid"));
+        errors.push(this.i18n.translate('calendarTypes.validation.idInvalid'));
       }
     }
 
     // Validation requestingUserId
     if (!request.requestingUserId?.trim()) {
       errors.push(
-        this.i18n.translate("calendarTypes.validation.requestingUserRequired"),
+        this.i18n.translate('calendarTypes.validation.requestingUserRequired'),
       );
     } else {
       const uuidRegex =
         /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
       if (!uuidRegex.test(request.requestingUserId)) {
         errors.push(
-          this.i18n.translate("calendarTypes.validation.requestingUserInvalid"),
+          this.i18n.translate('calendarTypes.validation.requestingUserInvalid'),
         );
       }
     }
@@ -149,13 +149,13 @@ export class DeleteCalendarTypeUseCase {
     // Validation correlationId
     if (!request.correlationId?.trim()) {
       errors.push(
-        this.i18n.translate("calendarTypes.validation.correlationIdRequired"),
+        this.i18n.translate('calendarTypes.validation.correlationIdRequired'),
       );
     }
 
     if (errors.length > 0) {
       throw new CalendarTypeValidationError(
-        this.i18n.translate("calendarTypes.validation.failed"),
+        this.i18n.translate('calendarTypes.validation.failed'),
         { errors },
       );
     }

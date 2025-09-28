@@ -9,7 +9,7 @@ import {
   Param,
   Post,
   UseGuards,
-} from "@nestjs/common";
+} from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -17,30 +17,30 @@ import {
   ApiParam,
   ApiResponse,
   ApiTags,
-} from "@nestjs/swagger";
+} from '@nestjs/swagger';
 
-import { AssignRoleUseCase } from "@application/use-cases/role-management/assign-role.use-case";
-import { User } from "@domain/entities/user.entity";
-import { GetUser } from "@presentation/security/decorators/get-user.decorator";
-import { RequireRoles } from "@presentation/security/decorators/roles.decorator";
-import { RoleBasedGuard } from "@presentation/security/guards/role-based.guard";
-import { TOKENS } from "@shared/constants/injection-tokens";
-import { UserRole } from "@shared/enums/user-role.enum";
+import { AssignRoleUseCase } from '@application/use-cases/role-management/assign-role.use-case';
+import { User } from '@domain/entities/user.entity';
+import { GetUser } from '@presentation/security/decorators/get-user.decorator';
+import { RequireRoles } from '@presentation/security/decorators/roles.decorator';
+import { RoleBasedGuard } from '@presentation/security/guards/role-based.guard';
+import { TOKENS } from '@shared/constants/injection-tokens';
+import { UserRole } from '@shared/enums/user-role.enum';
 
 import {
   AssignRoleDto,
   AssignRoleResponseDto,
-} from "@presentation/dtos/role-management/assign-role.dto";
+} from '@presentation/dtos/role-management/assign-role.dto';
 import {
   ListRoleAssignmentsDto,
   ListRoleAssignmentsResponseDto,
-} from "@presentation/dtos/role-management/list-role-assignments.dto";
+} from '@presentation/dtos/role-management/list-role-assignments.dto';
 import {
   BatchRevokeRolesDto,
   BatchRevokeRolesResponseDto,
   RevokeRoleDto,
   RevokeRoleResponseDto,
-} from "@presentation/dtos/role-management/revoke-role.dto";
+} from '@presentation/dtos/role-management/revoke-role.dto';
 
 /**
  * 🎯 **Controller RBAC - Gestion des Rôles et Permissions**
@@ -58,8 +58,8 @@ import {
  * - **Recherche** : Filtrage avancé des assignations avec pagination
  * - **Audit** : Historique complet des modifications
  */
-@ApiTags("👤 Role Management")
-@Controller("role-assignments")
+@ApiTags('👤 Role Management')
+@Controller('role-assignments')
 @ApiBearerAuth()
 @UseGuards(RoleBasedGuard)
 @RequireRoles(UserRole.SUPER_ADMIN)
@@ -105,7 +105,7 @@ export class RoleManagementController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
-    summary: "🎯 Assigner un rôle à un utilisateur",
+    summary: '🎯 Assigner un rôle à un utilisateur',
     description: `
     Assigne un rôle spécifique à un utilisateur dans un contexte business déterminé.
 
@@ -151,49 +151,49 @@ export class RoleManagementController {
     type: AssignRoleDto,
     examples: {
       locationManager: {
-        summary: "Assigner Manager de Location",
+        summary: 'Assigner Manager de Location',
         value: {
-          userId: "123e4567-e89b-12d3-a456-426614174000",
+          userId: '123e4567-e89b-12d3-a456-426614174000',
           role: UserRole.LOCATION_MANAGER,
-          businessContextId: "987fcdeb-51a2-43d7-8c9f-123456789abc",
-          scope: "LOCATION",
-          expiresAt: "2025-01-15T10:30:00Z",
-          notes: "Promotion temporaire pour Q1 2024",
+          businessContextId: '987fcdeb-51a2-43d7-8c9f-123456789abc',
+          scope: 'LOCATION',
+          expiresAt: '2025-01-15T10:30:00Z',
+          notes: 'Promotion temporaire pour Q1 2024',
         },
       },
       staffMember: {
-        summary: "Assigner Membre du Personnel",
+        summary: 'Assigner Membre du Personnel',
         value: {
-          userId: "456e7890-e12b-34c5-a678-901234567890",
+          userId: '456e7890-e12b-34c5-a678-901234567890',
           role: UserRole.ASSISTANT,
-          businessContextId: "654fedcb-21a9-87d6-4c3f-987654321cba",
-          scope: "DEPARTMENT",
-          notes: "Assignation permanente équipe technique",
+          businessContextId: '654fedcb-21a9-87d6-4c3f-987654321cba',
+          scope: 'DEPARTMENT',
+          notes: 'Assignation permanente équipe technique',
         },
       },
     },
   })
   @ApiResponse({
     status: HttpStatus.CREATED,
-    description: "✅ Rôle assigné avec succès",
+    description: '✅ Rôle assigné avec succès',
     type: AssignRoleResponseDto,
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
     description: "❌ Données d'assignation invalides",
     schema: {
-      type: "object",
+      type: 'object',
       properties: {
-        success: { type: "boolean", example: false },
+        success: { type: 'boolean', example: false },
         error: {
-          type: "object",
+          type: 'object',
           properties: {
-            code: { type: "string", example: "ROLE_ASSIGNMENT_INVALID_DATA" },
+            code: { type: 'string', example: 'ROLE_ASSIGNMENT_INVALID_DATA' },
             message: {
-              type: "string",
+              type: 'string',
               example: "Les données d'assignation sont invalides",
             },
-            field: { type: "string", example: "businessContextId" },
+            field: { type: 'string', example: 'businessContextId' },
           },
         },
       },
@@ -201,15 +201,15 @@ export class RoleManagementController {
   })
   @ApiResponse({
     status: HttpStatus.UNAUTHORIZED,
-    description: "🔐 Authentification requise",
+    description: '🔐 Authentification requise',
   })
   @ApiResponse({
     status: HttpStatus.FORBIDDEN,
-    description: "🚫 Permissions insuffisantes pour assigner des rôles",
+    description: '🚫 Permissions insuffisantes pour assigner des rôles',
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
-    description: "❌ Utilisateur ou contexte business introuvable",
+    description: '❌ Utilisateur ou contexte business introuvable',
   })
   @ApiResponse({
     status: HttpStatus.CONFLICT,
@@ -265,8 +265,8 @@ export class RoleManagementController {
         },
       };
     } catch (error) {
-      this.logger.error("Failed to assign role", {
-        error: error instanceof Error ? error.message : "Unknown error",
+      this.logger.error('Failed to assign role', {
+        error: error instanceof Error ? error.message : 'Unknown error',
         requestingUserId: requestingUser.id,
         targetUserId: dto.userId,
         role: dto.role,
@@ -281,16 +281,16 @@ export class RoleManagementController {
    *
    * TODO: À implémenter quand ListRoleAssignmentsUseCase sera créé
    */
-  @Post("list")
+  @Post('list')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
-    summary: "🔍 Rechercher les assignations de rôles",
+    summary: '🔍 Rechercher les assignations de rôles',
     description:
-      "Recherche avancée avec pagination et filtrage des assignations de rôles",
+      'Recherche avancée avec pagination et filtrage des assignations de rôles',
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: "✅ Liste des assignations trouvées",
+    description: '✅ Liste des assignations trouvées',
     type: ListRoleAssignmentsResponseDto,
   })
   async listRoleAssignments(
@@ -298,12 +298,12 @@ export class RoleManagementController {
     @GetUser() requestingUser: User,
   ): Promise<ListRoleAssignmentsResponseDto> {
     // TODO: Implémenter quand le use case sera créé
-    this.logger.log("Listing role assignments - TODO: Implement use case", {
+    this.logger.log('Listing role assignments - TODO: Implement use case', {
       requestingUserId: requestingUser.id,
       filters: dto,
     });
 
-    throw new Error("ListRoleAssignmentsUseCase not implemented yet");
+    throw new Error('ListRoleAssignmentsUseCase not implemented yet');
   }
 
   /**
@@ -311,35 +311,35 @@ export class RoleManagementController {
    *
    * TODO: À implémenter quand RevokeRoleUseCase sera créé
    */
-  @Delete(":assignmentId")
+  @Delete(':assignmentId')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
-    summary: "🗑️ Révoquer une assignation de rôle",
-    description: "Révoque une assignation de rôle spécifique avec audit trail",
+    summary: '🗑️ Révoquer une assignation de rôle',
+    description: 'Révoque une assignation de rôle spécifique avec audit trail',
   })
   @ApiParam({
-    name: "assignmentId",
+    name: 'assignmentId',
     description: "ID de l'assignation à révoquer",
-    example: "550e8400-e29b-41d4-a716-446655440000",
+    example: '550e8400-e29b-41d4-a716-446655440000',
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: "✅ Assignation révoquée avec succès",
+    description: '✅ Assignation révoquée avec succès',
     type: RevokeRoleResponseDto,
   })
   async revokeRoleAssignment(
-    @Param("assignmentId") assignmentId: string,
+    @Param('assignmentId') assignmentId: string,
     @Body() dto: RevokeRoleDto,
     @GetUser() requestingUser: User,
   ): Promise<RevokeRoleResponseDto> {
     // TODO: Implémenter quand le use case sera créé
-    this.logger.log("Revoking role assignment - TODO: Implement use case", {
+    this.logger.log('Revoking role assignment - TODO: Implement use case', {
       assignmentId,
       requestingUserId: requestingUser.id,
       reason: dto.reason,
     });
 
-    throw new Error("RevokeRoleUseCase not implemented yet");
+    throw new Error('RevokeRoleUseCase not implemented yet');
   }
 
   /**
@@ -347,16 +347,16 @@ export class RoleManagementController {
    *
    * TODO: À implémenter quand BatchRevokeRolesUseCase sera créé
    */
-  @Post("batch-revoke")
+  @Post('batch-revoke')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
-    summary: "🗑️ Révoquer des assignations en lot",
+    summary: '🗑️ Révoquer des assignations en lot',
     description:
-      "Révoque plusieurs assignations de rôles simultanément avec rapport détaillé",
+      'Révoque plusieurs assignations de rôles simultanément avec rapport détaillé',
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: "✅ Révocations en lot traitées",
+    description: '✅ Révocations en lot traitées',
     type: BatchRevokeRolesResponseDto,
   })
   async batchRevokeRoles(
@@ -365,7 +365,7 @@ export class RoleManagementController {
   ): Promise<BatchRevokeRolesResponseDto> {
     // TODO: Implémenter quand le use case sera créé
     this.logger.log(
-      "Batch revoking role assignments - TODO: Implement use case",
+      'Batch revoking role assignments - TODO: Implement use case',
       {
         assignmentCount: dto.assignmentIds.length,
         requestingUserId: requestingUser.id,
@@ -373,6 +373,6 @@ export class RoleManagementController {
       },
     );
 
-    throw new Error("BatchRevokeRolesUseCase not implemented yet");
+    throw new Error('BatchRevokeRolesUseCase not implemented yet');
   }
 }

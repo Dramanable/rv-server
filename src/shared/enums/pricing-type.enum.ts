@@ -1,6 +1,6 @@
 export enum PricingType {
-  FIXED = "FIXED",
-  HOURLY = "HOURLY",
-  PACKAGE = "PACKAGE",
-  TIERED = "TIERED",
+  FIXED = 'FIXED',
+  HOURLY = 'HOURLY',
+  PACKAGE = 'PACKAGE',
+  TIERED = 'TIERED',
 }

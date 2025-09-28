@@ -1,13 +1,13 @@
-import { Logger } from "../../ports/logger.port";
-import { I18nService } from "../../ports/i18n.port";
-import { IAuditService } from "../../ports/audit.port";
-import { ISkillRepository } from "../../../domain/repositories/skill.repository";
-import { BusinessId } from "../../../domain/value-objects/business-id.value-object";
-import { Skill } from "../../../domain/entities/skill.entity";
+import { Logger } from '../../ports/logger.port';
+import { I18nService } from '../../ports/i18n.port';
+import { IAuditService } from '../../ports/audit.port';
+import { ISkillRepository } from '../../../domain/repositories/skill.repository';
+import { BusinessId } from '../../../domain/value-objects/business-id.value-object';
+import { Skill } from '../../../domain/entities/skill.entity';
 import {
   SkillValidationException,
   SkillNameConflictException,
-} from "../../../domain/exceptions/skill.exceptions";
+} from '../../../domain/exceptions/skill.exceptions';
 
 /**
  * 🎯 Create Skill Use Case
@@ -54,7 +54,7 @@ export class CreateSkillUseCase {
 
   async execute(request: CreateSkillRequest): Promise<CreateSkillResponse> {
     // 📊 LOGGING OBLIGATOIRE - Début d'opération
-    this.logger.info("Starting skill creation process", {
+    this.logger.info('Starting skill creation process', {
       businessId: request.businessId,
       skillName: request.name,
       category: request.category,
@@ -87,7 +87,7 @@ export class CreateSkillUseCase {
       const savedSkill = await this.skillRepository.save(skill);
 
       // 📊 LOGGING OBLIGATOIRE - Succès
-      this.logger.info("Skill created successfully", {
+      this.logger.info('Skill created successfully', {
         skillId: savedSkill.getId(),
         businessId: request.businessId,
         skillName: savedSkill.getName(),
@@ -99,8 +99,8 @@ export class CreateSkillUseCase {
 
       // 🔐 AUDIT TRAIL OBLIGATOIRE
       await this.auditService.logOperation({
-        operation: "CREATE_SKILL",
-        entityType: "SKILL",
+        operation: 'CREATE_SKILL',
+        entityType: 'SKILL',
         entityId: savedSkill.getId(),
         businessId: request.businessId,
         userId: request.requestingUserId,
@@ -135,7 +135,7 @@ export class CreateSkillUseCase {
         error instanceof Error ? error : new Error(String(error));
 
       // 📊 LOGGING OBLIGATOIRE - Erreur avec contexte complet
-      this.logger.error("Failed to create skill", errorObj, {
+      this.logger.error('Failed to create skill', errorObj, {
         errorCode: (errorObj as any).code,
         errorName: errorObj.name,
         businessId: request.businessId,
@@ -157,24 +157,24 @@ export class CreateSkillUseCase {
   private validateRequestContext(request: CreateSkillRequest): void {
     if (!request.correlationId) {
       throw new SkillValidationException(
-        "MISSING_CORRELATION_ID",
-        this.i18n.translate("skill.validation.correlationIdRequired"),
+        'MISSING_CORRELATION_ID',
+        this.i18n.translate('skill.validation.correlationIdRequired'),
         { correlationId: request.correlationId },
       );
     }
 
     if (!request.requestingUserId) {
       throw new SkillValidationException(
-        "MISSING_REQUESTING_USER_ID",
-        this.i18n.translate("skill.validation.requestingUserIdRequired"),
+        'MISSING_REQUESTING_USER_ID',
+        this.i18n.translate('skill.validation.requestingUserIdRequired'),
         { requestingUserId: request.requestingUserId },
       );
     }
 
     if (!request.timestamp || isNaN(request.timestamp.getTime())) {
       throw new SkillValidationException(
-        "INVALID_TIMESTAMP",
-        this.i18n.translate("skill.validation.timestampRequired"),
+        'INVALID_TIMESTAMP',
+        this.i18n.translate('skill.validation.timestampRequired'),
         { timestamp: request.timestamp },
       );
     }
@@ -184,8 +184,8 @@ export class CreateSkillUseCase {
     const age = Date.now() - request.timestamp.getTime();
     if (age > maxAge) {
       throw new SkillValidationException(
-        "REQUEST_TOO_OLD",
-        this.i18n.translate("skill.validation.requestTooOld"),
+        'REQUEST_TOO_OLD',
+        this.i18n.translate('skill.validation.requestTooOld'),
         { age, maxAge, timestamp: request.timestamp },
       );
     }
@@ -200,24 +200,24 @@ export class CreateSkillUseCase {
     // Validation des données requises
     if (!request.businessId) {
       throw new SkillValidationException(
-        "BUSINESS_ID_REQUIRED",
-        this.i18n.translate("skill.validation.businessIdRequired"),
+        'BUSINESS_ID_REQUIRED',
+        this.i18n.translate('skill.validation.businessIdRequired'),
         { businessId: request.businessId },
       );
     }
 
     if (!request.name || request.name.trim().length < 2) {
       throw new SkillValidationException(
-        "SKILL_NAME_REQUIRED",
-        this.i18n.translate("skill.validation.nameRequired"),
+        'SKILL_NAME_REQUIRED',
+        this.i18n.translate('skill.validation.nameRequired'),
         { name: request.name, minimumLength: 2 },
       );
     }
 
     if (!request.category || request.category.trim().length < 2) {
       throw new SkillValidationException(
-        "SKILL_CATEGORY_REQUIRED",
-        this.i18n.translate("skill.validation.categoryRequired"),
+        'SKILL_CATEGORY_REQUIRED',
+        this.i18n.translate('skill.validation.categoryRequired'),
         { category: request.category, minimumLength: 2 },
       );
     }
@@ -236,7 +236,7 @@ export class CreateSkillUseCase {
       );
     }
 
-    this.logger.debug("Business rules validation completed", {
+    this.logger.debug('Business rules validation completed', {
       businessId: request.businessId,
       skillName: request.name,
       correlationId: request.correlationId,

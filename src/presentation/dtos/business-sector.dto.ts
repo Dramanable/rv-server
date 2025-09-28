@@ -5,8 +5,8 @@
  * Ces DTOs définissent la structure des requêtes et réponses HTTP.
  */
 
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { Transform } from "class-transformer";
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 import {
   IsBoolean,
   IsIn,
@@ -18,7 +18,7 @@ import {
   Matches,
   Max,
   Min,
-} from "class-validator";
+} from 'class-validator';
 
 /**
  * 📋 DTO : Création de secteur d'activité
@@ -30,50 +30,50 @@ export class CreateBusinessSectorDto {
     minLength: 2,
     maxLength: 100,
   })
-  @IsString({ message: "Le nom doit être une chaîne de caractères" })
-  @IsNotEmpty({ message: "Le nom est obligatoire" })
-  @Length(2, 100, { message: "Le nom doit contenir entre 2 et 100 caractères" })
+  @IsString({ message: 'Le nom doit être une chaîne de caractères' })
+  @IsNotEmpty({ message: 'Le nom est obligatoire' })
+  @Length(2, 100, { message: 'Le nom doit contenir entre 2 et 100 caractères' })
   @Matches(/^[a-zA-ZÀ-ÿ0-9\s\-'&.()]+$/, {
-    message: "Le nom contient des caractères non autorisés",
+    message: 'Le nom contient des caractères non autorisés',
   })
   @Transform(({ value }: { value: unknown }) =>
-    typeof value === "string" ? value.trim() : value,
+    typeof value === 'string' ? value.trim() : value,
   )
   readonly name!: string;
 
   @ApiProperty({
     description: "Description détaillée du secteur d'activité",
     example:
-      "Développement logiciel, conseil en systèmes informatiques, services cloud",
+      'Développement logiciel, conseil en systèmes informatiques, services cloud',
     minLength: 10,
     maxLength: 500,
   })
-  @IsString({ message: "La description doit être une chaîne de caractères" })
-  @IsNotEmpty({ message: "La description est obligatoire" })
+  @IsString({ message: 'La description doit être une chaîne de caractères' })
+  @IsNotEmpty({ message: 'La description est obligatoire' })
   @Length(10, 500, {
-    message: "La description doit contenir entre 10 et 500 caractères",
+    message: 'La description doit contenir entre 10 et 500 caractères',
   })
   @Transform(({ value }: { value: unknown }) =>
-    typeof value === "string" ? value.trim() : value,
+    typeof value === 'string' ? value.trim() : value,
   )
   readonly description!: string;
 
   @ApiProperty({
     description:
-      "Code unique du secteur (lettres majuscules, chiffres et underscores)",
-    example: "IT_SERVICES",
+      'Code unique du secteur (lettres majuscules, chiffres et underscores)',
+    example: 'IT_SERVICES',
     minLength: 2,
     maxLength: 20,
   })
-  @IsString({ message: "Le code doit être une chaîne de caractères" })
-  @IsNotEmpty({ message: "Le code est obligatoire" })
-  @Length(2, 20, { message: "Le code doit contenir entre 2 et 20 caractères" })
+  @IsString({ message: 'Le code doit être une chaîne de caractères' })
+  @IsNotEmpty({ message: 'Le code est obligatoire' })
+  @Length(2, 20, { message: 'Le code doit contenir entre 2 et 20 caractères' })
   @Matches(/^[A-Z][A-Z0-9_]*$/, {
     message:
-      "Le code doit commencer par une majuscule et ne contenir que des majuscules, chiffres et underscores",
+      'Le code doit commencer par une majuscule et ne contenir que des majuscules, chiffres et underscores',
   })
   @Transform(({ value }: { value: unknown }) =>
-    typeof value === "string" ? value.trim().toUpperCase() : value,
+    typeof value === 'string' ? value.trim().toUpperCase() : value,
   )
   readonly code!: string;
 }
@@ -89,30 +89,30 @@ export class UpdateBusinessSectorDto {
     maxLength: 100,
   })
   @IsOptional()
-  @IsString({ message: "Le nom doit être une chaîne de caractères" })
-  @Length(2, 100, { message: "Le nom doit contenir entre 2 et 100 caractères" })
+  @IsString({ message: 'Le nom doit être une chaîne de caractères' })
+  @Length(2, 100, { message: 'Le nom doit contenir entre 2 et 100 caractères' })
   @Matches(/^[a-zA-ZÀ-ÿ0-9\s\-'&.()]+$/, {
-    message: "Le nom contient des caractères non autorisés",
+    message: 'Le nom contient des caractères non autorisés',
   })
   @Transform(({ value }: { value: unknown }) =>
-    typeof value === "string" ? value.trim() : value,
+    typeof value === 'string' ? value.trim() : value,
   )
   readonly name?: string;
 
   @ApiPropertyOptional({
     description: "Nouvelle description du secteur d'activité",
     example:
-      "Développement logiciel, conseil en systèmes informatiques, services cloud et télécommunications",
+      'Développement logiciel, conseil en systèmes informatiques, services cloud et télécommunications',
     minLength: 10,
     maxLength: 500,
   })
   @IsOptional()
-  @IsString({ message: "La description doit être une chaîne de caractères" })
+  @IsString({ message: 'La description doit être une chaîne de caractères' })
   @Length(10, 500, {
-    message: "La description doit contenir entre 10 et 500 caractères",
+    message: 'La description doit contenir entre 10 et 500 caractères',
   })
   @Transform(({ value }: { value: unknown }) =>
-    typeof value === "string" ? value.trim() : value,
+    typeof value === 'string' ? value.trim() : value,
   )
   readonly description?: string;
 }
@@ -122,45 +122,45 @@ export class UpdateBusinessSectorDto {
  */
 export class BusinessSectorFiltersDto {
   @ApiPropertyOptional({
-    description: "Recherche textuelle dans le nom et la description",
-    example: "technologie",
+    description: 'Recherche textuelle dans le nom et la description',
+    example: 'technologie',
   })
   @IsOptional()
-  @IsString({ message: "La recherche doit être une chaîne de caractères" })
+  @IsString({ message: 'La recherche doit être une chaîne de caractères' })
   @Length(1, 100, {
-    message: "La recherche doit contenir entre 1 et 100 caractères",
+    message: 'La recherche doit contenir entre 1 et 100 caractères',
   })
   @Transform(({ value }: { value: unknown }) =>
-    typeof value === "string" ? value.trim() : value,
+    typeof value === 'string' ? value.trim() : value,
   )
   readonly search?: string;
 
   @ApiPropertyOptional({
-    description: "Filtrer par statut actif/inactif",
+    description: 'Filtrer par statut actif/inactif',
     example: true,
   })
   @IsOptional()
-  @IsBoolean({ message: "isActive doit être un booléen" })
+  @IsBoolean({ message: 'isActive doit être un booléen' })
   @Transform(({ value }) => {
-    if (value === "true") return true;
-    if (value === "false") return false;
+    if (value === 'true') return true;
+    if (value === 'false') return false;
     return value;
   })
   readonly isActive?: boolean;
 
   @ApiPropertyOptional({
-    description: "Filtrer par codes spécifiques",
-    example: ["IT_SERVICES", "CONSULTING"],
+    description: 'Filtrer par codes spécifiques',
+    example: ['IT_SERVICES', 'CONSULTING'],
     type: [String],
   })
   @IsOptional()
   @IsString({
     each: true,
-    message: "Chaque code doit être une chaîne de caractères",
+    message: 'Chaque code doit être une chaîne de caractères',
   })
   @Matches(/^[A-Z][A-Z0-9_]*$/, {
     each: true,
-    message: "Chaque code doit être en majuscules avec underscores",
+    message: 'Chaque code doit être en majuscules avec underscores',
   })
   readonly codes?: string[];
 }
@@ -170,28 +170,28 @@ export class BusinessSectorFiltersDto {
  */
 export class BusinessSectorSortDto {
   @ApiPropertyOptional({
-    description: "Champ de tri",
-    example: "name",
-    enum: ["name", "code", "createdAt", "updatedAt"],
+    description: 'Champ de tri',
+    example: 'name',
+    enum: ['name', 'code', 'createdAt', 'updatedAt'],
   })
   @IsOptional()
-  @IsString({ message: "Le champ de tri doit être une chaîne de caractères" })
-  @IsIn(["name", "code", "createdAt", "updatedAt"], {
-    message: "Le champ de tri doit être : name, code, createdAt ou updatedAt",
+  @IsString({ message: 'Le champ de tri doit être une chaîne de caractères' })
+  @IsIn(['name', 'code', 'createdAt', 'updatedAt'], {
+    message: 'Le champ de tri doit être : name, code, createdAt ou updatedAt',
   })
-  readonly field?: "name" | "code" | "createdAt" | "updatedAt";
+  readonly field?: 'name' | 'code' | 'createdAt' | 'updatedAt';
 
   @ApiPropertyOptional({
-    description: "Direction du tri",
-    example: "ASC",
-    enum: ["ASC", "DESC"],
+    description: 'Direction du tri',
+    example: 'ASC',
+    enum: ['ASC', 'DESC'],
   })
   @IsOptional()
-  @IsString({ message: "La direction doit être une chaîne de caractères" })
-  @IsIn(["ASC", "DESC"], {
-    message: "La direction doit être ASC ou DESC",
+  @IsString({ message: 'La direction doit être une chaîne de caractères' })
+  @IsIn(['ASC', 'DESC'], {
+    message: 'La direction doit être ASC ou DESC',
   })
-  readonly direction?: "ASC" | "DESC";
+  readonly direction?: 'ASC' | 'DESC';
 }
 
 /**
@@ -199,14 +199,14 @@ export class BusinessSectorSortDto {
  */
 export class BusinessSectorPaginationDto {
   @ApiPropertyOptional({
-    description: "Numéro de page (commence à 1)",
+    description: 'Numéro de page (commence à 1)',
     example: 1,
     minimum: 1,
   })
   @IsOptional()
   @Transform(({ value }) => parseInt(value))
-  @IsInt({ message: "La page doit être un nombre entier" })
-  @Min(1, { message: "La page doit être supérieure ou égale à 1" })
+  @IsInt({ message: 'La page doit être un nombre entier' })
+  @Min(1, { message: 'La page doit être supérieure ou égale à 1' })
   readonly page?: number;
 
   @ApiPropertyOptional({
@@ -217,9 +217,9 @@ export class BusinessSectorPaginationDto {
   })
   @IsOptional()
   @Transform(({ value }) => parseInt(value))
-  @IsInt({ message: "La limite doit être un nombre entier" })
-  @Min(1, { message: "La limite doit être supérieure ou égale à 1" })
-  @Max(100, { message: "La limite ne peut pas dépasser 100" })
+  @IsInt({ message: 'La limite doit être un nombre entier' })
+  @Min(1, { message: 'La limite doit être supérieure ou égale à 1' })
+  @Max(100, { message: 'La limite ne peut pas dépasser 100' })
   readonly limit?: number;
 }
 
@@ -228,19 +228,19 @@ export class BusinessSectorPaginationDto {
  */
 export class ListBusinessSectorsDto {
   @ApiPropertyOptional({
-    description: "Options de pagination",
+    description: 'Options de pagination',
   })
   @IsOptional()
   readonly pagination?: BusinessSectorPaginationDto;
 
   @ApiPropertyOptional({
-    description: "Options de tri",
+    description: 'Options de tri',
   })
   @IsOptional()
   readonly sort?: BusinessSectorSortDto;
 
   @ApiPropertyOptional({
-    description: "Filtres de recherche",
+    description: 'Filtres de recherche',
   })
   @IsOptional()
   readonly filters?: BusinessSectorFiltersDto;
@@ -251,15 +251,15 @@ export class ListBusinessSectorsDto {
  */
 export class DeleteBusinessSectorDto {
   @ApiPropertyOptional({
-    description: "Forcer la suppression même si le secteur est utilisé",
+    description: 'Forcer la suppression même si le secteur est utilisé',
     example: false,
     default: false,
   })
   @IsOptional()
-  @IsBoolean({ message: "force doit être un booléen" })
+  @IsBoolean({ message: 'force doit être un booléen' })
   @Transform(({ value }) => {
-    if (value === "true") return true;
-    if (value === "false") return false;
+    if (value === 'true') return true;
+    if (value === 'false') return false;
     return value === true;
   })
   readonly force?: boolean;
@@ -270,8 +270,8 @@ export class DeleteBusinessSectorDto {
  */
 export class BusinessSectorResponseDto {
   @ApiProperty({
-    description: "Identifiant unique du secteur",
-    example: "uuid-123-456",
+    description: 'Identifiant unique du secteur',
+    example: 'uuid-123-456',
   })
   readonly id!: string;
 
@@ -283,43 +283,43 @@ export class BusinessSectorResponseDto {
 
   @ApiProperty({
     description: "Description du secteur d'activité",
-    example: "Développement logiciel, conseil en systèmes informatiques",
+    example: 'Développement logiciel, conseil en systèmes informatiques',
   })
   readonly description!: string;
 
   @ApiProperty({
-    description: "Code unique du secteur",
-    example: "IT_SERVICES",
+    description: 'Code unique du secteur',
+    example: 'IT_SERVICES',
   })
   readonly code!: string;
 
   @ApiProperty({
-    description: "Statut actif/inactif",
+    description: 'Statut actif/inactif',
     example: true,
   })
   readonly isActive!: boolean;
 
   @ApiProperty({
-    description: "Date de création",
-    example: "2024-01-01T10:00:00Z",
+    description: 'Date de création',
+    example: '2024-01-01T10:00:00Z',
   })
   readonly createdAt!: Date;
 
   @ApiProperty({
-    description: "Identifiant du créateur",
-    example: "user-uuid-789",
+    description: 'Identifiant du créateur',
+    example: 'user-uuid-789',
   })
   readonly createdBy!: string;
 
   @ApiPropertyOptional({
-    description: "Date de dernière mise à jour",
-    example: "2024-01-15T14:30:00Z",
+    description: 'Date de dernière mise à jour',
+    example: '2024-01-15T14:30:00Z',
   })
   readonly updatedAt?: Date;
 
   @ApiPropertyOptional({
-    description: "Identifiant du dernier modificateur",
-    example: "user-uuid-456",
+    description: 'Identifiant du dernier modificateur',
+    example: 'user-uuid-456',
   })
   readonly updatedBy?: string;
 }
@@ -329,13 +329,13 @@ export class BusinessSectorResponseDto {
  */
 export class BusinessSectorPaginationMetaDto {
   @ApiProperty({
-    description: "Page courante",
+    description: 'Page courante',
     example: 1,
   })
   readonly currentPage!: number;
 
   @ApiProperty({
-    description: "Nombre total de pages",
+    description: 'Nombre total de pages',
     example: 5,
   })
   readonly totalPages!: number;
@@ -376,7 +376,7 @@ export class ListBusinessSectorsResponseDto {
   readonly data!: BusinessSectorResponseDto[];
 
   @ApiProperty({
-    description: "Métadonnées de pagination",
+    description: 'Métadonnées de pagination',
     type: BusinessSectorPaginationMetaDto,
   })
   readonly meta!: BusinessSectorPaginationMetaDto;
@@ -393,8 +393,8 @@ export class CreateBusinessSectorResponseDto {
   readonly success!: boolean;
 
   @ApiProperty({
-    description: "Message de confirmation",
-    example: "Business sector created successfully",
+    description: 'Message de confirmation',
+    example: 'Business sector created successfully',
   })
   readonly message!: string;
 
@@ -416,8 +416,8 @@ export class UpdateBusinessSectorResponseDto {
   readonly success!: boolean;
 
   @ApiProperty({
-    description: "Message de confirmation",
-    example: "Business sector updated successfully",
+    description: 'Message de confirmation',
+    example: 'Business sector updated successfully',
   })
   readonly message!: string;
 
@@ -439,31 +439,31 @@ export class DeleteBusinessSectorResponseDto {
   readonly success!: boolean;
 
   @ApiProperty({
-    description: "Message de confirmation",
-    example: "Business sector deactivated successfully",
+    description: 'Message de confirmation',
+    example: 'Business sector deactivated successfully',
   })
   readonly message!: string;
 
   @ApiProperty({
-    description: "Date de suppression/désactivation",
-    example: "2024-01-15T14:30:00Z",
+    description: 'Date de suppression/désactivation',
+    example: '2024-01-15T14:30:00Z',
   })
   readonly deletedAt!: Date;
 
   @ApiProperty({
-    description: "Identifiant du secteur supprimé",
-    example: "uuid-123-456",
+    description: 'Identifiant du secteur supprimé',
+    example: 'uuid-123-456',
   })
   readonly sectorId!: string;
 
   @ApiProperty({
-    description: "Nom du secteur supprimé",
+    description: 'Nom du secteur supprimé',
     example: "Technologies de l'Information",
   })
   readonly sectorName!: string;
 
   @ApiPropertyOptional({
-    description: "Indique si la suppression a été forcée",
+    description: 'Indique si la suppression a été forcée',
     example: false,
   })
   readonly wasForced?: boolean;

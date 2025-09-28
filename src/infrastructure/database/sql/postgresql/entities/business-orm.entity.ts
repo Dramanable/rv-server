@@ -19,53 +19,53 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
-} from "typeorm";
+} from 'typeorm';
 
 // ✅ Only import enums for type constraints - Clean Architecture compliant
-import { BusinessSectorOrmEntity } from "./business-sector-orm.entity";
+import { BusinessSectorOrmEntity } from './business-sector-orm.entity';
 
-@Entity("businesses")
-@Index(["name"])
-@Index(["status"])
-@Index(["business_sector_id"])
-@Index(["created_at"])
+@Entity('businesses')
+@Index(['name'])
+@Index(['status'])
+@Index(['business_sector_id'])
+@Index(['created_at'])
 export class BusinessOrmEntity {
-  @PrimaryGeneratedColumn("uuid")
+  @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-  @Column({ type: "varchar", length: 200, nullable: false })
+  @Column({ type: 'varchar', length: 200, nullable: false })
   @Index()
   name!: string;
 
-  @Column({ type: "text", nullable: false })
+  @Column({ type: 'text', nullable: false })
   description!: string;
 
-  @Column({ type: "varchar", length: 100, nullable: true })
+  @Column({ type: 'varchar', length: 100, nullable: true })
   slogan!: string | null;
 
-  @Column({ type: "uuid", nullable: true })
+  @Column({ type: 'uuid', nullable: true })
   business_sector_id!: string | null;
 
   @ManyToOne(() => BusinessSectorOrmEntity, { nullable: true })
-  @JoinColumn({ name: "business_sector_id" })
+  @JoinColumn({ name: 'business_sector_id' })
   businessSector!: BusinessSectorOrmEntity | null;
 
   @Column({
-    type: "enum",
-    enum: ["ACTIVE", "INACTIVE", "SUSPENDED", "PENDING_VERIFICATION"],
-    default: "PENDING_VERIFICATION",
+    type: 'enum',
+    enum: ['ACTIVE', 'INACTIVE', 'SUSPENDED', 'PENDING_VERIFICATION'],
+    default: 'PENDING_VERIFICATION',
   })
   @Index()
   status!: string;
 
-  @Column({ type: "varchar", length: 300, nullable: false })
+  @Column({ type: 'varchar', length: 300, nullable: false })
   primary_email!: string;
 
-  @Column({ type: "varchar", length: 20, nullable: false })
+  @Column({ type: 'varchar', length: 20, nullable: false })
   primary_phone!: string;
 
   // Address as JSON
-  @Column({ type: "jsonb", nullable: false })
+  @Column({ type: 'jsonb', nullable: false })
   address!: {
     street: string;
     city: string;
@@ -75,7 +75,7 @@ export class BusinessOrmEntity {
   };
 
   // Contact Info as JSON
-  @Column({ type: "jsonb", nullable: false })
+  @Column({ type: 'jsonb', nullable: false })
   contact_info!: {
     primary_email: string;
     secondary_emails?: string[];
@@ -86,7 +86,7 @@ export class BusinessOrmEntity {
   };
 
   // Branding as JSON
-  @Column({ type: "jsonb", nullable: true })
+  @Column({ type: 'jsonb', nullable: true })
   branding!: {
     logo_url?: string;
     cover_image_url?: string;
@@ -95,11 +95,11 @@ export class BusinessOrmEntity {
       secondary?: string;
       accent?: string;
     };
-    theme?: "light" | "dark" | "auto";
+    theme?: 'light' | 'dark' | 'auto';
   } | null;
 
   // Settings as JSON
-  @Column({ type: "jsonb", nullable: false })
+  @Column({ type: 'jsonb', nullable: false })
   settings!: {
     timezone: string;
     currency: string;
@@ -118,7 +118,7 @@ export class BusinessOrmEntity {
   };
 
   // Business Hours as JSON - Flexible schedule management
-  @Column({ type: "jsonb", nullable: false })
+  @Column({ type: 'jsonb', nullable: false })
   business_hours!: {
     weekly_schedule: {
       [key: string]: {
@@ -131,7 +131,7 @@ export class BusinessOrmEntity {
     };
     special_dates: Array<{
       date: string;
-      type: "CLOSED" | "SPECIAL_HOURS" | "HOLIDAY" | "MAINTENANCE";
+      type: 'CLOSED' | 'SPECIAL_HOURS' | 'HOLIDAY' | 'MAINTENANCE';
       label?: string;
       time_slots?: Array<{
         start_time: string;
@@ -141,20 +141,20 @@ export class BusinessOrmEntity {
     timezone: string;
   };
 
-  @Column({ type: "varchar", length: 500, nullable: true })
+  @Column({ type: 'varchar', length: 500, nullable: true })
   logo_url!: string | null;
 
-  @CreateDateColumn({ type: "timestamptz" })
+  @CreateDateColumn({ type: 'timestamptz' })
   created_at!: Date;
 
-  @UpdateDateColumn({ type: "timestamptz" })
+  @UpdateDateColumn({ type: 'timestamptz' })
   updated_at!: Date;
 
   // 🖼️ Relations for image management
-  @OneToMany("BusinessImageOrmEntity", "business", { lazy: true })
+  @OneToMany('BusinessImageOrmEntity', 'business', { lazy: true })
   images?: any[]; // Lazy loaded to avoid circular imports
 
-  @OneToMany("BusinessGalleryOrmEntity", "business", { lazy: true })
+  @OneToMany('BusinessGalleryOrmEntity', 'business', { lazy: true })
   galleries?: any[]; // Lazy loaded to avoid circular imports
 
   // ✅ NO MAPPING LOGIC HERE

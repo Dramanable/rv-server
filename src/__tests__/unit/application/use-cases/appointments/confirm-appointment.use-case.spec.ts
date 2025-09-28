@@ -4,9 +4,9 @@
  * ✅ Clean Architecture - Application Layer Testing
  */
 
-import { ConfirmAppointmentUseCase } from "../../../../../application/use-cases/appointments/confirm-appointment.use-case";
-import { AppointmentRepository } from "../../../../../domain/repositories/appointment.repository.interface";
-import { AppointmentNotFoundError } from "../../../../../application/exceptions/appointment.exceptions";
+import { ConfirmAppointmentUseCase } from '../../../../../application/use-cases/appointments/confirm-appointment.use-case';
+import { AppointmentRepository } from '../../../../../domain/repositories/appointment.repository.interface';
+import { AppointmentNotFoundError } from '../../../../../application/exceptions/appointment.exceptions';
 
 // ===== MOCK REPOSITORY =====
 
@@ -40,7 +40,7 @@ const createMockAppointmentRepository =
 
 // ===== TESTS =====
 
-describe("ConfirmAppointmentUseCase", () => {
+describe('ConfirmAppointmentUseCase', () => {
   let useCase: ConfirmAppointmentUseCase;
   let mockRepository: jest.Mocked<AppointmentRepository>;
 
@@ -49,18 +49,18 @@ describe("ConfirmAppointmentUseCase", () => {
     useCase = new ConfirmAppointmentUseCase(mockRepository);
   });
 
-  describe("execute", () => {
+  describe('execute', () => {
     const validRequest = {
-      appointmentId: "appointment-id-123",
-      requestingUserId: "user-id-456",
-      confirmationMethod: "EMAIL" as const,
-      notes: "Client called to confirm",
+      appointmentId: 'appointment-id-123',
+      requestingUserId: 'user-id-456',
+      confirmationMethod: 'EMAIL' as const,
+      notes: 'Client called to confirm',
     };
 
-    it("should be implemented later (placeholder test)", async () => {
+    it('should be implemented later (placeholder test)', async () => {
       // ✅ TEST TEMPORAIRE - En attendant l'implémentation complète
       await expect(useCase.execute(validRequest)).rejects.toThrow(
-        "ConfirmAppointmentUseCase not yet fully implemented",
+        'ConfirmAppointmentUseCase not yet fully implemented',
       );
     });
 

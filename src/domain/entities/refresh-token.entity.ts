@@ -66,12 +66,12 @@ export class RefreshToken {
    */
   revoke(reason: string): RefreshToken {
     if (this.isRevoked) {
-      throw new Error("Token is already revoked");
+      throw new Error('Token is already revoked');
     }
 
     return new RefreshToken(
       this.userId,
-      "dummy-token-for-revoked-with-minimum-length-32chars", // Token dummy valide
+      'dummy-token-for-revoked-with-minimum-length-32chars', // Token dummy valide
       this.expiresAt,
       this.deviceId,
       this.userAgent,
@@ -150,7 +150,7 @@ export class RefreshToken {
     this.validateBasicInputs(userId, token);
 
     if (expiresAt <= new Date()) {
-      throw new Error("Expiration date must be in the future");
+      throw new Error('Expiration date must be in the future');
     }
 
     // Vérification que l'expiration n'est pas trop lointaine (max 1 an)
@@ -159,7 +159,7 @@ export class RefreshToken {
 
     if (expiresAt > maxExpiry) {
       throw new Error(
-        "Expiration date cannot be more than 1 year in the future",
+        'Expiration date cannot be more than 1 year in the future',
       );
     }
   }
@@ -169,15 +169,15 @@ export class RefreshToken {
    */
   private validateBasicInputs(userId: string, token: string): void {
     if (!userId || userId.trim().length === 0) {
-      throw new Error("User ID cannot be empty");
+      throw new Error('User ID cannot be empty');
     }
 
     if (!token || token.trim().length === 0) {
-      throw new Error("Token cannot be empty");
+      throw new Error('Token cannot be empty');
     }
 
     if (token.length < 32) {
-      throw new Error("Token must be at least 32 characters long");
+      throw new Error('Token must be at least 32 characters long');
     }
   }
 
@@ -202,7 +202,7 @@ export class RefreshToken {
   private generateId(): string {
     // Simulation d'un UUID - en production, utiliser crypto.randomUUID()
     return (
-      "rt_" +
+      'rt_' +
       Math.random().toString(36).substring(2, 15) +
       Math.random().toString(36).substring(2, 15)
     );
@@ -241,7 +241,7 @@ export class RefreshToken {
     createdAt?: Date,
   ): RefreshToken {
     // Créer un token temporaire pour la reconstruction
-    const tempToken = "temp-reconstruction-token-32chars-min";
+    const tempToken = 'temp-reconstruction-token-32chars-min';
     const instance = new RefreshToken(
       userId,
       tempToken,
@@ -253,20 +253,20 @@ export class RefreshToken {
     );
 
     // Override les propriétés avec les vraies valeurs
-    Object.defineProperty(instance, "id", { value: id, writable: false });
-    Object.defineProperty(instance, "tokenHash", {
+    Object.defineProperty(instance, 'id', { value: id, writable: false });
+    Object.defineProperty(instance, 'tokenHash', {
       value: tokenHash,
       writable: false,
     });
-    Object.defineProperty(instance, "isRevoked", {
+    Object.defineProperty(instance, 'isRevoked', {
       value: isRevoked,
       writable: false,
     });
-    Object.defineProperty(instance, "revokedAt", {
+    Object.defineProperty(instance, 'revokedAt', {
       value: revokedAt,
       writable: false,
     });
-    Object.defineProperty(instance, "createdAt", {
+    Object.defineProperty(instance, 'createdAt', {
       value: createdAt || new Date(),
       writable: false,
     });

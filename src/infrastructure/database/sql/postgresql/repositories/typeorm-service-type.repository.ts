@@ -1,18 +1,18 @@
-import { Injectable } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
-import { ServiceType } from "@domain/entities/service-type.entity";
+import { ServiceType } from '@domain/entities/service-type.entity';
 import {
   IServiceTypeRepository,
   ServiceTypeSearchCriteria,
   ServiceTypeSearchResult,
-} from "@domain/repositories/service-type.repository";
-import { BusinessId } from "@domain/value-objects/business-id.value-object";
-import { ServiceTypeId } from "@domain/value-objects/service-type-id.value-object";
+} from '@domain/repositories/service-type.repository';
+import { BusinessId } from '@domain/value-objects/business-id.value-object';
+import { ServiceTypeId } from '@domain/value-objects/service-type-id.value-object';
 
-import { ServiceTypeOrmEntity } from "@infrastructure/database/sql/postgresql/entities/service-type-orm.entity";
-import { ServiceTypeOrmMapper } from "@infrastructure/mappers/service-type-orm.mapper";
+import { ServiceTypeOrmEntity } from '@infrastructure/database/sql/postgresql/entities/service-type-orm.entity';
+import { ServiceTypeOrmMapper } from '@infrastructure/mappers/service-type-orm.mapper';
 
 /**
  * ⚠️ CRITICAL - ServiceType TypeORM Repository Implementation
@@ -58,7 +58,7 @@ export class TypeOrmServiceTypeRepository implements IServiceTypeRepository {
     // 1. Requête ORM avec index optimisé
     const ormEntities = await this.repository.find({
       where: { businessId: businessId.getValue() },
-      order: { name: "ASC" },
+      order: { name: 'ASC' },
     });
 
     // 2. Conversion batch via Mapper
@@ -108,7 +108,7 @@ export class TypeOrmServiceTypeRepository implements IServiceTypeRepository {
         businessId: businessId.getValue(),
         isActive: true,
       },
-      order: { name: "ASC" },
+      order: { name: 'ASC' },
     });
 
     // 2. Conversion batch via Mapper
@@ -120,18 +120,18 @@ export class TypeOrmServiceTypeRepository implements IServiceTypeRepository {
   ): Promise<ServiceTypeSearchResult> {
     const page = criteria.page || 1;
     const limit = criteria.limit || 10;
-    const sortBy = criteria.sortBy || "name";
-    const sortOrder = criteria.sortOrder || "asc";
+    const sortBy = criteria.sortBy || 'name';
+    const sortOrder = criteria.sortOrder || 'asc';
 
     const query = this.repository
-      .createQueryBuilder("service_type")
-      .where("service_type.businessId = :businessId", {
+      .createQueryBuilder('service_type')
+      .where('service_type.businessId = :businessId', {
         businessId: criteria.businessId.getValue(),
       });
 
     // Filtre actif/inactif
     if (criteria.isActive !== undefined) {
-      query.andWhere("service_type.isActive = :isActive", {
+      query.andWhere('service_type.isActive = :isActive', {
         isActive: criteria.isActive,
       });
     }
@@ -139,14 +139,14 @@ export class TypeOrmServiceTypeRepository implements IServiceTypeRepository {
     // Recherche textuelle
     if (criteria.search?.trim()) {
       query.andWhere(
-        "(service_type.name ILIKE :search OR service_type.description ILIKE :search)",
+        '(service_type.name ILIKE :search OR service_type.description ILIKE :search)',
         { search: `%${criteria.search.trim()}%` },
       );
     }
 
     // Filtres par codes
     if (criteria.codes && criteria.codes.length > 0) {
-      query.andWhere("service_type.code IN (:...codes)", {
+      query.andWhere('service_type.code IN (:...codes)', {
         codes: criteria.codes,
       });
     }
@@ -156,7 +156,7 @@ export class TypeOrmServiceTypeRepository implements IServiceTypeRepository {
     query.skip(offset).take(limit);
 
     // Tri
-    const orderDirection = sortOrder.toUpperCase() as "ASC" | "DESC";
+    const orderDirection = sortOrder.toUpperCase() as 'ASC' | 'DESC';
     query.orderBy(`service_type.${sortBy}`, orderDirection);
 
     // Exécution avec count pour pagination
@@ -232,7 +232,7 @@ export class TypeOrmServiceTypeRepository implements IServiceTypeRepository {
   ): Promise<ServiceType[]> {
     const ormEntities = await this.repository.find({
       where: { businessId: businessId.getValue() },
-      order: { sortOrder: "ASC", name: "ASC" },
+      order: { sortOrder: 'ASC', name: 'ASC' },
     });
     return ServiceTypeOrmMapper.toDomainEntities(ormEntities);
   }

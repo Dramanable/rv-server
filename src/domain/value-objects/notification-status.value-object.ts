@@ -4,18 +4,18 @@
  * @version 1.0.0
  */
 
-import { DomainError } from "../exceptions/domain.exceptions";
+import { DomainError } from '../exceptions/domain.exceptions';
 
 /**
  * Enum pour les statuts de notification
  */
 export enum NotificationStatusType {
-  PENDING = "PENDING",
-  SENT = "SENT",
-  DELIVERED = "DELIVERED",
-  READ = "READ",
-  FAILED = "FAILED",
-  CANCELLED = "CANCELLED",
+  PENDING = 'PENDING',
+  SENT = 'SENT',
+  DELIVERED = 'DELIVERED',
+  READ = 'READ',
+  FAILED = 'FAILED',
+  CANCELLED = 'CANCELLED',
 }
 
 /**
@@ -32,8 +32,8 @@ export class NotificationStatus {
    * @throws DomainError si le statut n'est pas valide
    */
   static create(status: string): NotificationStatus {
-    if (!status || typeof status !== "string") {
-      throw new DomainError("Notification status is required");
+    if (!status || typeof status !== 'string') {
+      throw new DomainError('Notification status is required');
     }
 
     const normalizedStatus = status.toUpperCase().trim();
@@ -44,7 +44,7 @@ export class NotificationStatus {
       )
     ) {
       throw new DomainError(
-        `Invalid notification status: ${status}. Valid statuses are: ${Object.values(NotificationStatusType).join(", ")}`,
+        `Invalid notification status: ${status}. Valid statuses are: ${Object.values(NotificationStatusType).join(', ')}`,
       );
     }
 
@@ -82,8 +82,8 @@ export class NotificationStatus {
    * Factory method pour créer depuis string
    */
   static fromString(statusString: string): NotificationStatus {
-    if (!statusString || typeof statusString !== "string") {
-      throw new DomainError("Status string is required");
+    if (!statusString || typeof statusString !== 'string') {
+      throw new DomainError('Status string is required');
     }
 
     const normalizedStatus = statusString.toUpperCase().trim();
@@ -94,7 +94,7 @@ export class NotificationStatus {
       )
     ) {
       throw new DomainError(
-        `Invalid notification status: ${statusString}. Valid statuses are: ${Object.values(NotificationStatusType).join(", ")}`,
+        `Invalid notification status: ${statusString}. Valid statuses are: ${Object.values(NotificationStatusType).join(', ')}`,
       );
     }
 

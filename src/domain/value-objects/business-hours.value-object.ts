@@ -31,19 +31,19 @@ export interface SpecialDate {
 export class BusinessHours {
   private static readonly TIME_REGEX = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
   private static readonly DAY_NAMES = [
-    "Dimanche",
-    "Lundi",
-    "Mardi",
-    "Mercredi",
-    "Jeudi",
-    "Vendredi",
-    "Samedi",
+    'Dimanche',
+    'Lundi',
+    'Mardi',
+    'Mercredi',
+    'Jeudi',
+    'Vendredi',
+    'Samedi',
   ];
 
   constructor(
     private readonly weeklySchedule: DaySchedule[],
     private readonly specialDates: SpecialDate[] = [],
-    private readonly timezone: string = "Europe/Paris",
+    private readonly timezone: string = 'Europe/Paris',
   ) {
     this.validate();
   }
@@ -51,7 +51,7 @@ export class BusinessHours {
   private validate(): void {
     // Vérifier que nous avons 7 jours
     if (this.weeklySchedule.length !== 7) {
-      throw new Error("Weekly schedule must contain exactly 7 days");
+      throw new Error('Weekly schedule must contain exactly 7 days');
     }
 
     // Vérifier que les jours sont dans l'ordre (0-6)
@@ -70,15 +70,15 @@ export class BusinessHours {
 
   private validateDaySchedule(day: DaySchedule): void {
     if (day.dayOfWeek < 0 || day.dayOfWeek > 6) {
-      throw new Error("dayOfWeek must be between 0 and 6");
+      throw new Error('dayOfWeek must be between 0 and 6');
     }
 
     if (!day.isOpen && day.timeSlots.length > 0) {
-      throw new Error("Closed day cannot have time slots");
+      throw new Error('Closed day cannot have time slots');
     }
 
     if (day.isOpen && day.timeSlots.length === 0) {
-      throw new Error("Open day must have at least one time slot");
+      throw new Error('Open day must have at least one time slot');
     }
 
     // Valider chaque créneau
@@ -109,11 +109,11 @@ export class BusinessHours {
       special.isOpen &&
       (!special.timeSlots || special.timeSlots.length === 0)
     ) {
-      throw new Error("Open special date must have time slots");
+      throw new Error('Open special date must have time slots');
     }
 
     if (!special.isOpen && special.timeSlots && special.timeSlots.length > 0) {
-      throw new Error("Closed special date cannot have time slots");
+      throw new Error('Closed special date cannot have time slots');
     }
 
     if (special.timeSlots) {
@@ -140,15 +140,15 @@ export class BusinessHours {
   }
 
   private timeToMinutes(time: string): number {
-    const [hours, minutes] = time.split(":").map(Number);
+    const [hours, minutes] = time.split(':').map(Number);
     return hours * 60 + minutes;
   }
 
   // Factory methods
   static createStandardWeek(
     openDays: number[], // [1, 2, 3, 4, 5] pour Lun-Ven
-    openTime: string = "09:00",
-    closeTime: string = "17:00",
+    openTime: string = '09:00',
+    closeTime: string = '17:00',
     lunchBreak?: { start: string; end: string },
   ): BusinessHours {
     const weeklySchedule: DaySchedule[] = [];
@@ -160,8 +160,8 @@ export class BusinessHours {
         if (lunchBreak) {
           // Diviser en deux créneaux avec pause déjeuner
           timeSlots = [
-            { start: openTime, end: lunchBreak.start, name: "Matin" },
-            { start: lunchBreak.end, end: closeTime, name: "Après-midi" },
+            { start: openTime, end: lunchBreak.start, name: 'Matin' },
+            { start: lunchBreak.end, end: closeTime, name: 'Après-midi' },
           ];
         } else {
           // Un seul créneau
@@ -203,11 +203,11 @@ export class BusinessHours {
       dayOfWeek: i,
       isOpen: openDays.includes(i),
       timeSlots: openDays.includes(i)
-        ? [{ start: "00:00", end: "23:59", name: "24h/24" }]
+        ? [{ start: '00:00', end: '23:59', name: '24h/24' }]
         : [],
     }));
 
-    return new BusinessHours(schedule, [], "Europe/Paris");
+    return new BusinessHours(schedule, [], 'Europe/Paris');
   }
 
   /**
@@ -226,7 +226,7 @@ export class BusinessHours {
     >;
     special_dates: Array<{
       date: string;
-      type: "CLOSED" | "SPECIAL_HOURS" | "HOLIDAY" | "MAINTENANCE";
+      type: 'CLOSED' | 'SPECIAL_HOURS' | 'HOLIDAY' | 'MAINTENANCE';
       label?: string;
       time_slots?: Array<{
         start_time: string;
@@ -252,7 +252,7 @@ export class BusinessHours {
     // Convertir special_dates en SpecialDate[]
     const specialDates: SpecialDate[] = data.special_dates.map((special) => ({
       date: new Date(special.date),
-      isOpen: special.type !== "CLOSED",
+      isOpen: special.type !== 'CLOSED',
       timeSlots:
         special.time_slots?.map((slot) => ({
           start: slot.start_time,
@@ -280,7 +280,7 @@ export class BusinessHours {
   // Business logic
   isOpenOnDay(dayOfWeek: number): boolean {
     if (dayOfWeek < 0 || dayOfWeek > 6) {
-      throw new Error("dayOfWeek must be between 0 and 6");
+      throw new Error('dayOfWeek must be between 0 and 6');
     }
     return this.weeklySchedule[dayOfWeek].isOpen;
   }
@@ -301,7 +301,7 @@ export class BusinessHours {
 
   getTimeSlotsForDay(dayOfWeek: number): TimeSlot[] {
     if (dayOfWeek < 0 || dayOfWeek > 6) {
-      throw new Error("dayOfWeek must be between 0 and 6");
+      throw new Error('dayOfWeek must be between 0 and 6');
     }
     return [...this.weeklySchedule[dayOfWeek].timeSlots];
   }
@@ -374,7 +374,7 @@ export class BusinessHours {
 
   withUpdatedDay(
     dayOfWeek: number,
-    schedule: Omit<DaySchedule, "dayOfWeek">,
+    schedule: Omit<DaySchedule, 'dayOfWeek'>,
   ): BusinessHours {
     const newWeeklySchedule = [...this.weeklySchedule];
     newWeeklySchedule[dayOfWeek] = {
@@ -411,9 +411,9 @@ export class BusinessHours {
     const slotsText = day.timeSlots
       .map(
         (slot) =>
-          `${slot.start}-${slot.end}${slot.name ? ` (${slot.name})` : ""}`,
+          `${slot.start}-${slot.end}${slot.name ? ` (${slot.name})` : ''}`,
       )
-      .join(", ");
+      .join(', ');
 
     return `${dayName}: ${slotsText}`;
   }
@@ -421,17 +421,17 @@ export class BusinessHours {
   formatWeek(): string {
     return this.weeklySchedule
       .map((day) => this.formatDay(day.dayOfWeek))
-      .join("\n");
+      .join('\n');
   }
 
   formatSpecialDates(): string {
     if (this.specialDates.length === 0) {
-      return "Aucune date spéciale définie";
+      return 'Aucune date spéciale définie';
     }
 
     return this.specialDates
       .map((special) => {
-        const dateStr = special.date.toLocaleDateString("fr-FR");
+        const dateStr = special.date.toLocaleDateString('fr-FR');
         if (!special.isOpen) {
           return `${dateStr}: Fermé (${special.reason})`;
         }
@@ -439,11 +439,11 @@ export class BusinessHours {
         const slotsText =
           special.timeSlots
             ?.map((slot) => `${slot.start}-${slot.end}`)
-            .join(", ") || "";
+            .join(', ') || '';
 
         return `${dateStr}: ${slotsText} (${special.reason})`;
       })
-      .join("\n");
+      .join('\n');
   }
 
   // Statistics

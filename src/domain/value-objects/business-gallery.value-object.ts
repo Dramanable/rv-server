@@ -4,7 +4,7 @@
  * ✅ Collection of business images with business rules
  */
 
-import { BusinessImage, ImageCategory } from "./business-image.value-object";
+import { BusinessImage, ImageCategory } from './business-image.value-object';
 
 export class BusinessGallery {
   private readonly _images: Map<string, BusinessImage>;
@@ -52,13 +52,13 @@ export class BusinessGallery {
 
     // Check maximum images limit
     if (this._images.size >= 20) {
-      throw new Error("Maximum of 20 images allowed per business gallery");
+      throw new Error('Maximum of 20 images allowed per business gallery');
     }
 
     // Check for duplicate URLs
     const existingImage = this.findByUrl(image.url);
     if (existingImage) {
-      throw new Error("Image with this URL already exists in gallery");
+      throw new Error('Image with this URL already exists in gallery');
     }
 
     const newImages = new Map(this._images);
@@ -85,7 +85,7 @@ export class BusinessGallery {
     }
 
     if (newOrder < 0) {
-      throw new Error("Image order must be non-negative");
+      throw new Error('Image order must be non-negative');
     }
 
     // Create new image with updated order
@@ -246,12 +246,12 @@ export class BusinessGallery {
   // Validation methods
   private validateImageBeforeAdd(image: BusinessImage): void {
     if (!image) {
-      throw new Error("Image cannot be null or undefined");
+      throw new Error('Image cannot be null or undefined');
     }
 
     if (!image.isOptimizedForWeb()) {
       throw new Error(
-        "Image must be optimized for web (max 2MB, supported format)",
+        'Image must be optimized for web (max 2MB, supported format)',
       );
     }
   }
@@ -262,12 +262,12 @@ export class BusinessGallery {
 
     // Business rule: Maximum 1 logo
     if (logoImages.length > 1) {
-      throw new Error("Only one logo image is allowed per business");
+      throw new Error('Only one logo image is allowed per business');
     }
 
     // Business rule: Maximum 1 cover image
     if (coverImages.length > 1) {
-      throw new Error("Only one cover image is allowed per business");
+      throw new Error('Only one cover image is allowed per business');
     }
 
     // Business rule: Check for unique orders within categories

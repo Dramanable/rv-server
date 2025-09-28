@@ -9,13 +9,13 @@ import {
   AuthenticationService,
   AuthTokens,
   TokenPayload,
-} from "@application/ports/authentication.port";
-import type { Logger } from "@application/ports/logger.port";
-import { User } from "@domain/entities/user.entity";
-import { Inject, Injectable } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
-import { JwtService } from "@nestjs/jwt";
-import { TOKENS } from "@shared/constants/injection-tokens";
+} from '@application/ports/authentication.port';
+import type { Logger } from '@application/ports/logger.port';
+import { User } from '@domain/entities/user.entity';
+import { Inject, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
+import { TOKENS } from '@shared/constants/injection-tokens';
 
 @Injectable()
 export class JwtAuthenticationService implements AuthenticationService {
@@ -34,23 +34,23 @@ export class JwtAuthenticationService implements AuthenticationService {
     };
 
     const accessTokenExpiration = this.configService.get<number>(
-      "ACCESS_TOKEN_EXPIRATION",
+      'ACCESS_TOKEN_EXPIRATION',
       3600,
     ); // seconds
     const refreshTokenExpirationDays = this.configService.get<number>(
-      "REFRESH_TOKEN_EXPIRATION_DAYS",
+      'REFRESH_TOKEN_EXPIRATION_DAYS',
       30,
     );
 
     try {
       // Générer l'access token (courte durée)
       const accessToken = this.jwtService.sign(payload, {
-        secret: this.configService.get<string>("ACCESS_TOKEN_SECRET"),
+        secret: this.configService.get<string>('ACCESS_TOKEN_SECRET'),
         expiresIn: `${accessTokenExpiration}s`,
-        issuer: this.configService.get<string>("JWT_ISSUER", "clean-arch-app"),
+        issuer: this.configService.get<string>('JWT_ISSUER', 'clean-arch-app'),
         audience: this.configService.get<string>(
-          "JWT_AUDIENCE",
-          "clean-arch-users",
+          'JWT_AUDIENCE',
+          'clean-arch-users',
         ),
       });
 
@@ -58,15 +58,15 @@ export class JwtAuthenticationService implements AuthenticationService {
       const refreshToken = this.jwtService.sign(
         { userId: user.id }, // Payload minimal pour refresh token
         {
-          secret: this.configService.get<string>("REFRESH_TOKEN_SECRET"),
+          secret: this.configService.get<string>('REFRESH_TOKEN_SECRET'),
           expiresIn: `${refreshTokenExpirationDays}d`,
           issuer: this.configService.get<string>(
-            "JWT_ISSUER",
-            "clean-arch-app",
+            'JWT_ISSUER',
+            'clean-arch-app',
           ),
           audience: this.configService.get<string>(
-            "JWT_AUDIENCE",
-            "clean-arch-users",
+            'JWT_AUDIENCE',
+            'clean-arch-users',
           ),
         },
       );
@@ -83,47 +83,47 @@ export class JwtAuthenticationService implements AuthenticationService {
         `Failed to generate tokens for user ${user.id}`,
         error instanceof Error ? error : new Error(String(error)),
       );
-      throw new Error("Token generation failed");
+      throw new Error('Token generation failed');
     }
   }
 
   async validateAccessToken(token: string): Promise<TokenPayload> {
     try {
       const payload = this.jwtService.verify(token, {
-        secret: this.configService.get<string>("ACCESS_TOKEN_SECRET"),
-        issuer: this.configService.get<string>("JWT_ISSUER", "clean-arch-app"),
+        secret: this.configService.get<string>('ACCESS_TOKEN_SECRET'),
+        issuer: this.configService.get<string>('JWT_ISSUER', 'clean-arch-app'),
         audience: this.configService.get<string>(
-          "JWT_AUDIENCE",
-          "clean-arch-users",
+          'JWT_AUDIENCE',
+          'clean-arch-users',
         ),
       });
 
       return payload;
     } catch (error) {
       this.logger.warn(
-        `Invalid access token: ${error instanceof Error ? error.message : "Unknown error"}`,
+        `Invalid access token: ${error instanceof Error ? error.message : 'Unknown error'}`,
       );
-      throw new Error("Invalid access token");
+      throw new Error('Invalid access token');
     }
   }
 
   async validateRefreshToken(token: string): Promise<TokenPayload> {
     try {
       const payload = this.jwtService.verify(token, {
-        secret: this.configService.get<string>("REFRESH_TOKEN_SECRET"),
-        issuer: this.configService.get<string>("JWT_ISSUER", "clean-arch-app"),
+        secret: this.configService.get<string>('REFRESH_TOKEN_SECRET'),
+        issuer: this.configService.get<string>('JWT_ISSUER', 'clean-arch-app'),
         audience: this.configService.get<string>(
-          "JWT_AUDIENCE",
-          "clean-arch-users",
+          'JWT_AUDIENCE',
+          'clean-arch-users',
         ),
       });
 
       return payload;
     } catch (error) {
       this.logger.warn(
-        `Invalid refresh token: ${error instanceof Error ? error.message : "Unknown error"}`,
+        `Invalid refresh token: ${error instanceof Error ? error.message : 'Unknown error'}`,
       );
-      throw new Error("Invalid refresh token");
+      throw new Error('Invalid refresh token');
     }
   }
 
@@ -144,9 +144,9 @@ export class JwtAuthenticationService implements AuthenticationService {
       return this.generateTokens(user);
     } catch (error) {
       this.logger.error(
-        `Failed to refresh tokens: ${error instanceof Error ? error.message : "Unknown error"}`,
+        `Failed to refresh tokens: ${error instanceof Error ? error.message : 'Unknown error'}`,
       );
-      throw new Error("Token refresh failed");
+      throw new Error('Token refresh failed');
     }
   }
 
@@ -154,7 +154,7 @@ export class JwtAuthenticationService implements AuthenticationService {
     // Dans une implémentation complète, vous ajouteriez le token à une blacklist
     // ou le stockeriez dans une base de données avec un statut "révoqué"
     this.logger.info(`Refresh token revoked: ${token.substring(0, 10)}...`, {
-      service: "JWT Auth Service",
+      service: 'JWT Auth Service',
     });
 
     // TODO: Implémenter la logique de révocation (blacklist, DB, etc.)
@@ -164,7 +164,7 @@ export class JwtAuthenticationService implements AuthenticationService {
   async revokeAllUserTokens(userId: string): Promise<void> {
     // Dans une implémentation complète, vous révoqueriez tous les tokens de l'utilisateur
     this.logger.info(`All tokens revoked for user: ${userId}`, {
-      service: "JWT Auth Service",
+      service: 'JWT Auth Service',
     });
 
     // TODO: Implémenter la logique de révocation massive

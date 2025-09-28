@@ -25,15 +25,15 @@
  * - Performance des index validée
  */
 
-import { MigrationInterface, QueryRunner, Table } from "typeorm";
+import { MigrationInterface, QueryRunner, Table } from 'typeorm';
 
 export class CreateRoleAssignmentTable1727289600000
   implements MigrationInterface
 {
-  name = "CreateRoleAssignmentTable1727289600000";
+  name = 'CreateRoleAssignmentTable1727289600000';
 
   private getSchemaName(): string {
-    const schema = process.env.DB_SCHEMA || "public";
+    const schema = process.env.DB_SCHEMA || 'public';
 
     // Validation du nom de schéma (sécurité)
     if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(schema)) {
@@ -61,52 +61,52 @@ export class CreateRoleAssignmentTable1727289600000
         columns: [
           // 🆔 Identification primaire
           {
-            name: "id",
-            type: "uuid",
+            name: 'id',
+            type: 'uuid',
             isPrimary: true,
-            generationStrategy: "uuid",
-            default: "uuid_generate_v4()",
+            generationStrategy: 'uuid',
+            default: 'uuid_generate_v4()',
             comment: "Identifiant unique de l'assignation de rôle",
           },
 
           // 👤 Assignation utilisateur et rôle
           {
-            name: "user_id",
-            type: "uuid",
+            name: 'user_id',
+            type: 'uuid',
             isNullable: false,
             comment: "UUID de l'utilisateur assigné",
           },
           {
-            name: "role",
-            type: "varchar",
-            length: "50",
+            name: 'role',
+            type: 'varchar',
+            length: '50',
             isNullable: false,
-            comment: "Rôle assigné (enum UserRole)",
+            comment: 'Rôle assigné (enum UserRole)',
           },
 
           // 🏢 Contexte métier hiérarchique
           {
-            name: "business_id",
-            type: "uuid",
+            name: 'business_id',
+            type: 'uuid',
             isNullable: false,
-            comment: "UUID du business (niveau racine)",
+            comment: 'UUID du business (niveau racine)',
           },
           {
-            name: "location_id",
-            type: "uuid",
+            name: 'location_id',
+            type: 'uuid',
             isNullable: true,
-            comment: "UUID de la location (niveau intermédiaire)",
+            comment: 'UUID de la location (niveau intermédiaire)',
           },
           {
-            name: "department_id",
-            type: "uuid",
+            name: 'department_id',
+            type: 'uuid',
             isNullable: true,
-            comment: "UUID du département (niveau feuille)",
+            comment: 'UUID du département (niveau feuille)',
           },
           {
-            name: "assignment_scope",
-            type: "varchar",
-            length: "20",
+            name: 'assignment_scope',
+            type: 'varchar',
+            length: '20',
             isNullable: false,
             comment:
               "Étendue de l'assignation (BUSINESS, LOCATION, DEPARTMENT)",
@@ -114,21 +114,21 @@ export class CreateRoleAssignmentTable1727289600000
 
           // ⏰ Gestion temporelle
           {
-            name: "assigned_at",
-            type: "timestamp with time zone",
+            name: 'assigned_at',
+            type: 'timestamp with time zone',
             isNullable: false,
-            default: "CURRENT_TIMESTAMP",
+            default: 'CURRENT_TIMESTAMP',
             comment: "Date d'assignation du rôle",
           },
           {
-            name: "expires_at",
-            type: "timestamp with time zone",
+            name: 'expires_at',
+            type: 'timestamp with time zone',
             isNullable: true,
             comment: "Date d'expiration (nullable = permanent)",
           },
           {
-            name: "is_active",
-            type: "boolean",
+            name: 'is_active',
+            type: 'boolean',
             isNullable: false,
             default: true,
             comment: "Status actif/inactif de l'assignation",
@@ -136,76 +136,76 @@ export class CreateRoleAssignmentTable1727289600000
 
           // 📝 Métadonnées business
           {
-            name: "notes",
-            type: "text",
+            name: 'notes',
+            type: 'text',
             isNullable: true,
             comment: "Notes sur l'assignation",
           },
           {
-            name: "metadata",
-            type: "jsonb",
+            name: 'metadata',
+            type: 'jsonb',
             isNullable: true,
-            comment: "Métadonnées flexibles en JSON",
+            comment: 'Métadonnées flexibles en JSON',
           },
 
           // 👥 Audit trail - Traçabilité obligatoire
           {
-            name: "assigned_by",
-            type: "uuid",
+            name: 'assigned_by',
+            type: 'uuid',
             isNullable: false,
             comment: "UUID de l'utilisateur qui a fait l'assignation",
           },
           {
-            name: "created_by",
-            type: "uuid",
+            name: 'created_by',
+            type: 'uuid',
             isNullable: false,
             comment: "UUID de l'utilisateur créateur",
           },
           {
-            name: "updated_by",
-            type: "uuid",
+            name: 'updated_by',
+            type: 'uuid',
             isNullable: false,
-            comment: "UUID du dernier utilisateur modificateur",
+            comment: 'UUID du dernier utilisateur modificateur',
           },
 
           // ⏱️ Timestamps automatiques
           {
-            name: "created_at",
-            type: "timestamp with time zone",
+            name: 'created_at',
+            type: 'timestamp with time zone',
             isNullable: false,
-            default: "CURRENT_TIMESTAMP",
-            comment: "Date de création",
+            default: 'CURRENT_TIMESTAMP',
+            comment: 'Date de création',
           },
           {
-            name: "updated_at",
-            type: "timestamp with time zone",
+            name: 'updated_at',
+            type: 'timestamp with time zone',
             isNullable: false,
-            default: "CURRENT_TIMESTAMP",
-            comment: "Date de dernière modification",
+            default: 'CURRENT_TIMESTAMP',
+            comment: 'Date de dernière modification',
           },
 
           // 🔄 Versioning et métadonnées techniques
           {
-            name: "version",
-            type: "integer",
+            name: 'version',
+            type: 'integer',
             isNullable: false,
             default: 1,
-            comment: "Version pour optimistic locking",
+            comment: 'Version pour optimistic locking',
           },
           {
-            name: "assignment_source",
-            type: "varchar",
-            length: "50",
+            name: 'assignment_source',
+            type: 'varchar',
+            length: '50',
             isNullable: false,
             default: "'MANUAL'",
             comment: "Source de l'assignation (MANUAL, AUTOMATED, IMPORTED)",
           },
           {
-            name: "priority_level",
-            type: "integer",
+            name: 'priority_level',
+            type: 'integer',
             isNullable: false,
             default: 0,
-            comment: "Niveau de priorité pour résolution des conflits",
+            comment: 'Niveau de priorité pour résolution des conflits',
           },
         ],
       }),

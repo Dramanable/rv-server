@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsBoolean,
   IsHexColor,
@@ -9,7 +9,7 @@ import {
   Length,
   Matches,
   Min,
-} from "class-validator";
+} from 'class-validator';
 
 /**
  * DTO pour la mise à jour d'un type de calendrier
@@ -19,16 +19,16 @@ import {
  */
 export class UpdateCalendarTypeDto {
   @ApiProperty({
-    description: "ID of the business owning this calendar type",
-    example: "123e4567-e89b-12d3-a456-426614174000",
-    format: "uuid",
+    description: 'ID of the business owning this calendar type',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+    format: 'uuid',
   })
   @IsUUID()
   readonly businessId!: string;
 
   @ApiPropertyOptional({
-    description: "Name of the calendar type",
-    example: "Consultation Médicale Spécialisée",
+    description: 'Name of the calendar type',
+    example: 'Consultation Médicale Spécialisée',
     minLength: 2,
     maxLength: 100,
   })
@@ -38,25 +38,25 @@ export class UpdateCalendarTypeDto {
   readonly name?: string;
 
   @ApiPropertyOptional({
-    description: "Unique code for the calendar type (uppercase)",
-    example: "CONSULTATION_SPEC",
+    description: 'Unique code for the calendar type (uppercase)',
+    example: 'CONSULTATION_SPEC',
     minLength: 2,
     maxLength: 20,
-    pattern: "^[A-Z0-9_]+$",
+    pattern: '^[A-Z0-9_]+$',
   })
   @IsOptional()
   @IsString()
   @Length(2, 20)
   @Matches(/^[A-Z0-9_]+$/, {
     message:
-      "Code must contain only uppercase letters, numbers and underscores",
+      'Code must contain only uppercase letters, numbers and underscores',
   })
   readonly code?: string;
 
   @ApiPropertyOptional({
-    description: "Description of the calendar type",
+    description: 'Description of the calendar type',
     example:
-      "Calendrier pour les consultations médicales spécialisées avec suivi approfondi",
+      'Calendrier pour les consultations médicales spécialisées avec suivi approfondi',
     minLength: 10,
     maxLength: 500,
   })
@@ -66,9 +66,9 @@ export class UpdateCalendarTypeDto {
   readonly description?: string;
 
   @ApiPropertyOptional({
-    description: "Color associated with the calendar type (hex format)",
-    example: "#2196F3",
-    pattern: "^#[0-9A-Fa-f]{6}$",
+    description: 'Color associated with the calendar type (hex format)',
+    example: '#2196F3',
+    pattern: '^#[0-9A-Fa-f]{6}$',
   })
   @IsOptional()
   @IsString()
@@ -76,8 +76,8 @@ export class UpdateCalendarTypeDto {
   readonly color?: string;
 
   @ApiPropertyOptional({
-    description: "Icon identifier for the calendar type",
-    example: "specialized-calendar",
+    description: 'Icon identifier for the calendar type',
+    example: 'specialized-calendar',
     minLength: 2,
     maxLength: 50,
   })
@@ -87,7 +87,7 @@ export class UpdateCalendarTypeDto {
   readonly icon?: string;
 
   @ApiPropertyOptional({
-    description: "Sort order for display purposes",
+    description: 'Sort order for display purposes',
     example: 1,
     minimum: 0,
   })
@@ -97,7 +97,7 @@ export class UpdateCalendarTypeDto {
   readonly sortOrder?: number;
 
   @ApiPropertyOptional({
-    description: "Whether the calendar type is active",
+    description: 'Whether the calendar type is active',
     example: true,
   })
   @IsOptional()

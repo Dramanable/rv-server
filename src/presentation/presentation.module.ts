@@ -138,7 +138,7 @@ import { NotificationController } from './controllers/notification.controller';
 import { PermissionController } from './controllers/permission.controller';
 import { ProfessionalController } from './controllers/professional.controller';
 import { RoleManagementController } from './controllers/role-management.controller';
-// import { ServiceTypeController } from './controllers/service-type.controller'; // Temporarily disabled
+import { ServiceTypeController } from './controllers/service-type.controller';
 import { ServiceController } from './controllers/service.controller';
 // Removed ServiceTestController - debugging completed
 import { StaffAvailabilityController } from './controllers/staff-availability.controller';
@@ -173,8 +173,8 @@ import { PresentationCookieService } from './services/cookie.service';
     CalendarController,
     CalendarTypesController,
     ServiceController,
+    ServiceTypeController,
     // ServiceTestController removed - debugging completed
-    // ServiceTypeController, // Temporarily disabled
     StaffController,
     StaffAvailabilityController,
     BusinessImageController,
@@ -1085,9 +1085,13 @@ import { PresentationCookieService } from './services/cookie.service';
     },
     {
       provide: TOKENS.GET_PERMISSION_BY_ID_USE_CASE,
-      useFactory: (permissionRepo) =>
-        new GetPermissionByIdUseCase(permissionRepo),
-      inject: [TOKENS.PERMISSION_REPOSITORY],
+      useFactory: (permissionRepo, logger, i18n) =>
+        new GetPermissionByIdUseCase(permissionRepo, logger, i18n),
+      inject: [
+        TOKENS.PERMISSION_REPOSITORY,
+        TOKENS.LOGGER,
+        TOKENS.I18N_SERVICE,
+      ],
     },
     {
       provide: TOKENS.LIST_PERMISSIONS_USE_CASE,

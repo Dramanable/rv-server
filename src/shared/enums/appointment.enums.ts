@@ -33,7 +33,7 @@ export enum AppointmentStatus {
    * - Payment may be pending
    * - Automatic reminders not yet active
    */
-  PENDING = "PENDING",
+  PENDING = 'PENDING',
 
   /**
    * ✅ Appointment is confirmed and scheduled
@@ -42,7 +42,7 @@ export enum AppointmentStatus {
    * - Reminders and notifications are active
    * - Payment confirmed (if required)
    */
-  CONFIRMED = "CONFIRMED",
+  CONFIRMED = 'CONFIRMED',
 
   /**
    * 🏃 Appointment is currently in progress
@@ -51,7 +51,7 @@ export enum AppointmentStatus {
    * - May trigger real-time status updates
    * - Prevents double-booking during service
    */
-  IN_PROGRESS = "IN_PROGRESS",
+  IN_PROGRESS = 'IN_PROGRESS',
 
   /**
    * 🏁 Appointment has been completed successfully
@@ -60,7 +60,7 @@ export enum AppointmentStatus {
    * - Ready for follow-up actions
    * - Generates completion metrics
    */
-  COMPLETED = "COMPLETED",
+  COMPLETED = 'COMPLETED',
 
   /**
    * ❌ Appointment has been cancelled
@@ -69,7 +69,7 @@ export enum AppointmentStatus {
    * - Cancellation fees may apply
    * - Cancellation reason should be recorded
    */
-  CANCELLED = "CANCELLED",
+  CANCELLED = 'CANCELLED',
 
   /**
    * 👻 Client did not show up for appointment
@@ -78,7 +78,7 @@ export enum AppointmentStatus {
    * - May affect client standing/future bookings
    * - Automatic status update after grace period
    */
-  NO_SHOW = "NO_SHOW",
+  NO_SHOW = 'NO_SHOW',
 
   /**
    * 📅 Appointment has been rescheduled
@@ -87,7 +87,7 @@ export enum AppointmentStatus {
    * - Original slot is freed, new slot reserved
    * - Maintains appointment history and context
    */
-  RESCHEDULED = "RESCHEDULED",
+  RESCHEDULED = 'RESCHEDULED',
 }
 
 /**
@@ -100,49 +100,49 @@ export enum AppointmentRecurrenceType {
   /**
    * 📅 No recurrence - single appointment
    */
-  NONE = "NONE",
+  NONE = 'NONE',
 
   /**
    * 📆 Repeats daily
    * Example: Daily physiotherapy sessions
    */
-  DAILY = "DAILY",
+  DAILY = 'DAILY',
 
   /**
    * 📅 Repeats weekly on the same day
    * Example: Weekly therapy sessions on Wednesdays
    */
-  WEEKLY = "WEEKLY",
+  WEEKLY = 'WEEKLY',
 
   /**
    * 📅 Repeats every two weeks
    * Example: Bi-weekly dental check-ups
    */
-  BI_WEEKLY = "BI_WEEKLY",
+  BI_WEEKLY = 'BI_WEEKLY',
 
   /**
    * 📅 Repeats monthly on the same date
    * Example: Monthly medical consultations
    */
-  MONTHLY = "MONTHLY",
+  MONTHLY = 'MONTHLY',
 
   /**
    * 📅 Repeats quarterly
    * Example: Quarterly business reviews
    */
-  QUARTERLY = "QUARTERLY",
+  QUARTERLY = 'QUARTERLY',
 
   /**
    * 📅 Repeats annually
    * Example: Annual health check-ups
    */
-  YEARLY = "YEARLY",
+  YEARLY = 'YEARLY',
 
   /**
    * 🛠️ Custom recurrence pattern
    * Example: Every 3 days, or specific days of the week
    */
-  CUSTOM = "CUSTOM",
+  CUSTOM = 'CUSTOM',
 }
 
 /**
@@ -154,27 +154,27 @@ export enum AppointmentReminderType {
   /**
    * 📧 Email reminder
    */
-  EMAIL = "EMAIL",
+  EMAIL = 'EMAIL',
 
   /**
    * 📱 SMS text message
    */
-  SMS = "SMS",
+  SMS = 'SMS',
 
   /**
    * 📞 Phone call reminder
    */
-  PHONE = "PHONE",
+  PHONE = 'PHONE',
 
   /**
    * 🔔 Push notification (mobile app)
    */
-  PUSH = "PUSH",
+  PUSH = 'PUSH',
 
   /**
    * 💬 WhatsApp message
    */
-  WHATSAPP = "WHATSAPP",
+  WHATSAPP = 'WHATSAPP',
 }
 
 /**
@@ -186,32 +186,32 @@ export enum AppointmentReminderTiming {
   /**
    * 🕐 1 hour before appointment
    */
-  ONE_HOUR = "ONE_HOUR",
+  ONE_HOUR = 'ONE_HOUR',
 
   /**
    * 🕕 2 hours before appointment
    */
-  TWO_HOURS = "TWO_HOURS",
+  TWO_HOURS = 'TWO_HOURS',
 
   /**
    * 🌅 Morning of appointment day
    */
-  MORNING_OF = "MORNING_OF",
+  MORNING_OF = 'MORNING_OF',
 
   /**
    * 📅 1 day before appointment
    */
-  ONE_DAY = "ONE_DAY",
+  ONE_DAY = 'ONE_DAY',
 
   /**
    * 📅 2 days before appointment
    */
-  TWO_DAYS = "TWO_DAYS",
+  TWO_DAYS = 'TWO_DAYS',
 
   /**
    * 📅 1 week before appointment
    */
-  ONE_WEEK = "ONE_WEEK",
+  ONE_WEEK = 'ONE_WEEK',
 }
 
 /**
@@ -223,32 +223,32 @@ export enum AppointmentPaymentStatus {
   /**
    * 💸 No payment required
    */
-  NOT_REQUIRED = "NOT_REQUIRED",
+  NOT_REQUIRED = 'NOT_REQUIRED',
 
   /**
    * ⏳ Payment is pending
    */
-  PENDING = "PENDING",
+  PENDING = 'PENDING',
 
   /**
    * 💳 Partial payment received
    */
-  PARTIAL = "PARTIAL",
+  PARTIAL = 'PARTIAL',
 
   /**
    * ✅ Full payment received
    */
-  PAID = "PAID",
+  PAID = 'PAID',
 
   /**
    * 🔄 Refund processed
    */
-  REFUNDED = "REFUNDED",
+  REFUNDED = 'REFUNDED',
 
   /**
    * ⚠️ Payment failed or declined
    */
-  FAILED = "FAILED",
+  FAILED = 'FAILED',
 }
 
 /**
@@ -260,22 +260,22 @@ export enum AppointmentPriority {
   /**
    * 🔴 Emergency appointment - immediate attention required
    */
-  EMERGENCY = "EMERGENCY",
+  EMERGENCY = 'EMERGENCY',
 
   /**
    * 🟠 High priority - needs prompt attention
    */
-  HIGH = "HIGH",
+  HIGH = 'HIGH',
 
   /**
    * 🟡 Normal priority - standard appointment
    */
-  NORMAL = "NORMAL",
+  NORMAL = 'NORMAL',
 
   /**
    * 🟢 Low priority - flexible scheduling
    */
-  LOW = "LOW",
+  LOW = 'LOW',
 }
 
 /**
@@ -287,37 +287,37 @@ export enum AppointmentSource {
   /**
    * 🌐 Online booking system
    */
-  ONLINE = "ONLINE",
+  ONLINE = 'ONLINE',
 
   /**
    * 📞 Phone booking
    */
-  PHONE = "PHONE",
+  PHONE = 'PHONE',
 
   /**
    * 🏢 In-person booking at location
    */
-  IN_PERSON = "IN_PERSON",
+  IN_PERSON = 'IN_PERSON',
 
   /**
    * 📱 Mobile app booking
    */
-  MOBILE_APP = "MOBILE_APP",
+  MOBILE_APP = 'MOBILE_APP',
 
   /**
    * 👩‍💼 Booked by staff member
    */
-  STAFF = "STAFF",
+  STAFF = 'STAFF',
 
   /**
    * 🔄 Automatically rescheduled by system
    */
-  AUTO_RESCHEDULE = "AUTO_RESCHEDULE",
+  AUTO_RESCHEDULE = 'AUTO_RESCHEDULE',
 
   /**
    * 🔁 Created from recurring appointment pattern
    */
-  RECURRING = "RECURRING",
+  RECURRING = 'RECURRING',
 }
 
 /**
@@ -329,42 +329,42 @@ export enum AppointmentType {
   /**
    * 🩺 Medical consultation or examination
    */
-  CONSULTATION = "CONSULTATION",
+  CONSULTATION = 'CONSULTATION',
 
   /**
    * 🛠️ Treatment or therapy session
    */
-  TREATMENT = "TREATMENT",
+  TREATMENT = 'TREATMENT',
 
   /**
    * 🔍 Follow-up appointment
    */
-  FOLLOW_UP = "FOLLOW_UP",
+  FOLLOW_UP = 'FOLLOW_UP',
 
   /**
    * 🎯 Initial assessment or evaluation
    */
-  ASSESSMENT = "ASSESSMENT",
+  ASSESSMENT = 'ASSESSMENT',
 
   /**
    * 📋 Routine check-up or maintenance
    */
-  CHECKUP = "CHECKUP",
+  CHECKUP = 'CHECKUP',
 
   /**
    * 🆘 Emergency or urgent appointment
    */
-  EMERGENCY = "EMERGENCY",
+  EMERGENCY = 'EMERGENCY',
 
   /**
    * 📞 Consultation via phone/video
    */
-  TELECONSULTATION = "TELECONSULTATION",
+  TELECONSULTATION = 'TELECONSULTATION',
 
   /**
    * 📝 Administrative or paperwork appointment
    */
-  ADMINISTRATIVE = "ADMINISTRATIVE",
+  ADMINISTRATIVE = 'ADMINISTRATIVE',
 }
 
 /**
@@ -376,22 +376,22 @@ export enum AppointmentLocationType {
   /**
    * 🏢 At business premises
    */
-  ON_SITE = "ON_SITE",
+  ON_SITE = 'ON_SITE',
 
   /**
    * 🏠 At client's location
    */
-  CLIENT_LOCATION = "CLIENT_LOCATION",
+  CLIENT_LOCATION = 'CLIENT_LOCATION',
 
   /**
    * 💻 Virtual/online appointment
    */
-  VIRTUAL = "VIRTUAL",
+  VIRTUAL = 'VIRTUAL',
 
   /**
    * 🚗 Mobile service (traveling to client)
    */
-  MOBILE = "MOBILE",
+  MOBILE = 'MOBILE',
 }
 
 /**
@@ -403,27 +403,27 @@ export enum AppointmentConfirmationType {
   /**
    * ✅ No confirmation required
    */
-  NONE = "NONE",
+  NONE = 'NONE',
 
   /**
    * 📧 Email confirmation required
    */
-  EMAIL = "EMAIL",
+  EMAIL = 'EMAIL',
 
   /**
    * 📱 SMS confirmation required
    */
-  SMS = "SMS",
+  SMS = 'SMS',
 
   /**
    * 👤 Staff manual confirmation required
    */
-  MANUAL = "MANUAL",
+  MANUAL = 'MANUAL',
 
   /**
    * 💳 Payment confirmation required
    */
-  PAYMENT = "PAYMENT",
+  PAYMENT = 'PAYMENT',
 }
 
 /**
@@ -435,32 +435,32 @@ export enum AppointmentAnalyticsCategory {
   /**
    * 👥 New client appointments
    */
-  NEW_CLIENT = "NEW_CLIENT",
+  NEW_CLIENT = 'NEW_CLIENT',
 
   /**
    * 🔄 Returning client appointments
    */
-  RETURNING_CLIENT = "RETURNING_CLIENT",
+  RETURNING_CLIENT = 'RETURNING_CLIENT',
 
   /**
    * 💰 Revenue-generating appointments
    */
-  REVENUE = "REVENUE",
+  REVENUE = 'REVENUE',
 
   /**
    * 🆓 Complimentary or free appointments
    */
-  COMPLIMENTARY = "COMPLIMENTARY",
+  COMPLIMENTARY = 'COMPLIMENTARY',
 
   /**
    * ⏱️ Long-duration appointments (over threshold)
    */
-  EXTENDED = "EXTENDED",
+  EXTENDED = 'EXTENDED',
 
   /**
    * ⚡ Quick appointments (under threshold)
    */
-  QUICK = "QUICK",
+  QUICK = 'QUICK',
 }
 
 /**
@@ -701,13 +701,13 @@ export const DEFAULT_REMINDER_CONFIGS: Record<
  * Status colors for UI components
  */
 export const APPOINTMENT_STATUS_COLORS: Record<AppointmentStatus, string> = {
-  [AppointmentStatus.PENDING]: "#FFA726", // Orange
-  [AppointmentStatus.CONFIRMED]: "#66BB6A", // Green
-  [AppointmentStatus.IN_PROGRESS]: "#42A5F5", // Blue
-  [AppointmentStatus.COMPLETED]: "#4CAF50", // Dark Green
-  [AppointmentStatus.CANCELLED]: "#EF5350", // Red
-  [AppointmentStatus.NO_SHOW]: "#FF7043", // Deep Orange
-  [AppointmentStatus.RESCHEDULED]: "#AB47BC", // Purple
+  [AppointmentStatus.PENDING]: '#FFA726', // Orange
+  [AppointmentStatus.CONFIRMED]: '#66BB6A', // Green
+  [AppointmentStatus.IN_PROGRESS]: '#42A5F5', // Blue
+  [AppointmentStatus.COMPLETED]: '#4CAF50', // Dark Green
+  [AppointmentStatus.CANCELLED]: '#EF5350', // Red
+  [AppointmentStatus.NO_SHOW]: '#FF7043', // Deep Orange
+  [AppointmentStatus.RESCHEDULED]: '#AB47BC', // Purple
 };
 
 /**
@@ -715,8 +715,8 @@ export const APPOINTMENT_STATUS_COLORS: Record<AppointmentStatus, string> = {
  */
 export const APPOINTMENT_PRIORITY_COLORS: Record<AppointmentPriority, string> =
   {
-    [AppointmentPriority.EMERGENCY]: "#F44336", // Red
-    [AppointmentPriority.HIGH]: "#FF9800", // Orange
-    [AppointmentPriority.NORMAL]: "#2196F3", // Blue
-    [AppointmentPriority.LOW]: "#4CAF50", // Green
+    [AppointmentPriority.EMERGENCY]: '#F44336', // Red
+    [AppointmentPriority.HIGH]: '#FF9800', // Orange
+    [AppointmentPriority.NORMAL]: '#2196F3', // Blue
+    [AppointmentPriority.LOW]: '#4CAF50', // Green
   };

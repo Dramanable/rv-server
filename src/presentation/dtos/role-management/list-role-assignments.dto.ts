@@ -3,8 +3,8 @@
  * Respecte les standards API de pagination, tri et filtrage avancé
  */
 
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { Type } from "class-transformer";
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import {
   IsBoolean,
   IsDateString,
@@ -17,10 +17,10 @@ import {
   Length,
   Max,
   Min,
-} from "class-validator";
+} from 'class-validator';
 
-import { AssignmentScope } from "@shared/enums/assignment-scope.enum";
-import { UserRole } from "@shared/enums/user-role.enum";
+import { AssignmentScope } from '@shared/enums/assignment-scope.enum';
+import { UserRole } from '@shared/enums/user-role.enum';
 
 /**
  * 📝 DTO pour la recherche avancée des assignations de rôles
@@ -28,15 +28,15 @@ import { UserRole } from "@shared/enums/user-role.enum";
 export class ListRoleAssignmentsDto {
   // 📊 === PAGINATION ===
   @ApiPropertyOptional({
-    description: "Numéro de page (commence à 1)",
+    description: 'Numéro de page (commence à 1)',
     example: 1,
     minimum: 1,
     default: 1,
   })
   @IsOptional()
   @Type(() => Number)
-  @IsInt({ message: "Le numéro de page doit être un entier" })
-  @Min(1, { message: "Le numéro de page doit être supérieur à 0" })
+  @IsInt({ message: 'Le numéro de page doit être un entier' })
+  @Min(1, { message: 'Le numéro de page doit être supérieur à 0' })
   readonly page?: number = 1;
 
   @ApiPropertyOptional({
@@ -48,120 +48,120 @@ export class ListRoleAssignmentsDto {
   })
   @IsOptional()
   @Type(() => Number)
-  @IsInt({ message: "La limite doit être un entier" })
-  @Min(1, { message: "La limite doit être supérieure à 0" })
-  @Max(100, { message: "La limite ne peut dépasser 100" })
+  @IsInt({ message: 'La limite doit être un entier' })
+  @Min(1, { message: 'La limite doit être supérieure à 0' })
+  @Max(100, { message: 'La limite ne peut dépasser 100' })
   readonly limit?: number = 10;
 
   // 🎯 === TRI ===
   @ApiPropertyOptional({
-    description: "Champ de tri",
-    enum: ["assignedAt", "expiresAt", "role", "scope", "isActive"],
-    example: "assignedAt",
-    default: "assignedAt",
+    description: 'Champ de tri',
+    enum: ['assignedAt', 'expiresAt', 'role', 'scope', 'isActive'],
+    example: 'assignedAt',
+    default: 'assignedAt',
   })
   @IsOptional()
-  @IsIn(["assignedAt", "expiresAt", "role", "scope", "isActive"], {
-    message: "Le champ de tri doit être valide",
+  @IsIn(['assignedAt', 'expiresAt', 'role', 'scope', 'isActive'], {
+    message: 'Le champ de tri doit être valide',
   })
-  readonly sortBy?: string = "assignedAt";
+  readonly sortBy?: string = 'assignedAt';
 
   @ApiPropertyOptional({
-    description: "Ordre de tri",
-    enum: ["asc", "desc"],
-    example: "desc",
-    default: "desc",
+    description: 'Ordre de tri',
+    enum: ['asc', 'desc'],
+    example: 'desc',
+    default: 'desc',
   })
   @IsOptional()
-  @IsIn(["asc", "desc"], { message: "L'ordre de tri doit être asc ou desc" })
-  readonly sortOrder?: "asc" | "desc" = "desc";
+  @IsIn(['asc', 'desc'], { message: "L'ordre de tri doit être asc ou desc" })
+  readonly sortOrder?: 'asc' | 'desc' = 'desc';
 
   // 🔍 === RECHERCHE TEXTUELLE ===
   @ApiPropertyOptional({
-    description: "Recherche textuelle dans les notes et métadonnées",
-    example: "promotion temporaire",
+    description: 'Recherche textuelle dans les notes et métadonnées',
+    example: 'promotion temporaire',
     maxLength: 100,
   })
   @IsOptional()
-  @IsString({ message: "La recherche doit être une chaîne de caractères" })
-  @Length(1, 100, { message: "La recherche doit contenir 1 à 100 caractères" })
+  @IsString({ message: 'La recherche doit être une chaîne de caractères' })
+  @Length(1, 100, { message: 'La recherche doit contenir 1 à 100 caractères' })
   readonly search?: string;
 
   // 🎭 === FILTRES MÉTIER ===
   @ApiPropertyOptional({
-    description: "Filtrer par utilisateur spécifique",
-    example: "123e4567-e89b-12d3-a456-426614174000",
-    format: "uuid",
+    description: 'Filtrer par utilisateur spécifique',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+    format: 'uuid',
   })
   @IsOptional()
-  @IsUUID("4", { message: "L'ID utilisateur doit être un UUID valide" })
+  @IsUUID('4', { message: "L'ID utilisateur doit être un UUID valide" })
   readonly userId?: string;
 
   @ApiPropertyOptional({
-    description: "Filtrer par rôle spécifique",
+    description: 'Filtrer par rôle spécifique',
     enum: UserRole,
     example: UserRole.LOCATION_MANAGER,
-    enumName: "UserRole",
+    enumName: 'UserRole',
   })
   @IsOptional()
-  @IsEnum(UserRole, { message: "Le rôle doit être valide" })
+  @IsEnum(UserRole, { message: 'Le rôle doit être valide' })
   readonly role?: UserRole;
 
   @ApiPropertyOptional({
     description: "Filtrer par portée d'assignation",
     enum: AssignmentScope,
     example: AssignmentScope.BUSINESS,
-    enumName: "AssignmentScope",
+    enumName: 'AssignmentScope',
   })
   @IsOptional()
-  @IsEnum(AssignmentScope, { message: "Le scope doit être valide" })
+  @IsEnum(AssignmentScope, { message: 'Le scope doit être valide' })
   readonly scope?: AssignmentScope;
 
   @ApiPropertyOptional({
-    description: "Filtrer par contexte métier spécifique",
-    example: "987fcdeb-51a2-43d7-8c9f-123456789abc",
-    format: "uuid",
+    description: 'Filtrer par contexte métier spécifique',
+    example: '987fcdeb-51a2-43d7-8c9f-123456789abc',
+    format: 'uuid',
   })
   @IsOptional()
-  @IsUUID("4", { message: "L'ID du contexte métier doit être un UUID valide" })
+  @IsUUID('4', { message: "L'ID du contexte métier doit être un UUID valide" })
   readonly businessContextId?: string;
 
   @ApiPropertyOptional({
-    description: "Filtrer par statut actif/inactif",
+    description: 'Filtrer par statut actif/inactif',
     example: true,
   })
   @IsOptional()
-  @IsBoolean({ message: "Le statut actif doit être un booléen" })
+  @IsBoolean({ message: 'Le statut actif doit être un booléen' })
   readonly isActive?: boolean;
 
   @ApiPropertyOptional({
-    description: "Filtrer par assignations expirées",
+    description: 'Filtrer par assignations expirées',
     example: false,
   })
   @IsOptional()
-  @IsBoolean({ message: "Le filtre expiré doit être un booléen" })
+  @IsBoolean({ message: 'Le filtre expiré doit être un booléen' })
   readonly isExpired?: boolean;
 
   @ApiPropertyOptional({
     description: "Filtrer par date d'assignation depuis (ISO 8601)",
-    example: "2024-01-01T00:00:00.000Z",
-    format: "date-time",
+    example: '2024-01-01T00:00:00.000Z',
+    format: 'date-time',
   })
   @IsOptional()
-  @IsDateString({}, { message: "La date depuis doit être au format ISO 8601" })
+  @IsDateString({}, { message: 'La date depuis doit être au format ISO 8601' })
   readonly assignedSince?: string;
 
   @ApiPropertyOptional({
     description: "Filtrer par date d'assignation jusqu'à (ISO 8601)",
-    example: "2024-12-31T23:59:59.000Z",
-    format: "date-time",
+    example: '2024-12-31T23:59:59.000Z',
+    format: 'date-time',
   })
   @IsOptional()
   @IsDateString({}, { message: "La date jusqu'à doit être au format ISO 8601" })
   readonly assignedUntil?: string;
 
   @ApiPropertyOptional({
-    description: "Filtrer par assignations qui expirent bientôt (en jours)",
+    description: 'Filtrer par assignations qui expirent bientôt (en jours)',
     example: 30,
     minimum: 1,
     maximum: 365,
@@ -180,21 +180,21 @@ export class ListRoleAssignmentsDto {
 export class RoleAssignmentItemDto {
   @ApiProperty({
     description: "ID unique de l'assignation",
-    example: "456e7890-e89b-12d3-a456-426614174111",
-    format: "uuid",
+    example: '456e7890-e89b-12d3-a456-426614174111',
+    format: 'uuid',
   })
   readonly assignmentId!: string;
 
   @ApiProperty({
     description: "ID de l'utilisateur",
-    example: "123e4567-e89b-12d3-a456-426614174000",
-    format: "uuid",
+    example: '123e4567-e89b-12d3-a456-426614174000',
+    format: 'uuid',
   })
   readonly userId!: string;
 
   @ApiProperty({
-    description: "Information utilisateur",
-    type: "object",
+    description: 'Information utilisateur',
+    type: 'object',
     additionalProperties: true,
   })
   readonly user!: {
@@ -204,10 +204,10 @@ export class RoleAssignmentItemDto {
   };
 
   @ApiProperty({
-    description: "Rôle assigné",
+    description: 'Rôle assigné',
     enum: UserRole,
     example: UserRole.LOCATION_MANAGER,
-    enumName: "UserRole",
+    enumName: 'UserRole',
   })
   readonly role!: UserRole;
 
@@ -215,20 +215,20 @@ export class RoleAssignmentItemDto {
     description: "Portée de l'assignation",
     enum: AssignmentScope,
     example: AssignmentScope.BUSINESS,
-    enumName: "AssignmentScope",
+    enumName: 'AssignmentScope',
   })
   readonly scope!: AssignmentScope;
 
   @ApiProperty({
-    description: "ID du contexte métier",
-    example: "987fcdeb-51a2-43d7-8c9f-123456789abc",
-    format: "uuid",
+    description: 'ID du contexte métier',
+    example: '987fcdeb-51a2-43d7-8c9f-123456789abc',
+    format: 'uuid',
   })
   readonly businessContextId!: string;
 
   @ApiProperty({
-    description: "Information du contexte métier",
-    type: "object",
+    description: 'Information du contexte métier',
+    type: 'object',
     additionalProperties: true,
   })
   readonly businessContext!: {
@@ -245,22 +245,22 @@ export class RoleAssignmentItemDto {
 
   @ApiProperty({
     description: "Date d'assignation",
-    example: "2024-01-15T10:30:00.000Z",
-    format: "date-time",
+    example: '2024-01-15T10:30:00.000Z',
+    format: 'date-time',
   })
   readonly assignedAt!: string;
 
   @ApiProperty({
     description: "ID de l'utilisateur qui a effectué l'assignation",
-    example: "789e0123-e89b-12d3-a456-426614174222",
-    format: "uuid",
+    example: '789e0123-e89b-12d3-a456-426614174222',
+    format: 'uuid',
   })
   readonly assignedBy!: string;
 
   @ApiPropertyOptional({
     description: "Date d'expiration",
-    example: "2024-12-31T23:59:59.000Z",
-    format: "date-time",
+    example: '2024-12-31T23:59:59.000Z',
+    format: 'date-time',
   })
   readonly expiresAt?: string;
 
@@ -271,24 +271,24 @@ export class RoleAssignmentItemDto {
   readonly isExpired?: boolean;
 
   @ApiPropertyOptional({
-    description: "Jours restants avant expiration",
+    description: 'Jours restants avant expiration',
     example: 45,
   })
   readonly daysUntilExpiry?: number;
 
   @ApiPropertyOptional({
     description: "Notes sur l'assignation",
-    example: "Assignation temporaire pour le projet Q4",
+    example: 'Assignation temporaire pour le projet Q4',
   })
   readonly notes?: string;
 
   @ApiPropertyOptional({
     description: "Métadonnées de l'assignation",
-    type: "object",
+    type: 'object',
     additionalProperties: true,
     example: {
-      project: "Q4-2024",
-      department: "Sales",
+      project: 'Q4-2024',
+      department: 'Sales',
       temporary: true,
     },
   })
@@ -306,14 +306,14 @@ export class ListRoleAssignmentsResponseDto {
   readonly success!: boolean;
 
   @ApiProperty({
-    description: "Liste des assignations de rôles",
+    description: 'Liste des assignations de rôles',
     type: [RoleAssignmentItemDto],
   })
   readonly data!: RoleAssignmentItemDto[];
 
   @ApiProperty({
-    description: "Métadonnées de pagination",
-    type: "object",
+    description: 'Métadonnées de pagination',
+    type: 'object',
     additionalProperties: true,
     example: {
       currentPage: 1,
@@ -328,8 +328,8 @@ export class ListRoleAssignmentsResponseDto {
         isActive: true,
       },
       sorting: {
-        sortBy: "assignedAt",
-        sortOrder: "desc",
+        sortBy: 'assignedAt',
+        sortOrder: 'desc',
       },
     },
   })
@@ -348,17 +348,17 @@ export class ListRoleAssignmentsResponseDto {
     };
     readonly sorting: {
       readonly sortBy: string;
-      readonly sortOrder: "asc" | "desc";
+      readonly sortOrder: 'asc' | 'desc';
     };
   };
 
   @ApiPropertyOptional({
     description: "Informations sur l'opération",
-    type: "object",
+    type: 'object',
     additionalProperties: true,
     example: {
-      processedAt: "2024-01-15T10:30:00Z",
-      correlationId: "550e8400-e29b-41d4-a716-446655440000",
+      processedAt: '2024-01-15T10:30:00Z',
+      correlationId: '550e8400-e29b-41d4-a716-446655440000',
     },
   })
   readonly operationMeta?: {

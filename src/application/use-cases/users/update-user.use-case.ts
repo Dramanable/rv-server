@@ -5,20 +5,20 @@
  * Application Layer : Orchestration de la logique métier sans dépendance framework
  */
 
-import { User } from "../../../domain/entities/user.entity";
-import { UserRepository } from "../../../domain/repositories/user.repository.interface";
-import { Email } from "../../../domain/value-objects/email.vo";
-import { AppContextFactory } from "../../../shared/context/app-context";
-import { UserRole } from "../../../shared/enums/user-role.enum";
+import { User } from '../../../domain/entities/user.entity';
+import { UserRepository } from '../../../domain/repositories/user.repository.interface';
+import { Email } from '../../../domain/value-objects/email.vo';
+import { AppContextFactory } from '../../../shared/context/app-context';
+import { UserRole } from '../../../shared/enums/user-role.enum';
 import {
   DuplicationError,
   InsufficientPermissionsError,
   UserNotFoundError,
   ValidationError,
-} from "../../exceptions/auth.exceptions";
-import { I18nService } from "../../ports/i18n.port";
-import { Logger } from "../../ports/logger.port";
-import { IPermissionService } from "../../ports/permission.service.interface";
+} from '../../exceptions/auth.exceptions';
+import { I18nService } from '../../ports/i18n.port';
+import { Logger } from '../../ports/logger.port';
+import { IPermissionService } from '../../ports/permission.service.interface';
 
 // ═══════════════════════════════════════════════════════════════
 // 📋 REQUEST & RESPONSE TYPES
@@ -64,12 +64,12 @@ export class UpdateUserUseCase {
 
   async execute(request: UpdateUserRequest): Promise<UpdateUserResponse> {
     const context = AppContextFactory.userOperation(
-      "UpdateUser",
+      'UpdateUser',
       request.requestingUserId,
       request.targetUserId,
     );
 
-    this.logger.info("update_attempt", {
+    this.logger.info('update_attempt', {
       ...context,
       targetUserId: request.targetUserId,
       updates: Object.keys(request.updates),
@@ -81,7 +81,7 @@ export class UpdateUserUseCase {
         request.requestingUserId,
       );
       if (!requestingUser) {
-        throw new UserNotFoundError("Requesting user not found", {
+        throw new UserNotFoundError('Requesting user not found', {
           userId: request.requestingUserId,
         });
       }
@@ -91,7 +91,7 @@ export class UpdateUserUseCase {
         request.targetUserId,
       );
       if (!targetUser) {
-        throw new UserNotFoundError("Target user not found", {
+        throw new UserNotFoundError('Target user not found', {
           userId: request.targetUserId,
         });
       }
@@ -122,7 +122,7 @@ export class UpdateUserUseCase {
           request.updates[key as keyof typeof request.updates] !== undefined,
       );
 
-      this.logger.info("update_success", {
+      this.logger.info('update_success', {
         ...context,
         updatedUserId: response.id,
         changedFields,
@@ -131,7 +131,7 @@ export class UpdateUserUseCase {
       return response;
     } catch (error) {
       this.logger.error(
-        "update_failed",
+        'update_failed',
         error as Error,
         context as unknown as Record<string, unknown>,
       );
@@ -151,7 +151,7 @@ export class UpdateUserUseCase {
     );
 
     if (!hasUpdates) {
-      throw new ValidationError("No updates provided");
+      throw new ValidationError('No updates provided');
     }
 
     // Validation email si fourni
@@ -159,7 +159,7 @@ export class UpdateUserUseCase {
       try {
         Email.create(updates.email);
       } catch (error) {
-        throw new ValidationError("Invalid email format", {
+        throw new ValidationError('Invalid email format', {
           email: updates.email,
         });
       }
@@ -168,21 +168,21 @@ export class UpdateUserUseCase {
     // Validation nom si fourni
     if (updates.name !== undefined) {
       if (!updates.name || updates.name.trim().length === 0) {
-        throw new ValidationError("Name cannot be empty");
+        throw new ValidationError('Name cannot be empty');
       }
 
       if (updates.name.trim().length < 2) {
-        throw new ValidationError("Name must be at least 2 characters long");
+        throw new ValidationError('Name must be at least 2 characters long');
       }
 
       if (updates.name.length > 100) {
-        throw new ValidationError("Name must be less than 100 characters");
+        throw new ValidationError('Name must be less than 100 characters');
       }
     }
 
     // Validation rôle si fourni
     if (updates.role && !Object.values(UserRole).includes(updates.role)) {
-      throw new ValidationError("Invalid user role", { role: updates.role });
+      throw new ValidationError('Invalid user role', { role: updates.role });
     }
   }
 
@@ -206,7 +206,7 @@ export class UpdateUserUseCase {
 
     if (!canManageUser) {
       throw new InsufficientPermissionsError(
-        "Insufficient permissions to update this user",
+        'Insufficient permissions to update this user',
       );
     }
 
@@ -226,10 +226,10 @@ export class UpdateUserUseCase {
   }
 
   private validateSelfUpdatePermissions(
-    updates: UpdateUserRequest["updates"],
+    updates: UpdateUserRequest['updates'],
   ): void {
     // Les utilisateurs ne peuvent changer que certains champs de leur profil
-    const allowedSelfUpdateFields = ["name", "email"];
+    const allowedSelfUpdateFields = ['name', 'email'];
     const attemptedFields = Object.keys(updates);
 
     const forbiddenFields = attemptedFields.filter(
@@ -238,14 +238,14 @@ export class UpdateUserUseCase {
 
     if (forbiddenFields.length > 0) {
       throw new InsufficientPermissionsError(
-        `Users cannot modify these fields: ${forbiddenFields.join(", ")}`,
+        `Users cannot modify these fields: ${forbiddenFields.join(', ')}`,
       );
     }
 
     // Interdiction spéciale pour le changement de rôle
     if (updates.role) {
       throw new InsufficientPermissionsError(
-        "Users cannot change their own role",
+        'Users cannot change their own role',
       );
     }
   }
@@ -255,13 +255,13 @@ export class UpdateUserUseCase {
     const exists = await this.userRepository.emailExists(emailVO);
 
     if (exists) {
-      throw new DuplicationError("Email already exists", { email });
+      throw new DuplicationError('Email already exists', { email });
     }
   }
 
   private async applyUpdates(
     user: User,
-    updates: UpdateUserRequest["updates"],
+    updates: UpdateUserRequest['updates'],
   ): Promise<User> {
     // Pour l'instant, on crée un nouvel utilisateur avec les mises à jour
     // Dans une vraie implémentation, User aurait des méthodes de mise à jour
@@ -276,7 +276,7 @@ export class UpdateUserUseCase {
     const updatedUser = User.create(currentEmail, currentName, currentRole);
 
     // Conserver l'ID original
-    Object.defineProperty(updatedUser, "id", {
+    Object.defineProperty(updatedUser, 'id', {
       value: user.id,
       writable: false,
     });

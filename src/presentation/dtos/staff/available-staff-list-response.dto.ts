@@ -1,4 +1,4 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty } from '@nestjs/swagger';
 
 /**
  * 👤 Available Staff Member DTO
@@ -7,55 +7,55 @@ import { ApiProperty } from "@nestjs/swagger";
  */
 export class AvailableStaffMemberDto {
   @ApiProperty({
-    description: "Staff member ID",
-    example: "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+    description: 'Staff member ID',
+    example: 'f47ac10b-58cc-4372-a567-0e02b2c3d479',
   })
   readonly id!: string;
 
   @ApiProperty({
-    description: "Staff member name",
-    example: "Marie Dubois",
+    description: 'Staff member name',
+    example: 'Marie Dubois',
   })
   readonly name!: string;
 
   @ApiProperty({
-    description: "Staff role",
-    example: "THERAPIST",
+    description: 'Staff role',
+    example: 'THERAPIST',
   })
   readonly role!: string;
 
   @ApiProperty({
-    description: "Staff skills",
+    description: 'Staff skills',
     type: [String],
-    example: ["massage-therapy", "deep-tissue", "aromatherapy"],
+    example: ['massage-therapy', 'deep-tissue', 'aromatherapy'],
   })
   readonly skills!: string[];
 
   @ApiProperty({
-    description: "Available time slots for the requested period",
-    type: "array",
+    description: 'Available time slots for the requested period',
+    type: 'array',
     items: {
-      type: "object",
+      type: 'object',
       properties: {
-        startTime: { type: "string", example: "09:00" },
-        endTime: { type: "string", example: "12:00" },
+        startTime: { type: 'string', example: '09:00' },
+        endTime: { type: 'string', example: '12:00' },
       },
     },
     example: [
-      { startTime: "09:00", endTime: "12:00" },
-      { startTime: "14:00", endTime: "17:00" },
+      { startTime: '09:00', endTime: '12:00' },
+      { startTime: '14:00', endTime: '17:00' },
     ],
   })
   readonly availableSlots!: Array<{ startTime: string; endTime: string }>;
 
   @ApiProperty({
-    description: "Compatibility score (0-100)",
+    description: 'Compatibility score (0-100)',
     example: 95,
   })
   readonly compatibilityScore!: number;
 
   @ApiProperty({
-    description: "Current workload percentage",
+    description: 'Current workload percentage',
     example: 75,
   })
   readonly workloadPercentage!: number;
@@ -68,21 +68,21 @@ export class AvailableStaffMemberDto {
  */
 export class AvailableStaffListResponseDto {
   @ApiProperty({
-    description: "List of available staff members",
+    description: 'List of available staff members',
     type: [AvailableStaffMemberDto],
   })
   readonly staff!: AvailableStaffMemberDto[];
 
   @ApiProperty({
-    description: "Search metadata",
+    description: 'Search metadata',
     example: {
       searchPeriod: {
-        startTime: "2024-01-15T09:00:00Z",
-        endTime: "2024-01-15T17:00:00Z",
+        startTime: '2024-01-15T09:00:00Z',
+        endTime: '2024-01-15T17:00:00Z',
       },
       totalFound: 5,
       bestMatch: {
-        staffId: "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+        staffId: 'f47ac10b-58cc-4372-a567-0e02b2c3d479',
         score: 98,
       },
     },
@@ -107,8 +107,8 @@ export class AvailableStaffListResponseDto {
       staff:
         domainResult.staff?.map((member: any) => ({
           id: member.id,
-          name: member.name || "Unknown Staff",
-          role: member.role || "STAFF",
+          name: member.name || 'Unknown Staff',
+          role: member.role || 'STAFF',
           skills: member.skills || [],
           availableSlots: member.availableSlots || [],
           compatibilityScore: member.compatibilityScore || 0,

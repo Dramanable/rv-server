@@ -4,10 +4,10 @@
  * SOLID DIP: Application ne doit pas dépendre d'Infrastructure
  */
 
-import type { I18nService } from "../ports/i18n.port";
+import type { I18nService } from '../ports/i18n.port';
 
 export class MockI18nService implements I18nService {
-  private defaultLanguage = "fr";
+  private defaultLanguage = 'fr';
 
   t(key: string): string {
     // Retourne la clé directement pour les tests

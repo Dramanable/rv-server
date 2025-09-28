@@ -3,12 +3,12 @@
  * ✅ Clean Architecture - Domain Layer
  */
 
-import { BusinessOwner } from "@domain/entities/business-owner.entity";
-import { BusinessId } from "@domain/value-objects/business-id.value-object";
-import { BusinessOwnerId } from "@domain/value-objects/business-owner-id.value-object";
-import { UserId } from "@domain/value-objects/user-id.value-object";
+import { BusinessOwner } from '@domain/entities/business-owner.entity';
+import { BusinessId } from '@domain/value-objects/business-id.value-object';
+import { BusinessOwnerId } from '@domain/value-objects/business-owner-id.value-object';
+import { UserId } from '@domain/value-objects/user-id.value-object';
 
-export const BUSINESS_OWNER_REPOSITORY = "BUSINESS_OWNER_REPOSITORY";
+export const BUSINESS_OWNER_REPOSITORY = 'BUSINESS_OWNER_REPOSITORY';
 
 export interface BusinessOwnerRepository {
   /**

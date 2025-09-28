@@ -10,20 +10,20 @@
  * - Convertit entre entités Domain et ORM
  */
 
-import { Injectable } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import {
   Staff,
   StaffStatus,
-} from "../../../../../domain/entities/staff.entity";
-import { StaffRepository } from "../../../../../domain/repositories/staff.repository.interface";
-import { BusinessId } from "../../../../../domain/value-objects/business-id.value-object";
-import { Email } from "../../../../../domain/value-objects/email.value-object";
-import { UserId } from "../../../../../domain/value-objects/user-id.value-object";
-import { StaffRole } from "../../../../../shared/enums/staff-role.enum";
-import { StaffMapper } from "../../../../mappers/domain-mappers";
-import { StaffOrmEntity } from "../entities/staff-orm.entity";
+} from '../../../../../domain/entities/staff.entity';
+import { StaffRepository } from '../../../../../domain/repositories/staff.repository.interface';
+import { BusinessId } from '../../../../../domain/value-objects/business-id.value-object';
+import { Email } from '../../../../../domain/value-objects/email.value-object';
+import { UserId } from '../../../../../domain/value-objects/user-id.value-object';
+import { StaffRole } from '../../../../../shared/enums/staff-role.enum';
+import { StaffMapper } from '../../../../mappers/domain-mappers';
+import { StaffOrmEntity } from '../entities/staff-orm.entity';
 
 @Injectable()
 export class TypeOrmStaffRepository implements StaffRepository {
@@ -51,7 +51,7 @@ export class TypeOrmStaffRepository implements StaffRepository {
   async findByBusinessId(businessId: BusinessId): Promise<Staff[]> {
     const ormEntities = await this.repository.find({
       where: { business_id: businessId.getValue() },
-      order: { created_at: "DESC" },
+      order: { created_at: 'DESC' },
     });
 
     return ormEntities.map((entity) => StaffMapper.fromTypeOrmEntity(entity));
@@ -66,7 +66,7 @@ export class TypeOrmStaffRepository implements StaffRepository {
         business_id: businessId.getValue(),
         role: role as StaffRole,
       },
-      order: { created_at: "DESC" },
+      order: { created_at: 'DESC' },
     });
 
     return ormEntities.map((entity) => StaffMapper.fromTypeOrmEntity(entity));
@@ -84,7 +84,7 @@ export class TypeOrmStaffRepository implements StaffRepository {
         business_id: businessId.getValue(),
         status: StaffStatus.ACTIVE,
       },
-      order: { role: "ASC" },
+      order: { role: 'ASC' },
     });
 
     return ormEntities.map((entity) => StaffMapper.fromTypeOrmEntity(entity));
@@ -99,17 +99,17 @@ export class TypeOrmStaffRepository implements StaffRepository {
     limit?: number;
     offset?: number;
   }): Promise<{ staff: Staff[]; total: number }> {
-    const qb = this.repository.createQueryBuilder("staff");
+    const qb = this.repository.createQueryBuilder('staff');
 
     if (criteria.businessId) {
-      qb.andWhere("staff.business_id = :businessId", {
+      qb.andWhere('staff.business_id = :businessId', {
         businessId: criteria.businessId.getValue(),
       });
     }
 
     if (criteria.name) {
       qb.andWhere(
-        "(LOWER(staff.first_name) LIKE LOWER(:name) OR LOWER(staff.last_name) LIKE LOWER(:name))",
+        '(LOWER(staff.first_name) LIKE LOWER(:name) OR LOWER(staff.last_name) LIKE LOWER(:name))',
         {
           name: `%${criteria.name}%`,
         },
@@ -117,17 +117,17 @@ export class TypeOrmStaffRepository implements StaffRepository {
     }
 
     if (criteria.role) {
-      qb.andWhere("staff.role = :role", { role: criteria.role });
+      qb.andWhere('staff.role = :role', { role: criteria.role });
     }
 
     if (criteria.specialization) {
-      qb.andWhere("LOWER(staff.specialization) LIKE LOWER(:specialization)", {
+      qb.andWhere('LOWER(staff.specialization) LIKE LOWER(:specialization)', {
         specialization: `%${criteria.specialization}%`,
       });
     }
 
     if (criteria.isActive !== undefined) {
-      qb.andWhere("staff.status = :status", {
+      qb.andWhere('staff.status = :status', {
         status: criteria.isActive ? StaffStatus.ACTIVE : StaffStatus.INACTIVE,
       });
     }
@@ -141,7 +141,7 @@ export class TypeOrmStaffRepository implements StaffRepository {
       qb.offset(criteria.offset);
     }
 
-    qb.orderBy("staff.role", "ASC").addOrderBy("staff.last_name", "ASC");
+    qb.orderBy('staff.role', 'ASC').addOrderBy('staff.last_name', 'ASC');
 
     const ormEntities = await qb.getMany();
     const staff = ormEntities.map((entity) =>
@@ -162,11 +162,11 @@ export class TypeOrmStaffRepository implements StaffRepository {
 
   async existsByEmail(email: Email, excludeId?: UserId): Promise<boolean> {
     const qb = this.repository
-      .createQueryBuilder("staff")
-      .where("LOWER(staff.email) = LOWER(:email)", { email: email.getValue() });
+      .createQueryBuilder('staff')
+      .where('LOWER(staff.email) = LOWER(:email)', { email: email.getValue() });
 
     if (excludeId) {
-      qb.andWhere("staff.id != :excludeId", {
+      qb.andWhere('staff.id != :excludeId', {
         excludeId: excludeId.getValue(),
       });
     }
@@ -194,13 +194,13 @@ export class TypeOrmStaffRepository implements StaffRepository {
 
     // Statistiques par rôle
     const roleStats = await this.repository
-      .createQueryBuilder("staff")
-      .select("staff.role", "role")
-      .addSelect("COUNT(*)", "count")
-      .where("staff.business_id = :businessId", {
+      .createQueryBuilder('staff')
+      .select('staff.role', 'role')
+      .addSelect('COUNT(*)', 'count')
+      .where('staff.business_id = :businessId', {
         businessId: businessId.getValue(),
       })
-      .groupBy("staff.role")
+      .groupBy('staff.role')
       .getRawMany();
 
     const staffByRole = roleStats.reduce(

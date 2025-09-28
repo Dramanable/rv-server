@@ -1,14 +1,14 @@
-import { ServiceType } from "../entities/service-type.entity";
-import { BusinessId } from "../value-objects/business-id.value-object";
-import { ServiceTypeId } from "../value-objects/service-type-id.value-object";
+import { ServiceType } from '../entities/service-type.entity';
+import { BusinessId } from '../value-objects/business-id.value-object';
+import { ServiceTypeId } from '../value-objects/service-type-id.value-object';
 
 export interface ServiceTypeSearchCriteria {
   readonly businessId: BusinessId;
   readonly isActive?: boolean;
   readonly search?: string;
   readonly codes?: string[];
-  readonly sortBy?: "name" | "code" | "createdAt" | "sortOrder";
-  readonly sortOrder?: "asc" | "desc";
+  readonly sortBy?: 'name' | 'code' | 'createdAt' | 'sortOrder';
+  readonly sortOrder?: 'asc' | 'desc';
   readonly page?: number;
   readonly limit?: number;
 }

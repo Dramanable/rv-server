@@ -1,10 +1,10 @@
-import { Repository } from "typeorm";
+import { Repository } from 'typeorm';
 
-import { Notification } from "../../../../../domain/entities/notification.entity";
-import { INotificationRepository } from "../../../../../domain/repositories/notification.repository";
-import { NotificationStatus } from "../../../../../domain/value-objects/notification-status.value-object";
-import { NotificationOrmMapper } from "../../../../mappers/notification-orm.mapper";
-import { NotificationOrmEntity } from "../entities/notification-orm.entity";
+import { Notification } from '../../../../../domain/entities/notification.entity';
+import { INotificationRepository } from '../../../../../domain/repositories/notification.repository';
+import { NotificationStatus } from '../../../../../domain/value-objects/notification-status.value-object';
+import { NotificationOrmMapper } from '../../../../mappers/notification-orm.mapper';
+import { NotificationOrmEntity } from '../entities/notification-orm.entity';
 
 /**
  * Implémentation TypeORM du repository de notifications
@@ -63,7 +63,7 @@ export class TypeOrmNotificationRepository implements INotificationRepository {
     try {
       const ormEntities = await this.repository.find({
         where: { recipient_id: recipientId },
-        order: { created_at: "DESC" },
+        order: { created_at: 'DESC' },
       });
 
       // Conversion batch ORM → Domain
@@ -80,7 +80,7 @@ export class TypeOrmNotificationRepository implements INotificationRepository {
     try {
       const ormEntities = await this.repository.find({
         where: { status: status.toString() },
-        order: { created_at: "DESC" },
+        order: { created_at: 'DESC' },
       });
 
       return NotificationOrmMapper.toDomainEntities(ormEntities);
@@ -103,7 +103,7 @@ export class TypeOrmNotificationRepository implements INotificationRepository {
       });
 
       if (!existingEntity) {
-        throw new Error("Notification not found");
+        throw new Error('Notification not found');
       }
 
       // Mettre à jour le statut et la date de mise à jour
@@ -128,7 +128,7 @@ export class TypeOrmNotificationRepository implements INotificationRepository {
       const result = await this.repository.delete(id);
 
       if (result.affected === 0) {
-        throw new Error("Notification not found");
+        throw new Error('Notification not found');
       }
     } catch (error) {
       throw error;
@@ -166,10 +166,10 @@ export class TypeOrmNotificationRepository implements INotificationRepository {
   async findPendingOlderThan(cutoffDate: Date): Promise<Notification[]> {
     try {
       const ormEntities = await this.repository
-        .createQueryBuilder("notification")
-        .where("notification.status = :status", { status: "PENDING" })
-        .andWhere("notification.created_at < :cutoffDate", { cutoffDate })
-        .orderBy("notification.created_at", "ASC")
+        .createQueryBuilder('notification')
+        .where('notification.status = :status', { status: 'PENDING' })
+        .andWhere('notification.created_at < :cutoffDate', { cutoffDate })
+        .orderBy('notification.created_at', 'ASC')
         .getMany();
 
       return NotificationOrmMapper.toDomainEntities(ormEntities);

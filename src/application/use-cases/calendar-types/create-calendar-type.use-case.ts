@@ -1,17 +1,17 @@
-import type { IAuditService } from "@application/ports/audit.port";
-import type { I18nService } from "@application/ports/i18n.port";
-import type { Logger } from "@application/ports/logger.port";
-import { CalendarType } from "@domain/entities/calendar-type.entity";
+import type { IAuditService } from '@application/ports/audit.port';
+import type { I18nService } from '@application/ports/i18n.port';
+import type { Logger } from '@application/ports/logger.port';
+import { CalendarType } from '@domain/entities/calendar-type.entity';
 import {
   CalendarTypeAlreadyExistsError,
   CalendarTypeValidationError,
-} from "@domain/exceptions/calendar-type.exceptions";
-import type { ICalendarTypeRepository } from "@domain/repositories/calendar-type.repository";
-import { BusinessId } from "@domain/value-objects/business-id.value-object";
+} from '@domain/exceptions/calendar-type.exceptions';
+import type { ICalendarTypeRepository } from '@domain/repositories/calendar-type.repository';
+import { BusinessId } from '@domain/value-objects/business-id.value-object';
 import {
   CreateCalendarTypeRequest,
   CreateCalendarTypeResponse,
-} from "./calendar-type.types";
+} from './calendar-type.types';
 
 /**
  * Use Case pour créer un nouveau type de calendrier
@@ -28,7 +28,7 @@ export class CreateCalendarTypeUseCase {
   async execute(
     request: CreateCalendarTypeRequest,
   ): Promise<CreateCalendarTypeResponse> {
-    this.logger.info("Creating calendar type", {
+    this.logger.info('Creating calendar type', {
       businessId: request.businessId,
       name: request.name,
       code: request.code,
@@ -44,9 +44,9 @@ export class CreateCalendarTypeUseCase {
         businessId: BusinessId.fromString(request.businessId),
         name: request.name,
         code: request.code,
-        description: request.description || "",
-        icon: request.icon || "calendar",
-        color: request.color || "#000000",
+        description: request.description || '',
+        icon: request.icon || 'calendar',
+        color: request.color || '#000000',
         sortOrder: request.sortOrder,
         isActive: request.isActive,
         createdBy: request.requestingUserId,
@@ -58,12 +58,12 @@ export class CreateCalendarTypeUseCase {
 
       // 5. Audit trail
       await this.auditService.logOperation({
-        operation: "CREATE_CALENDAR_TYPE",
-        entityType: "CALENDAR_TYPE",
+        operation: 'CREATE_CALENDAR_TYPE',
+        entityType: 'CALENDAR_TYPE',
         entityId: savedCalendarType.getId().getValue(),
         businessId: request.businessId,
         userId: request.requestingUserId,
-        correlationId: request.correlationId || "no-correlation-id",
+        correlationId: request.correlationId || 'no-correlation-id',
         changes: {
           created: {
             id: savedCalendarType.getId().getValue(),
@@ -79,7 +79,7 @@ export class CreateCalendarTypeUseCase {
         timestamp: request.timestamp,
       });
 
-      this.logger.info("Calendar type created successfully", {
+      this.logger.info('Calendar type created successfully', {
         calendarTypeId: savedCalendarType.getId().getValue(),
         businessId: request.businessId,
         calendarTypeName: savedCalendarType.getName(),
@@ -89,14 +89,14 @@ export class CreateCalendarTypeUseCase {
       return {
         calendarType: savedCalendarType,
         success: true,
-        message: this.i18n.translate("calendarTypes.creation.success"),
+        message: this.i18n.translate('calendarTypes.creation.success'),
       };
     } catch (error) {
       const errorMessage =
-        error instanceof Error ? error.message : "Unknown error occurred";
+        error instanceof Error ? error.message : 'Unknown error occurred';
 
       this.logger.error(
-        "Failed to create calendar type",
+        'Failed to create calendar type',
         error instanceof Error ? error : new Error(errorMessage),
         {
           businessId: request.businessId,
@@ -118,21 +118,21 @@ export class CreateCalendarTypeUseCase {
     // Required field validation
     if (!request.businessId?.trim()) {
       errors.push(
-        this.i18n.translate("calendarTypes.validation.businessIdRequired"),
+        this.i18n.translate('calendarTypes.validation.businessIdRequired'),
       );
     }
 
     if (!request.name?.trim()) {
-      errors.push(this.i18n.translate("calendarTypes.validation.nameRequired"));
+      errors.push(this.i18n.translate('calendarTypes.validation.nameRequired'));
     }
 
     if (!request.code?.trim()) {
-      errors.push(this.i18n.translate("calendarTypes.validation.codeRequired"));
+      errors.push(this.i18n.translate('calendarTypes.validation.codeRequired'));
     }
 
     if (!request.requestingUserId?.trim()) {
       errors.push(
-        this.i18n.translate("calendarTypes.validation.requestingUserRequired"),
+        this.i18n.translate('calendarTypes.validation.requestingUserRequired'),
       );
     }
 
@@ -141,13 +141,13 @@ export class CreateCalendarTypeUseCase {
       /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
     if (request.businessId && !uuidRegex.test(request.businessId)) {
       errors.push(
-        this.i18n.translate("calendarTypes.validation.businessIdInvalid"),
+        this.i18n.translate('calendarTypes.validation.businessIdInvalid'),
       );
     }
 
     if (request.requestingUserId && !uuidRegex.test(request.requestingUserId)) {
       errors.push(
-        this.i18n.translate("calendarTypes.validation.requestingUserInvalid"),
+        this.i18n.translate('calendarTypes.validation.requestingUserInvalid'),
       );
     }
 
@@ -156,19 +156,19 @@ export class CreateCalendarTypeUseCase {
       request.name &&
       (request.name.trim().length < 2 || request.name.trim().length > 100)
     ) {
-      errors.push(this.i18n.translate("calendarTypes.validation.nameLength"));
+      errors.push(this.i18n.translate('calendarTypes.validation.nameLength'));
     }
 
     if (
       request.code &&
       (request.code.trim().length < 2 || request.code.trim().length > 20)
     ) {
-      errors.push(this.i18n.translate("calendarTypes.validation.codeLength"));
+      errors.push(this.i18n.translate('calendarTypes.validation.codeLength'));
     }
 
     if (request.description && request.description.length > 500) {
       errors.push(
-        this.i18n.translate("calendarTypes.validation.descriptionLength"),
+        this.i18n.translate('calendarTypes.validation.descriptionLength'),
       );
     }
 
@@ -176,19 +176,19 @@ export class CreateCalendarTypeUseCase {
       request.icon &&
       (request.icon.trim().length < 1 || request.icon.trim().length > 50)
     ) {
-      errors.push(this.i18n.translate("calendarTypes.validation.iconLength"));
+      errors.push(this.i18n.translate('calendarTypes.validation.iconLength'));
     }
 
     if (request.sortOrder !== undefined && request.sortOrder < 1) {
       errors.push(
-        this.i18n.translate("calendarTypes.validation.sortOrderMinimum"),
+        this.i18n.translate('calendarTypes.validation.sortOrderMinimum'),
       );
     }
 
     // Si des erreurs de validation de base existent, les lancer maintenant
     if (errors.length > 0) {
       throw new CalendarTypeValidationError(
-        this.i18n.translate("calendarTypes.validation.failed"),
+        this.i18n.translate('calendarTypes.validation.failed'),
         { errors },
       );
     }
@@ -204,7 +204,7 @@ export class CreateCalendarTypeUseCase {
     if (existsByCode) {
       throw new CalendarTypeAlreadyExistsError(
         request.code,
-        this.i18n.translate("calendarTypes.validation.codeAlreadyExists", {
+        this.i18n.translate('calendarTypes.validation.codeAlreadyExists', {
           code: request.code,
         }),
       );
@@ -220,7 +220,7 @@ export class CreateCalendarTypeUseCase {
     if (existsByName) {
       throw new CalendarTypeAlreadyExistsError(
         request.name,
-        this.i18n.translate("calendarTypes.validation.nameAlreadyExists", {
+        this.i18n.translate('calendarTypes.validation.nameAlreadyExists', {
           name: request.name,
         }),
       );

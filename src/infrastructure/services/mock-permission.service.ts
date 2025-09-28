@@ -4,9 +4,9 @@
  * Service de permissions simplifié pour les tests et développement
  */
 
-import type { Logger } from "../../application/ports/logger.port";
-import type { IPermissionService } from "../../application/ports/permission.service.interface";
-import { Permission, UserRole } from "../../shared/enums/user-role.enum";
+import type { Logger } from '../../application/ports/logger.port';
+import type { IPermissionService } from '../../application/ports/permission.service.interface';
+import { Permission, UserRole } from '../../shared/enums/user-role.enum';
 
 export class MockPermissionService implements IPermissionService {
   constructor(private readonly logger: Logger) {}
@@ -16,12 +16,12 @@ export class MockPermissionService implements IPermissionService {
     permission: Permission | string,
     context?: Record<string, unknown>,
   ): Promise<boolean> {
-    this.logger.debug("Permission check requested", {
+    this.logger.debug('Permission check requested', {
       userId,
       permission,
       context,
       result: true, // Mock - toujours autorisé pour les tests
-      operation: "hasPermission",
+      operation: 'hasPermission',
     });
 
     // Mock : toujours vrai pour permettre les tests
@@ -33,12 +33,12 @@ export class MockPermissionService implements IPermissionService {
     targetRole: UserRole,
     context?: Record<string, unknown>,
   ): Promise<boolean> {
-    this.logger.debug("Role action permission check requested", {
+    this.logger.debug('Role action permission check requested', {
       actorUserId,
       targetRole,
       context,
       result: true, // Mock - toujours autorisé pour les tests
-      operation: "canActOnRole",
+      operation: 'canActOnRole',
     });
 
     // Mock : toujours vrai pour permettre les tests
@@ -50,21 +50,21 @@ export class MockPermissionService implements IPermissionService {
     permission: Permission | string,
     context?: Record<string, unknown>,
   ): Promise<void> {
-    this.logger.debug("Permission required", {
+    this.logger.debug('Permission required', {
       userId,
       permission,
       context,
-      operation: "requirePermission",
+      operation: 'requirePermission',
     });
 
     // Mock : ne lance pas d'erreur pour les tests
   }
 
   async getUserPermissions(userId: string): Promise<Permission[]> {
-    this.logger.debug("User permissions requested", {
+    this.logger.debug('User permissions requested', {
       userId,
       permissions: Object.values(Permission),
-      operation: "getUserPermissions",
+      operation: 'getUserPermissions',
     });
 
     // Mock : retourner toutes les permissions pour les tests
@@ -72,10 +72,10 @@ export class MockPermissionService implements IPermissionService {
   }
 
   async getUserRole(userId: string): Promise<UserRole> {
-    this.logger.debug("User role requested", {
+    this.logger.debug('User role requested', {
       userId,
       role: UserRole.PLATFORM_ADMIN, // Mock - toujours super admin pour les tests
-      operation: "getUserRole",
+      operation: 'getUserRole',
     });
 
     // Mock : toujours super admin pour les tests
@@ -83,11 +83,11 @@ export class MockPermissionService implements IPermissionService {
   }
 
   async hasRole(userId: string, role: UserRole): Promise<boolean> {
-    this.logger.debug("Role check requested", {
+    this.logger.debug('Role check requested', {
       userId,
       role,
       result: true, // Mock - toujours autorisé pour les tests
-      operation: "hasRole",
+      operation: 'hasRole',
     });
 
     // Mock : toujours vrai pour permettre les tests
@@ -103,12 +103,12 @@ export class MockPermissionService implements IPermissionService {
       departmentId?: string;
     },
   ): Promise<boolean> {
-    this.logger.debug("Business permission check requested", {
+    this.logger.debug('Business permission check requested', {
       userId,
       permission,
       businessContext,
       result: true, // Mock - toujours autorisé pour les tests
-      operation: "hasBusinessPermission",
+      operation: 'hasBusinessPermission',
     });
 
     // Mock : toujours vrai pour permettre les tests
@@ -119,11 +119,11 @@ export class MockPermissionService implements IPermissionService {
     actorUserId: string,
     targetUserId: string,
   ): Promise<boolean> {
-    this.logger.debug("User management permission check requested", {
+    this.logger.debug('User management permission check requested', {
       actorUserId,
       targetUserId,
       result: true, // Mock - toujours autorisé pour les tests
-      operation: "canManageUser",
+      operation: 'canManageUser',
     });
 
     // Mock : toujours vrai pour permettre les tests
@@ -131,19 +131,19 @@ export class MockPermissionService implements IPermissionService {
   }
 
   async requireSuperAdminPermission(userId: string): Promise<void> {
-    this.logger.debug("Super admin permission required", {
+    this.logger.debug('Super admin permission required', {
       userId,
-      operation: "requireSuperAdminPermission",
+      operation: 'requireSuperAdminPermission',
     });
 
     // Mock : ne lance pas d'erreur pour les tests
   }
 
   async isSuperAdmin(userId: string): Promise<boolean> {
-    this.logger.debug("Super admin check requested", {
+    this.logger.debug('Super admin check requested', {
       userId,
       result: true, // Mock - toujours super admin pour les tests
-      operation: "isSuperAdmin",
+      operation: 'isSuperAdmin',
     });
 
     // Mock : toujours vrai pour permettre les tests
@@ -154,11 +154,11 @@ export class MockPermissionService implements IPermissionService {
     userId: string,
     businessId: string,
   ): Promise<boolean> {
-    this.logger.debug("Business access check requested", {
+    this.logger.debug('Business access check requested', {
       userId,
       businessId,
       result: true, // Mock - toujours autorisé pour les tests
-      operation: "hasAccessToBusiness",
+      operation: 'hasAccessToBusiness',
     });
 
     // Mock : toujours vrai pour permettre les tests

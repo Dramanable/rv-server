@@ -4,16 +4,16 @@
  * @version 1.0.0
  */
 
-import { DomainError } from "../exceptions/domain.exceptions";
+import { DomainError } from '../exceptions/domain.exceptions';
 
 /**
  * Enum pour les niveaux de priorité de notification
  */
 export enum NotificationPriorityLevel {
-  LOW = "LOW",
-  MEDIUM = "MEDIUM",
-  HIGH = "HIGH",
-  URGENT = "URGENT",
+  LOW = 'LOW',
+  MEDIUM = 'MEDIUM',
+  HIGH = 'HIGH',
+  URGENT = 'URGENT',
 }
 
 /**
@@ -30,8 +30,8 @@ export class NotificationPriority {
    * @throws DomainError si le niveau n'est pas valide
    */
   static create(level: string): NotificationPriority {
-    if (!level || typeof level !== "string") {
-      throw new DomainError("Notification priority level is required");
+    if (!level || typeof level !== 'string') {
+      throw new DomainError('Notification priority level is required');
     }
 
     const normalizedLevel = level.toUpperCase().trim();
@@ -42,7 +42,7 @@ export class NotificationPriority {
       )
     ) {
       throw new DomainError(
-        `Invalid notification priority level: ${level}. Valid levels are: ${Object.values(NotificationPriorityLevel).join(", ")}`,
+        `Invalid notification priority level: ${level}. Valid levels are: ${Object.values(NotificationPriorityLevel).join(', ')}`,
       );
     }
 
@@ -74,8 +74,8 @@ export class NotificationPriority {
    * Factory method pour créer depuis string
    */
   static fromString(levelString: string): NotificationPriority {
-    if (!levelString || typeof levelString !== "string") {
-      throw new DomainError("Priority level string is required");
+    if (!levelString || typeof levelString !== 'string') {
+      throw new DomainError('Priority level string is required');
     }
 
     const normalizedLevel = levelString.toUpperCase().trim();
@@ -86,7 +86,7 @@ export class NotificationPriority {
       )
     ) {
       throw new DomainError(
-        `Invalid priority level: ${levelString}. Valid levels are: ${Object.values(NotificationPriorityLevel).join(", ")}`,
+        `Invalid priority level: ${levelString}. Valid levels are: ${Object.values(NotificationPriorityLevel).join(', ')}`,
       );
     }
 

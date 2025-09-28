@@ -8,19 +8,19 @@
  * - Vérifier la disponibilité
  */
 
-import { BusinessRepository } from "../../../domain/repositories/business.repository.interface";
+import { BusinessRepository } from '../../../domain/repositories/business.repository.interface';
 import {
   BusinessHours,
   DaySchedule,
   SpecialDate,
-} from "../../../domain/value-objects/business-hours.value-object";
-import { BusinessId } from "../../../domain/value-objects/business-id.value-object";
+} from '../../../domain/value-objects/business-hours.value-object';
+import { BusinessId } from '../../../domain/value-objects/business-id.value-object';
 import {
   BusinessNotFoundError,
   BusinessValidationError,
-} from "../../exceptions/application.exceptions";
-import { I18nService } from "../../ports/i18n.port";
-import { Logger } from "../../ports/logger.port";
+} from '../../exceptions/application.exceptions';
+import { I18nService } from '../../ports/i18n.port';
+import { Logger } from '../../ports/logger.port';
 
 // Request & Response DTOs
 export interface GetBusinessHoursRequest {
@@ -99,7 +99,7 @@ export class ManageBusinessHoursUseCase {
   async getBusinessHours(
     request: GetBusinessHoursRequest,
   ): Promise<GetBusinessHoursResponse> {
-    console.log("Getting business hours", {
+    console.log('Getting business hours', {
       businessId: request.businessId,
       requestingUserId: request.requestingUserId,
     });
@@ -110,7 +110,7 @@ export class ManageBusinessHoursUseCase {
 
     if (!business) {
       throw new BusinessNotFoundError(
-        this.i18n.translate("business.errors.notFound", {
+        this.i18n.translate('business.errors.notFound', {
           id: request.businessId,
         }),
       );
@@ -145,7 +145,7 @@ export class ManageBusinessHoursUseCase {
       nextOpeningTime,
     };
 
-    console.log("Business hours retrieved successfully", {
+    console.log('Business hours retrieved successfully', {
       businessId: request.businessId,
     });
     return response;
@@ -154,7 +154,7 @@ export class ManageBusinessHoursUseCase {
   async updateBusinessHours(
     request: UpdateBusinessHoursRequest,
   ): Promise<UpdateBusinessHoursResponse> {
-    this.logger.debug("Updating business hours", {
+    this.logger.debug('Updating business hours', {
       businessId: request.businessId,
       requestingUserId: request.requestingUserId,
     });
@@ -165,7 +165,7 @@ export class ManageBusinessHoursUseCase {
 
     if (!business) {
       throw new BusinessNotFoundError(
-        this.i18n.translate("business.errors.notFound", {
+        this.i18n.translate('business.errors.notFound', {
           id: request.businessId,
         }),
       );
@@ -193,11 +193,11 @@ export class ManageBusinessHoursUseCase {
 
       const response: UpdateBusinessHoursResponse = {
         businessId: request.businessId,
-        message: this.i18n.translate("business.hours.updated"),
+        message: this.i18n.translate('business.hours.updated'),
         updatedAt: business.updatedAt,
       };
 
-      this.logger.info("Business hours updated successfully", {
+      this.logger.info('Business hours updated successfully', {
         businessId: request.businessId,
         openDaysCount: newBusinessHours.getOpenDaysCount(),
       });
@@ -207,7 +207,7 @@ export class ManageBusinessHoursUseCase {
       const errorMessage =
         error instanceof Error ? error.message : String(error);
       this.logger.error(
-        "Failed to update business hours",
+        'Failed to update business hours',
         error instanceof Error ? error : new Error(errorMessage),
         {
           businessId: request.businessId,
@@ -216,7 +216,7 @@ export class ManageBusinessHoursUseCase {
       );
 
       throw new BusinessValidationError(
-        "businessHours",
+        'businessHours',
         request.weeklySchedule,
         errorMessage,
       );
@@ -226,7 +226,7 @@ export class ManageBusinessHoursUseCase {
   async addSpecialDate(
     request: AddSpecialDateRequest,
   ): Promise<AddSpecialDateResponse> {
-    this.logger.debug("Adding special date", {
+    this.logger.debug('Adding special date', {
       businessId: request.businessId,
       date: request.date.toISOString(),
       isOpen: request.isOpen,
@@ -238,7 +238,7 @@ export class ManageBusinessHoursUseCase {
 
     if (!business) {
       throw new BusinessNotFoundError(
-        this.i18n.translate("business.errors.notFound", {
+        this.i18n.translate('business.errors.notFound', {
           id: request.businessId,
         }),
       );
@@ -269,10 +269,10 @@ export class ManageBusinessHoursUseCase {
       const response: AddSpecialDateResponse = {
         businessId: request.businessId,
         specialDate,
-        message: this.i18n.translate("business.hours.specialDateAdded"),
+        message: this.i18n.translate('business.hours.specialDateAdded'),
       };
 
-      this.logger.info("Special date added successfully", {
+      this.logger.info('Special date added successfully', {
         businessId: request.businessId,
         date: request.date.toISOString(),
         reason: request.reason,
@@ -282,13 +282,13 @@ export class ManageBusinessHoursUseCase {
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : String(error);
-      this.logger.error("Failed to add special date", undefined, {
+      this.logger.error('Failed to add special date', undefined, {
         businessId: request.businessId,
         error: errorMessage,
       });
 
       throw new BusinessValidationError(
-        "specialDate",
+        'specialDate',
         request.date,
         errorMessage,
       );
@@ -304,7 +304,7 @@ export class ManageBusinessHoursUseCase {
 
     if (!business) {
       throw new BusinessNotFoundError(
-        this.i18n.translate("business.errors.notFound", {
+        this.i18n.translate('business.errors.notFound', {
           id: request.businessId,
         }),
       );
@@ -361,7 +361,7 @@ export class ManageBusinessHoursUseCase {
     // - Super admin
 
     // Pour l'instant, on permet l'accès (à implémenter selon la logique métier)
-    this.logger.debug("Checking business access permission", {
+    this.logger.debug('Checking business access permission', {
       businessId: business.id.getValue(),
       requestingUserId,
     });
@@ -392,14 +392,14 @@ export class ManageBusinessHoursUseCase {
             );
             if (availableSlot) {
               return {
-                date: checkDate.toISOString().split("T")[0],
+                date: checkDate.toISOString().split('T')[0],
                 time: availableSlot.start,
               };
             }
           } else {
             // Jour suivant, prendre le premier créneau
             return {
-              date: checkDate.toISOString().split("T")[0],
+              date: checkDate.toISOString().split('T')[0],
               time: timeSlots[0].start,
             };
           }

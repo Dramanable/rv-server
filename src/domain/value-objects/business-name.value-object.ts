@@ -8,7 +8,7 @@ export class BusinessName {
 
   private validate(value: string): void {
     if (!value || value.trim().length === 0) {
-      throw new Error("Business name cannot be empty");
+      throw new Error('Business name cannot be empty');
     }
 
     const trimmedValue = value.trim();
@@ -28,7 +28,7 @@ export class BusinessName {
     // Vérifier les caractères interdits
     const forbiddenChars = /[<>{}[\]\\/]/;
     if (forbiddenChars.test(trimmedValue)) {
-      throw new Error("Business name contains forbidden characters");
+      throw new Error('Business name contains forbidden characters');
     }
   }
 
@@ -44,9 +44,9 @@ export class BusinessName {
     return this.value
       .trim()
       .toLowerCase()
-      .replace(/[^a-z0-9\s-]/g, "") // Supprimer les caractères spéciaux
-      .replace(/\s+/g, "-") // Remplacer les espaces par des tirets
-      .replace(/-+/g, "-") // Supprimer les tirets multiples
+      .replace(/[^a-z0-9\s-]/g, '') // Supprimer les caractères spéciaux
+      .replace(/\s+/g, '-') // Remplacer les espaces par des tirets
+      .replace(/-+/g, '-') // Supprimer les tirets multiples
       .trim();
   }
 

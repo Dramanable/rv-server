@@ -3,7 +3,7 @@
  * Respecte les principes de validation stricte et traçabilité
  */
 
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsNotEmpty,
   IsObject,
@@ -11,10 +11,10 @@ import {
   IsString,
   IsUUID,
   Length,
-} from "class-validator";
+} from 'class-validator';
 
-import { AssignmentScope } from "@shared/enums/assignment-scope.enum";
-import { UserRole } from "@shared/enums/user-role.enum";
+import { AssignmentScope } from '@shared/enums/assignment-scope.enum';
+import { UserRole } from '@shared/enums/user-role.enum';
 
 /**
  * 📝 DTO pour révoquer une assignation de rôle
@@ -22,45 +22,45 @@ import { UserRole } from "@shared/enums/user-role.enum";
 export class RevokeRoleDto {
   @ApiProperty({
     description: "ID de l'assignation de rôle à révoquer",
-    example: "456e7890-e89b-12d3-a456-426614174111",
-    format: "uuid",
+    example: '456e7890-e89b-12d3-a456-426614174111',
+    format: 'uuid',
   })
-  @IsUUID("4", { message: "L'ID d'assignation doit être un UUID valide" })
+  @IsUUID('4', { message: "L'ID d'assignation doit être un UUID valide" })
   @IsNotEmpty({ message: "L'ID d'assignation est obligatoire" })
   readonly assignmentId!: string;
 
   @ApiPropertyOptional({
-    description: "Raison de la révocation",
-    example: "Fin de projet temporaire",
+    description: 'Raison de la révocation',
+    example: 'Fin de projet temporaire',
     maxLength: 500,
   })
   @IsOptional()
-  @IsString({ message: "La raison doit être une chaîne de caractères" })
-  @Length(1, 500, { message: "La raison doit contenir 1 à 500 caractères" })
+  @IsString({ message: 'La raison doit être une chaîne de caractères' })
+  @Length(1, 500, { message: 'La raison doit contenir 1 à 500 caractères' })
   readonly reason?: string;
 
   @ApiPropertyOptional({
-    description: "Notes additionnelles sur la révocation",
-    example: "Révocation planifiée suite à la fin du projet Q4",
+    description: 'Notes additionnelles sur la révocation',
+    example: 'Révocation planifiée suite à la fin du projet Q4',
     maxLength: 1000,
   })
   @IsOptional()
-  @IsString({ message: "Les notes doivent être une chaîne de caractères" })
-  @Length(0, 1000, { message: "Les notes ne peuvent dépasser 1000 caractères" })
+  @IsString({ message: 'Les notes doivent être une chaîne de caractères' })
+  @Length(0, 1000, { message: 'Les notes ne peuvent dépasser 1000 caractères' })
   readonly notes?: string;
 
   @ApiPropertyOptional({
-    description: "Métadonnées de révocation",
-    type: "object",
+    description: 'Métadonnées de révocation',
+    type: 'object',
     additionalProperties: true,
     example: {
-      revokedBy: "manager@example.com",
-      category: "planned_termination",
-      impact: "low",
+      revokedBy: 'manager@example.com',
+      category: 'planned_termination',
+      impact: 'low',
     },
   })
   @IsOptional()
-  @IsObject({ message: "Les métadonnées doivent être un objet valide" })
+  @IsObject({ message: 'Les métadonnées doivent être un objet valide' })
   readonly metadata?: Record<string, unknown>;
 }
 
@@ -76,7 +76,7 @@ export class RevokeRoleResponseDto {
 
   @ApiProperty({
     description: "Données de l'assignation révoquée",
-    type: "object",
+    type: 'object',
     additionalProperties: true,
   })
   readonly data!: {
@@ -96,7 +96,7 @@ export class RevokeRoleResponseDto {
 
   @ApiProperty({
     description: "Informations sur l'opération",
-    type: "object",
+    type: 'object',
     additionalProperties: true,
   })
   readonly operationInfo!: {
@@ -124,51 +124,51 @@ export class BatchRevokeRolesDto {
     description: "Liste des IDs d'assignations à révoquer",
     type: [String],
     example: [
-      "456e7890-e89b-12d3-a456-426614174111",
-      "567e8901-e89b-12d3-a456-426614174222",
-      "678e9012-e89b-12d3-a456-426614174333",
+      '456e7890-e89b-12d3-a456-426614174111',
+      '567e8901-e89b-12d3-a456-426614174222',
+      '678e9012-e89b-12d3-a456-426614174333',
     ],
   })
-  @IsNotEmpty({ message: "La liste des assignations ne peut être vide" })
-  @IsUUID("4", {
+  @IsNotEmpty({ message: 'La liste des assignations ne peut être vide' })
+  @IsUUID('4', {
     each: true,
     message: "Chaque ID d'assignation doit être un UUID valide",
   })
   readonly assignmentIds!: string[];
 
   @ApiPropertyOptional({
-    description: "Raison commune pour toutes les révocations",
-    example: "Restructuration organisationnelle",
+    description: 'Raison commune pour toutes les révocations',
+    example: 'Restructuration organisationnelle',
     maxLength: 500,
   })
   @IsOptional()
-  @IsString({ message: "La raison doit être une chaîne de caractères" })
-  @Length(1, 500, { message: "La raison doit contenir 1 à 500 caractères" })
+  @IsString({ message: 'La raison doit être une chaîne de caractères' })
+  @Length(1, 500, { message: 'La raison doit contenir 1 à 500 caractères' })
   readonly reason?: string;
 
   @ApiPropertyOptional({
-    description: "Notes communes pour toutes les révocations",
-    example: "Révocations en lot suite à la restructuration du département",
+    description: 'Notes communes pour toutes les révocations',
+    example: 'Révocations en lot suite à la restructuration du département',
     maxLength: 1000,
   })
   @IsOptional()
-  @IsString({ message: "Les notes doivent être une chaîne de caractères" })
-  @Length(0, 1000, { message: "Les notes ne peuvent dépasser 1000 caractères" })
+  @IsString({ message: 'Les notes doivent être une chaîne de caractères' })
+  @Length(0, 1000, { message: 'Les notes ne peuvent dépasser 1000 caractères' })
   readonly notes?: string;
 
   @ApiPropertyOptional({
-    description: "Métadonnées communes pour la révocation en lot",
-    type: "object",
+    description: 'Métadonnées communes pour la révocation en lot',
+    type: 'object',
     additionalProperties: true,
     example: {
       batchOperation: true,
-      operationType: "restructuring",
-      department: "IT",
-      priority: "high",
+      operationType: 'restructuring',
+      department: 'IT',
+      priority: 'high',
     },
   })
   @IsOptional()
-  @IsObject({ message: "Les métadonnées doivent être un objet valide" })
+  @IsObject({ message: 'Les métadonnées doivent être un objet valide' })
   readonly metadata?: Record<string, unknown>;
 }
 
@@ -184,7 +184,7 @@ export class BatchRevokeRolesResponseDto {
 
   @ApiProperty({
     description: "Résumé de l'opération en lot",
-    type: "object",
+    type: 'object',
     additionalProperties: true,
   })
   readonly summary!: {
@@ -195,8 +195,8 @@ export class BatchRevokeRolesResponseDto {
   };
 
   @ApiProperty({
-    description: "Détails des révocations réussies",
-    type: "array",
+    description: 'Détails des révocations réussies',
+    type: 'array',
   })
   readonly successful!: Array<{
     readonly assignmentId: string;
@@ -207,8 +207,8 @@ export class BatchRevokeRolesResponseDto {
   }>;
 
   @ApiPropertyOptional({
-    description: "Détails des révocations échouées",
-    type: "array",
+    description: 'Détails des révocations échouées',
+    type: 'array',
   })
   readonly failed?: Array<{
     readonly assignmentId: string;
@@ -219,8 +219,8 @@ export class BatchRevokeRolesResponseDto {
   }>;
 
   @ApiPropertyOptional({
-    description: "Détails des révocations ignorées",
-    type: "array",
+    description: 'Détails des révocations ignorées',
+    type: 'array',
   })
   readonly skipped?: Array<{
     readonly assignmentId: string;
@@ -231,7 +231,7 @@ export class BatchRevokeRolesResponseDto {
 
   @ApiProperty({
     description: "Métadonnées de l'opération en lot",
-    type: "object",
+    type: 'object',
     additionalProperties: true,
   })
   readonly operationMeta!: {

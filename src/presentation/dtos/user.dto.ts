@@ -5,8 +5,8 @@
  * Production-ready avec validation stricte et documentation Swagger complète
  */
 
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { Transform, Type } from "class-transformer";
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Transform, Type } from 'class-transformer';
 import {
   IsArray,
   IsBoolean,
@@ -19,26 +19,26 @@ import {
   Max,
   Min,
   ValidateNested,
-} from "class-validator";
+} from 'class-validator';
 
-import { UserRole } from "../../shared/enums/user-role.enum";
+import { UserRole } from '../../shared/enums/user-role.enum';
 
 // ═══════════════════════════════════════════════════════════════
 // 🔍 ENUMS & TYPES
 // ═══════════════════════════════════════════════════════════════
 
 export enum SortDirection {
-  ASC = "ASC",
-  DESC = "DESC",
+  ASC = 'ASC',
+  DESC = 'DESC',
 }
 
 export enum UserSortField {
-  CREATED_AT = "created_at",
-  UPDATED_AT = "updated_at",
-  EMAIL = "email",
-  FIRST_NAME = "first_name",
-  LAST_NAME = "last_name",
-  ROLE = "role",
+  CREATED_AT = 'created_at',
+  UPDATED_AT = 'updated_at',
+  EMAIL = 'email',
+  FIRST_NAME = 'first_name',
+  LAST_NAME = 'last_name',
+  ROLE = 'role',
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -47,55 +47,55 @@ export enum UserSortField {
 
 export class PaginationDto {
   @ApiProperty({
-    description: "📄 Page number (1-based indexing)",
+    description: '📄 Page number (1-based indexing)',
     example: 1,
     minimum: 1,
     maximum: 10000,
     default: 1,
-    type: "integer",
-    title: "Page Number",
+    type: 'integer',
+    title: 'Page Number',
   })
   @Type(() => Number)
-  @IsInt({ message: "Page must be an integer" })
-  @Min(1, { message: "Page must be at least 1" })
-  @Max(10000, { message: "Page cannot exceed 10000" })
+  @IsInt({ message: 'Page must be an integer' })
+  @Min(1, { message: 'Page must be at least 1' })
+  @Max(10000, { message: 'Page cannot exceed 10000' })
   page: number = 1;
 
   @ApiProperty({
-    description: "📊 Number of items per page",
+    description: '📊 Number of items per page',
     example: 20,
     minimum: 1,
     maximum: 100,
     default: 20,
-    type: "integer",
-    title: "Items Per Page",
+    type: 'integer',
+    title: 'Items Per Page',
   })
   @Type(() => Number)
-  @IsInt({ message: "Limit must be an integer" })
-  @Min(1, { message: "Limit must be at least 1" })
-  @Max(100, { message: "Limit cannot exceed 100" })
+  @IsInt({ message: 'Limit must be an integer' })
+  @Min(1, { message: 'Limit must be at least 1' })
+  @Max(100, { message: 'Limit cannot exceed 100' })
   limit: number = 20;
 }
 
 export class SortDto {
   @ApiProperty({
-    description: "🔤 Field to sort by",
+    description: '🔤 Field to sort by',
     example: UserSortField.CREATED_AT,
     enum: UserSortField,
     default: UserSortField.CREATED_AT,
-    title: "Sort Field",
+    title: 'Sort Field',
   })
-  @IsEnum(UserSortField, { message: "Invalid sort field" })
+  @IsEnum(UserSortField, { message: 'Invalid sort field' })
   field: UserSortField = UserSortField.CREATED_AT;
 
   @ApiProperty({
-    description: "↕️ Sort direction",
+    description: '↕️ Sort direction',
     example: SortDirection.DESC,
     enum: SortDirection,
     default: SortDirection.DESC,
-    title: "Sort Direction",
+    title: 'Sort Direction',
   })
-  @IsEnum(SortDirection, { message: "Sort direction must be ASC or DESC" })
+  @IsEnum(SortDirection, { message: 'Sort direction must be ASC or DESC' })
   direction: SortDirection = SortDirection.DESC;
 }
 
@@ -106,95 +106,95 @@ export class SortDto {
 export class UserFiltersDto {
   @ApiPropertyOptional({
     description:
-      "🔍 Search term for email, first name, or last name (case-insensitive)",
-    example: "john",
-    type: "string",
+      '🔍 Search term for email, first name, or last name (case-insensitive)',
+    example: 'john',
+    type: 'string',
     minLength: 1,
     maxLength: 100,
-    title: "Search Term",
+    title: 'Search Term',
   })
   @IsOptional()
-  @IsString({ message: "Search must be a string" })
+  @IsString({ message: 'Search must be a string' })
   @Transform(({ value }: { value: unknown }) =>
-    typeof value === "string" ? value.trim() : value,
+    typeof value === 'string' ? value.trim() : value,
   )
   search?: string;
 
   @ApiPropertyOptional({
-    description: "📧 Filter by exact email address",
-    example: "user@example.com",
-    type: "string",
-    format: "email",
-    title: "Email Filter",
+    description: '📧 Filter by exact email address',
+    example: 'user@example.com',
+    type: 'string',
+    format: 'email',
+    title: 'Email Filter',
   })
   @IsOptional()
-  @IsEmail({}, { message: "Must be a valid email address" })
+  @IsEmail({}, { message: 'Must be a valid email address' })
   email?: string;
 
   @ApiPropertyOptional({
-    description: "🎭 Filter by user roles (multiple roles supported)",
+    description: '🎭 Filter by user roles (multiple roles supported)',
     example: [UserRole.PRACTITIONER, UserRole.ASSISTANT],
-    type: "array",
-    items: { type: "string", enum: Object.values(UserRole) },
-    title: "Role Filters",
+    type: 'array',
+    items: { type: 'string', enum: Object.values(UserRole) },
+    title: 'Role Filters',
   })
   @IsOptional()
-  @IsArray({ message: "Roles must be an array" })
-  @IsEnum(UserRole, { each: true, message: "Invalid role in roles array" })
+  @IsArray({ message: 'Roles must be an array' })
+  @IsEnum(UserRole, { each: true, message: 'Invalid role in roles array' })
   roles?: UserRole[];
 
   @ApiPropertyOptional({
-    description: "✅ Filter by account status (active/inactive)",
+    description: '✅ Filter by account status (active/inactive)',
     example: true,
-    type: "boolean",
-    title: "Active Status Filter",
+    type: 'boolean',
+    title: 'Active Status Filter',
   })
   @IsOptional()
-  @IsBoolean({ message: "isActive must be a boolean" })
+  @IsBoolean({ message: 'isActive must be a boolean' })
   isActive?: boolean;
 
   @ApiPropertyOptional({
-    description: "✅ Filter by verification status (verified/unverified)",
+    description: '✅ Filter by verification status (verified/unverified)',
     example: true,
-    type: "boolean",
-    title: "Verification Status Filter",
+    type: 'boolean',
+    title: 'Verification Status Filter',
   })
   @IsOptional()
-  @IsBoolean({ message: "isVerified must be a boolean" })
+  @IsBoolean({ message: 'isVerified must be a boolean' })
   isVerified?: boolean;
 
   @ApiPropertyOptional({
-    description: "📅 Filter by creation date (from date - ISO string)",
-    example: "2024-01-01T00:00:00.000Z",
-    type: "string",
-    format: "date-time",
-    title: "Created After Date",
+    description: '📅 Filter by creation date (from date - ISO string)',
+    example: '2024-01-01T00:00:00.000Z',
+    type: 'string',
+    format: 'date-time',
+    title: 'Created After Date',
   })
   @IsOptional()
-  @IsString({ message: "createdAfter must be a string" })
+  @IsString({ message: 'createdAfter must be a string' })
   createdAfter?: string;
 
   @ApiPropertyOptional({
-    description: "📅 Filter by creation date (to date - ISO string)",
-    example: "2024-12-31T23:59:59.999Z",
-    type: "string",
-    format: "date-time",
-    title: "Created Before Date",
+    description: '📅 Filter by creation date (to date - ISO string)',
+    example: '2024-12-31T23:59:59.999Z',
+    type: 'string',
+    format: 'date-time',
+    title: 'Created Before Date',
   })
   @IsOptional()
-  @IsString({ message: "createdBefore must be a string" })
+  @IsString({ message: 'createdBefore must be a string' })
   createdBefore?: string;
 
   @ApiPropertyOptional({
-    description: "🆔 Filter by specific user IDs (multiple IDs supported)",
-    example: ["123e4567-e89b-12d3-a456-426614174000"],
-    type: "array",
-    items: { type: "string", format: "uuid" },
-    title: "User ID Filters",
+    description: '🆔 Filter by specific user IDs (multiple IDs supported)',
+    example: ['123e4567-e89b-12d3-a456-426614174000'],
+    type: 'array',
+    items: { type: 'string', format: 'uuid' },
+    title: 'User ID Filters',
   })
   @IsOptional()
-  @IsArray({ message: "userIds must be an array" })
-  @IsUUID(4, { each: true, message: "Each userId must be a valid UUID v4" })
+  @IsArray({ message: 'userIds must be an array' })
+  @IsUUID(4, { each: true, message: 'Each userId must be a valid UUID v4' })
   userIds?: string[];
 }
 
@@ -204,18 +204,18 @@ export class UserFiltersDto {
 
 export class ListUsersRequestDto {
   @ApiProperty({
-    description: "📄 Pagination configuration",
+    description: '📄 Pagination configuration',
     type: PaginationDto,
-    title: "Pagination Settings",
+    title: 'Pagination Settings',
   })
   @ValidateNested()
   @Type(() => PaginationDto)
   pagination: PaginationDto = new PaginationDto();
 
   @ApiPropertyOptional({
-    description: "🔤 Sorting configuration",
+    description: '🔤 Sorting configuration',
     type: SortDto,
-    title: "Sort Settings",
+    title: 'Sort Settings',
   })
   @IsOptional()
   @ValidateNested()
@@ -223,9 +223,9 @@ export class ListUsersRequestDto {
   sort?: SortDto;
 
   @ApiPropertyOptional({
-    description: "🔍 Filtering options",
+    description: '🔍 Filtering options',
     type: UserFiltersDto,
-    title: "Filter Settings",
+    title: 'Filter Settings',
   })
   @IsOptional()
   @ValidateNested()
@@ -239,160 +239,160 @@ export class ListUsersRequestDto {
 
 export class UserListItemDto {
   @ApiProperty({
-    description: "🆔 Unique user identifier (UUID v4)",
-    example: "123e4567-e89b-12d3-a456-426614174000",
-    type: "string",
-    format: "uuid",
-    title: "User ID",
+    description: '🆔 Unique user identifier (UUID v4)',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+    type: 'string',
+    format: 'uuid',
+    title: 'User ID',
   })
   id!: string;
 
   @ApiProperty({
-    description: "📧 User email address",
-    example: "user@example.com",
-    type: "string",
-    format: "email",
-    title: "Email Address",
+    description: '📧 User email address',
+    example: 'user@example.com',
+    type: 'string',
+    format: 'email',
+    title: 'Email Address',
   })
   email!: string;
 
   @ApiPropertyOptional({
-    description: "👤 Username (optional)",
-    example: "john_doe",
-    type: "string",
-    title: "Username",
+    description: '👤 Username (optional)',
+    example: 'john_doe',
+    type: 'string',
+    title: 'Username',
   })
   username?: string;
 
   @ApiProperty({
-    description: "👤 User first name",
-    example: "John",
-    type: "string",
-    title: "First Name",
+    description: '👤 User first name',
+    example: 'John',
+    type: 'string',
+    title: 'First Name',
   })
   firstName!: string;
 
   @ApiProperty({
-    description: "👤 User last name",
-    example: "Doe",
-    type: "string",
-    title: "Last Name",
+    description: '👤 User last name',
+    example: 'Doe',
+    type: 'string',
+    title: 'Last Name',
   })
   lastName!: string;
 
   @ApiProperty({
-    description: "🎭 User role in the system",
+    description: '🎭 User role in the system',
     example: UserRole.PRACTITIONER,
     enum: UserRole,
-    title: "User Role",
+    title: 'User Role',
   })
   role!: UserRole;
 
   @ApiProperty({
-    description: "✅ Account active status",
+    description: '✅ Account active status',
     example: true,
-    type: "boolean",
-    title: "Is Active",
+    type: 'boolean',
+    title: 'Is Active',
   })
   isActive!: boolean;
 
   @ApiProperty({
-    description: "✅ Account verification status",
+    description: '✅ Account verification status',
     example: true,
-    type: "boolean",
-    title: "Is Verified",
+    type: 'boolean',
+    title: 'Is Verified',
   })
   isVerified!: boolean;
 
   @ApiProperty({
-    description: "📅 Account creation timestamp",
-    example: "2024-01-15T10:30:00.000Z",
-    type: "string",
-    format: "date-time",
-    title: "Created At",
+    description: '📅 Account creation timestamp',
+    example: '2024-01-15T10:30:00.000Z',
+    type: 'string',
+    format: 'date-time',
+    title: 'Created At',
   })
   createdAt!: string;
 
   @ApiProperty({
-    description: "📅 Last update timestamp",
-    example: "2024-01-20T14:45:00.000Z",
-    type: "string",
-    format: "date-time",
-    title: "Updated At",
+    description: '📅 Last update timestamp',
+    example: '2024-01-20T14:45:00.000Z',
+    type: 'string',
+    format: 'date-time',
+    title: 'Updated At',
   })
   updatedAt!: string;
 }
 
 export class PaginationMetaDto {
   @ApiProperty({
-    description: "📄 Current page number",
+    description: '📄 Current page number',
     example: 1,
-    type: "integer",
-    title: "Current Page",
+    type: 'integer',
+    title: 'Current Page',
   })
   currentPage!: number;
 
   @ApiProperty({
-    description: "📊 Items per page",
+    description: '📊 Items per page',
     example: 20,
-    type: "integer",
-    title: "Items Per Page",
+    type: 'integer',
+    title: 'Items Per Page',
   })
   itemsPerPage!: number;
 
   @ApiProperty({
-    description: "📊 Total number of items",
+    description: '📊 Total number of items',
     example: 150,
-    type: "integer",
-    title: "Total Items",
+    type: 'integer',
+    title: 'Total Items',
   })
   totalItems!: number;
 
   @ApiProperty({
-    description: "📄 Total number of pages",
+    description: '📄 Total number of pages',
     example: 8,
-    type: "integer",
-    title: "Total Pages",
+    type: 'integer',
+    title: 'Total Pages',
   })
   totalPages!: number;
 
   @ApiProperty({
-    description: "◀️ Has previous page",
+    description: '◀️ Has previous page',
     example: false,
-    type: "boolean",
-    title: "Has Previous Page",
+    type: 'boolean',
+    title: 'Has Previous Page',
   })
   hasPreviousPage!: boolean;
 
   @ApiProperty({
-    description: "▶️ Has next page",
+    description: '▶️ Has next page',
     example: true,
-    type: "boolean",
-    title: "Has Next Page",
+    type: 'boolean',
+    title: 'Has Next Page',
   })
   hasNextPage!: boolean;
 }
 
 export class ListUsersResponseDto {
   @ApiProperty({
-    description: "👥 Array of users matching the criteria",
+    description: '👥 Array of users matching the criteria',
     type: [UserListItemDto],
-    title: "Users List",
+    title: 'Users List',
   })
   data!: UserListItemDto[];
 
   @ApiProperty({
-    description: "📊 Pagination metadata",
+    description: '📊 Pagination metadata',
     type: PaginationMetaDto,
-    title: "Pagination Info",
+    title: 'Pagination Info',
   })
   meta!: PaginationMetaDto;
 
   @ApiProperty({
-    description: "✅ Success message",
-    example: "Users retrieved successfully",
-    type: "string",
-    title: "Success Message",
+    description: '✅ Success message',
+    example: 'Users retrieved successfully',
+    type: 'string',
+    title: 'Success Message',
   })
   message!: string;
 }
@@ -403,226 +403,226 @@ export class ListUsersResponseDto {
 
 export class CreateUserRequestDto {
   @ApiProperty({
-    description: "📧 User email address",
-    example: "user@example.com",
-    type: "string",
-    format: "email",
-    title: "Email Address",
+    description: '📧 User email address',
+    example: 'user@example.com',
+    type: 'string',
+    format: 'email',
+    title: 'Email Address',
   })
-  @IsEmail({}, { message: "Must be a valid email address" })
+  @IsEmail({}, { message: 'Must be a valid email address' })
   email!: string;
 
   @ApiProperty({
-    description: "👤 User first name",
-    example: "John",
-    type: "string",
+    description: '👤 User first name',
+    example: 'John',
+    type: 'string',
     minLength: 2,
     maxLength: 50,
-    title: "First Name",
+    title: 'First Name',
   })
-  @IsString({ message: "First name must be a string" })
+  @IsString({ message: 'First name must be a string' })
   @Transform(({ value }: { value: unknown }) =>
-    typeof value === "string" ? value.trim() : value,
+    typeof value === 'string' ? value.trim() : value,
   )
   firstName!: string;
 
   @ApiProperty({
-    description: "👤 User last name",
-    example: "Doe",
-    type: "string",
+    description: '👤 User last name',
+    example: 'Doe',
+    type: 'string',
     minLength: 2,
     maxLength: 50,
-    title: "Last Name",
+    title: 'Last Name',
   })
-  @IsString({ message: "Last name must be a string" })
+  @IsString({ message: 'Last name must be a string' })
   @Transform(({ value }: { value: unknown }) =>
-    typeof value === "string" ? value.trim() : value,
+    typeof value === 'string' ? value.trim() : value,
   )
   lastName!: string;
 
   @ApiProperty({
-    description: "🎭 User role in the system",
+    description: '🎭 User role in the system',
     example: UserRole.PRACTITIONER,
     enum: UserRole,
-    title: "User Role",
+    title: 'User Role',
   })
-  @IsEnum(UserRole, { message: "Invalid user role" })
+  @IsEnum(UserRole, { message: 'Invalid user role' })
   role!: UserRole;
 
   @ApiPropertyOptional({
-    description: "📱 User phone number (optional)",
-    example: "+1234567890",
-    type: "string",
-    title: "Phone Number",
+    description: '📱 User phone number (optional)',
+    example: '+1234567890',
+    type: 'string',
+    title: 'Phone Number',
   })
   @IsOptional()
-  @IsString({ message: "Phone must be a string" })
+  @IsString({ message: 'Phone must be a string' })
   phone?: string;
 }
 
 export class UpdateUserRequestDto {
   @ApiPropertyOptional({
-    description: "👤 User first name",
-    example: "John",
-    type: "string",
+    description: '👤 User first name',
+    example: 'John',
+    type: 'string',
     minLength: 2,
     maxLength: 50,
-    title: "First Name",
+    title: 'First Name',
   })
   @IsOptional()
-  @IsString({ message: "First name must be a string" })
+  @IsString({ message: 'First name must be a string' })
   @Transform(({ value }: { value: unknown }) =>
-    typeof value === "string" ? value.trim() : value,
+    typeof value === 'string' ? value.trim() : value,
   )
   firstName?: string;
 
   @ApiPropertyOptional({
-    description: "👤 User last name",
-    example: "Doe",
-    type: "string",
+    description: '👤 User last name',
+    example: 'Doe',
+    type: 'string',
     minLength: 2,
     maxLength: 50,
-    title: "Last Name",
+    title: 'Last Name',
   })
   @IsOptional()
-  @IsString({ message: "Last name must be a string" })
+  @IsString({ message: 'Last name must be a string' })
   @Transform(({ value }: { value: unknown }) =>
-    typeof value === "string" ? value.trim() : value,
+    typeof value === 'string' ? value.trim() : value,
   )
   lastName?: string;
 
   @ApiPropertyOptional({
-    description: "🎭 User role in the system",
+    description: '🎭 User role in the system',
     example: UserRole.PRACTITIONER,
     enum: UserRole,
-    title: "User Role",
+    title: 'User Role',
   })
   @IsOptional()
-  @IsEnum(UserRole, { message: "Invalid user role" })
+  @IsEnum(UserRole, { message: 'Invalid user role' })
   role?: UserRole;
 
   @ApiPropertyOptional({
-    description: "📱 User phone number",
-    example: "+1234567890",
-    type: "string",
-    title: "Phone Number",
+    description: '📱 User phone number',
+    example: '+1234567890',
+    type: 'string',
+    title: 'Phone Number',
   })
   @IsOptional()
-  @IsString({ message: "Phone must be a string" })
+  @IsString({ message: 'Phone must be a string' })
   phone?: string;
 
   @ApiPropertyOptional({
-    description: "✅ Account active status",
+    description: '✅ Account active status',
     example: true,
-    type: "boolean",
-    title: "Is Active",
+    type: 'boolean',
+    title: 'Is Active',
   })
   @IsOptional()
-  @IsBoolean({ message: "isActive must be a boolean" })
+  @IsBoolean({ message: 'isActive must be a boolean' })
   isActive?: boolean;
 }
 
 export class UserResponseDto {
   @ApiProperty({
-    description: "🆔 Unique user identifier (UUID v4)",
-    example: "123e4567-e89b-12d3-a456-426614174000",
-    type: "string",
-    format: "uuid",
-    title: "User ID",
+    description: '🆔 Unique user identifier (UUID v4)',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+    type: 'string',
+    format: 'uuid',
+    title: 'User ID',
   })
   id!: string;
 
   @ApiProperty({
-    description: "📧 User email address",
-    example: "user@example.com",
-    type: "string",
-    format: "email",
-    title: "Email Address",
+    description: '📧 User email address',
+    example: 'user@example.com',
+    type: 'string',
+    format: 'email',
+    title: 'Email Address',
   })
   email!: string;
 
   @ApiProperty({
-    description: "👤 User first name",
-    example: "John",
-    type: "string",
-    title: "First Name",
+    description: '👤 User first name',
+    example: 'John',
+    type: 'string',
+    title: 'First Name',
   })
   firstName!: string;
 
   @ApiProperty({
-    description: "👤 User last name",
-    example: "Doe",
-    type: "string",
-    title: "Last Name",
+    description: '👤 User last name',
+    example: 'Doe',
+    type: 'string',
+    title: 'Last Name',
   })
   lastName!: string;
 
   @ApiProperty({
-    description: "🎭 User role in the system",
+    description: '🎭 User role in the system',
     example: UserRole.PRACTITIONER,
     enum: UserRole,
-    title: "User Role",
+    title: 'User Role',
   })
   role!: UserRole;
 
   @ApiPropertyOptional({
-    description: "📱 User phone number (optional)",
-    example: "+1234567890",
-    type: "string",
-    title: "Phone Number",
+    description: '📱 User phone number (optional)',
+    example: '+1234567890',
+    type: 'string',
+    title: 'Phone Number',
   })
   phone?: string;
 
   @ApiProperty({
-    description: "✅ Account active status",
+    description: '✅ Account active status',
     example: true,
-    type: "boolean",
-    title: "Is Active",
+    type: 'boolean',
+    title: 'Is Active',
   })
   isActive!: boolean;
 
   @ApiProperty({
-    description: "✅ Account verification status",
+    description: '✅ Account verification status',
     example: true,
-    type: "boolean",
-    title: "Is Verified",
+    type: 'boolean',
+    title: 'Is Verified',
   })
   isVerified!: boolean;
 
   @ApiProperty({
-    description: "📅 Account creation timestamp",
-    example: "2024-01-15T10:30:00.000Z",
-    type: "string",
-    format: "date-time",
-    title: "Created At",
+    description: '📅 Account creation timestamp',
+    example: '2024-01-15T10:30:00.000Z',
+    type: 'string',
+    format: 'date-time',
+    title: 'Created At',
   })
   createdAt!: string;
 
   @ApiProperty({
-    description: "📅 Last update timestamp",
-    example: "2024-01-20T14:45:00.000Z",
-    type: "string",
-    format: "date-time",
-    title: "Updated At",
+    description: '📅 Last update timestamp',
+    example: '2024-01-20T14:45:00.000Z',
+    type: 'string',
+    format: 'date-time',
+    title: 'Updated At',
   })
   updatedAt!: string;
 }
 
 export class DeleteUserResponseDto {
   @ApiProperty({
-    description: "✅ Success message",
-    example: "User deleted successfully",
-    type: "string",
-    title: "Success Message",
+    description: '✅ Success message',
+    example: 'User deleted successfully',
+    type: 'string',
+    title: 'Success Message',
   })
   message!: string;
 
   @ApiProperty({
-    description: "🆔 Deleted user ID",
-    example: "123e4567-e89b-12d3-a456-426614174000",
-    type: "string",
-    format: "uuid",
-    title: "Deleted User ID",
+    description: '🆔 Deleted user ID',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+    type: 'string',
+    format: 'uuid',
+    title: 'Deleted User ID',
   })
   deletedUserId!: string;
 }
@@ -633,30 +633,30 @@ export class DeleteUserResponseDto {
 
 export class UserListValidationErrorDto {
   @ApiProperty({
-    description: "🚨 Error message for invalid filters or pagination",
-    example: "Invalid request parameters",
-    type: "string",
-    title: "Error Message",
+    description: '🚨 Error message for invalid filters or pagination',
+    example: 'Invalid request parameters',
+    type: 'string',
+    title: 'Error Message',
   })
   message!: string;
 
   @ApiProperty({
-    description: "📋 Array of detailed validation errors",
+    description: '📋 Array of detailed validation errors',
     example: [
-      "pagination.page must be at least 1",
-      "filters.roles[0] must be a valid enum value",
+      'pagination.page must be at least 1',
+      'filters.roles[0] must be a valid enum value',
     ],
-    type: "array",
-    items: { type: "string" },
-    title: "Validation Errors",
+    type: 'array',
+    items: { type: 'string' },
+    title: 'Validation Errors',
   })
   error!: string[];
 
   @ApiProperty({
-    description: "🔢 HTTP status code",
+    description: '🔢 HTTP status code',
     example: 400,
-    type: "number",
-    title: "Status Code",
+    type: 'number',
+    title: 'Status Code',
   })
   statusCode!: number;
 }

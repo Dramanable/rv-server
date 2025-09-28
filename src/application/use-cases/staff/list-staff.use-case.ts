@@ -5,13 +5,13 @@
  * Aucune dépendance vers les frameworks (NestJS, TypeORM, etc.)
  */
 
-import { Staff } from "../../../domain/entities/staff.entity";
-import { StaffRepository } from "../../../domain/repositories/staff.repository.interface";
-import { Permission } from "../../../shared/enums/permission.enum";
-import { ApplicationValidationError } from "../../exceptions/application.exceptions";
-import { I18nService } from "../../ports/i18n.port";
-import { Logger } from "../../ports/logger.port";
-import { IPermissionService } from "../../ports/permission.service.interface";
+import { Staff } from '../../../domain/entities/staff.entity';
+import { StaffRepository } from '../../../domain/repositories/staff.repository.interface';
+import { Permission } from '../../../shared/enums/permission.enum';
+import { ApplicationValidationError } from '../../exceptions/application.exceptions';
+import { I18nService } from '../../ports/i18n.port';
+import { Logger } from '../../ports/logger.port';
+import { IPermissionService } from '../../ports/permission.service.interface';
 
 export interface ListStaffRequest {
   readonly requestingUserId: string;
@@ -21,7 +21,7 @@ export interface ListStaffRequest {
   };
   readonly sorting: {
     readonly sortBy: string;
-    readonly sortOrder: "asc" | "desc";
+    readonly sortOrder: 'asc' | 'desc';
   };
   readonly filters: {
     readonly search?: string;
@@ -58,11 +58,11 @@ export interface ListStaffResponse {
 
 export class ListStaffUseCase {
   private static readonly VALID_SORT_FIELDS = [
-    "createdAt",
-    "firstName",
-    "lastName",
-    "role",
-    "email",
+    'createdAt',
+    'firstName',
+    'lastName',
+    'role',
+    'email',
   ];
   private static readonly MAX_PAGE_LIMIT = 100;
 
@@ -83,14 +83,14 @@ export class ListStaffUseCase {
         request.requestingUserId,
         Permission.VIEW_STAFF,
         {
-          action: "list",
-          resource: "staff",
+          action: 'list',
+          resource: 'staff',
           businessId: request.filters.businessId,
         },
       );
 
       // 3. Log de l'opération
-      this.logger.info("Attempting to list staff", {
+      this.logger.info('Attempting to list staff', {
         requestingUserId: request.requestingUserId,
         page: request.pagination.page,
         limit: request.pagination.limit,
@@ -111,7 +111,7 @@ export class ListStaffUseCase {
       const mappedStaff = staff.map(this.mapStaffToResponse);
 
       // 7. Log du succès
-      this.logger.info("Staff list retrieved successfully", {
+      this.logger.info('Staff list retrieved successfully', {
         requestingUserId: request.requestingUserId,
         totalItems: total,
         returnedItems: mappedStaff.length,
@@ -122,7 +122,7 @@ export class ListStaffUseCase {
         meta,
       };
     } catch (error) {
-      this.logger.error("Error listing staff", error as Error, {
+      this.logger.error('Error listing staff', error as Error, {
         requestingUserId: request.requestingUserId,
       });
       throw error;
@@ -136,11 +136,11 @@ export class ListStaffUseCase {
   }
 
   private validateRequestingUser(requestingUserId: string): void {
-    if (!requestingUserId || requestingUserId.trim() === "") {
+    if (!requestingUserId || requestingUserId.trim() === '') {
       throw new ApplicationValidationError(
-        "requestingUserId",
+        'requestingUserId',
         requestingUserId,
-        "Requesting user ID is required",
+        'Requesting user ID is required',
       );
     }
   }
@@ -151,15 +151,15 @@ export class ListStaffUseCase {
   }): void {
     if (pagination.page < 1) {
       throw new ApplicationValidationError(
-        "page",
+        'page',
         pagination.page.toString(),
-        "Page must be greater than 0",
+        'Page must be greater than 0',
       );
     }
 
     if (pagination.limit > ListStaffUseCase.MAX_PAGE_LIMIT) {
       throw new ApplicationValidationError(
-        "limit",
+        'limit',
         pagination.limit.toString(),
         `Limit cannot exceed ${ListStaffUseCase.MAX_PAGE_LIMIT}`,
       );
@@ -168,13 +168,13 @@ export class ListStaffUseCase {
 
   private validateSorting(sorting: {
     sortBy: string;
-    sortOrder: "asc" | "desc";
+    sortOrder: 'asc' | 'desc';
   }): void {
     if (!ListStaffUseCase.VALID_SORT_FIELDS.includes(sorting.sortBy)) {
       throw new ApplicationValidationError(
-        "sortBy",
+        'sortBy',
         sorting.sortBy,
-        `Sort field must be one of: ${ListStaffUseCase.VALID_SORT_FIELDS.join(", ")}`,
+        `Sort field must be one of: ${ListStaffUseCase.VALID_SORT_FIELDS.join(', ')}`,
       );
     }
   }
@@ -199,7 +199,7 @@ export class ListStaffUseCase {
   private calculatePaginationMeta(
     pagination: { page: number; limit: number },
     total: number,
-  ): ListStaffResponse["meta"] {
+  ): ListStaffResponse['meta'] {
     const totalPages = Math.ceil(total / pagination.limit);
 
     return {
@@ -212,7 +212,7 @@ export class ListStaffUseCase {
     };
   }
 
-  private mapStaffToResponse(staff: Staff): ListStaffResponse["data"][0] {
+  private mapStaffToResponse(staff: Staff): ListStaffResponse['data'][0] {
     return {
       id: staff.id.getValue(),
       businessId: staff.businessId.getValue(),

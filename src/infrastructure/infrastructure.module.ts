@@ -4,19 +4,19 @@
  * ✅ Only real services and repositories - NO MOCKS
  */
 
-import { Module } from "@nestjs/common";
-import { ConfigModule } from "@nestjs/config";
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 
 // Infrastructure modules - Only existing ones
-import { CacheModule } from "./cache/cache.module";
-import { DatabaseModule } from "./database/database.module";
-import { HealthModule } from "./health/health.module";
-import { PinoLoggerModule } from "./logging/pino-logger.module";
-import { MappersModule } from "./mappers/mappers.module";
-import { AuthInfrastructureModule } from "./modules/auth-infrastructure.module";
-import { AwsS3Module } from "./modules/aws-s3.module";
-import { NotificationServicesModule } from "./modules/notification-services.module";
-import { UseCasesModule } from "./modules/use-cases.module";
+import { CacheModule } from './cache/cache.module';
+import { DatabaseModule } from './database/database.module';
+import { HealthModule } from './health/health.module';
+import { PinoLoggerModule } from './logging/pino-logger.module';
+import { MappersModule } from './mappers/mappers.module';
+import { AuthInfrastructureModule } from './modules/auth-infrastructure.module';
+import { AwsS3Module } from './modules/aws-s3.module';
+import { NotificationServicesModule } from './modules/notification-services.module';
+import { UseCasesModule } from './modules/use-cases.module';
 
 // Shared constants
 
@@ -25,7 +25,7 @@ import { UseCasesModule } from "./modules/use-cases.module";
     // Configuration globale
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: ".env",
+      envFilePath: '.env',
     }),
 
     // Infrastructure modules

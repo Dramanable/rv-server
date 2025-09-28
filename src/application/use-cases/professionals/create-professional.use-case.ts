@@ -4,14 +4,14 @@
  * @description Use case pour créer un nouveau professionnel avec logging, audit et i18n
  */
 
-import { IAuditService } from "@application/ports/audit.port";
-import { I18nService } from "@application/ports/i18n.port";
-import { Logger } from "@application/ports/logger.port";
-import { Professional } from "@domain/entities/professional.entity";
-import { ProfessionalValidationError } from "@domain/exceptions/professional.exceptions";
-import { IProfessionalRepository } from "@domain/repositories/professional.repository";
-import { BusinessId } from "@domain/value-objects/business-id.value-object";
-import { Email } from "@domain/value-objects/email.value-object";
+import { IAuditService } from '@application/ports/audit.port';
+import { I18nService } from '@application/ports/i18n.port';
+import { Logger } from '@application/ports/logger.port';
+import { Professional } from '@domain/entities/professional.entity';
+import { ProfessionalValidationError } from '@domain/exceptions/professional.exceptions';
+import { IProfessionalRepository } from '@domain/repositories/professional.repository';
+import { BusinessId } from '@domain/value-objects/business-id.value-object';
+import { Email } from '@domain/value-objects/email.value-object';
 
 /**
  * Interface de requête pour créer un professionnel
@@ -85,7 +85,7 @@ export class CreateProfessionalUseCase {
     request: CreateProfessionalRequest,
   ): Promise<CreateProfessionalResponse> {
     // ✅ OBLIGATOIRE - Logging avec contexte complet
-    this.logger.info("Creating new professional", {
+    this.logger.info('Creating new professional', {
       businessId: request.businessId,
       professionalEmail: request.email,
       requestingUserId: request.requestingUserId,
@@ -107,7 +107,7 @@ export class CreateProfessionalUseCase {
         await this.professionalRepository.existsByEmail(email);
       if (existsByEmail) {
         this.logger.error(
-          "Professional creation failed: email already exists",
+          'Professional creation failed: email already exists',
           undefined, // No Error object
           {
             email: request.email,
@@ -117,7 +117,7 @@ export class CreateProfessionalUseCase {
         );
 
         throw new ProfessionalValidationError(
-          this.i18n.translate("professional.validation.emailAlreadyExists", {
+          this.i18n.translate('professional.validation.emailAlreadyExists', {
             email: request.email,
           }),
           { email: request.email },
@@ -131,7 +131,7 @@ export class CreateProfessionalUseCase {
         );
       if (existsByLicense) {
         this.logger.error(
-          "Professional creation failed: license number already exists",
+          'Professional creation failed: license number already exists',
           undefined, // No Error object
           {
             licenseNumber: request.licenseNumber,
@@ -141,7 +141,7 @@ export class CreateProfessionalUseCase {
         );
 
         throw new ProfessionalValidationError(
-          this.i18n.translate("professional.validation.licenseAlreadyExists", {
+          this.i18n.translate('professional.validation.licenseAlreadyExists', {
             licenseNumber: request.licenseNumber,
           }),
           { licenseNumber: request.licenseNumber },
@@ -168,8 +168,8 @@ export class CreateProfessionalUseCase {
 
       // ✅ OBLIGATOIRE - Audit Trail
       await this.auditService.logOperation({
-        operation: "CREATE_PROFESSIONAL",
-        entityType: "PROFESSIONAL",
+        operation: 'CREATE_PROFESSIONAL',
+        entityType: 'PROFESSIONAL',
         entityId: savedProfessional.getId().getValue(),
         businessId: request.businessId,
         userId: request.requestingUserId,
@@ -180,7 +180,7 @@ export class CreateProfessionalUseCase {
         timestamp: new Date(),
       });
 
-      this.logger.info("Professional created successfully", {
+      this.logger.info('Professional created successfully', {
         professionalId: savedProfessional.getId().getValue(),
         businessId: request.businessId,
         email: request.email,
@@ -191,11 +191,11 @@ export class CreateProfessionalUseCase {
       return this.mapToResponse(savedProfessional, request.correlationId);
     } catch (error) {
       const errorMessage =
-        error instanceof Error ? error.message : "Unknown error";
-      const errorStack = error instanceof Error ? error.stack : "";
+        error instanceof Error ? error.message : 'Unknown error';
+      const errorStack = error instanceof Error ? error.stack : '';
 
       this.logger.error(
-        "Failed to create professional",
+        'Failed to create professional',
         error instanceof Error ? error : undefined,
         {
           message: errorMessage,
@@ -215,31 +215,31 @@ export class CreateProfessionalUseCase {
   private validateRequest(request: CreateProfessionalRequest): void {
     if (!request.firstName?.trim()) {
       throw new ProfessionalValidationError(
-        this.i18n.translate("professional.validation.firstNameRequired"),
+        this.i18n.translate('professional.validation.firstNameRequired'),
       );
     }
 
     if (!request.lastName?.trim()) {
       throw new ProfessionalValidationError(
-        this.i18n.translate("professional.validation.lastNameRequired"),
+        this.i18n.translate('professional.validation.lastNameRequired'),
       );
     }
 
     if (!request.speciality?.trim()) {
       throw new ProfessionalValidationError(
-        this.i18n.translate("professional.validation.specialityRequired"),
+        this.i18n.translate('professional.validation.specialityRequired'),
       );
     }
 
     if (!request.licenseNumber?.trim()) {
       throw new ProfessionalValidationError(
-        this.i18n.translate("professional.validation.licenseRequired"),
+        this.i18n.translate('professional.validation.licenseRequired'),
       );
     }
 
     if (request.experience !== undefined && request.experience < 0) {
       throw new ProfessionalValidationError(
-        this.i18n.translate("professional.validation.experienceInvalid"),
+        this.i18n.translate('professional.validation.experienceInvalid'),
         { experience: request.experience },
       );
     }
@@ -262,7 +262,7 @@ export class CreateProfessionalUseCase {
         fullName: professional.getFullName(),
         email: professional.getEmail().toString(),
         speciality: professional.getSpeciality(),
-        licenseNumber: professional.getLicenseNumber() || "",
+        licenseNumber: professional.getLicenseNumber() || '',
         phoneNumber: professional.getPhoneNumber(),
         bio: professional.getBio(),
         experience: professional.getExperience(),

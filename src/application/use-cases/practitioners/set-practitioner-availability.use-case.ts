@@ -1,11 +1,11 @@
-import { I18nService } from "@application/ports/i18n.port";
-import { IPermissionService } from "@application/ports/permission.service.interface";
-import { AppointmentRepository } from "@domain/repositories/appointment.repository.interface";
-import { IRoleAssignmentRepository } from "@domain/repositories/role-assignment.repository.interface";
-import { StaffRepository } from "@domain/repositories/staff.repository.interface";
-import { UserId } from "@domain/value-objects/user-id.value-object";
-import { Permission } from "@shared/enums/user-role.enum";
-import { ILogger } from "@shared/types/logger.interface";
+import { I18nService } from '@application/ports/i18n.port';
+import { IPermissionService } from '@application/ports/permission.service.interface';
+import { AppointmentRepository } from '@domain/repositories/appointment.repository.interface';
+import { IRoleAssignmentRepository } from '@domain/repositories/role-assignment.repository.interface';
+import { StaffRepository } from '@domain/repositories/staff.repository.interface';
+import { UserId } from '@domain/value-objects/user-id.value-object';
+import { Permission } from '@shared/enums/user-role.enum';
+import { ILogger } from '@shared/types/logger.interface';
 
 export interface SetPractitionerAvailabilityRequest {
   readonly practitionerId: string;
@@ -55,21 +55,21 @@ export interface SetPractitionerAvailabilityResponse {
 export class InvalidAvailabilityDataError extends Error {
   constructor(message: string) {
     super(message);
-    this.name = "InvalidAvailabilityDataError";
+    this.name = 'InvalidAvailabilityDataError';
   }
 }
 
 export class PractitionerNotFoundError extends Error {
   constructor(practitionerId: string) {
     super(`Practitioner ${practitionerId} not found`);
-    this.name = "PractitionerNotFoundError";
+    this.name = 'PractitionerNotFoundError';
   }
 }
 
 export class InsufficientPermissionsError extends Error {
   constructor(message: string) {
     super(message);
-    this.name = "InsufficientPermissionsError";
+    this.name = 'InsufficientPermissionsError';
   }
 }
 
@@ -89,7 +89,7 @@ export class SetPractitionerAvailabilityUseCase {
     const requestingUserId = request.requestingUserId || request.practitionerId;
 
     // 1. Log operation start
-    this.logger.log("Setting practitioner availability", {
+    this.logger.log('Setting practitioner availability', {
       requestingUserId,
       practitionerId: request.practitionerId,
       businessId: request.businessId,
@@ -101,7 +101,7 @@ export class SetPractitionerAvailabilityUseCase {
     const practitionerExists =
       await this.staffRepository.findById(practitionerId);
     if (!practitionerExists) {
-      this.logger.error("Practitioner not found", {
+      this.logger.error('Practitioner not found', {
         practitionerId: request.practitionerId,
         correlationId: request.correlationId,
       });
@@ -110,12 +110,12 @@ export class SetPractitionerAvailabilityUseCase {
 
     // 3. Basic validation - practitioner is active
     if (!practitionerExists.isActive()) {
-      this.logger.error("Practitioner not active", {
+      this.logger.error('Practitioner not active', {
         practitionerId: request.practitionerId,
         correlationId: request.correlationId,
       });
       throw new InvalidAvailabilityDataError(
-        this.i18n.translate("staff.practitionerNotActive", {
+        this.i18n.translate('staff.practitionerNotActive', {
           id: request.practitionerId,
         }),
       );
@@ -123,12 +123,12 @@ export class SetPractitionerAvailabilityUseCase {
 
     // 4. Validation - user is a practitioner
     if (!practitionerExists.isPractitioner()) {
-      this.logger.error("User is not a practitioner", {
+      this.logger.error('User is not a practitioner', {
         practitionerId: request.practitionerId,
         correlationId: request.correlationId,
       });
       throw new InvalidAvailabilityDataError(
-        this.i18n.translate("staff.notAPractitioner", {
+        this.i18n.translate('staff.notAPractitioner', {
           id: request.practitionerId,
         }),
       );
@@ -155,7 +155,7 @@ export class SetPractitionerAvailabilityUseCase {
 
       if (!canManage) {
         this.logger.error(
-          "Insufficient permissions to manage other practitioners",
+          'Insufficient permissions to manage other practitioners',
           {
             requestingUserId,
             practitionerId: request.practitionerId,
@@ -163,20 +163,20 @@ export class SetPractitionerAvailabilityUseCase {
           },
         );
         throw new InsufficientPermissionsError(
-          this.i18n.translate("permissions.cannotManageOtherPractitioners"),
+          this.i18n.translate('permissions.cannotManageOtherPractitioners'),
         );
       }
     }
 
     // 6. Validate availability data - Date range
     if (request.availability.startDate >= request.availability.endDate) {
-      this.logger.error("Invalid date range", {
+      this.logger.error('Invalid date range', {
         startDate: request.availability.startDate,
         endDate: request.availability.endDate,
         correlationId: request.correlationId,
       });
       throw new InvalidAvailabilityDataError(
-        this.i18n.translate("availability.invalidDateRange"),
+        this.i18n.translate('availability.invalidDateRange'),
       );
     }
 
@@ -185,7 +185,7 @@ export class SetPractitionerAvailabilityUseCase {
       !request.availability.availabilities ||
       request.availability.availabilities.length === 0
     ) {
-      throw new InvalidAvailabilityDataError("No availability slots provided");
+      throw new InvalidAvailabilityDataError('No availability slots provided');
     }
 
     // 8. Validate each availability slot
@@ -197,14 +197,14 @@ export class SetPractitionerAvailabilityUseCase {
       for (const slot of availability.timeSlots) {
         // Validate time slot format
         if (slot.startTime >= slot.endTime) {
-          this.logger.error("Invalid time slot", {
+          this.logger.error('Invalid time slot', {
             day: availability.dayOfWeek,
             startTime: slot.startTime,
             endTime: slot.endTime,
             correlationId: request.correlationId,
           });
           throw new InvalidAvailabilityDataError(
-            this.i18n.translate("availability.invalidTimeSlot", {
+            this.i18n.translate('availability.invalidTimeSlot', {
               day: availability.dayOfWeek,
               startTime: slot.startTime,
               endTime: slot.endTime,
@@ -223,7 +223,7 @@ export class SetPractitionerAvailabilityUseCase {
           );
 
           if (!isBreakWithinWorkingHours) {
-            this.logger.error("Break outside working hours", {
+            this.logger.error('Break outside working hours', {
               day: availability.dayOfWeek,
               breakStart: breakPeriod.startTime,
               breakEnd: breakPeriod.endTime,
@@ -231,7 +231,7 @@ export class SetPractitionerAvailabilityUseCase {
               correlationId: request.correlationId,
             });
             throw new InvalidAvailabilityDataError(
-              this.i18n.translate("availability.breakOutsideWorkingHours", {
+              this.i18n.translate('availability.breakOutsideWorkingHours', {
                 day: availability.dayOfWeek,
                 breakStart: breakPeriod.startTime,
                 breakEnd: breakPeriod.endTime,
@@ -257,11 +257,11 @@ export class SetPractitionerAvailabilityUseCase {
 
       // Mock conflict data for response
       conflictingAppointments.push({
-        appointmentId: "appointment-123",
-        clientId: "client-456",
+        appointmentId: 'appointment-123',
+        clientId: 'client-456',
         status: request.autoRescheduleConflicts
-          ? "RESCHEDULED"
-          : "REQUIRES_MANUAL_INTERVENTION",
+          ? 'RESCHEDULED'
+          : 'REQUIRES_MANUAL_INTERVENTION',
         ...(request.autoRescheduleConflicts && {
           newScheduledTime: new Date(),
         }),
@@ -278,7 +278,7 @@ export class SetPractitionerAvailabilityUseCase {
       .reduce((total, day) => total + day.timeSlots.length, 0);
 
     // 11. Log successful completion
-    this.logger.log("Practitioner availability set successfully", {
+    this.logger.log('Practitioner availability set successfully', {
       practitionerId: request.practitionerId,
       availableSlots: totalAvailableSlots,
       conflictsDetected,
@@ -298,7 +298,7 @@ export class SetPractitionerAvailabilityUseCase {
           ? conflictingAppointments
           : undefined,
       notificationsSent: [], // Empty array for now, will be implemented later
-      message: "Availability updated successfully",
+      message: 'Availability updated successfully',
     };
   }
 
