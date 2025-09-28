@@ -236,8 +236,7 @@ All endpoints return standardized error responses:
     .addTag('👨‍💼 Professional Management', '👨‍💼 Professional services management')
     .addTag('🔐 Permissions', '🔐 Permission and access control management')
     .addTag('🎭 Role Management', '🎭 Role assignment and hierarchy management')
-    .addTag('🎯 Skills Management', '🎯 Professional skills and competencies')
-    .addTag('🏥 Health', '💚 System health and monitoring endpoints')
+    .addTag(' Health', '💚 System health and monitoring endpoints')
 
     // 🍪 Cookie-based authentication (production)
     .addCookieAuth('accessToken', {

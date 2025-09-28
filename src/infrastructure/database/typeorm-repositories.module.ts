@@ -19,6 +19,7 @@ import { CalendarOrmEntity } from './sql/postgresql/entities/calendar-orm.entity
 import { CalendarTypeOrmEntity } from './sql/postgresql/entities/calendar-type-orm.entity';
 import { PermissionOrmEntity } from './sql/postgresql/entities/permission-orm.entity';
 import { ProfessionalOrmEntity } from './sql/postgresql/entities/professional-orm.entity';
+import { ProfessionalRoleOrmEntity } from './sql/postgresql/entities/professional-role-orm.entity';
 import { RefreshTokenOrmEntity } from './sql/postgresql/entities/refresh-token-orm.entity';
 import { ServiceOrmEntity } from './sql/postgresql/entities/service-orm.entity';
 import { ServiceTypeOrmEntity } from './sql/postgresql/entities/service-type-orm.entity';
@@ -37,6 +38,7 @@ import { TypeOrmCalendarTypeRepository } from './sql/postgresql/repositories/typ
 import { TypeOrmCalendarRepository } from './sql/postgresql/repositories/typeorm-calendar.repository';
 import { TypeOrmPermissionRepository } from './sql/postgresql/repositories/typeorm-permission.repository';
 import { TypeOrmProfessionalRepository } from './sql/postgresql/repositories/typeorm-professional.repository';
+import { TypeOrmProfessionalRoleRepository } from './sql/postgresql/repositories/typeorm-professional-role.repository';
 import { TypeOrmServiceTypeRepository } from './sql/postgresql/repositories/typeorm-service-type.repository';
 import { TypeOrmServiceRepository } from './sql/postgresql/repositories/typeorm-service.repository';
 import { TypeOrmStaffRepository } from './sql/postgresql/repositories/typeorm-staff.repository';
@@ -70,6 +72,7 @@ import { RbacPermissionService } from '../services/rbac-permission.service';
       CalendarOrmEntity,
       CalendarTypeOrmEntity,
       ProfessionalOrmEntity, // ✅ Professional entity for actor separation
+      ProfessionalRoleOrmEntity, // ✅ Professional Role entity
       // 🎭 RBAC Entities
       RoleAssignmentOrmEntity,
       BusinessContextOrmEntity,
@@ -146,6 +149,12 @@ import { RbacPermissionService } from '../services/rbac-permission.service';
       useClass: TypeOrmProfessionalRepository,
     },
 
+    // Professional Role Repository
+    {
+      provide: TOKENS.PROFESSIONAL_ROLE_REPOSITORY,
+      useClass: TypeOrmProfessionalRoleRepository,
+    },
+
     // Permission Repository
     {
       provide: TOKENS.PERMISSION_REPOSITORY,
@@ -220,6 +229,7 @@ import { RbacPermissionService } from '../services/rbac-permission.service';
     TOKENS.CALENDAR_TYPE_REPOSITORY,
     TOKENS.APPOINTMENT_REPOSITORY,
     TOKENS.PROFESSIONAL_REPOSITORY, // ✅ Professional repository for actor separation
+    TOKENS.PROFESSIONAL_ROLE_REPOSITORY, // ✅ Professional Role repository
     TOKENS.PERMISSION_REPOSITORY,
     // 🎭 RBAC Repositories
     TOKENS.ROLE_ASSIGNMENT_REPOSITORY,

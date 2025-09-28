@@ -61,7 +61,7 @@ import { TOKENS } from '@shared/constants/injection-tokens';
  * - Update existing business sectors
  * - Delete business sectors (with usage validation)
  */
-@ApiTags('� Business Sectors')
+@ApiTags('🏭 Business Sectors')
 @Controller('business-sectors')
 @ApiBearerAuth()
 @UsePipes(new I18nValidationPipe())

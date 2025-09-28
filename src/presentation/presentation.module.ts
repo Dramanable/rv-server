@@ -118,6 +118,13 @@ import { GetProfessionalByIdUseCase } from '@application/use-cases/professionals
 import { ListProfessionalsUseCase } from '@application/use-cases/professionals/list-professionals.use-case';
 import { UpdateProfessionalUseCase } from '@application/use-cases/professionals/update-professional.use-case';
 
+// Professional Role Use Cases
+import { CreateProfessionalRoleUseCase } from '@application/use-cases/professional-roles/create-professional-role.use-case';
+import { DeleteProfessionalRoleUseCase } from '@application/use-cases/professional-roles/delete-professional-role.use-case';
+import { GetProfessionalRoleUseCase } from '@application/use-cases/professional-roles/get-professional-role.use-case';
+import { ListProfessionalRolesUseCase } from '@application/use-cases/professional-roles/list-professional-roles.use-case';
+import { UpdateProfessionalRoleUseCase } from '@application/use-cases/professional-roles/update-professional-role.use-case';
+
 // Practitioner Use Cases
 import { SetPractitionerAvailabilityUseCase } from '@application/use-cases/practitioners/set-practitioner-availability.use-case';
 
@@ -137,6 +144,7 @@ import { CalendarController } from './controllers/calendar.controller';
 import { NotificationController } from './controllers/notification.controller';
 import { PermissionController } from './controllers/permission.controller';
 import { ProfessionalController } from './controllers/professional.controller';
+import { ProfessionalRoleController } from './controllers/professional-role.controller';
 import { RoleManagementController } from './controllers/role-management.controller';
 import { ServiceTypeController } from './controllers/service-type.controller';
 import { ServiceController } from './controllers/service.controller';
@@ -182,6 +190,7 @@ import { PresentationCookieService } from './services/cookie.service';
     AppointmentController,
     NotificationController,
     ProfessionalController,
+    ProfessionalRoleController,
     PermissionController,
     RoleManagementController,
   ],
@@ -1045,6 +1054,38 @@ import { PresentationCookieService } from './services/cookie.service';
         TOKENS.I18N_SERVICE,
         TOKENS.AUDIT_SERVICE,
       ],
+    },
+
+    // 🎭 Professional Role Use Cases
+    {
+      provide: TOKENS.CREATE_PROFESSIONAL_ROLE_USE_CASE,
+      useFactory: (professionalRoleRepo) =>
+        new CreateProfessionalRoleUseCase(professionalRoleRepo),
+      inject: [TOKENS.PROFESSIONAL_ROLE_REPOSITORY],
+    },
+    {
+      provide: TOKENS.GET_PROFESSIONAL_ROLE_USE_CASE,
+      useFactory: (professionalRoleRepo) =>
+        new GetProfessionalRoleUseCase(professionalRoleRepo),
+      inject: [TOKENS.PROFESSIONAL_ROLE_REPOSITORY],
+    },
+    {
+      provide: TOKENS.LIST_PROFESSIONAL_ROLES_USE_CASE,
+      useFactory: (professionalRoleRepo) =>
+        new ListProfessionalRolesUseCase(professionalRoleRepo),
+      inject: [TOKENS.PROFESSIONAL_ROLE_REPOSITORY],
+    },
+    {
+      provide: TOKENS.UPDATE_PROFESSIONAL_ROLE_USE_CASE,
+      useFactory: (professionalRoleRepo) =>
+        new UpdateProfessionalRoleUseCase(professionalRoleRepo),
+      inject: [TOKENS.PROFESSIONAL_ROLE_REPOSITORY],
+    },
+    {
+      provide: TOKENS.DELETE_PROFESSIONAL_ROLE_USE_CASE,
+      useFactory: (professionalRoleRepo) =>
+        new DeleteProfessionalRoleUseCase(professionalRoleRepo),
+      inject: [TOKENS.PROFESSIONAL_ROLE_REPOSITORY],
     },
 
     // 👨‍⚕️ Practitioner Use Cases

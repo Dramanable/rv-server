@@ -58,7 +58,7 @@ import {
  * - **Recherche** : Filtrage avancé des assignations avec pagination
  * - **Audit** : Historique complet des modifications
  */
-@ApiTags('👤 Role Management')
+@ApiTags('🎭 Role Management')
 @Controller('role-assignments')
 @ApiBearerAuth()
 @UseGuards(RoleBasedGuard)
