@@ -10,12 +10,10 @@
  */
 
 import { InsufficientPermissionsError } from '@application/exceptions/application.exceptions';
-import { I18nService } from '@application/ports/i18n.port';
 import { Logger } from '@application/ports/logger.port';
 import { IPermissionService } from '@application/ports/permission.service.interface';
 import { GetUserEffectivePermissionsUseCase } from '@application/use-cases/role-management/get-user-effective-permissions.use-case';
 import { RoleAssignmentContext } from '@domain/entities/role-assignment.entity';
-import { IBusinessContextRepository } from '@domain/repositories/business-context.repository.interface';
 import { IRoleAssignmentRepository } from '@domain/repositories/role-assignment.repository.interface';
 import { Permission, UserRole } from '@shared/enums/user-role.enum';
 

@@ -4,11 +4,11 @@
  * Cas d'usage pour récupérer un rôle professionnel par ID
  */
 
-import { IProfessionalRoleRepository } from '@domain/repositories/professional-role.repository';
 import {
-  ProfessionalRoleValidationError,
   ProfessionalRoleNotFoundError,
+  ProfessionalRoleValidationError,
 } from '@domain/exceptions/professional-role.exceptions';
+import { IProfessionalRoleRepository } from '@domain/repositories/professional-role.repository';
 
 export interface GetProfessionalRoleRequest {
   readonly professionalRoleId: string;

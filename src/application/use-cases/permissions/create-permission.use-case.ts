@@ -1,6 +1,6 @@
 import { Permission } from '@domain/entities/permission.entity';
-import { IPermissionRepository } from '@domain/repositories/permission.repository';
 import { PermissionAlreadyExistsError } from '@domain/exceptions/permission.exceptions';
+import { IPermissionRepository } from '@domain/repositories/permission.repository';
 import { generateId } from '@shared/utils/id.utils';
 
 /**

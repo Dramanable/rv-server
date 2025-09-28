@@ -1,5 +1,5 @@
-import { Skill } from '../../domain/entities/skill.entity';
-import { BusinessId } from '../../domain/value-objects/business-id.value-object';
+import { Skill } from '@domain/entities/skill.entity';
+import { BusinessId } from '@domain/value-objects/business-id.value-object';
 import { SkillOrmEntity } from '../database/sql/postgresql/entities/skill-orm.entity';
 
 /**

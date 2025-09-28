@@ -4,11 +4,11 @@
  * Cas d'usage pour mettre à jour un rôle professionnel
  */
 
-import { IProfessionalRoleRepository } from '@domain/repositories/professional-role.repository';
 import {
-  ProfessionalRoleValidationError,
   ProfessionalRoleNotFoundError,
+  ProfessionalRoleValidationError,
 } from '@domain/exceptions/professional-role.exceptions';
+import { IProfessionalRoleRepository } from '@domain/repositories/professional-role.repository';
 
 export interface UpdateProfessionalRoleRequest {
   readonly professionalRoleId: string;

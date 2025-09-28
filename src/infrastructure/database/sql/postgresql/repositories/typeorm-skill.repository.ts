@@ -1,9 +1,9 @@
+import { Skill } from '@domain/entities/skill.entity';
+import { ISkillRepository } from '@domain/repositories/skill.repository';
+import { BusinessId } from '@domain/value-objects/business-id.value-object';
+import { SkillOrmMapper } from '@infrastructure/mappers/skill-orm.mapper';
 import { Repository } from 'typeorm';
-import { Skill } from '../../domain/entities/skill.entity';
-import { ISkillRepository } from '../../domain/repositories/skill.repository';
-import { BusinessId } from '../../domain/value-objects/business-id.value-object';
-import { SkillOrmEntity } from '../database/sql/postgresql/entities/skill-orm.entity';
-import { SkillOrmMapper } from '../mappers/skill-orm.mapper';
+import { SkillOrmEntity } from '../entities/skill-orm.entity';
 
 /**
  * ✅ OBLIGATOIRE - Repository TypeORM pour Skills
@@ -161,7 +161,7 @@ export class TypeOrmSkillRepository implements ISkillRepository {
     await this.repository.delete(id);
   }
 
-  async isSkillInUse(id: string): Promise<boolean> {
+  async isSkillInUse(_id: string): Promise<boolean> {
     // TODO: Implémenter la vérification d'usage dans StaffSkills
     // Actuellement, retourne false en attendant l'implémentation complète
     return false;

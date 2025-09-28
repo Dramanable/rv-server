@@ -37,8 +37,8 @@ import { TypeOrmBusinessRepository } from './sql/postgresql/repositories/typeorm
 import { TypeOrmCalendarTypeRepository } from './sql/postgresql/repositories/typeorm-calendar-type.repository';
 import { TypeOrmCalendarRepository } from './sql/postgresql/repositories/typeorm-calendar.repository';
 import { TypeOrmPermissionRepository } from './sql/postgresql/repositories/typeorm-permission.repository';
-import { TypeOrmProfessionalRepository } from './sql/postgresql/repositories/typeorm-professional.repository';
 import { TypeOrmProfessionalRoleRepository } from './sql/postgresql/repositories/typeorm-professional-role.repository';
+import { TypeOrmProfessionalRepository } from './sql/postgresql/repositories/typeorm-professional.repository';
 import { TypeOrmServiceTypeRepository } from './sql/postgresql/repositories/typeorm-service-type.repository';
 import { TypeOrmServiceRepository } from './sql/postgresql/repositories/typeorm-service.repository';
 import { TypeOrmStaffRepository } from './sql/postgresql/repositories/typeorm-staff.repository';

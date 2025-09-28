@@ -1,7 +1,7 @@
+import { I18nService } from '@application/ports/i18n.port';
+import { Logger } from '@application/ports/logger.port';
 import { PermissionNotFoundError } from '@domain/exceptions/permission.exceptions';
 import { IPermissionRepository } from '@domain/repositories/permission.repository';
-import { Logger } from '@application/ports/logger.port';
-import { I18nService } from '@application/ports/i18n.port';
 
 /**
  * Get Permission By ID Use Case

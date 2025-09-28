@@ -1,6 +1,29 @@
-`````instructions
-````instructions
+``````instructions
 # 🤖 GitHub Copilot Instructions pour Clean Architecture + NestJS
+
+## 🚀 Fastify dans ce projet
+
+- Le serveur NestJS utilise Fastify comme HTTP adapter pour des performances accrues.
+- Les middlewares, guards, interceptors et pipes doivent être compatibles Fastify (pas Express).
+- Les tests E2E utilisent l’API Fastify (ex : `app.getHttpAdapter().getInstance()` pour accéder à Fastify).
+- Les plugins Fastify personnalisés doivent être déclarés dans l’initialisation Nest.
+- Les headers, cookies, et requêtes doivent être manipulés via l’API Fastify (`request.raw`, `reply.raw`).
+- Pour la gestion des fichiers, utiliser les hooks Fastify (`onRequest`, `onSend`, etc.)
+- Les erreurs doivent être formatées pour Fastify (pas de `res.status().json()` mais `reply.status().send()`).
+
+## 📝 Exemples Fastify
+
+```typescript
+// Accès à l’instance Fastify dans un test E2E
+const fastify = app.getHttpAdapter().getInstance();
+
+// Utilisation de reply Fastify dans un interceptor
+intercept(context: ExecutionContext, next: CallHandler) {
+  const reply = context.switchToHttp().getResponse(); // FastifyReply
+  reply.header('X-Custom', 'value');
+  return next.handle();
+}
+```
 
 ## 🚨 **RÈGLES CRITIQUES DE CONNEXION BASE DE DONNÉES**
 
@@ -305,79 +328,56 @@ export interface CreateSkillRequest {
 
 ## 🐳 **ENVIRONNEMENT DOCKER EXCLUSIF - RÈGLE ABSOLUE**
 
-### 🛠️ **RÈGLE CRITIQUE NON-NÉGOCIABLE : TOUT TOURNE SUR DOCKER**
+### � **RÈGLE CRITIQUE NON-NÉGOCIABLE : TOUT TOURNE SUR DOCKER**
 
 **⚠️ INTERDICTION ABSOLUE D'EXÉCUTER DES COMMANDES SUR L'HOST**
 
 L'application **TOURNE EXCLUSIVEMENT SUR DOCKER** avec Docker Compose. **AUCUNE** commande ne doit être exécutée directement sur la machine host.
 
-**🚨 NOUVELLE RÈGLE CRITIQUE** : Toute commande npm, node, tsc, lint, test, ou migration DOIT s'exécuter dans le container Docker.
+**🎯 POURQUOI DOCKER EXCLUSIF :**
+- **🎯 Consistance d'environnement** : Même stack partout (dev, staging, prod)
+- **🗄️ Base de données intégrée** : PostgreSQL + Redis dans containers
+- **🔧 Hot reload activé** : Développement fluide avec volumes montés
+- **⚙️ Configuration simplifiée** : Variables d'environnement centralisées
+- **🚀 Déploiement reproductible** : Infrastructure as Code
+- **🔒 Isolation complète** : Pas de pollution de l'environnement host
+- **📦 Dépendances maîtrisées** : Versions exactes dans containers
 
-#### **✅ COMMANDES OBLIGATOIRES - TOUJOURS DOCKER**
+### **🔧 Commandes Docker OBLIGATOIRES - REMPLACEMENTS HOST**
 
 ```bash
-# ✅ OBLIGATOIRE - Tous les tests
-docker compose exec app npm test
-docker compose exec app npm run test:unit
-docker compose exec app npm run test:cov
+# 🐳 Démarrer TOUS les services (App + DB + Redis)
+make start
+# OU
+docker compose up -d
 
-# ✅ OBLIGATOIRE - Lint et formatage
+# 📊 Démarrer SEULEMENT les bases de données
+make start-db
+
+# 🛑 Arrêter tous les services
+make stop
+
+# 🔄 Redémarrer les services
+make restart
+
+# 📝 Voir les logs
+make logs
+
+# 🧹 Nettoyer volumes et images
+make clean
+
+# ⚠️ NOUVEAU - Commandes dans container OBLIGATOIRES
 docker compose exec app npm run lint
-docker compose exec app npm run lint -- --fix
-docker compose exec app npm run format
-
-# ✅ OBLIGATOIRE - Build et compilation
+docker compose exec app npm run test
 docker compose exec app npm run build
 docker compose exec app npx tsc --noEmit
-
-# ✅ OBLIGATOIRE - Migrations (CRITIQUE !)
 docker compose exec app npm run migration:run
 docker compose exec app npm run migration:revert
-docker compose exec app npm run migration:generate -- -n NameOfMigration
-
-# ✅ OBLIGATOIRE - Installation dépendances
-docker compose exec app npm install package-name
-docker compose exec app npm ci
-
-# ✅ OBLIGATOIRE - Développement
-docker compose exec app npm run start:dev
 ```
 
-#### **🚨 WORKFLOW INSTALLATION DÉPENDANCES OBLIGATOIRE**
+### **🚨 RÈGLE CRITIQUE : INSTALLATION DÉPENDANCES DANS LE CONTAINER**
 
-**⚠️ RÈGLE CRITIQUE** : Pour éviter les problèmes de cache Docker et compatibilité :
-
-```bash
-# 1️⃣ Installer dans le container
-docker compose exec app npm install nouvelle-dependance
-
-# 2️⃣ OBLIGATOIRE : Supprimer le container
-docker compose down app
-
-# 3️⃣ OBLIGATOIRE : Reconstruire sans cache
-docker compose build --no-cache app
-
-# 4️⃣ Redémarrer avec nouvelle image
-docker compose up -d app
-
-# 5️⃣ Vérifier démarrage
-docker compose logs app --tail=20
-```
-
-#### **❌ INTERDICTIONS ABSOLUES - COMMANDES HOST**
-
-- ❌ **JAMAIS** `npm run start:dev` directement
-- ❌ **JAMAIS** `npm test` sur l'host
-- ❌ **JAMAIS** `npm run lint` sur l'host
-- ❌ **JAMAIS** `npm run build` sur l'host
-- ❌ **JAMAIS** `npm run migration:run` sur l'host
-- ❌ **JAMAIS** `npx tsc` sur l'host
-- ❌ **JAMAIS** installer PostgreSQL/Redis/MongoDB localement
-
-## 🗄️ **RÈGLE CRITIQUE : MIGRATIONS TYPEORM ET DONNÉES EXISTANTES**
-
-### 🎯 **RÈGLE FONDAMENTALE NON-NÉGOCIABLE : PRÉSERVER LES DONNÉES EXISTANTES**
-
+**⚠️ WORKFLOW OBLIGATOIRE** : Pour éviter les problèmes de compatibilité et de cache Docker,
 **⚠️ RÈGLE CRITIQUE** : Toute migration TypeORM DOIT impérativement tenir compte des données déjà présentes en base de données. Cette règle est **NON-NÉGOCIABLE** pour éviter la corruption de données et les pannes en production.
 
 #### **📋 PRINCIPE FONDAMENTAL : SAFETY-FIRST MIGRATIONS**
@@ -5734,3 +5734,4 @@ Le non-respect de cette règle entraîne :
 - **Formation supplémentaire** sur les bonnes pratiques
 
 **Cette règle est CRITIQUE pour la sécurité et l'intégrité des données !**
+``````
