@@ -5,52 +5,54 @@
  * Remplace les mocks du DatabaseModule par de vraies connexions DB
  */
 
-import { Module } from "@nestjs/common";
-import { TypeOrmModule, getRepositoryToken } from "@nestjs/typeorm";
+import { Module } from '@nestjs/common';
+import { TypeOrmModule, getRepositoryToken } from '@nestjs/typeorm';
 
-import { TOKENS } from "../../shared/constants/injection-tokens";
-import { PinoLoggerModule } from "../logging/pino-logger.module";
+import { TOKENS } from '../../shared/constants/injection-tokens';
+import { PinoLoggerModule } from '../logging/pino-logger.module';
 
 // Entities TypeORM
-import { AppointmentOrmEntity } from "./sql/postgresql/entities/appointment-orm.entity";
-import { BusinessOrmEntity } from "./sql/postgresql/entities/business-orm.entity";
-import { BusinessSectorOrmEntity } from "./sql/postgresql/entities/business-sector-orm.entity";
-import { CalendarOrmEntity } from "./sql/postgresql/entities/calendar-orm.entity";
-import { CalendarTypeOrmEntity } from "./sql/postgresql/entities/calendar-type-orm.entity";
-import { ProfessionalOrmEntity } from "./sql/postgresql/entities/professional-orm.entity";
-import { RefreshTokenOrmEntity } from "./sql/postgresql/entities/refresh-token-orm.entity";
-import { ServiceOrmEntity } from "./sql/postgresql/entities/service-orm.entity";
-import { ServiceTypeOrmEntity } from "./sql/postgresql/entities/service-type-orm.entity";
-import { StaffOrmEntity } from "./sql/postgresql/entities/staff-orm.entity";
-import { UserOrmEntity } from "./sql/postgresql/entities/user-orm.entity";
+import { AppointmentOrmEntity } from './sql/postgresql/entities/appointment-orm.entity';
+import { BusinessOrmEntity } from './sql/postgresql/entities/business-orm.entity';
+import { BusinessSectorOrmEntity } from './sql/postgresql/entities/business-sector-orm.entity';
+import { CalendarOrmEntity } from './sql/postgresql/entities/calendar-orm.entity';
+import { CalendarTypeOrmEntity } from './sql/postgresql/entities/calendar-type-orm.entity';
+import { PermissionOrmEntity } from './sql/postgresql/entities/permission-orm.entity';
+import { ProfessionalOrmEntity } from './sql/postgresql/entities/professional-orm.entity';
+import { RefreshTokenOrmEntity } from './sql/postgresql/entities/refresh-token-orm.entity';
+import { ServiceOrmEntity } from './sql/postgresql/entities/service-orm.entity';
+import { ServiceTypeOrmEntity } from './sql/postgresql/entities/service-type-orm.entity';
+import { StaffOrmEntity } from './sql/postgresql/entities/staff-orm.entity';
+import { UserOrmEntity } from './sql/postgresql/entities/user-orm.entity';
 
 // 🎭 RBAC Entities
-import { BusinessContextOrmEntity } from "./sql/postgresql/entities/business-context-orm.entity";
-import { RoleAssignmentOrmEntity } from "./sql/postgresql/entities/role-assignment-orm.entity";
+import { BusinessContextOrmEntity } from './sql/postgresql/entities/business-context-orm.entity';
+import { RoleAssignmentOrmEntity } from './sql/postgresql/entities/role-assignment-orm.entity';
 
 // Repository Implementations
-import { RefreshTokenOrmRepository } from "./sql/postgresql/repositories/refresh-token-orm.repository";
-import { TypeOrmAppointmentRepository } from "./sql/postgresql/repositories/typeorm-appointment.repository";
-import { TypeOrmBusinessRepository } from "./sql/postgresql/repositories/typeorm-business.repository";
-import { TypeOrmCalendarTypeRepository } from "./sql/postgresql/repositories/typeorm-calendar-type.repository";
-import { TypeOrmCalendarRepository } from "./sql/postgresql/repositories/typeorm-calendar.repository";
-import { TypeOrmProfessionalRepository } from "./sql/postgresql/repositories/typeorm-professional.repository";
-import { TypeOrmServiceTypeRepository } from "./sql/postgresql/repositories/typeorm-service-type.repository";
-import { TypeOrmServiceRepository } from "./sql/postgresql/repositories/typeorm-service.repository";
-import { TypeOrmStaffRepository } from "./sql/postgresql/repositories/typeorm-staff.repository";
-import { TypeOrmUserRepository } from "./sql/postgresql/repositories/user.repository";
+import { RefreshTokenOrmRepository } from './sql/postgresql/repositories/refresh-token-orm.repository';
+import { TypeOrmAppointmentRepository } from './sql/postgresql/repositories/typeorm-appointment.repository';
+import { TypeOrmBusinessRepository } from './sql/postgresql/repositories/typeorm-business.repository';
+import { TypeOrmCalendarTypeRepository } from './sql/postgresql/repositories/typeorm-calendar-type.repository';
+import { TypeOrmCalendarRepository } from './sql/postgresql/repositories/typeorm-calendar.repository';
+import { TypeOrmPermissionRepository } from './sql/postgresql/repositories/typeorm-permission.repository';
+import { TypeOrmProfessionalRepository } from './sql/postgresql/repositories/typeorm-professional.repository';
+import { TypeOrmServiceTypeRepository } from './sql/postgresql/repositories/typeorm-service-type.repository';
+import { TypeOrmServiceRepository } from './sql/postgresql/repositories/typeorm-service.repository';
+import { TypeOrmStaffRepository } from './sql/postgresql/repositories/typeorm-staff.repository';
+import { TypeOrmUserRepository } from './sql/postgresql/repositories/user.repository';
 
 // 🎭 RBAC Repository Implementations
-import { TypeOrmRbacBusinessContextRepository } from "./sql/postgresql/repositories/typeorm-rbac-business-context.repository";
-import { TypeOrmRoleAssignmentRepository } from "./sql/postgresql/repositories/typeorm-role-assignment.repository";
+import { TypeOrmRbacBusinessContextRepository } from './sql/postgresql/repositories/typeorm-rbac-business-context.repository';
+import { TypeOrmRoleAssignmentRepository } from './sql/postgresql/repositories/typeorm-role-assignment.repository';
 
 // Services nécessaires
-import type { I18nService } from "../../application/ports/i18n.port";
-import type { Logger } from "../../application/ports/logger.port";
-import { ProductionI18nService } from "../i18n/production-i18n.service";
+import type { I18nService } from '../../application/ports/i18n.port';
+import type { Logger } from '../../application/ports/logger.port';
+import { ProductionI18nService } from '../i18n/production-i18n.service';
 
 // 🛡️ RBAC Permission Service - Real Implementation
-import { RbacPermissionService } from "../services/rbac-permission.service";
+import { RbacPermissionService } from '../services/rbac-permission.service';
 
 @Module({
   imports: [
@@ -61,6 +63,7 @@ import { RbacPermissionService } from "../services/rbac-permission.service";
       AppointmentOrmEntity,
       BusinessOrmEntity,
       BusinessSectorOrmEntity, // Décommenté pour activer la relation
+      PermissionOrmEntity,
       ServiceOrmEntity,
       ServiceTypeOrmEntity, // ✅ ServiceType entity
       StaffOrmEntity,
@@ -143,6 +146,12 @@ import { RbacPermissionService } from "../services/rbac-permission.service";
       useClass: TypeOrmProfessionalRepository,
     },
 
+    // Permission Repository
+    {
+      provide: TOKENS.PERMISSION_REPOSITORY,
+      useClass: TypeOrmPermissionRepository,
+    },
+
     // 🎭 RBAC Repositories
     {
       provide: TOKENS.ROLE_ASSIGNMENT_REPOSITORY,
@@ -150,8 +159,8 @@ import { RbacPermissionService } from "../services/rbac-permission.service";
         new TypeOrmRoleAssignmentRepository(ormRepository, logger, i18n),
       inject: [
         getRepositoryToken(RoleAssignmentOrmEntity),
-        "Logger",
-        "I18nService",
+        'Logger',
+        'I18nService',
       ],
     },
 
@@ -161,8 +170,8 @@ import { RbacPermissionService } from "../services/rbac-permission.service";
         new TypeOrmRbacBusinessContextRepository(ormRepository, logger, i18n),
       inject: [
         getRepositoryToken(BusinessContextOrmEntity),
-        "Logger",
-        "I18nService",
+        'Logger',
+        'I18nService',
       ],
     },
 
@@ -187,8 +196,8 @@ import { RbacPermissionService } from "../services/rbac-permission.service";
         TOKENS.ROLE_ASSIGNMENT_REPOSITORY,
         TOKENS.RBAC_BUSINESS_CONTEXT_REPOSITORY,
         TOKENS.USER_REPOSITORY,
-        "Logger",
-        "I18nService",
+        'Logger',
+        'I18nService',
       ],
     },
 
@@ -211,6 +220,7 @@ import { RbacPermissionService } from "../services/rbac-permission.service";
     TOKENS.CALENDAR_TYPE_REPOSITORY,
     TOKENS.APPOINTMENT_REPOSITORY,
     TOKENS.PROFESSIONAL_REPOSITORY, // ✅ Professional repository for actor separation
+    TOKENS.PERMISSION_REPOSITORY,
     // 🎭 RBAC Repositories
     TOKENS.ROLE_ASSIGNMENT_REPOSITORY,
     TOKENS.RBAC_BUSINESS_CONTEXT_REPOSITORY,

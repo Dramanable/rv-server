@@ -143,6 +143,13 @@ export const APPLICATION_TOKENS = {
   UPDATE_PROFESSIONAL_USE_CASE: 'UpdateProfessionalUseCase',
   DELETE_PROFESSIONAL_USE_CASE: 'DeleteProfessionalUseCase',
 
+  // ✅ NEW: Permission Use Cases
+  CREATE_PERMISSION_USE_CASE: 'CreatePermissionUseCase',
+  GET_PERMISSION_BY_ID_USE_CASE: 'GetPermissionByIdUseCase',
+  LIST_PERMISSIONS_USE_CASE: 'ListPermissionsUseCase',
+  UPDATE_PERMISSION_USE_CASE: 'UpdatePermissionUseCase',
+  DELETE_PERMISSION_USE_CASE: 'DeletePermissionUseCase',
+
   // ✅ NEW: RBAC Use Cases
   ASSIGN_ROLE_USE_CASE: 'AssignRoleUseCase',
   LIST_ROLE_ASSIGNMENTS_USE_CASE: 'ListRoleAssignmentsUseCase',
@@ -173,6 +180,7 @@ export const DOMAIN_TOKENS = {
   SERVICE_REPOSITORY: 'ServiceRepository',
   STAFF_REPOSITORY: 'StaffRepository',
   PROFESSIONAL_ROLE_REPOSITORY: 'ProfessionalRoleRepository',
+  PERMISSION_REPOSITORY: 'PermissionRepository',
   APPOINTMENT_REPOSITORY: 'AppointmentRepository',
   NOTIFICATION_REPOSITORY: 'NotificationRepository',
 

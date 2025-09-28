@@ -32,8 +32,14 @@ export class ProfessionalRole {
     const now = new Date();
 
     // Validation du code
-    if (!params.code || params.code.trim().length < 2 || params.code.trim().length > 20) {
-      throw new Error('Professional role code must be between 2 and 20 characters');
+    if (
+      !params.code ||
+      params.code.trim().length < 2 ||
+      params.code.trim().length > 20
+    ) {
+      throw new Error(
+        'Professional role code must be between 2 and 20 characters',
+      );
     }
 
     // Validation du nom

@@ -5,7 +5,6 @@
  */
 
 import { MigrationInterface, QueryRunner, Table } from 'typeorm';
-import { generateId } from '@shared/utils/id.utils';
 
 export class CreateProfessionalRolesTable1727549200000
   implements MigrationInterface
@@ -84,7 +83,7 @@ export class CreateProfessionalRolesTable1727549200000
             length: '50',
             isUnique: true,
             isNullable: false,
-            comment: 'Code unique du rôle (ex: DOCTOR, NURSE)',
+            comment: 'Code unique du rôle (ex: SPECIALIST, ASSISTANT)',
           },
           {
             name: 'name',
@@ -105,7 +104,8 @@ export class CreateProfessionalRolesTable1727549200000
             type: 'varchar',
             length: '50',
             isNullable: false,
-            comment: 'Catégorie professionnelle (MEDICAL, DENTAL, etc.)',
+            comment:
+              'Catégorie professionnelle (SERVICE_PROVIDER, SUPPORT, etc.)',
           },
           {
             name: 'description',
@@ -171,14 +171,14 @@ export class CreateProfessionalRolesTable1727549200000
 
     // Insérer les rôles prédéfinis (MVP neutres)
     await queryRunner.query(`
-      INSERT INTO "${schema}"."professional_roles" (id, code, name, display_name, category, description, can_lead, is_active, created_at, updated_at)
+      INSERT INTO "${schema}"."professional_roles" (code, name, display_name, category, description, can_lead, is_active, created_at, updated_at)
       VALUES 
-        ('${generateId()}', 'SPECIALIST', 'Specialist', 'Spécialiste', 'SERVICE_PROVIDER', 'Professionnel spécialisé dans la prestation de services', true, true, NOW(), NOW()),
-        ('${generateId()}', 'ASSISTANT', 'Assistant', 'Assistant(e)', 'SUPPORT', 'Assistant pour l''accompagnement et le support', false, true, NOW(), NOW()),
-        ('${generateId()}', 'SUPERVISOR', 'Supervisor', 'Superviseur', 'MANAGEMENT', 'Responsable de la supervision et du management', true, true, NOW(), NOW()),
-        ('${generateId()}', 'COORDINATOR', 'Coordinator', 'Coordinateur', 'MANAGEMENT', 'Responsable de la coordination des activités', true, true, NOW(), NOW()),
-        ('${generateId()}', 'TECHNICIAN', 'Technician', 'Technicien', 'TECHNICAL', 'Support technique et maintenance', false, true, NOW(), NOW()),
-        ('${generateId()}', 'RECEPTIONIST', 'Receptionist', 'Réceptionniste', 'ADMINISTRATIVE', 'Accueil et gestion administrative', false, true, NOW(), NOW())
+        ('SPECIALIST', 'Specialist', 'Spécialiste', 'SERVICE_PROVIDER', 'Professionnel spécialisé dans la prestation de services', true, true, NOW(), NOW()),
+        ('ASSISTANT', 'Assistant', 'Assistant(e)', 'SUPPORT', 'Assistant pour l''accompagnement et le support', false, true, NOW(), NOW()),
+        ('SUPERVISOR', 'Supervisor', 'Superviseur', 'MANAGEMENT', 'Responsable de la supervision et du management', true, true, NOW(), NOW()),
+        ('COORDINATOR', 'Coordinator', 'Coordinateur', 'MANAGEMENT', 'Responsable de la coordination des activités', true, true, NOW(), NOW()),
+        ('TECHNICIAN', 'Technician', 'Technicien', 'TECHNICAL', 'Support technique et maintenance', false, true, NOW(), NOW()),
+        ('RECEPTIONIST', 'Receptionist', 'Réceptionniste', 'ADMINISTRATIVE', 'Accueil et gestion administrative', false, true, NOW(), NOW())
     `);
 
     console.log(
@@ -208,106 +208,5 @@ export class CreateProfessionalRolesTable1727549200000
 
     // Supprimer la table
     await queryRunner.dropTable(`${schema}.professional_roles`);
-  }
-
-  /**
-   * Insérer les rôles professionnels prédéfinis
-   */
-  private async insertPredefinedRoles(
-    queryRunner: QueryRunner,
-    schema: string,
-  ): Promise<void> {
-    const predefinedRoles = [
-      {
-        code: 'DOCTOR',
-        name: 'Doctor',
-        displayName: 'Médecin',
-        category: 'MEDICAL',
-        description:
-          'Professionnel de santé qualifié pour diagnostiquer et traiter les maladies',
-        canLead: true,
-      },
-      {
-        code: 'SURGEON',
-        name: 'Surgeon',
-        displayName: 'Chirurgien',
-        category: 'MEDICAL',
-        description: 'Médecin spécialisé dans les interventions chirurgicales',
-        canLead: true,
-      },
-      {
-        code: 'NURSE',
-        name: 'Nurse',
-        displayName: 'Infirmier(ère)',
-        category: 'MEDICAL',
-        description:
-          'Professionnel de santé spécialisé dans les soins aux patients',
-        canLead: false,
-      },
-      {
-        code: 'DENTIST',
-        name: 'Dentist',
-        displayName: 'Dentiste',
-        category: 'DENTAL',
-        description:
-          'Professionnel de santé spécialisé dans les soins dentaires',
-        canLead: true,
-      },
-      {
-        code: 'DENTAL_HYGIENIST',
-        name: 'Dental Hygienist',
-        displayName: 'Hygiéniste Dentaire',
-        category: 'DENTAL',
-        description:
-          "Spécialiste de l'hygiène et des soins préventifs dentaires",
-        canLead: false,
-      },
-      {
-        code: 'PSYCHOLOGIST',
-        name: 'Psychologist',
-        displayName: 'Psychologue',
-        category: 'PSYCHOLOGICAL',
-        description:
-          "Professionnel spécialisé dans l'étude et le traitement des troubles mentaux",
-        canLead: true,
-      },
-      {
-        code: 'LAWYER',
-        name: 'Lawyer',
-        displayName: 'Avocat',
-        category: 'LEGAL',
-        description:
-          'Professionnel du droit représentant et conseillant les clients',
-        canLead: true,
-      },
-      {
-        code: 'CONSULTANT',
-        name: 'Consultant',
-        displayName: 'Consultant',
-        category: 'CONSULTANCY',
-        description:
-          'Expert fournissant des conseils spécialisés dans son domaine',
-        canLead: true,
-      },
-    ];
-
-    for (const role of predefinedRoles) {
-      await queryRunner.query(
-        `
-        INSERT INTO "${schema}"."professional_roles" 
-        (code, name, display_name, category, description, can_lead, is_active, created_at, updated_at)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-      `,
-        [
-          role.code,
-          role.name,
-          role.displayName,
-          role.category,
-          role.description,
-          role.canLead,
-          true, // is_active
-        ],
-      );
-    }
   }
 }
