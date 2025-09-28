@@ -1,7 +1,7 @@
 import { CreatePermissionUseCase } from '@application/use-cases/permissions/create-permission.use-case';
-import { IPermissionRepository } from '@domain/repositories/permission.repository';
 import { Permission } from '@domain/entities/permission.entity';
 import { PermissionAlreadyExistsError } from '@domain/exceptions/permission.exceptions';
+import { IPermissionRepository } from '@domain/repositories/permission.repository';
 
 describe('CreatePermissionUseCase', () => {
   let useCase: CreatePermissionUseCase;

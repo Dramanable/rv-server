@@ -6,14 +6,14 @@
 
 import { ProfessionalRole } from '@domain/entities/professional-role.entity';
 import {
-  ProfessionalRoleDto,
   CreateProfessionalRoleDto,
-  UpdateProfessionalRoleDto,
-  ListProfessionalRolesDto,
   CreateProfessionalRoleResponseDto,
-  UpdateProfessionalRoleResponseDto,
   DeleteProfessionalRoleResponseDto,
+  ListProfessionalRolesDto,
   ListProfessionalRolesResponseDto,
+  ProfessionalRoleDto,
+  UpdateProfessionalRoleDto,
+  UpdateProfessionalRoleResponseDto,
 } from '@presentation/dtos/professional-roles/professional-role.dto';
 
 // Import des interfaces Use Case

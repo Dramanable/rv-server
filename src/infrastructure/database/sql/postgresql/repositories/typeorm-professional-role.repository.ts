@@ -9,8 +9,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import {
-  ProfessionalRole,
   ProfessionalCategory,
+  ProfessionalRole,
 } from '@domain/entities/professional-role.entity';
 import { IProfessionalRoleRepository } from '@domain/repositories/professional-role.repository';
 import { ProfessionalRoleOrmEntity } from '@infrastructure/database/sql/postgresql/entities/professional-role-orm.entity';

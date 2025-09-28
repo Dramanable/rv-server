@@ -5,16 +5,16 @@
  */
 
 import { ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import {
+  IsBoolean,
+  IsIn,
+  IsInt,
   IsOptional,
   IsString,
-  IsBoolean,
-  IsInt,
-  Min,
   Max,
-  IsIn,
+  Min,
 } from 'class-validator';
-import { Type } from 'class-transformer';
 
 export class ListPermissionsDto {
   @ApiPropertyOptional({

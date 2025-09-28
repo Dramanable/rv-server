@@ -97,8 +97,9 @@ export class Permission {
    * Updates permission properties
    */
   update(props: UpdatePermissionProps): void {
-    if (this._isSystemPermission && props.isActive === false) {
-      throw new Error('System permissions cannot be deactivated');
+    // Prevent modification of system permissions completely
+    if (this._isSystemPermission) {
+      throw new Error('System permissions cannot be modified');
     }
 
     if (props.displayName !== undefined) {

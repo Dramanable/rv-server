@@ -1,6 +1,6 @@
 import { ListPermissionsUseCase } from '@application/use-cases/permissions/list-permissions.use-case';
-import { IPermissionRepository } from '@domain/repositories/permission.repository';
 import { Permission } from '@domain/entities/permission.entity';
+import { IPermissionRepository } from '@domain/repositories/permission.repository';
 
 describe('ListPermissionsUseCase', () => {
   let useCase: ListPermissionsUseCase;
@@ -70,19 +70,33 @@ describe('ListPermissionsUseCase', () => {
             isSystemPermission: true,
           }),
         ],
-        totalCount: 2,
+        meta: {
+          currentPage: 1,
+          totalPages: 1,
+          totalItems: 2,
+          itemsPerPage: 10,
+          hasNextPage: false,
+          hasPrevPage: false,
+        },
       });
 
-      expect(mockPermissionRepository.findAll).toHaveBeenCalledWith(undefined);
-      expect(mockPermissionRepository.count).toHaveBeenCalledWith(undefined);
+      // Vérifier que les repositories sont appelés avec les options par défaut
+      expect(mockPermissionRepository.findAll).toHaveBeenCalledWith(
+        {},
+        { limit: 10, offset: 0, sortBy: 'createdAt', sortOrder: 'desc' },
+      );
+      expect(mockPermissionRepository.count).toHaveBeenCalledWith({});
     });
 
     it('should filter permissions by category', async () => {
       // Given
       const request = {
-        category: 'APPOINTMENTS',
+        filters: {
+          category: 'APPOINTMENTS',
+        },
         requestingUserId: 'user-123',
         correlationId: 'req-123',
+        timestamp: new Date(),
       };
 
       const appointmentPermissions = [
@@ -107,11 +121,16 @@ describe('ListPermissionsUseCase', () => {
       // Then
       expect(result.permissions).toHaveLength(1);
       expect(result.permissions[0].category).toBe('APPOINTMENTS');
-      expect(result.totalCount).toBe(1);
+      expect(result.meta.totalItems).toBe(1);
+      expect(result.meta.currentPage).toBe(1);
+      expect(result.meta.itemsPerPage).toBe(10);
 
-      expect(mockPermissionRepository.findAll).toHaveBeenCalledWith({
-        category: 'APPOINTMENTS',
-      });
+      expect(mockPermissionRepository.findAll).toHaveBeenCalledWith(
+        {
+          category: 'APPOINTMENTS',
+        },
+        { limit: 10, offset: 0, sortBy: 'createdAt', sortOrder: 'desc' },
+      );
       expect(mockPermissionRepository.count).toHaveBeenCalledWith({
         category: 'APPOINTMENTS',
       });
@@ -120,9 +139,12 @@ describe('ListPermissionsUseCase', () => {
     it('should filter permissions by active status', async () => {
       // Given
       const request = {
-        isActive: true,
+        filters: {
+          isActive: true,
+        },
         requestingUserId: 'user-123',
         correlationId: 'req-123',
+        timestamp: new Date(),
       };
 
       const activePermissions = [
@@ -143,11 +165,14 @@ describe('ListPermissionsUseCase', () => {
       const result = await useCase.execute(request);
 
       // Then
-      expect(result.totalCount).toBe(1);
+      expect(result.meta.totalItems).toBe(1);
 
-      expect(mockPermissionRepository.findAll).toHaveBeenCalledWith({
-        isActive: true,
-      });
+      expect(mockPermissionRepository.findAll).toHaveBeenCalledWith(
+        {
+          isActive: true,
+        },
+        { limit: 10, offset: 0, sortBy: 'createdAt', sortOrder: 'desc' },
+      );
       expect(mockPermissionRepository.count).toHaveBeenCalledWith({
         isActive: true,
       });
@@ -156,9 +181,12 @@ describe('ListPermissionsUseCase', () => {
     it('should filter permissions by system permission status', async () => {
       // Given
       const request = {
-        isSystemPermission: false,
+        filters: {
+          isSystemPermission: false,
+        },
         requestingUserId: 'user-123',
         correlationId: 'req-123',
+        timestamp: new Date(),
       };
 
       const customPermissions = [
@@ -180,35 +208,44 @@ describe('ListPermissionsUseCase', () => {
 
       // Then
       expect(result.permissions[0].isSystemPermission).toBe(false);
-      expect(result.totalCount).toBe(1);
+      expect(result.meta.totalItems).toBe(1);
 
-      expect(mockPermissionRepository.findAll).toHaveBeenCalledWith({
-        isSystemPermission: false,
-      });
+      expect(mockPermissionRepository.findAll).toHaveBeenCalledWith(
+        {
+          isSystemPermission: false,
+        },
+        { limit: 10, offset: 0, sortBy: 'createdAt', sortOrder: 'desc' },
+      );
     });
 
     it('should combine multiple filters', async () => {
       // Given
       const request = {
-        category: 'APPOINTMENTS',
-        isActive: true,
-        isSystemPermission: false,
+        filters: {
+          category: 'APPOINTMENTS',
+          isActive: true,
+          isSystemPermission: false,
+        },
         requestingUserId: 'user-123',
         correlationId: 'req-123',
+        timestamp: new Date(),
       };
 
       mockPermissionRepository.findAll.mockResolvedValue([]);
       mockPermissionRepository.count.mockResolvedValue(0);
 
       // When
-      const result = await useCase.execute(request);
+      await useCase.execute(request);
 
       // Then
-      expect(mockPermissionRepository.findAll).toHaveBeenCalledWith({
-        category: 'APPOINTMENTS',
-        isActive: true,
-        isSystemPermission: false,
-      });
+      expect(mockPermissionRepository.findAll).toHaveBeenCalledWith(
+        {
+          category: 'APPOINTMENTS',
+          isActive: true,
+          isSystemPermission: false,
+        },
+        { limit: 10, offset: 0, sortBy: 'createdAt', sortOrder: 'desc' },
+      );
       expect(mockPermissionRepository.count).toHaveBeenCalledWith({
         category: 'APPOINTMENTS',
         isActive: true,

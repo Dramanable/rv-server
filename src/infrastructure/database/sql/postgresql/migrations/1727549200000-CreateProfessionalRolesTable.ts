@@ -172,7 +172,7 @@ export class CreateProfessionalRolesTable1727549200000
     // Insérer les rôles prédéfinis (MVP neutres)
     await queryRunner.query(`
       INSERT INTO "${schema}"."professional_roles" (code, name, display_name, category, description, can_lead, is_active, created_at, updated_at)
-      VALUES 
+      VALUES
         ('SPECIALIST', 'Specialist', 'Spécialiste', 'SERVICE_PROVIDER', 'Professionnel spécialisé dans la prestation de services', true, true, NOW(), NOW()),
         ('ASSISTANT', 'Assistant', 'Assistant(e)', 'SUPPORT', 'Assistant pour l''accompagnement et le support', false, true, NOW(), NOW()),
         ('SUPERVISOR', 'Supervisor', 'Superviseur', 'MANAGEMENT', 'Responsable de la supervision et du management', true, true, NOW(), NOW()),

@@ -4,12 +4,12 @@
  * Use case pour mettre à jour une permission existante
  */
 
-import type { IPermissionRepository } from '@domain/repositories/permission.repository';
 import type { Permission } from '@domain/entities/permission.entity';
 import {
   PermissionNotFoundError,
   SystemPermissionModificationError,
 } from '@domain/exceptions/permission.exceptions';
+import type { IPermissionRepository } from '@domain/repositories/permission.repository';
 
 export interface UpdatePermissionRequest {
   readonly permissionId: string;

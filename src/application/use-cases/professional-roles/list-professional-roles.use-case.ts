@@ -5,11 +5,11 @@
  */
 
 import {
-  ProfessionalRole,
   ProfessionalCategory,
+  ProfessionalRole,
 } from '@domain/entities/professional-role.entity';
-import { IProfessionalRoleRepository } from '@domain/repositories/professional-role.repository';
 import { ProfessionalRoleValidationError } from '@domain/exceptions/professional-role.exceptions';
+import { IProfessionalRoleRepository } from '@domain/repositories/professional-role.repository';
 
 export interface ListProfessionalRolesRequest {
   readonly category?: ProfessionalCategory;

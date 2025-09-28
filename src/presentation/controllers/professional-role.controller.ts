@@ -5,39 +5,39 @@
  */
 
 import {
+  Body,
   Controller,
+  Delete,
   Get,
+  HttpStatus,
+  Inject,
+  Param,
   Post,
   Put,
-  Delete,
-  Body,
-  Param,
-  Inject,
-  HttpStatus,
   UseGuards,
 } from '@nestjs/common';
 import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
   ApiBearerAuth,
+  ApiOperation,
   ApiParam,
+  ApiResponse,
+  ApiTags,
 } from '@nestjs/swagger';
 
-import { TOKENS } from '@shared/constants/injection-tokens';
-import { JwtAuthGuard } from '@presentation/security/guards/jwt-auth.guard';
 import { GetUser } from '@presentation/security/decorators/get-user.decorator';
+import { JwtAuthGuard } from '@presentation/security/guards/jwt-auth.guard';
+import { TOKENS } from '@shared/constants/injection-tokens';
 
 // DTOs
 import {
-  ProfessionalRoleDto,
   CreateProfessionalRoleDto,
-  UpdateProfessionalRoleDto,
-  ListProfessionalRolesDto,
   CreateProfessionalRoleResponseDto,
-  UpdateProfessionalRoleResponseDto,
   DeleteProfessionalRoleResponseDto,
+  ListProfessionalRolesDto,
   ListProfessionalRolesResponseDto,
+  ProfessionalRoleDto,
+  UpdateProfessionalRoleDto,
+  UpdateProfessionalRoleResponseDto,
 } from '@presentation/dtos/professional-roles/professional-role.dto';
 
 // Mappers
@@ -45,10 +45,10 @@ import { ProfessionalRoleMapper } from '@presentation/mappers/professional-role.
 
 // Use Cases
 import { CreateProfessionalRoleUseCase } from '@application/use-cases/professional-roles/create-professional-role.use-case';
+import { DeleteProfessionalRoleUseCase } from '@application/use-cases/professional-roles/delete-professional-role.use-case';
 import { GetProfessionalRoleUseCase } from '@application/use-cases/professional-roles/get-professional-role.use-case';
 import { ListProfessionalRolesUseCase } from '@application/use-cases/professional-roles/list-professional-roles.use-case';
 import { UpdateProfessionalRoleUseCase } from '@application/use-cases/professional-roles/update-professional-role.use-case';
-import { DeleteProfessionalRoleUseCase } from '@application/use-cases/professional-roles/delete-professional-role.use-case';
 
 @ApiTags('🎭 Professional Roles')
 @Controller('professional-roles')

@@ -1,7 +1,7 @@
 import { CreateProfessionalRoleUseCase } from '@application/use-cases/professional-roles/create-professional-role.use-case';
-import { IProfessionalRoleRepository } from '@domain/repositories/professional-role.repository';
 import { ProfessionalRole } from '@domain/entities/professional-role.entity';
 import { ProfessionalRoleCodeAlreadyExistsError } from '@domain/exceptions/professional-role.exceptions';
+import { IProfessionalRoleRepository } from '@domain/repositories/professional-role.repository';
 
 describe('CreateProfessionalRoleUseCase', () => {
   let useCase: CreateProfessionalRoleUseCase;

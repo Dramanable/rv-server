@@ -4,43 +4,43 @@
  * Controller REST pour la gestion des permissions
  */
 
+import type { CreatePermissionUseCase } from '@application/use-cases/permissions/create-permission.use-case';
+import type { DeletePermissionUseCase } from '@application/use-cases/permissions/delete-permission.use-case';
+import type { GetPermissionByIdUseCase } from '@application/use-cases/permissions/get-permission-by-id.use-case';
+import type { ListPermissionsUseCase } from '@application/use-cases/permissions/list-permissions.use-case';
+import type { UpdatePermissionUseCase } from '@application/use-cases/permissions/update-permission.use-case';
 import {
+  Body,
   Controller,
+  Delete,
   Get,
+  HttpCode,
+  HttpStatus,
+  Inject,
+  Param,
   Post,
   Put,
-  Delete,
-  Body,
-  Param,
-  HttpStatus,
-  HttpCode,
   UseGuards,
-  Inject,
 } from '@nestjs/common';
 import {
-  ApiTags,
+  ApiBearerAuth,
   ApiOperation,
   ApiResponse,
-  ApiBearerAuth,
+  ApiTags,
 } from '@nestjs/swagger';
-import type { CreatePermissionUseCase } from '@application/use-cases/permissions/create-permission.use-case';
-import type { ListPermissionsUseCase } from '@application/use-cases/permissions/list-permissions.use-case';
-import type { GetPermissionByIdUseCase } from '@application/use-cases/permissions/get-permission-by-id.use-case';
-import type { UpdatePermissionUseCase } from '@application/use-cases/permissions/update-permission.use-case';
-import type { DeletePermissionUseCase } from '@application/use-cases/permissions/delete-permission.use-case';
-import { JwtAuthGuard } from '@presentation/security/guards/jwt-auth.guard';
 import { GetUser } from '@presentation/security/decorators/get-user.decorator';
+import { JwtAuthGuard } from '@presentation/security/guards/jwt-auth.guard';
 import { TOKENS } from '@shared/constants/injection-tokens';
 import { CreatePermissionDto } from '../dtos/permissions/create-permission.dto';
-import { UpdatePermissionDto } from '../dtos/permissions/update-permission.dto';
 import { ListPermissionsDto } from '../dtos/permissions/list-permissions.dto';
+import { PermissionResponseDto } from '../dtos/permissions/permission-response.dto';
 import {
   CreatePermissionResponseDto,
-  UpdatePermissionResponseDto,
   DeletePermissionResponseDto,
   ListPermissionsResponseDto,
+  UpdatePermissionResponseDto,
 } from '../dtos/permissions/response-dtos.dto';
-import { PermissionResponseDto } from '../dtos/permissions/permission-response.dto';
+import { UpdatePermissionDto } from '../dtos/permissions/update-permission.dto';
 import { PermissionMapper } from '../mappers/permission.mapper';
 
 @ApiTags('🔐 Permissions')

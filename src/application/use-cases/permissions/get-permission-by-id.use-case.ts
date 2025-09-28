@@ -1,6 +1,6 @@
+import { PermissionNotFoundError } from '@domain/exceptions/permission.exceptions';
 import { IPermissionRepository } from '@domain/repositories/permission.repository';
 import { PermissionJSON } from '@domain/entities/permission.entity';
-import { PermissionNotFoundError } from '@domain/exceptions/permission.exceptions';
 
 /**
  * Get Permission By ID Use Case

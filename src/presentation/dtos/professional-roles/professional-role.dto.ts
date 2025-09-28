@@ -5,18 +5,18 @@
  */
 
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import {
-  IsString,
   IsBoolean,
+  IsIn,
+  IsInt,
   IsOptional,
+  IsString,
   Length,
   Matches,
-  IsInt,
-  Min,
   Max,
-  IsIn,
+  Min,
 } from 'class-validator';
-import { Type } from 'class-transformer';
 
 /**
  * DTO principal pour représenter un ProfessionalRole

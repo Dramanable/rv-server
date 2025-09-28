@@ -1,10 +1,10 @@
+import { Permission } from '@domain/entities/permission.entity';
+import { IPermissionRepository } from '@domain/repositories/permission.repository';
+import { PermissionOrmEntity } from '@infrastructure/database/sql/postgresql/entities/permission-orm.entity';
+import { PermissionOrmMapper } from '@infrastructure/mappers/permission-orm.mapper';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { IPermissionRepository } from '@domain/repositories/permission.repository';
-import { Permission } from '@domain/entities/permission.entity';
-import { PermissionOrmEntity } from '@infrastructure/database/sql/postgresql/entities/permission-orm.entity';
-import { PermissionOrmMapper } from '@infrastructure/mappers/permission-orm.mapper';
 
 /**
  * TypeORM Permission Repository Implementation

@@ -135,8 +135,8 @@ import { BusinessController } from './controllers/business.controller';
 import { CalendarTypesController } from './controllers/calendar-types.controller';
 import { CalendarController } from './controllers/calendar.controller';
 import { NotificationController } from './controllers/notification.controller';
-import { ProfessionalController } from './controllers/professional.controller';
 import { PermissionController } from './controllers/permission.controller';
+import { ProfessionalController } from './controllers/professional.controller';
 import { RoleManagementController } from './controllers/role-management.controller';
 // import { ServiceTypeController } from './controllers/service-type.controller'; // Temporarily disabled
 import { ServiceController } from './controllers/service.controller';

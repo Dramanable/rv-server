@@ -4,12 +4,12 @@
  * Cas d'usage pour supprimer un rôle professionnel
  */
 
-import { IProfessionalRoleRepository } from '@domain/repositories/professional-role.repository';
 import {
+  ProfessionalRoleInUseError,
   ProfessionalRoleNotFoundError,
   ProfessionalRoleValidationError,
-  ProfessionalRoleInUseError,
 } from '@domain/exceptions/professional-role.exceptions';
+import { IProfessionalRoleRepository } from '@domain/repositories/professional-role.repository';
 
 export interface DeleteProfessionalRoleRequest {
   readonly professionalRoleId: string;

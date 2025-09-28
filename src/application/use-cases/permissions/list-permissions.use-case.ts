@@ -1,5 +1,5 @@
-import { IPermissionRepository } from '@domain/repositories/permission.repository';
 import { PermissionJSON } from '@domain/entities/permission.entity';
+import { IPermissionRepository } from '@domain/repositories/permission.repository';
 
 /**
  * List Permissions Use Case
@@ -7,15 +7,15 @@ import { PermissionJSON } from '@domain/entities/permission.entity';
  */
 
 export interface ListPermissionsRequest {
-  readonly pagination: {
+  readonly pagination?: {
     readonly page: number;
     readonly limit: number;
   };
-  readonly sorting: {
+  readonly sorting?: {
     readonly sortBy: string;
     readonly sortOrder: 'asc' | 'desc';
   };
-  readonly filters: {
+  readonly filters?: {
     readonly search?: string;
     readonly category?: string;
     readonly isActive?: boolean;
@@ -44,49 +44,55 @@ export class ListPermissionsUseCase {
   async execute(
     request: ListPermissionsRequest,
   ): Promise<ListPermissionsResponse> {
+    // Valeurs par défaut pour pagination et tri
+    const page = request.pagination?.page || 1;
+    const limit = request.pagination?.limit || 10;
+    const sortBy = request.sorting?.sortBy || 'createdAt';
+    const sortOrder = request.sorting?.sortOrder || 'desc';
+
     // Construire les filtres
     const filters: any = {};
 
-    if (request.filters.search) {
+    if (request.filters?.search) {
       filters.search = request.filters.search;
     }
 
-    if (request.filters.category !== undefined) {
+    if (request.filters?.category !== undefined) {
       filters.category = request.filters.category;
     }
 
-    if (request.filters.isActive !== undefined) {
+    if (request.filters?.isActive !== undefined) {
       filters.isActive = request.filters.isActive;
     }
 
-    if (request.filters.isSystemPermission !== undefined) {
+    if (request.filters?.isSystemPermission !== undefined) {
       filters.isSystemPermission = request.filters.isSystemPermission;
     }
 
     // Récupérer les permissions avec pagination
-    const offset = (request.pagination.page - 1) * request.pagination.limit;
+    const offset = (page - 1) * limit;
     const permissions = await this.permissionRepository.findAll(filters, {
       offset,
-      limit: request.pagination.limit,
-      sortBy: request.sorting.sortBy,
-      sortOrder: request.sorting.sortOrder,
+      limit,
+      sortBy,
+      sortOrder,
     });
 
     // Compter le total
     const totalCount = await this.permissionRepository.count(filters);
 
     // Calculer les métadonnées de pagination
-    const totalPages = Math.ceil(totalCount / request.pagination.limit);
-    const hasNextPage = request.pagination.page < totalPages;
-    const hasPrevPage = request.pagination.page > 1;
+    const totalPages = Math.ceil(totalCount / limit);
+    const hasNextPage = page < totalPages;
+    const hasPrevPage = page > 1;
 
     return {
       permissions: permissions.map((p) => p.toJSON()),
       meta: {
-        currentPage: request.pagination.page,
+        currentPage: page,
         totalPages,
         totalItems: totalCount,
-        itemsPerPage: request.pagination.limit,
+        itemsPerPage: limit,
         hasNextPage,
         hasPrevPage,
       },

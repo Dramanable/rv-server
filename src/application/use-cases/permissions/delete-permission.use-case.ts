@@ -4,11 +4,11 @@
  * Use case pour supprimer une permission existante
  */
 
-import type { IPermissionRepository } from '@domain/repositories/permission.repository';
 import {
   PermissionNotFoundError,
   SystemPermissionModificationError,
 } from '@domain/exceptions/permission.exceptions';
+import type { IPermissionRepository } from '@domain/repositories/permission.repository';
 
 export interface DeletePermissionRequest {
   readonly permissionId: string;

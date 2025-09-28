@@ -1,0 +1,58 @@
+--- a/src/__tests__/unit/application/use-cases/permissions/list-permissions.use-case.spec.ts
++++ b/src/__tests__/unit/application/use-cases/permissions/list-permissions.use-case.spec.ts
+@@ -82,8 +82,11 @@ describe('ListPermissionsUseCase', () => {
+       });
+ 
+-      expect(mockPermissionRepository.findAll).toHaveBeenCalledWith(undefined);
+-      expect(mockPermissionRepository.count).toHaveBeenCalledWith(undefined);
++      // Vérifier que les repositories sont appelés avec les options par défaut
++      expect(mockPermissionRepository.findAll).toHaveBeenCalledWith(
++        {}, { limit: 10, offset: 0, sortBy: 'createdAt', sortOrder: 'desc' }
++      );
++      expect(mockPermissionRepository.count).toHaveBeenCalledWith({});
+     });
+ 
+     it('should filter permissions by category', async () => {
+@@ -114,7 +117,9 @@ describe('ListPermissionsUseCase', () => {
+       // Then
+       expect(result.permissions).toHaveLength(1);
+       expect(result.permissions[0].category).toBe('APPOINTMENTS');
+-      expect(result.totalCount).toBe(1);
++      expect(result.meta.totalItems).toBe(1);
++      expect(result.meta.currentPage).toBe(1);
++      expect(result.meta.itemsPerPage).toBe(10);
+ 
+       expect(mockPermissionRepository.findAll).toHaveBeenCalledWith({
+         category: 'APPOINTMENTS',
+@@ -150,7 +155,7 @@ describe('ListPermissionsUseCase', () => {
+       });
+ 
+       // Then
+-      expect(result.totalCount).toBe(1);
++      expect(result.meta.totalItems).toBe(1);
+ 
+       expect(mockPermissionRepository.findAll).toHaveBeenCalledWith({
+         isActive: true,
+@@ -187,7 +192,7 @@ describe('ListPermissionsUseCase', () => {
+       // Then
+       expect(result.permissions[0].isSystemPermission).toBe(false);
+-      expect(result.totalCount).toBe(1);
++      expect(result.meta.totalItems).toBe(1);
+ 
+       expect(mockPermissionRepository.findAll).toHaveBeenCalledWith({
+         isSystemPermission: false,
+@@ -210,10 +215,12 @@ describe('ListPermissionsUseCase', () => {
+       });
+ 
+       // Then
+-      expect(mockPermissionRepository.findAll).toHaveBeenCalledWith({
++      expect(mockPermissionRepository.findAll).toHaveBeenCalledWith(
++        {
+         category: 'APPOINTMENTS',
+         isActive: true,
+         isSystemPermission: false,
+-      });
++        },
++        { limit: 10, offset: 0, sortBy: 'createdAt', sortOrder: 'desc' }
++      );
+     });
