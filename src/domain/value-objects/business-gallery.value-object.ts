@@ -4,14 +4,14 @@
  * ✅ Collection of business images with business rules
  */
 
-import { BusinessImage, ImageCategory } from './business-image.value-object';
 import {
+  DuplicateValueError,
   InvalidValueError,
   RequiredValueError,
-  ValueOutOfRangeError,
-  DuplicateValueError,
   ValueNotFoundError,
+  ValueOutOfRangeError,
 } from '@domain/exceptions/value-object.exceptions';
+import { BusinessImage, ImageCategory } from './business-image.value-object';
 
 export class BusinessGallery {
   private readonly _images: Map<string, BusinessImage>;

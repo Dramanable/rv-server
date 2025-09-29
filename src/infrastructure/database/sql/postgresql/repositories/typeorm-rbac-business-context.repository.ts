@@ -9,8 +9,8 @@
  */
 
 import { Injectable } from '@nestjs/common';
-import { InfrastructureException } from '@shared/exceptions/shared.exceptions';
 import { InjectRepository } from '@nestjs/typeorm';
+import { InfrastructureException } from '@shared/exceptions/shared.exceptions';
 import { Repository } from 'typeorm';
 
 import type { I18nService } from '@application/ports/i18n.port';

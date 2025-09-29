@@ -12,12 +12,12 @@ import type { I18nService } from '../../ports/i18n.port';
 import type { Logger } from '../../ports/logger.port';
 
 import { CalendarId } from '../../../domain/value-objects/calendar-id.value-object';
+import { ResourceNotFoundError } from '../../exceptions/application.exceptions';
 import {
   CalendarNotFoundError,
   CalendarPermissionError,
   InvalidCalendarDataError,
 } from '../../exceptions/calendar.exceptions';
-import { ResourceNotFoundError } from '../../exceptions/application.exceptions';
 
 export interface DeleteCalendarRequest {
   readonly requestingUserId: string;

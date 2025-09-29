@@ -14,14 +14,14 @@
  */
 
 import {
-  ContextIdRequiredError,
-  ContextNameRequiredError,
-  BusinessIdRequiredError,
-  InvalidContextTypeError,
   BusinessContextCannotHaveParentError,
+  BusinessIdRequiredError,
+  ContextIdRequiredError,
   ContextMustHaveParentError,
-  ContextNameTooShortError,
+  ContextNameRequiredError,
   ContextNameTooLongError,
+  ContextNameTooShortError,
+  InvalidContextTypeError,
 } from '@domain/exceptions';
 
 export enum RbacContextType {

@@ -1,5 +1,5 @@
-import { WeekDay } from './time-slot.value-object';
 import { InvalidValueError } from '../exceptions/value-object.exceptions';
+import { WeekDay } from './time-slot.value-object';
 
 export class WorkingHours {
   constructor(

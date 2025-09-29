@@ -8,13 +8,7 @@
  * - Validation stricte des horaires
  */
 
-import {
-  InvalidValueError,
-  RequiredValueError,
-  ValueOutOfRangeError,
-  InvalidFormatError,
-  EmptyArrayError,
-} from '@domain/exceptions';
+import { InvalidValueError, ValueOutOfRangeError } from '@domain/exceptions';
 
 export interface TimeSlot {
   start: string; // Format HH:MM (ex: "09:00")

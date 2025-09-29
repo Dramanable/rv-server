@@ -26,9 +26,9 @@ import { ServiceId } from '../../../domain/value-objects/service-id.value-object
 import { TimeSlot } from '../../../domain/value-objects/time-slot.value-object';
 import { UserId } from '../../../domain/value-objects/user-id.value-object';
 
-import { AppointmentValidationError } from '../../exceptions/appointment.exceptions';
 import {
   AppointmentConflictError,
+  AppointmentValidationError,
   BusinessNotFoundError,
   CalendarNotFoundError,
   ServiceNotBookableOnlineError,

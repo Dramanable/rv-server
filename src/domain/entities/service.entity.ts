@@ -1,3 +1,7 @@
+import {
+  ServiceStaffAssignmentError,
+  ServiceValidationError,
+} from '../exceptions/service.exceptions';
 import { BusinessId } from '../value-objects/business-id.value-object';
 import { FileUrl } from '../value-objects/file-url.value-object';
 import { Money } from '../value-objects/money.value-object';
@@ -5,11 +9,6 @@ import { PricingConfig } from '../value-objects/pricing-config.value-object';
 import { ServiceId } from '../value-objects/service-id.value-object';
 import { ServiceTypeId } from '../value-objects/service-type-id.value-object';
 import { UserId } from '../value-objects/user-id.value-object';
-import {
-  ServiceValidationError,
-  ServiceStaffAssignmentError,
-  ServiceError,
-} from '../exceptions/service.exceptions';
 
 export enum ServiceStatus {
   ACTIVE = 'ACTIVE',

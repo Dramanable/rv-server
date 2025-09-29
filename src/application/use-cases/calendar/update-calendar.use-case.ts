@@ -13,12 +13,12 @@ import type { Logger } from '../../ports/logger.port';
 import { Calendar } from '../../../domain/entities/calendar.entity';
 import { CalendarId } from '../../../domain/value-objects/calendar-id.value-object';
 import { WorkingHours } from '../../../domain/value-objects/working-hours.value-object';
+import { ResourceNotFoundError } from '../../exceptions/application.exceptions';
 import {
   CalendarNotFoundError,
   CalendarPermissionError,
   InvalidCalendarDataError,
 } from '../../exceptions/calendar.exceptions';
-import { ResourceNotFoundError } from '../../exceptions/application.exceptions';
 
 export interface UpdateCalendarRequest {
   readonly requestingUserId: string;
@@ -87,7 +87,6 @@ export class UpdateCalendarUseCase {
     );
 
     // 5. Sauvegarde
-    const savedCalendar = await this.calendarRepository.save(updatedCalendar);
 
     this.logger.info('Calendar updated successfully', {
       calendarId: updatedCalendar.id.getValue(),

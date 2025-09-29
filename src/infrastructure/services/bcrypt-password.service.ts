@@ -6,10 +6,10 @@
  */
 
 import { IPasswordService } from '@application/ports/password.service.interface';
+import { PasswordHashingError } from '@infrastructure/exceptions/infrastructure.exceptions';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
-import { PasswordHashingError } from '@infrastructure/exceptions/infrastructure.exceptions';
 
 @Injectable()
 export class BcryptPasswordService implements IPasswordService {

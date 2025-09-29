@@ -5,9 +5,9 @@
  */
 
 import {
-  InsufficientPermissionsError,
   ApplicationValidationError,
   CalendarValidationError,
+  InsufficientPermissionsError,
 } from '@application/exceptions/application.exceptions';
 import { I18nService } from '@application/ports/i18n.port';
 import { Logger } from '@application/ports/logger.port';
@@ -316,7 +316,7 @@ export class SetPractitionerAvailabilityUseCase {
     }
 
     // 2. Validation des disponibilités par jour
-    availability.availabilities.forEach((dayAvail, index) => {
+    availability.availabilities.forEach((dayAvail) => {
       // 3. Validation des créneaux horaires
       dayAvail.timeSlots.forEach((slot) => {
         if (slot.startTime >= slot.endTime) {

@@ -5,13 +5,10 @@ import {
   Get,
   HttpStatus,
   Inject,
-  Logger,
   NotImplementedException,
   Param,
   Post,
   Put,
-  Query,
-  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,

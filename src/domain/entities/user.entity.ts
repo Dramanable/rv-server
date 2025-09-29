@@ -15,8 +15,8 @@ import {
   ROLE_PERMISSIONS,
   UserRole,
 } from '../../shared/enums/user-role.enum';
-import { Email } from '../value-objects/email.vo';
 import { DomainValidationError } from '../exceptions/domain.exceptions';
+import { Email } from '../value-objects/email.vo';
 
 export class User {
   public readonly id: string;

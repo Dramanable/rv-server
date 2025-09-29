@@ -21,11 +21,11 @@ import type { AppointmentRepository } from '../../../domain/repositories/appoint
 import type { CalendarRepository } from '../../../domain/repositories/calendar.repository.interface';
 import type { ServiceRepository } from '../../../domain/repositories/service.repository.interface';
 import type { StaffRepository } from '../../../domain/repositories/staff.repository.interface';
+import { ViewMode } from '../../../presentation/dtos/appointment.dto';
 import {
   ApplicationValidationError,
   ResourceNotFoundError,
 } from '../../exceptions/application.exceptions';
-import { ViewMode } from '../../../presentation/dtos/appointment.dto';
 import type { I18nService } from '../../ports/i18n.port';
 import type { Logger } from '../../ports/logger.port';
 

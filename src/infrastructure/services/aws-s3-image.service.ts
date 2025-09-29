@@ -12,12 +12,12 @@ import {
   S3Client,
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import {
+  ExternalServiceError,
+  ImageProcessingError,
+} from '@infrastructure/exceptions/infrastructure.exceptions';
 import { ImageCategory } from '../../domain/value-objects/business-image.value-object';
 import { ImageUploadSettings } from '../../domain/value-objects/image-upload-settings.value-object';
-import {
-  ImageProcessingError,
-  ExternalServiceError,
-} from '@infrastructure/exceptions/infrastructure.exceptions';
 
 export interface UploadImageMetadata {
   readonly category: ImageCategory;

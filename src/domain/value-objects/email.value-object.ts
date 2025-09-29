@@ -1,6 +1,6 @@
 import {
-  RequiredValueError,
   InvalidFormatError,
+  RequiredValueError,
   ValueTooLongError,
 } from '../exceptions/value-object.exceptions';
 

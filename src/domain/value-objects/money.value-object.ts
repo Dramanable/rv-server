@@ -1,13 +1,13 @@
 import {
-  NegativeAmountError,
-  NonFiniteAmountError,
-  InvalidDecimalPrecisionError,
-  InvalidCurrencyError,
-  UnsupportedCurrencyError,
   CurrencyMismatchError,
-  NegativeResultError,
-  InvalidMultiplierError,
+  InvalidCurrencyError,
+  InvalidDecimalPrecisionError,
   InvalidDivisorError,
+  InvalidMultiplierError,
+  NegativeAmountError,
+  NegativeResultError,
+  NonFiniteAmountError,
+  UnsupportedCurrencyError,
 } from '@domain/exceptions/money.exceptions';
 
 export class Money {

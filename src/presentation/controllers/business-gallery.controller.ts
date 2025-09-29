@@ -1,17 +1,17 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
   Get,
   HttpStatus,
+  InternalServerErrorException,
   Param,
   ParseUUIDPipe,
+  PayloadTooLargeException,
   Post,
   Put,
   Req,
-  BadRequestException,
-  PayloadTooLargeException,
-  InternalServerErrorException,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -149,7 +149,6 @@ export class BusinessGalleryController {
   })
   async createGallery(
     @Param('businessId', ParseUUIDPipe) businessId: string,
-    @Body() dto: CreateBusinessGalleryDto,
     @GetUser() user: User,
   ): Promise<CreateBusinessGalleryResponseDto> {
     const result = await this.createBusinessGalleryUseCase.execute({
@@ -390,7 +389,6 @@ export class BusinessGalleryController {
   })
   async updateGallery(
     @Param('galleryId') galleryId: string,
-    @Body() dto: UpdateBusinessGalleryDto,
     @GetUser() user: User,
   ): Promise<UpdateBusinessGalleryResponseDto> {
     // For now, use galleryId as businessId (this should be refactored)

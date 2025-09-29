@@ -1,8 +1,8 @@
 import { v4 as uuidv4 } from 'uuid';
 
 import {
-  RequiredValueError,
   InvalidFormatError,
+  RequiredValueError,
 } from '../exceptions/value-object.exceptions';
 
 export class ServiceId {

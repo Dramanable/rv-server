@@ -4,10 +4,9 @@
  * Clean Architecture - Domain Layer - Pure business logic
  */
 
-import { DomainException } from '../exceptions/domain.exception';
 import {
-  SystemPermissionModificationError,
   PermissionValidationError,
+  SystemPermissionModificationError,
 } from '../exceptions/permission.exceptions';
 
 export interface CreatePermissionProps {

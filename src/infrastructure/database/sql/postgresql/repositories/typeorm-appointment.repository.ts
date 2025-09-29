@@ -9,7 +9,6 @@ import {
   AppointmentStatistics,
 } from '@domain/repositories/appointment.repository.interface';
 import { BusinessId } from '@domain/value-objects/business-id.value-object';
-import { InfrastructureException } from '@shared/exceptions/shared.exceptions';
 import { CalendarId } from '@domain/value-objects/calendar-id.value-object';
 import { Email } from '@domain/value-objects/email.value-object';
 import { ServiceId } from '@domain/value-objects/service-id.value-object';
@@ -18,6 +17,7 @@ import { AppointmentOrmEntity } from '@infrastructure/database/sql/postgresql/en
 import { AppointmentOrmMapper } from '@infrastructure/mappers/appointment-orm.mapper';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { InfrastructureException } from '@shared/exceptions/shared.exceptions';
 import { Repository } from 'typeorm';
 
 /**

@@ -13,9 +13,9 @@
 import {
   ContextIdRequiredError,
   ContextNameRequiredError,
+  DepartmentAlreadyExistsError,
   LocationAlreadyExistsError,
   LocationNotFoundError,
-  DepartmentAlreadyExistsError,
 } from '../exceptions/rbac-business-context.exceptions';
 
 export interface BusinessContextData {

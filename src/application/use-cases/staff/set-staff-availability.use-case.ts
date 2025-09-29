@@ -121,83 +121,8 @@ export class SetStaffAvailabilityUseCase {
     };
   }
 
-  private validateWorkingHours(workingHours: StaffWorkingHours[]): void {
-    // Validation des horaires de travail
-    workingHours.forEach((wh, index) => {
-      if (wh.dayOfWeek < 0 || wh.dayOfWeek > 6) {
-        throw new ApplicationValidationError(
-          'dayOfWeek',
-          wh.dayOfWeek,
-          'invalid_day_of_week',
-        );
-      }
-
-      if (wh.isWorkingDay) {
-        if (!this.isValidTimeFormat(wh.startTime)) {
-          throw new ApplicationValidationError(
-            'startTime',
-            wh.startTime,
-            'invalid_time_format',
-          );
-        }
-
-        if (!this.isValidTimeFormat(wh.endTime)) {
-          throw new ApplicationValidationError(
-            'endTime',
-            wh.endTime,
-            'invalid_time_format',
-          );
-        }
-
-        if (wh.startTime >= wh.endTime) {
-          throw new ApplicationValidationError(
-            'timeRange',
-            wh.startTime,
-            'start_time_must_be_before_end_time',
-          );
-        }
-      }
-    });
-  }
-
   private isValidTimeFormat(time: string): boolean {
     const timeRegex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
     return timeRegex.test(time);
-  }
-
-  private validateTimeOff(
-    timeOff?: Array<{ startDate: Date; endDate: Date; reason?: string }>,
-  ): void {
-    if (!timeOff) return;
-
-    // Vérifier que les dates de début sont avant les dates de fin
-    timeOff.forEach((leave, index) => {
-      if (leave.startDate >= leave.endDate) {
-        throw new ApplicationValidationError(
-          'leavePeriod',
-          leave.startDate,
-          'start_date_must_be_before_end_date',
-        );
-      }
-    });
-
-    // Vérifier qu'il n'y a pas de chevauchement entre les congés
-    for (let i = 0; i < timeOff.length; i++) {
-      for (let j = i + 1; j < timeOff.length; j++) {
-        const leave1 = timeOff[i];
-        const leave2 = timeOff[j];
-
-        if (
-          leave1.startDate <= leave2.endDate &&
-          leave1.endDate >= leave2.startDate
-        ) {
-          throw new ApplicationValidationError(
-            'leavePeriods',
-            `${i},${j}`,
-            'overlapping_leave_periods',
-          );
-        }
-      }
-    }
   }
 }

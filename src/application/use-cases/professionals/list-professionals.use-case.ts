@@ -1,7 +1,7 @@
+import { ApplicationValidationError } from '@application/exceptions/application.exceptions';
 import { IAuditService } from '@application/ports/audit.port';
 import { I18nService } from '@application/ports/i18n.port';
 import { Logger } from '@application/ports/logger.port';
-import { ApplicationValidationError } from '@application/exceptions/application.exceptions';
 import { ProfessionalValidationError } from '@domain/exceptions/professional.exceptions';
 import { IProfessionalRepository } from '@domain/repositories/professional.repository';
 import { BusinessId } from '@domain/value-objects/business-id.value-object';
@@ -17,39 +17,6 @@ export class ListProfessionalsUseCase {
     private readonly i18n: I18nService,
     private readonly auditService: IAuditService,
   ) {}
-
-  /**
-   * ✅ STRICT VALIDATION according to Copilot instructions
-   */
-  private validateRequest(request: ListProfessionalsRequest): void {
-    if (!request.businessId) {
-      throw new ProfessionalValidationError(
-        this.i18n.translate('professional.validation.businessIdRequired'),
-        { businessId: request.businessId },
-      );
-    }
-
-    if (!request.requestingUserId) {
-      throw new ProfessionalValidationError(
-        this.i18n.translate('professional.validation.contextRequired'),
-        { requestingUserId: request.requestingUserId },
-      );
-    }
-
-    if (request.pagination.page < 1) {
-      throw new ProfessionalValidationError(
-        this.i18n.translate('professional.validation.pageInvalid'),
-        { page: request.pagination.page },
-      );
-    }
-
-    if (request.pagination.limit < 1 || request.pagination.limit > 100) {
-      throw new ProfessionalValidationError(
-        this.i18n.translate('professional.validation.limitInvalid'),
-        { limit: request.pagination.limit },
-      );
-    }
-  }
 
   async execute(
     request: ListProfessionalsRequest,

@@ -12,15 +12,15 @@ import {
 } from '@application/ports/authentication.port';
 import type { Logger } from '@application/ports/logger.port';
 import { User } from '@domain/entities/user.entity';
+import {
+  AuthenticationServiceError,
+  TokenGenerationError,
+  TokenValidationError,
+} from '@infrastructure/exceptions/infrastructure.exceptions';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { TOKENS } from '@shared/constants/injection-tokens';
-import {
-  TokenGenerationError,
-  TokenValidationError,
-  AuthenticationServiceError,
-} from '@infrastructure/exceptions/infrastructure.exceptions';
 
 @Injectable()
 export class JwtAuthenticationService implements AuthenticationService {

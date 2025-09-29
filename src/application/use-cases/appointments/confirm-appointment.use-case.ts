@@ -6,7 +6,6 @@
 
 import { Appointment } from '../../../domain/entities/appointment.entity';
 import { AppointmentRepository } from '../../../domain/repositories/appointment.repository.interface';
-import { AppointmentNotFoundError } from '../../exceptions/appointment.exceptions';
 import { ApplicationValidationError } from '../../exceptions/application.exceptions';
 
 // ===== REQUEST & RESPONSE =====
@@ -30,7 +29,7 @@ export class ConfirmAppointmentUseCase {
   constructor(private readonly appointmentRepository: AppointmentRepository) {}
 
   async execute(
-    request: ConfirmAppointmentRequest,
+    _request: ConfirmAppointmentRequest,
   ): Promise<ConfirmAppointmentResponse> {
     // TODO: Implémenter la logique de confirmation complète
     // - Validation du statut actuel (doit être REQUESTED)

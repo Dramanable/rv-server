@@ -6,6 +6,7 @@ import { UserId } from '../value-objects/user-id.value-object';
 import { WorkingHours } from '../value-objects/working-hours.value-object';
 
 // Re-export pour faciliter les imports
+import { ValueOutOfRangeError } from '../exceptions/value-object.exceptions';
 export { CalendarId } from '../value-objects/calendar-id.value-object';
 
 export enum CalendarType {
@@ -92,26 +93,19 @@ export class Calendar {
 
   private validate(): void {
     if (!this._name || this._name.trim().length === 0) {
-      throw new Error('Calendar name is required');
     }
 
     if (this._type === CalendarType.STAFF && !this._ownerId) {
-      throw new Error('Staff calendar must have an owner');
     }
 
     if (this._settings.defaultSlotDuration < 5) {
-      throw new Error('Default slot duration must be at least 5 minutes');
     }
 
     if (this._settings.minimumNotice < 0) {
-      throw new Error('Minimum notice cannot be negative');
     }
 
     // Valider les horaires de travail
     if (this._availability.workingHours.length !== 7) {
-      throw new Error(
-        'Working hours must be defined for all 7 days of the week',
-      );
     }
   }
 
@@ -447,7 +441,7 @@ export class Calendar {
     workingHours: WorkingHours,
   ): void {
     if (dayOfWeek < 0 || dayOfWeek > 6) {
-      throw new Error('Day of week must be between 0 and 6');
+      throw new ValueOutOfRangeError('day_of_week', dayOfWeek, 0, 6);
     }
 
     this._availability.workingHours[dayOfWeek] = workingHours;

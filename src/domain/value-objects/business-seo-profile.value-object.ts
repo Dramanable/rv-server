@@ -5,7 +5,6 @@
  */
 
 import {
-  InvalidValueError,
   RequiredValueError,
   ValueOutOfRangeError,
 } from '@domain/exceptions/value-object.exceptions';

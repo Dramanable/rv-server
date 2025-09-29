@@ -1,9 +1,5 @@
+import { SkillValidationException } from '../exceptions/skill.exceptions';
 import { BusinessId } from '../value-objects/business-id.value-object';
-import {
-  SkillValidationException,
-  SkillOperationNotAllowedException,
-  CriticalSkillException,
-} from '../exceptions/skill.exceptions';
 
 /**
  * 🎯 Skill Entity - Compétences Configurables par Business

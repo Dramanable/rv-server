@@ -1,6 +1,6 @@
+import { DomainValidationError } from '../exceptions/domain.exceptions';
 import { BusinessId } from '../value-objects/business-id.value-object';
 import { ServiceTypeId } from '../value-objects/service-type-id.value-object';
-import { DomainValidationError } from '../exceptions/domain.exceptions';
 
 export interface ServiceTypeProps {
   readonly id?: ServiceTypeId;

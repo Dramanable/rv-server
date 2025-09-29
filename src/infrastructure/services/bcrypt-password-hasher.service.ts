@@ -6,12 +6,9 @@
  */
 
 import { IPasswordHasher } from '@application/ports/password-hasher.port';
+import { InvalidInputError } from '@infrastructure/exceptions/infrastructure.exceptions';
 import { Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-import {
-  InvalidInputError,
-  PasswordHashingError,
-} from '@infrastructure/exceptions/infrastructure.exceptions';
 
 @Injectable()
 export class BcryptPasswordHasher implements IPasswordHasher {

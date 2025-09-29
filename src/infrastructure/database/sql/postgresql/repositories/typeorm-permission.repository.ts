@@ -2,9 +2,9 @@ import { Permission } from '@domain/entities/permission.entity';
 import { IPermissionRepository } from '@domain/repositories/permission.repository';
 import { PermissionOrmEntity } from '@infrastructure/database/sql/postgresql/entities/permission-orm.entity';
 import { PermissionOrmMapper } from '@infrastructure/mappers/permission-orm.mapper';
-import { InfrastructureException } from '@shared/exceptions/shared.exceptions';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { InfrastructureException } from '@shared/exceptions/shared.exceptions';
 import { Repository } from 'typeorm';
 
 /**

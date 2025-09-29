@@ -1,9 +1,9 @@
-import { Injectable, Logger, Inject } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 
 import { User } from '../../domain/entities/user.entity';
 
-import type { UserRepository } from '../../domain/repositories/user.repository.interface';
 import { InvalidCachedDataError } from '@infrastructure/exceptions/infrastructure.exceptions';
+import type { UserRepository } from '../../domain/repositories/user.repository.interface';
 
 // Interface temporaire pour éviter les erreurs d'import
 interface ICacheService {

@@ -11,8 +11,8 @@
 
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { InfrastructureException } from '@shared/exceptions/shared.exceptions';
+import { Repository } from 'typeorm';
 import { Business } from '../../../../../domain/entities/business.entity';
 import { BusinessRepository } from '../../../../../domain/repositories/business.repository.interface';
 import { BusinessId } from '../../../../../domain/value-objects/business-id.value-object';

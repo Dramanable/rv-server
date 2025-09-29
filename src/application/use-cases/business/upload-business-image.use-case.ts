@@ -15,10 +15,10 @@ import {
 import { ImageUploadSettings } from '../../../domain/value-objects/image-upload-settings.value-object';
 import { AwsS3ImageService } from '../../../infrastructure/services/aws-s3-image.service';
 import {
-  ResourceNotFoundError,
-  InsufficientPermissionsError,
   BusinessValidationError,
   ExternalServiceError,
+  InsufficientPermissionsError,
+  ResourceNotFoundError,
 } from '../../exceptions/application.exceptions';
 
 export interface UploadBusinessImageRequest {

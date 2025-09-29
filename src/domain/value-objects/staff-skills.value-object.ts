@@ -6,10 +6,9 @@
  */
 
 import {
+  DuplicateValueError,
   InvalidValueError,
   RequiredValueError,
-  ValueOutOfRangeError,
-  DuplicateValueError,
   ValueNotFoundError,
 } from '@domain/exceptions/value-object.exceptions';
 export class StaffSkills {

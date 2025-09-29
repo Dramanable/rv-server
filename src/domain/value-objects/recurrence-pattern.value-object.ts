@@ -1,8 +1,8 @@
-import { RecurrenceType, WeekDay } from './time-slot.value-object';
 import {
   InvalidValueError,
   RequiredValueError,
 } from '@domain/exceptions/value-object.exceptions';
+import { RecurrenceType, WeekDay } from './time-slot.value-object';
 
 export interface RecurrenceRule {
   type: RecurrenceType;

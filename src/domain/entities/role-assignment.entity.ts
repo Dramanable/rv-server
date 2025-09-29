@@ -11,20 +11,20 @@
  */
 
 import {
+  BusinessIdRequiredError,
+  DepartmentContextError,
+  InvalidExpirationDateError,
+  RoleBusinessLevelOnlyError,
+  RoleContextViolationError,
+  RoleDepartmentLevelOnlyError,
+  RoleLocationLevelOnlyError,
+} from '@domain/exceptions';
+import {
   Permission,
   ROLE_HIERARCHY,
   ROLE_PERMISSIONS,
   UserRole,
 } from '@shared/enums/user-role.enum';
-import {
-  InvalidExpirationDateError,
-  BusinessIdRequiredError,
-  RoleContextViolationError,
-  DepartmentContextError,
-  RoleBusinessLevelOnlyError,
-  RoleLocationLevelOnlyError,
-  RoleDepartmentLevelOnlyError,
-} from '@domain/exceptions';
 
 export interface RoleAssignmentContext {
   readonly businessId: string;

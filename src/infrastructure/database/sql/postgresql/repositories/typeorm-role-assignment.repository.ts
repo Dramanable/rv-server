@@ -12,24 +12,24 @@
  * - Messages i18n pour erreurs utilisateur
  */
 
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, MoreThan, LessThan, Between } from 'typeorm';
-import { InfrastructureException } from '@shared/exceptions/shared.exceptions';
-import { RoleAssignmentOrmEntity } from '../entities/role-assignment-orm.entity';
+import { I18nService } from '@application/ports/i18n.port';
+import { Logger } from '@application/ports/logger.port';
 import {
   RoleAssignment,
   RoleAssignmentContext,
 } from '@domain/entities/role-assignment.entity';
-import { IRoleAssignmentRepository } from '@domain/repositories/role-assignment.repository.interface';
 import {
-  RoleAssignmentFilters,
+  IRoleAssignmentRepository,
   RoleAssignmentCriteria,
+  RoleAssignmentFilters,
 } from '@domain/repositories/role-assignment.repository.interface';
 import { RoleAssignmentOrmMapper } from '@infrastructure/mappers/role-assignment-orm.mapper';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import { UserRole } from '@shared/enums/user-role.enum';
-import { Logger } from '@application/ports/logger.port';
-import { I18nService } from '@application/ports/i18n.port';
+import { InfrastructureException } from '@shared/exceptions/shared.exceptions';
+import { Between, LessThan, MoreThan, Repository } from 'typeorm';
+import { RoleAssignmentOrmEntity } from '../entities/role-assignment-orm.entity';
 
 @Injectable()
 export class TypeOrmRoleAssignmentRepository

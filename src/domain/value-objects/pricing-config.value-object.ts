@@ -4,11 +4,11 @@
  * ✅ Configuration flexible de tarification pour services
  */
 
-import { Money } from './money.value-object';
 import {
   InvalidValueError,
   RequiredValueError,
 } from '@domain/exceptions/value-object.exceptions';
+import { Money } from './money.value-object';
 
 export enum PricingType {
   FREE = 'FREE', // Service gratuit

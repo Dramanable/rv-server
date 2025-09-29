@@ -9,8 +9,8 @@
  * ✅ Gestion des erreurs et logging
  */
 
-import { Repository, QueryRunner, Brackets } from 'typeorm';
 import { InfrastructureException } from '@shared/exceptions/shared.exceptions';
+import { Repository } from 'typeorm';
 
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';

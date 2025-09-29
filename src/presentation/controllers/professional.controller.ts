@@ -14,12 +14,9 @@ import {
   Get,
   HttpStatus,
   Inject,
-  Logger,
   Param,
   Post,
   Put,
-  Query,
-  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,

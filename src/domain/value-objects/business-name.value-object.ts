@@ -1,8 +1,8 @@
 import {
-  RequiredValueError,
-  ValueTooShortError,
-  ValueTooLongError,
   InvalidFormatError,
+  RequiredValueError,
+  ValueTooLongError,
+  ValueTooShortError,
 } from '../exceptions/value-object.exceptions';
 
 export class BusinessName {

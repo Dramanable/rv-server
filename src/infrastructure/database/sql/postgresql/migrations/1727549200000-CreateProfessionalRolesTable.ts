@@ -5,14 +5,8 @@ import { DatabaseSchemaError } from '@infrastructure/exceptions/infrastructure.e
  * Migration pour créer la table des rôles professionnels
  */
 
-import {
-  MigrationInterface,
-  QueryRunner,
-  Table,
-  ForeignKey,
-  Index,
-} from 'typeorm';
 import { InfrastructureException } from '@shared/exceptions/shared.exceptions';
+import { MigrationInterface, QueryRunner, Table } from 'typeorm';
 
 export class CreateProfessionalRolesTable1727549200000
   implements MigrationInterface

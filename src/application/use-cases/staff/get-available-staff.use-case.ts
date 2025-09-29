@@ -121,8 +121,8 @@ export class GetAvailableStaffUseCase {
   private async filterAvailableStaff(
     allStaff: Staff[],
     dateTime: Date,
-    durationMinutes: number,
-    serviceId?: string,
+    _durationMinutes: number,
+    _serviceId?: string,
   ): Promise<Staff[]> {
     return allStaff.filter((staff) => {
       // 1. Staff doit être actif
@@ -151,8 +151,8 @@ export class GetAvailableStaffUseCase {
   }
 
   private getNextAvailableSlot(
-    staff: Staff,
-    currentDateTime: Date,
+    _staff: Staff,
+    _currentDateTime: Date,
   ): Date | undefined {
     // TODO: Implémenter le calcul du prochain créneau disponible
     // Cette logique nécessite le système de créneaux et l'agenda

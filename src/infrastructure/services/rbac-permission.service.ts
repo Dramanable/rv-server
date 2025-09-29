@@ -28,8 +28,8 @@ import { RoleAssignment } from '@domain/entities/role-assignment.entity';
 import { IBusinessContextRepository } from '@domain/repositories/business-context.repository.interface';
 import { IRoleAssignmentRepository } from '@domain/repositories/role-assignment.repository.interface';
 import { UserRepository } from '@domain/repositories/user.repository.interface';
+import { PermissionServiceError } from '@infrastructure/exceptions/infrastructure.exceptions';
 import { Injectable } from '@nestjs/common';
-import { InfrastructureException } from '@shared/exceptions/shared.exceptions';
 import {
   Permission,
   ROLE_HIERARCHY,
@@ -37,7 +37,7 @@ import {
   RoleUtils,
   UserRole,
 } from '@shared/enums/user-role.enum';
-import { PermissionServiceError } from '@infrastructure/exceptions/infrastructure.exceptions';
+import { InfrastructureException } from '@shared/exceptions/shared.exceptions';
 
 /**
  * 🎯 Business Context for Permission Checks

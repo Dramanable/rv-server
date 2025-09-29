@@ -5,8 +5,8 @@
 
 import { generateId } from '@shared/utils/id.utils';
 import {
-  RequiredValueError,
   InvalidFormatError,
+  RequiredValueError,
 } from '../exceptions/value-object.exceptions';
 
 export class ClientId {
