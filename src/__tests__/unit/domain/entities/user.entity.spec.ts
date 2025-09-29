@@ -5,8 +5,7 @@
  */
 import { User } from '@domain/entities/user.entity';
 import { Email } from '@domain/value-objects/email.vo';
-import { UserRole } from '@shared/enums/user-role.enum';
-import { Permission } from '@shared/enums/user-role.enum';
+import { Permission, UserRole } from '@shared/enums/user-role.enum';
 
 describe('User Entity with Roles', () => {
   let validEmail: Email;

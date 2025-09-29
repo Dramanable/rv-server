@@ -1,10 +1,10 @@
-import { BusinessName } from '@domain/value-objects/business-name.value-object';
 import {
-  RequiredValueError,
-  ValueTooShortError,
-  ValueTooLongError,
   InvalidFormatError,
+  RequiredValueError,
+  ValueTooLongError,
+  ValueTooShortError,
 } from '@domain/exceptions/value-object.exceptions';
+import { BusinessName } from '@domain/value-objects/business-name.value-object';
 
 describe('BusinessName', () => {
   describe('create', () => {

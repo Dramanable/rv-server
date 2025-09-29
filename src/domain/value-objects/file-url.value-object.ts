@@ -50,7 +50,9 @@ export class FileUrl {
     if (
       key.includes('..') ||
       key.includes('//') ||
-      /[\x00-\x1f\x7f]/.test(key)
+      key
+        .split('')
+        .some((char) => char.charCodeAt(0) < 32 || char.charCodeAt(0) === 127)
     ) {
       throw new InvalidValueError(
         'fileKey',

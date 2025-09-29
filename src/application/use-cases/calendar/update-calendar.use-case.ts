@@ -64,7 +64,7 @@ export class UpdateCalendarUseCase {
     });
 
     // 1. Validation des paramètres
-    await this.validateRequest(request);
+    this.validateRequest(request);
 
     // 2. Récupération du calendrier existant
     const calendarId = CalendarId.create(request.calendarId);

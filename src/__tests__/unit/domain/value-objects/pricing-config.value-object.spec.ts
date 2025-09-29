@@ -3,13 +3,13 @@
  * ✅ Domain Layer - TDD Tests
  */
 
+import { Money } from '@domain/value-objects/money.value-object';
 import {
   PricingConfig,
+  PricingRule,
   PricingType,
   PricingVisibility,
-  PricingRule,
 } from '@domain/value-objects/pricing-config.value-object';
-import { Money } from '@domain/value-objects/money.value-object';
 
 describe('PricingConfig Value Object', () => {
   describe('Free Pricing', () => {
