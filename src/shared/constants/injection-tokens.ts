@@ -33,6 +33,11 @@ export const APPLICATION_TOKENS = {
   REFRESH_TOKEN_USE_CASE: 'RefreshTokenUseCase',
   LOGOUT_USE_CASE: 'LogoutUseCase',
 
+  // Password Reset Use Cases
+  REQUEST_PASSWORD_RESET_USE_CASE: 'RequestPasswordResetUseCase',
+  VERIFY_PASSWORD_RESET_CODE_USE_CASE: 'VerifyPasswordResetCodeUseCase',
+  COMPLETE_PASSWORD_RESET_USE_CASE: 'CompletePasswordResetUseCase',
+
   // BusinessSector Use Cases
   CREATE_BUSINESS_SECTOR_USE_CASE: 'CreateBusinessSectorUseCase',
   LIST_BUSINESS_SECTORS_USE_CASE: 'ListBusinessSectorsUseCase',
@@ -177,6 +182,7 @@ export const DOMAIN_TOKENS = {
   // Repository Interfaces
   USER_REPOSITORY: 'UserRepository',
   REFRESH_TOKEN_REPOSITORY: 'RefreshTokenRepository',
+  PASSWORD_RESET_CODE_REPOSITORY: 'PasswordResetCodeRepository',
   BUSINESS_SECTOR_REPOSITORY: 'BusinessSectorRepository',
   BUSINESS_REPOSITORY: 'BusinessRepository',
   CALENDAR_REPOSITORY: 'CalendarRepository',

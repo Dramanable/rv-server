@@ -22,6 +22,11 @@ import { LogoutUseCase } from '@application/use-cases/auth/logout.use-case';
 import { RefreshTokenUseCase } from '@application/use-cases/auth/refresh-token.use-case';
 import { RegisterUseCase } from '@application/use-cases/auth/register.use-case';
 
+// Password Reset Use Cases
+import { CompletePasswordResetUseCase } from '@application/use-cases/password-reset/complete-password-reset.use-case';
+import { RequestPasswordResetUseCase } from '@application/use-cases/password-reset/request-password-reset.use-case';
+import { VerifyPasswordResetCodeUseCase } from '@application/use-cases/password-reset/verify-password-reset-code.use-case';
+
 // User Use Cases
 import { CreateUserUseCase } from '@application/use-cases/users/create-user.use-case';
 import { DeleteUserUseCase } from '@application/use-cases/users/delete-user.use-case';
@@ -41,8 +46,8 @@ import { CreateBusinessUseCase } from '@application/use-cases/business/create-bu
 import { GetBusinessUseCase } from '@application/use-cases/business/get-business.use-case';
 import { ListBusinessUseCase } from '@application/use-cases/business/list-business.use-case';
 import { ManageBusinessHoursUseCase } from '@application/use-cases/business/manage-business-hours.use-case';
-import { UpdateBusinessUseCase } from '@application/use-cases/business/update-business.use-case';
 import { UpdateBusinessConfigurationUseCase } from '@application/use-cases/business/update-business-configuration.use-case';
+import { UpdateBusinessUseCase } from '@application/use-cases/business/update-business.use-case';
 
 // Calendar Use Cases
 import { CreateCalendarUseCase } from '@application/use-cases/calendar/create-calendar.use-case';
@@ -142,15 +147,16 @@ import { AssignRoleUseCase } from '@application/use-cases/role-management/assign
 // 🎮 Controllers
 import { AppointmentController } from './controllers/appointment.controller';
 import { AuthController } from './controllers/auth.controller';
+import { BusinessConfigurationController } from './controllers/business-configuration.controller';
 import { BusinessGalleryController } from './controllers/business-gallery.controller';
 import { BusinessHoursController } from './controllers/business-hours.controller';
 import { BusinessImageController } from './controllers/business-image.controller';
 import { BusinessSectorController } from './controllers/business-sector.controller';
 import { BusinessController } from './controllers/business.controller';
-import { BusinessConfigurationController } from './controllers/business-configuration.controller';
 import { CalendarTypesController } from './controllers/calendar-types.controller';
 import { CalendarController } from './controllers/calendar.controller';
 import { NotificationController } from './controllers/notification.controller';
+import { PasswordResetController } from './controllers/PasswordResetController';
 import { PermissionController } from './controllers/permission.controller';
 import { ProfessionalRoleController } from './controllers/professional-role.controller';
 import { ProfessionalController } from './controllers/professional.controller';
@@ -184,6 +190,7 @@ import { PresentationCookieService } from './services/cookie.service';
   ],
   controllers: [
     AuthController,
+    PasswordResetController,
     UserController,
     BusinessController,
     BusinessConfigurationController,
@@ -313,6 +320,51 @@ import { PresentationCookieService } from './services/cookie.service';
         TOKENS.I18N_SERVICE,
       ],
     },
+
+    // 🔐 Password Reset Use Cases
+    {
+      provide: TOKENS.REQUEST_PASSWORD_RESET_USE_CASE,
+      useFactory: (passwordResetRepo, userRepo, emailService) =>
+        new RequestPasswordResetUseCase(
+          passwordResetRepo,
+          userRepo,
+          emailService,
+        ),
+      inject: [
+        TOKENS.PASSWORD_RESET_CODE_REPOSITORY,
+        TOKENS.USER_REPOSITORY,
+        TOKENS.EMAIL_SERVICE,
+      ],
+    },
+    {
+      provide: TOKENS.VERIFY_PASSWORD_RESET_CODE_USE_CASE,
+      useFactory: (passwordResetRepo, userRepo, authService) =>
+        new VerifyPasswordResetCodeUseCase(
+          passwordResetRepo,
+          userRepo,
+          authService,
+        ),
+      inject: [
+        TOKENS.PASSWORD_RESET_CODE_REPOSITORY,
+        TOKENS.USER_REPOSITORY,
+        TOKENS.AUTH_SERVICE,
+      ],
+    },
+    {
+      provide: TOKENS.COMPLETE_PASSWORD_RESET_USE_CASE,
+      useFactory: (userRepo, authService, passwordService) =>
+        new CompletePasswordResetUseCase(
+          userRepo,
+          authService,
+          passwordService,
+        ),
+      inject: [
+        TOKENS.USER_REPOSITORY,
+        TOKENS.AUTH_SERVICE,
+        TOKENS.PASSWORD_SERVICE,
+      ],
+    },
+
     // 👤 User Management Use Cases
     {
       provide: TOKENS.GET_ME_USE_CASE,

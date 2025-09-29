@@ -35,7 +35,7 @@ export class MockEmailService implements IEmailService {
 
     this.sentEmails.push(emailContent);
     await new Promise((resolve) => setTimeout(resolve, 100));
-
+    //fr.wikipedia.org/wiki/%C3%89quipe_du_S%C3%A9n%C3%A9gal_de_football
     console.log(`📧 EMAIL SENT: ${emailContent.subject} to ${emailContent.to}`);
 
     return {

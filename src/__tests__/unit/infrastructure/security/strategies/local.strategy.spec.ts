@@ -5,10 +5,6 @@
  * (sans logique business qui reste dans LoginUseCase)
  */
 
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-
 import { User } from '@domain/entities/user.entity';
 import { Email } from '@domain/value-objects/email.vo';
 import { Test, TestingModule } from '@nestjs/testing';

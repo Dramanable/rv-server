@@ -50,4 +50,17 @@ export interface AuthenticationService {
    * Révoque tous les tokens d'un utilisateur
    */
   revokeAllUserTokens(userId: string): Promise<void>;
+
+  /**
+   * Génère un token de session temporaire pour la réinitialisation de mot de passe
+   * (valide 5 minutes, permet seulement de changer le mot de passe)
+   */
+  generateResetSessionToken(userId: string): Promise<string>;
+
+  /**
+   * Valide un token de session de réinitialisation
+   */
+  validateResetSessionToken(
+    token: string,
+  ): Promise<{ userId: string; valid: boolean }>;
 }

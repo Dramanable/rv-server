@@ -182,4 +182,63 @@ export class JwtAuthenticationService implements AuthenticationService {
     // Cela pourrait impliquer une mise à jour en base de données ou un incrément
     // d'un numéro de version des tokens pour l'utilisateur
   }
+
+  async generateResetSessionToken(userId: string): Promise<string> {
+    try {
+      // Générer un token temporaire valide 5 minutes pour la réinitialisation
+      const resetToken = `reset_${userId}_${Date.now()}_${Math.random().toString(36).substring(2)}`;
+
+      this.logger.info(`Generated reset session token for user: ${userId}`, {
+        service: 'JWT Auth Service',
+      });
+
+      return resetToken;
+    } catch (error) {
+      this.logger.error(
+        `Failed to generate reset session token: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
+      throw new TokenGenerationError('reset session token generation', error);
+    }
+  }
+
+  async validateResetSessionToken(
+    token: string,
+  ): Promise<{ userId: string; valid: boolean }> {
+    try {
+      // Parser le token de format: reset_userId_timestamp_random
+      const parts = token.split('_');
+
+      if (parts.length !== 4 || parts[0] !== 'reset') {
+        return { userId: '', valid: false };
+      }
+
+      const userId = parts[1];
+      const timestamp = parseInt(parts[2], 10);
+
+      if (!userId || isNaN(timestamp)) {
+        return { userId: '', valid: false };
+      }
+
+      // Vérifier l'expiration (5 minutes)
+      const now = Date.now();
+      const tokenAge = now - timestamp;
+      const fiveMinutes = 5 * 60 * 1000;
+
+      const valid = tokenAge <= fiveMinutes;
+
+      this.logger.info(
+        `Reset session token validation result: ${valid} for user: ${userId}`,
+        {
+          service: 'JWT Auth Service',
+        },
+      );
+
+      return { userId, valid };
+    } catch (error) {
+      this.logger.error(
+        `Failed to validate reset session token: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
+      return { userId: '', valid: false };
+    }
+  }
 }

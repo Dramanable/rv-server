@@ -8,6 +8,8 @@ import { CalendarId } from '../value-objects/calendar-id.value-object';
 import { Email } from '../value-objects/email.value-object';
 import { ServiceId } from '../value-objects/service-id.value-object';
 import { UserId } from '../value-objects/user-id.value-object';
+import { AppointmentStatisticsData } from '../value-objects/appointment-statistics.vo';
+import { StatisticsPeriod } from '../value-objects/statistics-period.vo';
 
 /**
  * 📅 APPOINTMENT REPOSITORY INTERFACE
@@ -32,6 +34,13 @@ export interface AppointmentSearchCriteria {
   tags?: string[];
   limit?: number;
   offset?: number;
+}
+
+export interface AppointmentStatisticsCriteria {
+  businessId?: BusinessId; // Optional pour PLATFORM_ADMIN
+  staffId?: UserId;
+  serviceId?: ServiceId;
+  period: StatisticsPeriod;
 }
 
 export interface AppointmentStatistics {
@@ -153,15 +162,6 @@ export interface AppointmentRepository {
   >;
 
   /**
-   * Get appointment statistics
-   */
-  getStatistics(
-    businessId: BusinessId,
-    startDate: Date,
-    endDate: Date,
-  ): Promise<AppointmentStatistics>;
-
-  /**
    * Get upcoming appointments (next 24 hours)
    */
   getUpcomingAppointments(
@@ -242,4 +242,11 @@ export interface AppointmentRepository {
    * Export appointments for reporting
    */
   export(criteria: AppointmentSearchCriteria): Promise<Appointment[]>;
+
+  /**
+   * Get appointment statistics for a given period and filters
+   */
+  getStatistics(
+    criteria: AppointmentStatisticsCriteria,
+  ): Promise<AppointmentStatisticsData>;
 }

@@ -21,6 +21,7 @@ import { PermissionOrmEntity } from './sql/postgresql/entities/permission-orm.en
 import { ProfessionalOrmEntity } from './sql/postgresql/entities/professional-orm.entity';
 import { ProfessionalRoleOrmEntity } from './sql/postgresql/entities/professional-role-orm.entity';
 import { RefreshTokenOrmEntity } from './sql/postgresql/entities/refresh-token-orm.entity';
+import { PasswordResetCodeEntity } from './sql/postgresql/entities/password-reset-code.entity';
 import { ServiceOrmEntity } from './sql/postgresql/entities/service-orm.entity';
 import { ServiceTypeOrmEntity } from './sql/postgresql/entities/service-type-orm.entity';
 import { SkillOrmEntity } from './sql/postgresql/entities/skill-orm.entity';
@@ -33,6 +34,7 @@ import { RoleAssignmentOrmEntity } from './sql/postgresql/entities/role-assignme
 
 // Repository Implementations
 import { RefreshTokenOrmRepository } from './sql/postgresql/repositories/refresh-token-orm.repository';
+import { PasswordResetCodeRepository } from './sql/postgresql/repositories/password-reset-code.repository';
 import { TypeOrmAppointmentRepository } from './sql/postgresql/repositories/typeorm-appointment.repository';
 import { TypeOrmBusinessRepository } from './sql/postgresql/repositories/typeorm-business.repository';
 import { TypeOrmCalendarTypeRepository } from './sql/postgresql/repositories/typeorm-calendar-type.repository';
@@ -64,6 +66,7 @@ import { RbacPermissionService } from '../services/rbac-permission.service';
     TypeOrmModule.forFeature([
       UserOrmEntity,
       RefreshTokenOrmEntity,
+      PasswordResetCodeEntity,
       AppointmentOrmEntity,
       BusinessOrmEntity,
       BusinessSectorOrmEntity, // Décommenté pour activer la relation
@@ -102,6 +105,12 @@ import { RbacPermissionService } from '../services/rbac-permission.service';
       useFactory: (refreshTokenRepository, logger: Logger) =>
         new RefreshTokenOrmRepository(refreshTokenRepository, logger),
       inject: [getRepositoryToken(RefreshTokenOrmEntity), TOKENS.LOGGER],
+    },
+
+    // Password Reset Code Repository
+    {
+      provide: TOKENS.PASSWORD_RESET_CODE_REPOSITORY,
+      useClass: PasswordResetCodeRepository,
     },
 
     // Business Repository

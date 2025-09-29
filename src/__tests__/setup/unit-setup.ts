@@ -89,7 +89,7 @@ jest.setTimeout(5000); // 5 secondes max par test
 // 🔍 Intercepter les erreurs console pour des tests plus propres
 const originalConsoleError = console.error;
 beforeAll(() => {
-  console.error = (...args: any[]) => {
+  console.error = (...args: unknown[]) => {
     // Filtrer certaines erreurs connues des tests
     const message = args[0]?.toString() || '';
     if (

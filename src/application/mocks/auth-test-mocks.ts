@@ -49,6 +49,8 @@ export function createMockAuthService(): jest.Mocked<AuthenticationService> {
     refreshTokens: jest.fn(),
     revokeRefreshToken: jest.fn(),
     revokeAllUserTokens: jest.fn(),
+    generateResetSessionToken: jest.fn(),
+    validateResetSessionToken: jest.fn(),
   };
 }
 

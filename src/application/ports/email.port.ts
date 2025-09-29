@@ -54,8 +54,7 @@ export interface WelcomeEmailData {
 
 export interface PasswordResetEmailData {
   readonly userName: string;
-  readonly resetToken: string;
-  readonly resetUrl: string;
+  readonly resetCode: string;
   readonly expirationTime: string;
   readonly companyName: string;
 }
