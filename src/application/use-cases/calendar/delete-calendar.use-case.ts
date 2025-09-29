@@ -15,7 +15,9 @@ import { CalendarId } from '../../../domain/value-objects/calendar-id.value-obje
 import {
   CalendarNotFoundError,
   CalendarPermissionError,
+  InvalidCalendarDataError,
 } from '../../exceptions/calendar.exceptions';
+import { ResourceNotFoundError } from '../../exceptions/application.exceptions';
 
 export interface DeleteCalendarRequest {
   readonly requestingUserId: string;
@@ -96,7 +98,10 @@ export class DeleteCalendarUseCase {
 
   private async validateRequest(request: DeleteCalendarRequest): Promise<void> {
     if (!request.calendarId || !request.requestingUserId) {
-      throw new Error(this.i18n.t('calendar.invalid_delete_request'));
+      throw new InvalidCalendarDataError(
+        'request',
+        this.i18n.t('calendar.invalid_delete_request'),
+      );
     }
   }
 
@@ -110,7 +115,9 @@ export class DeleteCalendarUseCase {
     );
 
     if (!business) {
-      throw new Error(this.i18n.t('business.not_found'));
+      throw new ResourceNotFoundError('Business', calendar.businessId, {
+        message: this.i18n.t('business.not_found'),
+      });
     }
 
     // Vérifier si l'utilisateur est le propriétaire du business

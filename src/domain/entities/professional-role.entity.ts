@@ -5,6 +5,7 @@
  */
 
 import { generateId } from '@shared/utils/id.utils';
+import { ProfessionalRoleValidationError } from '../exceptions/professional-role.exceptions';
 
 export class ProfessionalRole {
   private constructor(
@@ -37,33 +38,37 @@ export class ProfessionalRole {
       params.code.trim().length < 2 ||
       params.code.trim().length > 20
     ) {
-      throw new Error(
+      throw new ProfessionalRoleValidationError(
         'Professional role code must be between 2 and 20 characters',
       );
     }
 
     // Validation du nom
     if (!params.name || params.name.trim().length < 2) {
-      throw new Error('Professional role name must be at least 2 characters');
+      throw new ProfessionalRoleValidationError(
+        'Professional role name must be at least 2 characters',
+      );
     }
 
     // Validation du displayName
     if (!params.displayName || params.displayName.trim().length < 2) {
-      throw new Error(
+      throw new ProfessionalRoleValidationError(
         'Professional role display name must be at least 2 characters',
       );
     }
 
     // Validation de la description
     if (!params.description || params.description.trim().length < 10) {
-      throw new Error(
+      throw new ProfessionalRoleValidationError(
         'Professional role description must be at least 10 characters',
       );
     }
 
     // Validation de la catégorie (flexible pour MVP)
     if (!params.category || params.category.trim().length < 2) {
-      throw new Error('Professional category must be at least 2 characters');
+      throw new ProfessionalRoleValidationError(
+        'Professional category must be at least 2 characters',
+      );
     }
 
     return new ProfessionalRole(
@@ -178,7 +183,9 @@ export class ProfessionalRole {
   // 🔄 Update methods
   updateDisplayName(newDisplayName: string): void {
     if (!newDisplayName || newDisplayName.trim().length < 2) {
-      throw new Error('Display name must be at least 2 characters');
+      throw new ProfessionalRoleValidationError(
+        'Display name must be at least 2 characters',
+      );
     }
     this._displayName = newDisplayName.trim();
     this._updatedAt = new Date();
@@ -186,7 +193,9 @@ export class ProfessionalRole {
 
   updateDescription(newDescription: string): void {
     if (!newDescription || newDescription.trim().length < 10) {
-      throw new Error('Description must be at least 10 characters');
+      throw new ProfessionalRoleValidationError(
+        'Description must be at least 10 characters',
+      );
     }
     this._description = newDescription.trim();
     this._updatedAt = new Date();

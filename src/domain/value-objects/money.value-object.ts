@@ -1,3 +1,15 @@
+import {
+  NegativeAmountError,
+  NonFiniteAmountError,
+  InvalidDecimalPrecisionError,
+  InvalidCurrencyError,
+  UnsupportedCurrencyError,
+  CurrencyMismatchError,
+  NegativeResultError,
+  InvalidMultiplierError,
+  InvalidDivisorError,
+} from '@domain/exceptions/money.exceptions';
+
 export class Money {
   constructor(
     private readonly amount: number,
@@ -9,27 +21,30 @@ export class Money {
 
   private validateAmount(amount: number): void {
     if (amount < 0) {
-      throw new Error('Amount cannot be negative');
+      throw new NegativeAmountError(amount);
     }
 
     if (!Number.isFinite(amount)) {
-      throw new Error('Amount must be a finite number');
+      throw new NonFiniteAmountError(amount);
     }
 
     // Vérifier que le montant n'a pas plus de 2 décimales
     if (Number((amount % 1).toFixed(2)) !== Number(amount % 1)) {
-      throw new Error('Amount cannot have more than 2 decimal places');
+      throw new InvalidDecimalPrecisionError(amount);
     }
   }
 
   private validateCurrency(currency: string): void {
     if (!currency || currency.length !== 3) {
-      throw new Error('Currency must be a valid 3-letter ISO code');
+      throw new InvalidCurrencyError(
+        currency,
+        'Currency must be a valid 3-letter ISO code',
+      );
     }
 
     const supportedCurrencies = ['EUR', 'USD', 'GBP', 'CAD', 'CHF', 'JPY'];
     if (!supportedCurrencies.includes(currency.toUpperCase())) {
-      throw new Error(`Currency ${currency} is not supported`);
+      throw new UnsupportedCurrencyError(currency, supportedCurrencies);
     }
   }
 
@@ -52,19 +67,28 @@ export class Money {
   // Operations
   add(other: Money): Money {
     if (this.currency !== other.currency) {
-      throw new Error('Cannot add amounts with different currencies');
+      throw new CurrencyMismatchError('add', this.currency, other.currency);
     }
     return new Money(this.amount + other.amount, this.currency);
   }
 
   subtract(other: Money): Money {
     if (this.currency !== other.currency) {
-      throw new Error('Cannot subtract amounts with different currencies');
+      throw new CurrencyMismatchError(
+        'subtract',
+        this.currency,
+        other.currency,
+      );
     }
 
     const result = this.amount - other.amount;
     if (result < 0) {
-      throw new Error('Result cannot be negative');
+      throw new NegativeResultError(
+        'subtract',
+        this.amount,
+        other.amount,
+        this.currency,
+      );
     }
 
     return new Money(result, this.currency);
@@ -72,14 +96,14 @@ export class Money {
 
   multiply(factor: number): Money {
     if (factor < 0) {
-      throw new Error('Cannot multiply by negative number');
+      throw new InvalidMultiplierError(factor);
     }
     return new Money(this.amount * factor, this.currency);
   }
 
   divide(divisor: number): Money {
     if (divisor <= 0) {
-      throw new Error('Cannot divide by zero or negative number');
+      throw new InvalidDivisorError(divisor);
     }
     return new Money(this.amount / divisor, this.currency);
   }
@@ -91,14 +115,14 @@ export class Money {
 
   isGreaterThan(other: Money): boolean {
     if (this.currency !== other.currency) {
-      throw new Error('Cannot compare amounts with different currencies');
+      throw new CurrencyMismatchError('compare', this.currency, other.currency);
     }
     return this.amount > other.amount;
   }
 
   isLessThan(other: Money): boolean {
     if (this.currency !== other.currency) {
-      throw new Error('Cannot compare amounts with different currencies');
+      throw new CurrencyMismatchError('compare', this.currency, other.currency);
     }
     return this.amount < other.amount;
   }

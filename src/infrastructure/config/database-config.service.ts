@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { InvalidInputError } from '@infrastructure/exceptions/infrastructure.exceptions';
 import {
   DatabaseType,
   IDatabaseConfigService,
@@ -42,7 +43,8 @@ export class DatabaseConfigService implements IDatabaseConfigService {
       .toLowerCase();
 
     if (!Object.values(DatabaseType).includes(dbType as DatabaseType)) {
-      throw new Error(
+      throw new InvalidInputError(
+        'configuration',
         `Invalid DATABASE_TYPE: ${dbType}. Must be one of: ${Object.values(DatabaseType).join(', ')}`,
       );
     }

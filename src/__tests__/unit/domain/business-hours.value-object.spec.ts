@@ -62,7 +62,7 @@ describe('BusinessHours Value Object', () => {
       ];
 
       expect(() => new BusinessHours(invalidSchedule)).toThrow(
-        'Weekly schedule must contain exactly 7 days',
+        'Invalid weeklySchedule: must contain exactly 7 days',
       );
     });
 
@@ -78,7 +78,7 @@ describe('BusinessHours Value Object', () => {
       ];
 
       expect(() => new BusinessHours(invalidSchedule)).toThrow(
-        'Day at index 0 must have dayOfWeek = 0',
+        'Invalid dayOfWeek: day at index 0 must have dayOfWeek = 0',
       );
     });
 

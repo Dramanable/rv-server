@@ -5,6 +5,8 @@
  * Immutable et auto-validant
  */
 
+import { ValueObjectValidationError } from '../exceptions/domain.exceptions';
+
 export class Email {
   public readonly value: string;
 
@@ -26,21 +28,32 @@ export class Email {
 
   private validateNotEmpty(email: string): void {
     if (!email || email.trim().length === 0) {
-      throw new Error('Email cannot be empty');
+      throw new ValueObjectValidationError(
+        'EMAIL_EMPTY',
+        'Email cannot be empty',
+        { email },
+      );
     }
   }
 
   private validateLength(email: string): void {
     if (email.length > 254) {
       // RFC 5321 limite
-      throw new Error('Email too long');
+      throw new ValueObjectValidationError('EMAIL_TOO_LONG', 'Email too long', {
+        email,
+        length: email.length,
+      });
     }
   }
 
   private validateFormat(email: string): void {
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (!emailRegex.test(email.trim())) {
-      throw new Error('Invalid email format');
+      throw new ValueObjectValidationError(
+        'EMAIL_INVALID_FORMAT',
+        'Invalid email format',
+        { email },
+      );
     }
   }
 

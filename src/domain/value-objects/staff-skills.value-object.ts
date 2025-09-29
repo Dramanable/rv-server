@@ -4,6 +4,14 @@
  * Représente les compétences d'un membre du staff avec niveaux et certifications.
  * Immutable, contient la logique de validation et de matching.
  */
+
+import {
+  InvalidValueError,
+  RequiredValueError,
+  ValueOutOfRangeError,
+  DuplicateValueError,
+  ValueNotFoundError,
+} from '@domain/exceptions/value-object.exceptions';
 export class StaffSkills {
   private constructor(private readonly _skillAssignments: SkillAssignment[]) {}
 
@@ -13,7 +21,7 @@ export class StaffSkills {
   static create(skillAssignments: SkillAssignment[]): StaffSkills {
     // Validation
     if (!skillAssignments || skillAssignments.length === 0) {
-      throw new Error('Un membre du staff doit avoir au moins une compétence');
+      throw new RequiredValueError('skillAssignments');
     }
 
     // Vérifier qu'il n'y a pas de doublons
@@ -21,7 +29,8 @@ export class StaffSkills {
     const uniqueSkillIds = new Set(skillIds);
 
     if (skillIds.length !== uniqueSkillIds.size) {
-      throw new Error(
+      throw new DuplicateValueError(
+        'skillAssignment',
         'Un membre du staff ne peut pas avoir la même compétence assignée plusieurs fois',
       );
     }
@@ -29,7 +38,9 @@ export class StaffSkills {
     // Validation de chaque assignment
     skillAssignments.forEach((assignment) => {
       if (!assignment.isValid()) {
-        throw new Error(
+        throw new InvalidValueError(
+          'skillAssignment',
+          assignment.getSkillId(),
           `Assignment de compétence invalide: ${assignment.getSkillId()}`,
         );
       }
@@ -153,8 +164,9 @@ export class StaffSkills {
    */
   addSkill(skillAssignment: SkillAssignment): StaffSkills {
     if (this.hasSkill(skillAssignment.getSkillId())) {
-      throw new Error(
-        `La compétence ${skillAssignment.getSkillId()} est déjà assignée à ce staff member`,
+      throw new DuplicateValueError(
+        'skillAssignment',
+        skillAssignment.getSkillId(),
       );
     }
 
@@ -182,7 +194,7 @@ export class StaffSkills {
     );
 
     if (assignmentIndex === -1) {
-      throw new Error(`Compétence ${skillId} non trouvée pour ce staff member`);
+      throw new ValueNotFoundError('compétence', skillId);
     }
 
     const updatedAssignment =
@@ -202,11 +214,15 @@ export class StaffSkills {
     );
 
     if (filteredAssignments.length === this._skillAssignments.length) {
-      throw new Error(`Compétence ${skillId} non trouvée pour ce staff member`);
+      throw new ValueNotFoundError('compétence', skillId);
     }
 
     if (filteredAssignments.length === 0) {
-      throw new Error('Un membre du staff doit avoir au moins une compétence');
+      throw new InvalidValueError(
+        'skillAssignments',
+        filteredAssignments.length,
+        'Un membre du staff doit avoir au moins une compétence',
+      );
     }
 
     return new StaffSkills(filteredAssignments);
@@ -433,11 +449,15 @@ export class SkillAssignment {
   }): SkillAssignment {
     // Validation
     if (!data.skillId || !data.skillName || !data.skillCategory) {
-      throw new Error('SkillId, skillName et skillCategory sont requis');
+      throw new RequiredValueError('skillData');
     }
 
     if (data.yearsOfExperience < 0 || data.yearsOfExperience > 50) {
-      throw new Error("L'expérience doit être entre 0 et 50 ans");
+      throw new InvalidValueError(
+        'yearsOfExperience',
+        data.yearsOfExperience,
+        "L'expérience doit être entre 0 et 50 ans",
+      );
     }
 
     if (
@@ -445,7 +465,9 @@ export class SkillAssignment {
       data.certificationExpiryDate &&
       data.certificationExpiryDate < new Date()
     ) {
-      throw new Error(
+      throw new InvalidValueError(
+        'certificationExpiryDate',
+        data.certificationExpiryDate,
         'Une certification expirée ne peut pas être marquée comme active',
       );
     }

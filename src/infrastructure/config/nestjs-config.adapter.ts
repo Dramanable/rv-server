@@ -8,6 +8,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { IConfigService } from '../../application/ports/config.port';
+import { InvalidInputError } from '@infrastructure/exceptions/infrastructure.exceptions';
 
 @Injectable()
 export class NestJsConfigServiceAdapter implements IConfigService {
@@ -28,7 +29,10 @@ export class NestJsConfigServiceAdapter implements IConfigService {
   getAccessTokenSecret(): string {
     const secret = this.configService.get<string>('ACCESS_TOKEN_SECRET');
     if (!secret) {
-      throw new Error('ACCESS_TOKEN_SECRET is required but not configured');
+      throw new InvalidInputError(
+        'configuration',
+        'ACCESS_TOKEN_SECRET is required but not configured',
+      );
     }
     return secret;
   }
@@ -36,7 +40,10 @@ export class NestJsConfigServiceAdapter implements IConfigService {
   getRefreshTokenSecret(): string {
     const secret = this.configService.get<string>('REFRESH_TOKEN_SECRET');
     if (!secret) {
-      throw new Error('REFRESH_TOKEN_SECRET is required but not configured');
+      throw new InvalidInputError(
+        'configuration',
+        'REFRESH_TOKEN_SECRET is required but not configured',
+      );
     }
     return secret;
   }
@@ -80,7 +87,10 @@ export class NestJsConfigServiceAdapter implements IConfigService {
       'postgresql',
     );
     if (!['postgresql', 'mongodb', 'mysql', 'sqlite'].includes(dbType)) {
-      throw new Error(`Invalid DATABASE_TYPE: ${dbType}`);
+      throw new InvalidInputError(
+        'configuration',
+        `Invalid DATABASE_TYPE: ${dbType}`,
+      );
     }
     return dbType as 'postgresql' | 'mongodb' | 'mysql' | 'sqlite';
   }

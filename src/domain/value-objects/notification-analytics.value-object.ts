@@ -4,6 +4,8 @@
  * @version 1.0.0
  */
 
+import { ValueObjectValidationError } from '../exceptions/domain.exceptions';
+
 /**
  * Métriques de performance des notifications
  */
@@ -69,7 +71,11 @@ export class NotificationAnalytics {
    */
   private validatePeriod(): void {
     if (this._periodStart >= this._periodEnd) {
-      throw new Error('Period start must be before period end');
+      throw new ValueObjectValidationError(
+        'NOTIFICATION_ANALYTICS_PERIOD_INVALID',
+        'Period start must be before period end',
+        { periodStart: this._periodStart, periodEnd: this._periodEnd },
+      );
     }
 
     const maxPeriodDays = 365; // 1 an maximum
@@ -78,8 +84,10 @@ export class NotificationAnalytics {
       (1000 * 60 * 60 * 24);
 
     if (periodDays > maxPeriodDays) {
-      throw new Error(
+      throw new ValueObjectValidationError(
+        'NOTIFICATION_ANALYTICS_PERIOD_TOO_LONG',
         `Period too long: ${periodDays} days (max: ${maxPeriodDays})`,
+        { periodDays, maxPeriodDays },
       );
     }
   }

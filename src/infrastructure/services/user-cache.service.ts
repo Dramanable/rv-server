@@ -3,6 +3,7 @@ import { Injectable, Logger, Inject } from '@nestjs/common';
 import { User } from '../../domain/entities/user.entity';
 
 import type { UserRepository } from '../../domain/repositories/user.repository.interface';
+import { InvalidCachedDataError } from '@infrastructure/exceptions/infrastructure.exceptions';
 
 // Interface temporaire pour éviter les erreurs d'import
 interface ICacheService {
@@ -236,7 +237,10 @@ export class UserCacheService {
       );
     } catch (error) {
       this.logger.error('Failed to deserialize user from cache', error);
-      throw new Error('Invalid cached user data');
+      throw new InvalidCachedDataError(
+        'user',
+        'Failed to deserialize user from cache',
+      );
     }
   }
 }

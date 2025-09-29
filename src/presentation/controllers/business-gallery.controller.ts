@@ -9,6 +9,9 @@ import {
   Post,
   Put,
   Req,
+  BadRequestException,
+  PayloadTooLargeException,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -745,7 +748,7 @@ export class BusinessGalleryController {
       const data = await request.file();
 
       if (!data) {
-        throw new Error('No file uploaded');
+        throw new BadRequestException('No file uploaded');
       }
 
       // Lecture du buffer du fichier
@@ -772,12 +775,12 @@ export class BusinessGalleryController {
 
       // Validation du type de fichier
       if (!data.mimetype.startsWith('image/')) {
-        throw new Error('File must be an image');
+        throw new BadRequestException('File must be an image');
       }
 
       // Validation de la taille (10MB max)
       if (buffer.length > 10 * 1024 * 1024) {
-        throw new Error('File size cannot exceed 10MB');
+        throw new PayloadTooLargeException('File size cannot exceed 10MB');
       }
 
       // TODO: This should be a separate use case for file upload handling
@@ -833,7 +836,9 @@ export class BusinessGalleryController {
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error';
-      throw new Error(`File upload failed: ${errorMessage}`);
+      throw new InternalServerErrorException(
+        `File upload failed: ${errorMessage}`,
+      );
     }
   }
 }

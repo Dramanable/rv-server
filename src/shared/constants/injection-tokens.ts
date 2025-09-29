@@ -5,6 +5,8 @@
  * Évite les dépendances circulaires et respecte Clean Architecture
  */
 
+import { UnknownLayerError } from '../exceptions/shared.exceptions';
+
 // 🏗️ Application Layer Tokens
 export const APPLICATION_TOKENS = {
   // Ports (Interfaces)
@@ -287,6 +289,6 @@ export function getTokensByLayer(
     case 'presentation':
       return PRESENTATION_TOKENS;
     default:
-      throw new Error(`Unknown layer: ${String(layer)}`);
+      throw new UnknownLayerError(layer);
   }
 }

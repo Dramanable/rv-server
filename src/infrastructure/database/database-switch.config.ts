@@ -9,6 +9,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { MongooseModuleOptions } from '@nestjs/mongoose';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { InfrastructureException } from '@shared/exceptions/shared.exceptions';
 
 // Entities SQL
 import { AppointmentOrmEntity } from './sql/postgresql/entities/appointment-orm.entity';
@@ -57,7 +58,10 @@ export class DatabaseSwitchConfig {
 
       default: {
         // TypeScript exhaustiveness check - ce cas ne devrait jamais arriver
-        throw new Error(`Database type non supporté: ${String(dbType)}`);
+        throw new InfrastructureException(
+          `Database type non supporté: ${String(dbType)}`,
+          'DATABASE_TYPE_NOT_SUPPORTED',
+        );
       }
     }
   }

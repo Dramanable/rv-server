@@ -69,3 +69,23 @@ export class InvalidCredentialsError extends AuthenticationError {
     this.name = 'InvalidCredentialsError';
   }
 }
+
+export class TokenAlreadyRevokedError extends AuthenticationError {
+  constructor(
+    message: string = 'Token is already revoked',
+    context?: Record<string, any>,
+  ) {
+    super(message, 'TOKEN_ALREADY_REVOKED', context);
+    this.name = 'TokenAlreadyRevokedError';
+  }
+}
+
+export class TokenValidationError extends AuthenticationError {
+  constructor(
+    message: string = 'Token validation failed',
+    context?: Record<string, any>,
+  ) {
+    super(message, 'TOKEN_VALIDATION_ERROR', context);
+    this.name = 'TokenValidationError';
+  }
+}

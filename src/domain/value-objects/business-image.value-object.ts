@@ -4,6 +4,8 @@
  * ✅ Immutable value object for business image management
  */
 
+import { ValueObjectValidationError } from '../exceptions/domain.exceptions';
+
 export enum ImageCategory {
   LOGO = 'LOGO',
   COVER = 'COVER',
@@ -146,29 +148,49 @@ export class BusinessImage {
   // Validation methods
   private validateUrl(): void {
     if (!this._url || this._url.trim().length === 0) {
-      throw new Error('Image URL cannot be empty');
+      throw new ValueObjectValidationError(
+        'BUSINESS_IMAGE_URL_EMPTY',
+        'Image URL cannot be empty',
+        { url: this._url },
+      );
     }
 
     try {
       new URL(this._url);
     } catch {
-      throw new Error('Invalid image URL format');
+      throw new ValueObjectValidationError(
+        'BUSINESS_IMAGE_URL_INVALID',
+        'Invalid image URL format',
+        { url: this._url },
+      );
     }
   }
 
   private validateAlt(): void {
     if (!this._alt || this._alt.trim().length === 0) {
-      throw new Error('Alt text is required for accessibility');
+      throw new ValueObjectValidationError(
+        'BUSINESS_IMAGE_ALT_REQUIRED',
+        'Alt text is required for accessibility',
+        { alt: this._alt },
+      );
     }
 
     if (this._alt.length > 200) {
-      throw new Error('Alt text must be less than 200 characters');
+      throw new ValueObjectValidationError(
+        'BUSINESS_IMAGE_ALT_TOO_LONG',
+        'Alt text must be less than 200 characters',
+        { alt: this._alt, length: this._alt.length },
+      );
     }
   }
 
   private validateOrder(): void {
     if (this._order < 0) {
-      throw new Error('Image order must be non-negative');
+      throw new ValueObjectValidationError(
+        'BUSINESS_IMAGE_ORDER_NEGATIVE',
+        'Image order must be non-negative',
+        { order: this._order },
+      );
     }
   }
 

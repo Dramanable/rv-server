@@ -5,6 +5,10 @@
  */
 
 import { Request } from 'express';
+import {
+  UserNotAuthenticatedError,
+  UserNotAuthenticatedNoFallbackError,
+} from '../exceptions/shared.exceptions';
 
 /**
  * Interface pour les informations utilisateur dans la requête
@@ -38,7 +42,7 @@ export function getUserIdFromRequest(req: Request): string {
   if (isAuthenticatedRequest(req)) {
     return req.user.id;
   }
-  throw new Error('User not authenticated');
+  throw new UserNotAuthenticatedError();
 }
 
 /**
@@ -54,5 +58,5 @@ export function getUserIdFromRequestSafe(
   if (fallback) {
     return fallback;
   }
-  throw new Error('User not authenticated and no fallback provided');
+  throw new UserNotAuthenticatedNoFallbackError();
 }

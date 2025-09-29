@@ -4,7 +4,11 @@
  * Version GREEN simplifiée pour TDD - Phase GREEN
  */
 
-import { InsufficientPermissionsError } from '@application/exceptions/application.exceptions';
+import {
+  InsufficientPermissionsError,
+  ApplicationValidationError,
+  CalendarValidationError,
+} from '@application/exceptions/application.exceptions';
 import { I18nService } from '@application/ports/i18n.port';
 import { Logger } from '@application/ports/logger.port';
 import { IPermissionService } from '@application/ports/permission.service.interface';
@@ -198,7 +202,11 @@ export class SetPractitionerAvailabilityUseCase {
 
     // Vérifications de base pour les tests
     if (!requestingUserRoles || requestingUserRoles.length === 0) {
-      throw new Error('Requesting user has no roles');
+      throw new ApplicationValidationError(
+        'requestingUserId',
+        request.requestingUserId,
+        'user_has_no_roles',
+      );
     }
 
     if (!targetUserRoles || targetUserRoles.length === 0) {
@@ -233,8 +241,10 @@ export class SetPractitionerAvailabilityUseCase {
     }
 
     if (!targetIsPractitioner) {
-      throw new Error(
-        this.i18n.translate('availability.targetMustBePractitioner'),
+      throw new ApplicationValidationError(
+        'practitionerId',
+        request.practitionerId,
+        'target_must_be_practitioner',
       );
     }
   }
@@ -248,18 +258,18 @@ export class SetPractitionerAvailabilityUseCase {
       await this.staffRepository.findById(practitionerUserId);
 
     if (!practitioner) {
-      throw new Error(
-        this.i18n.translate('staff.practitionerNotFound', {
-          id: request.practitionerId,
-        }),
+      throw new ApplicationValidationError(
+        'practitionerId',
+        request.practitionerId,
+        'practitioner_not_found',
       );
     }
 
     if (!practitioner.isActive()) {
-      throw new Error(
-        this.i18n.translate('staff.practitionerNotActive', {
-          id: request.practitionerId,
-        }),
+      throw new ApplicationValidationError(
+        'practitionerId',
+        request.practitionerId,
+        'practitioner_not_active',
       );
     }
 
@@ -269,10 +279,10 @@ export class SetPractitionerAvailabilityUseCase {
     );
 
     if (!roleAssignments || roleAssignments.length === 0) {
-      throw new Error(
-        this.i18n.translate('staff.notAPractitioner', {
-          id: request.practitionerId,
-        }),
+      throw new ApplicationValidationError(
+        'practitionerId',
+        request.practitionerId,
+        'not_a_practitioner',
       );
     }
 
@@ -285,10 +295,10 @@ export class SetPractitionerAvailabilityUseCase {
     );
 
     if (!isPractitioner) {
-      throw new Error(
-        this.i18n.translate('staff.notAPractitioner', {
-          id: request.practitionerId,
-        }),
+      throw new ApplicationValidationError(
+        'practitionerId',
+        request.practitionerId,
+        'user_not_practitioner',
       );
     }
 
@@ -298,7 +308,11 @@ export class SetPractitionerAvailabilityUseCase {
   private validateAvailabilityData(availability: AvailabilityPeriod): void {
     // 1. Validation des dates
     if (availability.startDate >= availability.endDate) {
-      throw new Error(this.i18n.translate('availability.invalidDateRange'));
+      throw new CalendarValidationError(
+        'date_range',
+        availability.startDate,
+        'start_date_must_be_before_end_date',
+      );
     }
 
     // 2. Validation des disponibilités par jour
@@ -306,12 +320,10 @@ export class SetPractitionerAvailabilityUseCase {
       // 3. Validation des créneaux horaires
       dayAvail.timeSlots.forEach((slot) => {
         if (slot.startTime >= slot.endTime) {
-          throw new Error(
-            this.i18n.translate('availability.invalidTimeSlot', {
-              day: index,
-              startTime: slot.startTime,
-              endTime: slot.endTime,
-            }),
+          throw new CalendarValidationError(
+            'time_slot',
+            slot.startTime,
+            'start_time_must_be_before_end_time',
           );
         }
       });
@@ -326,12 +338,10 @@ export class SetPractitionerAvailabilityUseCase {
         });
 
         if (!isBreakInWorkingHours) {
-          throw new Error(
-            this.i18n.translate('availability.breakOutsideWorkingHours', {
-              day: index,
-              breakStart: breakPeriod.startTime,
-              breakEnd: breakPeriod.endTime,
-            }),
+          throw new CalendarValidationError(
+            'break_period',
+            breakPeriod.startTime,
+            'break_must_be_within_working_hours',
           );
         }
       });

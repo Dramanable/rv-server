@@ -1,4 +1,5 @@
 import { Repository } from 'typeorm';
+import { InfrastructureException } from '@shared/exceptions/shared.exceptions';
 
 import { Notification } from '../../../../../domain/entities/notification.entity';
 import { INotificationRepository } from '../../../../../domain/repositories/notification.repository';
@@ -103,7 +104,10 @@ export class TypeOrmNotificationRepository implements INotificationRepository {
       });
 
       if (!existingEntity) {
-        throw new Error('Notification not found');
+        throw new InfrastructureException(
+          'Notification not found',
+          'INFRASTRUCTURE_ERROR',
+        );
       }
 
       // Mettre à jour le statut et la date de mise à jour
@@ -128,7 +132,10 @@ export class TypeOrmNotificationRepository implements INotificationRepository {
       const result = await this.repository.delete(id);
 
       if (result.affected === 0) {
-        throw new Error('Notification not found');
+        throw new InfrastructureException(
+          'Notification not found',
+          'INFRASTRUCTURE_ERROR',
+        );
       }
     } catch (error) {
       throw error;

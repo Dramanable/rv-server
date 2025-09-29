@@ -4,6 +4,12 @@
  * Clean Architecture - Domain Layer - Pure business logic
  */
 
+import { DomainException } from '../exceptions/domain.exception';
+import {
+  SystemPermissionModificationError,
+  PermissionValidationError,
+} from '../exceptions/permission.exceptions';
+
 export interface CreatePermissionProps {
   readonly id: string;
   readonly name: string;
@@ -99,7 +105,7 @@ export class Permission {
   update(props: UpdatePermissionProps): void {
     // Prevent modification of system permissions completely
     if (this._isSystemPermission) {
-      throw new Error('System permissions cannot be modified');
+      throw new SystemPermissionModificationError(this._name, 'modify');
     }
 
     if (props.displayName !== undefined) {
@@ -132,7 +138,7 @@ export class Permission {
    */
   deactivate(): void {
     if (this._isSystemPermission) {
-      throw new Error('System permissions cannot be deactivated');
+      throw new SystemPermissionModificationError(this._name, 'deactivate');
     }
 
     this._isActive = false;
@@ -168,16 +174,26 @@ export class Permission {
    */
   private validateName(name: string): void {
     if (!name || name.trim().length === 0) {
-      throw new Error('Permission name must be between 2 and 100 characters');
+      throw new PermissionValidationError(
+        'name',
+        name,
+        'Permission name must be between 2 and 100 characters',
+      );
     }
 
     if (name.trim().length < 2 || name.trim().length > 100) {
-      throw new Error('Permission name must be between 2 and 100 characters');
+      throw new PermissionValidationError(
+        'name',
+        name,
+        'Permission name must be between 2 and 100 characters',
+      );
     }
 
     // Permission names should be uppercase with underscores
     if (!/^[A-Z][A-Z0-9_]*$/.test(name)) {
-      throw new Error(
+      throw new PermissionValidationError(
+        'name',
+        name,
         'Permission name must be uppercase with underscores (e.g., MANAGE_APPOINTMENTS)',
       );
     }
@@ -188,13 +204,17 @@ export class Permission {
    */
   private validateDisplayName(displayName: string): void {
     if (!displayName || displayName.trim().length === 0) {
-      throw new Error(
+      throw new PermissionValidationError(
+        'displayName',
+        displayName,
         'Permission display name must be between 2 and 200 characters',
       );
     }
 
     if (displayName.trim().length < 2 || displayName.trim().length > 200) {
-      throw new Error(
+      throw new PermissionValidationError(
+        'displayName',
+        displayName,
         'Permission display name must be between 2 and 200 characters',
       );
     }
@@ -205,11 +225,17 @@ export class Permission {
    */
   private validateDescription(description: string): void {
     if (!description || description.trim().length === 0) {
-      throw new Error('Permission description is required');
+      throw new PermissionValidationError(
+        'description',
+        description,
+        'Permission description is required',
+      );
     }
 
     if (description.trim().length < 5 || description.trim().length > 500) {
-      throw new Error(
+      throw new PermissionValidationError(
+        'description',
+        description,
         'Permission description must be between 5 and 500 characters',
       );
     }
@@ -220,11 +246,17 @@ export class Permission {
    */
   private validateCategory(category: string): void {
     if (!category || category.trim().length === 0) {
-      throw new Error('Permission category is required');
+      throw new PermissionValidationError(
+        'category',
+        category,
+        'Permission category is required',
+      );
     }
 
     if (category.trim().length < 2 || category.trim().length > 50) {
-      throw new Error(
+      throw new PermissionValidationError(
+        'category',
+        category,
         'Permission category must be between 2 and 50 characters',
       );
     }

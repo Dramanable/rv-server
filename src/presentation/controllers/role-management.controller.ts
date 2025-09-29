@@ -1,11 +1,17 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
+  ForbiddenException,
+  Get,
   HttpCode,
   HttpStatus,
   Inject,
+  InternalServerErrorException,
   Logger,
+  NotImplementedException,
+  NotFoundException,
   Param,
   Post,
   UseGuards,
@@ -303,7 +309,10 @@ export class RoleManagementController {
       filters: dto,
     });
 
-    throw new Error('ListRoleAssignmentsUseCase not implemented yet');
+    // TODO: Implement ListRoleAssignmentsUseCase
+    throw new NotImplementedException(
+      'ListRoleAssignmentsUseCase not implemented yet',
+    );
   }
 
   /**
@@ -339,7 +348,8 @@ export class RoleManagementController {
       reason: dto.reason,
     });
 
-    throw new Error('RevokeRoleUseCase not implemented yet');
+    // TODO: Implement RevokeRoleUseCase
+    throw new NotImplementedException('RevokeRoleUseCase not implemented yet');
   }
 
   /**
@@ -373,6 +383,9 @@ export class RoleManagementController {
       },
     );
 
-    throw new Error('BatchRevokeRolesUseCase not implemented yet');
+    // TODO: Implement BatchRevokeRolesUseCase
+    throw new NotImplementedException(
+      'BatchRevokeRolesUseCase not implemented yet',
+    );
   }
 }

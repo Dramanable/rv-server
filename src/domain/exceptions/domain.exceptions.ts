@@ -77,3 +77,17 @@ export class IntegrityConstraintError extends DomainError {
     this.name = 'IntegrityConstraintError';
   }
 }
+
+/**
+ * Erreur de validation de Value Object
+ */
+export class ValueObjectValidationError extends DomainError {
+  constructor(
+    code: string,
+    message: string,
+    public readonly context?: Record<string, unknown>,
+  ) {
+    super(message, code, context);
+    this.name = 'ValueObjectValidationError';
+  }
+}

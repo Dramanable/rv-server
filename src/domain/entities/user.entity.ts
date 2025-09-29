@@ -16,6 +16,7 @@ import {
   UserRole,
 } from '../../shared/enums/user-role.enum';
 import { Email } from '../value-objects/email.vo';
+import { DomainValidationError } from '../exceptions/domain.exceptions';
 
 export class User {
   public readonly id: string;
@@ -302,7 +303,11 @@ export class User {
 
   private validateName(name: string): void {
     if (!name || name.trim().length === 0) {
-      throw new Error('Name cannot be empty');
+      throw new DomainValidationError(
+        'USER_NAME_VALIDATION_ERROR',
+        'Name cannot be empty',
+        { name },
+      );
     }
   }
 

@@ -183,17 +183,24 @@ export class Skill {
 
     // Validation
     if (updatedName.length < 2 || updatedName.length > 100) {
-      throw new Error(
+      throw new SkillValidationException(
+        'SKILL_NAME_LENGTH_INVALID',
         'Le nom de la compétence doit contenir entre 2 et 100 caractères',
       );
     }
 
     if (updatedCategory.length < 2) {
-      throw new Error('La catégorie doit contenir au moins 2 caractères');
+      throw new SkillValidationException(
+        'SKILL_CATEGORY_TOO_SHORT',
+        'La catégorie doit contenir au moins 2 caractères',
+      );
     }
 
     if (updatedDescription.length > 500) {
-      throw new Error('La description ne peut pas dépasser 500 caractères');
+      throw new SkillValidationException(
+        'SKILL_DESCRIPTION_TOO_LONG',
+        'La description ne peut pas dépasser 500 caractères',
+      );
     }
 
     return new Skill(

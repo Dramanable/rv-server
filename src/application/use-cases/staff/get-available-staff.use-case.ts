@@ -1,6 +1,7 @@
 import { Staff } from '../../../domain/entities/staff.entity';
 import { StaffRepository } from '../../../domain/repositories/staff.repository.interface';
 import { BusinessId } from '../../../domain/value-objects/business-id.value-object';
+import { ApplicationValidationError } from '../../exceptions/application.exceptions';
 
 export interface GetAvailableStaffRequest {
   readonly businessId: string;
@@ -93,15 +94,27 @@ export class GetAvailableStaffUseCase {
 
   private validateRequest(request: GetAvailableStaffRequest): void {
     if (request.durationMinutes <= 0) {
-      throw new Error('Duration must be positive');
+      throw new ApplicationValidationError(
+        'durationMinutes',
+        request.durationMinutes,
+        'must_be_positive',
+      );
     }
 
     if (request.durationMinutes > 8 * 60) {
-      throw new Error('Duration cannot exceed 8 hours');
+      throw new ApplicationValidationError(
+        'durationMinutes',
+        request.durationMinutes,
+        'cannot_exceed_8_hours',
+      );
     }
 
     if (request.dateTime < new Date()) {
-      throw new Error('Cannot search for availability in the past');
+      throw new ApplicationValidationError(
+        'dateTime',
+        request.dateTime,
+        'cannot_be_in_past',
+      );
     }
   }
 

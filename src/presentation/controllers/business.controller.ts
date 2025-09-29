@@ -16,6 +16,7 @@ import {
   Get,
   HttpStatus,
   Inject,
+  NotImplementedException,
   Param,
   ParseUUIDPipe,
   Post,
@@ -464,6 +465,9 @@ export class BusinessController {
   })
   async delete(): Promise<DeleteBusinessResponseDto> {
     // TODO: Implémenter DeleteBusinessUseCase
-    throw new Error('Delete business use case not implemented yet');
+    // TODO: Implement delete business use case
+    throw new NotImplementedException(
+      'Delete business use case not implemented yet',
+    );
   }
 }

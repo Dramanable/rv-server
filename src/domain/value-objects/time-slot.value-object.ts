@@ -1,3 +1,5 @@
+import { ValueObjectValidationError } from '../exceptions/domain.exceptions';
+
 export enum TimeSlotStatus {
   AVAILABLE = 'AVAILABLE',
   BOOKED = 'BOOKED',
@@ -41,18 +43,30 @@ export class TimeSlot {
 
   private validate(): void {
     if (this.startTime >= this.endTime) {
-      throw new Error('Start time must be before end time');
+      throw new ValueObjectValidationError(
+        'TIME_SLOT_START_AFTER_END',
+        'Start time must be before end time',
+        { startTime: this.startTime, endTime: this.endTime },
+      );
     }
 
     const diffMinutes =
       (this.endTime.getTime() - this.startTime.getTime()) / (1000 * 60);
     if (diffMinutes < 5) {
-      throw new Error('Time slot must be at least 5 minutes');
+      throw new ValueObjectValidationError(
+        'TIME_SLOT_TOO_SHORT',
+        'Time slot must be at least 5 minutes',
+        { durationMinutes: diffMinutes },
+      );
     }
 
     if (diffMinutes > 480) {
       // 8 heures max
-      throw new Error('Time slot cannot exceed 8 hours');
+      throw new ValueObjectValidationError(
+        'TIME_SLOT_TOO_LONG',
+        'Time slot cannot exceed 8 hours',
+        { durationMinutes: diffMinutes },
+      );
     }
   }
 
@@ -116,7 +130,11 @@ export class TimeSlot {
   // Operations
   split(splitTime: Date): TimeSlot[] {
     if (!this.contains(splitTime)) {
-      throw new Error('Split time must be within the time slot');
+      throw new ValueObjectValidationError(
+        'TIME_SLOT_SPLIT_OUT_OF_BOUNDS',
+        'Split time must be within the time slot',
+        { splitTime, startTime: this.startTime, endTime: this.endTime },
+      );
     }
 
     if (
@@ -134,7 +152,14 @@ export class TimeSlot {
 
   merge(other: TimeSlot): TimeSlot {
     if (!this.canMerge(other)) {
-      throw new Error('Time slots cannot be merged');
+      throw new ValueObjectValidationError(
+        'TIME_SLOT_CANNOT_MERGE',
+        'Time slots cannot be merged',
+        {
+          thisSlot: { startTime: this.startTime, endTime: this.endTime },
+          otherSlot: { startTime: other.startTime, endTime: other.endTime },
+        },
+      );
     }
 
     const newStart =

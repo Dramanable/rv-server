@@ -1,4 +1,5 @@
 import { WeekDay } from './time-slot.value-object';
+import { InvalidValueError } from '../exceptions/value-object.exceptions';
 
 export class WorkingHours {
   constructor(
@@ -17,15 +18,27 @@ export class WorkingHours {
 
   private validate(): void {
     if (!this.isValidTimeFormat(this.startTime)) {
-      throw new Error('Invalid start time format. Use HH:MM');
+      throw new InvalidValueError(
+        'startTime',
+        this.startTime,
+        'Invalid start time format. Use HH:MM',
+      );
     }
 
     if (!this.isValidTimeFormat(this.endTime)) {
-      throw new Error('Invalid end time format. Use HH:MM');
+      throw new InvalidValueError(
+        'endTime',
+        this.endTime,
+        'Invalid end time format. Use HH:MM',
+      );
     }
 
     if (this.isWorkingDay && this.startTime >= this.endTime) {
-      throw new Error('Start time must be before end time');
+      throw new InvalidValueError(
+        'timeRange',
+        `${this.startTime}-${this.endTime}`,
+        'Start time must be before end time',
+      );
     }
 
     // Valider les pauses
@@ -34,16 +47,28 @@ export class WorkingHours {
         !this.isValidTimeFormat(breakTime.start) ||
         !this.isValidTimeFormat(breakTime.end)
       ) {
-        throw new Error('Invalid break time format');
+        throw new InvalidValueError(
+          'breakTime',
+          `${breakTime.start}-${breakTime.end}`,
+          'Invalid break time format',
+        );
       }
 
       if (breakTime.start >= breakTime.end) {
-        throw new Error('Break start time must be before end time');
+        throw new InvalidValueError(
+          'breakTime',
+          `${breakTime.start}-${breakTime.end}`,
+          'Break start time must be before end time',
+        );
       }
 
       if (this.isWorkingDay) {
         if (breakTime.start < this.startTime || breakTime.end > this.endTime) {
-          throw new Error('Break must be within working hours');
+          throw new InvalidValueError(
+            'breakTime',
+            `${breakTime.start}-${breakTime.end}`,
+            'Break must be within working hours',
+          );
         }
       }
     });

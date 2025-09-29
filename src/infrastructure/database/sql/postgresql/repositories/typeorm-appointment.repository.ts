@@ -9,6 +9,7 @@ import {
   AppointmentStatistics,
 } from '@domain/repositories/appointment.repository.interface';
 import { BusinessId } from '@domain/value-objects/business-id.value-object';
+import { InfrastructureException } from '@shared/exceptions/shared.exceptions';
 import { CalendarId } from '@domain/value-objects/calendar-id.value-object';
 import { Email } from '@domain/value-objects/email.value-object';
 import { ServiceId } from '@domain/value-objects/service-id.value-object';
@@ -150,7 +151,10 @@ export class TypeOrmAppointmentRepository implements AppointmentRepository {
     businessId: BusinessId,
     criteria?: AppointmentSearchCriteria,
   ): Promise<Appointment[]> {
-    throw new Error('findByBusinessId not implemented yet - TODO Phase 2');
+    throw new InfrastructureException(
+      'findByBusinessId not implemented yet - TODO Phase 2',
+      'NOT_IMPLEMENTED',
+    );
   }
 
   async findByCalendarId(
@@ -158,42 +162,60 @@ export class TypeOrmAppointmentRepository implements AppointmentRepository {
     startDate?: Date,
     endDate?: Date,
   ): Promise<Appointment[]> {
-    throw new Error('findByCalendarId not implemented yet - TODO Phase 2');
+    throw new InfrastructureException(
+      'findByCalendarId not implemented yet - TODO Phase 2',
+      'NOT_IMPLEMENTED',
+    );
   }
 
   async findByServiceId(
     serviceId: ServiceId,
     criteria?: AppointmentSearchCriteria,
   ): Promise<Appointment[]> {
-    throw new Error('findByServiceId not implemented yet - TODO Phase 2');
+    throw new InfrastructureException(
+      'findByServiceId not implemented yet - TODO Phase 2',
+      'NOT_IMPLEMENTED',
+    );
   }
 
   async findByClientEmail(
     email: Email,
     criteria?: AppointmentSearchCriteria,
   ): Promise<Appointment[]> {
-    throw new Error('findByClientEmail not implemented yet - TODO Phase 2');
+    throw new InfrastructureException(
+      'findByClientEmail not implemented yet - TODO Phase 2',
+      'NOT_IMPLEMENTED',
+    );
   }
 
   async findByStaffId(
     staffId: UserId,
     criteria?: AppointmentSearchCriteria,
   ): Promise<Appointment[]> {
-    throw new Error('findByStaffId not implemented yet - TODO Phase 2');
+    throw new InfrastructureException(
+      'findByStaffId not implemented yet - TODO Phase 2',
+      'NOT_IMPLEMENTED',
+    );
   }
 
   async findByStatus(
     status: AppointmentStatus[],
     criteria?: AppointmentSearchCriteria,
   ): Promise<Appointment[]> {
-    throw new Error('findByStatus not implemented yet - TODO Phase 2');
+    throw new InfrastructureException(
+      'findByStatus not implemented yet - TODO Phase 2',
+      'NOT_IMPLEMENTED',
+    );
   }
 
   async search(criteria: AppointmentSearchCriteria): Promise<{
     appointments: Appointment[];
     total: number;
   }> {
-    throw new Error('search not implemented yet - TODO Phase 2');
+    throw new InfrastructureException(
+      'search not implemented yet - TODO Phase 2',
+      'NOT_IMPLEMENTED',
+    );
   }
 
   async findAvailableSlots(
@@ -202,7 +224,10 @@ export class TypeOrmAppointmentRepository implements AppointmentRepository {
     date: Date,
     duration: number,
   ): Promise<{ startTime: Date; endTime: Date }[]> {
-    throw new Error('findAvailableSlots not implemented yet - TODO Phase 2');
+    throw new InfrastructureException(
+      'findAvailableSlots not implemented yet - TODO Phase 2',
+      'NOT_IMPLEMENTED',
+    );
   }
 
   async getStatistics(
@@ -210,21 +235,26 @@ export class TypeOrmAppointmentRepository implements AppointmentRepository {
     startDate: Date,
     endDate: Date,
   ): Promise<AppointmentStatistics> {
-    throw new Error('getStatistics not implemented yet - TODO Phase 2');
+    throw new InfrastructureException(
+      'getStatistics not implemented yet - TODO Phase 2',
+      'NOT_IMPLEMENTED',
+    );
   }
 
   async getUpcomingAppointments(
     businessId: BusinessId,
     hours?: number,
   ): Promise<Appointment[]> {
-    throw new Error(
+    throw new InfrastructureException(
       'getUpcomingAppointments not implemented yet - TODO Phase 2',
+      'NOT_IMPLEMENTED',
     );
   }
 
   async getOverdueAppointments(businessId: BusinessId): Promise<Appointment[]> {
-    throw new Error(
+    throw new InfrastructureException(
       'getOverdueAppointments not implemented yet - TODO Phase 2',
+      'NOT_IMPLEMENTED',
     );
   }
 
@@ -232,8 +262,9 @@ export class TypeOrmAppointmentRepository implements AppointmentRepository {
     businessId: BusinessId,
     parentAppointmentId?: AppointmentId,
   ): Promise<Appointment[]> {
-    throw new Error(
+    throw new InfrastructureException(
       'findRecurringAppointments not implemented yet - TODO Phase 2',
+      'NOT_IMPLEMENTED',
     );
   }
 
@@ -241,8 +272,9 @@ export class TypeOrmAppointmentRepository implements AppointmentRepository {
     businessId: BusinessId,
     reminderTime: Date,
   ): Promise<Appointment[]> {
-    throw new Error(
+    throw new InfrastructureException(
       'getAppointmentsForReminders not implemented yet - TODO Phase 2',
+      'NOT_IMPLEMENTED',
     );
   }
 
@@ -251,14 +283,20 @@ export class TypeOrmAppointmentRepository implements AppointmentRepository {
     status: AppointmentStatus,
     reason?: string,
   ): Promise<void> {
-    throw new Error('bulkUpdateStatus not implemented yet - TODO Phase 2');
+    throw new InfrastructureException(
+      'bulkUpdateStatus not implemented yet - TODO Phase 2',
+      'NOT_IMPLEMENTED',
+    );
   }
 
   async bulkCancel(
     appointmentIds: AppointmentId[],
     reason?: string,
   ): Promise<void> {
-    throw new Error('bulkCancel not implemented yet - TODO Phase 2');
+    throw new InfrastructureException(
+      'bulkCancel not implemented yet - TODO Phase 2',
+      'NOT_IMPLEMENTED',
+    );
   }
 
   async getClientHistory(
@@ -266,15 +304,19 @@ export class TypeOrmAppointmentRepository implements AppointmentRepository {
     businessId?: BusinessId,
     limit?: number,
   ): Promise<Appointment[]> {
-    throw new Error('getClientHistory not implemented yet - TODO Phase 2');
+    throw new InfrastructureException(
+      'getClientHistory not implemented yet - TODO Phase 2',
+      'NOT_IMPLEMENTED',
+    );
   }
 
   async findAppointmentsNeedingFollowUp(
     businessId: BusinessId,
     daysSinceCompletion: number,
   ): Promise<Appointment[]> {
-    throw new Error(
+    throw new InfrastructureException(
       'findAppointmentsNeedingFollowUp not implemented yet - TODO Phase 2',
+      'NOT_IMPLEMENTED',
     );
   }
 
@@ -289,12 +331,16 @@ export class TypeOrmAppointmentRepository implements AppointmentRepository {
     utilizationPercentage: number;
     peakTimes: { time: string; bookingCount: number }[];
   }> {
-    throw new Error(
+    throw new InfrastructureException(
       'getCalendarUtilization not implemented yet - TODO Phase 2',
+      'NOT_IMPLEMENTED',
     );
   }
 
   async export(criteria: AppointmentSearchCriteria): Promise<Appointment[]> {
-    throw new Error('export not implemented yet - TODO Phase 2');
+    throw new InfrastructureException(
+      'export not implemented yet - TODO Phase 2',
+      'NOT_IMPLEMENTED',
+    );
   }
 }

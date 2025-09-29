@@ -3,6 +3,7 @@ import { Logger } from '../../ports/logger.port';
 import { I18nService } from '../../ports/i18n.port';
 import { Skill } from '../../../domain/entities/skill.entity';
 import { SkillNotFoundException } from '../../../domain/exceptions/skill.exceptions';
+import { ApplicationValidationError } from '../../exceptions/application.exceptions';
 
 export interface GetSkillByIdRequest {
   readonly skillId: string;
@@ -96,37 +97,53 @@ export class GetSkillByIdUseCase {
 
   private validateRequest(request: GetSkillByIdRequest): void {
     if (!request.correlationId) {
-      throw new Error(
+      throw new ApplicationValidationError(
+        'correlationId',
+        'required',
         this.i18n.translate('skill.validation.correlationIdRequired'),
       );
     }
 
     if (!request.requestingUserId) {
-      throw new Error(
+      throw new ApplicationValidationError(
+        'requestingUserId',
+        'required',
         this.i18n.translate('skill.validation.requestingUserIdRequired'),
       );
     }
 
     if (!request.timestamp) {
-      throw new Error(
+      throw new ApplicationValidationError(
+        'timestamp',
+        'required',
         this.i18n.translate('skill.validation.timestampRequired'),
       );
     }
 
     if (!request.businessId) {
-      throw new Error(
+      throw new ApplicationValidationError(
+        'businessId',
+        'required',
         this.i18n.translate('skill.validation.businessIdRequired'),
       );
     }
 
     if (!request.skillId) {
-      throw new Error('Skill ID is required');
+      throw new ApplicationValidationError(
+        'skillId',
+        'required',
+        'Skill ID is required',
+      );
     }
 
     // Check if request is not too old (5 minutes)
     const requestAge = Date.now() - request.timestamp.getTime();
     if (requestAge > 5 * 60 * 1000) {
-      throw new Error(this.i18n.translate('skill.validation.requestTooOld'));
+      throw new ApplicationValidationError(
+        'timestamp',
+        'too_old',
+        this.i18n.translate('skill.validation.requestTooOld'),
+      );
     }
   }
 }

@@ -6,6 +6,7 @@
  */
 
 import { v4 as uuidv4 } from 'uuid';
+import { OperationRequiredError } from '../exceptions/shared.exceptions';
 
 export interface AppContext {
   correlationId: string;
@@ -65,7 +66,7 @@ export class AppContextFactory {
 
   build(): AppContext {
     if (!this.context.operation) {
-      throw new Error('Operation is required for AppContext');
+      throw new OperationRequiredError();
     }
 
     return {

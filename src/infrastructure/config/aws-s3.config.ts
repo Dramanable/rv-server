@@ -7,6 +7,7 @@
 
 import { S3Client } from '@aws-sdk/client-s3';
 import { ConfigService } from '@nestjs/config';
+import { InvalidInputError } from '@infrastructure/exceptions/infrastructure.exceptions';
 
 export interface AwsS3ConfigOptions {
   readonly region: string;
@@ -67,7 +68,10 @@ export class AwsS3Config {
 
     for (const field of requiredFields) {
       if (!field.value) {
-        throw new Error(`Missing required AWS S3 configuration: ${field.key}`);
+        throw new InvalidInputError(
+          'configuration',
+          `Missing required AWS S3 configuration: ${field.key}`,
+        );
       }
     }
   }

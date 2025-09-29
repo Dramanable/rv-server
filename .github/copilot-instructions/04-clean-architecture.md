@@ -260,4 +260,164 @@ grep -r "typeorm\\|mongoose\\|prisma" src/domain/ src/application/
 - **❌ FORBIDDEN**: Data structures with dependencies violating Dependency Rule
 - **✅ RULE**: Data always in format most convenient for inner circle
 
+## 🚨 CRITICAL RULE: NO GENERIC EXCEPTIONS IN CLEAN ARCHITECTURE
+
+### ❌ ABSOLUTE PROHIBITION: Generic Error Usage
+
+**NEVER use `throw new Error()` in any layer of Clean Architecture:**
+
+- ❌ **Domain Layer**: No `throw new Error('message')`
+- ❌ **Application Layer**: No `throw new Error('message')`
+- ❌ **Infrastructure Layer**: No `throw new Error('message')`
+- ❌ **Presentation Layer**: No `throw new Error('message')`
+
+### 🎯 MANDATORY: Domain-Specific Exceptions
+
+**ALWAYS create specialized exception classes:**
+
+```typescript
+// ✅ CORRECT - Domain-specific exceptions
+// src/domain/exceptions/money.exceptions.ts
+export class MoneyValidationError extends Error {
+  constructor(
+    message: string,
+    public readonly code: string,
+    public readonly context?: Record<string, unknown>,
+  ) {
+    super(message);
+    this.name = 'MoneyValidationError';
+  }
+}
+
+export class CurrencyMismatchError extends MoneyValidationError {
+  constructor(currency1: string, currency2: string) {
+    super(
+      `Cannot perform operation with different currencies: ${currency1} and ${currency2}`,
+      'CURRENCY_MISMATCH',
+      { currency1, currency2 },
+    );
+  }
+}
+
+export class NegativeAmountError extends MoneyValidationError {
+  constructor(amount: number) {
+    super(
+      `Amount cannot be negative: ${amount}`,
+      'NEGATIVE_AMOUNT',
+      { amount },
+    );
+  }
+}
+```
+
+### 🔧 IMPLEMENTATION PATTERN FOR VALUE OBJECTS
+
+```typescript
+// ✅ CORRECT - Value Object with domain exceptions
+export class Money {
+  private validateAmount(amount: number): void {
+    if (amount < 0) {
+      throw new NegativeAmountError(amount);
+    }
+
+    if (!Number.isFinite(amount)) {
+      throw new MoneyValidationError(
+        'Amount must be a finite number',
+        'INVALID_AMOUNT_FORMAT',
+        { amount },
+      );
+    }
+
+    if (Number((amount % 1).toFixed(2)) !== Number(amount % 1)) {
+      throw new MoneyValidationError(
+        'Amount cannot have more than 2 decimal places',
+        'INVALID_DECIMAL_PRECISION',
+        { amount },
+      );
+    }
+  }
+
+  add(other: Money): Money {
+    if (this.currency !== other.currency) {
+      throw new CurrencyMismatchError(this.currency, other.currency);
+    }
+    return new Money(this.amount + other.amount, this.currency);
+  }
+}
+```
+
+### 🏗️ EXCEPTION HIERARCHY BY LAYER
+
+#### **Domain Layer Exceptions**
+```
+src/domain/exceptions/
+├── domain.exception.ts          # Base domain exception
+├── user.exceptions.ts           # User-specific exceptions
+├── money.exceptions.ts          # Money-specific exceptions
+├── appointment.exceptions.ts    # Appointment-specific exceptions
+└── business.exceptions.ts       # Business-specific exceptions
+```
+
+#### **Application Layer Exceptions**
+```
+src/application/exceptions/
+├── application.exception.ts     # Base application exception
+├── validation.exceptions.ts     # Input validation exceptions
+├── authorization.exceptions.ts  # Permission exceptions
+└── use-case.exceptions.ts       # Use case specific exceptions
+```
+
+### 🎯 EXCEPTION NAMING CONVENTIONS
+
+- **Domain Exceptions**: `{Entity}ValidationError`, `{Entity}BusinessRuleError`
+- **Application Exceptions**: `{UseCase}ValidationError`, `InsufficientPermissionsError`
+- **Infrastructure Exceptions**: `DatabaseConnectionError`, `ExternalServiceError`
+
+### 📋 MANDATORY EXCEPTION PROPERTIES
+
+**Every custom exception MUST have:**
+
+```typescript
+export class CustomDomainException extends Error {
+  constructor(
+    message: string,
+    public readonly code: string,           // ⚠️ MANDATORY
+    public readonly context?: Record<string, unknown>, // ⚠️ MANDATORY
+    public readonly timestamp: Date = new Date(),      // ⚠️ MANDATORY
+  ) {
+    super(message);
+    this.name = this.constructor.name;
+  }
+}
+```
+
+### 🚨 VIOLATION DETECTION COMMANDS
+
+```bash
+# Detect generic Error usage (ZERO tolerance)
+grep -r "throw new Error" src/
+# EXPECTED RESULT: No matches (0 lines)
+
+# Detect generic Error imports
+grep -r "import.*Error" src/ | grep -v "custom\\|domain\\|application"
+# EXPECTED RESULT: Only custom exception imports
+
+# Verify custom exception usage
+grep -r "throw new.*Error" src/ | grep -v "throw new Error"
+# EXPECTED RESULT: Only custom exception throws
+```
+
+### ✅ BENEFITS OF DOMAIN EXCEPTIONS
+
+1. **🎯 Explicit Error Context**: Each exception carries relevant business context
+2. **🔍 Better Debugging**: Precise error location and cause identification
+3. **📊 Error Analytics**: Categorized error tracking and monitoring
+4. **🌐 I18n Support**: Structured error codes for internationalization
+5. **🔒 Security**: No internal system details leaked through generic errors
+6. **🧪 Testability**: Specific exception testing in unit tests
+
+### 🚫 ZERO TOLERANCE POLICY
+
+**Any `throw new Error()` usage is considered a CRITICAL architectural violation requiring immediate correction.**
+
 This architecture ensures **framework independence**, **testability**, and **maintainability**!

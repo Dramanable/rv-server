@@ -1,3 +1,5 @@
+import { ValueObjectValidationError } from '../exceptions/domain.exceptions';
+
 export class Phone {
   private static readonly PHONE_REGEX = /^\+?[\d\s-().]{8,20}$/;
 
@@ -7,13 +9,21 @@ export class Phone {
 
   private validate(value: string): void {
     if (!value || value.trim().length === 0) {
-      throw new Error('Phone number cannot be empty');
+      throw new ValueObjectValidationError(
+        'PHONE_EMPTY',
+        'Phone number cannot be empty',
+        { value },
+      );
     }
 
     const cleanValue = this.cleanPhoneNumber(value);
 
     if (!Phone.PHONE_REGEX.test(cleanValue)) {
-      throw new Error('Invalid phone number format');
+      throw new ValueObjectValidationError(
+        'PHONE_INVALID_FORMAT',
+        'Invalid phone number format',
+        { value, cleanValue },
+      );
     }
   }
 

@@ -1,3 +1,8 @@
+import {
+  InvalidValueError,
+  RequiredValueError,
+} from '@domain/exceptions/value-object.exceptions';
+
 export enum CloudProvider {
   AWS_S3 = 'AWS_S3',
   AZURE_BLOB = 'AZURE_BLOB',
@@ -19,28 +24,39 @@ export class FileUrl {
 
   private validateUrl(url: string): void {
     if (!url || url.trim().length === 0) {
-      throw new Error('File URL cannot be empty');
+      throw new RequiredValueError('fileUrl');
     }
 
     try {
       const urlObj = new URL(url);
       if (!['http:', 'https:'].includes(urlObj.protocol)) {
-        throw new Error('File URL must use HTTP or HTTPS protocol');
+        throw new InvalidValueError(
+          'protocol',
+          urlObj.protocol,
+          'File URL must use HTTP or HTTPS protocol',
+        );
       }
     } catch {
-      throw new Error('Invalid file URL format');
+      throw new InvalidValueError('fileUrl', url, 'Invalid file URL format');
     }
   }
 
   private validateKey(key: string): void {
     if (!key || key.trim().length === 0) {
-      throw new Error('File key cannot be empty');
+      throw new RequiredValueError('fileKey');
     }
 
-    // Vérifier les caractères interdits dans les clés
-    const forbiddenChars = /[<>:"|?*\\]/;
-    if (forbiddenChars.test(key)) {
-      throw new Error('File key contains forbidden characters');
+    // Vérifier les caractères interdits (exemple : caractères de contrôle)
+    if (
+      key.includes('..') ||
+      key.includes('//') ||
+      /[\x00-\x1f\x7f]/.test(key)
+    ) {
+      throw new InvalidValueError(
+        'fileKey',
+        key,
+        'File key contains forbidden characters',
+      );
     }
   }
 
@@ -172,18 +188,26 @@ export class FileUrl {
     allowedExtensions: string[] = ['jpg', 'jpeg', 'png', 'webp'],
   ): void {
     if (!this.isImage()) {
-      throw new Error('File is not a valid image');
+      throw new InvalidValueError(
+        'fileType',
+        this.contentType,
+        'File is not a valid image',
+      );
     }
 
     const extension = this.getFileExtension();
     if (!allowedExtensions.includes(extension)) {
-      throw new Error(
+      throw new InvalidValueError(
+        'imageExtension',
+        extension,
         `Image extension ${extension} is not allowed. Allowed: ${allowedExtensions.join(', ')}`,
       );
     }
 
     if (this.size && this.size > maxSizeMB * 1024 * 1024) {
-      throw new Error(
+      throw new InvalidValueError(
+        'imageSize',
+        this.size,
         `Image size ${this.size} exceeds maximum allowed size of ${maxSizeMB}MB`,
       );
     }

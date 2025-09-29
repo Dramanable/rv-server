@@ -9,6 +9,7 @@
  */
 
 import { Injectable } from '@nestjs/common';
+import { InfrastructureException } from '@shared/exceptions/shared.exceptions';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -64,7 +65,10 @@ export class TypeOrmRbacBusinessContextRepository
       this.logger.error('Failed to save business context', error as Error, {
         businessId: businessContext.getBusinessId(),
       });
-      throw new Error(this.i18n.translate('rbac.businessContext.saveError'));
+      throw new InfrastructureException(
+        this.i18n.translate('rbac.businessContext.saveError'),
+        'RBAC_SAVE_ERROR',
+      );
     }
   }
 
@@ -97,7 +101,10 @@ export class TypeOrmRbacBusinessContextRepository
           businessId,
         },
       );
-      throw new Error(this.i18n.translate('rbac.businessContext.findError'));
+      throw new InfrastructureException(
+        this.i18n.translate('rbac.businessContext.findError'),
+        'RBAC_FIND_ERROR',
+      );
     }
   }
 
@@ -125,7 +132,10 @@ export class TypeOrmRbacBusinessContextRepository
         'Failed to find active business contexts',
         error as Error,
       );
-      throw new Error(this.i18n.translate('rbac.businessContext.findAllError'));
+      throw new InfrastructureException(
+        this.i18n.translate('rbac.businessContext.findAllError'),
+        'RBAC_FIND_ALL_ERROR',
+      );
     }
   }
 
@@ -184,7 +194,10 @@ export class TypeOrmRbacBusinessContextRepository
           businessId,
         },
       );
-      throw new Error(this.i18n.translate('rbac.businessContext.existsError'));
+      throw new InfrastructureException(
+        this.i18n.translate('rbac.businessContext.existsError'),
+        'RBAC_EXISTS_ERROR',
+      );
     }
   }
 
@@ -237,7 +250,10 @@ export class TypeOrmRbacBusinessContextRepository
       this.logger.error('Failed to delete business context', error as Error, {
         businessId,
       });
-      throw new Error(this.i18n.translate('rbac.businessContext.deleteError'));
+      throw new InfrastructureException(
+        this.i18n.translate('rbac.businessContext.deleteError'),
+        'RBAC_DELETE_ERROR',
+      );
     }
   }
 
@@ -267,7 +283,10 @@ export class TypeOrmRbacBusinessContextRepository
       };
     } catch (error) {
       this.logger.error('Failed to get context stats', error as Error);
-      throw new Error(this.i18n.translate('rbac.businessContext.statsError'));
+      throw new InfrastructureException(
+        this.i18n.translate('rbac.businessContext.statsError'),
+        'RBAC_STATS_ERROR',
+      );
     }
   }
 
@@ -328,8 +347,9 @@ export class TypeOrmRbacBusinessContextRepository
     });
     const context = await this.findByBusinessId(businessId);
     if (!context) {
-      throw new Error(
+      throw new InfrastructureException(
         `Business context ${businessId} not found for synchronization`,
+        'BUSINESS_CONTEXT_NOT_FOUND',
       );
     }
     return context;

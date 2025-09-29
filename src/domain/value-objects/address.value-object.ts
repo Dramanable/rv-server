@@ -1,3 +1,8 @@
+import {
+  InvalidValueError,
+  RequiredValueError,
+} from '@domain/exceptions/value-object.exceptions';
+
 export class Address {
   constructor(
     private readonly street: string,
@@ -14,19 +19,19 @@ export class Address {
 
   private validate(): void {
     if (!this.street || this.street.trim().length === 0) {
-      throw new Error('Street address is required');
+      throw new RequiredValueError('streetAddress');
     }
 
     if (!this.city || this.city.trim().length === 0) {
-      throw new Error('City is required');
+      throw new RequiredValueError('city');
     }
 
     if (!this.postalCode || this.postalCode.trim().length === 0) {
-      throw new Error('Postal code is required');
+      throw new RequiredValueError('postalCode');
     }
 
     if (!this.country || this.country.trim().length === 0) {
-      throw new Error('Country is required');
+      throw new RequiredValueError('country');
     }
 
     // Validation du code postal français
@@ -36,20 +41,32 @@ export class Address {
     ) {
       const frenchPostalRegex = /^[0-9]{5}$/;
       if (!frenchPostalRegex.test(this.postalCode.trim())) {
-        throw new Error('Invalid French postal code format');
+        throw new InvalidValueError(
+          'postalCode',
+          this.postalCode,
+          'Invalid French postal code format',
+        );
       }
     }
 
     // Validation des coordonnées géographiques
     if (this.latitude !== undefined) {
       if (this.latitude < -90 || this.latitude > 90) {
-        throw new Error('Latitude must be between -90 and 90 degrees');
+        throw new InvalidValueError(
+          'latitude',
+          this.latitude,
+          'Latitude must be between -90 and 90 degrees',
+        );
       }
     }
 
     if (this.longitude !== undefined) {
       if (this.longitude < -180 || this.longitude > 180) {
-        throw new Error('Longitude must be between -180 and 180 degrees');
+        throw new InvalidValueError(
+          'longitude',
+          this.longitude,
+          'Longitude must be between -180 and 180 degrees',
+        );
       }
     }
   }

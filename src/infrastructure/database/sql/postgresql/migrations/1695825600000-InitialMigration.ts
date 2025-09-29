@@ -1,3 +1,4 @@
+import { DatabaseSchemaError } from '@infrastructure/exceptions/infrastructure.exceptions';
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class InitialMigration1695825600000 implements MigrationInterface {

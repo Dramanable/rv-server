@@ -16,7 +16,9 @@ import { WorkingHours } from '../../../domain/value-objects/working-hours.value-
 import {
   CalendarNotFoundError,
   CalendarPermissionError,
+  InvalidCalendarDataError,
 } from '../../exceptions/calendar.exceptions';
+import { ResourceNotFoundError } from '../../exceptions/application.exceptions';
 
 export interface UpdateCalendarRequest {
   readonly requestingUserId: string;
@@ -98,9 +100,12 @@ export class UpdateCalendarUseCase {
     };
   }
 
-  private async validateRequest(request: UpdateCalendarRequest): Promise<void> {
+  private validateRequest(request: UpdateCalendarRequest): void {
     if (!request.calendarId || !request.requestingUserId) {
-      throw new Error(this.i18n.t('calendar.invalid_update_request'));
+      throw new InvalidCalendarDataError(
+        'request',
+        this.i18n.t('calendar.invalid_update_request'),
+      );
     }
 
     // Validation des horaires de travail si fournis
@@ -110,15 +115,21 @@ export class UpdateCalendarUseCase {
 
     // Validation des paramètres de réservation
     if (request.settings?.slotDuration && request.settings.slotDuration < 15) {
-      throw new Error(this.i18n.t('calendar.invalid_slot_duration'));
+      throw new InvalidCalendarDataError(
+        'slotDuration',
+        this.i18n.t('calendar.invalid_slot_duration'),
+      );
     }
 
-    if (
-      request.settings?.maxAdvanceBooking &&
-      request.settings.maxAdvanceBooking < 1
-    ) {
-      throw new Error(this.i18n.t('calendar.invalid_advance_booking'));
-    }
+    // if (
+    //   request.settings?.advanceBookingLimit &&
+    //   request.settings.advanceBookingLimit < 1
+    // ) {
+    //   throw new InvalidCalendarDataError(
+    //     'advanceBookingLimit',
+    //     this.i18n.t('calendar.invalid_advance_booking')
+    //   );
+    // }
   }
 
   private validateWorkingHours(
@@ -136,18 +147,27 @@ export class UpdateCalendarUseCase {
 
     for (const [day, hours] of Object.entries(workingHours)) {
       if (!validDays.includes(day)) {
-        throw new Error(this.i18n.t('calendar.invalid_day', { day }));
+        throw new InvalidCalendarDataError(
+          'workingHours',
+          this.i18n.t('calendar.invalid_day', { day }),
+        );
       }
 
       // Validation format horaire (HH:MM)
       const timeRegex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
       if (!timeRegex.test(hours.start) || !timeRegex.test(hours.end)) {
-        throw new Error(this.i18n.t('calendar.invalid_time_format', { day }));
+        throw new InvalidCalendarDataError(
+          'workingHours',
+          this.i18n.t('calendar.invalid_time_format', { day }),
+        );
       }
 
       // Validation cohérence horaires
       if (hours.start >= hours.end) {
-        throw new Error(this.i18n.t('calendar.invalid_time_range', { day }));
+        throw new InvalidCalendarDataError(
+          'workingHours',
+          this.i18n.t('calendar.invalid_time_range', { day }),
+        );
       }
     }
   }
@@ -162,7 +182,11 @@ export class UpdateCalendarUseCase {
     );
 
     if (!business) {
-      throw new Error(this.i18n.t('business.not_found'));
+      throw new ResourceNotFoundError(
+        'Business',
+        calendar.businessId.getValue(),
+        { message: this.i18n.t('business.not_found') },
+      );
     }
 
     // Vérifier si l'utilisateur est le propriétaire du business ou a les permissions

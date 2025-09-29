@@ -5,6 +5,10 @@
  */
 
 import { Money } from './money.value-object';
+import {
+  InvalidValueError,
+  RequiredValueError,
+} from '@domain/exceptions/value-object.exceptions';
 
 export enum PricingType {
   FREE = 'FREE', // Service gratuit
@@ -72,7 +76,7 @@ export class PricingConfig {
     description?: string,
   ): PricingConfig {
     if (rules.length === 0) {
-      throw new Error('Variable pricing requires at least one rule');
+      throw new RequiredValueError('pricingRules');
     }
 
     // Utiliser le prix de base de la première règle
@@ -114,25 +118,37 @@ export class PricingConfig {
     switch (this._type) {
       case PricingType.FREE:
         if (!this._basePrice || this._basePrice.getAmount() !== 0) {
-          throw new Error('Free pricing must have zero base price');
+          throw new InvalidValueError(
+            'basePrice',
+            this._basePrice?.getAmount(),
+            'Free pricing must have zero base price',
+          );
         }
         break;
 
       case PricingType.FIXED:
         if (!this._basePrice || this._basePrice.getAmount() < 0) {
-          throw new Error('Fixed pricing requires valid base price');
+          throw new InvalidValueError(
+            'basePrice',
+            this._basePrice?.getAmount(),
+            'Fixed pricing requires valid base price',
+          );
         }
         break;
 
       case PricingType.VARIABLE:
         if (this._rules.length === 0) {
-          throw new Error('Variable pricing requires pricing rules');
+          throw new RequiredValueError('pricingRules');
         }
         break;
 
       case PricingType.HIDDEN:
         if (this._visibility !== PricingVisibility.HIDDEN) {
-          throw new Error('Hidden pricing must have hidden visibility');
+          throw new InvalidValueError(
+            'visibility',
+            this._visibility,
+            'Hidden pricing must have hidden visibility',
+          );
         }
         break;
     }
@@ -196,12 +212,18 @@ export class PricingConfig {
 
       case PricingType.HIDDEN:
       case PricingType.ON_DEMAND:
-        throw new Error(
+        throw new InvalidValueError(
+          'pricingType',
+          this._type,
           'Cannot calculate price for hidden or on-demand pricing',
         );
 
       default:
-        throw new Error(`Unsupported pricing type: ${String(this._type)}`);
+        throw new InvalidValueError(
+          'pricingType',
+          this._type,
+          `Unsupported pricing type: ${String(this._type)}`,
+        );
     }
   }
 
@@ -214,7 +236,9 @@ export class PricingConfig {
     });
 
     if (!applicableRule) {
-      throw new Error(
+      throw new InvalidValueError(
+        'durationMinutes',
+        durationMinutes,
         `No pricing rule found for duration: ${durationMinutes} minutes`,
       );
     }

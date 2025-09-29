@@ -4,23 +4,16 @@
  * Entité métier pour la gestion des tokens de rafraîchissement.
  * Gère le cycle de vie des tokens avec rotation automatique et sécurité.
  *
- * PRINCIPES CLEAN ARCHITECTUR  static fromRepository(
-    id: string,
-    userId: string,
-    tokenHash: string,
-    expiresAt: Date,
-    metadata: {
-      deviceId?: string;
-      userAgent?: string;
-      ipAddress?: string;
-    },
-    isRevoked: boolean = false,
-    revokedAt?: Date,
-    createdAt?: Date,
-  ): RefreshToken { dépendance vers l'infrastructure
+ * PRINCIPES CLEAN ARCHITECTURE :
+ * - Aucune dépendance vers l'infrastructure
  * - Logique métier pure pour la sécurité des tokens
  * - Entité auto-validante avec expiration
  */
+
+import {
+  TokenAlreadyRevokedError,
+  TokenValidationError,
+} from '../exceptions/auth.exceptions';
 
 export class RefreshToken {
   public readonly id: string;
@@ -66,7 +59,7 @@ export class RefreshToken {
    */
   revoke(reason: string): RefreshToken {
     if (this.isRevoked) {
-      throw new Error('Token is already revoked');
+      throw new TokenAlreadyRevokedError('Token is already revoked');
     }
 
     return new RefreshToken(
@@ -150,7 +143,7 @@ export class RefreshToken {
     this.validateBasicInputs(userId, token);
 
     if (expiresAt <= new Date()) {
-      throw new Error('Expiration date must be in the future');
+      throw new TokenValidationError('Expiration date must be in the future');
     }
 
     // Vérification que l'expiration n'est pas trop lointaine (max 1 an)
@@ -158,7 +151,7 @@ export class RefreshToken {
     maxExpiry.setFullYear(maxExpiry.getFullYear() + 1);
 
     if (expiresAt > maxExpiry) {
-      throw new Error(
+      throw new TokenValidationError(
         'Expiration date cannot be more than 1 year in the future',
       );
     }
@@ -169,15 +162,17 @@ export class RefreshToken {
    */
   private validateBasicInputs(userId: string, token: string): void {
     if (!userId || userId.trim().length === 0) {
-      throw new Error('User ID cannot be empty');
+      throw new TokenValidationError('User ID cannot be empty');
     }
 
     if (!token || token.trim().length === 0) {
-      throw new Error('Token cannot be empty');
+      throw new TokenValidationError('Token cannot be empty');
     }
 
     if (token.length < 32) {
-      throw new Error('Token must be at least 32 characters long');
+      throw new TokenValidationError(
+        'Token must be at least 32 characters long',
+      );
     }
   }
 

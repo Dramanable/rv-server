@@ -12,6 +12,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { InfrastructureException } from '@shared/exceptions/shared.exceptions';
 import { Business } from '../../../../../domain/entities/business.entity';
 import { BusinessRepository } from '../../../../../domain/repositories/business.repository.interface';
 import { BusinessId } from '../../../../../domain/value-objects/business-id.value-object';
@@ -36,8 +37,9 @@ export class TypeOrmBusinessRepository implements BusinessRepository {
 
       return ormEntity ? BusinessMapper.fromTypeOrmEntity(ormEntity) : null;
     } catch (error) {
-      throw new Error(
+      throw new InfrastructureException(
         `Failed to find business by id: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        'INFRASTRUCTURE_ERROR',
       );
     }
   }
@@ -52,8 +54,9 @@ export class TypeOrmBusinessRepository implements BusinessRepository {
 
       return ormEntity ? BusinessMapper.fromTypeOrmEntity(ormEntity) : null;
     } catch (error) {
-      throw new Error(
+      throw new InfrastructureException(
         `Failed to find business by name: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        'INFRASTRUCTURE_ERROR',
       );
     }
   }
@@ -69,8 +72,9 @@ export class TypeOrmBusinessRepository implements BusinessRepository {
         BusinessMapper.fromTypeOrmEntity(entity),
       );
     } catch (error) {
-      throw new Error(
+      throw new InfrastructureException(
         `Failed to find businesses by sector: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        'INFRASTRUCTURE_ERROR',
       );
     }
   }
@@ -135,8 +139,9 @@ export class TypeOrmBusinessRepository implements BusinessRepository {
 
       return { businesses, total };
     } catch (error) {
-      throw new Error(
+      throw new InfrastructureException(
         `Failed to search businesses: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        'INFRASTRUCTURE_ERROR',
       );
     }
   }
@@ -149,8 +154,9 @@ export class TypeOrmBusinessRepository implements BusinessRepository {
       // Sauvegarder dans la base
       await this.ormRepository.save(ormEntity);
     } catch (error) {
-      throw new Error(
+      throw new InfrastructureException(
         `Failed to save business: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        'INFRASTRUCTURE_ERROR',
       );
     }
   }
@@ -161,11 +167,15 @@ export class TypeOrmBusinessRepository implements BusinessRepository {
       const result = await this.ormRepository.delete(businessId);
 
       if (result.affected === 0) {
-        throw new Error(`Business with id ${businessId} not found`);
+        throw new InfrastructureException(
+          `Business with id ${businessId} not found`,
+          'BUSINESS_NOT_FOUND',
+        );
       }
     } catch (error) {
-      throw new Error(
+      throw new InfrastructureException(
         `Failed to delete business: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        'INFRASTRUCTURE_ERROR',
       );
     }
   }
@@ -179,8 +189,9 @@ export class TypeOrmBusinessRepository implements BusinessRepository {
 
       return count > 0;
     } catch (error) {
-      throw new Error(
+      throw new InfrastructureException(
         `Failed to check business name existence: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        'INFRASTRUCTURE_ERROR',
       );
     }
   }
@@ -267,8 +278,9 @@ export class TypeOrmBusinessRepository implements BusinessRepository {
         revenue: 0,
       };
     } catch (error) {
-      throw new Error(
+      throw new InfrastructureException(
         `Failed to get business statistics: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        'INFRASTRUCTURE_ERROR',
       );
     }
   }

@@ -118,7 +118,11 @@ export class ListCalendarsUseCase {
         );
         if (requestingUser?.role === UserRole.PLATFORM_ADMIN) {
           // Récupération de tous les calendriers - à implémenter dans le repository
-          throw new Error('Global calendar listing not implemented yet');
+          throw new ApplicationValidationError(
+            'global_listing',
+            'not_implemented',
+            'Global calendar listing not implemented yet',
+          );
         } else {
           const ownerId = UserId.create(request.requestingUserId);
           calendars = await this.calendarRepository.findByOwnerId(ownerId);

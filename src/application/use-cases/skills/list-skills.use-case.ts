@@ -1,6 +1,7 @@
 import { ISkillRepository } from '../../../domain/repositories/skill.repository';
 import { Logger } from '../../ports/logger.port';
 import { I18nService } from '../../ports/i18n.port';
+import { ApplicationValidationError } from '../../exceptions/application.exceptions';
 import { Skill } from '../../../domain/entities/skill.entity';
 import { BusinessId } from '../../../domain/value-objects/business-id.value-object';
 
@@ -143,25 +144,33 @@ export class ListSkillsUseCase {
 
   private validateRequest(request: ListSkillsRequest): void {
     if (!request.correlationId) {
-      throw new Error(
+      throw new ApplicationValidationError(
+        'correlationId',
+        'required',
         this.i18n.translate('skill.validation.correlationIdRequired'),
       );
     }
 
     if (!request.requestingUserId) {
-      throw new Error(
+      throw new ApplicationValidationError(
+        'requestingUserId',
+        'required',
         this.i18n.translate('skill.validation.requestingUserIdRequired'),
       );
     }
 
     if (!request.timestamp) {
-      throw new Error(
+      throw new ApplicationValidationError(
+        'timestamp',
+        'required',
         this.i18n.translate('skill.validation.timestampRequired'),
       );
     }
 
     if (!request.businessId) {
-      throw new Error(
+      throw new ApplicationValidationError(
+        'businessId',
+        'required',
         this.i18n.translate('skill.validation.businessIdRequired'),
       );
     }
@@ -169,16 +178,28 @@ export class ListSkillsUseCase {
     // Check if request is not too old (5 minutes)
     const requestAge = Date.now() - request.timestamp.getTime();
     if (requestAge > 5 * 60 * 1000) {
-      throw new Error(this.i18n.translate('skill.validation.requestTooOld'));
+      throw new ApplicationValidationError(
+        'timestamp',
+        'too_old',
+        this.i18n.translate('skill.validation.requestTooOld'),
+      );
     }
 
     // Validate pagination
     if (request.pagination) {
       if (request.pagination.page < 1) {
-        throw new Error('Page must be greater than 0');
+        throw new ApplicationValidationError(
+          'pagination.page',
+          'invalid',
+          'Page must be greater than 0',
+        );
       }
       if (request.pagination.limit < 1 || request.pagination.limit > 100) {
-        throw new Error('Limit must be between 1 and 100');
+        throw new ApplicationValidationError(
+          'pagination.limit',
+          'invalid',
+          'Limit must be between 1 and 100',
+        );
       }
     }
   }

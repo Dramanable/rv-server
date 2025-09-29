@@ -4,6 +4,8 @@
  * Contexte d'application pour tracer les requêtes et opérations
  */
 
+import { OperationNameRequiredError } from '../exceptions/shared.exceptions';
+
 export interface AppContext {
   // Identifiants uniques
   correlationId: string; // ID unique pour tracer la requête
@@ -112,7 +114,7 @@ class AppContextBuilderImpl implements AppContextBuilder {
 
   build(): AppContext {
     if (!this.context.operation) {
-      throw new Error('Operation name is required');
+      throw new OperationNameRequiredError();
     }
     return this.context as AppContext;
   }

@@ -2,6 +2,7 @@ import { Permission } from '@domain/entities/permission.entity';
 import { IPermissionRepository } from '@domain/repositories/permission.repository';
 import { PermissionOrmEntity } from '@infrastructure/database/sql/postgresql/entities/permission-orm.entity';
 import { PermissionOrmMapper } from '@infrastructure/mappers/permission-orm.mapper';
+import { InfrastructureException } from '@shared/exceptions/shared.exceptions';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -177,8 +178,9 @@ export class TypeOrmPermissionRepository implements IPermissionRepository {
     }
 
     if (permission.isSystemPermission()) {
-      throw new Error(
+      throw new InfrastructureException(
         `Cannot delete system permission: ${permission.getName()}`,
+        'PERMISSION_DELETE_FORBIDDEN',
       );
     }
 

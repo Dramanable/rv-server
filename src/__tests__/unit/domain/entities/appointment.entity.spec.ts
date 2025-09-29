@@ -184,7 +184,7 @@ describe('Appointment Entity', () => {
         // THEN
         expect(cancelledAppointment.status).toBe(AppointmentStatus.CANCELLED);
         expect(cancelledAppointment.notes).toHaveLength(1);
-        expect(cancelledAppointment.notes![0].content).toContain(
+        expect(cancelledAppointment.notes[0].content).toContain(
           'Client annulé',
         );
         expect(cancelledAppointment.updatedAt).toBeInstanceOf(Date);
@@ -274,11 +274,11 @@ describe('Appointment Entity', () => {
 
         // THEN
         expect(appointmentWithNote.notes).toHaveLength(1);
-        expect(appointmentWithNote.notes![0].content).toBe(noteContent);
-        expect(appointmentWithNote.notes![0].authorId).toBe(authorId);
-        expect(appointmentWithNote.notes![0].isPrivate).toBe(false);
-        expect(appointmentWithNote.notes![0].id).toBeDefined();
-        expect(appointmentWithNote.notes![0].createdAt).toBeInstanceOf(Date);
+        expect(appointmentWithNote.notes[0].content).toBe(noteContent);
+        expect(appointmentWithNote.notes[0].authorId).toBe(authorId);
+        expect(appointmentWithNote.notes[0].isPrivate).toBe(false);
+        expect(appointmentWithNote.notes[0].id).toBeDefined();
+        expect(appointmentWithNote.notes[0].createdAt).toBeInstanceOf(Date);
       });
 
       it('should add multiple notes to appointment', () => {
@@ -292,9 +292,9 @@ describe('Appointment Entity', () => {
 
         // THEN
         expect(appointmentWith2Notes.notes).toHaveLength(2);
-        expect(appointmentWith2Notes.notes![0].content).toBe('Première note');
-        expect(appointmentWith2Notes.notes![1].content).toBe('Deuxième note');
-        expect(appointmentWith2Notes.notes![1].isPrivate).toBe(true);
+        expect(appointmentWith2Notes.notes[0].content).toBe('Première note');
+        expect(appointmentWith2Notes.notes[1].content).toBe('Deuxième note');
+        expect(appointmentWith2Notes.notes[1].isPrivate).toBe(true);
       });
     });
 

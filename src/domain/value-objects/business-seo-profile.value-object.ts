@@ -4,6 +4,12 @@
  * ✅ SEO optimization for business visibility
  */
 
+import {
+  InvalidValueError,
+  RequiredValueError,
+  ValueOutOfRangeError,
+} from '@domain/exceptions/value-object.exceptions';
+
 export interface SchemaOrgBusiness {
   '@context': string;
   '@type': string;
@@ -225,7 +231,12 @@ Allow: /about`;
     );
 
     if (uniqueKeywords.length > 10) {
-      throw new Error('Maximum 10 keywords allowed for optimal SEO');
+      throw new ValueOutOfRangeError(
+        'keywords.length',
+        uniqueKeywords.length,
+        1,
+        10,
+      );
     }
 
     return BusinessSeoProfile.create({
@@ -323,50 +334,61 @@ Allow: /about`;
   // Validation methods
   private validateMetaTitle(): void {
     if (!this._metaTitle || this._metaTitle.trim().length === 0) {
-      throw new Error('Meta title is required');
+      throw new RequiredValueError('metaTitle');
     }
     if (this._metaTitle.length > 60) {
-      throw new Error(
-        'Meta title should be under 60 characters for optimal SEO',
+      throw new ValueOutOfRangeError(
+        'metaTitle.length',
+        this._metaTitle.length,
+        1,
+        60,
       );
     }
   }
 
   private validateMetaDescription(): void {
     if (!this._metaDescription || this._metaDescription.trim().length === 0) {
-      throw new Error('Meta description is required');
+      throw new RequiredValueError('metaDescription');
     }
     if (this._metaDescription.length > 160) {
-      throw new Error(
-        'Meta description should be under 160 characters for optimal SEO',
+      throw new ValueOutOfRangeError(
+        'metaDescription.length',
+        this._metaDescription.length,
+        1,
+        160,
       );
     }
   }
 
   private validateKeywords(): void {
     if (this._keywords.length === 0) {
-      throw new Error('At least one keyword is required');
+      throw new RequiredValueError('keywords');
     }
     if (this._keywords.length > 10) {
-      throw new Error('Maximum 10 keywords allowed for optimal SEO');
+      throw new ValueOutOfRangeError(
+        'keywords.length',
+        this._keywords.length,
+        1,
+        10,
+      );
     }
 
     this._keywords.forEach((keyword) => {
       if (!keyword || keyword.trim().length === 0) {
-        throw new Error('Keywords cannot be empty');
+        throw new RequiredValueError('keyword');
       }
       if (keyword.length > 50) {
-        throw new Error('Individual keywords should be under 50 characters');
+        throw new ValueOutOfRangeError('keyword.length', keyword.length, 1, 50);
       }
     });
   }
 
   private validateStructuredData(): void {
     if (!this._structuredData['@context'] || !this._structuredData['@type']) {
-      throw new Error('Structured data must have @context and @type');
+      throw new RequiredValueError('structuredData.@context/@type');
     }
     if (!this._structuredData.name || !this._structuredData.description) {
-      throw new Error('Structured data must have name and description');
+      throw new RequiredValueError('structuredData.name/description');
     }
   }
 

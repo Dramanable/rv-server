@@ -53,6 +53,15 @@ export class CalendarTypeCodeConflictError extends CalendarTypeException {
 }
 
 /**
+ * 🗓️ Calendar validation error
+ */
+export class CalendarValidationError extends CalendarTypeException {
+  constructor(message: string, context?: Record<string, any>) {
+    super(message, 'CALENDAR_VALIDATION_ERROR', context);
+  }
+}
+
+/**
  * 🔒 CalendarType built-in modification error
  */
 export class CalendarTypeBuiltInModificationError extends CalendarTypeException {

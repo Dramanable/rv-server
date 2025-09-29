@@ -1,3 +1,4 @@
+import { DatabaseSchemaError } from '@infrastructure/exceptions/infrastructure.exceptions';
 import { MigrationInterface, QueryRunner, Table } from 'typeorm';
 
 export class CreateCalendarTypesTable1758681000000
@@ -36,7 +37,7 @@ export class CreateCalendarTypesTable1758681000000
 
     // Validation du nom de schéma (sécurité)
     if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(schema)) {
-      throw new Error(`Invalid schema name: ${schema}`);
+      throw new DatabaseSchemaError(schema, 'Invalid schema name format');
     }
 
     return schema;

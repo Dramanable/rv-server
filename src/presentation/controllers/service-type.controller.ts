@@ -5,9 +5,13 @@ import {
   Get,
   HttpStatus,
   Inject,
+  Logger,
+  NotImplementedException,
   Param,
   Post,
   Put,
+  Query,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -474,6 +478,9 @@ export class ServiceTypeController {
   })
   async getStats(): Promise<any> {
     // TODO: Implement stats use case
-    throw new Error('ServiceType stats use case not yet implemented');
+    // TODO: Implement ServiceType stats use case
+    throw new NotImplementedException(
+      'ServiceType stats use case not yet implemented',
+    );
   }
 }

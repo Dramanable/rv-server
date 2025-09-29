@@ -1,4 +1,5 @@
 import { v4 as uuidv4, validate as uuidValidate } from 'uuid';
+import { ValueObjectValidationError } from '../exceptions/domain.exceptions';
 
 /**
  * 🆔 CalendarType ID Value Object
@@ -9,7 +10,11 @@ import { v4 as uuidv4, validate as uuidValidate } from 'uuid';
 export class CalendarTypeId {
   private constructor(private readonly value: string) {
     if (!CalendarTypeId.isValid(value)) {
-      throw new Error(`Invalid CalendarTypeId: ${value}`);
+      throw new ValueObjectValidationError(
+        'CALENDAR_TYPE_ID_INVALID',
+        `Invalid CalendarTypeId: ${value}`,
+        { value },
+      );
     }
   }
 

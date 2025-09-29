@@ -5,6 +5,7 @@ import {
 import { StaffNotFoundError } from '../../../domain/exceptions/staff.exceptions';
 import { StaffRepository } from '../../../domain/repositories/staff.repository.interface';
 import { UserId } from '../../../domain/value-objects/user-id.value-object';
+import { ApplicationValidationError } from '../../exceptions/application.exceptions';
 
 export interface SetStaffAvailabilityRequest {
   readonly staffId: string;
@@ -124,27 +125,35 @@ export class SetStaffAvailabilityUseCase {
     // Validation des horaires de travail
     workingHours.forEach((wh, index) => {
       if (wh.dayOfWeek < 0 || wh.dayOfWeek > 6) {
-        throw new Error(
-          `Invalid day of week at index ${index}: ${wh.dayOfWeek}`,
+        throw new ApplicationValidationError(
+          'dayOfWeek',
+          wh.dayOfWeek,
+          'invalid_day_of_week',
         );
       }
 
       if (wh.isWorkingDay) {
         if (!this.isValidTimeFormat(wh.startTime)) {
-          throw new Error(
-            `Invalid start time format at index ${index}: ${wh.startTime}`,
+          throw new ApplicationValidationError(
+            'startTime',
+            wh.startTime,
+            'invalid_time_format',
           );
         }
 
         if (!this.isValidTimeFormat(wh.endTime)) {
-          throw new Error(
-            `Invalid end time format at index ${index}: ${wh.endTime}`,
+          throw new ApplicationValidationError(
+            'endTime',
+            wh.endTime,
+            'invalid_time_format',
           );
         }
 
         if (wh.startTime >= wh.endTime) {
-          throw new Error(
-            `Start time must be before end time at index ${index}`,
+          throw new ApplicationValidationError(
+            'timeRange',
+            wh.startTime,
+            'start_time_must_be_before_end_time',
           );
         }
       }
@@ -164,8 +173,10 @@ export class SetStaffAvailabilityUseCase {
     // Vérifier que les dates de début sont avant les dates de fin
     timeOff.forEach((leave, index) => {
       if (leave.startDate >= leave.endDate) {
-        throw new Error(
-          `Invalid leave period at index ${index}: start date must be before end date`,
+        throw new ApplicationValidationError(
+          'leavePeriod',
+          leave.startDate,
+          'start_date_must_be_before_end_date',
         );
       }
     });
@@ -180,7 +191,11 @@ export class SetStaffAvailabilityUseCase {
           leave1.startDate <= leave2.endDate &&
           leave1.endDate >= leave2.startDate
         ) {
-          throw new Error(`Overlapping leave periods at indices ${i} and ${j}`);
+          throw new ApplicationValidationError(
+            'leavePeriods',
+            `${i},${j}`,
+            'overlapping_leave_periods',
+          );
         }
       }
     }

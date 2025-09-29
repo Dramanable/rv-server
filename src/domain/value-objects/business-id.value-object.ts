@@ -1,9 +1,14 @@
 import { v4 as uuidv4 } from 'uuid';
+import { ValueObjectValidationError } from '../exceptions/domain.exceptions';
 
 export class BusinessId {
   constructor(private readonly value: string) {
     if (!value || value.trim().length === 0) {
-      throw new Error('BusinessId cannot be empty');
+      throw new ValueObjectValidationError(
+        'BUSINESS_ID_EMPTY',
+        'BusinessId cannot be empty',
+        { value },
+      );
     }
     this.validateFormat(value);
   }
@@ -13,7 +18,11 @@ export class BusinessId {
     const uuidRegex =
       /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
     if (!uuidRegex.test(value)) {
-      throw new Error('BusinessId must be a valid UUID v4');
+      throw new ValueObjectValidationError(
+        'BUSINESS_ID_INVALID_FORMAT',
+        'BusinessId must be a valid UUID v4',
+        { value },
+      );
     }
   }
 

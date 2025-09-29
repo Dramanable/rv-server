@@ -7,6 +7,7 @@
 import { Appointment } from '../../../domain/entities/appointment.entity';
 import { AppointmentRepository } from '../../../domain/repositories/appointment.repository.interface';
 import { AppointmentNotFoundError } from '../../exceptions/appointment.exceptions';
+import { ApplicationValidationError } from '../../exceptions/application.exceptions';
 
 // ===== REQUEST & RESPONSE =====
 
@@ -37,6 +38,10 @@ export class ConfirmAppointmentUseCase {
     // - Envoi de notification de confirmation
     // - Audit trail de la confirmation
 
-    throw new Error('ConfirmAppointmentUseCase not yet fully implemented');
+    throw new ApplicationValidationError(
+      'implementation',
+      'not_implemented',
+      'ConfirmAppointmentUseCase not yet fully implemented',
+    );
   }
 }

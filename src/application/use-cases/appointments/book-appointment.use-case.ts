@@ -26,6 +26,7 @@ import { ServiceId } from '../../../domain/value-objects/service-id.value-object
 import { TimeSlot } from '../../../domain/value-objects/time-slot.value-object';
 import { UserId } from '../../../domain/value-objects/user-id.value-object';
 
+import { AppointmentValidationError } from '../../exceptions/appointment.exceptions';
 import {
   AppointmentConflictError,
   BusinessNotFoundError,
@@ -205,38 +206,50 @@ export class BookAppointmentUseCase {
   ): Promise<void> {
     // Validation des IDs
     if (!request.businessId?.trim()) {
-      throw new Error(
+      throw new AppointmentValidationError(
+        'businessId',
+        request.businessId,
         this.i18n.translate('errors.validation.business_id_required'),
       );
     }
 
     if (!request.serviceId?.trim()) {
-      throw new Error(
+      throw new AppointmentValidationError(
+        'serviceId',
+        request.serviceId,
         this.i18n.translate('errors.validation.service_id_required'),
       );
     }
 
     if (!request.calendarId?.trim()) {
-      throw new Error(
+      throw new AppointmentValidationError(
+        'calendarId',
+        request.calendarId,
         this.i18n.translate('errors.validation.calendar_id_required'),
       );
     }
 
     // Validation du créneau horaire
     if (!request.startTime || !request.endTime) {
-      throw new Error(
+      throw new AppointmentValidationError(
+        'timeSlot',
+        { startTime: request.startTime, endTime: request.endTime },
         this.i18n.translate('errors.validation.time_slot_required'),
       );
     }
 
     if (request.startTime >= request.endTime) {
-      throw new Error(
+      throw new AppointmentValidationError(
+        'timeSlot',
+        { startTime: request.startTime, endTime: request.endTime },
         this.i18n.translate('errors.validation.invalid_time_slot'),
       );
     }
 
     if (request.startTime <= new Date()) {
-      throw new Error(
+      throw new AppointmentValidationError(
+        'startTime',
+        request.startTime,
         this.i18n.translate('errors.validation.time_slot_in_past'),
       );
     }
@@ -245,26 +258,38 @@ export class BookAppointmentUseCase {
     const clientInfo = request.clientInfo;
 
     if (!clientInfo.firstName?.trim()) {
-      throw new Error(
+      throw new AppointmentValidationError(
+        'firstName',
+        clientInfo.firstName,
         this.i18n.translate('errors.validation.first_name_required'),
       );
     }
 
     if (!clientInfo.lastName?.trim()) {
-      throw new Error(
+      throw new AppointmentValidationError(
+        'lastName',
+        clientInfo.lastName,
         this.i18n.translate('errors.validation.last_name_required'),
       );
     }
 
     if (!clientInfo.email?.trim()) {
-      throw new Error(this.i18n.translate('errors.validation.email_required'));
+      throw new AppointmentValidationError(
+        'email',
+        clientInfo.email,
+        this.i18n.translate('errors.validation.email_required'),
+      );
     }
 
     // Validation de l'email avec le Value Object
     try {
       Email.create(clientInfo.email);
     } catch {
-      throw new Error(this.i18n.translate('errors.validation.invalid_email'));
+      throw new AppointmentValidationError(
+        'email',
+        clientInfo.email,
+        this.i18n.translate('errors.validation.invalid_email'),
+      );
     }
 
     // Validation du téléphone si fourni
@@ -272,7 +297,11 @@ export class BookAppointmentUseCase {
       try {
         Phone.create(clientInfo.phone);
       } catch {
-        throw new Error(this.i18n.translate('errors.validation.invalid_phone'));
+        throw new AppointmentValidationError(
+          'phone',
+          clientInfo.phone,
+          this.i18n.translate('errors.validation.invalid_phone'),
+        );
       }
     }
   }
@@ -298,8 +327,9 @@ export class BookAppointmentUseCase {
         );
 
         if (staffConflict) {
-          throw new Error(
-            this.i18n.translate('errors.booking.slot_not_available_staff'),
+          throw new AppointmentConflictError(
+            { startTime: request.startTime, endTime: request.endTime },
+            conflictingAppointments[0].getId().getValue(),
           );
         }
       } else {
@@ -318,7 +348,11 @@ export class BookAppointmentUseCase {
 
     // TODO: Vérifier les horaires d'ouverture du calendrier
     // if (!calendar.isOpenAt(timeSlot)) {
-    //   throw new Error(this.i18n.translate('errors.booking.outside_working_hours'));
+    //   throw new AppointmentValidationError(
+    //     'timeSlot',
+    //     { startTime: request.startTime, endTime: request.endTime },
+    //     this.i18n.translate('errors.booking.outside_working_hours')
+    //   );
     // }
   }
 
@@ -346,20 +380,32 @@ export class BookAppointmentUseCase {
     }
 
     if (!calendar) {
-      throw new Error(this.i18n.translate('errors.calendar.not_found'));
+      throw new CalendarNotFoundError(calendarId.getValue());
     }
 
     if (request.staffId && !staff) {
-      throw new Error(this.i18n.translate('errors.staff.not_found'));
+      throw new AppointmentValidationError(
+        'staffId',
+        request.staffId,
+        this.i18n.translate('errors.staff.not_found'),
+      );
     }
 
     // ✅ Validations d'état métier
     if (!business.isActive()) {
-      throw new Error(this.i18n.translate('errors.business.inactive'));
+      throw new AppointmentValidationError(
+        'businessStatus',
+        'inactive',
+        this.i18n.translate('errors.business.inactive'),
+      );
     }
 
     if (!service.isActive()) {
-      throw new Error(this.i18n.translate('errors.service.inactive'));
+      throw new AppointmentValidationError(
+        'serviceStatus',
+        'inactive',
+        this.i18n.translate('errors.service.inactive'),
+      );
     }
 
     // ✅ RÈGLE MÉTIER CRITIQUE : Seuls les services avec réservation en ligne publique
@@ -370,13 +416,19 @@ export class BookAppointmentUseCase {
     // ✅ Validations temporelles
     const now = new Date();
     if (request.startTime <= now) {
-      throw new Error(this.i18n.translate('errors.booking.past_time'));
+      throw new AppointmentValidationError(
+        'startTime',
+        request.startTime,
+        this.i18n.translate('errors.booking.past_time'),
+      );
     }
 
     // ✅ Préavis minimum de 2 heures
     const twoHoursFromNow = new Date(now.getTime() + 2 * 60 * 60 * 1000);
     if (request.startTime < twoHoursFromNow) {
-      throw new Error(
+      throw new AppointmentValidationError(
+        'startTime',
+        request.startTime,
         this.i18n.translate('errors.booking.insufficient_notice'),
       );
     }
@@ -429,6 +481,7 @@ export class BookAppointmentUseCase {
     // Création de l'appointment (type déterminé par le service lié)
     const appointment = Appointment.create({
       businessId: business.getId(),
+      calendarId: CalendarId.generate(), // TODO: Récupérer le vrai calendarId depuis le business
       serviceId: service.getId(),
       timeSlot: timeSlot,
       clientInfo,

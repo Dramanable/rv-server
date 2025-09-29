@@ -1,3 +1,9 @@
+import {
+  RequiredValueError,
+  InvalidFormatError,
+  ValueTooLongError,
+} from '../exceptions/value-object.exceptions';
+
 export class Email {
   private static readonly EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -7,17 +13,17 @@ export class Email {
 
   private validate(value: string): void {
     if (!value || value.trim().length === 0) {
-      throw new Error('Email cannot be empty');
+      throw new RequiredValueError('email');
     }
 
     const trimmedValue = value.trim().toLowerCase();
 
     if (!Email.EMAIL_REGEX.test(trimmedValue)) {
-      throw new Error('Invalid email format');
+      throw new InvalidFormatError('email', trimmedValue, 'user@domain.com');
     }
 
     if (trimmedValue.length > 254) {
-      throw new Error('Email is too long');
+      throw new ValueTooLongError('email', 254, trimmedValue.length);
     }
   }
 

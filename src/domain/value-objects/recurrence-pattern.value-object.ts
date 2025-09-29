@@ -1,4 +1,8 @@
 import { RecurrenceType, WeekDay } from './time-slot.value-object';
+import {
+  InvalidValueError,
+  RequiredValueError,
+} from '@domain/exceptions/value-object.exceptions';
 
 export interface RecurrenceRule {
   type: RecurrenceType;
@@ -18,21 +22,33 @@ export class RecurrencePattern {
 
   private validate(): void {
     if (this.rule.interval < 1) {
-      throw new Error('Interval must be at least 1');
+      throw new InvalidValueError(
+        'interval',
+        this.rule.interval,
+        'Interval must be at least 1',
+      );
     }
 
     if (this.rule.occurrences && this.rule.occurrences < 1) {
-      throw new Error('Occurrences must be at least 1');
+      throw new InvalidValueError(
+        'occurrences',
+        this.rule.occurrences,
+        'Occurrences must be at least 1',
+      );
     }
 
     if (this.rule.endDate && this.rule.occurrences) {
-      throw new Error('Cannot specify both endDate and occurrences');
+      throw new InvalidValueError(
+        'endDate_occurrences',
+        { endDate: this.rule.endDate, occurrences: this.rule.occurrences },
+        'Cannot specify both endDate and occurrences',
+      );
     }
 
     switch (this.rule.type) {
       case RecurrenceType.WEEKLY:
         if (!this.rule.daysOfWeek || this.rule.daysOfWeek.length === 0) {
-          throw new Error('Weekly recurrence requires daysOfWeek');
+          throw new RequiredValueError('daysOfWeek');
         }
         break;
 
@@ -42,7 +58,9 @@ export class RecurrencePattern {
           this.rule.dayOfMonth < 1 ||
           this.rule.dayOfMonth > 31
         ) {
-          throw new Error(
+          throw new InvalidValueError(
+            'dayOfMonth',
+            this.rule.dayOfMonth,
             'Monthly recurrence requires valid dayOfMonth (1-31)',
           );
         }
@@ -54,7 +72,9 @@ export class RecurrencePattern {
           this.rule.monthOfYear < 1 ||
           this.rule.monthOfYear > 12
         ) {
-          throw new Error(
+          throw new InvalidValueError(
+            'monthOfYear',
+            this.rule.monthOfYear,
             'Yearly recurrence requires valid monthOfYear (1-12)',
           );
         }
@@ -63,7 +83,11 @@ export class RecurrencePattern {
           this.rule.dayOfMonth < 1 ||
           this.rule.dayOfMonth > 31
         ) {
-          throw new Error('Yearly recurrence requires valid dayOfMonth (1-31)');
+          throw new InvalidValueError(
+            'dayOfMonth',
+            this.rule.dayOfMonth,
+            'Yearly recurrence requires valid dayOfMonth (1-31)',
+          );
         }
         break;
     }
@@ -152,7 +176,11 @@ export class RecurrencePattern {
 
       // Safety check to prevent infinite loops
       if (count > 1000) {
-        throw new Error('Recurrence pattern generated too many dates');
+        throw new InvalidValueError(
+          'recurrenceCount',
+          count,
+          'Recurrence pattern generated too many dates',
+        );
       }
     }
 
@@ -212,7 +240,11 @@ export class RecurrencePattern {
         break;
 
       default:
-        throw new Error(`Unsupported recurrence type: ${this.rule.type}`);
+        throw new InvalidValueError(
+          'recurrenceType',
+          this.rule.type,
+          `Unsupported recurrence type: ${this.rule.type}`,
+        );
     }
 
     return nextDate;

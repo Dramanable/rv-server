@@ -8,6 +8,14 @@
  * - Validation stricte des horaires
  */
 
+import {
+  InvalidValueError,
+  RequiredValueError,
+  ValueOutOfRangeError,
+  InvalidFormatError,
+  EmptyArrayError,
+} from '@domain/exceptions';
+
 export interface TimeSlot {
   start: string; // Format HH:MM (ex: "09:00")
   end: string; // Format HH:MM (ex: "17:30")
@@ -51,13 +59,21 @@ export class BusinessHours {
   private validate(): void {
     // Vérifier que nous avons 7 jours
     if (this.weeklySchedule.length !== 7) {
-      throw new Error('Weekly schedule must contain exactly 7 days');
+      throw new InvalidValueError(
+        'weeklySchedule',
+        this.weeklySchedule.length,
+        'must contain exactly 7 days',
+      );
     }
 
     // Vérifier que les jours sont dans l'ordre (0-6)
     for (let i = 0; i < 7; i++) {
       if (this.weeklySchedule[i].dayOfWeek !== i) {
-        throw new Error(`Day at index ${i} must have dayOfWeek = ${i}`);
+        throw new InvalidValueError(
+          'dayOfWeek',
+          this.weeklySchedule[i].dayOfWeek,
+          `day at index ${i} must have dayOfWeek = ${i}`,
+        );
       }
     }
 
@@ -70,15 +86,23 @@ export class BusinessHours {
 
   private validateDaySchedule(day: DaySchedule): void {
     if (day.dayOfWeek < 0 || day.dayOfWeek > 6) {
-      throw new Error('dayOfWeek must be between 0 and 6');
+      throw new ValueOutOfRangeError('dayOfWeek', day.dayOfWeek, 0, 6);
     }
 
     if (!day.isOpen && day.timeSlots.length > 0) {
-      throw new Error('Closed day cannot have time slots');
+      throw new InvalidValueError(
+        'daySchedule',
+        day,
+        'Closed day cannot have time slots',
+      );
     }
 
     if (day.isOpen && day.timeSlots.length === 0) {
-      throw new Error('Open day must have at least one time slot');
+      throw new InvalidValueError(
+        'daySchedule',
+        day,
+        'Open day must have at least one time slot',
+      );
     }
 
     // Valider chaque créneau
@@ -90,15 +114,25 @@ export class BusinessHours {
 
   private validateTimeSlot(slot: TimeSlot): void {
     if (!BusinessHours.TIME_REGEX.test(slot.start)) {
-      throw new Error(`Invalid start time format: ${slot.start}. Use HH:MM`);
+      throw new InvalidValueError(
+        'timeSlot.start',
+        slot.start,
+        `Invalid start time format: ${slot.start}. Use HH:MM`,
+      );
     }
 
     if (!BusinessHours.TIME_REGEX.test(slot.end)) {
-      throw new Error(`Invalid end time format: ${slot.end}. Use HH:MM`);
+      throw new InvalidValueError(
+        'timeSlot.end',
+        slot.end,
+        `Invalid end time format: ${slot.end}. Use HH:MM`,
+      );
     }
 
     if (this.timeToMinutes(slot.start) >= this.timeToMinutes(slot.end)) {
-      throw new Error(
+      throw new InvalidValueError(
+        'timeSlot',
+        `${slot.start}-${slot.end}`,
         `Start time ${slot.start} must be before end time ${slot.end}`,
       );
     }
@@ -109,11 +143,19 @@ export class BusinessHours {
       special.isOpen &&
       (!special.timeSlots || special.timeSlots.length === 0)
     ) {
-      throw new Error('Open special date must have time slots');
+      throw new InvalidValueError(
+        'specialDate',
+        special,
+        'Open special date must have time slots',
+      );
     }
 
     if (!special.isOpen && special.timeSlots && special.timeSlots.length > 0) {
-      throw new Error('Closed special date cannot have time slots');
+      throw new InvalidValueError(
+        'specialDate',
+        special,
+        'Closed special date cannot have time slots',
+      );
     }
 
     if (special.timeSlots) {
@@ -132,7 +174,12 @@ export class BusinessHours {
       const next = sortedSlots[i + 1];
 
       if (this.timeToMinutes(current.end) > this.timeToMinutes(next.start)) {
-        throw new Error(
+        throw new InvalidValueError(
+          'timeSlots',
+          {
+            current: `${current.start}-${current.end}`,
+            next: `${next.start}-${next.end}`,
+          },
           `Time slots overlap: ${current.start}-${current.end} and ${next.start}-${next.end}`,
         );
       }
@@ -280,7 +327,7 @@ export class BusinessHours {
   // Business logic
   isOpenOnDay(dayOfWeek: number): boolean {
     if (dayOfWeek < 0 || dayOfWeek > 6) {
-      throw new Error('dayOfWeek must be between 0 and 6');
+      throw new ValueOutOfRangeError('dayOfWeek', dayOfWeek, 0, 6);
     }
     return this.weeklySchedule[dayOfWeek].isOpen;
   }
@@ -301,7 +348,7 @@ export class BusinessHours {
 
   getTimeSlotsForDay(dayOfWeek: number): TimeSlot[] {
     if (dayOfWeek < 0 || dayOfWeek > 6) {
-      throw new Error('dayOfWeek must be between 0 and 6');
+      throw new ValueOutOfRangeError('dayOfWeek', dayOfWeek, 0, 6);
     }
     return [...this.weeklySchedule[dayOfWeek].timeSlots];
   }
@@ -322,7 +369,11 @@ export class BusinessHours {
 
   isOpenAt(date: Date, time: string): boolean {
     if (!BusinessHours.TIME_REGEX.test(time)) {
-      throw new Error(`Invalid time format: ${time}. Use HH:MM`);
+      throw new InvalidValueError(
+        'time',
+        time,
+        `Invalid time format: ${time}. Use HH:MM`,
+      );
     }
 
     const timeSlots = this.getTimeSlotsForDate(date);

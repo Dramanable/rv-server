@@ -7,6 +7,7 @@
 import { IConfigService } from '@application/ports/config.port';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { InvalidInputError } from '@infrastructure/exceptions/infrastructure.exceptions';
 
 @Injectable()
 export class AppConfigService implements IConfigService {
@@ -17,14 +18,16 @@ export class AppConfigService implements IConfigService {
       'ACCESS_TOKEN_EXPIRATION',
     );
     if (!expiration) {
-      throw new Error(
+      throw new InvalidInputError(
+        'configuration',
         'ACCESS_TOKEN_EXPIRATION is required. Please set this environment variable.',
       );
     }
 
     const parsed = parseInt(expiration, 10);
     if (isNaN(parsed) || parsed <= 0) {
-      throw new Error(
+      throw new InvalidInputError(
+        'configuration',
         `ACCESS_TOKEN_EXPIRATION must be a positive number. Got: ${expiration}`,
       );
     }
@@ -37,14 +40,16 @@ export class AppConfigService implements IConfigService {
       'REFRESH_TOKEN_EXPIRATION_DAYS',
     );
     if (!expirationDays) {
-      throw new Error(
+      throw new InvalidInputError(
+        'configuration',
         'REFRESH_TOKEN_EXPIRATION_DAYS is required. Please set this environment variable.',
       );
     }
 
     const numericValue = parseInt(expirationDays, 10);
     if (isNaN(numericValue) || numericValue <= 0) {
-      throw new Error(
+      throw new InvalidInputError(
+        'configuration',
         `REFRESH_TOKEN_EXPIRATION_DAYS must be a positive number. Got: ${expirationDays}`,
       );
     }
@@ -60,7 +65,8 @@ export class AppConfigService implements IConfigService {
 
     const parsed = parseInt(durationMinutes, 10);
     if (isNaN(parsed) || parsed <= 0) {
-      throw new Error(
+      throw new InvalidInputError(
+        'configuration',
         `USER_SESSION_DURATION_MINUTES must be a positive number. Got: ${durationMinutes}`,
       );
     }
@@ -71,12 +77,14 @@ export class AppConfigService implements IConfigService {
   getAccessTokenSecret(): string {
     const secret = this.configService.get<string>('ACCESS_TOKEN_SECRET');
     if (!secret) {
-      throw new Error(
+      throw new InvalidInputError(
+        'configuration',
         'ACCESS_TOKEN_SECRET is required. Please set this environment variable.',
       );
     }
     if (secret.length < 32) {
-      throw new Error(
+      throw new InvalidInputError(
+        'configuration',
         'ACCESS_TOKEN_SECRET must be at least 32 characters long for security.',
       );
     }
@@ -86,19 +94,22 @@ export class AppConfigService implements IConfigService {
   getRefreshTokenSecret(): string {
     const secret = this.configService.get<string>('REFRESH_TOKEN_SECRET');
     if (!secret) {
-      throw new Error(
+      throw new InvalidInputError(
+        'configuration',
         'REFRESH_TOKEN_SECRET is required. Please set this environment variable.',
       );
     }
     if (secret.length < 32) {
-      throw new Error(
+      throw new InvalidInputError(
+        'configuration',
         'REFRESH_TOKEN_SECRET must be at least 32 characters long for security.',
       );
     }
 
     // Vérification de sécurité : les secrets doivent être différents
     if (secret === this.getAccessTokenSecret()) {
-      throw new Error(
+      throw new InvalidInputError(
+        'configuration',
         'REFRESH_TOKEN_SECRET must be different from ACCESS_TOKEN_SECRET for security reasons.',
       );
     }
@@ -134,7 +145,8 @@ export class AppConfigService implements IConfigService {
   getBcryptRounds(): number {
     const rounds = this.configService.get<number>('BCRYPT_ROUNDS', 12);
     if (rounds < 10 || rounds > 20) {
-      throw new Error(
+      throw new InvalidInputError(
+        'configuration',
         'BCRYPT_ROUNDS must be between 10 and 20 for security and performance balance.',
       );
     }
@@ -155,7 +167,8 @@ export class AppConfigService implements IConfigService {
       'postgresql',
     );
     if (!['postgresql', 'mongodb', 'mysql', 'sqlite'].includes(dbType)) {
-      throw new Error(
+      throw new InvalidInputError(
+        'configuration',
         `Unsupported DATABASE_TYPE: ${dbType}. Supported: postgresql, mongodb, mysql, sqlite`,
       );
     }
@@ -178,7 +191,8 @@ export class AppConfigService implements IConfigService {
   getDatabasePassword(): string {
     const password = this.configService.get<string>('DATABASE_PASSWORD');
     if (!password) {
-      throw new Error(
+      throw new InvalidInputError(
+        'configuration',
         'DATABASE_PASSWORD is required. Please set this environment variable.',
       );
     }
@@ -215,7 +229,8 @@ export class AppConfigService implements IConfigService {
 
     const parsed = parseInt(retentionMinutes, 10);
     if (isNaN(parsed) || parsed <= 0) {
-      throw new Error(
+      throw new InvalidInputError(
+        'configuration',
         `USER_CACHE_RETENTION_MINUTES must be a positive number. Got: ${retentionMinutes}`,
       );
     }

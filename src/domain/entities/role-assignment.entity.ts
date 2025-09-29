@@ -16,6 +16,15 @@ import {
   ROLE_PERMISSIONS,
   UserRole,
 } from '@shared/enums/user-role.enum';
+import {
+  InvalidExpirationDateError,
+  BusinessIdRequiredError,
+  RoleContextViolationError,
+  DepartmentContextError,
+  RoleBusinessLevelOnlyError,
+  RoleLocationLevelOnlyError,
+  RoleDepartmentLevelOnlyError,
+} from '@domain/exceptions';
 
 export interface RoleAssignmentContext {
   readonly businessId: string;
@@ -230,7 +239,7 @@ export class RoleAssignment {
    */
   extendExpiration(newExpirationDate: Date): RoleAssignment {
     if (newExpirationDate <= new Date()) {
-      throw new Error('New expiration date must be in the future');
+      throw new InvalidExpirationDateError();
     }
 
     return new RoleAssignment(
@@ -314,19 +323,20 @@ export class RoleAssignment {
   ): void {
     // Validation du businessId obligatoire
     if (!context.businessId || context.businessId.trim().length === 0) {
-      throw new Error('Business ID is required');
+      throw new BusinessIdRequiredError();
     }
 
     // Validation du rôle selon le contexte
     if (role === UserRole.SUPER_ADMIN || role === UserRole.PLATFORM_ADMIN) {
-      throw new Error(
+      throw new RoleContextViolationError(
         'Super admin and platform admin roles cannot be assigned in business context',
+        role,
       );
     }
 
     // Validation de la hiérarchie des contextes
     if (context.departmentId && !context.locationId) {
-      throw new Error('Department assignments must include location context');
+      throw new DepartmentContextError();
     }
 
     // Validation des rôles selon le niveau de contexte
@@ -339,19 +349,19 @@ export class RoleAssignment {
 
     if (businessLevelRoles.includes(role)) {
       if (context.locationId || context.departmentId) {
-        throw new Error(`Role ${role} must be assigned at business level only`);
+        throw new RoleBusinessLevelOnlyError(role);
       }
     }
 
     if (locationLevelRoles.includes(role)) {
       if (!context.locationId || context.departmentId) {
-        throw new Error(`Role ${role} must be assigned at location level only`);
+        throw new RoleLocationLevelOnlyError(role);
       }
     }
 
     if (departmentLevelRoles.includes(role)) {
       if (!context.departmentId) {
-        throw new Error(`Role ${role} must be assigned at department level`);
+        throw new RoleDepartmentLevelOnlyError(role);
       }
     }
   }

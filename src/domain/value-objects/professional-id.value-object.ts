@@ -4,6 +4,7 @@
  */
 
 import { generateId } from '@shared/utils/id.utils';
+import { ValueObjectValidationError } from '../exceptions/domain.exceptions';
 
 export class ProfessionalId {
   constructor(private readonly value: string) {
@@ -12,14 +13,22 @@ export class ProfessionalId {
 
   private validate(value: string): void {
     if (!value || value.trim() === '') {
-      throw new Error('Professional ID cannot be empty');
+      throw new ValueObjectValidationError(
+        'PROFESSIONAL_ID_EMPTY',
+        'Professional ID cannot be empty',
+        { value },
+      );
     }
 
     // UUID format validation (basic)
     const uuidRegex =
       /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
     if (!uuidRegex.test(value)) {
-      throw new Error('Professional ID must be a valid UUID');
+      throw new ValueObjectValidationError(
+        'PROFESSIONAL_ID_INVALID_FORMAT',
+        'Professional ID must be a valid UUID',
+        { value },
+      );
     }
   }
 

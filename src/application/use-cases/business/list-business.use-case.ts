@@ -13,6 +13,7 @@ import {
   AppContext,
   AppContextFactory,
 } from '../../../shared/context/app-context';
+import { ApplicationValidationError } from '../../exceptions/application.exceptions';
 
 export interface ListBusinessRequest {
   readonly requestingUserId: string;
@@ -185,28 +186,40 @@ export class ListBusinessUseCase {
   private validateBusinessRules(request: ListBusinessRequest): void {
     // Validation de la pagination
     if (request.page !== undefined && request.page < 1) {
-      throw new Error('Page number must be greater than 0');
+      throw new ApplicationValidationError(
+        'page',
+        request.page,
+        'must_be_greater_than_zero',
+      );
     }
 
     if (
       request.limit !== undefined &&
       (request.limit < 1 || request.limit > 100)
     ) {
-      throw new Error('Limit must be between 1 and 100');
+      throw new ApplicationValidationError(
+        'limit',
+        request.limit,
+        'must_be_between_1_and_100',
+      );
     }
 
     // Validation du tri
     const validSortFields = ['name', 'createdAt', 'updatedAt'];
     if (request.sortBy && !validSortFields.includes(request.sortBy)) {
-      throw new Error(
-        `Invalid sort field. Must be one of: ${validSortFields.join(', ')}`,
+      throw new ApplicationValidationError(
+        'sortBy',
+        request.sortBy,
+        'invalid_sort_field',
       );
     }
 
     const validSortOrders = ['ASC', 'DESC'];
     if (request.sortOrder && !validSortOrders.includes(request.sortOrder)) {
-      throw new Error(
-        `Invalid sort order. Must be one of: ${validSortOrders.join(', ')}`,
+      throw new ApplicationValidationError(
+        'sortOrder',
+        request.sortOrder,
+        'invalid_sort_order',
       );
     }
   }

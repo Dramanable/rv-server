@@ -15,6 +15,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, MoreThan, LessThan, Between } from 'typeorm';
+import { InfrastructureException } from '@shared/exceptions/shared.exceptions';
 import { RoleAssignmentOrmEntity } from '../entities/role-assignment-orm.entity';
 import {
   RoleAssignment,
@@ -874,9 +875,10 @@ export class TypeOrmRoleAssignmentRepository
         error instanceof Error ? error : new Error(String(error)),
         { businessId },
       );
-      throw new Error(
+      throw new InfrastructureException(
         this.i18n.translate('rbac.assignment.stats.failed') ||
           'Failed to get assignment statistics',
+        'RBAC_STATS_ERROR',
       );
     }
   }

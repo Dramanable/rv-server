@@ -14,6 +14,12 @@ import {
 } from '../../../domain/value-objects/business-image.value-object';
 import { ImageUploadSettings } from '../../../domain/value-objects/image-upload-settings.value-object';
 import { AwsS3ImageService } from '../../../infrastructure/services/aws-s3-image.service';
+import {
+  ResourceNotFoundError,
+  InsufficientPermissionsError,
+  BusinessValidationError,
+  ExternalServiceError,
+} from '../../exceptions/application.exceptions';
 
 export interface UploadBusinessImageRequest {
   readonly businessId: string;
@@ -60,19 +66,28 @@ export class UploadBusinessImageUseCase {
     const business = await this.businessRepository.findById(businessId);
 
     if (!business) {
-      throw new Error('Business not found');
+      throw new ResourceNotFoundError('Business', request.businessId);
     }
 
     // 2. Validate permissions
     if (business.getOwnerId() !== request.requestingUserId) {
-      throw new Error('Insufficient permissions');
+      throw new InsufficientPermissionsError(
+        request.requestingUserId,
+        'UPLOAD_BUSINESS_IMAGE',
+        request.businessId,
+      );
     }
 
     // 3. Validate image quota for gallery images
     if (request.metadata.category === ImageCategory.GALLERY) {
       const currentImageCount = business.getGallery().images.length;
       if (!request.uploadSettings.canBusinessAddMoreImages(currentImageCount)) {
-        throw new Error('Image quota exceeded');
+        throw new BusinessValidationError(
+          'image_count',
+          currentImageCount,
+          'quota_exceeded',
+          request.businessId,
+        );
       }
     }
 
@@ -171,10 +186,16 @@ export class UploadBusinessImageUseCase {
           throw error; // Re-throw validation errors
         }
         if (error.message.includes('S3')) {
-          throw new Error('Failed to upload image');
+          throw new ExternalServiceError('AWS_S3', 'upload_failed', error);
         }
+        throw new ExternalServiceError('IMAGE_SERVICE', 'upload_failed', error);
       }
-      throw new Error('Failed to upload image');
+      const unknownError = new Error(String(error));
+      throw new ExternalServiceError(
+        'IMAGE_SERVICE',
+        'upload_failed',
+        unknownError,
+      );
     }
   }
 }

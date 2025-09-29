@@ -5,6 +5,7 @@
  */
 
 import { Inject, Injectable } from '@nestjs/common';
+import { InfrastructureException } from '@shared/exceptions/shared.exceptions';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -359,7 +360,10 @@ export class TypeOrmBusinessSectorRepository
       const updatedEntity = await this.repository.findOne({ where: { id } });
 
       if (!updatedEntity) {
-        throw new Error(`Business sector with id ${id} not found after update`);
+        throw new InfrastructureException(
+          `Business sector with id ${id} not found after update`,
+          'INFRASTRUCTURE_ERROR',
+        );
       }
 
       this.logger.info('Business sector status updated', {

@@ -2,13 +2,29 @@
  * 📅 GET AVAILABLE SLOTS USE CASE - VERSION SIMPLIFIÉE
  * ✅ Clean Architecture - Application Layer
  * ✅ Compatible avec les DTOs Doctolib-inspired
- * ✅ Pattern Request-Response simple
- */
+ * ✅ Pattern Requ    if (!request.calendarId?.trim()) {
+      throw new ApplicationValidationError('calendarId', request.calendarId, 'calendar_id_required');
+    }
+
+    if (!request.referenceDate) {
+      throw new ApplicationValidationError('referenceDate', request.referenceDate, 'reference_date_required');
+    }
+
+    // Validation de la durée si fournie
+    if (request.duration !== undefined) {
+      if (request.duration < 15 || request.duration > 480) {
+        throw new ApplicationValidationError('duration', request.duration, 'duration_invalid');
+      }
+    } */
 
 import type { AppointmentRepository } from '../../../domain/repositories/appointment.repository.interface';
 import type { CalendarRepository } from '../../../domain/repositories/calendar.repository.interface';
 import type { ServiceRepository } from '../../../domain/repositories/service.repository.interface';
 import type { StaffRepository } from '../../../domain/repositories/staff.repository.interface';
+import {
+  ApplicationValidationError,
+  ResourceNotFoundError,
+} from '../../exceptions/application.exceptions';
 import { ViewMode } from '../../../presentation/dtos/appointment.dto';
 import type { I18nService } from '../../ports/i18n.port';
 import type { Logger } from '../../ports/logger.port';
@@ -159,34 +175,44 @@ export class GetAvailableSlotsUseCase {
     request: GetAvailableSlotsRequest,
   ): Promise<void> {
     if (!request.businessId?.trim()) {
-      throw new Error(
-        this.i18n.translate('errors.validation.business_id_required'),
+      throw new ApplicationValidationError(
+        'businessId',
+        request.businessId,
+        'business_id_required',
       );
     }
 
     if (!request.serviceId?.trim()) {
-      throw new Error(
-        this.i18n.translate('errors.validation.service_id_required'),
+      throw new ApplicationValidationError(
+        'serviceId',
+        request.serviceId,
+        'service_id_required',
       );
     }
 
     if (!request.calendarId?.trim()) {
-      throw new Error(
-        this.i18n.translate('errors.validation.calendar_id_required'),
+      throw new ApplicationValidationError(
+        'calendarId',
+        request.calendarId,
+        'calendar_id_required',
       );
     }
 
     if (!request.referenceDate) {
-      throw new Error(
-        this.i18n.translate('errors.validation.reference_date_required'),
+      throw new ApplicationValidationError(
+        'referenceDate',
+        request.referenceDate,
+        'reference_date_required',
       );
     }
 
     // Validation de la durée si fournie
     if (request.duration !== undefined) {
       if (request.duration < 15 || request.duration > 480) {
-        throw new Error(
-          this.i18n.translate('errors.validation.invalid_duration'),
+        throw new ApplicationValidationError(
+          'duration',
+          request.duration,
+          'invalid_duration',
         );
       }
     }
@@ -206,15 +232,15 @@ export class GetAvailableSlotsUseCase {
     ]);
 
     if (!service) {
-      throw new Error(this.i18n.translate('errors.service.not_found'));
+      throw new ResourceNotFoundError('Service', request.serviceId);
     }
 
     if (!calendar) {
-      throw new Error(this.i18n.translate('errors.calendar.not_found'));
+      throw new ResourceNotFoundError('Calendar', request.calendarId);
     }
 
     if (request.staffId && !staff) {
-      throw new Error(this.i18n.translate('errors.staff.not_found'));
+      throw new ResourceNotFoundError('Staff', request.staffId);
     }
 
     return { service, calendar, staff };

@@ -14,6 +14,10 @@ import {
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { ImageCategory } from '../../domain/value-objects/business-image.value-object';
 import { ImageUploadSettings } from '../../domain/value-objects/image-upload-settings.value-object';
+import {
+  ImageProcessingError,
+  ExternalServiceError,
+} from '@infrastructure/exceptions/infrastructure.exceptions';
 
 export interface UploadImageMetadata {
   readonly category: ImageCategory;
@@ -202,8 +206,10 @@ export class AwsS3ImageService {
     });
 
     if (!validation.isValid) {
-      throw new Error(
-        `Image validation failed: ${validation.errors.join(', ')}`,
+      throw new ImageProcessingError(
+        'image validation',
+        metadata.fileName,
+        new Error(`Image validation failed: ${validation.errors.join(', ')}`),
       );
     }
 
@@ -224,8 +230,8 @@ export class AwsS3ImageService {
   }
 
   async updateImageMetadata(
-    s3Key: string,
-    newMetadata: { alt?: string; isPublic?: boolean; order?: number },
+    _s3Key: string,
+    _newMetadata: Partial<UploadImageMetadata>,
   ): Promise<void> {
     // For simplification in GREEN phase, we'll just return success
     // In real implementation, we'd update S3 object metadata
@@ -233,8 +239,8 @@ export class AwsS3ImageService {
   }
 
   async listBusinessImages(
-    businessId: string,
-    options: ImageListOptions,
+    _businessId: string,
+    _options: ImageListOptions,
   ): Promise<any[]> {
     // Simplified implementation for GREEN phase
     // Real implementation would list S3 objects with prefix
@@ -281,12 +287,14 @@ export class AwsS3ImageService {
   async deleteImageWithAuthorization(
     s3Key: string,
     businessId: string,
-    requestingUserId: string,
+    _requestingUserId: string,
   ): Promise<void> {
     // Check if S3 key belongs to the business
     if (!s3Key.startsWith(businessId)) {
-      throw new Error(
-        'Unauthorized: Cannot delete image from different business',
+      throw new ExternalServiceError(
+        'S3',
+        'delete image',
+        new Error('Unauthorized: Cannot delete image from different business'),
       );
     }
 

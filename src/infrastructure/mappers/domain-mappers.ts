@@ -11,6 +11,7 @@
  */
 
 // Domain Entities
+import { InfrastructureException } from '../../shared/exceptions/shared.exceptions';
 import { BusinessSector as BusinessSectorEntity } from '../../domain/entities/business-sector.entity';
 import {
   Business,
@@ -649,7 +650,10 @@ export class BusinessMapper {
     const businessId = BusinessId.create(entity.id);
 
     if (!entity.name) {
-      throw new Error(`Business name is undefined for id: ${entity.id}`);
+      throw new InfrastructureException(
+        `Business name is undefined for id: ${entity.id}`,
+        'BUSINESS_NAME_UNDEFINED',
+      );
     }
 
     const businessName = BusinessName.create(entity.name);
@@ -910,7 +914,10 @@ export class MapperValidator {
    */
   static validateNotNull<T>(obj: T | null | undefined, entityName: string): T {
     if (obj === null || obj === undefined) {
-      throw new Error(`Cannot map ${entityName}: object is null or undefined`);
+      throw new InfrastructureException(
+        `Cannot map ${entityName}: object is null or undefined`,
+        'ENTITY_NULL_OR_UNDEFINED',
+      );
     }
     return obj;
   }
@@ -923,8 +930,9 @@ export class MapperValidator {
     entityName: string,
   ): T[] {
     if (arr === null || arr === undefined) {
-      throw new Error(
+      throw new InfrastructureException(
         `Cannot map ${entityName} array: array is null or undefined`,
+        'ENTITY_ARRAY_NULL_OR_UNDEFINED',
       );
     }
     return arr;

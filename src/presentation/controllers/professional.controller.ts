@@ -7,15 +7,19 @@
  */
 
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
   Get,
   HttpStatus,
   Inject,
+  Logger,
   Param,
   Post,
   Put,
+  Query,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -162,7 +166,9 @@ export class ProfessionalController {
   ): Promise<ListProfessionalsResponseDto> {
     // Validation: businessId is required
     if (!dto.businessId) {
-      throw new Error('businessId is required for listing professionals');
+      throw new BadRequestException(
+        'businessId is required for listing professionals',
+      );
     }
 
     const request = {

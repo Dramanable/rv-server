@@ -9,9 +9,11 @@
  * ✅ Gestion des erreurs et logging
  */
 
+import { Repository, QueryRunner, Brackets } from 'typeorm';
+import { InfrastructureException } from '@shared/exceptions/shared.exceptions';
+
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { Calendar } from '../../../../../domain/entities/calendar.entity';
 import { CalendarRepository } from '../../../../../domain/repositories/calendar.repository.interface';
 import { BusinessId } from '../../../../../domain/value-objects/business-id.value-object';
@@ -39,8 +41,9 @@ export class TypeOrmCalendarRepository implements CalendarRepository {
         ? CalendarOrmMapper.toDomainPlainObject(ormEntity)
         : null;
     } catch (error) {
-      throw new Error(
+      throw new InfrastructureException(
         `Failed to find calendar by id: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        'CALENDAR_FIND_BY_ID_ERROR',
       );
     }
   }
@@ -54,8 +57,9 @@ export class TypeOrmCalendarRepository implements CalendarRepository {
 
       return CalendarOrmMapper.toDomainPlainObjects(ormEntities);
     } catch (error) {
-      throw new Error(
+      throw new InfrastructureException(
         `Failed to find calendars by business id: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        'CALENDAR_FIND_BY_BUSINESS_ID_ERROR',
       );
     }
   }
@@ -69,8 +73,9 @@ export class TypeOrmCalendarRepository implements CalendarRepository {
 
       return CalendarOrmMapper.toDomainPlainObjects(ormEntities);
     } catch (error) {
-      throw new Error(
+      throw new InfrastructureException(
         `Failed to find calendars by owner id: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        'CALENDAR_FIND_BY_OWNER_ID_ERROR',
       );
     }
   }
@@ -87,8 +92,9 @@ export class TypeOrmCalendarRepository implements CalendarRepository {
 
       return CalendarOrmMapper.toDomainPlainObjects(ormEntities);
     } catch (error) {
-      throw new Error(
+      throw new InfrastructureException(
         `Failed to find calendars by type: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        'CALENDAR_FIND_BY_TYPE_ERROR',
       );
     }
   }
@@ -101,8 +107,9 @@ export class TypeOrmCalendarRepository implements CalendarRepository {
       // Sauvegarder dans la base
       await this.ormRepository.save(ormEntity);
     } catch (error) {
-      throw new Error(
+      throw new InfrastructureException(
         `Failed to save calendar: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        'CALENDAR_SAVE_ERROR',
       );
     }
   }
@@ -113,11 +120,15 @@ export class TypeOrmCalendarRepository implements CalendarRepository {
       const result = await this.ormRepository.delete(calendarId);
 
       if (result.affected === 0) {
-        throw new Error(`Calendar with id ${calendarId} not found`);
+        throw new InfrastructureException(
+          `Calendar with id ${calendarId} not found`,
+          'CALENDAR_NOT_FOUND',
+        );
       }
     } catch (error) {
-      throw new Error(
+      throw new InfrastructureException(
         `Failed to delete calendar: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        'CALENDAR_DELETE_ERROR',
       );
     }
   }
@@ -165,8 +176,9 @@ export class TypeOrmCalendarRepository implements CalendarRepository {
 
       return results;
     } catch (error) {
-      throw new Error(
+      throw new InfrastructureException(
         `Failed to find available slots: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        'CALENDAR_FIND_AVAILABLE_SLOTS_ERROR',
       );
     }
   }
@@ -181,8 +193,9 @@ export class TypeOrmCalendarRepository implements CalendarRepository {
       // À implémenter quand l'entité Appointment sera intégrée
       return [];
     } catch (error) {
-      throw new Error(
+      throw new InfrastructureException(
         `Failed to get booked slots: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        'CALENDAR_GET_BOOKED_SLOTS_ERROR',
       );
     }
   }
@@ -196,8 +209,9 @@ export class TypeOrmCalendarRepository implements CalendarRepository {
       const calendar = await this.findById(calendarId);
       return calendar !== null;
     } catch (error) {
-      throw new Error(
+      throw new InfrastructureException(
         `Failed to check slot availability: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        'CALENDAR_CHECK_SLOT_AVAILABILITY_ERROR',
       );
     }
   }
@@ -225,8 +239,9 @@ export class TypeOrmCalendarRepository implements CalendarRepository {
       const ormEntities = await query.getMany();
       return CalendarOrmMapper.toDomainPlainObjects(ormEntities);
     } catch (error) {
-      throw new Error(
+      throw new InfrastructureException(
         `Failed to find overlapping calendars: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        'CALENDAR_FIND_OVERLAPPING_ERROR',
       );
     }
   }
@@ -252,8 +267,9 @@ export class TypeOrmCalendarRepository implements CalendarRepository {
         peakDays: [],
       };
     } catch (error) {
-      throw new Error(
+      throw new InfrastructureException(
         `Failed to get utilization stats: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        'CALENDAR_GET_UTILIZATION_STATS_ERROR',
       );
     }
   }
@@ -274,8 +290,9 @@ export class TypeOrmCalendarRepository implements CalendarRepository {
       // À améliorer avec la vérification réelle de disponibilité
       return CalendarOrmMapper.toDomainPlainObjects(ormEntities);
     } catch (error) {
-      throw new Error(
+      throw new InfrastructureException(
         `Failed to find calendars with availability: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        'CALENDAR_FIND_WITH_AVAILABILITY_ERROR',
       );
     }
   }
@@ -295,8 +312,9 @@ export class TypeOrmCalendarRepository implements CalendarRepository {
       // Implémentation par défaut - à développer selon les besoins
       return [];
     } catch (error) {
-      throw new Error(
+      throw new InfrastructureException(
         `Failed to get recurring patterns: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        'CALENDAR_GET_RECURRING_PATTERNS_ERROR',
       );
     }
   }

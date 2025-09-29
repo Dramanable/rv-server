@@ -5,6 +5,13 @@
  */
 
 import { BusinessImage, ImageCategory } from './business-image.value-object';
+import {
+  InvalidValueError,
+  RequiredValueError,
+  ValueOutOfRangeError,
+  DuplicateValueError,
+  ValueNotFoundError,
+} from '@domain/exceptions/value-object.exceptions';
 
 export class BusinessGallery {
   private readonly _images: Map<string, BusinessImage>;
@@ -52,13 +59,13 @@ export class BusinessGallery {
 
     // Check maximum images limit
     if (this._images.size >= 20) {
-      throw new Error('Maximum of 20 images allowed per business gallery');
+      throw new ValueOutOfRangeError('gallery.size', this._images.size, 0, 19);
     }
 
     // Check for duplicate URLs
     const existingImage = this.findByUrl(image.url);
     if (existingImage) {
-      throw new Error('Image with this URL already exists in gallery');
+      throw new DuplicateValueError('image.url', image.url);
     }
 
     const newImages = new Map(this._images);
@@ -69,7 +76,7 @@ export class BusinessGallery {
 
   removeImage(imageId: string): BusinessGallery {
     if (!this._images.has(imageId)) {
-      throw new Error(`Image with ID ${imageId} not found in gallery`);
+      throw new ValueNotFoundError('imageId', imageId);
     }
 
     const newImages = new Map(this._images);
@@ -81,11 +88,16 @@ export class BusinessGallery {
   updateImageOrder(imageId: string, newOrder: number): BusinessGallery {
     const image = this._images.get(imageId);
     if (!image) {
-      throw new Error(`Image with ID ${imageId} not found in gallery`);
+      throw new ValueNotFoundError('imageId', imageId);
     }
 
     if (newOrder < 0) {
-      throw new Error('Image order must be non-negative');
+      throw new ValueOutOfRangeError(
+        'newOrder',
+        newOrder,
+        0,
+        Number.MAX_SAFE_INTEGER,
+      );
     }
 
     // Create new image with updated order
@@ -108,7 +120,7 @@ export class BusinessGallery {
   updateImageVisibility(imageId: string, isPublic: boolean): BusinessGallery {
     const image = this._images.get(imageId);
     if (!image) {
-      throw new Error(`Image with ID ${imageId} not found in gallery`);
+      throw new ValueNotFoundError('imageId', imageId);
     }
 
     // Create new image with updated visibility
@@ -134,7 +146,7 @@ export class BusinessGallery {
   ): BusinessGallery {
     const image = this._images.get(imageId);
     if (!image) {
-      throw new Error(`Image with ID ${imageId} not found in gallery`);
+      throw new ValueNotFoundError('imageId', imageId);
     }
 
     // Create new image with updated metadata
@@ -246,11 +258,13 @@ export class BusinessGallery {
   // Validation methods
   private validateImageBeforeAdd(image: BusinessImage): void {
     if (!image) {
-      throw new Error('Image cannot be null or undefined');
+      throw new RequiredValueError('image');
     }
 
     if (!image.isOptimizedForWeb()) {
-      throw new Error(
+      throw new InvalidValueError(
+        'image',
+        image,
         'Image must be optimized for web (max 2MB, supported format)',
       );
     }
@@ -262,12 +276,22 @@ export class BusinessGallery {
 
     // Business rule: Maximum 1 logo
     if (logoImages.length > 1) {
-      throw new Error('Only one logo image is allowed per business');
+      throw new ValueOutOfRangeError(
+        'logoImages.length',
+        logoImages.length,
+        0,
+        1,
+      );
     }
 
     // Business rule: Maximum 1 cover image
     if (coverImages.length > 1) {
-      throw new Error('Only one cover image is allowed per business');
+      throw new ValueOutOfRangeError(
+        'coverImages.length',
+        coverImages.length,
+        0,
+        1,
+      );
     }
 
     // Business rule: Check for unique orders within categories
@@ -280,8 +304,9 @@ export class BusinessGallery {
 
       const orders = categoryOrders.get(image.category)!;
       if (orders.has(image.order)) {
-        throw new Error(
-          `Duplicate order ${image.order} found in category ${image.category}`,
+        throw new DuplicateValueError(
+          `image.order.${image.category}`,
+          image.order,
         );
       }
 

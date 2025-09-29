@@ -5,7 +5,11 @@
  * Couche présentation/sécurité - extraction de l'utilisateur authentifié
  */
 
-import { createParamDecorator, ExecutionContext } from '@nestjs/common';
+import {
+  createParamDecorator,
+  ExecutionContext,
+  UnauthorizedException,
+} from '@nestjs/common';
 import type { Request } from 'express';
 import { User } from '../../../domain/entities/user.entity';
 
@@ -36,7 +40,7 @@ export const GetUser = createParamDecorator(
     const user = (request as any).user;
 
     if (!user) {
-      throw new Error(
+      throw new UnauthorizedException(
         'User not found in request. Make sure JwtAuthGuard is applied.',
       );
     }

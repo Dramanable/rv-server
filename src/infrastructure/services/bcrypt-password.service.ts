@@ -9,6 +9,7 @@ import { IPasswordService } from '@application/ports/password.service.interface'
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
+import { PasswordHashingError } from '@infrastructure/exceptions/infrastructure.exceptions';
 
 @Injectable()
 export class BcryptPasswordService implements IPasswordService {
@@ -28,7 +29,7 @@ export class BcryptPasswordService implements IPasswordService {
         `Failed to hash password: ${error instanceof Error ? error.message : 'Unknown error'}`,
         error,
       );
-      throw new Error('Password hashing failed');
+      throw new PasswordHashingError(error);
     }
   }
 

@@ -8,6 +8,7 @@ import { Email } from '../value-objects/email.value-object';
 import { FileUrl } from '../value-objects/file-url.value-object';
 import { Phone } from '../value-objects/phone.value-object';
 import { BusinessSector } from './business-sector.entity';
+import { BusinessRuleViolationError } from '../exceptions/domain.exceptions';
 
 // Réexporter BusinessSector pour compatibilité
 export { BusinessSector } from './business-sector.entity';
@@ -344,7 +345,11 @@ export class Business {
   // Domain events
   public activate(): void {
     if (this._status !== BusinessStatus.PENDING_VERIFICATION) {
-      throw new Error('Business must be verified before activation');
+      throw new BusinessRuleViolationError(
+        'BUSINESS_ACTIVATION_ERROR',
+        'Business must be verified before activation',
+        { currentStatus: this._status, businessId: this._id.getValue() },
+      );
     }
     this._status = BusinessStatus.ACTIVE;
     this._updatedAt = new Date();
@@ -352,7 +357,11 @@ export class Business {
 
   public suspend(): void {
     if (!this.isActive()) {
-      throw new Error('Only active businesses can be suspended');
+      throw new BusinessRuleViolationError(
+        'BUSINESS_SUSPENSION_ERROR',
+        'Only active businesses can be suspended',
+        { currentStatus: this._status, businessId: this._id.getValue() },
+      );
     }
     this._status = BusinessStatus.SUSPENDED;
     this._updatedAt = new Date();

@@ -13,6 +13,17 @@
  * - Hiérarchie Business > Location > Department
  */
 
+import {
+  ContextIdRequiredError,
+  ContextNameRequiredError,
+  BusinessIdRequiredError,
+  InvalidContextTypeError,
+  BusinessContextCannotHaveParentError,
+  ContextMustHaveParentError,
+  ContextNameTooShortError,
+  ContextNameTooLongError,
+} from '@domain/exceptions';
+
 export enum RbacContextType {
   BUSINESS = 'BUSINESS',
   LOCATION = 'LOCATION',
@@ -194,7 +205,7 @@ export class RbacBusinessContext {
    */
   static reconstruct(data: RbacBusinessContextData): RbacBusinessContext {
     if (!data.id) {
-      throw new Error('Context ID is required for reconstruction');
+      throw new ContextIdRequiredError();
     }
 
     return new RbacBusinessContext(
@@ -395,36 +406,36 @@ export class RbacBusinessContext {
     parentContextId?: string;
   }): void {
     if (!params.name || params.name.trim().length === 0) {
-      throw new Error('Context name is required');
+      throw new ContextNameRequiredError();
     }
 
     this.validateName(params.name);
 
     if (!params.businessId || params.businessId.trim().length === 0) {
-      throw new Error('Business ID is required');
+      throw new BusinessIdRequiredError();
     }
 
     if (!Object.values(RbacContextType).includes(params.type)) {
-      throw new Error(`Invalid context type: ${params.type}`);
+      throw new InvalidContextTypeError(params.type);
     }
 
     // Validation hiérarchique
     if (params.type === RbacContextType.BUSINESS && params.parentContextId) {
-      throw new Error('Business context cannot have parent');
+      throw new BusinessContextCannotHaveParentError();
     }
 
     if (params.type !== RbacContextType.BUSINESS && !params.parentContextId) {
-      throw new Error(`${params.type} context must have parent`);
+      throw new ContextMustHaveParentError(params.type);
     }
   }
 
   private static validateName(name: string): void {
     if (name.trim().length < 2) {
-      throw new Error('Context name must be at least 2 characters long');
+      throw new ContextNameTooShortError();
     }
 
     if (name.trim().length > 200) {
-      throw new Error('Context name must be less than 200 characters');
+      throw new ContextNameTooLongError();
     }
   }
 

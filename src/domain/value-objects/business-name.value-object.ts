@@ -1,3 +1,10 @@
+import {
+  RequiredValueError,
+  ValueTooShortError,
+  ValueTooLongError,
+  InvalidFormatError,
+} from '../exceptions/value-object.exceptions';
+
 export class BusinessName {
   private static readonly MIN_LENGTH = 2;
   private static readonly MAX_LENGTH = 100;
@@ -8,27 +15,35 @@ export class BusinessName {
 
   private validate(value: string): void {
     if (!value || value.trim().length === 0) {
-      throw new Error('Business name cannot be empty');
+      throw new RequiredValueError('business_name');
     }
 
     const trimmedValue = value.trim();
 
     if (trimmedValue.length < BusinessName.MIN_LENGTH) {
-      throw new Error(
-        `Business name must be at least ${BusinessName.MIN_LENGTH} characters long`,
+      throw new ValueTooShortError(
+        'business_name',
+        BusinessName.MIN_LENGTH,
+        trimmedValue.length,
       );
     }
 
     if (trimmedValue.length > BusinessName.MAX_LENGTH) {
-      throw new Error(
-        `Business name cannot exceed ${BusinessName.MAX_LENGTH} characters`,
+      throw new ValueTooLongError(
+        'business_name',
+        BusinessName.MAX_LENGTH,
+        trimmedValue.length,
       );
     }
 
     // Vérifier les caractères interdits
     const forbiddenChars = /[<>{}[\]\\/]/;
     if (forbiddenChars.test(trimmedValue)) {
-      throw new Error('Business name contains forbidden characters');
+      throw new InvalidFormatError(
+        'business_name',
+        trimmedValue,
+        'valid business name format',
+      );
     }
   }
 

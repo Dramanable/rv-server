@@ -2,7 +2,18 @@
  * 🛡️ RBAC Permission Service - Real Implementation
  *
  * Service de permissions basé sur les rôles et le système RBAC.
- * Applique les règles métier strictes et la hiérarchie des permissions.
+ * Applique les règles métier strictes      this.logger.error(
+        `Permission denied for user ${userId}`,
+        new Error(errorMessage),
+        {
+          userId,
+          permission,
+          context,
+        },
+      );
+
+      throw new PermissionServiceError(`Permission denied: ${permission}`, { userId, permission, context });
+    }rchie des permissions.
  *
  * CLEAN ARCHITECTURE :
  * - Implémente l'interface définie dans Application
@@ -18,6 +29,7 @@ import { IBusinessContextRepository } from '@domain/repositories/business-contex
 import { IRoleAssignmentRepository } from '@domain/repositories/role-assignment.repository.interface';
 import { UserRepository } from '@domain/repositories/user.repository.interface';
 import { Injectable } from '@nestjs/common';
+import { InfrastructureException } from '@shared/exceptions/shared.exceptions';
 import {
   Permission,
   ROLE_HIERARCHY,
@@ -25,6 +37,7 @@ import {
   RoleUtils,
   UserRole,
 } from '@shared/enums/user-role.enum';
+import { PermissionServiceError } from '@infrastructure/exceptions/infrastructure.exceptions';
 
 /**
  * 🎯 Business Context for Permission Checks
@@ -170,7 +183,7 @@ export class RbacPermissionService implements IPermissionService {
         },
       );
 
-      throw new Error(errorMessage);
+      throw new InfrastructureException(errorMessage, 'RBAC_PERMISSION_DENIED');
     }
   }
 
@@ -354,7 +367,9 @@ export class RbacPermissionService implements IPermissionService {
         },
       );
 
-      throw new Error(errorMessage);
+      throw new PermissionServiceError('Super admin permission required', {
+        userId,
+      });
     }
   }
 

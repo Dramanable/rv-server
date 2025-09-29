@@ -10,6 +10,14 @@
  * - Validation des accès selon les assignations de rôles
  */
 
+import {
+  ContextIdRequiredError,
+  ContextNameRequiredError,
+  LocationAlreadyExistsError,
+  LocationNotFoundError,
+  DepartmentAlreadyExistsError,
+} from '../exceptions/rbac-business-context.exceptions';
+
 export interface BusinessContextData {
   readonly businessId: string;
   readonly businessName: string;
@@ -248,7 +256,7 @@ export class BusinessContext {
   addLocation(location: LocationContext): BusinessContext {
     // Vérifier que la location n'existe pas déjà
     if (this.hasLocation(location.locationId)) {
-      throw new Error(`Location ${location.locationId} already exists`);
+      throw new LocationAlreadyExistsError(location.locationId);
     }
 
     const newLocations = [...this._locations, location];
@@ -272,7 +280,7 @@ export class BusinessContext {
       (loc) => loc.locationId === locationId,
     );
     if (locationIndex === -1) {
-      throw new Error(`Location ${locationId} not found`);
+      throw new LocationNotFoundError(locationId);
     }
 
     const location = this._locations[locationIndex];
@@ -283,8 +291,9 @@ export class BusinessContext {
         (dept) => dept.departmentId === department.departmentId,
       )
     ) {
-      throw new Error(
-        `Department ${department.departmentId} already exists in location ${locationId}`,
+      throw new DepartmentAlreadyExistsError(
+        department.departmentId,
+        locationId,
       );
     }
 
@@ -360,15 +369,17 @@ export class BusinessContext {
     businessName: string,
   ): void {
     if (!businessId || businessId.trim().length === 0) {
-      throw new Error('Business ID is required');
+      throw new ContextIdRequiredError('Business ID is required');
     }
 
     if (!businessName || businessName.trim().length === 0) {
-      throw new Error('Business name is required');
+      throw new ContextNameRequiredError('Business name is required');
     }
 
     if (businessName.trim().length < 2) {
-      throw new Error('Business name must be at least 2 characters long');
+      throw new ContextNameRequiredError(
+        'Business name must be at least 2 characters long',
+      );
     }
   }
 }

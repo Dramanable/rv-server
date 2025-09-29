@@ -5,6 +5,11 @@ import { PricingConfig } from '../value-objects/pricing-config.value-object';
 import { ServiceId } from '../value-objects/service-id.value-object';
 import { ServiceTypeId } from '../value-objects/service-type-id.value-object';
 import { UserId } from '../value-objects/user-id.value-object';
+import {
+  ServiceValidationError,
+  ServiceStaffAssignmentError,
+  ServiceError,
+} from '../exceptions/service.exceptions';
 
 export enum ServiceStatus {
   ACTIVE = 'ACTIVE',
@@ -197,7 +202,9 @@ export class Service {
 
     // ✅ VALIDATION CRITIQUE : Service doit avoir au moins un ServiceType
     if (serviceTypeIds.length === 0) {
-      throw new Error('Service must have at least one ServiceType');
+      throw new ServiceValidationError(
+        'Service must have at least one ServiceType',
+      );
     }
 
     return new Service(
@@ -319,7 +326,9 @@ export class Service {
     );
 
     if (existingPackage) {
-      throw new Error(`Package '${packageData.name}' already exists`);
+      throw new ServiceValidationError(
+        `Package '${packageData.name}' already exists`,
+      );
     }
 
     this._packages.push(packageData);
@@ -355,7 +364,9 @@ export class Service {
 
   public activate(): void {
     if (this._assignedStaffIds.length === 0) {
-      throw new Error('Cannot activate service without assigned staff');
+      throw new ServiceStaffAssignmentError(
+        'Cannot activate service without assigned staff',
+      );
     }
     this._status = ServiceStatus.ACTIVE;
     this._updatedAt = new Date();
@@ -418,7 +429,9 @@ export class Service {
   public removeServiceType(serviceTypeId: ServiceTypeId): void {
     // Ne pas permettre de supprimer le dernier ServiceType
     if (this._serviceTypeIds.length <= 1) {
-      throw new Error('Service must have at least one ServiceType');
+      throw new ServiceValidationError(
+        'Service must have at least one ServiceType',
+      );
     }
 
     const index = this._serviceTypeIds.findIndex((id) =>
@@ -433,7 +446,9 @@ export class Service {
 
   public updateServiceTypes(newServiceTypeIds: ServiceTypeId[]): void {
     if (newServiceTypeIds.length === 0) {
-      throw new Error('Service must have at least one ServiceType');
+      throw new ServiceValidationError(
+        'Service must have at least one ServiceType',
+      );
     }
 
     this._serviceTypeIds = [...newServiceTypeIds];
@@ -477,14 +492,14 @@ export class Service {
     updates: Partial<Omit<BookingQuestion, 'id'>>,
   ): void {
     if (!this._requirements?.bookingQuestionnaire) {
-      throw new Error('Service has no booking questionnaire');
+      throw new ServiceValidationError('Service has no booking questionnaire');
     }
 
     const questionIndex = this._requirements.bookingQuestionnaire.findIndex(
       (q) => q.id === questionId,
     );
     if (questionIndex === -1) {
-      throw new Error(`Question ${questionId} not found`);
+      throw new ServiceValidationError(`Question ${questionId} not found`);
     }
 
     this._requirements.bookingQuestionnaire[questionIndex] = {
@@ -502,7 +517,7 @@ export class Service {
 
   public removeBookingQuestion(questionId: string): void {
     if (!this._requirements?.bookingQuestionnaire) {
-      throw new Error('Service has no booking questionnaire');
+      throw new ServiceValidationError('Service has no booking questionnaire');
     }
 
     const initialLength = this._requirements.bookingQuestionnaire.length;
@@ -512,7 +527,7 @@ export class Service {
       );
 
     if (this._requirements.bookingQuestionnaire.length === initialLength) {
-      throw new Error(`Question ${questionId} not found`);
+      throw new ServiceValidationError(`Question ${questionId} not found`);
     }
 
     this._updatedAt = new Date();

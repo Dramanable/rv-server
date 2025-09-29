@@ -1,6 +1,7 @@
 import { IAuditService } from '@application/ports/audit.port';
 import { I18nService } from '@application/ports/i18n.port';
 import { Logger } from '@application/ports/logger.port';
+import { ApplicationValidationError } from '@application/exceptions/application.exceptions';
 import { ProfessionalValidationError } from '@domain/exceptions/professional.exceptions';
 import { IProfessionalRepository } from '@domain/repositories/professional.repository';
 import { BusinessId } from '@domain/value-objects/business-id.value-object';
@@ -186,7 +187,9 @@ export class ListProfessionalsUseCase {
       }
 
       // For other errors, throw a generic error message
-      throw new Error(
+      throw new ApplicationValidationError(
+        'unknown',
+        'unexpected_error',
         error instanceof Error ? error.message : 'Unknown error occurred',
       );
     }

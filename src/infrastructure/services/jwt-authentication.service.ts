@@ -16,6 +16,11 @@ import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { TOKENS } from '@shared/constants/injection-tokens';
+import {
+  TokenGenerationError,
+  TokenValidationError,
+  AuthenticationServiceError,
+} from '@infrastructure/exceptions/infrastructure.exceptions';
 
 @Injectable()
 export class JwtAuthenticationService implements AuthenticationService {
@@ -83,7 +88,7 @@ export class JwtAuthenticationService implements AuthenticationService {
         `Failed to generate tokens for user ${user.id}`,
         error instanceof Error ? error : new Error(String(error)),
       );
-      throw new Error('Token generation failed');
+      throw new TokenGenerationError('access/refresh tokens', error);
     }
   }
 
@@ -103,7 +108,10 @@ export class JwtAuthenticationService implements AuthenticationService {
       this.logger.warn(
         `Invalid access token: ${error instanceof Error ? error.message : 'Unknown error'}`,
       );
-      throw new Error('Invalid access token');
+      throw new TokenValidationError(
+        'access token',
+        error instanceof Error ? error.message : 'Unknown error',
+      );
     }
   }
 
@@ -123,7 +131,10 @@ export class JwtAuthenticationService implements AuthenticationService {
       this.logger.warn(
         `Invalid refresh token: ${error instanceof Error ? error.message : 'Unknown error'}`,
       );
-      throw new Error('Invalid refresh token');
+      throw new TokenValidationError(
+        'refresh token',
+        error instanceof Error ? error.message : 'Unknown error',
+      );
     }
   }
 
@@ -146,7 +157,7 @@ export class JwtAuthenticationService implements AuthenticationService {
       this.logger.error(
         `Failed to refresh tokens: ${error instanceof Error ? error.message : 'Unknown error'}`,
       );
-      throw new Error('Token refresh failed');
+      throw new AuthenticationServiceError('token refresh', error);
     }
   }
 
