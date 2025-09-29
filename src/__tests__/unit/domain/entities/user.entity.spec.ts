@@ -245,7 +245,7 @@ describe('User Entity with Roles', () => {
   describe('Role Validation', () => {
     it('should reject invalid name', () => {
       expect(() => new User(validEmail, '', UserRole.REGULAR_CLIENT)).toThrow(
-        'Name cannot be empty',
+        'USER_NAME_VALIDATION_ERROR',
       );
     });
 

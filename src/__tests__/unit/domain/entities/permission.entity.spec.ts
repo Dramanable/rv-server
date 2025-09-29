@@ -137,7 +137,7 @@ describe('Permission Entity', () => {
 
       // When & Then
       expect(() => systemPermission.deactivate()).toThrow(
-        'System permissions cannot be deactivated',
+        'Cannot deactivate system permission: SYSTEM_ADMIN',
       );
     });
 
@@ -202,7 +202,7 @@ describe('Permission Entity', () => {
           displayName: 'Updated Name',
           description: 'Updated description',
         }),
-      ).toThrow('System permissions cannot be modified');
+      ).toThrow('Cannot modify system permission: SYSTEM_ADMIN');
     });
   });
 

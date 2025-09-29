@@ -117,7 +117,7 @@ describe('PricingConfig Value Object', () => {
     it('should reject empty rules', () => {
       // WHEN & THEN
       expect(() => PricingConfig.createVariable([])).toThrow(
-        'Variable pricing requires at least one rule',
+        'pricingRules is required',
       );
     });
 

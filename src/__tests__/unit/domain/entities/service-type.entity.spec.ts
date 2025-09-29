@@ -208,7 +208,7 @@ describe('ServiceType Entity', () => {
 
       // When & Then
       expect(() => ServiceType.reconstruct(props as any)).toThrow(
-        'ServiceType ID is required for reconstruction',
+        'SERVICE_TYPE_ID_REQUIRED',
       );
     });
   });
