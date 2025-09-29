@@ -42,6 +42,7 @@ import { GetBusinessUseCase } from '@application/use-cases/business/get-business
 import { ListBusinessUseCase } from '@application/use-cases/business/list-business.use-case';
 import { ManageBusinessHoursUseCase } from '@application/use-cases/business/manage-business-hours.use-case';
 import { UpdateBusinessUseCase } from '@application/use-cases/business/update-business.use-case';
+import { UpdateBusinessConfigurationUseCase } from '@application/use-cases/business/update-business-configuration.use-case';
 
 // Calendar Use Cases
 import { CreateCalendarUseCase } from '@application/use-cases/calendar/create-calendar.use-case';
@@ -74,6 +75,13 @@ import { DeleteServiceTypeUseCase } from '@application/use-cases/service-types/d
 // import { GetServiceTypeByIdUseCase } from '@application/use-cases/service-types/get-service-type-by-id.use-case';
 import { ListServiceTypesUseCase } from '@application/use-cases/service-types/list-service-types.use-case';
 import { UpdateServiceTypeUseCase } from '@application/use-cases/service-types/update-service-type.use-case';
+
+// Skill Use Cases
+import { CreateSkillUseCase } from '@application/use-cases/skills/create-skill.use-case';
+import { DeleteSkillUseCase } from '@application/use-cases/skills/delete-skill.use-case';
+import { GetSkillByIdUseCase } from '@application/use-cases/skills/get-skill-by-id.use-case';
+import { ListSkillsUseCase } from '@application/use-cases/skills/list-skills.use-case';
+import { UpdateSkillUseCase } from '@application/use-cases/skills/update-skill.use-case';
 
 // Staff Use Cases
 import { CreateStaffUseCase } from '@application/use-cases/staff/create-staff.use-case';
@@ -139,6 +147,7 @@ import { BusinessHoursController } from './controllers/business-hours.controller
 import { BusinessImageController } from './controllers/business-image.controller';
 import { BusinessSectorController } from './controllers/business-sector.controller';
 import { BusinessController } from './controllers/business.controller';
+import { BusinessConfigurationController } from './controllers/business-configuration.controller';
 import { CalendarTypesController } from './controllers/calendar-types.controller';
 import { CalendarController } from './controllers/calendar.controller';
 import { NotificationController } from './controllers/notification.controller';
@@ -148,6 +157,7 @@ import { ProfessionalController } from './controllers/professional.controller';
 import { RoleManagementController } from './controllers/role-management.controller';
 import { ServiceTypeController } from './controllers/service-type.controller';
 import { ServiceController } from './controllers/service.controller';
+import { SkillController } from './controllers/skill.controller';
 // Removed ServiceTestController - debugging completed
 import { StaffAvailabilityController } from './controllers/staff-availability.controller';
 import { StaffController } from './controllers/staff.controller';
@@ -176,12 +186,14 @@ import { PresentationCookieService } from './services/cookie.service';
     AuthController,
     UserController,
     BusinessController,
+    BusinessConfigurationController,
     BusinessHoursController,
     BusinessSectorController,
     CalendarController,
     CalendarTypesController,
     ServiceController,
     ServiceTypeController,
+    SkillController,
     // ServiceTestController removed - debugging completed
     StaffController,
     StaffAvailabilityController,
@@ -478,6 +490,12 @@ import { PresentationCookieService } from './services/cookie.service';
         new ManageBusinessHoursUseCase(businessRepo, logger, i18n),
       inject: [TOKENS.BUSINESS_REPOSITORY, TOKENS.LOGGER, TOKENS.I18N_SERVICE],
     },
+    {
+      provide: TOKENS.UPDATE_BUSINESS_CONFIGURATION_USE_CASE,
+      useFactory: (businessRepo, logger, i18n) =>
+        new UpdateBusinessConfigurationUseCase(businessRepo, logger, i18n),
+      inject: [TOKENS.BUSINESS_REPOSITORY, TOKENS.LOGGER, TOKENS.I18N_SERVICE],
+    },
 
     // 📅 Calendar Use Cases
     {
@@ -679,6 +697,53 @@ import { PresentationCookieService } from './services/cookie.service';
         TOKENS.SERVICE_TYPE_REPOSITORY,
         TOKENS.LOGGER,
         TOKENS.I18N_SERVICE,
+      ],
+    },
+
+    // 🎯 Skill Use Cases
+    {
+      provide: TOKENS.CREATE_SKILL_USE_CASE,
+      useFactory: (skillRepo, logger, i18n, auditService) =>
+        new CreateSkillUseCase(skillRepo, logger, i18n, auditService),
+      inject: [
+        TOKENS.SKILL_REPOSITORY,
+        TOKENS.LOGGER,
+        TOKENS.I18N_SERVICE,
+        TOKENS.AUDIT_SERVICE,
+      ],
+    },
+    {
+      provide: TOKENS.GET_SKILL_BY_ID_USE_CASE,
+      useFactory: (skillRepo, logger, i18n) =>
+        new GetSkillByIdUseCase(skillRepo, logger, i18n),
+      inject: [TOKENS.SKILL_REPOSITORY, TOKENS.LOGGER, TOKENS.I18N_SERVICE],
+    },
+    {
+      provide: TOKENS.LIST_SKILLS_USE_CASE,
+      useFactory: (skillRepo, logger, i18n) =>
+        new ListSkillsUseCase(skillRepo, logger, i18n),
+      inject: [TOKENS.SKILL_REPOSITORY, TOKENS.LOGGER, TOKENS.I18N_SERVICE],
+    },
+    {
+      provide: TOKENS.UPDATE_SKILL_USE_CASE,
+      useFactory: (skillRepo, logger, i18n, auditService) =>
+        new UpdateSkillUseCase(skillRepo, logger, i18n, auditService),
+      inject: [
+        TOKENS.SKILL_REPOSITORY,
+        TOKENS.LOGGER,
+        TOKENS.I18N_SERVICE,
+        TOKENS.AUDIT_SERVICE,
+      ],
+    },
+    {
+      provide: TOKENS.DELETE_SKILL_USE_CASE,
+      useFactory: (skillRepo, logger, i18n, auditService) =>
+        new DeleteSkillUseCase(skillRepo, logger, i18n, auditService),
+      inject: [
+        TOKENS.SKILL_REPOSITORY,
+        TOKENS.LOGGER,
+        TOKENS.I18N_SERVICE,
+        TOKENS.AUDIT_SERVICE,
       ],
     },
 

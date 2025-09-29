@@ -1,5 +1,6 @@
 import { BusinessRuleViolationError } from '../exceptions/domain.exceptions';
 import { Address } from '../value-objects/address.value-object';
+import { BusinessConfiguration } from '../value-objects/business-configuration.value-object';
 import { BusinessGallery } from '../value-objects/business-gallery.value-object';
 import { BusinessHours } from '../value-objects/business-hours.value-object';
 import { BusinessId } from '../value-objects/business-id.value-object';
@@ -75,6 +76,7 @@ export class Business {
     private readonly _address: Address,
     private readonly _contactInfo: BusinessContactInfo,
     private readonly _settings: BusinessSettings,
+    private readonly _configuration: BusinessConfiguration,
     private _businessHours: BusinessHours,
     private _status: BusinessStatus,
     private readonly _createdAt: Date,
@@ -136,6 +138,10 @@ export class Business {
     return this._settings;
   }
 
+  get configuration(): BusinessConfiguration {
+    return this._configuration;
+  }
+
   get status(): BusinessStatus {
     return this._status;
   }
@@ -180,6 +186,9 @@ export class Business {
       },
     };
 
+    // Create default configuration
+    const defaultConfiguration = BusinessConfiguration.createDefault();
+
     return new Business(
       BusinessId.generate(),
       BusinessName.create(data.name),
@@ -192,6 +201,7 @@ export class Business {
       data.address,
       data.contactInfo,
       { ...defaultSettings, ...data.settings },
+      defaultConfiguration,
       data.businessHours ||
         BusinessHours.createStandardWeek([1, 2, 3, 4, 5], '09:00', '17:00'),
       BusinessStatus.PENDING_VERIFICATION,
@@ -265,6 +275,7 @@ export class Business {
       this._address,
       this._contactInfo,
       this._settings,
+      this._configuration,
       this._businessHours,
       this._status,
       this._createdAt,
@@ -298,6 +309,7 @@ export class Business {
       this._address,
       this._contactInfo,
       this._settings,
+      this._configuration,
       this._businessHours,
       this._status,
       this._createdAt,
@@ -340,6 +352,65 @@ export class Business {
         },
       },
     });
+  }
+
+  // Reconstruction method for persistence
+  static reconstruct(data: {
+    id: BusinessId;
+    name: string;
+    description: string;
+    slogan: string;
+    sector: BusinessSector | null;
+    address: Address;
+    contactInfo: BusinessContactInfo;
+    branding: BusinessBranding;
+    settings: BusinessSettings;
+    configuration: BusinessConfiguration;
+    businessHours: BusinessHours;
+    status: BusinessStatus;
+    createdAt: Date;
+    updatedAt: Date;
+  }): Business {
+    return new Business(
+      data.id,
+      BusinessName.create(data.name),
+      data.description,
+      data.slogan,
+      data.sector,
+      data.branding,
+      BusinessGallery.empty(), // Gallery will be loaded separately
+      null, // SEO profile will be loaded separately
+      data.address,
+      data.contactInfo,
+      data.settings,
+      data.configuration,
+      data.businessHours,
+      data.status,
+      data.createdAt,
+      data.updatedAt,
+    );
+  }
+
+  // Configuration management
+  public updateConfiguration(configuration: BusinessConfiguration): Business {
+    return new Business(
+      this._id,
+      this._name,
+      this._description,
+      this._slogan,
+      this._sector,
+      this._branding,
+      this._gallery,
+      this._seoProfile,
+      this._address,
+      this._contactInfo,
+      this._settings,
+      configuration,
+      this._businessHours,
+      this._status,
+      this._createdAt,
+      new Date(),
+    );
   }
 
   // Domain events

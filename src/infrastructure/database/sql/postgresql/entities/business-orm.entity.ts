@@ -117,6 +117,41 @@ export class BusinessOrmEntity {
     };
   };
 
+  // ✅ Business Configuration - New structured configuration fields
+  @Column({
+    type: 'varchar',
+    length: 50,
+    nullable: false,
+    default: 'Europe/Paris',
+  })
+  @Index()
+  configuration_timezone!: string;
+
+  @Column({ type: 'varchar', length: 3, nullable: false, default: 'EUR' })
+  @Index()
+  configuration_currency!: string;
+
+  @Column({ type: 'varchar', length: 10, nullable: false, default: 'fr-FR' })
+  configuration_locale!: string;
+
+  @Column({ type: 'smallint', nullable: false, default: 1 })
+  configuration_first_day_of_week!: number;
+
+  @Column({
+    type: 'int',
+    array: true,
+    nullable: false,
+    default: [1, 2, 3, 4, 5],
+  })
+  configuration_business_week_days!: number[];
+
+  @Column({
+    type: 'timestamptz',
+    nullable: false,
+    default: () => 'CURRENT_TIMESTAMP',
+  })
+  configuration_updated_at!: Date;
+
   // Business Hours as JSON - Flexible schedule management
   @Column({ type: 'jsonb', nullable: false })
   business_hours!: {

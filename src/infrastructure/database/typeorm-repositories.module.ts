@@ -23,6 +23,7 @@ import { ProfessionalRoleOrmEntity } from './sql/postgresql/entities/professiona
 import { RefreshTokenOrmEntity } from './sql/postgresql/entities/refresh-token-orm.entity';
 import { ServiceOrmEntity } from './sql/postgresql/entities/service-orm.entity';
 import { ServiceTypeOrmEntity } from './sql/postgresql/entities/service-type-orm.entity';
+import { SkillOrmEntity } from './sql/postgresql/entities/skill-orm.entity';
 import { StaffOrmEntity } from './sql/postgresql/entities/staff-orm.entity';
 import { UserOrmEntity } from './sql/postgresql/entities/user-orm.entity';
 
@@ -41,6 +42,7 @@ import { TypeOrmProfessionalRoleRepository } from './sql/postgresql/repositories
 import { TypeOrmProfessionalRepository } from './sql/postgresql/repositories/typeorm-professional.repository';
 import { TypeOrmServiceTypeRepository } from './sql/postgresql/repositories/typeorm-service-type.repository';
 import { TypeOrmServiceRepository } from './sql/postgresql/repositories/typeorm-service.repository';
+import { TypeOrmSkillRepository } from './sql/postgresql/repositories/typeorm-skill.repository';
 import { TypeOrmStaffRepository } from './sql/postgresql/repositories/typeorm-staff.repository';
 import { TypeOrmUserRepository } from './sql/postgresql/repositories/user.repository';
 
@@ -68,6 +70,7 @@ import { RbacPermissionService } from '../services/rbac-permission.service';
       PermissionOrmEntity,
       ServiceOrmEntity,
       ServiceTypeOrmEntity, // ✅ ServiceType entity
+      SkillOrmEntity, // ✅ Skill entity
       StaffOrmEntity,
       CalendarOrmEntity,
       CalendarTypeOrmEntity,
@@ -117,6 +120,12 @@ import { RbacPermissionService } from '../services/rbac-permission.service';
     {
       provide: TOKENS.SERVICE_TYPE_REPOSITORY,
       useClass: TypeOrmServiceTypeRepository,
+    },
+
+    // Skill Repository
+    {
+      provide: TOKENS.SKILL_REPOSITORY,
+      useClass: TypeOrmSkillRepository,
     },
 
     // Staff Repository
@@ -224,6 +233,7 @@ import { RbacPermissionService } from '../services/rbac-permission.service';
     TOKENS.BUSINESS_REPOSITORY,
     TOKENS.SERVICE_REPOSITORY,
     TOKENS.SERVICE_TYPE_REPOSITORY, // ✅ ServiceType repository
+    TOKENS.SKILL_REPOSITORY, // ✅ Skill repository
     TOKENS.STAFF_REPOSITORY,
     TOKENS.CALENDAR_REPOSITORY,
     TOKENS.CALENDAR_TYPE_REPOSITORY,

@@ -1,16 +1,40 @@
-# 📖 Documentation Swagger / OpenAPI
+# � Complete API Documentation Hub
 
-Ce dossier contient la documentation API générée automatiquement au format OpenAPI 3.0 (Swagger).
+Welcome to the **Appointment Management System API** documentation - your one-stop resource for integrating with our enterprise-grade backend.
 
-## 🚀 Génération de la Documentation
+## 🚀 Quick Access
 
-### Scripts Disponibles
+### 📖 Main Documentation Files
+
+- **[🎯 API Documentation Hub](API_DOCUMENTATION_HUB.md)** - Complete overview and navigation
+- **[📋 Complete API Reference](API_COMPLETE_DOCUMENTATION.md)** - Full endpoint documentation
+- **[🎨 Frontend Integration Guide](FRONTEND_INTEGRATION_GUIDE.md)** - React, Vue, Angular examples
+- **[🧪 Testing Guide](API_TESTING_GUIDE.md)** - cURL, Postman, testing workflows
+- **[📝 TypeScript Types](TYPESCRIPT_TYPES.md)** - Complete type definitions
+
+### 🏛️ Architecture Documentation
+
+- **[🎯 Clean Architecture](CLEAN_ARCHITECTURE_DEPENDENCIES.md)** - Domain-driven design
+- **[🗄️ Database Architecture](DATABASE_ARCHITECTURE.md)** - Schema and relationships
+- **[� Migration Guide](MIGRATIONS.md)** - Database version control
+
+## 🌐 Live Documentation
+
+### Interactive Swagger UI
+
+```
+🌐 API Documentation: http://localhost:3000/api/docs
+📊 JSON Schema: http://localhost:3000/api/docs-json
+💾 Download Collection: curl http://localhost:3000/api/docs-json > collection.json
+```
+
+### Scripts Available
 
 ```bash
-# Générer la documentation Swagger JSON
+# Generate Swagger JSON documentation
 npm run swagger:generate
 
-# Valider la documentation générée
+# Validate generated documentation
 npm run swagger:validate
 ```
 
@@ -22,11 +46,13 @@ npm run swagger:validate
 ## 📊 Contenu de la Documentation
 
 ### 🔐 Endpoints d'Authentification
+
 - `POST /api/v1/auth/login` - Connexion utilisateur (définit les cookies HttpOnly)
 - `POST /api/v1/auth/refresh` - Renouvellement automatique des tokens
 - `POST /api/v1/auth/logout` - Déconnexion (efface les cookies)
 
 ### 👥 Endpoints de Gestion Utilisateurs
+
 - `GET /api/v1/users` - Recherche et liste des utilisateurs
 - `POST /api/v1/users` - Création d'un nouvel utilisateur
 - `GET /api/v1/users/{id}` - Récupération d'un utilisateur par ID
@@ -34,6 +60,7 @@ npm run swagger:validate
 - `DELETE /api/v1/users/{id}` - Suppression d'un utilisateur
 
 ### 🏥 Endpoints de Santé
+
 - `GET /health` - Vérification de l'état de l'application
 
 ## 🔧 Sécurité
@@ -59,6 +86,7 @@ La documentation inclut deux méthodes d'authentification :
 Cette API utilise des **cookies HttpOnly** pour l'authentification au lieu des headers Authorization traditionnels.
 
 **Avantages :**
+
 - 🔒 **Sécurité renforcée** : Les tokens ne sont pas accessibles via JavaScript
 - 🚀 **Gestion automatique** : Pas de gestion manuelle des tokens côté client
 - 🛡️ **Protection CSRF** : Intégration avec les mécanismes de protection CSRF
@@ -67,12 +95,15 @@ Cette API utilise des **cookies HttpOnly** pour l'authentification au lieu des h
 ## 📋 Schémas de Données
 
 ### UserResponse
+
 Représentation d'un utilisateur dans les réponses API.
 
 ### CreateUserRequest
+
 Données requises pour créer un nouvel utilisateur.
 
 ### UpdateUserRequest
+
 Données optionnelles pour mettre à jour un utilisateur existant.
 
 ## 🎯 Extensions Personnalisées
@@ -166,4 +197,4 @@ Le fichier `swagger-stats.json` contient :
 
 ---
 
-*Documentation générée automatiquement par le script `generate-swagger-simple.ts`*
+_Documentation générée automatiquement par le script `generate-swagger-simple.ts`_

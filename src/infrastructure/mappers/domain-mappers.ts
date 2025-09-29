@@ -798,6 +798,13 @@ export class BusinessMapper {
       address, // Position 9
       contactInfo, // Position 10
       settings, // Position 11
+      {
+        timezone: 'Europe/Paris',
+        currency: 'EUR',
+        locale: 'fr-FR',
+        firstDayOfWeek: 1,
+        businessWeekDays: [1, 2, 3, 4, 5],
+      } as any, // Position 12 - Temp config object
       businessHours, // Position 12
       entity.status as any, // Position 13
       entity.created_at, // Position 14

@@ -15,6 +15,7 @@ import { NotificationOrmEntity } from './sql/postgresql/entities/notification-or
 import { ProfessionalOrmEntity } from './sql/postgresql/entities/professional-orm.entity';
 import { RefreshTokenOrmEntity } from './sql/postgresql/entities/refresh-token-orm.entity';
 import { ServiceOrmEntity } from './sql/postgresql/entities/service-orm.entity';
+import { SkillOrmEntity } from './sql/postgresql/entities/skill-orm.entity';
 import { StaffOrmEntity } from './sql/postgresql/entities/staff-orm.entity';
 import { UserOrmEntity } from './sql/postgresql/entities/user-orm.entity';
 
@@ -57,6 +58,7 @@ import { BusinessImageOrmEntity } from './sql/postgresql/entities/business-image
           BusinessSectorOrmEntity,
           CalendarOrmEntity,
           ServiceOrmEntity,
+          SkillOrmEntity,
           StaffOrmEntity,
           NotificationOrmEntity,
           ProfessionalOrmEntity,
