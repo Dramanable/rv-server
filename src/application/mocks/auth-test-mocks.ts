@@ -2,13 +2,11 @@
  * 🧪 Mocks Typés pour Tests - Application Layer
  */
 
-import type { Mocked } from 'jest-mock';
 import type { UserRepository } from '../../domain/repositories/user.repository.interface';
-import type { IPasswordService } from '../ports/password.service.interface';
 import type { AuthenticationService } from '../ports/authentication.port';
-import type { Logger } from '../ports/logger.port';
 import type { I18nService } from '../ports/i18n.port';
-import type { IConfigService } from '../ports/config.port';
+import type { Logger } from '../ports/logger.port';
+import type { IPasswordService } from '../ports/password.service.interface';
 
 export function createMockUserRepository(): jest.Mocked<UserRepository> {
   return {

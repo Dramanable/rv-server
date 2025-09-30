@@ -1,4 +1,3 @@
-import { DatabaseSchemaError } from '@infrastructure/exceptions/infrastructure.exceptions';
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
 /**
@@ -31,7 +30,7 @@ export class RemoveAppointmentTypeColumn1758913392000
 
     // Validation du nom de schéma (sécurité)
     if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(schema)) {
-      throw new DatabaseSchemaError(schema, 'Invalid schema name format');
+      throw new Error(`Invalid schema name format: ${schema}`);
     }
 
     return schema;

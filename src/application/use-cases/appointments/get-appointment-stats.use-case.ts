@@ -17,13 +17,13 @@ import {
   AppointmentStatisticsCriteria,
 } from '../../../domain/repositories/appointment.repository.interface';
 import { AppointmentStatistics } from '../../../domain/value-objects/appointment-statistics.vo';
-import {
-  StatisticsPeriod,
-  PeriodType,
-} from '../../../domain/value-objects/statistics-period.vo';
 import { BusinessId } from '../../../domain/value-objects/business-id.value-object';
-import { UserId } from '../../../domain/value-objects/user-id.value-object';
 import { ServiceId } from '../../../domain/value-objects/service-id.value-object';
+import {
+  PeriodType,
+  StatisticsPeriod,
+} from '../../../domain/value-objects/statistics-period.vo';
+import { UserId } from '../../../domain/value-objects/user-id.value-object';
 import { UserRole } from '../../../shared/enums/user-role.enum';
 import { Result } from '../../../shared/result';
 

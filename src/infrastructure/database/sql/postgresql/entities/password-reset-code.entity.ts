@@ -20,8 +20,8 @@ import { PasswordResetCode } from '../../../../../domain/entities/password-reset
 
 @Entity('password_reset_codes')
 @Index(['code'], { unique: true })
-@Index(['user_id', 'expires_at'])
-@Index(['expires_at']) // Pour le nettoyage des codes expirés
+@Index(['userId', 'expiresAt'])
+@Index(['expiresAt']) // Pour le nettoyage des codes expirés
 export class PasswordResetCodeEntity {
   @PrimaryGeneratedColumn('uuid')
   id!: string;

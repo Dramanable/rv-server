@@ -34,7 +34,6 @@ export class BusinessOrmEntity {
   id!: string;
 
   @Column({ type: 'varchar', length: 200, nullable: false })
-  @Index()
   name!: string;
 
   @Column({ type: 'text', nullable: false })
@@ -55,7 +54,6 @@ export class BusinessOrmEntity {
     enum: ['ACTIVE', 'INACTIVE', 'SUSPENDED', 'PENDING_VERIFICATION'],
     default: 'PENDING_VERIFICATION',
   })
-  @Index()
   status!: string;
 
   @Column({ type: 'varchar', length: 300, nullable: false })

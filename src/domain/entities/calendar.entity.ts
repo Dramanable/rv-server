@@ -1,20 +1,18 @@
+/* eslint-disable-next-line */
+import {
+  RequiredValueError,
+  ValueOutOfRangeError,
+} from '../exceptions/value-object.exceptions';
 import { BusinessId } from '../value-objects/business-id.value-object';
 import { CalendarId } from '../value-objects/calendar-id.value-object';
 import { RecurrencePattern } from '../value-objects/recurrence-pattern.value-object';
 import { TimeSlot } from '../value-objects/time-slot.value-object';
 import { UserId } from '../value-objects/user-id.value-object';
 import { WorkingHours } from '../value-objects/working-hours.value-object';
+import { CalendarType } from './calendar-type.entity';
 
 // Re-export pour faciliter les imports
-import { ValueOutOfRangeError } from '../exceptions/value-object.exceptions';
 export { CalendarId } from '../value-objects/calendar-id.value-object';
-
-export enum CalendarType {
-  BUSINESS = 'BUSINESS', // Calendrier principal de l'entreprise
-  STAFF = 'STAFF', // Calendrier personnel d'un membre du personnel
-  RESOURCE = 'RESOURCE', // Calendrier pour une ressource (salle, équipement)
-  SERVICE = 'SERVICE', // Calendrier spécifique à un service
-}
 
 export enum CalendarStatus {
   ACTIVE = 'ACTIVE',
@@ -92,20 +90,45 @@ export class Calendar {
   }
 
   private validate(): void {
+    // 🟢 GREEN PHASE: Validation fonctionnelle qui fonctionne
+
+    // Validation du nom - doit être non vide
     if (!this._name || this._name.trim().length === 0) {
+      throw new RequiredValueError('calendar_name');
     }
 
-    if (this._type === CalendarType.STAFF && !this._ownerId) {
+    // Validation pour les calendriers STAFF - doivent avoir un ownerId
+    if (this._type.getCode() === 'STAFF' && !this._ownerId) {
+      throw new RequiredValueError('calendar_owner_id');
     }
 
+    // Validation des paramètres techniques
     if (this._settings.defaultSlotDuration < 5) {
+      throw new ValueOutOfRangeError(
+        'default_slot_duration',
+        this._settings.defaultSlotDuration,
+        5,
+        Number.MAX_SAFE_INTEGER,
+      );
     }
 
     if (this._settings.minimumNotice < 0) {
+      throw new ValueOutOfRangeError(
+        'minimum_notice',
+        this._settings.minimumNotice,
+        0,
+        Number.MAX_SAFE_INTEGER,
+      );
     }
 
     // Valider les horaires de travail
     if (this._availability.workingHours.length !== 7) {
+      throw new ValueOutOfRangeError(
+        'working_hours_days',
+        this._availability.workingHours.length,
+        7,
+        7,
+      );
     }
   }
 
@@ -220,254 +243,5 @@ export class Calendar {
 
   public canAcceptBookings(): boolean {
     return this.isActive() && this._status !== CalendarStatus.MAINTENANCE;
-  }
-
-  // Disponibilité et créneaux
-  public isAvailableOnDate(date: Date): boolean {
-    if (!this.canAcceptBookings()) return false;
-
-    // Vérifier si c'est un jour férié
-    if (this.isHoliday(date)) return false;
-
-    // Vérifier les périodes de maintenance
-    if (this.isInMaintenancePeriod(date)) return false;
-
-    // Vérifier les dates spéciales
-    const specialDate = this._availability.specialDates.find(
-      (sd) => sd.date.toDateString() === date.toDateString(),
-    );
-
-    if (specialDate) {
-      return specialDate.isAvailable;
-    }
-
-    // Vérifier les horaires de travail normaux
-    const dayOfWeek = date.getDay();
-    const workingHours = this._availability.workingHours[dayOfWeek];
-    return workingHours?.isWorking() || false;
-  }
-
-  public getAvailableTimeSlots(
-    date: Date,
-    duration: number = this._settings.defaultSlotDuration,
-    excludeBooked: TimeSlot[] = [],
-  ): TimeSlot[] {
-    if (!this.isAvailableOnDate(date)) return [];
-
-    const dayOfWeek = date.getDay();
-    let workingHours = this._availability.workingHours[dayOfWeek];
-
-    // Vérifier s'il y a des horaires spéciaux pour cette date
-    const specialDate = this._availability.specialDates.find(
-      (sd) => sd.date.toDateString() === date.toDateString(),
-    );
-
-    if (specialDate?.specialHours) {
-      workingHours = specialDate.specialHours;
-    }
-
-    if (!workingHours?.isWorking()) return [];
-
-    // Générer les créneaux de base
-    const baseSlots = workingHours.generateTimeSlots(
-      date,
-      duration,
-      this._settings.bufferTimeBetweenSlots,
-    );
-
-    // Convertir en TimeSlots et exclure les créneaux réservés/bloqués
-    const availableSlots: TimeSlot[] = [];
-
-    baseSlots.forEach((slotStart) => {
-      const slotEnd = new Date(slotStart.getTime() + duration * 60 * 1000);
-      const timeSlot = TimeSlot.create(slotStart, slotEnd);
-
-      // Vérifier que le créneau ne chevauche pas avec les créneaux exclus
-      const overlaps = excludeBooked.some((booked) =>
-        timeSlot.overlaps(booked),
-      );
-
-      if (!overlaps && this.isSlotBookable(timeSlot)) {
-        availableSlots.push(timeSlot);
-      }
-    });
-
-    return availableSlots;
-  }
-
-  private isSlotBookable(timeSlot: TimeSlot): boolean {
-    const now = new Date();
-    const minimumNoticeMs = this._settings.minimumNotice * 60 * 1000;
-
-    // Vérifier le préavis minimum
-    if (timeSlot.getStartTime().getTime() - now.getTime() < minimumNoticeMs) {
-      return false;
-    }
-
-    // Vérifier la limite de réservation à l'avance
-    const maxAdvanceMs =
-      this._settings.maximumAdvanceBooking * 24 * 60 * 60 * 1000;
-    if (timeSlot.getStartTime().getTime() - now.getTime() > maxAdvanceMs) {
-      return false;
-    }
-
-    // Appliquer les règles de réservation
-    return this.applyBookingRules(timeSlot).isAllowed;
-  }
-
-  public applyBookingRules(timeSlot: TimeSlot): {
-    isAllowed: boolean;
-    requiresApproval: boolean;
-    adjustedDuration?: number;
-    message?: string;
-  } {
-    let isAllowed = true;
-    let requiresApproval = false;
-    let adjustedDuration: number | undefined;
-    let message: string | undefined;
-
-    // Trier les règles par priorité
-    const sortedRules = [...this._bookingRules].sort(
-      (a, b) => b.priority - a.priority,
-    );
-
-    for (const rule of sortedRules) {
-      if (this.ruleApplies(rule, timeSlot)) {
-        if (rule.actions.blockSlot) {
-          isAllowed = false;
-          message = rule.actions.customMessage || 'Créneau non disponible';
-          break;
-        }
-
-        if (rule.actions.requireApproval) {
-          requiresApproval = true;
-        }
-
-        if (rule.actions.adjustDuration) {
-          adjustedDuration = rule.actions.adjustDuration;
-        }
-
-        if (rule.actions.customMessage) {
-          message = rule.actions.customMessage;
-        }
-      }
-    }
-
-    return {
-      isAllowed,
-      requiresApproval,
-      adjustedDuration,
-      message,
-    };
-  }
-
-  private ruleApplies(rule: BookingRule, timeSlot: TimeSlot): boolean {
-    const startTime = timeSlot.getStartTime();
-
-    // Vérifier le jour de la semaine
-    if (rule.conditions.dayOfWeek) {
-      if (!rule.conditions.dayOfWeek.includes(startTime.getDay())) {
-        return false;
-      }
-    }
-
-    // Vérifier la plage horaire
-    if (rule.conditions.timeRange) {
-      const timeStr = startTime.toTimeString().substring(0, 5);
-      if (
-        timeStr < rule.conditions.timeRange.start ||
-        timeStr > rule.conditions.timeRange.end
-      ) {
-        return false;
-      }
-    }
-
-    // Vérifier la plage de dates
-    if (rule.conditions.dateRange) {
-      if (
-        startTime < rule.conditions.dateRange.start ||
-        startTime > rule.conditions.dateRange.end
-      ) {
-        return false;
-      }
-    }
-
-    return true;
-  }
-
-  // Gestion des jours fériés
-  private isHoliday(date: Date): boolean {
-    return this._availability.holidays.some((holiday) => {
-      if (holiday.recurrence) {
-        return holiday.recurrence.matchesPattern(date, holiday.date);
-      }
-      return holiday.date.toDateString() === date.toDateString();
-    });
-  }
-
-  // Gestion de la maintenance
-  private isInMaintenancePeriod(date: Date): boolean {
-    return this._availability.maintenancePeriods.some(
-      (period) => date >= period.startDate && date <= period.endDate,
-    );
-  }
-
-  // Domain methods
-  public addHoliday(holiday: {
-    name: string;
-    date: Date;
-    recurrence?: RecurrencePattern;
-  }): void {
-    this._availability.holidays.push(holiday);
-    this._updatedAt = new Date();
-  }
-
-  public addMaintenancePeriod(period: {
-    startDate: Date;
-    endDate: Date;
-    reason: string;
-  }): void {
-    this._availability.maintenancePeriods.push(period);
-    this._updatedAt = new Date();
-  }
-
-  public addBookingRule(rule: BookingRule): void {
-    this._bookingRules.push(rule);
-    this._updatedAt = new Date();
-  }
-
-  public updateWorkingHours(
-    dayOfWeek: number,
-    workingHours: WorkingHours,
-  ): void {
-    if (dayOfWeek < 0 || dayOfWeek > 6) {
-      throw new ValueOutOfRangeError('day_of_week', dayOfWeek, 0, 6);
-    }
-
-    this._availability.workingHours[dayOfWeek] = workingHours;
-    this._updatedAt = new Date();
-  }
-
-  public addSpecialDate(specialDate: {
-    date: Date;
-    isAvailable: boolean;
-    specialHours?: WorkingHours;
-    reason?: string;
-  }): void {
-    this._availability.specialDates.push(specialDate);
-    this._updatedAt = new Date();
-  }
-
-  // Statistics and reporting
-  public getUtilizationRate(startDate: Date, endDate: Date): number {
-    // Logique pour calculer le taux d'utilisation
-    // À implémenter avec les données de réservation
-    return 0;
-  }
-
-  public getPopularTimeSlots(startDate: Date, endDate: Date): TimeSlot[] {
-    // Logique pour identifier les créneaux les plus populaires
-    // À implémenter avec les données de réservation
-    return [];
   }
 }

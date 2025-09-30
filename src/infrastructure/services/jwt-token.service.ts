@@ -100,16 +100,14 @@ export class JwtTokenService {
     this.logger.info(this.i18n.t('operations.token.verify_attempt'), context);
 
     try {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const payload = this.jwtService.verify(token, { secret });
 
       this.logger.info(this.i18n.t('operations.token.verify_success'), {
         ...context,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+
         userId: payload.sub,
       });
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       return payload;
     } catch (error) {
       this.logger.warn(this.i18n.t('warnings.token.verify_failed'), {

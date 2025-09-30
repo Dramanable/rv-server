@@ -5,10 +5,10 @@
  * Génère un token de session temporaire pour permettre le changement de mot de passe.
  */
 
+import { DomainValidationError } from '../../../domain/exceptions/domain.exceptions';
 import { IPasswordResetCodeRepository } from '../../../domain/repositories/password-reset-code.repository';
 import { UserRepository } from '../../../domain/repositories/user.repository.interface';
 import { AuthenticationService } from '../../ports/authentication.port';
-import { DomainValidationError } from '../../../domain/exceptions/domain.exceptions';
 
 export interface VerifyPasswordResetCodeCommand {
   code: string;

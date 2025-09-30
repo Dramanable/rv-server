@@ -17,11 +17,11 @@ import { BusinessOrmEntity } from './sql/postgresql/entities/business-orm.entity
 import { BusinessSectorOrmEntity } from './sql/postgresql/entities/business-sector-orm.entity';
 import { CalendarOrmEntity } from './sql/postgresql/entities/calendar-orm.entity';
 import { CalendarTypeOrmEntity } from './sql/postgresql/entities/calendar-type-orm.entity';
+import { PasswordResetCodeEntity } from './sql/postgresql/entities/password-reset-code.entity';
 import { PermissionOrmEntity } from './sql/postgresql/entities/permission-orm.entity';
 import { ProfessionalOrmEntity } from './sql/postgresql/entities/professional-orm.entity';
 import { ProfessionalRoleOrmEntity } from './sql/postgresql/entities/professional-role-orm.entity';
 import { RefreshTokenOrmEntity } from './sql/postgresql/entities/refresh-token-orm.entity';
-import { PasswordResetCodeEntity } from './sql/postgresql/entities/password-reset-code.entity';
 import { ServiceOrmEntity } from './sql/postgresql/entities/service-orm.entity';
 import { ServiceTypeOrmEntity } from './sql/postgresql/entities/service-type-orm.entity';
 import { SkillOrmEntity } from './sql/postgresql/entities/skill-orm.entity';
@@ -33,8 +33,8 @@ import { BusinessContextOrmEntity } from './sql/postgresql/entities/business-con
 import { RoleAssignmentOrmEntity } from './sql/postgresql/entities/role-assignment-orm.entity';
 
 // Repository Implementations
-import { RefreshTokenOrmRepository } from './sql/postgresql/repositories/refresh-token-orm.repository';
 import { PasswordResetCodeRepository } from './sql/postgresql/repositories/password-reset-code.repository';
+import { RefreshTokenOrmRepository } from './sql/postgresql/repositories/refresh-token-orm.repository';
 import { TypeOrmAppointmentRepository } from './sql/postgresql/repositories/typeorm-appointment.repository';
 import { TypeOrmBusinessRepository } from './sql/postgresql/repositories/typeorm-business.repository';
 import { TypeOrmCalendarTypeRepository } from './sql/postgresql/repositories/typeorm-calendar-type.repository';

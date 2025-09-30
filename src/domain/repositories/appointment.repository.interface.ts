@@ -3,13 +3,13 @@ import {
   AppointmentId,
   AppointmentStatus,
 } from '../entities/appointment.entity';
+import { AppointmentStatisticsData } from '../value-objects/appointment-statistics.vo';
 import { BusinessId } from '../value-objects/business-id.value-object';
 import { CalendarId } from '../value-objects/calendar-id.value-object';
 import { Email } from '../value-objects/email.value-object';
 import { ServiceId } from '../value-objects/service-id.value-object';
-import { UserId } from '../value-objects/user-id.value-object';
-import { AppointmentStatisticsData } from '../value-objects/appointment-statistics.vo';
 import { StatisticsPeriod } from '../value-objects/statistics-period.vo';
+import { UserId } from '../value-objects/user-id.value-object';
 
 /**
  * 📅 APPOINTMENT REPOSITORY INTERFACE

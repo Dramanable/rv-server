@@ -1,36 +1,36 @@
 import {
-  Controller,
-  Post,
   Body,
+  Controller,
   HttpCode,
   HttpStatus,
+  Inject,
+  Post,
   UsePipes,
   ValidationPipe,
-  Inject,
 } from '@nestjs/common';
 import {
-  ApiTags,
+  ApiBadRequestResponse,
   ApiOperation,
   ApiResponse,
-  ApiBadRequestResponse,
-  ApiUnauthorizedResponse,
+  ApiTags,
   ApiTooManyRequestsResponse,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 
 // DTOs
 import {
+  CompletePasswordResetDto,
+  CompletePasswordResetResponseDto,
   RequestPasswordResetDto,
   RequestPasswordResetResponseDto,
   VerifyPasswordResetCodeDto,
   VerifyPasswordResetCodeResponseDto,
-  CompletePasswordResetDto,
-  CompletePasswordResetResponseDto,
 } from '../dtos/password-reset.dto';
 
 // Use Cases - Types only for typing
+import { CompletePasswordResetUseCase } from '../../application/use-cases/password-reset/complete-password-reset.use-case';
 import { RequestPasswordResetUseCase } from '../../application/use-cases/password-reset/request-password-reset.use-case';
 import { VerifyPasswordResetCodeUseCase } from '../../application/use-cases/password-reset/verify-password-reset-code.use-case';
-import { CompletePasswordResetUseCase } from '../../application/use-cases/password-reset/complete-password-reset.use-case';
 
 // Domain Errors
 import { ValidationError } from '../../domain/exceptions/domain.error';

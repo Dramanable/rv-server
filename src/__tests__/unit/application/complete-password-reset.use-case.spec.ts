@@ -4,13 +4,13 @@
  * Tests TDD pour le use case de finalisation de la réinitialisation de mot de passe
  */
 
-import { CompletePasswordResetUseCase } from '../../../application/use-cases/password-reset/complete-password-reset.use-case';
-import { UserRepository } from '../../../domain/repositories/user.repository.interface';
 import { AuthenticationService } from '../../../application/ports/authentication.port';
 import { IPasswordService } from '../../../application/ports/password.port';
+import { CompletePasswordResetUseCase } from '../../../application/use-cases/password-reset/complete-password-reset.use-case';
 import { User } from '../../../domain/entities/user.entity';
-import { Email } from '../../../domain/value-objects/email.vo';
 import { DomainValidationError } from '../../../domain/exceptions/domain.exceptions';
+import { UserRepository } from '../../../domain/repositories/user.repository.interface';
+import { Email } from '../../../domain/value-objects/email.vo';
 
 // Mocks pour les tests
 class MockUserRepository implements Partial<UserRepository> {

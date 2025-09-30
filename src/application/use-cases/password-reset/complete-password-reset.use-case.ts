@@ -6,10 +6,10 @@
  * met à jour l'utilisateur et génère de nouveaux tokens d'authentification.
  */
 
+import { DomainValidationError } from '../../../domain/exceptions/domain.exceptions';
 import { UserRepository } from '../../../domain/repositories/user.repository.interface';
 import { AuthenticationService } from '../../ports/authentication.port';
 import { IPasswordService } from '../../ports/password.port';
-import { DomainValidationError } from '../../../domain/exceptions/domain.exceptions';
 
 export interface CompletePasswordResetCommand {
   sessionToken: string;

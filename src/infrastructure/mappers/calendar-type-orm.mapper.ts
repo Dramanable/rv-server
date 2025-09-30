@@ -44,7 +44,7 @@ export class CalendarTypeOrmMapper {
     const settings = orm.settings || {};
 
     return CalendarType.reconstruct({
-      id,
+      id: id.getValue(),
       businessId,
       name: orm.name,
       code: orm.code,

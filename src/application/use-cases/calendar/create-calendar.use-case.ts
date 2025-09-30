@@ -4,10 +4,8 @@
  * Création d'un calendrier avec validation métier et permissions
  * ✅ AUCUNE dépendance NestJS - Respect de la Clean Architecture
  */
-import {
-  Calendar,
-  CalendarType,
-} from '../../../domain/entities/calendar.entity';
+import { Calendar } from '../../../domain/entities/calendar.entity';
+import { CalendarType } from '../../../domain/entities/calendar-type.entity';
 import type { CalendarRepository } from '../../../domain/repositories/calendar.repository.interface';
 import type { BusinessRepository } from '../../../domain/repositories/business.repository.interface';
 import type { Logger } from '../../../application/ports/logger.port';
@@ -244,10 +242,11 @@ export class CreateCalendarUseCase {
 
     // Validation du type de calendrier
     if (!Object.values(CalendarType).includes(request.type)) {
+      const typeValue = JSON.stringify(request.type);
       throw new CalendarValidationError(
         'type',
-        request.type,
-        `Invalid calendar type: ${request.type}`,
+        typeValue,
+        `Invalid calendar type: ${typeValue}`,
       );
     }
 

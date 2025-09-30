@@ -1,3 +1,6 @@
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import {
   Appointment,
   AppointmentId,
@@ -16,9 +19,6 @@ import { Email } from '../../../../../domain/value-objects/email.value-object';
 import { ServiceId } from '../../../../../domain/value-objects/service-id.value-object';
 import { UserId } from '../../../../../domain/value-objects/user-id.value-object';
 import { AppointmentOrmEntity } from '../entities/appointment-orm.entity';
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 
 // Placeholder exception class pour éviter les erreurs de compilation
 class InfrastructureException extends Error {

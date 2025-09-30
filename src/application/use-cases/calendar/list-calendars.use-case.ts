@@ -14,8 +14,8 @@ import type { Logger } from '../../../application/ports/logger.port';
 import {
   Calendar,
   CalendarStatus,
-  CalendarType,
 } from '../../../domain/entities/calendar.entity';
+import { CalendarType } from '../../../domain/entities/calendar-type.entity';
 import type { CalendarRepository } from '../../../domain/repositories/calendar.repository.interface';
 import type { UserRepository } from '../../../domain/repositories/user.repository.interface';
 import { BusinessId } from '../../../domain/value-objects/business-id.value-object';

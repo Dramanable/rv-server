@@ -8,14 +8,11 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  Index,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
 @Entity('business_sectors')
-@Index(['code'], { unique: true })
-@Index(['isActive'])
 export class BusinessSectorOrmEntity {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
