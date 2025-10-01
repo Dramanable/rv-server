@@ -40,7 +40,11 @@
     "jest.config.js",
     "scripts/**/*.ts",
     "src/infrastructure/database/migrations/nosql/**/*.ts",
-    "src/infrastructure/database/modules/dynamic-repository.module.ts"
+    "src/infrastructure/database/modules/dynamic-repository.module.ts",
+    "sdk/**/*.ts",
+    "sdk/**/*.tsx",
+    "frontend-sdk/**/*.ts",
+    "frontend-sdk/**/*.tsx"
   ],
   "ts-node": {
     "compilerOptions": {

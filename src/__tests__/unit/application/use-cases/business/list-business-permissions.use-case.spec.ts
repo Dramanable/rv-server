@@ -41,7 +41,7 @@ describe('🟢 ListBusinessUseCase - TDD Permission Tests', () => {
       const methodString = ListBusinessUseCase.toString();
 
       // Verify LIST_BUSINESSES permission is hardcoded in the implementation
-      expect(methodString).toContain("'LIST_BUSINESSES'");
+      expect(methodString).toContain('"LIST_BUSINESSES"');
       console.log(
         '📋 VALIDATED: ListBusinessUseCase enforces LIST_BUSINESSES permission',
       );

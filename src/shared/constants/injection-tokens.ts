@@ -115,6 +115,7 @@ export const APPLICATION_TOKENS = {
 
   // Notification Services
   NOTIFICATION_SERVICE: 'NotificationService',
+  NOTIFICATION_BUSINESS_ENRICHER: 'NotificationBusinessEnricher', // ✅ NOUVEAU: Service d'enrichissement business
   USER_SEGMENTATION_SERVICE: 'UserSegmentationService',
   CAMPAIGN_SERVICE: 'CampaignService',
 

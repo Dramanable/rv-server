@@ -134,22 +134,11 @@ export class BillingCycle {
       throw new DomainError('All usage costs must be in the same currency');
     }
 
+    // Ajouter le coût et les compteurs depuis NotificationCost
     this._totalCost = this._totalCost.add(cost);
+    this._emailCount += cost.getEmailCount();
+    this._smsCount += cost.getSmsCount();
     this._updatedAt = new Date();
-
-    // Estimation du nombre de notifications basée sur les coûts standards
-    // Note: Cette logique pourrait être améliorée avec des métadonnées plus précises
-    if (cost.getAmount() > 0) {
-      const emailCostEstimate = Math.round(cost.getAmount() / 0.02);
-      const smsCostEstimate = Math.round(cost.getAmount() / 0.08);
-
-      // Heuristique simple : si le coût est un multiple de 0.02, c'est probablement des emails
-      if (cost.getAmount() % 0.02 === 0) {
-        this._emailCount += emailCostEstimate;
-      } else {
-        this._smsCount += smsCostEstimate;
-      }
-    }
   }
 
   finalize(): void {
@@ -177,7 +166,8 @@ export class BillingCycle {
 
   private getDurationInDays(): number {
     const timeDiff = this._endDate.getTime() - this._startDate.getTime();
-    return Math.ceil(timeDiff / (1000 * 3600 * 24));
+    // Ajouter 1 pour inclure les deux dates (calcul inclusif)
+    return Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1;
   }
 
   getBillingSummary(): BillingSummary {

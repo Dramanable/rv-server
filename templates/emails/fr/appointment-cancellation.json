@@ -1,0 +1,60 @@
+{
+  "template": "appointment-cancellation",
+  "type": "appointment",
+  "event": "appointment_cancelled",
+  "language": "fr",
+  "subject": "✖️ Rendez-vous annulé - {{serviceName}} le {{appointmentDate}} | {{businessName}}",
+  "description": "Template d'annulation de rendez-vous avec informations de remboursement et alternatives",
+  "variables": {
+    "business": [
+      "businessName",
+      "businessDescription",
+      "businessLogo",
+      "businessAddress",
+      "businessPhone",
+      "businessEmail",
+      "businessWebsite",
+      "businessApologyMessage",
+      "businessCancellationMessage",
+      "businessConfidentialityMessage",
+      "brandPrimaryColor",
+      "brandSecondaryColor"
+    ],
+    "appointment": [
+      "appointmentId",
+      "appointmentDate",
+      "appointmentTime",
+      "serviceName",
+      "serviceDuration",
+      "servicePrice",
+      "staffName",
+      "clientName"
+    ],
+    "cancellation": [
+      "cancellationDate",
+      "cancellationTime",
+      "cancellationReason",
+      "cancelledBy"
+    ],
+    "refund": [
+      "refundAmount",
+      "refundTimeframe",
+      "refundMethod",
+      "refundReference"
+    ],
+    "alternatives": ["alternativeServices"],
+    "actions": ["bookingUrl", "alternativeSlotsUrl", "supportUrl"],
+    "flags": ["isCancelledByBusiness", "hasRefund", "hasAlternativeServices"]
+  },
+  "category": "transactional",
+  "priority": "high",
+  "businessRules": {
+    "refundPolicy": "automatic",
+    "alternativeBookingEnabled": true,
+    "supportContactEnabled": true
+  },
+  "author": "System",
+  "version": "1.0.0",
+  "created": "2024-12-30",
+  "lastModified": "2024-12-30"
+}

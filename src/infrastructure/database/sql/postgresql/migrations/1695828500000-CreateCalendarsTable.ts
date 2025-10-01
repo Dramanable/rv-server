@@ -1,4 +1,3 @@
-import { DatabaseSchemaError } from '@infrastructure/exceptions/infrastructure.exceptions';
 import { MigrationInterface, QueryRunner, Table } from 'typeorm';
 
 export class CreateCalendarsTable1695828500000 implements MigrationInterface {

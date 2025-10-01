@@ -33,8 +33,8 @@ describe('NotificationCost Value Object', () => {
 
     it('should throw error for invalid currency', () => {
       // Act & Assert
-      expect(() => NotificationCost.create(0.02, 'GBP' as any)).toThrow(
-        'Currency must be EUR or USD',
+      expect(() => NotificationCost.create(0.02, 'INVALID' as any)).toThrow(
+        'Currency must be a valid 3-letter ISO currency code (e.g., EUR, USD, GBP, CAD, JPY)',
       );
     });
 

@@ -1,0 +1,50 @@
+{
+  "template": "appointment-reminder",
+  "type": "appointment",
+  "event": "appointment_reminder",
+  "language": "en",
+  "subject": "⏰ Reminder: {{serviceName}} tomorrow at {{appointmentTime}} | {{businessName}}",
+  "description": "Appointment reminder template with countdown and preparation tips",
+  "variables": {
+    "business": [
+      "businessName",
+      "businessDescription",
+      "businessLogo",
+      "businessAddress",
+      "businessPhone",
+      "businessEmail",
+      "businessWebsite",
+      "businessReminderMessage",
+      "businessConfidentialityMessage",
+      "brandPrimaryColor",
+      "brandSecondaryColor"
+    ],
+    "appointment": [
+      "appointmentId",
+      "appointmentDate",
+      "appointmentTime",
+      "serviceName",
+      "serviceDuration",
+      "servicePrice",
+      "staffName",
+      "clientName",
+      "hoursUntilAppointment",
+      "reminderTimeBefore"
+    ],
+    "service": ["servicePreparationInstructions"],
+    "practical": ["parkingInstructions"],
+    "actions": ["confirmUrl", "rescheduleUrl", "cancelUrl", "unsubscribeUrl"],
+    "flags": ["isUrgentReminder"]
+  },
+  "category": "transactional",
+  "priority": "high",
+  "timing": {
+    "defaultSendBefore": "24h",
+    "urgentSendBefore": "2h",
+    "lastChanceSendBefore": "30min"
+  },
+  "author": "System",
+  "version": "1.0.0",
+  "created": "2024-12-30",
+  "lastModified": "2024-12-30"
+}

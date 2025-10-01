@@ -1,4 +1,3 @@
-import { DatabaseSchemaError } from '@infrastructure/exceptions/infrastructure.exceptions';
 import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm';
 
 export class CreateAppointmentsTable1695829200000

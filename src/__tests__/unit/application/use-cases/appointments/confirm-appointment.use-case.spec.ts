@@ -10,6 +10,38 @@ import {
 } from '../../../../../application/use-cases/appointments/confirm-appointment.use-case';
 import { AppointmentRepository } from '../../../../../domain/repositories/appointment.repository.interface';
 
+// ===== MOCK FACTORY =====
+
+const createMockAppointmentRepository =
+  (): jest.Mocked<AppointmentRepository> => {
+    return {
+      findById: jest.fn(),
+      findByBusinessId: jest.fn(),
+      findByCalendarId: jest.fn(),
+      findByServiceId: jest.fn(),
+      findByClientEmail: jest.fn(),
+      findByStaffId: jest.fn(),
+      findByStatus: jest.fn(),
+      search: jest.fn(),
+      save: jest.fn(),
+      delete: jest.fn(),
+      findConflictingAppointments: jest.fn(),
+      findAvailableSlots: jest.fn(),
+      getUpcomingAppointments: jest.fn(),
+      getOverdueAppointments: jest.fn(),
+      findRecurringAppointments: jest.fn(),
+      getAppointmentsForReminders: jest.fn(),
+      bulkUpdateStatus: jest.fn(),
+      bulkCancel: jest.fn(),
+      getClientHistory: jest.fn(),
+      findAppointmentsNeedingFollowUp: jest.fn(),
+      getCalendarUtilization: jest.fn(),
+      count: jest.fn(),
+      export: jest.fn(),
+      getStatistics: jest.fn(),
+    } as jest.Mocked<AppointmentRepository>;
+  };
+
 // ===== TESTS =====
 
 describe('ConfirmAppointmentUseCase', () => {

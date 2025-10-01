@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appointment Reminder - {{businessName}}</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #ff9500 0%, #ff6b35 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+        .business-logo {
+            max-width: 150px;
+            height: auto;
+            margin-bottom: 15px;
+            border-radius: 8px;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 300;
+        }
+        .content {
+            padding: 30px;
+        }
+        .reminder-badge {
+            background: linear-gradient(135deg, #ff9500 0%, #ff6b35 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 25px;
+            text-align: center;
+            margin: 20px 0;
+            font-size: 18px;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 149, 0, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(255, 149, 0, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 149, 0, 0); }
+        }
+        .countdown {
+            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            margin: 25px 0;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .countdown .time-left {
+            font-size: 24px;
+            display: block;
+            margin-top: 5px;
+        }
+        .appointment-details {
+            background-color: #fff3cd;
+            border: 2px solid #ff9500;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 25px 0;
+        }
+        .appointment-details h3 {
+            color: #ff6b35;
+            margin-top: 0;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+        }
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #ffeaa7;
+        }
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+        .detail-label {
+            font-weight: bold;
+            color: #856404;
+        }
+        .detail-value {
+            color: #212529;
+            text-align: right;
+        }
+        .business-info {
+            background: linear-gradient(135deg, rgba(255, 149, 0, 0.1) 0%, rgba(255, 107, 53, 0.1) 100%);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+        .business-info h3 {
+            color: #ff6b35;
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+        }
+        .contact-item {
+            margin: 8px 0;
+            display: flex;
+            align-items: center;
+        }
+        .contact-icon {
+            margin-right: 10px;
+            font-size: 16px;
+        }
+        .action-buttons {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+        .btn-warning {
+            background: linear-gradient(135deg, #ff9500 0%, #ff6b35 100%);
+            color: white;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+            color: white;
+        }
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .urgent-notice {
+            background-color: #f8d7da;
+            border: 2px solid #dc3545;
+            color: #721c24;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 25px 0;
+            text-align: center;
+        }
+        .urgent-notice h4 {
+            color: #dc3545;
+            margin-top: 0;
+            font-size: 18px;
+        }
+        .preparation-tips {
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+        .preparation-tips h4 {
+            color: #0c5460;
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+        }
+        .footer {
+            background-color: #212529;
+            color: #adb5bd;
+            padding: 25px;
+            text-align: center;
+            font-size: 14px;
+        }
+        .footer-business {
+            color: white;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        @media (max-width: 600px) {
+            .container {
+                margin: 0;
+                box-shadow: none;
+            }
+            .header, .content, .footer {
+                padding: 20px;
+            }
+            .appointment-details, .business-info {
+                padding: 15px;
+            }
+            .detail-row {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .detail-value {
+                text-align: left;
+                margin-top: 5px;
+            }
+            .btn {
+                display: block;
+                margin: 10px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            {{#if businessLogo}}
+            <img src="{{businessLogo}}" alt="{{businessName}}" class="business-logo">
+            {{/if}}
+            <h1>{{businessName}}</h1>
+            <p style="margin: 0; opacity: 0.9;">{{businessDescription}}</p>
+        </div>
+
+        <div class="content">
+            <div class="reminder-badge">
+                ⏰ Appointment Reminder
+            </div>
+
+            {{#if isBookingForSelf}}
+            <p style="font-size: 16px; text-align: center; color: #495057;">
+                Hello <strong>{{clientName}}</strong>,<br>
+                We're reminding you of your upcoming appointment.
+            </p>
+            {{else}}
+            <p style="font-size: 16px; text-align: center; color: #495057;">
+                Hello <strong>{{clientName}}</strong>,<br>
+                We're reminding you of the upcoming appointment for 
+                <strong>{{beneficiaryName}}</strong>{{#if relationshipToBeneficiary}} (your {{relationshipToBeneficiary}}){{/if}}.
+            </p>
+            {{/if}}
+
+            {{#if hoursUntilAppointment}}
+            <div class="countdown">
+                🕐 Your appointment in
+                <span class="time-left">{{hoursUntilAppointment}}</span>
+            </div>
+            {{/if}}
+
+            <div class="appointment-details">
+                {{#if isBookingForSelf}}
+                <h3>📅 Your Appointment</h3>
+                {{else}}
+                <h3>📅 Appointment for {{beneficiaryName}}</h3>
+                {{/if}}
+                {{#unless isBookingForSelf}}
+                <div class="detail-row">
+                    <span class="detail-label">Beneficiary</span>
+                    <span class="detail-value"><strong>{{beneficiaryName}}</strong>{{#if beneficiaryAge}} ({{beneficiaryAge}} years old){{/if}}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Booked by</span>
+                    <span class="detail-value">{{clientName}}{{#if relationshipToBeneficiary}} ({{relationshipToBeneficiary}}){{/if}}</span>
+                </div>
+                {{/unless}}
+                <div class="detail-row">
+                    <span class="detail-label">Service</span>
+                    <span class="detail-value"><strong>{{serviceName}}</strong></span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Date & Time</span>
+                    <span class="detail-value"><strong>{{appointmentDate}} at {{appointmentTime}}</strong></span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Duration</span>
+                    <span class="detail-value">{{serviceDuration}}</span>
+                </div>
+                {{#if servicePrice}}
+                <div class="detail-row">
+                    <span class="detail-label">Price</span>
+                    <span class="detail-value"><strong>{{servicePrice}}</strong></span>
+                </div>
+                {{/if}}
+                {{#if staffName}}
+                <div class="detail-row">
+                    <span class="detail-label">Practitioner</span>
+                    <span class="detail-value">{{staffName}}</span>
+                </div>
+                {{/if}}
+                <div class="detail-row">
+                    <span class="detail-label">Reference</span>
+                    <span class="detail-value"><code>{{appointmentId}}</code></span>
+                </div>
+            </div>
+
+            {{#if isUrgentReminder}}
+            <div class="urgent-notice">
+                <h4>⚠️ Last chance!</h4>
+                <p>This appointment is in less than 2 hours. Please confirm your attendance or cancel if you cannot come.</p>
+            </div>
+            {{/if}}
+
+            <div class="business-info">
+                <h3>📍 Where to Find Us</h3>
+                {{#if businessAddress}}
+                <div class="contact-item">
+                    <span class="contact-icon">📍</span>
+                    <span>{{businessAddress}}</span>
+                </div>
+                {{/if}}
+                {{#if businessPhone}}
+                <div class="contact-item">
+                    <span class="contact-icon">📞</span>
+                    <span><a href="tel:{{businessPhone}}" style="color: inherit; text-decoration: none;">{{businessPhone}}</a></span>
+                </div>
+                {{/if}}
+                {{#if businessEmail}}
+                <div class="contact-item">
+                    <span class="contact-icon">📧</span>
+                    <span><a href="mailto:{{businessEmail}}" style="color: inherit; text-decoration: none;">{{businessEmail}}</a></span>
+                </div>
+                {{/if}}
+                {{#if businessWebsite}}
+                <div class="contact-item">
+                    <span class="contact-icon">🌐</span>
+                    <span><a href="{{businessWebsite}}" style="color: #ff6b35; text-decoration: none;">{{businessWebsite}}</a></span>
+                </div>
+                {{/if}}
+            </div>
+
+            <div class="action-buttons">
+                {{#if confirmUrl}}
+                <a href="{{confirmUrl}}" class="btn btn-primary">✅ Confirm Attendance</a>
+                {{/if}}
+                {{#if rescheduleUrl}}
+                <a href="{{rescheduleUrl}}" class="btn btn-warning">📅 Reschedule</a>
+                {{/if}}
+                {{#if cancelUrl}}
+                <a href="{{cancelUrl}}" class="btn btn-danger">✖️ Cancel</a>
+                {{/if}}
+            </div>
+
+            <div class="preparation-tips">
+                <h4>📋 Tips for Your Appointment</h4>
+                <ul>
+                    {{#if isBookingForSelf}}
+                    <li><strong>Arrive 10 minutes early</strong> to complete formalities</li>
+                    <li><strong>Bring ID</strong> if this is your first visit</li>
+                    {{else}}
+                    <li><strong>Make sure {{beneficiaryName}} arrives 10 minutes early</strong> to complete formalities</li>
+                    <li><strong>{{beneficiaryName}} should bring ID</strong> if this is their first visit</li>
+                    {{/if}}
+                    {{#if servicePreparationInstructions}}
+                    <li>{{servicePreparationInstructions}}</li>
+                    {{/if}}
+                    {{#if businessPhone}}
+                    <li><strong>In case of emergency</strong>, contact us at {{businessPhone}}</li>
+                    {{/if}}
+                    <li><strong>Parking:</strong> {{#if parkingInstructions}}{{parkingInstructions}}{{else}}Check parking conditions near our location{{/if}}</li>
+                </ul>
+            </div>
+
+            {{#if businessReminderMessage}}
+            <div style="background-color: #e8f5e8; border: 1px solid #28a745; border-radius: 8px; padding: 20px; margin: 25px 0;">
+                <h4 style="color: #155724; margin-top: 0;">💬 Message from {{businessName}}</h4>
+                <p style="color: #155724; margin-bottom: 0;">{{businessReminderMessage}}</p>
+            </div>
+            {{/if}}
+        </div>
+
+        <div class="footer">
+            <div class="footer-business">{{businessName}}</div>
+            <p>This reminder was sent automatically {{reminderTimeBefore}} before your appointment.</p>
+            {{#if businessConfidentialityMessage}}
+            <p><small>{{businessConfidentialityMessage}}</small></p>
+            {{/if}}
+            <p><small>To unsubscribe from automatic reminders, <a href="{{unsubscribeUrl}}" style="color: #adb5bd;">click here</a>.</small></p>
+        </div>
+    </div>
+</body>
+</html>

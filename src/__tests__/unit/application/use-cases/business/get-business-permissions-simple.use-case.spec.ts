@@ -46,7 +46,7 @@ describe('� GetBusinessUseCase - TDD GREEN State for Permission Refactor', () 
       const methodString = GetBusinessUseCase.toString();
 
       // Verify READ_BUSINESS permission is hardcoded in the implementation
-      expect(methodString).toContain("'READ_BUSINESS'");
+      expect(methodString).toContain('"READ_BUSINESS"');
       console.log(
         '📋 VALIDATED: GetBusinessUseCase enforces READ_BUSINESS permission',
       );

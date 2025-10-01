@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appointment Cancelled - {{businessName}}</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+        .business-logo {
+            max-width: 150px;
+            height: auto;
+            margin-bottom: 15px;
+            border-radius: 8px;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 300;
+        }
+        .content {
+            padding: 30px;
+        }
+        .cancellation-badge {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 25px;
+            text-align: center;
+            margin: 20px 0;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .appointment-details {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 25px 0;
+            opacity: 0.7;
+            position: relative;
+        }
+        .appointment-details::after {
+            content: "CANCELLED";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-15deg);
+            color: #dc3545;
+            font-size: 32px;
+            font-weight: bold;
+            opacity: 0.3;
+            z-index: 1;
+        }
+        .appointment-details h3 {
+            color: #6c757d;
+            margin-top: 0;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+        }
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+        .detail-label {
+            font-weight: bold;
+            color: #6c757d;
+        }
+        .detail-value {
+            color: #495057;
+            text-align: right;
+            text-decoration: line-through;
+        }
+        .cancellation-info {
+            background: linear-gradient(135deg, rgba(220, 53, 69, 0.1) 0%, rgba(200, 35, 51, 0.1) 100%);
+            border: 1px solid #dc3545;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+        .cancellation-info h3 {
+            color: #dc3545;
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+        }
+        .business-info {
+            background: linear-gradient(135deg, rgba(108, 117, 125, 0.1) 0%, rgba(73, 80, 87, 0.1) 100%);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+        .business-info h3 {
+            color: #495057;
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+        }
+        .contact-item {
+            margin: 8px 0;
+            display: flex;
+            align-items: center;
+        }
+        .contact-icon {
+            margin-right: 10px;
+            font-size: 16px;
+        }
+        .action-buttons {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+            color: white;
+        }
+        .btn-success {
+            background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+            color: white;
+        }
+        .btn-info {
+            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+            color: white;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .refund-info {
+            background-color: #d4edda;
+            border: 1px solid #28a745;
+            color: #155724;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+        .refund-info h4 {
+            color: #28a745;
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+        }
+        .alternative-suggestions {
+            background-color: #e2e3e5;
+            border: 1px solid #6c757d;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+        .alternative-suggestions h4 {
+            color: #495057;
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+        }
+        .footer {
+            background-color: #212529;
+            color: #adb5bd;
+            padding: 25px;
+            text-align: center;
+            font-size: 14px;
+        }
+        .footer-business {
+            color: white;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        @media (max-width: 600px) {
+            .container {
+                margin: 0;
+                box-shadow: none;
+            }
+            .header, .content, .footer {
+                padding: 20px;
+            }
+            .appointment-details, .business-info {
+                padding: 15px;
+            }
+            .detail-row {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .detail-value {
+                text-align: left;
+                margin-top: 5px;
+            }
+            .btn {
+                display: block;
+                margin: 10px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            {{#if businessLogo}}
+            <img src="{{businessLogo}}" alt="{{businessName}}" class="business-logo">
+            {{/if}}
+            <h1>{{businessName}}</h1>
+            <p style="margin: 0; opacity: 0.9;">{{businessDescription}}</p>
+        </div>
+
+        <div class="content">
+            <div class="cancellation-badge">
+                ✖️ Appointment Cancelled
+            </div>
+
+            {{#if isBookingForSelf}}
+            <p style="font-size: 16px; text-align: center; color: #495057;">
+                Hello <strong>{{clientName}}</strong>,<br>
+                Your appointment has been cancelled {{#if cancelledBy}}by {{cancelledBy}}{{/if}}.
+            </p>
+            {{else}}
+            <p style="font-size: 16px; text-align: center; color: #495057;">
+                Hello <strong>{{clientName}}</strong>,<br>
+                The appointment for <strong>{{beneficiaryName}}</strong>{{#if relationshipToBeneficiary}} (your {{relationshipToBeneficiary}}){{/if}} 
+                has been cancelled {{#if cancelledBy}}by {{cancelledBy}}{{/if}}.
+            </p>
+            {{/if}}
+
+            <div class="appointment-details">
+                {{#if isBookingForSelf}}
+                <h3>📅 Cancelled Appointment</h3>
+                {{else}}
+                <h3>📅 Cancelled Appointment for {{beneficiaryName}}</h3>
+                {{/if}}
+                {{#unless isBookingForSelf}}
+                <div class="detail-row">
+                    <span class="detail-label">Beneficiary</span>
+                    <span class="detail-value"><strong>{{beneficiaryName}}</strong>{{#if beneficiaryAge}} ({{beneficiaryAge}} years old){{/if}}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Booked by</span>
+                    <span class="detail-value">{{clientName}}{{#if relationshipToBeneficiary}} ({{relationshipToBeneficiary}}){{/if}}</span>
+                </div>
+                {{/unless}}
+                <div class="detail-row">
+                    <span class="detail-label">Service</span>
+                    <span class="detail-value">{{serviceName}}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Date & Time</span>
+                    <span class="detail-value">{{appointmentDate}} at {{appointmentTime}}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Duration</span>
+                    <span class="detail-value">{{serviceDuration}}</span>
+                </div>
+                {{#if servicePrice}}
+                <div class="detail-row">
+                    <span class="detail-label">Price</span>
+                    <span class="detail-value">{{servicePrice}}</span>
+                </div>
+                {{/if}}
+                {{#if staffName}}
+                <div class="detail-row">
+                    <span class="detail-label">Practitioner</span>
+                    <span class="detail-value">{{staffName}}</span>
+                </div>
+                {{/if}}
+                <div class="detail-row">
+                    <span class="detail-label">Reference</span>
+                    <span class="detail-value"><code>{{appointmentId}}</code></span>
+                </div>
+            </div>
+
+            <div class="cancellation-info">
+                <h3>ℹ️ Cancellation Details</h3>
+                <div style="margin: 10px 0;">
+                    <strong>Cancellation Date:</strong> {{cancellationDate}} at {{cancellationTime}}
+                </div>
+                {{#if cancellationReason}}
+                <div style="margin: 10px 0;">
+                    <strong>Reason:</strong> {{cancellationReason}}
+                </div>
+                {{/if}}
+                {{#if isCancelledByBusiness}}
+                <div style="margin: 10px 0;">
+                    <strong>Cancelled by:</strong> {{businessName}}
+                    {{#if businessApologyMessage}}
+                    <br><em>{{businessApologyMessage}}</em>
+                    {{/if}}
+                </div>
+                {{/if}}
+            </div>
+
+            {{#if hasRefund}}
+            <div class="refund-info">
+                <h4>💰 Refund Information</h4>
+                <p><strong>Refund Amount:</strong> {{refundAmount}}</p>
+                <p><strong>Processing Time:</strong> {{refundTimeframe}}</p>
+                <p><strong>Refund Method:</strong> {{refundMethod}}</p>
+                {{#if refundReference}}
+                <p><strong>Reference:</strong> <code>{{refundReference}}</code></p>
+                {{/if}}
+            </div>
+            {{/if}}
+
+            <div class="business-info">
+                <h3>📞 Contact Us</h3>
+                {{#if businessAddress}}
+                <div class="contact-item">
+                    <span class="contact-icon">📍</span>
+                    <span>{{businessAddress}}</span>
+                </div>
+                {{/if}}
+                {{#if businessPhone}}
+                <div class="contact-item">
+                    <span class="contact-icon">📞</span>
+                    <span><a href="tel:{{businessPhone}}" style="color: inherit; text-decoration: none;">{{businessPhone}}</a></span>
+                </div>
+                {{/if}}
+                {{#if businessEmail}}
+                <div class="contact-item">
+                    <span class="contact-icon">📧</span>
+                    <span><a href="mailto:{{businessEmail}}" style="color: inherit; text-decoration: none;">{{businessEmail}}</a></span>
+                </div>
+                {{/if}}
+                {{#if businessWebsite}}
+                <div class="contact-item">
+                    <span class="contact-icon">🌐</span>
+                    <span><a href="{{businessWebsite}}" style="color: #495057; text-decoration: none;">{{businessWebsite}}</a></span>
+                </div>
+                {{/if}}
+            </div>
+
+            <div class="action-buttons">
+                {{#if bookingUrl}}
+                <a href="{{bookingUrl}}" class="btn btn-primary">📅 New Appointment</a>
+                {{/if}}
+                {{#if alternativeSlotsUrl}}
+                <a href="{{alternativeSlotsUrl}}" class="btn btn-success">🔄 Available Slots</a>
+                {{/if}}
+                {{#if supportUrl}}
+                <a href="{{supportUrl}}" class="btn btn-info">💬 Contact Us</a>
+                {{/if}}
+            </div>
+
+            {{#if hasAlternativeServices}}
+            <div class="alternative-suggestions">
+                <h4>💡 Our Other Services</h4>
+                <p>Discover our other services that might interest you:</p>
+                <ul>
+                    {{#each alternativeServices}}
+                    <li><strong>{{name}}</strong> - {{description}} ({{duration}}, {{price}})</li>
+                    {{/each}}
+                </ul>
+            </div>
+            {{/if}}
+
+            {{#if businessCancellationMessage}}
+            <div style="background-color: #e2e3e5; border: 1px solid #6c757d; border-radius: 8px; padding: 20px; margin: 25px 0;">
+                <h4 style="color: #495057; margin-top: 0;">💬 Message from {{businessName}}</h4>
+                <p style="color: #495057; margin-bottom: 0;">{{businessCancellationMessage}}</p>
+            </div>
+            {{/if}}
+
+            <div style="background-color: #fff3cd; border: 1px solid #ffeaa7; border-radius: 8px; padding: 20px; margin: 25px 0; text-align: center;">
+                {{#if isBookingForSelf}}
+                <p style="margin: 0; color: #856404;">
+                    <strong>🙏 We apologize for any inconvenience.</strong><br>
+                    We hope to see you again soon at {{businessName}}!
+                </p>
+                {{else}}
+                <p style="margin: 0; color: #856404;">
+                    <strong>🙏 We apologize for any inconvenience.</strong><br>
+                    We hope to see you and {{beneficiaryName}} again soon at {{businessName}}!
+                </p>
+                {{/if}}
+            </div>
+        </div>
+
+        <div class="footer">
+            <div class="footer-business">{{businessName}}</div>
+            <p>This cancellation email was sent automatically on {{cancellationDate}} at {{cancellationTime}}.</p>
+            {{#if businessConfidentialityMessage}}
+            <p><small>{{businessConfidentialityMessage}}</small></p>
+            {{/if}}
+        </div>
+    </div>
+</body>
+</html>

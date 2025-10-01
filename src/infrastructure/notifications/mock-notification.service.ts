@@ -196,13 +196,25 @@ export class MockNotificationService implements INotificationService {
       serviceName: string;
       appointmentDate: string;
       appointmentTime: string;
+      patientName?: string;
+      relationshipToPatient?: string;
+      isBookingForSelf?: boolean;
     },
   ): Promise<NotificationResult> {
+    const isForSelf = appointmentData.isBookingForSelf ?? true;
+    const patientInfo = isForSelf
+      ? appointmentData.clientName
+      : `${appointmentData.patientName} (${appointmentData.relationshipToPatient})`;
+
+    const contentMessage = isForSelf
+      ? `Nouveau rendez-vous réservé par ${appointmentData.clientName} pour ${appointmentData.serviceName} le ${appointmentData.appointmentDate} à ${appointmentData.appointmentTime}`
+      : `Nouveau rendez-vous réservé par ${appointmentData.clientName} pour ${patientInfo} - ${appointmentData.serviceName} le ${appointmentData.appointmentDate} à ${appointmentData.appointmentTime}`;
+
     return this.sendNotification({
       recipientId,
       type: NotificationType.APPOINTMENT_CONFIRMATION,
       channel: NotificationChannel.IN_APP,
-      content: `Nouveau rendez-vous réservé par ${appointmentData.clientName} pour ${appointmentData.serviceName} le ${appointmentData.appointmentDate} à ${appointmentData.appointmentTime}`,
+      content: contentMessage,
       priority: NotificationPriority.HIGH,
       subject: 'Nouveau rendez-vous',
       metadata: appointmentData,
@@ -216,15 +228,27 @@ export class MockNotificationService implements INotificationService {
       serviceName: string;
       appointmentDate: string;
       appointmentTime: string;
+      patientName?: string;
+      relationshipToPatient?: string;
+      isBookingForSelf?: boolean;
     },
   ): Promise<NotificationResult> {
+    const isForSelf = appointmentData.isBookingForSelf ?? true;
+    const contentMessage = isForSelf
+      ? `Votre rendez-vous ${appointmentData.serviceName} du ${appointmentData.appointmentDate} à ${appointmentData.appointmentTime} a été confirmé`
+      : `Le rendez-vous de ${appointmentData.patientName} (${appointmentData.relationshipToPatient}) pour ${appointmentData.serviceName} du ${appointmentData.appointmentDate} à ${appointmentData.appointmentTime} a été confirmé`;
+
+    const subjectMessage = isForSelf
+      ? 'Rendez-vous confirmé'
+      : `Rendez-vous de ${appointmentData.patientName} confirmé`;
+
     return this.sendNotification({
       recipientId,
       type: NotificationType.APPOINTMENT_CONFIRMATION,
       channel: NotificationChannel.IN_APP,
-      content: `Votre rendez-vous ${appointmentData.serviceName} du ${appointmentData.appointmentDate} à ${appointmentData.appointmentTime} a été confirmé`,
+      content: contentMessage,
       priority: NotificationPriority.NORMAL,
-      subject: 'Rendez-vous confirmé',
+      subject: subjectMessage,
       metadata: appointmentData,
     });
   }

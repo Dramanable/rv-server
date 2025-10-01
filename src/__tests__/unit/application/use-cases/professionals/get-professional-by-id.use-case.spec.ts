@@ -6,6 +6,10 @@
 
 import { I18nService } from '@application/ports/i18n.port';
 import { Logger } from '@application/ports/logger.port';
+import {
+  GetProfessionalByIdUseCase,
+  GetProfessionalByIdRequest,
+} from '@application/use-cases/professionals/get-professional-by-id.use-case';
 import { Professional } from '@domain/entities/professional.entity';
 import { ProfessionalNotFoundError } from '@domain/exceptions/professional.exceptions';
 import { IProfessionalRepository } from '@domain/repositories/professional.repository';

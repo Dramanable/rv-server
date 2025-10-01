@@ -1,0 +1,45 @@
+{
+  "template": "appointment-confirmation",
+  "type": "appointment",
+  "event": "appointment_confirmed",
+  "language": "en",
+  "subject": "✅ Appointment Confirmed - {{serviceName}} on {{appointmentDate}} | {{businessName}}",
+  "description": "Appointment confirmation template with complete business branding",
+  "variables": {
+    "business": [
+      "businessName",
+      "businessDescription",
+      "businessLogo",
+      "businessAddress",
+      "businessPhone",
+      "businessEmail",
+      "businessWebsite",
+      "businessWelcomeMessage",
+      "businessConfidentialityMessage",
+      "brandPrimaryColor",
+      "brandSecondaryColor",
+      "facebookUrl",
+      "instagramUrl",
+      "linkedinUrl",
+      "twitterUrl"
+    ],
+    "appointment": [
+      "appointmentId",
+      "appointmentDate",
+      "appointmentTime",
+      "serviceName",
+      "serviceDuration",
+      "servicePrice",
+      "staffName",
+      "clientName"
+    ],
+    "actions": ["rescheduleUrl", "cancelUrl", "bookingUrl"],
+    "flags": ["socialMediaSection"]
+  },
+  "category": "transactional",
+  "priority": "high",
+  "author": "System",
+  "version": "1.0.0",
+  "created": "2024-12-30",
+  "lastModified": "2024-12-30"
+}

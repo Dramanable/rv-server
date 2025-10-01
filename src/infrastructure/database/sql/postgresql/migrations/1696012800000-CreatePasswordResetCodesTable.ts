@@ -17,11 +17,21 @@ export class CreatePasswordResetCodesTable1696012800000
 {
   name = 'CreatePasswordResetCodesTable1696012800000';
 
+  private getSchemaName(): string {
+    const schema = process.env.DB_SCHEMA || 'public';
+    if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(schema)) {
+      throw new Error(`Invalid schema name format: ${schema}`);
+    }
+    return schema;
+  }
+
   public async up(queryRunner: QueryRunner): Promise<void> {
+    const schema = this.getSchemaName();
+
     // Créer la table password_reset_codes
     await queryRunner.createTable(
       new Table({
-        name: 'password_reset_codes',
+        name: `${schema}.password_reset_codes`,
         columns: [
           {
             name: 'id',
@@ -127,21 +137,23 @@ export class CreatePasswordResetCodesTable1696012800000
 
     await queryRunner.query(`
       CREATE TRIGGER update_password_reset_codes_updated_at
-      BEFORE UPDATE ON password_reset_codes
+      BEFORE UPDATE ON "${schema}"."password_reset_codes"
       FOR EACH ROW
       EXECUTE FUNCTION update_updated_at_column();
     `);
 
     // Commentaires sur la table
     await queryRunner.query(`
-      COMMENT ON TABLE password_reset_codes IS 'Codes temporaires à 4 chiffres pour la réinitialisation de mot de passe';
+      COMMENT ON TABLE "${schema}"."password_reset_codes" IS 'Codes temporaires à 4 chiffres pour la réinitialisation de mot de passe';
     `);
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
+    const schema = this.getSchemaName();
+
     // Supprimer le trigger
     await queryRunner.query(
-      'DROP TRIGGER IF EXISTS update_password_reset_codes_updated_at ON password_reset_codes',
+      `DROP TRIGGER IF EXISTS update_password_reset_codes_updated_at ON "${schema}"."password_reset_codes"`,
     );
 
     // Supprimer la fonction (seulement si elle n'est pas utilisée ailleurs)
@@ -149,25 +161,25 @@ export class CreatePasswordResetCodesTable1696012800000
 
     // Supprimer les index
     await queryRunner.dropIndex(
-      'password_reset_codes',
+      `${schema}.password_reset_codes`,
       'IDX_password_reset_codes_expires_at',
     );
     await queryRunner.dropIndex(
-      'password_reset_codes',
+      `${schema}.password_reset_codes`,
       'IDX_password_reset_codes_user_expires',
     );
     await queryRunner.dropIndex(
-      'password_reset_codes',
+      `${schema}.password_reset_codes`,
       'IDX_password_reset_codes_code_unique',
     );
 
     // Supprimer la clé étrangère
     await queryRunner.dropForeignKey(
-      'password_reset_codes',
+      `${schema}.password_reset_codes`,
       'FK_password_reset_codes_user',
     );
 
     // Supprimer la table
-    await queryRunner.dropTable('password_reset_codes');
+    await queryRunner.dropTable(`${schema}.password_reset_codes`);
   }
 }

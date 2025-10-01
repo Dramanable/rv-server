@@ -1,4 +1,3 @@
-import { DatabaseSchemaError } from '@infrastructure/exceptions/infrastructure.exceptions';
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class AddAppointmentForeignKeys1695830000000

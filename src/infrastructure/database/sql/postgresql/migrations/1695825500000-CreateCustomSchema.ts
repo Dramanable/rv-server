@@ -1,4 +1,3 @@
-import { DatabaseSchemaError } from '@infrastructure/exceptions/infrastructure.exceptions';
 import { MigrationInterface, QueryRunner } from 'typeorm';
 import { getSchemaName } from '../utils/migration-utils';
 

@@ -22,10 +22,67 @@ export enum NotificationTemplateType {
 }
 
 /**
- * Structure des variables de template
+ * Structure complète des variables de template avec business info
  */
 export interface TemplateVariables {
   readonly [key: string]: string | number | Date | boolean | undefined;
+
+  // ✅ Variables Client/Bénéficiaire - Support rendez-vous pour autrui
+  readonly clientName?: string; // Nom du client qui prend RDV
+  readonly clientEmail?: string; // Email du client qui prend RDV
+  readonly clientPhone?: string; // Téléphone du client qui prend RDV
+  readonly beneficiaryName?: string; // Nom du bénéficiaire du service (si différent du client)
+  readonly beneficiaryAge?: string; // Âge du bénéficiaire (utile pour enfants)
+  readonly relationshipToBeneficiary?: string; // "pour votre fils", "pour votre épouse", etc.
+  readonly isBookingForSelf?: boolean; // true si client = bénéficiaire
+
+  // ✅ Alias pour compatibilité (à supprimer progressivement)
+  readonly patientName?: string; // @deprecated Utiliser beneficiaryName
+  readonly patientAge?: string; // @deprecated Utiliser beneficiaryAge
+  readonly relationshipToPatient?: string; // @deprecated Utiliser relationshipToBeneficiary
+
+  // ✅ Variables Rendez-vous
+  readonly appointmentId?: string;
+  readonly appointmentDate?: string;
+  readonly appointmentTime?: string;
+  readonly serviceName?: string;
+  readonly serviceDuration?: string;
+  readonly servicePrice?: string;
+  readonly staffName?: string;
+  readonly appointmentStatus?: string;
+
+  // 🏢 Variables Business (NOUVELLES - OBLIGATOIRES)
+  readonly businessName?: string;
+  readonly businessPhone?: string;
+  readonly businessEmail?: string;
+  readonly businessAddress?: string;
+  readonly businessCity?: string;
+  readonly businessPostalCode?: string;
+  readonly businessCountry?: string;
+  readonly businessWebsite?: string;
+
+  // 🎨 Variables Branding Business (NOUVELLES)
+  readonly businessLogo?: string; // URL du logo
+  readonly businessCoverImage?: string; // URL image de couverture
+  readonly businessPrimaryColor?: string;
+  readonly businessSecondaryColor?: string;
+
+  // 🌐 Variables Réseaux Sociaux Business (NOUVELLES)
+  readonly businessFacebook?: string;
+  readonly businessInstagram?: string;
+  readonly businessLinkedin?: string;
+  readonly businessTwitter?: string;
+
+  // ⚙️ Variables Configuration
+  readonly timezone?: string;
+  readonly currency?: string;
+  readonly language?: string;
+
+  // 🔗 Variables Actions
+  readonly bookingUrl?: string;
+  readonly cancelUrl?: string;
+  readonly rescheduleUrl?: string;
+  readonly confirmUrl?: string;
 }
 
 /**
@@ -97,6 +154,10 @@ export class NotificationTemplate {
         [NotificationTemplateType.APPOINTMENT_CONFIRMATION]: {
           subject: 'Confirmation de rendez-vous - {{businessName}}',
           body: `
+{{#if businessLogo}}
+<img src="{{businessLogo}}" alt="Logo {{businessName}}" style="max-width: 200px; margin-bottom: 20px;">
+{{/if}}
+
 Bonjour {{clientName}},
 
 Votre rendez-vous a été confirmé avec succès !
@@ -107,43 +168,112 @@ Votre rendez-vous a été confirmé avec succès !
 - **Service :** {{serviceName}}
 - **Durée :** {{serviceDuration}}
 - **Professionnel :** {{staffName}}
-- **Prix :** {{servicePrice}}
+- **Prix :** {{servicePrice}} {{currency}}
 
-📍 **Lieu :**
-{{businessName}}
+📍 **Lieu de rendez-vous :**
+**{{businessName}}**
 {{businessAddress}}
+{{businessCity}}, {{businessPostalCode}}
+{{businessCountry}}
 
-📞 **Contact :** {{businessPhone}}
+📞 **Contact :**
+- Téléphone : {{businessPhone}}
+- Email : {{businessEmail}}
+{{#if businessWebsite}}
+- Site web : {{businessWebsite}}
+{{/if}}
 
-Pour modifier ou annuler votre rendez-vous, contactez-nous au moins 24h à l'avance.
+🔗 **Actions rapides :**
+{{#if confirmUrl}}
+- [Confirmer le rendez-vous]({{confirmUrl}})
+{{/if}}
+{{#if rescheduleUrl}}
+- [Reprogrammer]({{rescheduleUrl}})
+{{/if}}
+{{#if cancelUrl}}
+- [Annuler]({{cancelUrl}})
+{{/if}}
+
+{{#if businessFacebook}}
+🌐 **Suivez-nous :**
+{{#if businessFacebook}}
+- [Facebook]({{businessFacebook}})
+{{/if}}
+{{#if businessInstagram}}
+- [Instagram]({{businessInstagram}})
+{{/if}}
+{{#if businessLinkedin}}
+- [LinkedIn]({{businessLinkedin}})
+{{/if}}
+{{/if}}
+
+**Note importante :** Pour modifier ou annuler votre rendez-vous, contactez-nous au moins 24h à l'avance.
 
 Cordialement,
 L'équipe {{businessName}}
+
+{{#if businessCoverImage}}
+<img src="{{businessCoverImage}}" alt="{{businessName}}" style="width: 100%; max-width: 600px; margin-top: 20px;">
+{{/if}}
           `,
         },
         [NotificationTemplateType.APPOINTMENT_REMINDER]: {
-          subject: 'Rappel : Votre rendez-vous demain - {{businessName}}',
+          subject: '⏰ Rappel : RDV {{appointmentTime}} - {{businessName}}',
           body: `
+{{#if businessLogo}}
+<img src="{{businessLogo}}" alt="Logo {{businessName}}" style="max-width: 200px; margin-bottom: 20px;">
+{{/if}}
+
 Bonjour {{clientName}},
 
-Nous vous rappelons votre rendez-vous prévu demain :
+⏰ **Rappel important** : Votre rendez-vous est prévu **demain** !
 
-⏰ **{{appointmentDate}} à {{appointmentTime}}**
-📍 **{{businessName}}** - {{businessAddress}}
-💼 **Service :** {{serviceName}} ({{serviceDuration}})
-👨‍💼 **Avec :** {{staffName}}
+📅 **Détails de votre rendez-vous :**
+- 📆 **Date :** {{appointmentDate}}
+- ⏰ **Heure :** {{appointmentTime}}
+- � **Service :** {{serviceName}} ({{serviceDuration}})
+- 👨‍💼 **Professionnel :** {{staffName}}
+- � **Prix :** {{servicePrice}} {{currency}}
 
-💡 **Conseils :**
+📍 **Rendez-vous chez :**
+**{{businessName}}**
+{{businessAddress}}
+{{businessCity}}, {{businessPostalCode}}
+{{businessCountry}}
+
+�️ **Comment nous trouver :**
+{{#if businessWebsite}}
+- Voir plan d'accès : {{businessWebsite}}
+{{/if}}
+- GPS/Maps : "{{businessName}} {{businessAddress}} {{businessCity}}"
+
+💡 **Conseils pratiques :**
 {{#if servicePreparation}}
 - {{servicePreparation}}
 {{/if}}
-- Arrivez 10 minutes avant l'heure
-- N'oubliez pas vos documents si nécessaire
+- ✅ Arrivez 10 minutes avant l'heure
+- 📋 N'oubliez pas vos documents si nécessaire
+- 🚗 Prévoyez du temps pour le stationnement
 
-Pour toute question : {{businessPhone}}
+📞 **Contact en cas d'urgence :**
+- Téléphone : **{{businessPhone}}**
+- Email : {{businessEmail}}
 
-À bientôt !
-L'équipe {{businessName}}
+🔗 **Besoin de modifier ?**
+{{#if rescheduleUrl}}
+- [Reprogrammer le rendez-vous]({{rescheduleUrl}})
+{{/if}}
+{{#if cancelUrl}}
+- [Annuler le rendez-vous]({{cancelUrl}})
+{{/if}}
+
+{{#if businessFacebook}}
+🌐 **Restez connecté :**
+{{#if businessFacebook}}[Facebook]({{businessFacebook}}) | {{/if}}{{#if businessInstagram}}[Instagram]({{businessInstagram}}) | {{/if}}{{#if businessLinkedin}}[LinkedIn]({{businessLinkedin}}){{/if}}
+{{/if}}
+
+À très bientôt !
+L'équipe {{businessName}} 🌟
           `,
         },
         [NotificationTemplateType.APPOINTMENT_CANCELLATION]: {

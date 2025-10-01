@@ -4,7 +4,10 @@
  * ✅ Clean Architecture - Application Layer Testing
  */
 
-import { AppointmentException } from '../../../../../application/exceptions/appointment.exceptions';
+import {
+  AppointmentException,
+  AppointmentNotFoundError,
+} from '../../../../../application/exceptions/appointment.exceptions';
 import {
   UpdateAppointmentStatusRequest,
   UpdateAppointmentStatusUseCase,

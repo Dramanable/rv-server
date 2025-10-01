@@ -1,4 +1,3 @@
-import { DatabaseSchemaError } from '@infrastructure/exceptions/infrastructure.exceptions';
 import { MigrationInterface, QueryRunner, Table } from 'typeorm';
 
 export class CreateServiceCategoriesTable1703702000000
@@ -12,7 +11,7 @@ export class CreateServiceCategoriesTable1703702000000
 
     // Validation du nom de schéma (sécurité)
     if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(schema)) {
-      throw new DatabaseSchemaError(schema, 'Invalid schema name format');
+      throw new Error(`Invalid schema name format: ${schema}`);
     }
 
     return schema;
@@ -41,7 +40,7 @@ export class CreateServiceCategoriesTable1703702000000
     // Vérifier que le schéma existe
     const exists = await this.schemaExists(queryRunner, schema);
     if (!exists) {
-      throw new DatabaseSchemaError(schema, 'Schema does not exist');
+      throw new Error(`Invalid schema name format: ${schema}`);
     }
 
     await queryRunner.createTable(

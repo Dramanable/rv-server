@@ -1,11 +1,9 @@
-import { DatabaseSchemaError } from '@infrastructure/exceptions/infrastructure.exceptions';
 /**
  * 🗄️ MIGRATION TYPEORM - CreateProfessionalRolesTable
  * Clean Architecture - Infrastructure Layer
  * Migration pour créer la table des rôles professionnels
  */
 
-import { InfrastructureException } from '@shared/exceptions/shared.exceptions';
 import { MigrationInterface, QueryRunner, Table } from 'typeorm';
 
 export class CreateProfessionalRolesTable1727549200000
@@ -42,7 +40,7 @@ export class CreateProfessionalRolesTable1727549200000
 
     // Validation du nom de schéma (sécurité)
     if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(schema)) {
-      throw new DatabaseSchemaError(schema, 'Invalid schema name format');
+      throw new Error(`Invalid schema name format: ${schema}`);
     }
 
     return schema;
@@ -63,10 +61,7 @@ export class CreateProfessionalRolesTable1727549200000
     );
 
     if (!schemaExists[0]?.exists) {
-      throw new InfrastructureException(
-        `Schema "${schema}" does not exist`,
-        'SCHEMA_NOT_EXISTS',
-      );
+      throw new Error(`Schema "${schema}" does not exist`);
     }
 
     // Créer la table professional_roles

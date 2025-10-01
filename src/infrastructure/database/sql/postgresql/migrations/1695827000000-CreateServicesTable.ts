@@ -1,4 +1,4 @@
-// import { DatabaseSchemaError } from '@infrastructure/exceptions/infrastructure.exceptions';
+//
 import { MigrationInterface, QueryRunner, Table } from 'typeorm';
 
 export class CreateServicesTable1695827000000 implements MigrationInterface {

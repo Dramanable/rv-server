@@ -1,4 +1,3 @@
-import { DatabaseSchemaError } from '@infrastructure/exceptions/infrastructure.exceptions';
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class RefactorServiceTypesToBusinessId1758680000000
