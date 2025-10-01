@@ -105,7 +105,7 @@ export class SearchUsersUseCase {
       const response: SearchUsersResponse = {
         users: (results.data || []).map((user) => ({
           id: user.id,
-          email: user.email.value,
+          email: user.email.getValue(),
           name: user.name,
           role: user.role,
           isActive: true, // Default value since User entity doesn't have isActive

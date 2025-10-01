@@ -81,8 +81,8 @@ export class VerifyPasswordResetCodeUseCase {
       }
 
       // 3. Vérifier la validité du code (expiration + usage)
-      if (!resetCode.isValid()) {
-        const reason = resetCode.isExpired() ? 'expired' : 'already_used';
+      if (!resetCode.isValid) {
+        const reason = resetCode.isExpired ? 'expired' : 'already_used';
 
         this.logger.warn('🚫 Invalid password reset code (expired or used)', {
           correlationId,
@@ -99,13 +99,17 @@ export class VerifyPasswordResetCodeUseCase {
 
       // 4. Vérifier que l'utilisateur existe toujours
       const userId = UserId.create(resetCode.userId);
-      const user = await this.userRepository.findById(userId);
+      const user = await this.userRepository.findById(userId.getValue());
 
       if (!user) {
-        this.logger.error('🚫 User not found for valid reset code', {
-          correlationId,
-          userId: resetCode.userId,
-        });
+        this.logger.error(
+          '🚫 User not found for valid reset code',
+          new Error('User not found'),
+          {
+            correlationId,
+            userId: resetCode.userId,
+          },
+        );
 
         return {
           success: false,
@@ -118,25 +122,28 @@ export class VerifyPasswordResetCodeUseCase {
       await this.resetCodeRepository.markAsUsed(request.code);
 
       // 6. Générer un token temporaire pour la session de reset (5 minutes)
-      const resetToken = this.generateResetSessionToken(user.id.getValue());
+      const resetToken = this.generateResetSessionToken(user.id);
 
       this.logger.info('✅ Password reset code verified successfully', {
         correlationId,
-        userId: user.id.getValue(),
+        userId: user.id,
       });
 
       return {
         success: true,
         message: this.i18n.t('auth.password_reset.code_verified'),
         messageKey: 'auth.password_reset.code_verified',
-        userId: user.id.getValue(),
+        userId: user.id,
         resetToken,
       };
     } catch (error) {
-      this.logger.error('❌ Password reset code verification failed', {
-        correlationId,
-        error: error instanceof Error ? error.message : String(error),
-      });
+      this.logger.error(
+        '❌ Password reset code verification failed',
+        error instanceof Error ? error : new Error(String(error)),
+        {
+          correlationId,
+        },
+      );
 
       if (error instanceof DomainValidationError) {
         return {

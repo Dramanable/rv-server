@@ -41,7 +41,7 @@ export class RemoveAppointmentTypeColumn1758913392000
 
     // ✅ ÉTAPE 1 - Vérifier s'il y a des données dans la colonne
     const dataCount = await queryRunner.query(`
-      SELECT COUNT(*) as count FROM "${schema}"."appointments" 
+      SELECT COUNT(*) as count FROM "${schema}"."appointments"
       WHERE "type" IS NOT NULL
     `);
 
@@ -68,7 +68,7 @@ export class RemoveAppointmentTypeColumn1758913392000
     if (columnExists) {
       // ✅ ÉTAPE 4 - Supprimer la colonne type
       await queryRunner.query(`
-        ALTER TABLE "${schema}"."appointments" 
+        ALTER TABLE "${schema}"."appointments"
         DROP COLUMN IF EXISTS "type"
       `);
 
@@ -89,8 +89,8 @@ export class RemoveAppointmentTypeColumn1758913392000
 
     // ✅ ÉTAPE 2 - Recréer l'enum (pour compatibilité)
     await queryRunner.query(`
-      UPDATE "${schema}"."appointments" 
-      SET "type" = 'CONSULTATION' 
+      UPDATE "${schema}"."appointments"
+      SET "type" = 'CONSULTATION'
       WHERE "type" IS NULL
     `);
 
@@ -118,7 +118,7 @@ export class RemoveAppointmentTypeColumn1758913392000
     // ✅ ÉTAPE 5 - Ajouter constraint enum si nécessaire
     await queryRunner.query(`
       ALTER TABLE "${schema}"."appointments"
-      ADD CONSTRAINT appointments_type_check 
+      ADD CONSTRAINT appointments_type_check
       CHECK ("type" IN ('CONSULTATION', 'TREATMENT', 'FOLLOWUP', 'EMERGENCY', 'GROUP', 'ONLINE'))
     `);
 

@@ -101,8 +101,8 @@ export class GetUserUseCase {
       // Log de succès
       this.logger.info(
         this.i18n.t('success.user.retrieval_success', {
-          email: targetUser.email.value,
-          requestingUser: requestingUser.email.value,
+          email: targetUser.email.getValue(),
+          requestingUser: requestingUser.email.getValue(),
         }),
         { ...requestContext, duration },
       );
@@ -113,7 +113,7 @@ export class GetUserUseCase {
         request.requestingUserId,
         {
           targetUserId: targetUser.id,
-          targetEmail: targetUser.email.value,
+          targetEmail: targetUser.email.getValue(),
           targetRole: targetUser.role,
         },
       );
@@ -121,7 +121,7 @@ export class GetUserUseCase {
       // 4. Retour des données
       return {
         id: targetUser.id || 'generated-id',
-        email: targetUser.email.value,
+        email: targetUser.email.getValue(),
         name: targetUser.name,
         role: targetUser.role,
         passwordChangeRequired: targetUser.passwordChangeRequired,

@@ -205,7 +205,7 @@ export class UserCacheService {
   private serializeUser(user: User): string {
     const userData = {
       id: user.id,
-      email: user.email.value,
+      email: user.email.getValue(),
       name: user.name,
       role: user.role,
       createdAt: user.createdAt.toISOString(),

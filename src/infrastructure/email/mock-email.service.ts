@@ -86,9 +86,9 @@ export class MockEmailService implements IEmailService {
       html: `
         <h1>Réinitialisation de mot de passe</h1>
         <p>Bonjour ${data.userName},</p>
-        <p>Cliquez sur ce lien pour réinitialiser votre mot de passe :</p>
-        <p><a href="${data.resetUrl}">Réinitialiser mon mot de passe</a></p>
-        <p>Ce lien expire le ${data.expirationTime}</p>
+        <p>Voici votre code de réinitialisation de mot de passe :</p>
+        <p><strong>${data.resetCode}</strong></p>
+        <p>Ce code expire le ${data.expirationTime}</p>
         <p>L'équipe ${data.companyName}</p>
       `,
     });

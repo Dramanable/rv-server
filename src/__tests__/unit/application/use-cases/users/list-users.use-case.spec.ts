@@ -315,8 +315,14 @@ describe('ListUsersUseCase', () => {
       expect(mockUserRepository.search).toHaveBeenCalledWith(
         expect.objectContaining({
           filters: expect.objectContaining({
-            businessId: 'business-1', // Filtre par business ID
-            excludeRoles: [UserRole.PLATFORM_ADMIN, UserRole.BUSINESS_OWNER], // Ne peut pas voir les autres owners
+            // New implementation uses allowed roles instead of excluded roles
+            role: expect.arrayContaining([
+              UserRole.BUSINESS_ADMIN,
+              UserRole.LOCATION_MANAGER,
+              UserRole.DEPARTMENT_HEAD,
+              UserRole.SENIOR_PRACTITIONER,
+              // ... other allowed roles for BUSINESS_OWNER
+            ]),
           }),
         }),
       );
@@ -409,8 +415,13 @@ describe('ListUsersUseCase', () => {
       expect(mockUserRepository.search).toHaveBeenCalledWith(
         expect.objectContaining({
           filters: expect.objectContaining({
-            businessId: 'business-1',
-            excludeRoles: [UserRole.PLATFORM_ADMIN, UserRole.BUSINESS_OWNER],
+            // New implementation uses allowed roles instead of excluded roles
+            role: expect.arrayContaining([
+              UserRole.LOCATION_MANAGER,
+              UserRole.DEPARTMENT_HEAD,
+              UserRole.SENIOR_PRACTITIONER,
+              // ... other allowed roles for BUSINESS_ADMIN
+            ]),
           }),
         }),
       );
@@ -478,13 +489,13 @@ describe('ListUsersUseCase', () => {
       expect(mockUserRepository.search).toHaveBeenCalledWith(
         expect.objectContaining({
           filters: expect.objectContaining({
-            locationId: 'location-1',
-            excludeRoles: [
-              UserRole.PLATFORM_ADMIN,
-              UserRole.BUSINESS_OWNER,
-              UserRole.BUSINESS_ADMIN,
-              UserRole.LOCATION_MANAGER,
-            ],
+            // New implementation uses allowed roles instead of excluded roles
+            role: expect.arrayContaining([
+              UserRole.DEPARTMENT_HEAD,
+              UserRole.SENIOR_PRACTITIONER,
+              UserRole.PRACTITIONER,
+              // ... other allowed roles for LOCATION_MANAGER
+            ]),
           }),
         }),
       );

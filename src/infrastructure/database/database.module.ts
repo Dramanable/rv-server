@@ -240,6 +240,38 @@ import { BusinessImageOrmEntity } from './sql/postgresql/entities/business-image
       },
     },
 
+    // ✅ Mock Email Service pour démarrer l'app
+    {
+      provide: TOKENS.EMAIL_SERVICE,
+      useValue: {
+        async sendPasswordResetCode(email: string, code: string) {
+          console.log(
+            `[MOCK EMAIL] Sending password reset code ${code} to ${email}`,
+          );
+          return {
+            messageId: 'mock-email-id',
+            success: true,
+          };
+        },
+        async sendWelcomeEmail(email: string, name: string) {
+          console.log(
+            `[MOCK EMAIL] Sending welcome email to ${name} at ${email}`,
+          );
+          return {
+            messageId: 'mock-welcome-id',
+            success: true,
+          };
+        },
+        async send(to: string, subject: string, body: string) {
+          console.log(`[MOCK EMAIL] Sending email to ${to}: ${subject}`);
+          return {
+            messageId: 'mock-generic-id',
+            success: true,
+          };
+        },
+      },
+    },
+
     // ✅ Business, Calendar, Service et Staff repositories à ajouter si nécessaires
   ],
   exports: [
@@ -248,6 +280,7 @@ import { BusinessImageOrmEntity } from './sql/postgresql/entities/business-image
     TOKENS.BUSINESS_SECTOR_REPOSITORY, // ✅ Export du mock BusinessSectorRepository
     TOKENS.NOTIFICATION_REPOSITORY, // ✅ Export du mock NotificationRepository
     TOKENS.NOTIFICATION_SERVICE, // ✅ Export du mock NotificationService
+    TOKENS.EMAIL_SERVICE, // ✅ Export du mock EmailService
     TypeOrmRepositoriesModule, // ✅ Export le module qui contient USER_REPOSITORY, PERMISSION_SERVICE, etc.
     // Les autres repositories sont exportés via TypeOrmRepositoriesModule
   ],

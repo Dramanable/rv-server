@@ -70,7 +70,7 @@ describe('🏗️ RedisUserCacheAdapter - Integration Tests (Infrastructure)', (
       mockRedisClient.get.mockResolvedValue(
         JSON.stringify({
           id: user.id,
-          email: user.email.value,
+          email: user.email.getValue(),
           name: user.name,
           role: user.role,
         }),
@@ -136,7 +136,7 @@ describe('🏗️ RedisUserCacheAdapter - Integration Tests (Infrastructure)', (
       // Mock Redis response
       const userData = {
         id: user.id,
-        email: user.email.value,
+        email: user.email.getValue(),
         name: user.name,
         role: user.role,
         isActive: true,

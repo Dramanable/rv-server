@@ -13,7 +13,7 @@ export class BuiltInCalendarTypes {
    */
   static createBusinessType(
     businessId: BusinessId,
-    createdBy: string,
+    _createdBy: string,
   ): CalendarType {
     return CalendarType.create({
       businessId,
@@ -34,7 +34,7 @@ export class BuiltInCalendarTypes {
    */
   static createStaffType(
     businessId: BusinessId,
-    createdBy: string,
+    _createdBy: string,
   ): CalendarType {
     return CalendarType.create({
       businessId,
@@ -54,7 +54,7 @@ export class BuiltInCalendarTypes {
    */
   static createResourceType(
     businessId: BusinessId,
-    createdBy: string,
+    _createdBy: string,
   ): CalendarType {
     return CalendarType.create({
       businessId,
@@ -74,7 +74,7 @@ export class BuiltInCalendarTypes {
    */
   static createServiceType(
     businessId: BusinessId,
-    createdBy: string,
+    _createdBy: string,
   ): CalendarType {
     return CalendarType.create({
       businessId,

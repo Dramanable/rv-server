@@ -11,11 +11,11 @@ import {
 } from '../../../application/exceptions/application.exceptions';
 import type { I18nService } from '../../../application/ports/i18n.port';
 import type { Logger } from '../../../application/ports/logger.port';
+import { CalendarType } from '../../../domain/entities/calendar-type.entity';
 import {
   Calendar,
   CalendarStatus,
 } from '../../../domain/entities/calendar.entity';
-import { CalendarType } from '../../../domain/entities/calendar-type.entity';
 import type { CalendarRepository } from '../../../domain/repositories/calendar.repository.interface';
 import type { UserRepository } from '../../../domain/repositories/user.repository.interface';
 import { BusinessId } from '../../../domain/value-objects/business-id.value-object';
@@ -146,7 +146,7 @@ export class ListCalendarsUseCase {
 
       // 8. Mapping vers response
       const calendarSummaries: CalendarSummary[] = paginatedCalendars.map(
-        this.mapToCalendarSummary,
+        (calendar) => this.mapToCalendarSummary(calendar),
       );
 
       // 9. Métadonnées de pagination
@@ -186,7 +186,7 @@ export class ListCalendarsUseCase {
 
   private async validatePermissions(
     requestingUserId: string,
-    context: AppContext,
+    _context: AppContext,
   ): Promise<void> {
     const requestingUser = await this.userRepository.findById(requestingUserId);
     if (!requestingUser) {

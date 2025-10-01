@@ -68,7 +68,7 @@ export class UserMapper {
   static toTypeOrmEntity(domainUser: User): UserOrmEntity {
     const entity = new UserOrmEntity();
     entity.id = domainUser.id;
-    entity.email = domainUser.email.value;
+    entity.email = domainUser.email.getValue();
     entity.firstName =
       domainUser.firstName || domainUser.name.split(' ')[0] || domainUser.name;
     entity.lastName =
@@ -123,7 +123,7 @@ export class UserMapper {
 
     return {
       id: domainUser.id,
-      email: domainUser.email.value,
+      email: domainUser.email.getValue(),
       firstName,
       lastName,
       role: domainUser.role as any, // Cast temporaire pour éviter les erreurs d'enum

@@ -96,14 +96,14 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
       }
 
       // ✅ Vérification additionnelle de cohérence
-      if (user.email.value !== payload.email) {
+      if (user.email.getValue() !== payload.email) {
         this.logger.error(
           'JWT payload email mismatch',
           new Error('Token integrity violation'),
           {
             ...context,
             payloadEmail: payload.email,
-            userEmail: user.email.value,
+            userEmail: user.email.getValue(),
           },
         );
         throw new UnauthorizedException('Token integrity violation');
@@ -111,7 +111,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
 
       this.logger.debug('JWT validation successful', {
         ...context,
-        userEmail: user.email.value,
+        userEmail: user.email.getValue(),
         userRole: user.role,
       });
 
@@ -176,7 +176,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
         // 💾 Mettre en cache pour les prochaines requêtes (TTL: 15 minutes)
         const userJson = JSON.stringify({
           id: user.id,
-          email: user.email.value,
+          email: user.email.getValue(),
           name: user.name,
           role: user.role,
           createdAt: user.createdAt.toISOString(),

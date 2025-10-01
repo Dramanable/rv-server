@@ -6,17 +6,17 @@
  */
 
 import {
-  Entity,
-  PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
-  UpdateDateColumn,
-  ManyToOne,
-  JoinColumn,
+  Entity,
   Index,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
-import { UserOrmEntity } from './user-orm.entity';
 import { PasswordResetCode } from '../../../../../domain/entities/password-reset-code.entity';
+import { UserOrmEntity } from './user-orm.entity';
 
 @Entity('password_reset_codes')
 @Index(['code'], { unique: true })

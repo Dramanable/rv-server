@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+  <!-- Version haute résolution pour les applications -->
+  
+  <!-- Background gradient inspiré du coucher de soleil sénégalais -->
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="30%" r="70%">
+      <stop offset="0%" style="stop-color:#FFD700;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#E74C3C;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00A651;stop-opacity:1" />
+    </radialGradient>
+    
+    <linearGradient id="calendarGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#F8F9FA;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background circle -->
+  <circle cx="128" cy="128" r="120" fill="url(#bg)" stroke="#FFD700" stroke-width="8"/>
+  
+  <!-- Étoile du Sénégal -->
+  <polygon points="128,40 136,64 164,64 142,82 150,106 128,94 106,106 114,82 92,64 120,64" 
+           fill="#00A651" stroke="#FFD700" stroke-width="2"/>
+  
+  <!-- Calendrier principal -->
+  <rect x="80" y="100" width="96" height="72" rx="8" fill="url(#calendarGrad)" 
+        stroke="#E74C3C" stroke-width="4"/>
+  
+  <!-- Anneaux du calendrier -->
+  <rect x="88" y="92" width="8" height="16" rx="4" fill="#E74C3C"/>
+  <rect x="104" y="92" width="8" height="16" rx="4" fill="#E74C3C"/>
+  <rect x="144" y="92" width="8" height="16" rx="4" fill="#E74C3C"/>
+  <rect x="160" y="92" width="8" height="16" rx="4" fill="#E74C3C"/>
+  
+  <!-- En-tête du calendrier -->
+  <rect x="84" y="108" width="88" height="16" fill="#E74C3C"/>
+  <text x="128" y="120" text-anchor="middle" font-family="Arial, sans-serif" 
+        font-size="10" font-weight="bold" fill="#FFFFFF">RENDEZ-VOUS</text>
+  
+  <!-- Grille du calendrier -->
+  <line x1="84" y1="132" x2="172" y2="132" stroke="#E0E0E0" stroke-width="1"/>
+  <line x1="84" y1="148" x2="172" y2="148" stroke="#E0E0E0" stroke-width="1"/>
+  <line x1="84" y1="164" x2="172" y2="164" stroke="#E0E0E0" stroke-width="1"/>
+  
+  <line x1="106" y1="124" x2="106" y2="168" stroke="#E0E0E0" stroke-width="1"/>
+  <line x1="128" y1="124" x2="128" y2="168" stroke="#E0E0E0" stroke-width="1"/>
+  <line x1="150" y1="124" x2="150" y2="168" stroke="#E0E0E0" stroke-width="1"/>
+  
+  <!-- Rendez-vous colorés -->
+  <circle cx="95" cy="140" r="4" fill="#00A651"/>
+  <circle cx="117" cy="140" r="4" fill="#FFD700"/>
+  <circle cx="139" cy="140" r="4" fill="#E74C3C"/>
+  <circle cx="161" cy="140" r="4" fill="#00A651"/>
+  
+  <circle cx="95" cy="156" r="4" fill="#FFD700"/>
+  <circle cx="117" cy="156" r="4" fill="#E74C3C"/>
+  <circle cx="139" cy="156" r="4" fill="#00A651"/>
+  <circle cx="161" cy="156" r="4" fill="#FFD700"/>
+  
+  <!-- Horloge stylisée -->
+  <circle cx="128" cy="200" r="24" fill="#FFFFFF" stroke="#00A651" stroke-width="4"/>
+  <line x1="128" y1="200" x2="128" y2="184" stroke="#00A651" stroke-width="3" stroke-linecap="round"/>
+  <line x1="128" y1="200" x2="140" y2="200" stroke="#E74C3C" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="128" cy="200" r="3" fill="#FFD700"/>
+  
+  <!-- Motifs décoratifs sénégalais -->
+  <path d="M40,40 Q50,30 60,40 Q50,50 40,40" fill="#FFD700" opacity="0.8"/>
+  <path d="M196,216 Q206,206 216,216 Q206,226 196,216" fill="#FFD700" opacity="0.8"/>
+  <path d="M40,216 Q50,206 60,216 Q50,226 40,216" fill="#FFD700" opacity="0.8"/>
+  <path d="M196,40 Q206,30 216,40 Q206,50 196,40" fill="#FFD700" opacity="0.8"/>
+  
+  <!-- Logo text stylisé -->
+  <text x="128" y="75" text-anchor="middle" font-family="Arial, sans-serif" 
+        font-size="24" font-weight="bold" fill="#FFFFFF" stroke="#00A651" stroke-width="1">amRDV</text>
+</svg>

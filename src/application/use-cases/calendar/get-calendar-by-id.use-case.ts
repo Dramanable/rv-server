@@ -12,11 +12,11 @@ import {
 } from '../../../application/exceptions/application.exceptions';
 import type { I18nService } from '../../../application/ports/i18n.port';
 import type { Logger } from '../../../application/ports/logger.port';
+import { CalendarType } from '../../../domain/entities/calendar-type.entity';
 import {
   Calendar,
   CalendarStatus,
 } from '../../../domain/entities/calendar.entity';
-import { CalendarType } from '../../../domain/entities/calendar-type.entity';
 import type { CalendarRepository } from '../../../domain/repositories/calendar.repository.interface';
 import type { UserRepository } from '../../../domain/repositories/user.repository.interface';
 import { CalendarId } from '../../../domain/value-objects/calendar-id.value-object';
@@ -169,7 +169,7 @@ export class GetCalendarByIdUseCase {
   private async validatePermissions(
     requestingUserId: string,
     calendar: Calendar,
-    context: AppContext,
+    _context: AppContext,
   ): Promise<void> {
     const requestingUser = await this.userRepository.findById(requestingUserId);
     if (!requestingUser) {

@@ -136,7 +136,7 @@ export class LoginUseCase {
       return {
         user: {
           id: user.id,
-          email: user.email.value,
+          email: user.email.getValue(),
           name: user.name,
           role: user.role,
         },

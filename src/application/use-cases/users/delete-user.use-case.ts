@@ -167,7 +167,7 @@ export class DeleteUserUseCase {
   private buildResponse(user: User, deletedBy: string): DeleteUserResponse {
     return {
       id: user.id,
-      email: user.email.value,
+      email: user.email.getValue(),
       deletedAt: new Date(),
       deletedBy,
     };

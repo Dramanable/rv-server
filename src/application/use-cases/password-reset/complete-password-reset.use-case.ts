@@ -106,7 +106,7 @@ export class CompletePasswordResetUseCase {
         expiresIn: authTokens.expiresIn,
         user: {
           id: user.id,
-          email: user.email.value,
+          email: user.email.getValue(),
           name: user.name,
         },
         passwordChangeRequired: false,

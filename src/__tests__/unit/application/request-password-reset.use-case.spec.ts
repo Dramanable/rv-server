@@ -70,7 +70,7 @@ class MockUserRepository implements Partial<UserRepository> {
   private users: User[] = [];
 
   async findByEmail(email: Email): Promise<User | null> {
-    return this.users.find((u) => u.email.value === email.value) || null;
+    return this.users.find((u) => u.email.getValue() === email.value) || null;
   }
 
   addUser(user: User): void {

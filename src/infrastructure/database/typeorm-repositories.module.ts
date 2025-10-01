@@ -238,6 +238,7 @@ import { RbacPermissionService } from '../services/rbac-permission.service';
     TOKENS.USER_REPOSITORY,
     // TOKENS.BUSINESS_SECTOR_REPOSITORY, // Temporairement commenté
     TOKENS.REFRESH_TOKEN_REPOSITORY,
+    TOKENS.PASSWORD_RESET_CODE_REPOSITORY, // ✅ Password Reset Code repository - AJOUTÉ
     TOKENS.PERMISSION_SERVICE,
     TOKENS.BUSINESS_REPOSITORY,
     TOKENS.SERVICE_REPOSITORY,

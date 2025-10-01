@@ -32,6 +32,8 @@ export interface CreateServiceRequest {
   basePrice: number;
   currency: string;
   duration: number;
+  allowOnlineBooking?: boolean;
+  requiresApproval?: boolean;
 }
 
 export interface CreateServiceResponse {

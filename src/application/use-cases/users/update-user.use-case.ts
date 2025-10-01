@@ -105,7 +105,7 @@ export class UpdateUserUseCase {
       // 5. Vérifier unicité email si changement
       if (
         request.updates.email &&
-        request.updates.email !== targetUser.email.value
+        request.updates.email !== targetUser.email.getValue()
       ) {
         await this.validateEmailUniqueness(request.updates.email);
       }
@@ -287,12 +287,12 @@ export class UpdateUserUseCase {
   private buildResponse(user: User): UpdateUserResponse {
     return {
       id: user.id,
-      email: user.email.value,
+      email: user.email.getValue(),
       name: user.name,
       role: user.role,
-      isActive: true, // Par défaut
-      requirePasswordChange: false, // TODO: Récupérer la vraie valeur
-      updatedAt: new Date(), // TODO: Récupérer la vraie date de mise à jour
+      isActive: user.isActive ?? true,
+      requirePasswordChange: user.passwordChangeRequired,
+      updatedAt: user.updatedAt ?? new Date(),
     };
   }
 }

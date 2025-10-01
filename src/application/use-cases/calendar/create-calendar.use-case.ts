@@ -4,28 +4,25 @@
  * Création d'un calendrier avec validation métier et permissions
  * ✅ AUCUNE dépendance NestJS - Respect de la Clean Architecture
  */
-import { Calendar } from '../../../domain/entities/calendar.entity';
-import { CalendarType } from '../../../domain/entities/calendar-type.entity';
-import type { CalendarRepository } from '../../../domain/repositories/calendar.repository.interface';
-import type { BusinessRepository } from '../../../domain/repositories/business.repository.interface';
-import type { Logger } from '../../../application/ports/logger.port';
+import {
+  BusinessNotFoundError,
+  CalendarValidationError,
+  InsufficientPermissionsError,
+} from '../../../application/exceptions/application.exceptions';
 import type { I18nService } from '../../../application/ports/i18n.port';
+import type { Logger } from '../../../application/ports/logger.port';
+import { CalendarType } from '../../../domain/entities/calendar-type.entity';
+import { Calendar } from '../../../domain/entities/calendar.entity';
+import type { BusinessRepository } from '../../../domain/repositories/business.repository.interface';
+import type { CalendarRepository } from '../../../domain/repositories/calendar.repository.interface';
+import type { UserRepository } from '../../../domain/repositories/user.repository.interface';
+import { Address } from '../../../domain/value-objects/address.value-object';
+import { BusinessId } from '../../../domain/value-objects/business-id.value-object';
 import {
   AppContext,
   AppContextFactory,
 } from '../../../shared/context/app-context';
-import { UserRole, Permission } from '../../../shared/enums/user-role.enum';
-import { User } from '../../../domain/entities/user.entity';
-import type { UserRepository } from '../../../domain/repositories/user.repository.interface';
-import {
-  InsufficientPermissionsError,
-  CalendarValidationError,
-  BusinessNotFoundError,
-} from '../../../application/exceptions/application.exceptions';
-import { BusinessId } from '../../../domain/value-objects/business-id.value-object';
-import { UserId } from '../../../domain/value-objects/user-id.value-object';
-import { Address } from '../../../domain/value-objects/address.value-object';
-import { WorkingHours } from '../../../domain/value-objects/working-hours.value-object';
+import { UserRole } from '../../../shared/enums/user-role.enum';
 export interface CreateCalendarRequest {
   readonly requestingUserId: string;
   readonly businessId: string;

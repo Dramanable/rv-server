@@ -114,7 +114,7 @@ export class RegisterUseCase {
       // 8. 📊 Log de succès
       this.logger.info(
         this.i18n.t('operations.auth.register_success', {
-          email: savedUser.email.value,
+          email: savedUser.email.getValue(),
           userId: savedUser.id,
         }),
         { context: context.correlationId },
@@ -124,7 +124,7 @@ export class RegisterUseCase {
       return {
         user: {
           id: savedUser.id,
-          email: savedUser.email.value,
+          email: savedUser.email.getValue(),
           name: savedUser.name,
           role: savedUser.role,
         },

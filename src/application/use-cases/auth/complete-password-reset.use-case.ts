@@ -125,7 +125,7 @@ export class CompletePasswordResetUseCase {
 
       this.logger.info('✅ Password reset completed successfully', {
         correlationId,
-        userId: user.id,
+        userId: updatedUser.id,
       });
 
       return {
@@ -136,7 +136,7 @@ export class CompletePasswordResetUseCase {
         refreshToken: tokens.refreshToken,
         user: {
           id: updatedUser.id,
-          email: updatedUser.email.value,
+          email: updatedUser.email.getValue(),
           name: updatedUser.name,
           passwordChangeRequired: updatedUser.passwordChangeRequired,
         },

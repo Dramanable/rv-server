@@ -167,6 +167,8 @@ describe('GetUserByIdUseCase', () => {
         role: UserRole.PRACTITIONER,
         isActive: true,
         canViewSensitiveData: false, // Pas de data sensible pour soi-même dans ce contexte
+        createdAt: expect.any(Date),
+        updatedAt: undefined,
       });
     });
   });
@@ -213,6 +215,8 @@ describe('GetUserByIdUseCase', () => {
         role: UserRole.BUSINESS_OWNER,
         isActive: true,
         canViewSensitiveData: true, // PLATFORM_ADMIN peut voir les données sensibles
+        createdAt: expect.any(Date),
+        updatedAt: undefined,
       });
     });
 

@@ -27,11 +27,16 @@ export class TypeOrmAppointmentStatisticsRepository {
   ): Promise<AppointmentStatisticsData> {
     try {
       // 1. Construction de la requête de base
-      let queryBuilder = this.repository
-        .createQueryBuilder('appointment')
-        .where('appointment.business_id = :businessId', {
-          businessId: criteria.businessId.getValue(),
-        });
+      let queryBuilder = this.repository.createQueryBuilder('appointment');
+
+      if (criteria.businessId) {
+        queryBuilder = queryBuilder.where(
+          'appointment.business_id = :businessId',
+          {
+            businessId: criteria.businessId.getValue(),
+          },
+        );
+      }
 
       // 2. Filtrage par période temporelle
       const startDate = criteria.period.startDate;

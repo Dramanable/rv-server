@@ -19,6 +19,7 @@ import { Email } from '../../../../../domain/value-objects/email.value-object';
 import { ServiceId } from '../../../../../domain/value-objects/service-id.value-object';
 import { UserId } from '../../../../../domain/value-objects/user-id.value-object';
 import { AppointmentOrmEntity } from '../entities/appointment-orm.entity';
+import { AppointmentOrmMapper } from '../../../../mappers/appointment-orm.mapper';
 
 // Placeholder exception class pour éviter les erreurs de compilation
 class InfrastructureException extends Error {
@@ -377,11 +378,16 @@ export class TypeOrmAppointmentRepository implements AppointmentRepository {
     const criteria = businessIdOrCriteria as AppointmentStatisticsCriteria;
     try {
       // 1. Construction de la requête de base
-      let queryBuilder = this.repository
-        .createQueryBuilder('appointment')
-        .where('appointment.businessId = :businessId', {
-          businessId: criteria.businessId.getValue(),
-        });
+      let queryBuilder = this.repository.createQueryBuilder('appointment');
+
+      if (criteria.businessId) {
+        queryBuilder = queryBuilder.where(
+          'appointment.businessId = :businessId',
+          {
+            businessId: criteria.businessId.getValue(),
+          },
+        );
+      }
 
       // 2. Filtrage par période temporelle
       const startDate = criteria.period.startDate;

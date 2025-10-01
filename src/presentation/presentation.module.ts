@@ -368,8 +368,8 @@ import { PresentationCookieService } from './services/cookie.service';
     // 👤 User Management Use Cases
     {
       provide: TOKENS.GET_ME_USE_CASE,
-      useFactory: () => new GetMeUseCase(),
-      inject: [],
+      useFactory: (userRepo) => new GetMeUseCase(userRepo),
+      inject: [TOKENS.USER_REPOSITORY],
     },
     {
       provide: TOKENS.LIST_USERS_USE_CASE,
@@ -379,13 +379,20 @@ import { PresentationCookieService } from './services/cookie.service';
     },
     {
       provide: TOKENS.CREATE_USER_USE_CASE,
-      useFactory: (userRepo, logger, i18n, permissionService) =>
-        new CreateUserUseCase(userRepo, logger, i18n, permissionService),
+      useFactory: (userRepo, logger, i18n, permissionService, passwordHasher) =>
+        new CreateUserUseCase(
+          userRepo,
+          logger,
+          i18n,
+          permissionService,
+          passwordHasher,
+        ),
       inject: [
         TOKENS.USER_REPOSITORY,
         TOKENS.LOGGER,
         TOKENS.I18N_SERVICE,
         TOKENS.PERMISSION_SERVICE,
+        TOKENS.PASSWORD_HASHER,
       ],
     },
     {

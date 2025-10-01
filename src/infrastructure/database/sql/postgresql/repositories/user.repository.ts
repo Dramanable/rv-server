@@ -77,7 +77,7 @@ export class TypeOrmUserRepository implements UserRepository {
    * 🔍 Find user by email
    */
   async findByEmail(email: Email | string): Promise<User | null> {
-    const emailValue = typeof email === 'string' ? email : email.value;
+    const emailValue = typeof email === 'string' ? email : email.getValue();
     console.log('🔍 DEBUG findByEmail - Searching for email:', emailValue);
 
     const user = await this.repository.findOne({
@@ -196,7 +196,7 @@ export class TypeOrmUserRepository implements UserRepository {
    * ✅ Check if email exists
    */
   async emailExists(email: Email | string): Promise<boolean> {
-    const emailValue = typeof email === 'string' ? email : email.value;
+    const emailValue = typeof email === 'string' ? email : email.getValue();
     const count = await this.repository.count({ where: { email: emailValue } });
     return count > 0;
   }
@@ -302,9 +302,7 @@ export class TypeOrmUserRepository implements UserRepository {
     // Create a User-like object that satisfies the interface
     return {
       id: ormUser.id,
-      email: {
-        value: ormUser.email,
-      } as Email,
+      email: Email.create(ormUser.email),
       name: `${ormUser.firstName} ${ormUser.lastName}`.trim(),
       firstName: ormUser.firstName,
       lastName: ormUser.lastName,

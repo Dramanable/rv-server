@@ -129,7 +129,10 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     this.logger.debug('JWT authentication successful', {
       ...requestContext,
       userId: user.id,
-      userEmail: typeof user.email === 'string' ? user.email : user.email.value,
+      userEmail:
+        typeof user.email === 'string'
+          ? user.email
+          : (user.email as any).value || user.email,
       userRole: user.role,
     });
 

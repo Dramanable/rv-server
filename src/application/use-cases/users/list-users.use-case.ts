@@ -189,7 +189,7 @@ export class ListUsersUseCase {
             UserRole.REGULAR_CLIENT,
             UserRole.GUEST_CLIENT,
           ],
-          businessId: 'business-1', // TODO: Extraire du requestingUser
+          businessId: undefined, // Will be provided via request context in the future
         };
 
       case UserRole.BUSINESS_ADMIN:
@@ -210,7 +210,7 @@ export class ListUsersUseCase {
             UserRole.REGULAR_CLIENT,
             UserRole.GUEST_CLIENT,
           ],
-          businessId: 'business-1', // TODO: Extraire du requestingUser
+          businessId: undefined, // Will be provided via request context in the future
         };
 
       case UserRole.LOCATION_MANAGER:
@@ -230,8 +230,8 @@ export class ListUsersUseCase {
             UserRole.REGULAR_CLIENT,
             UserRole.GUEST_CLIENT,
           ],
-          businessId: 'business-1',
-          locationId: 'location-1', // TODO: Extraire du requestingUser
+          businessId: undefined, // Will be provided via request context in the future
+          locationId: undefined, // Will be provided via request context in the future
         };
 
       default:

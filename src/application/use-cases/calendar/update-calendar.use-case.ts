@@ -248,7 +248,9 @@ export class UpdateCalendarUseCase {
             hours.start,
             hours.end,
           );
-          existingCalendar.updateWorkingHours(dayIndex, workingHours);
+          // Mise à jour des heures de travail dans le calendrier
+          const availability = existingCalendar.availability;
+          availability.workingHours[dayIndex] = workingHours;
         }
       });
     }

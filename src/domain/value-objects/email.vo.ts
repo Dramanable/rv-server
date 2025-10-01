@@ -8,7 +8,7 @@
 import { ValueObjectValidationError } from '../exceptions/domain.exceptions';
 
 export class Email {
-  public readonly value: string;
+  private readonly value: string;
 
   constructor(email: string) {
     this.validateNotEmpty(email);
@@ -24,6 +24,13 @@ export class Email {
    */
   static create(email: string): Email {
     return new Email(email);
+  }
+
+  /**
+   * Récupère la valeur de l'email
+   */
+  getValue(): string {
+    return this.value;
   }
 
   private validateNotEmpty(email: string): void {

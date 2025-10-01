@@ -34,7 +34,7 @@ export class CalendarRequestMapper {
       filters: {
         search: dto.search,
         businessId: dto.businessId,
-        type: dto.type,
+        type: dto.type as any,
         status: this.mapCalendarStatusToDomain(dto.status),
       },
     };

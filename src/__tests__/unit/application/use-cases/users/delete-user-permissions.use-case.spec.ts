@@ -16,6 +16,7 @@ import {
   DeleteUserUseCase,
 } from '@application/use-cases/users/delete-user.use-case';
 import { User } from '@domain/entities/user.entity';
+import { Email } from '@domain/value-objects/email.vo';
 import { UserRepository } from '@domain/repositories/user.repository.interface';
 import { UserRole } from '@shared/enums/user-role.enum';
 
@@ -39,15 +40,36 @@ describe('🧪 TDD - DeleteUserUseCase Permissions', () => {
       hasBusinessPermission: jest.fn(),
       isSuperAdmin: jest.fn(),
       requireSuperAdminPermission: jest.fn(),
+      hasAccessToBusiness: jest.fn(),
     } as jest.Mocked<IPermissionService>;
 
     mockUserRepository = {
-      findById: jest.fn(),
       save: jest.fn(),
-      delete: jest.fn(),
+      findById: jest.fn(),
       findByEmail: jest.fn(),
+      findByUsername: jest.fn(),
       findAll: jest.fn(),
+      search: jest.fn(),
+      findByRole: jest.fn(),
+      emailExists: jest.fn(),
+      usernameExists: jest.fn(),
+      existsByUsername: jest.fn(),
       exists: jest.fn(),
+      delete: jest.fn(),
+      count: jest.fn(),
+      countWithFilters: jest.fn(),
+      findActive: jest.fn(),
+      findInactive: jest.fn(),
+      findByCreatedAtRange: jest.fn(),
+      update: jest.fn(),
+      updatePassword: jest.fn(),
+      updateActiveStatus: jest.fn(),
+      updateBatch: jest.fn(),
+      deleteBatch: jest.fn(),
+      countSuperAdmins: jest.fn(),
+      findSystemAdmins: jest.fn(),
+      bulkCreate: jest.fn(),
+      export: jest.fn(),
     } as jest.Mocked<UserRepository>;
 
     mockLogger = {
@@ -85,7 +107,7 @@ describe('🧪 TDD - DeleteUserUseCase Permissions', () => {
 
       const mockRequestingUser = {
         id: 'admin-user-id',
-        email: 'admin@example.com',
+        email: Email.create('admin@example.com'),
         role: UserRole.SUPER_ADMIN,
         name: 'Admin User',
         createdAt: new Date(),
@@ -94,7 +116,7 @@ describe('🧪 TDD - DeleteUserUseCase Permissions', () => {
 
       const mockTargetUser = {
         id: 'target-user-id',
-        email: 'target@example.com',
+        email: Email.create('target@example.com'),
         role: UserRole.REGULAR_CLIENT,
         name: 'Target User',
         createdAt: new Date(),
@@ -143,7 +165,7 @@ describe('🧪 TDD - DeleteUserUseCase Permissions', () => {
 
       const mockRequestingUser = {
         id: 'low-privilege-user-id',
-        email: 'low@example.com',
+        email: Email.create('low@example.com'),
         role: UserRole.REGULAR_CLIENT,
         name: 'Low Privilege User',
         createdAt: new Date(),
@@ -152,7 +174,7 @@ describe('🧪 TDD - DeleteUserUseCase Permissions', () => {
 
       const mockTargetUser = {
         id: 'target-user-id',
-        email: 'target@example.com',
+        email: Email.create('target@example.com'),
         role: UserRole.PRACTITIONER,
         name: 'Target User',
         createdAt: new Date(),
@@ -194,7 +216,7 @@ describe('🧪 TDD - DeleteUserUseCase Permissions', () => {
 
       const mockRequestingUser = {
         id: 'manager-user-id',
-        email: 'manager@example.com',
+        email: Email.create('manager@example.com'),
         role: UserRole.LOCATION_MANAGER,
         name: 'Manager User',
         createdAt: new Date(),
@@ -203,7 +225,7 @@ describe('🧪 TDD - DeleteUserUseCase Permissions', () => {
 
       const mockTargetUser = {
         id: 'subordinate-user-id',
-        email: 'subordinate@example.com',
+        email: Email.create('subordinate@example.com'),
         role: UserRole.PRACTITIONER,
         name: 'Subordinate User',
         createdAt: new Date(),
@@ -247,7 +269,7 @@ describe('🧪 TDD - DeleteUserUseCase Permissions', () => {
 
       const mockRequestingUser = {
         id: 'business-owner-id',
-        email: 'owner@business.com',
+        email: Email.create('owner@business.com'),
         role: UserRole.BUSINESS_OWNER,
         name: 'Business Owner',
         createdAt: new Date(),
@@ -256,7 +278,7 @@ describe('🧪 TDD - DeleteUserUseCase Permissions', () => {
 
       const mockTargetUser = {
         id: 'business-staff-id',
-        email: 'staff@business.com',
+        email: Email.create('staff@business.com'),
         role: UserRole.PRACTITIONER,
         businessId: 'business-123', // Context métier
         name: 'Business Staff',
@@ -301,7 +323,7 @@ describe('🧪 TDD - DeleteUserUseCase Permissions', () => {
 
       const mockRequestingUser = {
         id: 'unauthorized-user-id',
-        email: 'unauthorized@example.com',
+        email: Email.create('unauthorized@example.com'),
         role: UserRole.REGULAR_CLIENT,
         name: 'Unauthorized User',
         createdAt: new Date(),
@@ -310,7 +332,7 @@ describe('🧪 TDD - DeleteUserUseCase Permissions', () => {
 
       const mockTargetUser = {
         id: 'protected-user-id',
-        email: 'protected@example.com',
+        email: Email.create('protected@example.com'),
         role: UserRole.SUPER_ADMIN,
         name: 'Protected User',
         createdAt: new Date(),

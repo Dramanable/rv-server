@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="300" height="150" viewBox="0 0 300 150" xmlns="http://www.w3.org/2000/svg">
+  <!-- Logo horizontal pour header/bannière -->
+  
+  <defs>
+    <linearGradient id="textGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#00A651;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#FFD700;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#E74C3C;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Cercle background avec étoile -->
+  <circle cx="75" cy="75" r="60" fill="#00A651" stroke="#FFD700" stroke-width="3"/>
+  <polygon points="75,30 79,42 93,42 83,52 87,64 75,58 63,64 67,52 57,42 71,42" 
+           fill="#FFD700"/>
+  
+  <!-- Calendrier dans le cercle -->
+  <rect x="55" y="80" width="40" height="28" rx="3" fill="#FFFFFF" stroke="#E74C3C" stroke-width="2"/>
+  <rect x="59" y="77" width="3" height="6" rx="1.5" fill="#E74C3C"/>
+  <rect x="66" y="77" width="3" height="6" rx="1.5" fill="#E74C3C"/>
+  <rect x="78" y="77" width="3" height="6" rx="1.5" fill="#E74C3C"/>
+  <rect x="85" y="77" width="3" height="6" rx="1.5" fill="#E74C3C"/>
+  
+  <line x1="57" y1="87" x2="93" y2="87" stroke="#E74C3C" stroke-width="1"/>
+  
+  <!-- Points de RDV -->
+  <circle cx="62" cy="93" r="1.5" fill="#00A651"/>
+  <circle cx="69" cy="93" r="1.5" fill="#FFD700"/>
+  <circle cx="76" cy="93" r="1.5" fill="#E74C3C"/>
+  <circle cx="83" cy="93" r="1.5" fill="#00A651"/>
+  <circle cx="62" cy="100" r="1.5" fill="#FFD700"/>
+  <circle cx="76" cy="100" r="1.5" fill="#E74C3C"/>
+  <circle cx="83" cy="100" r="1.5" fill="#FFD700"/>
+  
+  <!-- Texte principal "amRDV" -->
+  <text x="180" y="60" font-family="Arial, sans-serif" font-size="36" font-weight="bold" 
+        fill="url(#textGrad)">amRDV</text>
+  
+  <!-- Sous-titre explicatif -->
+  <text x="180" y="80" font-family="Arial, sans-serif" font-size="12" 
+        fill="#666666">Gestion intelligente de rendez-vous</text>
+  
+  <!-- Tagline culturel -->
+  <text x="180" y="100" font-family="Arial, sans-serif" font-size="10" font-style="italic"
+        fill="#00A651">"Je suis RDV" - Votre assistant personnel sénégalais</text>
+  
+  <!-- Petite horloge décorative -->
+  <circle cx="270" cy="75" r="12" fill="#FFFFFF" stroke="#00A651" stroke-width="2"/>
+  <line x1="270" y1="75" x2="270" y2="68" stroke="#00A651" stroke-width="2"/>
+  <line x1="270" y1="75" x2="276" y2="75" stroke="#E74C3C" stroke-width="2"/>
+  <circle cx="270" cy="75" r="1.5" fill="#FFD700"/>
+</svg>

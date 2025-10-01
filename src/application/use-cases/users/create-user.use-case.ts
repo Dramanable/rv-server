@@ -18,6 +18,7 @@ import {
 import { I18nService } from '../../ports/i18n.port';
 import { Logger } from '../../ports/logger.port';
 import { IPermissionService } from '../../ports/permission.service.interface';
+import { IPasswordHasher } from '../../ports/password-hasher.port';
 
 // ═══════════════════════════════════════════════════════════════
 // 📋 REQUEST & RESPONSE TYPES
@@ -56,6 +57,7 @@ export class CreateUserUseCase {
     private readonly logger: Logger,
     private readonly i18n: I18nService,
     private readonly permissionService: IPermissionService,
+    private readonly passwordHasher: IPasswordHasher,
   ) {}
 
   async execute(request: CreateUserRequest): Promise<CreateUserResponse> {
@@ -102,7 +104,7 @@ export class CreateUserUseCase {
       await this.validateEmailUniqueness(request.email);
 
       // 5. Créer l'utilisateur
-      const newUser = this.createUser(request);
+      const newUser = await this.createUser(request);
 
       // 6. Sauvegarder
       const savedUser = await this.userRepository.save(newUser);
@@ -168,21 +170,40 @@ export class CreateUserUseCase {
     }
   }
 
-  private createUser(request: CreateUserRequest): User {
+  private async createUser(request: CreateUserRequest): Promise<User> {
     const email = Email.create(request.email);
     const normalizedName = request.name.trim();
 
-    const user = User.create(email, normalizedName, request.role);
+    // Créer l'utilisateur de base
+    let user = User.create(email, normalizedName, request.role);
 
-    // Si un mot de passe temporaire est fourni
+    // Si un mot de passe temporaire est fourni, le hacher
     if (request.temporaryPassword) {
-      // TODO: Hash du mot de passe temporaire
-      // Pour l'instant, on force le changement de mot de passe
-    }
+      const hashedPassword = await this.passwordHasher.hash(
+        request.temporaryPassword,
+      );
 
-    // Forcer le changement de mot de passe si demandé
-    if (request.requirePasswordChange !== undefined) {
-      // TODO: Setter le flag passwordChangeRequired
+      // Recréer l'utilisateur avec le mot de passe haché
+      user = User.createWithHashedPassword(
+        user.id,
+        email,
+        normalizedName,
+        request.role,
+        hashedPassword,
+        new Date(),
+        undefined,
+        undefined,
+        true,
+        false,
+        request.requirePasswordChange ?? true, // Force password change by default for temporary password
+      );
+    } else {
+      // Si pas de mot de passe temporaire, créer avec le flag requirePasswordChange
+      if (request.requirePasswordChange) {
+        user = User.createTemporary(email, normalizedName, request.role);
+      } else {
+        user = User.create(email, normalizedName, request.role);
+      }
     }
 
     return user;
@@ -191,12 +212,12 @@ export class CreateUserUseCase {
   private buildResponse(user: User): CreateUserResponse {
     return {
       id: user.id,
-      email: user.email.value,
+      email: user.email.getValue(),
       name: user.name,
       role: user.role,
-      isActive: true, // Par défaut
-      requirePasswordChange: false, // TODO: Récupérer la vraie valeur
-      createdAt: new Date(), // TODO: Récupérer la vraie date de création
+      isActive: user.isActive ?? true,
+      requirePasswordChange: user.passwordChangeRequired,
+      createdAt: user.createdAt,
     };
   }
 }

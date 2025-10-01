@@ -12,6 +12,7 @@ import {
 } from '@application/ports/authentication.port';
 import type { Logger } from '@application/ports/logger.port';
 import { User } from '@domain/entities/user.entity';
+import { Email } from '@domain/value-objects/email.vo';
 import {
   AuthenticationServiceError,
   TokenGenerationError,
@@ -34,7 +35,7 @@ export class JwtAuthenticationService implements AuthenticationService {
   async generateTokens(user: User): Promise<AuthTokens> {
     const payload: TokenPayload = {
       userId: user.id,
-      email: user.email.value,
+      email: user.email.getValue(),
       role: user.role,
     };
 
@@ -147,9 +148,12 @@ export class JwtAuthenticationService implements AuthenticationService {
       // Note: En production, vous devriez récupérer l'utilisateur complet depuis la DB
       const user = {
         id: payload.userId,
-        email: { value: payload.email },
+        email: Email.create(payload.email),
         role: payload.role,
-      } as User;
+        name: 'Unknown',
+        createdAt: new Date(),
+        passwordChangeRequired: false,
+      } as unknown as User;
 
       // Générer de nouveaux tokens
       return this.generateTokens(user);

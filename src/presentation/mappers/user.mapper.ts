@@ -31,7 +31,7 @@ export class UserToDtoMapper {
 
     return {
       id: user.id,
-      email: user.email.value,
+      email: user.email.getValue(),
       firstName,
       lastName,
       role: user.role,
@@ -51,7 +51,7 @@ export class UserToDtoMapper {
 
     return {
       id: user.id,
-      email: user.email.value,
+      email: user.email.getValue(),
       username: undefined, // User entity n'a pas de username
       firstName,
       lastName,

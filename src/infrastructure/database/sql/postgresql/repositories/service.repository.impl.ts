@@ -9,13 +9,13 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { ServiceRepository } from '../../../../../domain/repositories/service.repository.interface';
 import { Service } from '../../../../../domain/entities/service.entity';
-import { ServiceId } from '../../../../../domain/value-objects/service-id.value-object';
+import { ServiceRepository } from '../../../../../domain/repositories/service.repository.interface';
 import { BusinessId } from '../../../../../domain/value-objects/business-id.value-object';
+import { ServiceId } from '../../../../../domain/value-objects/service-id.value-object';
 import { UserId } from '../../../../../domain/value-objects/user-id.value-object';
-import { ServiceOrmEntity } from '../entities/service-orm.entity';
 import { ServiceMapper } from '../../../../mappers/service.mapper';
+import { ServiceOrmEntity } from '../entities/service-orm.entity';
 
 export interface ServiceSearchCriteria {
   businessId: BusinessId;
@@ -247,7 +247,7 @@ export class ServiceRepositoryImpl implements ServiceRepository {
    */
   async findByCategory(
     businessId: BusinessId,
-    category: string,
+    _category: string,
   ): Promise<Service[]> {
     // TODO: Implement when category support is added
     const entities = await this.ormRepository.find({
@@ -262,7 +262,7 @@ export class ServiceRepositoryImpl implements ServiceRepository {
   /**
    * Find services assigned to a staff member
    */
-  async findByStaffId(staffId: UserId): Promise<Service[]> {
+  async findByStaffId(_staffId: UserId): Promise<Service[]> {
     // TODO: Implement when staff assignment support is added
     const entities = await this.ormRepository.find({
       where: { status: 'ACTIVE' },
@@ -292,7 +292,7 @@ export class ServiceRepositoryImpl implements ServiceRepository {
   /**
    * Get service statistics
    */
-  async getServiceStatistics(serviceId: ServiceId): Promise<{
+  async getServiceStatistics(_serviceId: ServiceId): Promise<{
     totalBookings: number;
     completedBookings: number;
     cancelledBookings: number;

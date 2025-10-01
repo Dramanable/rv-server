@@ -201,14 +201,14 @@ export class GetUserByIdUseCase {
 
     return {
       id: targetUser.id,
-      email: targetUser.email.value,
+      email: targetUser.email.getValue(),
       name: targetUser.name,
       role: targetUser.role,
-      isActive: true, // Par défaut, à récupérer depuis les vraies données plus tard
+      isActive: targetUser.isActive ?? true,
       canViewSensitiveData,
       // Les champs optionnels peuvent être ajoutés selon les besoins
-      createdAt: undefined, // TODO: Récupérer depuis l'entité si disponible
-      updatedAt: undefined, // TODO: Récupérer depuis l'entité si disponible
+      createdAt: targetUser.createdAt,
+      updatedAt: targetUser.updatedAt,
     };
   }
 

@@ -91,3 +91,13 @@ export class ValueObjectValidationError extends DomainError {
     this.name = 'ValueObjectValidationError';
   }
 }
+
+/**
+ * Alias pour ValidationError - Compatibility
+ */
+export class ValidationError extends DomainValidationError {
+  constructor(message: string, field?: string, value?: unknown) {
+    super(message, field, value);
+    this.name = 'ValidationError';
+  }
+}

@@ -21,7 +21,7 @@ import { I18nService } from '../../ports/i18n.port';
 import { UserRepository } from '../../../domain/repositories/user.repository.interface';
 import { IPasswordResetCodeRepository } from '../../../domain/repositories/password-reset-code.repository';
 import { IEmailService } from '../../ports/email.port';
-import { Email } from '../../../domain/value-objects/email.value-object';
+import { Email } from '../../../domain/value-objects/email.vo';
 import { PasswordResetCode } from '../../../domain/entities/password-reset-code.entity';
 import { ValidationError } from '../../../domain/exceptions/domain.exceptions';
 
@@ -81,10 +81,10 @@ export class RequestPasswordResetUseCase {
       }
 
       // 3. Invalider les anciens codes de cet utilisateur
-      await this.resetCodeRepository.invalidateUserCodes(user.id.getValue());
+      await this.resetCodeRepository.invalidateUserCodes(user.id);
 
       // 4. Générer un nouveau code à 4 chiffres
-      const resetCode = PasswordResetCode.create(user.id.getValue());
+      const resetCode = PasswordResetCode.create(user.id);
 
       // 5. Sauvegarder le code
       await this.resetCodeRepository.save(resetCode);
@@ -92,7 +92,6 @@ export class RequestPasswordResetUseCase {
       // 6. Envoyer l'email avec le code
       await this.emailService.sendPasswordResetEmail({
         userName: user.name,
-        userEmail: user.email.getValue(),
         resetCode: resetCode.code,
         expirationTime: this.formatExpirationTime(resetCode.expiresAt),
         companyName: 'RV Project',
@@ -100,7 +99,7 @@ export class RequestPasswordResetUseCase {
 
       this.logger.info('✅ Password reset code sent successfully', {
         correlationId,
-        userId: user.id.getValue(),
+        userId: user.id,
       });
 
       return {
@@ -109,10 +108,13 @@ export class RequestPasswordResetUseCase {
         messageKey: 'auth.password_reset.code_sent',
       };
     } catch (error) {
-      this.logger.error('❌ Password reset request failed', {
-        correlationId,
-        error: error instanceof Error ? error.message : String(error),
-      });
+      this.logger.error(
+        '❌ Password reset request failed',
+        error instanceof Error ? error : new Error(String(error)),
+        {
+          correlationId,
+        },
+      );
 
       if (error instanceof ValidationError) {
         return {

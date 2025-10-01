@@ -4,11 +4,11 @@
  * Tests pour le Value Object StatisticsPeriod avec gestion des périodes.
  */
 
-import {
-  StatisticsPeriod,
-  PeriodType,
-} from '../../../../domain/value-objects/statistics-period.value-object';
 import { DomainValidationError } from '../../../../domain/exceptions/domain.exceptions';
+import {
+  PeriodType,
+  StatisticsPeriod,
+} from '../../../../domain/value-objects/statistics-period.value-object';
 
 describe('StatisticsPeriod Value Object', () => {
   describe('Factory Method - createMonth', () => {

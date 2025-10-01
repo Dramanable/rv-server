@@ -151,16 +151,22 @@ export class ServiceController {
       serviceTypeIds: dto.serviceTypeIds, // Utilisation de serviceTypeIds depuis DTO
       duration: dto.duration,
       price: dto.price || {
-        amount: dto.pricingConfig?.basePrice?.amount || 0,
+        amount: Number(dto.pricingConfig?.basePrice?.amount || 0),
         currency: dto.pricingConfig?.basePrice?.currency || 'EUR',
       },
-      // Propriétés optionnelles pour compatibilité (à adapter selon besoin)
-      pricingConfig: dto.pricingConfig,
-      isActive: dto.isActive ?? true,
-      allowOnlineBooking: (dto as any).allowOnlineBooking ?? false,
+      settings: {
+        isOnlineBookingEnabled: (dto as any).allowOnlineBooking ?? false,
+        requiresApproval: dto.settings?.requiresApproval,
+        maxAdvanceBookingDays: dto.settings?.maxAdvanceBookingDays,
+        minAdvanceBookingHours: dto.settings?.minAdvanceBookingHours,
+        bufferTimeBefore: dto.settings?.bufferTimeBefore,
+        bufferTimeAfter: dto.settings?.bufferTimeAfter,
+        isGroupBookingAllowed: dto.settings?.isGroupBookingAllowed,
+        maxGroupSize: dto.settings?.maxGroupSize,
+      },
       requirements: dto.requirements,
-      tags: (dto as any).tags,
-    } as any; // Casting temporaire pour compatibilité
+      isActive: dto.isActive ?? true,
+    };
 
     const response = await this.createServiceUseCase.execute(request);
 
@@ -200,11 +206,17 @@ export class ServiceController {
             }
           : undefined,
         isActive: dto.isActive,
-        // Propriétés optionnelles pour compatibilité (à adapter selon besoin)
-        categoryId: (dto as any).categoryId,
-        allowOnlineBooking: (dto as any).allowOnlineBooking,
+        settings: {
+          isOnlineBookingEnabled: (dto as any).allowOnlineBooking,
+          requiresApproval: dto.settings?.requiresApproval,
+          maxAdvanceBookingDays: dto.settings?.maxAdvanceBookingDays,
+          minAdvanceBookingHours: dto.settings?.minAdvanceBookingHours,
+          bufferTimeBefore: dto.settings?.bufferTimeBefore,
+          bufferTimeAfter: dto.settings?.bufferTimeAfter,
+          isGroupBookingAllowed: dto.settings?.isGroupBookingAllowed,
+          maxGroupSize: dto.settings?.maxGroupSize,
+        },
         requirements: dto.requirements,
-        tags: (dto as any).tags,
       } as any, // Casting temporaire pour compatibilité
     };
 

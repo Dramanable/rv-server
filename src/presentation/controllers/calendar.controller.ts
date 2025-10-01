@@ -135,7 +135,7 @@ export class CalendarController {
             ? calendar.description.substring(0, 100) + '...'
             : calendar.description || '',
         businessId: calendar.businessId,
-        type: calendar.type,
+        type: calendar.type as any,
         status: this.mapDomainStatusToDto(calendar.status),
         timeZone: 'Europe/Paris', // TODO: Add to use case response
         isDefault: false, // TODO: Add to use case response
@@ -211,7 +211,7 @@ export class CalendarController {
       name: calendar.name,
       description: calendar.description,
       businessId: calendar.businessId,
-      type: calendar.type,
+      type: calendar.type as any,
       status: this.mapDomainStatusToDto(calendar.status),
       settings: calendar.settings,
       availability: calendar.availability,
@@ -267,7 +267,7 @@ export class CalendarController {
       name: dto.name,
       description: dto.description,
       businessId: dto.businessId,
-      type: dto.type,
+      type: dto.type as any,
       address: {
         street: '',
         city: '',
@@ -291,7 +291,7 @@ export class CalendarController {
       name: result.name,
       description: result.description || '',
       businessId: result.businessId,
-      type: result.type,
+      type: result.type as any,
       status: CalendarStatus.ACTIVE, // TODO: Add to CreateCalendarResponse
       createdAt: result.createdAt,
     };

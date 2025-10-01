@@ -303,7 +303,7 @@ describe('CompletePasswordResetUseCase', () => {
       // Then
       expect(result.user).toMatchObject({
         id: testUser.id,
-        email: testUser.email.value,
+        email: testUser.email.getValue(),
         name: testUser.name,
       });
     });
@@ -406,7 +406,7 @@ describe('CompletePasswordResetUseCase', () => {
       // Then
       expect(result.success).toBe(false);
       expect(result.message).not.toContain(testUser.name);
-      expect(result.message).not.toContain(testUser.email.value);
+      expect(result.message).not.toContain(testUser.email.getValue());
       expect(result.user).toBeUndefined();
     });
   });
