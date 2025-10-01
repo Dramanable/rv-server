@@ -6,11 +6,14 @@
 
 export enum ActorTypeEnum {
   CLIENT = 'CLIENT',
-  PROFESSIONAL = 'PROFESSIONAL',
   STAFF = 'STAFF',
   ADMIN = 'ADMIN',
   BUSINESS_OWNER = 'BUSINESS_OWNER',
   PLATFORM_ADMIN = 'PLATFORM_ADMIN',
+  // 🆕 Nouveaux rôles éditeur SaaS
+  SUPER_ADMIN = 'SUPER_ADMIN',
+  SALES_MANAGER = 'SALES_MANAGER',
+  SALES_REP = 'SALES_REP',
 }
 
 export class ActorType {
@@ -22,10 +25,6 @@ export class ActorType {
 
   static client(): ActorType {
     return new ActorType(ActorTypeEnum.CLIENT);
-  }
-
-  static professional(): ActorType {
-    return new ActorType(ActorTypeEnum.PROFESSIONAL);
   }
 
   static staff(): ActorType {
@@ -42,6 +41,18 @@ export class ActorType {
 
   static platformAdmin(): ActorType {
     return new ActorType(ActorTypeEnum.PLATFORM_ADMIN);
+  }
+
+  static superAdmin(): ActorType {
+    return new ActorType(ActorTypeEnum.SUPER_ADMIN);
+  }
+
+  static salesManager(): ActorType {
+    return new ActorType(ActorTypeEnum.SALES_MANAGER);
+  }
+
+  static salesRep(): ActorType {
+    return new ActorType(ActorTypeEnum.SALES_REP);
   }
 
   static fromString(value: string): ActorType {
@@ -95,7 +106,6 @@ export class ActorType {
       case ActorTypeEnum.CLIENT:
         return { email: true, sms: true, push: true, inApp: true };
 
-      case ActorTypeEnum.PROFESSIONAL:
       case ActorTypeEnum.STAFF:
         return { email: true, sms: true, push: true, inApp: true };
 
@@ -105,6 +115,13 @@ export class ActorType {
 
       case ActorTypeEnum.PLATFORM_ADMIN:
         return { email: true, sms: false, push: false, inApp: true };
+
+      case ActorTypeEnum.SUPER_ADMIN:
+        return { email: true, sms: false, push: true, inApp: true };
+
+      case ActorTypeEnum.SALES_MANAGER:
+      case ActorTypeEnum.SALES_REP:
+        return { email: true, sms: true, push: true, inApp: true };
 
       default:
         return { email: true, sms: false, push: false, inApp: true };
@@ -119,7 +136,6 @@ export class ActorType {
       case ActorTypeEnum.CLIENT:
         return 'HIGH'; // Les clients ont la priorité pour les notifications
 
-      case ActorTypeEnum.PROFESSIONAL:
       case ActorTypeEnum.STAFF:
         return 'HIGH'; // Notifications importantes pour le staff
 
@@ -129,6 +145,15 @@ export class ActorType {
 
       case ActorTypeEnum.PLATFORM_ADMIN:
         return 'LOW'; // Priorité basse pour l'admin plateforme
+
+      case ActorTypeEnum.SUPER_ADMIN:
+        return 'HIGH'; // Priorité haute pour le super admin
+
+      case ActorTypeEnum.SALES_MANAGER:
+        return 'HIGH'; // Priorité haute pour les managers commerciaux
+
+      case ActorTypeEnum.SALES_REP:
+        return 'NORMAL'; // Priorité normale pour les commerciaux
 
       default:
         return 'NORMAL';
@@ -140,7 +165,6 @@ export class ActorType {
    */
   isBusinessUser(): boolean {
     return [
-      ActorTypeEnum.PROFESSIONAL,
       ActorTypeEnum.STAFF,
       ActorTypeEnum.ADMIN,
       ActorTypeEnum.BUSINESS_OWNER,
@@ -162,7 +186,40 @@ export class ActorType {
       ActorTypeEnum.ADMIN,
       ActorTypeEnum.BUSINESS_OWNER,
       ActorTypeEnum.PLATFORM_ADMIN,
+      ActorTypeEnum.SUPER_ADMIN,
     ].includes(this._value);
+  }
+
+  /**
+   * Vérifie si ce type d'acteur est un rôle éditeur SaaS
+   */
+  isPublisherRole(): boolean {
+    return [
+      ActorTypeEnum.SUPER_ADMIN,
+      ActorTypeEnum.SALES_MANAGER,
+      ActorTypeEnum.SALES_REP,
+    ].includes(this._value);
+  }
+
+  /**
+   * Vérifie si ce type d'acteur est un rôle tenant (client du SaaS)
+   */
+  isTenantRole(): boolean {
+    return [
+      ActorTypeEnum.CLIENT,
+      ActorTypeEnum.STAFF,
+      ActorTypeEnum.ADMIN,
+      ActorTypeEnum.BUSINESS_OWNER,
+    ].includes(this._value);
+  }
+
+  /**
+   * Vérifie si ce type d'acteur est un rôle commercial
+   */
+  isSalesRole(): boolean {
+    return [ActorTypeEnum.SALES_MANAGER, ActorTypeEnum.SALES_REP].includes(
+      this._value,
+    );
   }
 
   equals(other: ActorType): boolean {

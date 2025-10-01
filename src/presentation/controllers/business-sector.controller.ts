@@ -137,55 +137,126 @@ export class BusinessSectorController {
   }
 
   /**
-   * 📋 List business sectors with pagination
+   * � LIST BUSINESS SECTORS - POST /api/v1/business-sectors/list
    *
-   * @description Retrieves all business sectors with optional pagination
-   * @param query Pagination and filtering options
-   * @returns Paginated list of business sectors
+   * @description Recherche avancée paginée des secteurs d'activité avec système de filtrage complet
+   * @param dto Complex filtering, pagination and sorting options
+   * @returns Paginated list of business sectors with metadata
    */
-  @Get()
+  @Post('list')
   @ApiOperation({
-    summary: '📋 List Business Sectors',
-    description: 'Retrieves all business sectors with pagination support.',
-  })
-  @ApiQuery({
-    name: 'page',
-    required: false,
-    description: 'Page number (default: 1)',
-    example: 1,
-  })
-  @ApiQuery({
-    name: 'limit',
-    required: false,
-    description: 'Items per page (default: 20, max: 100)',
-    example: 20,
+    summary: '� Search Business Sectors with Advanced Filters',
+    description: `
+    **Recherche avancée paginée** des secteurs d'activité avec système de filtrage complet.
+
+    ## 🎯 Fonctionnalités
+
+    ### 📊 **Filtres disponibles**
+    - **Recherche textuelle** : Nom, description, code
+    - **Filtres métier** : Statut actif/inactif
+    - **Tri multi-critères** : Tous champs avec asc/desc
+    - **Pagination** : Page/limit avec métadonnées complètes
+
+    ### 🔐 **Sécurité**
+    - **JWT** : Token Bearer obligatoire
+    - **RBAC** : Permissions granulaires par ressource
+    - **Rate limiting** : 100 req/min par utilisateur
+
+    ## 🎯 **Guide d'intégration Frontend**
+
+    ### React/Vue.js Example
+    \`\`\`typescript
+    const searchBusinessSectors = async (filters: BusinessSectorFilters) => {
+      const response = await api.post('/api/v1/business-sectors/list', {
+        pagination: { page: 1, limit: 20 },
+        sort: { sortBy: 'name', sortOrder: 'asc' },
+        filters: { search: 'tech', isActive: true }
+      });
+
+      return {
+        sectors: response.data.data,
+        pagination: response.data.meta
+      };
+    };
+    \`\`\`
+    `,
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: '✅ Business sectors retrieved successfully',
-    type: [BusinessSectorResponseDto], // Array response
+    description: '✅ Business sectors found successfully',
+    schema: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean', example: true },
+        data: {
+          type: 'array',
+          items: { $ref: '#/components/schemas/BusinessSectorResponseDto' },
+        },
+        meta: {
+          type: 'object',
+          properties: {
+            currentPage: { type: 'number', example: 1 },
+            totalPages: { type: 'number', example: 5 },
+            totalItems: { type: 'number', example: 47 },
+            itemsPerPage: { type: 'number', example: 10 },
+            hasNextPage: { type: 'boolean', example: true },
+            hasPrevPage: { type: 'boolean', example: false },
+          },
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: '❌ Invalid search parameters',
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: '🔐 Authentication required',
   })
   @ApiResponse({
     status: HttpStatus.FORBIDDEN,
     description: '🚫 Insufficient permissions',
   })
   async listBusinessSectors(
-    @Query() query: ListBusinessSectorsDto,
+    @Body() dto: ListBusinessSectorsDto,
     @Request() req: any,
-  ): Promise<BusinessSectorResponseDto[]> {
-    // � Extract requesting user ID from JWT token
+  ): Promise<{
+    success: boolean;
+    data: BusinessSectorResponseDto[];
+    meta: {
+      currentPage: number;
+      totalPages: number;
+      totalItems: number;
+      itemsPerPage: number;
+      hasNextPage: boolean;
+      hasPrevPage: boolean;
+    };
+  }> {
+    // 🔐 Extract requesting user ID from JWT token
     const requestingUserId = req.user?.id || 'anonymous';
 
-    // �🔄 Convert query to use case request
-    const request = BusinessSectorMapper.toListRequest(query, requestingUserId);
+    // 🔄 Convert DTO to use case request
+    const request = BusinessSectorMapper.toListRequest(dto, requestingUserId);
 
     // 💼 Execute use case
     const response = await this.listBusinessSectorsUseCase.execute(request);
 
-    // 🔄 Convert response to DTOs
-    return response.businessSectors.data.map((sector) =>
-      BusinessSectorMapper.toDto(sector),
-    );
+    // 🔄 Convert response to standard API format with metadata
+    return {
+      success: true,
+      data: response.businessSectors.data.map((sector) =>
+        BusinessSectorMapper.toDto(sector),
+      ),
+      meta: {
+        currentPage: response.businessSectors.meta.currentPage,
+        totalPages: response.businessSectors.meta.totalPages,
+        totalItems: response.businessSectors.meta.totalItems,
+        itemsPerPage: response.businessSectors.meta.itemsPerPage,
+        hasNextPage: response.businessSectors.meta.hasNextPage,
+        hasPrevPage: response.businessSectors.meta.hasPrevPage,
+      },
+    };
   }
 
   /**

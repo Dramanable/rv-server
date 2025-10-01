@@ -53,6 +53,13 @@ export const APPLICATION_TOKENS = {
   MANAGE_BUSINESS_HOURS_USE_CASE: 'ManageBusinessHoursUseCase',
   UPDATE_BUSINESS_CONFIGURATION_USE_CASE: 'UpdateBusinessConfigurationUseCase',
 
+  // Prospect Use Cases
+  CREATE_PROSPECT_USE_CASE: 'CreateProspectUseCase',
+  GET_PROSPECT_USE_CASE: 'GetProspectUseCase',
+  LIST_PROSPECTS_USE_CASE: 'ListProspectsUseCase',
+  UPDATE_PROSPECT_USE_CASE: 'UpdateProspectUseCase',
+  DELETE_PROSPECT_USE_CASE: 'DeleteProspectUseCase',
+
   // Calendar Use Cases
   CREATE_CALENDAR_USE_CASE: 'CreateCalendarUseCase',
   GET_CALENDAR_USE_CASE: 'GetCalendarUseCase',
@@ -198,17 +205,23 @@ export const DOMAIN_TOKENS = {
   SKILL_REPOSITORY: 'SkillRepository',
   SERVICE_TYPE_REPOSITORY: 'ServiceTypeRepository',
   CALENDAR_TYPE_REPOSITORY: 'CalendarTypeRepository',
-  PROFESSIONAL_REPOSITORY: 'ProfessionalRepository',
+  PROSPECT_REPOSITORY: 'ProspectRepository',
 
   // ✅ NEW: RBAC Repositories
   ROLE_ASSIGNMENT_REPOSITORY: 'RoleAssignmentRepository',
   RBAC_BUSINESS_CONTEXT_REPOSITORY: 'RbacBusinessContextRepository',
+
+  // 🔐 NEW: Permission System Repositories
+  USER_PERMISSION_REPOSITORY: 'UserPermissionRepository',
 
   // Domain Services
   USER_DOMAIN_SERVICE: 'UserDomainService',
   PASSWORD_DOMAIN_SERVICE: 'PasswordDomainService',
   EMAIL_DOMAIN_SERVICE: 'EmailDomainService',
   PERMISSION_SERVICE: 'IPermissionService',
+
+  // 🔐 NEW: Simple Permission Service
+  SIMPLE_PERMISSION_SERVICE: 'SimplePermissionService',
 } as const;
 
 // 🏗️ Infrastructure Layer Tokens

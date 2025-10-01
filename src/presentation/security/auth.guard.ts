@@ -62,7 +62,7 @@ export class LegacyJwtAuthGuard implements CanActivate {
 
       // Attacher les infos utilisateur à la requête
       request['user'] = {
-        id: payload.sub,
+        id: payload.userId,
         email: payload.email,
         role: payload.role,
       };

@@ -124,12 +124,12 @@ import { GetCalendarTypeByIdUseCase } from '@application/use-cases/calendar-type
 import { ListCalendarTypesUseCase } from '@application/use-cases/calendar-types/list-calendar-types.use-case';
 import { UpdateCalendarTypeUseCase } from '@application/use-cases/calendar-types/update-calendar-type.use-case';
 
-// Professional Use Cases
-import { CreateProfessionalUseCase } from '@application/use-cases/professionals/create-professional.use-case';
-import { DeleteProfessionalUseCase } from '@application/use-cases/professionals/delete-professional.use-case';
-import { GetProfessionalByIdUseCase } from '@application/use-cases/professionals/get-professional-by-id.use-case';
-import { ListProfessionalsUseCase } from '@application/use-cases/professionals/list-professionals.use-case';
-import { UpdateProfessionalUseCase } from '@application/use-cases/professionals/update-professional.use-case';
+// Prospect Use Cases
+import { CreateProspectUseCase } from '@application/use-cases/prospects/create-prospect.use-case';
+import { DeleteProspectUseCase } from '@application/use-cases/prospects/delete-prospect.use-case';
+import { GetProspectByIdUseCase } from '@application/use-cases/prospects/get-prospect-by-id.use-case';
+import { ListProspectsUseCase } from '@application/use-cases/prospects/list-prospects.use-case';
+import { UpdateProspectUseCase } from '@application/use-cases/prospects/update-prospect.use-case';
 
 // Professional Role Use Cases
 import { CreateProfessionalRoleUseCase } from '@application/use-cases/professional-roles/create-professional-role.use-case';
@@ -159,7 +159,7 @@ import { NotificationController } from './controllers/notification.controller';
 import { PasswordResetController } from './controllers/PasswordResetController';
 import { PermissionController } from './controllers/permission.controller';
 import { ProfessionalRoleController } from './controllers/professional-role.controller';
-import { ProfessionalController } from './controllers/professional.controller';
+import { ProspectController } from './controllers/prospect.controller';
 import { RoleManagementController } from './controllers/role-management.controller';
 import { ServiceTypeController } from './controllers/service-type.controller';
 import { ServiceController } from './controllers/service.controller';
@@ -208,7 +208,7 @@ import { PresentationCookieService } from './services/cookie.service';
     BusinessGalleryController,
     AppointmentController,
     NotificationController,
-    ProfessionalController,
+    ProspectController,
     ProfessionalRoleController,
     PermissionController,
     RoleManagementController,
@@ -1116,67 +1116,70 @@ import { PresentationCookieService } from './services/cookie.service';
       ],
     },
 
-    // 👨‍💼 Professional Use Cases
+    // 🎯 Prospect Use Cases
     {
-      provide: TOKENS.CREATE_PROFESSIONAL_USE_CASE,
-      useFactory: (professionalRepo, logger, i18n, auditService) =>
-        new CreateProfessionalUseCase(
-          professionalRepo,
+      provide: TOKENS.CREATE_PROSPECT_USE_CASE,
+      useFactory: (prospectRepo, permissionService, logger, i18n) =>
+        new CreateProspectUseCase(
+          prospectRepo,
+          permissionService,
           logger,
           i18n,
-          auditService,
         ),
       inject: [
-        TOKENS.PROFESSIONAL_REPOSITORY,
+        TOKENS.PROSPECT_REPOSITORY,
+        TOKENS.PERMISSION_SERVICE,
+        TOKENS.LOGGER,
+        TOKENS.I18N_SERVICE,
+      ],
+    },
+    {
+      provide: TOKENS.GET_PROSPECT_USE_CASE,
+      useFactory: (prospectRepo, permissionService, logger, i18n) =>
+        new GetProspectByIdUseCase(
+          prospectRepo,
+          permissionService,
+          logger,
+          i18n,
+        ),
+      inject: [
+        TOKENS.PROSPECT_REPOSITORY,
+        TOKENS.PERMISSION_SERVICE,
+        TOKENS.LOGGER,
+        TOKENS.I18N_SERVICE,
+      ],
+    },
+    {
+      provide: TOKENS.UPDATE_PROSPECT_USE_CASE,
+      useFactory: (prospectRepo, logger, i18n, auditService) =>
+        new UpdateProspectUseCase(prospectRepo, logger, i18n, auditService),
+      inject: [
+        TOKENS.PROSPECT_REPOSITORY,
         TOKENS.LOGGER,
         TOKENS.I18N_SERVICE,
         TOKENS.AUDIT_SERVICE,
       ],
     },
     {
-      provide: TOKENS.GET_PROFESSIONAL_BY_ID_USE_CASE,
-      useFactory: (professionalRepo, logger, i18n) =>
-        new GetProfessionalByIdUseCase(professionalRepo, logger, i18n),
+      provide: TOKENS.DELETE_PROSPECT_USE_CASE,
+      useFactory: (prospectRepo, logger, i18n, auditService) =>
+        new DeleteProspectUseCase(prospectRepo, logger, i18n, auditService),
       inject: [
-        TOKENS.PROFESSIONAL_REPOSITORY,
-        TOKENS.LOGGER,
-        TOKENS.I18N_SERVICE,
-      ],
-    },
-    {
-      provide: TOKENS.UPDATE_PROFESSIONAL_USE_CASE,
-      useFactory: (professionalRepo, logger, i18n) =>
-        new UpdateProfessionalUseCase(professionalRepo, logger, i18n),
-      inject: [
-        TOKENS.PROFESSIONAL_REPOSITORY,
-        TOKENS.LOGGER,
-        TOKENS.I18N_SERVICE,
-      ],
-    },
-    {
-      provide: TOKENS.DELETE_PROFESSIONAL_USE_CASE,
-      useFactory: (professionalRepo, logger, i18n) =>
-        new DeleteProfessionalUseCase(professionalRepo, logger, i18n),
-      inject: [
-        TOKENS.PROFESSIONAL_REPOSITORY,
-        TOKENS.LOGGER,
-        TOKENS.I18N_SERVICE,
-      ],
-    },
-    {
-      provide: TOKENS.LIST_PROFESSIONALS_USE_CASE,
-      useFactory: (professionalRepo, logger, i18n, auditService) =>
-        new ListProfessionalsUseCase(
-          professionalRepo,
-          logger,
-          i18n,
-          auditService,
-        ),
-      inject: [
-        TOKENS.PROFESSIONAL_REPOSITORY,
+        TOKENS.PROSPECT_REPOSITORY,
         TOKENS.LOGGER,
         TOKENS.I18N_SERVICE,
         TOKENS.AUDIT_SERVICE,
+      ],
+    },
+    {
+      provide: TOKENS.LIST_PROSPECTS_USE_CASE,
+      useFactory: (prospectRepo, permissionService, logger, i18n) =>
+        new ListProspectsUseCase(prospectRepo, permissionService, logger, i18n),
+      inject: [
+        TOKENS.PROSPECT_REPOSITORY,
+        TOKENS.PERMISSION_SERVICE,
+        TOKENS.LOGGER,
+        TOKENS.I18N_SERVICE,
       ],
     },
 

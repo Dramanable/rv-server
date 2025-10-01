@@ -25,7 +25,10 @@ export default new DataSource({
 
   // 📁 Entities - Clean Architecture paths
   entities: [
-    path.join(__dirname, 'sql/postgresql/entities/**/*.entity.{ts,js}'),
+    path.join(
+      __dirname,
+      'sql/postgresql/entities/**/*{.entity,.orm.entity}.{ts,js}',
+    ),
   ],
 
   // 🔄 Migrations configuration

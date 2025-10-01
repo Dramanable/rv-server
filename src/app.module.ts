@@ -11,7 +11,7 @@ import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD, APP_PIPE } from '@nestjs/core';
 import { ExceptionFiltersModule } from '@presentation/filters/exception-filters.module';
 import { PresentationModule } from '@presentation/presentation.module';
-import { JwtAuthGuard } from '@presentation/security/guards/jwt-auth.guard';
+import { LegacyJwtAuthGuard } from '@presentation/security/auth.guard';
 import { SecurityValidationPipe } from '@presentation/security/validation.pipe';
 
 @Module({
@@ -39,7 +39,7 @@ import { SecurityValidationPipe } from '@presentation/security/validation.pipe';
     // 🛡️ Global security providers
     {
       provide: APP_GUARD,
-      useClass: JwtAuthGuard,
+      useClass: LegacyJwtAuthGuard,
     },
     {
       provide: APP_PIPE,

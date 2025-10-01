@@ -75,8 +75,59 @@ export class RbacPermissionService implements IPermissionService {
         context,
       });
 
+      // 🎯 RÈGLE SPÉCIALE : ADMIN et SUPER_ADMIN ont toutes les permissions
+      // TODO: Récupérer le rôle système de l'utilisateur depuis une source appropriée
+      // Pour l'instant, on assume que si l'utilisateur arrive ici, il a passé l'auth
+      // et nous devons vérifier ses rôles depuis la base de données
+
       // 1. Obtenir les rôles de l'utilisateur
       const userRoles = await this.getUserRoles(userId, context);
+
+      console.log(
+        '🚨 DEBUG PERMISSIONS - User roles retrieved in hasPermission',
+        {
+          userId,
+          permission,
+          context,
+          userRoles: userRoles.map((ra) => ({
+            role: ra.getRole(),
+            businessId: ra.getContext().businessId,
+            locationId: ra.getContext().locationId,
+            departmentId: ra.getContext().departmentId,
+            assignmentScope: ra.getAssignmentScope(),
+            isActive: ra.isActive(),
+          })),
+          userRolesCount: userRoles.length,
+        },
+      );
+
+      this.logger.info('🚨 DEBUG PERMISSIONS - User roles retrieved', {
+        userId,
+        permission,
+        context,
+        userRoles: userRoles.map((ra) => ({
+          role: ra.getRole(),
+          businessId: ra.getContext().businessId,
+          locationId: ra.getContext().locationId,
+          departmentId: ra.getContext().departmentId,
+          assignmentScope: ra.getAssignmentScope(),
+          isActive: ra.isActive(),
+        })),
+        userRolesCount: userRoles.length,
+      });
+
+      // 🔧 TEMPORAIRE : Si aucun rôle assigné, vérifier si c'est un admin système
+      if (userRoles.length === 0) {
+        this.logger.warn(
+          'No role assignments found for user - checking system roles',
+          {
+            userId,
+            permission,
+          },
+        );
+        // TODO: Implémenter une vérification des rôles système
+        // Pour l'instant, on refuse l'accès
+      }
 
       // 2. Vérifier si l'un des rôles a cette permission
       for (const roleAssignment of userRoles) {
@@ -401,15 +452,60 @@ export class RbacPermissionService implements IPermissionService {
     userId: string,
     context?: Record<string, unknown>,
   ): Promise<RoleAssignment[]> {
+    console.log('🚨 DEBUG PERMISSIONS - getUserRoles called', {
+      userId,
+      context,
+      operation: 'getUserRoles',
+    });
+
     const assignments =
       await this.roleAssignmentRepository.findByUserId(userId);
 
+    console.log('🚨 DEBUG PERMISSIONS - Raw assignments from DB', {
+      userId,
+      assignmentsCount: assignments.length,
+      assignments: assignments.map((a) => ({
+        id: a.getId(),
+        role: a.getRole(),
+        businessId: a.getContext().businessId,
+        isActive: a.isActive(),
+        assignmentScope: a.getAssignmentScope(),
+      })),
+    });
+
+    this.logger.info('🚨 DEBUG PERMISSIONS - getUserRoles called', {
+      userId,
+      context,
+      operation: 'getUserRoles',
+    });
+
+    this.logger.info('🚨 DEBUG PERMISSIONS - Raw assignments from DB', {
+      userId,
+      assignmentsCount: assignments.length,
+      assignments: assignments.map((a) => ({
+        id: a.getId(),
+        role: a.getRole(),
+        businessId: a.getContext().businessId,
+        isActive: a.isActive(),
+        assignmentScope: a.getAssignmentScope(),
+      })),
+    });
+
     // Si un contexte business est spécifié, filtrer par ce contexte
     if (context?.businessId) {
-      return assignments.filter(
+      const filtered = assignments.filter(
         (assignment) =>
           assignment.getContext().businessId === context.businessId,
       );
+
+      this.logger.info('🚨 DEBUG PERMISSIONS - Filtered by business context', {
+        userId,
+        originalCount: assignments.length,
+        filteredCount: filtered.length,
+        contextBusinessId: context.businessId,
+      });
+
+      return filtered;
     }
 
     return assignments;

@@ -13,6 +13,7 @@ import { BusinessSectorOrmEntity } from './sql/postgresql/entities/business-sect
 import { CalendarOrmEntity } from './sql/postgresql/entities/calendar-orm.entity';
 import { NotificationOrmEntity } from './sql/postgresql/entities/notification-orm.entity';
 import { ProfessionalOrmEntity } from './sql/postgresql/entities/professional-orm.entity';
+import { ProspectOrmEntity } from './sql/postgresql/entities/prospect-orm.entity';
 import { RefreshTokenOrmEntity } from './sql/postgresql/entities/refresh-token-orm.entity';
 import { ServiceOrmEntity } from './sql/postgresql/entities/service-orm.entity';
 import { SkillOrmEntity } from './sql/postgresql/entities/skill-orm.entity';
@@ -22,6 +23,9 @@ import { UserOrmEntity } from './sql/postgresql/entities/user-orm.entity';
 // 🎭 RBAC Entities
 import { BusinessContextOrmEntity } from './sql/postgresql/entities/business-context-orm.entity';
 import { RoleAssignmentOrmEntity } from './sql/postgresql/entities/role-assignment-orm.entity';
+
+// 🔐 Permission Entities
+import { UserPermissionOrmEntity } from './sql/postgresql/entities/user-permission-orm.entity';
 
 // 🖼️ Business Image & Gallery Entities
 import { BusinessGalleryOrmEntity } from './sql/postgresql/entities/business-gallery-orm.entity';
@@ -62,12 +66,15 @@ import { BusinessImageOrmEntity } from './sql/postgresql/entities/business-image
           StaffOrmEntity,
           NotificationOrmEntity,
           ProfessionalOrmEntity,
+          ProspectOrmEntity, // ✅ Prospect entity for sales management
           // 🖼️ Business Image & Gallery Entities
           BusinessImageOrmEntity,
           BusinessGalleryOrmEntity,
           // 🎭 RBAC Entities
           RoleAssignmentOrmEntity,
           BusinessContextOrmEntity,
+          // 🔐 Permission Entities
+          UserPermissionOrmEntity,
         ],
         migrations: [
           'dist/infrastructure/database/sql/postgresql/migrations/*.js',

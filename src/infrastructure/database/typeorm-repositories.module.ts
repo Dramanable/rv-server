@@ -1,7 +1,11 @@
 /**
  * 🗄️ TypeORM Module - Real Database Implementation
  *
- * Module pour les vraies implémentations TypeORM des repositories
+ * Modimport { RbacPermissionService } from '../services/rbac-permission.service';
+import { TestPermissionService } from '../services/test-permission.service';
+
+// Simple Permission Service
+import { SimplePermissionService } from '../../application/services/simple-permission.service';pour les vraies implémentations TypeORM des repositories
  * Remplace les mocks du DatabaseModule par de vraies connexions DB
  */
 
@@ -19,7 +23,7 @@ import { CalendarOrmEntity } from './sql/postgresql/entities/calendar-orm.entity
 import { CalendarTypeOrmEntity } from './sql/postgresql/entities/calendar-type-orm.entity';
 import { PasswordResetCodeEntity } from './sql/postgresql/entities/password-reset-code.entity';
 import { PermissionOrmEntity } from './sql/postgresql/entities/permission-orm.entity';
-import { ProfessionalOrmEntity } from './sql/postgresql/entities/professional-orm.entity';
+import { ProspectOrmEntity } from './sql/postgresql/entities/prospect-orm.entity';
 import { ProfessionalRoleOrmEntity } from './sql/postgresql/entities/professional-role-orm.entity';
 import { RefreshTokenOrmEntity } from './sql/postgresql/entities/refresh-token-orm.entity';
 import { ServiceOrmEntity } from './sql/postgresql/entities/service-orm.entity';
@@ -32,6 +36,9 @@ import { UserOrmEntity } from './sql/postgresql/entities/user-orm.entity';
 import { BusinessContextOrmEntity } from './sql/postgresql/entities/business-context-orm.entity';
 import { RoleAssignmentOrmEntity } from './sql/postgresql/entities/role-assignment-orm.entity';
 
+// 🔐 Permission Entities
+import { UserPermissionOrmEntity } from './sql/postgresql/entities/user-permission-orm.entity';
+
 // Repository Implementations
 import { PasswordResetCodeRepository } from './sql/postgresql/repositories/password-reset-code.repository';
 import { RefreshTokenOrmRepository } from './sql/postgresql/repositories/refresh-token-orm.repository';
@@ -41,14 +48,17 @@ import { TypeOrmCalendarTypeRepository } from './sql/postgresql/repositories/typ
 import { TypeOrmCalendarRepository } from './sql/postgresql/repositories/typeorm-calendar.repository';
 import { TypeOrmPermissionRepository } from './sql/postgresql/repositories/typeorm-permission.repository';
 import { TypeOrmProfessionalRoleRepository } from './sql/postgresql/repositories/typeorm-professional-role.repository';
-import { TypeOrmProfessionalRepository } from './sql/postgresql/repositories/typeorm-professional.repository';
+import { TypeOrmProspectRepository } from './sql/postgresql/repositories/typeorm-prospect.repository';
 import { TypeOrmServiceTypeRepository } from './sql/postgresql/repositories/typeorm-service-type.repository';
 import { TypeOrmServiceRepository } from './sql/postgresql/repositories/typeorm-service.repository';
 import { TypeOrmSkillRepository } from './sql/postgresql/repositories/typeorm-skill.repository';
 import { TypeOrmStaffRepository } from './sql/postgresql/repositories/typeorm-staff.repository';
 import { TypeOrmUserRepository } from './sql/postgresql/repositories/user.repository';
 
-// 🎭 RBAC Repository Implementations
+// � BusinessSector Repository Implementation
+import { TypeOrmBusinessSectorRepository } from './sql/postgresql/repositories/typeorm-business-sector.repository';
+
+// �🎭 RBAC Repository Implementations
 import { TypeOrmRbacBusinessContextRepository } from './sql/postgresql/repositories/typeorm-rbac-business-context.repository';
 import { TypeOrmRoleAssignmentRepository } from './sql/postgresql/repositories/typeorm-role-assignment.repository';
 
@@ -57,8 +67,15 @@ import type { I18nService } from '../../application/ports/i18n.port';
 import type { Logger } from '../../application/ports/logger.port';
 import { ProductionI18nService } from '../i18n/production-i18n.service';
 
+// 🔐 Permission Repositories
+import { TypeOrmUserPermissionRepository } from './sql/postgresql/repositories/typeorm-user-permission.repository';
+
 // 🛡️ RBAC Permission Service - Real Implementation
 import { RbacPermissionService } from '../services/rbac-permission.service';
+import { TestPermissionService } from '../services/test-permission.service';
+
+// Permission Service
+import { SimplePermissionService } from '../../application/services/simple-permission.service';
 
 @Module({
   imports: [
@@ -77,11 +94,13 @@ import { RbacPermissionService } from '../services/rbac-permission.service';
       StaffOrmEntity,
       CalendarOrmEntity,
       CalendarTypeOrmEntity,
-      ProfessionalOrmEntity, // ✅ Professional entity for actor separation
+      ProspectOrmEntity, // ✅ Prospect entity for sales organization
       ProfessionalRoleOrmEntity, // ✅ Professional Role entity
       // 🎭 RBAC Entities
       RoleAssignmentOrmEntity,
       BusinessContextOrmEntity,
+      // 🔐 Permission Entities
+      UserPermissionOrmEntity,
     ]),
     // Import du PinoLoggerModule pour avoir accès au Logger
     PinoLoggerModule,
@@ -93,11 +112,11 @@ import { RbacPermissionService } from '../services/rbac-permission.service';
       useClass: TypeOrmUserRepository,
     },
 
-    // BusinessSector Repository (temporairement commenté à cause des problèmes de décorateurs TS 5.7)
-    // {
-    //   provide: TOKENS.BUSINESS_SECTOR_REPOSITORY,
-    //   useClass: TypeOrmBusinessSectorRepository,
-    // },
+    // BusinessSector Repository
+    {
+      provide: TOKENS.BUSINESS_SECTOR_REPOSITORY,
+      useClass: TypeOrmBusinessSectorRepository,
+    },
 
     // RefreshToken Repository (vraie implémentation TypeORM)
     {
@@ -161,10 +180,10 @@ import { RbacPermissionService } from '../services/rbac-permission.service';
       useClass: TypeOrmAppointmentRepository,
     },
 
-    // Professional Repository (✅ Professional entity for actor separation)
+    // Prospect Repository (✅ Prospect entity for sales organization)
     {
-      provide: TOKENS.PROFESSIONAL_REPOSITORY,
-      useClass: TypeOrmProfessionalRepository,
+      provide: TOKENS.PROSPECT_REPOSITORY,
+      useClass: TypeOrmProspectRepository,
     },
 
     // Professional Role Repository
@@ -202,30 +221,12 @@ import { RbacPermissionService } from '../services/rbac-permission.service';
       ],
     },
 
-    // 🛡️ RBAC Permission Service - Real Implementation with Business Rules
+    // 🛡️ TEST Permission Service - Simplified for Testing
     {
       provide: TOKENS.PERMISSION_SERVICE,
-      useFactory: (
-        roleAssignmentRepository: any,
-        businessContextRepository: any,
-        userRepository: any,
-        logger: Logger,
-        i18n: I18nService,
-      ) =>
-        new RbacPermissionService(
-          roleAssignmentRepository,
-          businessContextRepository,
-          userRepository,
-          logger,
-          i18n,
-        ),
-      inject: [
-        TOKENS.ROLE_ASSIGNMENT_REPOSITORY,
-        TOKENS.RBAC_BUSINESS_CONTEXT_REPOSITORY,
-        TOKENS.USER_REPOSITORY,
-        'Logger',
-        'I18nService',
-      ],
+      useFactory: (logger: Logger, i18n: I18nService) =>
+        new TestPermissionService(logger, i18n),
+      inject: ['Logger', 'I18nService'],
     },
 
     // I18n Service
@@ -233,10 +234,24 @@ import { RbacPermissionService } from '../services/rbac-permission.service';
       provide: TOKENS.I18N_SERVICE,
       useClass: ProductionI18nService,
     },
+
+    // 🔐 User Permission Repository
+    {
+      provide: TOKENS.USER_PERMISSION_REPOSITORY,
+      useClass: TypeOrmUserPermissionRepository,
+    },
+
+    // 🔐 Simple Permission Service
+    {
+      provide: TOKENS.SIMPLE_PERMISSION_SERVICE,
+      useFactory: (userPermissionRepository) =>
+        new SimplePermissionService(userPermissionRepository),
+      inject: [TOKENS.USER_PERMISSION_REPOSITORY],
+    },
   ],
   exports: [
     TOKENS.USER_REPOSITORY,
-    // TOKENS.BUSINESS_SECTOR_REPOSITORY, // Temporairement commenté
+    TOKENS.BUSINESS_SECTOR_REPOSITORY,
     TOKENS.REFRESH_TOKEN_REPOSITORY,
     TOKENS.PASSWORD_RESET_CODE_REPOSITORY, // ✅ Password Reset Code repository - AJOUTÉ
     TOKENS.PERMISSION_SERVICE,
@@ -248,12 +263,15 @@ import { RbacPermissionService } from '../services/rbac-permission.service';
     TOKENS.CALENDAR_REPOSITORY,
     TOKENS.CALENDAR_TYPE_REPOSITORY,
     TOKENS.APPOINTMENT_REPOSITORY,
-    TOKENS.PROFESSIONAL_REPOSITORY, // ✅ Professional repository for actor separation
+    TOKENS.PROSPECT_REPOSITORY, // ✅ Prospect repository for sales organization
     TOKENS.PROFESSIONAL_ROLE_REPOSITORY, // ✅ Professional Role repository
     TOKENS.PERMISSION_REPOSITORY,
     // 🎭 RBAC Repositories
     TOKENS.ROLE_ASSIGNMENT_REPOSITORY,
     TOKENS.RBAC_BUSINESS_CONTEXT_REPOSITORY,
+    // 🔐 Permission Repositories & Services
+    TOKENS.USER_PERMISSION_REPOSITORY,
+    TOKENS.SIMPLE_PERMISSION_SERVICE,
     // Services
     TOKENS.I18N_SERVICE,
   ],
