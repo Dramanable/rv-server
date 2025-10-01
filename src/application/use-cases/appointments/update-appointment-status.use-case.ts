@@ -8,14 +8,14 @@
 import {
   Appointment,
   AppointmentStatus,
-} from '../../../domain/entities/appointment.entity';
-import { AppointmentRepository } from '../../../domain/repositories/appointment.repository.interface';
-import { AppointmentId } from '../../../domain/value-objects/appointment-id.value-object';
-import { ApplicationValidationError } from '../../exceptions/application.exceptions';
+} from "../../../domain/entities/appointment.entity";
+import { AppointmentRepository } from "../../../domain/repositories/appointment.repository.interface";
+import { AppointmentId } from "../../../domain/value-objects/appointment-id.value-object";
+import { ApplicationValidationError } from "../../exceptions/application.exceptions";
 import {
   AppointmentException,
   AppointmentNotFoundError,
-} from '../../exceptions/appointment.exceptions';
+} from "../../exceptions/appointment.exceptions";
 
 export interface UpdateAppointmentStatusRequest {
   readonly appointmentId: string;
@@ -81,7 +81,7 @@ export class UpdateAppointmentStatusUseCase {
       default:
         throw new AppointmentException(
           `Status transition to ${request.newStatus} not implemented`,
-          'STATUS_TRANSITION_NOT_IMPLEMENTED',
+          "STATUS_TRANSITION_NOT_IMPLEMENTED",
         );
     }
 
@@ -98,7 +98,7 @@ export class UpdateAppointmentStatusUseCase {
       // );
       notificationSent = true;
     } catch (error) {
-      console.warn('Failed to send status change notification:', error);
+      console.warn("Failed to send status change notification:", error);
     }
 
     return {
@@ -113,34 +113,34 @@ export class UpdateAppointmentStatusUseCase {
   private validateRequest(request: UpdateAppointmentStatusRequest): void {
     if (!request.appointmentId) {
       throw new ApplicationValidationError(
-        'validation',
-        'required_field',
-        'Appointment ID is required',
+        "validation",
+        "required_field",
+        "Appointment ID is required",
       );
     }
 
     if (!request.newStatus) {
       throw new ApplicationValidationError(
-        'validation',
-        'required_field',
-        'New status is required',
+        "validation",
+        "required_field",
+        "New status is required",
       );
     }
 
     if (!request.requestingUserId) {
       throw new ApplicationValidationError(
-        'validation',
-        'required_field',
-        'Requesting user ID is required',
+        "validation",
+        "required_field",
+        "Requesting user ID is required",
       );
     }
 
     const validStatuses = Object.values(AppointmentStatus);
     if (!validStatuses.includes(request.newStatus)) {
       throw new ApplicationValidationError(
-        'validation',
-        'invalid_value',
-        `Invalid status. Must be one of: ${validStatuses.join(', ')}`,
+        "validation",
+        "invalid_value",
+        `Invalid status. Must be one of: ${validStatuses.join(", ")}`,
       );
     }
   }
@@ -173,7 +173,7 @@ export class UpdateAppointmentStatusUseCase {
     if (currentStatus === newStatus) {
       throw new AppointmentException(
         `Appointment is already in status ${newStatus}`,
-        'STATUS_ALREADY_SET',
+        "STATUS_ALREADY_SET",
       );
     }
 
@@ -181,7 +181,7 @@ export class UpdateAppointmentStatusUseCase {
     if (!allowedTransitions.includes(newStatus)) {
       throw new AppointmentException(
         `Invalid status transition from ${currentStatus} to ${newStatus}`,
-        'INVALID_STATUS_TRANSITION',
+        "INVALID_STATUS_TRANSITION",
       );
     }
   }
@@ -192,17 +192,17 @@ export class UpdateAppointmentStatusUseCase {
   ): string {
     const messages: Record<string, string> = {
       [`${AppointmentStatus.REQUESTED}-${AppointmentStatus.CONFIRMED}`]:
-        'Appointment confirmed successfully',
+        "Appointment confirmed successfully",
       [`${AppointmentStatus.REQUESTED}-${AppointmentStatus.CANCELLED}`]:
-        'Appointment cancelled',
+        "Appointment cancelled",
       [`${AppointmentStatus.CONFIRMED}-${AppointmentStatus.COMPLETED}`]:
-        'Appointment marked as completed',
+        "Appointment marked as completed",
       [`${AppointmentStatus.CONFIRMED}-${AppointmentStatus.CANCELLED}`]:
-        'Confirmed appointment cancelled',
+        "Confirmed appointment cancelled",
       [`${AppointmentStatus.CONFIRMED}-${AppointmentStatus.NO_SHOW}`]:
-        'Appointment marked as no-show',
+        "Appointment marked as no-show",
       [`${AppointmentStatus.NO_SHOW}-${AppointmentStatus.COMPLETED}`]:
-        'No-show appointment corrected to completed',
+        "No-show appointment corrected to completed",
     };
 
     const key = `${previousStatus}-${newStatus}`;

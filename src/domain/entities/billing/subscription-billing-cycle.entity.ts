@@ -1,14 +1,14 @@
-import { DomainError } from '../../exceptions/domain.exceptions';
-import { Subscription } from './subscription.entity';
-import { NotificationCost } from '../../value-objects/billing/notification-cost.value-object';
-import { generateId } from '../../../shared/utils/id.utils';
+import { DomainError } from "../../exceptions/domain.exceptions";
+import { Subscription } from "./subscription.entity";
+import { NotificationCost } from "../../value-objects/billing/notification-cost.value-object";
+import { generateId } from "../../../shared/utils/id.utils";
 
 export type SubscriptionBillingStatus =
-  | 'PENDING' // En attente de traitement
-  | 'PROCESSING' // En cours de traitement
-  | 'COMPLETED' // Terminé avec succès
-  | 'FAILED' // Échec de facturation
-  | 'REFUNDED'; // Remboursé
+  | "PENDING" // En attente de traitement
+  | "PROCESSING" // En cours de traitement
+  | "COMPLETED" // Terminé avec succès
+  | "FAILED" // Échec de facturation
+  | "REFUNDED"; // Remboursé
 
 export interface SubscriptionBillingCycleUsage {
   readonly notifications: number;
@@ -56,11 +56,11 @@ export class SubscriptionBillingCycle {
   }): SubscriptionBillingCycle {
     // Validation des dates
     if (params.startDate >= params.endDate) {
-      throw new DomainError('Start date must be before end date');
+      throw new DomainError("Start date must be before end date");
     }
 
     const now = new Date();
-    const zeroCost = NotificationCost.zero('EUR');
+    const zeroCost = NotificationCost.zero("EUR");
 
     return new SubscriptionBillingCycle(
       generateId(),
@@ -68,7 +68,7 @@ export class SubscriptionBillingCycle {
       params.businessId,
       params.startDate,
       params.endDate,
-      'PENDING',
+      "PENDING",
       {
         notifications: 0,
         businesses: 0,
@@ -171,17 +171,17 @@ export class SubscriptionBillingCycle {
 
     // TODO: Calculer les taxes selon les règles locales
     const taxes = NotificationCost.zero(
-      baseCost.getCurrency() as 'EUR' | 'USD',
+      baseCost.getCurrency() as "EUR" | "USD",
     );
 
     // TODO: Appliquer les remises si applicables
     const discounts = NotificationCost.zero(
-      baseCost.getCurrency() as 'EUR' | 'USD',
+      baseCost.getCurrency() as "EUR" | "USD",
     );
 
     // Frais de configuration (une seule fois pour nouveau client)
     const setupFees = NotificationCost.zero(
-      baseCost.getCurrency() as 'EUR' | 'USD',
+      baseCost.getCurrency() as "EUR" | "USD",
     );
 
     const totalCost = baseCost
@@ -205,7 +205,7 @@ export class SubscriptionBillingCycle {
   // 📈 Enregistrement d'usage
   recordNotificationUsage(count: number): void {
     if (count < 0) {
-      throw new DomainError('Notification usage count cannot be negative');
+      throw new DomainError("Notification usage count cannot be negative");
     }
 
     this._usage = {
@@ -218,7 +218,7 @@ export class SubscriptionBillingCycle {
 
   recordBusinessUsage(count: number): void {
     if (count < 0) {
-      throw new DomainError('Business usage count cannot be negative');
+      throw new DomainError("Business usage count cannot be negative");
     }
 
     this._usage = {
@@ -231,7 +231,7 @@ export class SubscriptionBillingCycle {
 
   recordStaffUsage(count: number): void {
     if (count < 0) {
-      throw new DomainError('Staff usage count cannot be negative');
+      throw new DomainError("Staff usage count cannot be negative");
     }
 
     this._usage = {
@@ -244,7 +244,7 @@ export class SubscriptionBillingCycle {
 
   recordServiceUsage(count: number): void {
     if (count < 0) {
-      throw new DomainError('Service usage count cannot be negative');
+      throw new DomainError("Service usage count cannot be negative");
     }
 
     this._usage = {
@@ -257,7 +257,7 @@ export class SubscriptionBillingCycle {
 
   recordApiUsage(count: number): void {
     if (count < 0) {
-      throw new DomainError('API usage count cannot be negative');
+      throw new DomainError("API usage count cannot be negative");
     }
 
     this._usage = {
@@ -270,7 +270,7 @@ export class SubscriptionBillingCycle {
 
   recordStorageUsage(sizeGB: number): void {
     if (sizeGB < 0) {
-      throw new DomainError('Storage usage cannot be negative');
+      throw new DomainError("Storage usage cannot be negative");
     }
 
     this._usage = {
@@ -283,84 +283,84 @@ export class SubscriptionBillingCycle {
 
   // 🔄 Gestion du statut
   markAsProcessing(): void {
-    if (this._status !== 'PENDING') {
+    if (this._status !== "PENDING") {
       throw new DomainError(
         `Cannot process billing cycle with status ${this._status}`,
       );
     }
 
-    this._status = 'PROCESSING';
+    this._status = "PROCESSING";
     this._updatedAt = new Date();
   }
 
   markAsCompleted(): void {
-    if (this._status !== 'PROCESSING') {
-      throw new DomainError('Can only complete processing billing cycles');
+    if (this._status !== "PROCESSING") {
+      throw new DomainError("Can only complete processing billing cycles");
     }
 
-    this._status = 'COMPLETED';
+    this._status = "COMPLETED";
     this._processedAt = new Date();
     this._updatedAt = new Date();
     this._failureReason = null;
   }
 
   markAsFailed(reason: string): void {
-    if (this._status !== 'PROCESSING') {
-      throw new DomainError('Can only fail processing billing cycles');
+    if (this._status !== "PROCESSING") {
+      throw new DomainError("Can only fail processing billing cycles");
     }
 
     if (!reason || reason.trim().length === 0) {
-      throw new DomainError('Failure reason is required');
+      throw new DomainError("Failure reason is required");
     }
 
-    this._status = 'FAILED';
+    this._status = "FAILED";
     this._failureReason = reason.trim();
     this._updatedAt = new Date();
   }
 
   retry(): void {
-    if (this._status !== 'FAILED') {
-      throw new DomainError('Can only retry failed billing cycles');
+    if (this._status !== "FAILED") {
+      throw new DomainError("Can only retry failed billing cycles");
     }
 
-    this._status = 'PENDING';
+    this._status = "PENDING";
     this._failureReason = null;
     this._updatedAt = new Date();
   }
 
   refund(reason: string): void {
-    if (this._status !== 'COMPLETED') {
-      throw new DomainError('Can only refund completed billing cycles');
+    if (this._status !== "COMPLETED") {
+      throw new DomainError("Can only refund completed billing cycles");
     }
 
     if (!reason || reason.trim().length === 0) {
-      throw new DomainError('Refund reason is required');
+      throw new DomainError("Refund reason is required");
     }
 
-    this._status = 'REFUNDED';
+    this._status = "REFUNDED";
     this._failureReason = reason.trim(); // Réutiliser pour la raison du remboursement
     this._updatedAt = new Date();
   }
 
   // 🔍 Vérifications d'état
   isPending(): boolean {
-    return this._status === 'PENDING';
+    return this._status === "PENDING";
   }
 
   isProcessing(): boolean {
-    return this._status === 'PROCESSING';
+    return this._status === "PROCESSING";
   }
 
   isCompleted(): boolean {
-    return this._status === 'COMPLETED';
+    return this._status === "COMPLETED";
   }
 
   isFailed(): boolean {
-    return this._status === 'FAILED';
+    return this._status === "FAILED";
   }
 
   isRefunded(): boolean {
-    return this._status === 'REFUNDED';
+    return this._status === "REFUNDED";
   }
 
   isCurrentPeriod(): boolean {
@@ -397,7 +397,7 @@ export class SubscriptionBillingCycle {
     const usageRatio = this.getUsageRatio();
     if (usageRatio === 0) {
       return NotificationCost.zero(
-        this._charges.baseCost.getCurrency() as 'EUR' | 'USD',
+        this._charges.baseCost.getCurrency() as "EUR" | "USD",
       );
     }
 
@@ -451,7 +451,7 @@ export class SubscriptionBillingCycle {
   }
 
   toString(): string {
-    const period = `${this._startDate.toISOString().split('T')[0]} - ${this._endDate.toISOString().split('T')[0]}`;
+    const period = `${this._startDate.toISOString().split("T")[0]} - ${this._endDate.toISOString().split("T")[0]}`;
     return `SubscriptionBillingCycle(${this._id}) - ${period} - ${this._status} - ${this._charges.totalCost.getFormattedAmount()}`;
   }
 }

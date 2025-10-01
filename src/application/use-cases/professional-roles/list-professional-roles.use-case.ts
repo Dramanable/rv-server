@@ -7,9 +7,9 @@
 import {
   ProfessionalCategory,
   ProfessionalRole,
-} from '@domain/entities/professional-role.entity';
-import { ProfessionalRoleValidationError } from '@domain/exceptions/professional-role.exceptions';
-import { IProfessionalRoleRepository } from '@domain/repositories/professional-role.repository';
+} from "@domain/entities/professional-role.entity";
+import { ProfessionalRoleValidationError } from "@domain/exceptions/professional-role.exceptions";
+import { IProfessionalRoleRepository } from "@domain/repositories/professional-role.repository";
 
 export interface ListProfessionalRolesRequest {
   readonly category?: ProfessionalCategory;
@@ -55,7 +55,7 @@ export class ListProfessionalRolesUseCase {
     // 🔍 Validate request
     if (!request.requestingUserId) {
       throw new ProfessionalRoleValidationError(
-        'Requesting user ID is required',
+        "Requesting user ID is required",
       );
     }
 
@@ -63,11 +63,11 @@ export class ListProfessionalRolesUseCase {
     const limit = Math.min(request.limit || 10, 100); // Max 100 items per page
 
     if (page < 1) {
-      throw new ProfessionalRoleValidationError('Page must be greater than 0');
+      throw new ProfessionalRoleValidationError("Page must be greater than 0");
     }
 
     if (limit < 1) {
-      throw new ProfessionalRoleValidationError('Limit must be greater than 0');
+      throw new ProfessionalRoleValidationError("Limit must be greater than 0");
     }
 
     // 🔍 Get professional roles based on filters

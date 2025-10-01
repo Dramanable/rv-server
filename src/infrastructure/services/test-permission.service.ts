@@ -3,12 +3,12 @@
  * ✅ Permettre toutes les permissions pour ADMIN et SUPER_ADMIN
  */
 
-import { Injectable } from '@nestjs/common';
-import { Logger } from '@application/ports/logger.port';
-import { I18nService } from '@application/ports/i18n.port';
-import { IPermissionService } from '@application/ports/permission.service.interface';
-import { UserRole } from '@shared/enums/user-role.enum';
-import { Permission } from '@shared/enums/user-role.enum';
+import { Injectable } from "@nestjs/common";
+import { Logger } from "@application/ports/logger.port";
+import { I18nService } from "@application/ports/i18n.port";
+import { IPermissionService } from "@application/ports/permission.service.interface";
+import { UserRole } from "@shared/enums/user-role.enum";
+import { Permission } from "@shared/enums/user-role.enum";
 
 @Injectable()
 export class TestPermissionService implements IPermissionService {
@@ -25,14 +25,14 @@ export class TestPermissionService implements IPermissionService {
     permission: Permission | string,
     context?: Record<string, unknown>,
   ): Promise<boolean> {
-    this.logger.info('TEST PERMISSIONS - Allowing all permissions', {
+    this.logger.info("TEST PERMISSIONS - Allowing all permissions", {
       userId,
       permission,
       context,
     });
 
     // Pour les tests, on autorise tout sauf pour les utilisateurs anonymes
-    if (userId && userId !== 'anonymous') {
+    if (userId && userId !== "anonymous") {
       return true;
     }
 
@@ -81,7 +81,7 @@ export class TestPermissionService implements IPermissionService {
 
   async isSuperAdmin(userId: string): Promise<boolean> {
     // Pour les tests, considérer tous les utilisateurs authentifiés comme super admin
-    return !!(userId && userId !== 'anonymous');
+    return !!(userId && userId !== "anonymous");
   }
 
   async hasAccessToBusiness(

@@ -4,14 +4,14 @@
  * ✅ Représente un prospect commercial pour l'éditeur SaaS
  */
 
-import { Email } from '@domain/value-objects/email.value-object';
-import { Phone } from '@domain/value-objects/phone.value-object';
-import { Money } from '@domain/value-objects/money.value-object';
-import { ProspectId } from '@domain/value-objects/prospect-id.value-object';
-import { UserId } from '@domain/value-objects/user-id.value-object';
-import { ProspectStatus } from '@domain/value-objects/prospect-status.value-object';
-import { BusinessSizeEnum } from '@domain/enums/business-size.enum';
-import { ProspectValidationError } from '@domain/exceptions/prospect.exceptions';
+import { Email } from "@domain/value-objects/email.value-object";
+import { Phone } from "@domain/value-objects/phone.value-object";
+import { Money } from "@domain/value-objects/money.value-object";
+import { ProspectId } from "@domain/value-objects/prospect-id.value-object";
+import { UserId } from "@domain/value-objects/user-id.value-object";
+import { ProspectStatus } from "@domain/value-objects/prospect-status.value-object";
+import { BusinessSizeEnum } from "@domain/enums/business-size.enum";
+import { ProspectValidationError } from "@domain/exceptions/prospect.exceptions";
 
 export interface CreateProspectParams {
   readonly businessName: string;
@@ -74,15 +74,15 @@ export class Prospect {
    */
   static create(params: CreateProspectParams): Prospect {
     if (!params.businessName?.trim()) {
-      throw new ProspectValidationError('Business name is required');
+      throw new ProspectValidationError("Business name is required");
     }
 
     if (!params.contactName?.trim()) {
-      throw new ProspectValidationError('Contact name is required');
+      throw new ProspectValidationError("Contact name is required");
     }
 
     if (params.estimatedValue < 0) {
-      throw new ProspectValidationError('Estimated value must be positive');
+      throw new ProspectValidationError("Estimated value must be positive");
     }
 
     const now = new Date();
@@ -95,9 +95,9 @@ export class Prospect {
       params.contactName.trim(),
       ProspectStatus.lead(),
       UserId.create(params.assignedSalesRep),
-      Money.create(params.estimatedValue, params.currency || 'EUR'),
-      params.notes?.trim() || '',
-      params.source || 'DIRECT',
+      Money.create(params.estimatedValue, params.currency || "EUR"),
+      params.notes?.trim() || "",
+      params.source || "DIRECT",
       params.businessSize || BusinessSizeEnum.SMALL,
       params.staffCount || 1,
       params.currentSolution,
@@ -136,7 +136,7 @@ export class Prospect {
    */
   assignTo(salesRepId: UserId): void {
     if (!salesRepId?.getValue()) {
-      throw new ProspectValidationError('Sales rep ID is required');
+      throw new ProspectValidationError("Sales rep ID is required");
     }
 
     this._assignedSalesRep = salesRepId;
@@ -148,7 +148,7 @@ export class Prospect {
    */
   updateStatus(newStatus: ProspectStatus): void {
     if (!newStatus) {
-      throw new ProspectValidationError('Status is required');
+      throw new ProspectValidationError("Status is required");
     }
 
     // Règle métier : Vérifier les transitions de statut autorisées
@@ -173,7 +173,7 @@ export class Prospect {
    */
   addNote(note: string): void {
     if (!note?.trim()) {
-      throw new ProspectValidationError('Note cannot be empty');
+      throw new ProspectValidationError("Note cannot be empty");
     }
 
     const timestamp = new Date().toISOString();
@@ -186,7 +186,7 @@ export class Prospect {
    */
   updateEstimatedValue(amount: number, currency?: string): void {
     if (amount < 0) {
-      throw new ProspectValidationError('Estimated value must be positive');
+      throw new ProspectValidationError("Estimated value must be positive");
     }
 
     this._estimatedValue = Money.create(
@@ -201,7 +201,7 @@ export class Prospect {
    */
   updateStaffCount(staffCount: number): void {
     if (staffCount < 1) {
-      throw new ProspectValidationError('Staff count must be at least 1');
+      throw new ProspectValidationError("Staff count must be at least 1");
     }
 
     this._staffCount = staffCount;
@@ -224,15 +224,15 @@ export class Prospect {
    */
   private validateProspect(): void {
     if (!this._businessName?.trim()) {
-      throw new ProspectValidationError('Business name is required');
+      throw new ProspectValidationError("Business name is required");
     }
 
     if (!this._contactName?.trim()) {
-      throw new ProspectValidationError('Contact name is required');
+      throw new ProspectValidationError("Contact name is required");
     }
 
     if (this._staffCount < 1) {
-      throw new ProspectValidationError('Staff count must be at least 1');
+      throw new ProspectValidationError("Staff count must be at least 1");
     }
   }
 

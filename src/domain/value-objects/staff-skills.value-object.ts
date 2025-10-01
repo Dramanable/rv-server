@@ -10,7 +10,7 @@ import {
   InvalidValueError,
   RequiredValueError,
   ValueNotFoundError,
-} from '@domain/exceptions/value-object.exceptions';
+} from "@domain/exceptions/value-object.exceptions";
 export class StaffSkills {
   private constructor(private readonly _skillAssignments: SkillAssignment[]) {}
 
@@ -20,7 +20,7 @@ export class StaffSkills {
   static create(skillAssignments: SkillAssignment[]): StaffSkills {
     // Validation
     if (!skillAssignments || skillAssignments.length === 0) {
-      throw new RequiredValueError('skillAssignments');
+      throw new RequiredValueError("skillAssignments");
     }
 
     // Vérifier qu'il n'y a pas de doublons
@@ -29,8 +29,8 @@ export class StaffSkills {
 
     if (skillIds.length !== uniqueSkillIds.size) {
       throw new DuplicateValueError(
-        'skillAssignment',
-        'Un membre du staff ne peut pas avoir la même compétence assignée plusieurs fois',
+        "skillAssignment",
+        "Un membre du staff ne peut pas avoir la même compétence assignée plusieurs fois",
       );
     }
 
@@ -38,7 +38,7 @@ export class StaffSkills {
     skillAssignments.forEach((assignment) => {
       if (!assignment.isValid()) {
         throw new InvalidValueError(
-          'skillAssignment',
+          "skillAssignment",
           assignment.getSkillId(),
           `Assignment de compétence invalide: ${assignment.getSkillId()}`,
         );
@@ -164,7 +164,7 @@ export class StaffSkills {
   addSkill(skillAssignment: SkillAssignment): StaffSkills {
     if (this.hasSkill(skillAssignment.getSkillId())) {
       throw new DuplicateValueError(
-        'skillAssignment',
+        "skillAssignment",
         skillAssignment.getSkillId(),
       );
     }
@@ -193,7 +193,7 @@ export class StaffSkills {
     );
 
     if (assignmentIndex === -1) {
-      throw new ValueNotFoundError('compétence', skillId);
+      throw new ValueNotFoundError("compétence", skillId);
     }
 
     const updatedAssignment =
@@ -213,14 +213,14 @@ export class StaffSkills {
     );
 
     if (filteredAssignments.length === this._skillAssignments.length) {
-      throw new ValueNotFoundError('compétence', skillId);
+      throw new ValueNotFoundError("compétence", skillId);
     }
 
     if (filteredAssignments.length === 0) {
       throw new InvalidValueError(
-        'skillAssignments',
+        "skillAssignments",
         filteredAssignments.length,
-        'Un membre du staff doit avoir au moins une compétence',
+        "Un membre du staff doit avoir au moins une compétence",
       );
     }
 
@@ -370,14 +370,14 @@ export class StaffSkills {
 
     // Vérifier qu'il y a au moins une compétence
     if (this._skillAssignments.length === 0) {
-      errors.push('Un membre du staff doit avoir au moins une compétence');
+      errors.push("Un membre du staff doit avoir au moins une compétence");
     }
 
     // Valider chaque assignment
     this._skillAssignments.forEach((assignment, index) => {
       const validation = assignment.validate();
       if (!validation.isValid) {
-        errors.push(`Assignment ${index + 1}: ${validation.errors.join(', ')}`);
+        errors.push(`Assignment ${index + 1}: ${validation.errors.join(", ")}`);
       }
     });
 
@@ -448,12 +448,12 @@ export class SkillAssignment {
   }): SkillAssignment {
     // Validation
     if (!data.skillId || !data.skillName || !data.skillCategory) {
-      throw new RequiredValueError('skillData');
+      throw new RequiredValueError("skillData");
     }
 
     if (data.yearsOfExperience < 0 || data.yearsOfExperience > 50) {
       throw new InvalidValueError(
-        'yearsOfExperience',
+        "yearsOfExperience",
         data.yearsOfExperience,
         "L'expérience doit être entre 0 et 50 ans",
       );
@@ -465,9 +465,9 @@ export class SkillAssignment {
       data.certificationExpiryDate < new Date()
     ) {
       throw new InvalidValueError(
-        'certificationExpiryDate',
+        "certificationExpiryDate",
         data.certificationExpiryDate,
-        'Une certification expirée ne peut pas être marquée comme active',
+        "Une certification expirée ne peut pas être marquée comme active",
       );
     }
 
@@ -481,7 +481,7 @@ export class SkillAssignment {
       data.lastUsed,
       data.isCertified || false,
       data.certificationExpiryDate,
-      data.notes || '',
+      data.notes || "",
     );
   }
 
@@ -507,7 +507,7 @@ export class SkillAssignment {
       data.lastUsed,
       data.isCertified,
       data.certificationExpiryDate,
-      data.notes || '',
+      data.notes || "",
     );
   }
 
@@ -630,9 +630,9 @@ export class SkillAssignment {
   validate(): { isValid: boolean; errors: string[] } {
     const errors: string[] = [];
 
-    if (!this._skillId) errors.push('SkillId requis');
-    if (!this._skillName) errors.push('Nom de compétence requis');
-    if (!this._skillCategory) errors.push('Catégorie de compétence requise');
+    if (!this._skillId) errors.push("SkillId requis");
+    if (!this._skillName) errors.push("Nom de compétence requis");
+    if (!this._skillCategory) errors.push("Catégorie de compétence requise");
     if (this._yearsOfExperience < 0)
       errors.push("L'expérience ne peut pas être négative");
 
@@ -672,20 +672,20 @@ export class SkillAssignment {
  * 🎯 Proficiency Level - Niveau de maîtrise d'une compétence
  */
 export enum ProficiencyLevel {
-  BEGINNER = 'BEGINNER', // Débutant - 0-1 ans
-  INTERMEDIATE = 'INTERMEDIATE', // Intermédiaire - 1-3 ans
-  ADVANCED = 'ADVANCED', // Avancé - 3-7 ans
-  EXPERT = 'EXPERT', // Expert - 7-15 ans
-  MASTER = 'MASTER', // Maître - 15+ ans
+  BEGINNER = "BEGINNER", // Débutant - 0-1 ans
+  INTERMEDIATE = "INTERMEDIATE", // Intermédiaire - 1-3 ans
+  ADVANCED = "ADVANCED", // Avancé - 3-7 ans
+  EXPERT = "EXPERT", // Expert - 7-15 ans
+  MASTER = "MASTER", // Maître - 15+ ans
 }
 
 /**
  * 🎯 Certification Level - Niveau de certification
  */
 export enum CertificationLevel {
-  BASIC = 'BASIC', // Certification de base
-  INTERMEDIATE = 'INTERMEDIATE', // Certification intermédiaire
-  ADVANCED = 'ADVANCED', // Certification avancée
-  PROFESSIONAL = 'PROFESSIONAL', // Certification professionnelle
-  EXPERT = 'EXPERT', // Certification expert
+  BASIC = "BASIC", // Certification de base
+  INTERMEDIATE = "INTERMEDIATE", // Certification intermédiaire
+  ADVANCED = "ADVANCED", // Certification avancée
+  PROFESSIONAL = "PROFESSIONAL", // Certification professionnelle
+  EXPERT = "EXPERT", // Certification expert
 }

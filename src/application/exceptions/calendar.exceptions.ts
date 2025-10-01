@@ -9,7 +9,7 @@ export class InvalidCalendarDataError extends Error {
 
   constructor(field: string, message: string) {
     super(message);
-    this.name = 'InvalidCalendarDataError';
+    this.name = "InvalidCalendarDataError";
     this.field = field;
   }
 }
@@ -19,7 +19,7 @@ export class CalendarNotFoundError extends Error {
 
   constructor(calendarId: string) {
     super(`Calendar with ID '${calendarId}' not found`);
-    this.name = 'CalendarNotFoundError';
+    this.name = "CalendarNotFoundError";
     this.calendarId = calendarId;
   }
 }
@@ -33,7 +33,7 @@ export class CalendarConflictError extends Error {
     super(
       `Calendar conflict detected for calendar '${calendarId}' between ${startTime.toISOString()} and ${endTime.toISOString()}`,
     );
-    this.name = 'CalendarConflictError';
+    this.name = "CalendarConflictError";
     this.calendarId = calendarId;
     this.startTime = startTime;
     this.endTime = endTime;
@@ -49,7 +49,7 @@ export class InvalidTimeSlotError extends Error {
       ? `Invalid time slot (${startTime.toISOString()} - ${endTime.toISOString()}): ${reason}`
       : `Invalid time slot: ${startTime.toISOString()} - ${endTime.toISOString()}`;
     super(message);
-    this.name = 'InvalidTimeSlotError';
+    this.name = "InvalidTimeSlotError";
     this.startTime = startTime;
     this.endTime = endTime;
   }
@@ -64,7 +64,7 @@ export class CalendarPermissionError extends Error {
     super(
       `User '${userId}' not authorized for operation '${operation}' on calendar '${calendarId}'`,
     );
-    this.name = 'CalendarPermissionError';
+    this.name = "CalendarPermissionError";
     this.calendarId = calendarId;
     this.userId = userId;
     this.operation = operation;

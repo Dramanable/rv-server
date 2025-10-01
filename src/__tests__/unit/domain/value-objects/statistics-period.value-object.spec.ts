@@ -4,15 +4,15 @@
  * Tests pour le Value Object StatisticsPeriod avec gestion des périodes.
  */
 
-import { DomainValidationError } from '../../../../domain/exceptions/domain.exceptions';
+import { DomainValidationError } from "../../../../domain/exceptions/domain.exceptions";
 import {
   PeriodType,
   StatisticsPeriod,
-} from '../../../../domain/value-objects/statistics-period.value-object';
+} from "../../../../domain/value-objects/statistics-period.value-object";
 
-describe('StatisticsPeriod Value Object', () => {
-  describe('Factory Method - createMonth', () => {
-    it('should create valid monthly period', () => {
+describe("StatisticsPeriod Value Object", () => {
+  describe("Factory Method - createMonth", () => {
+    it("should create valid monthly period", () => {
       // Arrange
       const year = 2024;
       const month = 6; // June
@@ -28,31 +28,31 @@ describe('StatisticsPeriod Value Object', () => {
       expect(period.getEndDate()).toEqual(new Date(2024, 6, 0)); // June 30th
     });
 
-    it('should throw error for invalid year', () => {
+    it("should throw error for invalid year", () => {
       // Act & Assert
       expect(() => StatisticsPeriod.createMonth(1999, 6)).toThrow(
         DomainValidationError,
       );
       expect(() => StatisticsPeriod.createMonth(1999, 6)).toThrow(
-        'Year must be between 2000 and',
+        "Year must be between 2000 and",
       );
     });
 
-    it('should throw error for invalid month', () => {
+    it("should throw error for invalid month", () => {
       // Act & Assert
       expect(() => StatisticsPeriod.createMonth(2024, 13)).toThrow(
         DomainValidationError,
       );
       expect(() => StatisticsPeriod.createMonth(2024, 13)).toThrow(
-        'Month must be between 1 and 12',
+        "Month must be between 1 and 12",
       );
     });
   });
 
-  describe('Factory Method - createWeek', () => {
-    it('should create valid weekly period from Monday', () => {
+  describe("Factory Method - createWeek", () => {
+    it("should create valid weekly period from Monday", () => {
       // Arrange
-      const weekStart = '2024-01-15'; // Monday
+      const weekStart = "2024-01-15"; // Monday
 
       // Act
       const period = StatisticsPeriod.createWeek(weekStart);
@@ -60,23 +60,23 @@ describe('StatisticsPeriod Value Object', () => {
       // Assert
       expect(period.type).toBe(PeriodType.WEEK);
       expect(period.year).toBe(2024);
-      expect(period.weekStart).toEqual(new Date('2024-01-15T00:00:00.000Z'));
-      expect(period.weekEnd).toEqual(new Date('2024-01-21T00:00:00.000Z')); // Sunday
+      expect(period.weekStart).toEqual(new Date("2024-01-15T00:00:00.000Z"));
+      expect(period.weekEnd).toEqual(new Date("2024-01-21T00:00:00.000Z")); // Sunday
     });
 
-    it('should throw error for invalid date format', () => {
+    it("should throw error for invalid date format", () => {
       // Act & Assert
-      expect(() => StatisticsPeriod.createWeek('invalid-date')).toThrow(
+      expect(() => StatisticsPeriod.createWeek("invalid-date")).toThrow(
         DomainValidationError,
       );
-      expect(() => StatisticsPeriod.createWeek('invalid-date')).toThrow(
-        'Invalid week start date format',
+      expect(() => StatisticsPeriod.createWeek("invalid-date")).toThrow(
+        "Invalid week start date format",
       );
     });
   });
 
-  describe('Factory Method - createQuarter', () => {
-    it('should create valid Q2 period', () => {
+  describe("Factory Method - createQuarter", () => {
+    it("should create valid Q2 period", () => {
       // Arrange
       const year = 2024;
       const quarter = 2; // Q2
@@ -92,7 +92,7 @@ describe('StatisticsPeriod Value Object', () => {
       expect(period.getEndDate()).toEqual(new Date(2024, 6, 0)); // June 30th
     });
 
-    it('should create valid Q1 period', () => {
+    it("should create valid Q1 period", () => {
       // Arrange
       const year = 2024;
       const quarter = 1; // Q1
@@ -106,19 +106,19 @@ describe('StatisticsPeriod Value Object', () => {
       expect(period.getEndDate()).toEqual(new Date(2024, 3, 0)); // March 31st
     });
 
-    it('should throw error for invalid quarter', () => {
+    it("should throw error for invalid quarter", () => {
       // Act & Assert
       expect(() => StatisticsPeriod.createQuarter(2024, 5)).toThrow(
         DomainValidationError,
       );
       expect(() => StatisticsPeriod.createQuarter(2024, 5)).toThrow(
-        'Quarter must be between 1 and 4',
+        "Quarter must be between 1 and 4",
       );
     });
   });
 
-  describe('Factory Method - createYear', () => {
-    it('should create valid yearly period', () => {
+  describe("Factory Method - createYear", () => {
+    it("should create valid yearly period", () => {
       // Arrange
       const year = 2024;
 
@@ -132,19 +132,19 @@ describe('StatisticsPeriod Value Object', () => {
       expect(period.getEndDate()).toEqual(new Date(2024, 11, 31)); // December 31st
     });
 
-    it('should throw error for invalid year', () => {
+    it("should throw error for invalid year", () => {
       // Act & Assert
       expect(() => StatisticsPeriod.createYear(1999)).toThrow(
         DomainValidationError,
       );
       expect(() => StatisticsPeriod.createYear(1999)).toThrow(
-        'Year must be between 2000 and',
+        "Year must be between 2000 and",
       );
     });
   });
 
-  describe('Factory Method - createCurrent', () => {
-    it('should create current month period', () => {
+  describe("Factory Method - createCurrent", () => {
+    it("should create current month period", () => {
       // Arrange
       const now = new Date();
       const expectedMonth = now.getMonth() + 1;
@@ -159,7 +159,7 @@ describe('StatisticsPeriod Value Object', () => {
       expect(period.month).toBe(expectedMonth);
     });
 
-    it('should create current year period', () => {
+    it("should create current year period", () => {
       // Arrange
       const expectedYear = new Date().getFullYear();
 
@@ -171,7 +171,7 @@ describe('StatisticsPeriod Value Object', () => {
       expect(period.year).toBe(expectedYear);
     });
 
-    it('should create current quarter period', () => {
+    it("should create current quarter period", () => {
       // Arrange
       const now = new Date();
       const expectedQuarter = Math.ceil((now.getMonth() + 1) / 3);
@@ -184,7 +184,7 @@ describe('StatisticsPeriod Value Object', () => {
       expect(period.quarter).toBe(expectedQuarter);
     });
 
-    it('should create current week period', () => {
+    it("should create current week period", () => {
       // Act
       const period = StatisticsPeriod.createCurrent(PeriodType.WEEK);
 
@@ -195,8 +195,8 @@ describe('StatisticsPeriod Value Object', () => {
     });
   });
 
-  describe('Business Logic - Period Analysis', () => {
-    it('should identify if period is in the past', () => {
+  describe("Business Logic - Period Analysis", () => {
+    it("should identify if period is in the past", () => {
       // Arrange
       const pastPeriod = StatisticsPeriod.createMonth(2020, 1);
 
@@ -204,15 +204,15 @@ describe('StatisticsPeriod Value Object', () => {
       expect(pastPeriod.isPast()).toBe(true);
     });
 
-    it.skip('should identify current period correctly - TIMING ISSUE TO FIX', () => {
+    it.skip("should identify current period correctly - TIMING ISSUE TO FIX", () => {
       // TODO: Fix timing-sensitive test - possibly timezone related
       // This test occasionally fails due to timing precision issues
       // Need to refactor to be more robust
     });
   });
 
-  describe('Display Methods', () => {
-    it('should format month display name correctly', () => {
+  describe("Display Methods", () => {
+    it("should format month display name correctly", () => {
       // Arrange
       const period = StatisticsPeriod.createMonth(2024, 6);
 
@@ -220,10 +220,10 @@ describe('StatisticsPeriod Value Object', () => {
       const displayName = period.getDisplayName();
 
       // Assert
-      expect(displayName).toBe('Juin 2024');
+      expect(displayName).toBe("Juin 2024");
     });
 
-    it('should format quarter display name correctly', () => {
+    it("should format quarter display name correctly", () => {
       // Arrange
       const period = StatisticsPeriod.createQuarter(2024, 2);
 
@@ -231,10 +231,10 @@ describe('StatisticsPeriod Value Object', () => {
       const displayName = period.getDisplayName();
 
       // Assert
-      expect(displayName).toBe('T2 2024');
+      expect(displayName).toBe("T2 2024");
     });
 
-    it('should format year display name correctly', () => {
+    it("should format year display name correctly", () => {
       // Arrange
       const period = StatisticsPeriod.createYear(2024);
 
@@ -242,25 +242,25 @@ describe('StatisticsPeriod Value Object', () => {
       const displayName = period.getDisplayName();
 
       // Assert
-      expect(displayName).toBe('Année 2024');
+      expect(displayName).toBe("Année 2024");
     });
 
-    it('should format week display name correctly', () => {
+    it("should format week display name correctly", () => {
       // Arrange
-      const period = StatisticsPeriod.createWeek('2024-01-15');
+      const period = StatisticsPeriod.createWeek("2024-01-15");
 
       // Act
       const displayName = period.getDisplayName();
 
       // Assert
-      expect(displayName).toContain('Semaine du');
-      expect(displayName).toContain('1/15/2024'); // Format US
-      expect(displayName).toContain('1/21/2024'); // Format US
+      expect(displayName).toContain("Semaine du");
+      expect(displayName).toContain("1/15/2024"); // Format US
+      expect(displayName).toContain("1/21/2024"); // Format US
     });
   });
 
-  describe('Data Serialization', () => {
-    it('should serialize month period correctly', () => {
+  describe("Data Serialization", () => {
+    it("should serialize month period correctly", () => {
       // Arrange
       const period = StatisticsPeriod.createMonth(2024, 6);
 
@@ -276,9 +276,9 @@ describe('StatisticsPeriod Value Object', () => {
       expect(data.weekEnd).toBeUndefined();
     });
 
-    it('should serialize week period correctly', () => {
+    it("should serialize week period correctly", () => {
       // Arrange
-      const period = StatisticsPeriod.createWeek('2024-01-15');
+      const period = StatisticsPeriod.createWeek("2024-01-15");
 
       // Act
       const data = period.toData();
@@ -286,15 +286,15 @@ describe('StatisticsPeriod Value Object', () => {
       // Assert
       expect(data.type).toBe(PeriodType.WEEK);
       expect(data.year).toBe(2024);
-      expect(data.weekStart).toBe('2024-01-15');
-      expect(data.weekEnd).toBe('2024-01-21');
+      expect(data.weekStart).toBe("2024-01-15");
+      expect(data.weekEnd).toBe("2024-01-21");
       expect(data.month).toBeUndefined();
       expect(data.quarter).toBeUndefined();
     });
   });
 
-  describe('Equality', () => {
-    it('should be equal for same month periods', () => {
+  describe("Equality", () => {
+    it("should be equal for same month periods", () => {
       // Arrange
       const period1 = StatisticsPeriod.createMonth(2024, 6);
       const period2 = StatisticsPeriod.createMonth(2024, 6);
@@ -303,7 +303,7 @@ describe('StatisticsPeriod Value Object', () => {
       expect(period1.equals(period2)).toBe(true);
     });
 
-    it('should not be equal for different months', () => {
+    it("should not be equal for different months", () => {
       // Arrange
       const period1 = StatisticsPeriod.createMonth(2024, 6);
       const period2 = StatisticsPeriod.createMonth(2024, 7);
@@ -312,16 +312,16 @@ describe('StatisticsPeriod Value Object', () => {
       expect(period1.equals(period2)).toBe(false);
     });
 
-    it('should be equal for same week periods', () => {
+    it("should be equal for same week periods", () => {
       // Arrange
-      const period1 = StatisticsPeriod.createWeek('2024-01-15');
-      const period2 = StatisticsPeriod.createWeek('2024-01-15');
+      const period1 = StatisticsPeriod.createWeek("2024-01-15");
+      const period2 = StatisticsPeriod.createWeek("2024-01-15");
 
       // Act & Assert
       expect(period1.equals(period2)).toBe(true);
     });
 
-    it('should not be equal for different period types', () => {
+    it("should not be equal for different period types", () => {
       // Arrange
       const monthPeriod = StatisticsPeriod.createMonth(2024, 6);
       const yearPeriod = StatisticsPeriod.createYear(2024);

@@ -8,9 +8,9 @@
 import {
   Appointment,
   AppointmentId,
-} from '../../../domain/entities/appointment.entity';
-import { AppointmentRepository } from '../../../domain/repositories/appointment.repository.interface';
-import { AppointmentNotFoundError } from '../../exceptions/appointment.exceptions';
+} from "../../../domain/entities/appointment.entity";
+import { AppointmentRepository } from "../../../domain/repositories/appointment.repository.interface";
+import { AppointmentNotFoundError } from "../../exceptions/appointment.exceptions";
 
 export interface UpdateAppointmentRequest {
   readonly appointmentId: string;
@@ -76,7 +76,7 @@ export class UpdateAppointmentUseCase {
 
     return {
       appointment: updatedAppointment,
-      message: 'Rendez-vous mis à jour avec succès',
+      message: "Rendez-vous mis à jour avec succès",
     };
   }
 }

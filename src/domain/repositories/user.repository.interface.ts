@@ -5,13 +5,13 @@
  * Clean Architecture : Application ne dépend PAS de l'infrastructure
  */
 
-import { User } from '../entities/user.entity';
-import { Email } from '../value-objects/email.vo';
-import { UserRole } from '../../shared/enums/user-role.enum';
-import { PaginatedResult } from '../../shared/types/pagination.types';
-import { UserQueryParams } from '../../shared/types/user-query.types';
+import { User } from "../entities/user.entity";
+import { Email } from "../value-objects/email.vo";
+import { UserRole } from "../../shared/enums/user-role.enum";
+import { PaginatedResult } from "../../shared/types/pagination.types";
+import { UserQueryParams } from "../../shared/types/user-query.types";
 
-export const USER_REPOSITORY = 'USER_REPOSITORY';
+export const USER_REPOSITORY = "USER_REPOSITORY";
 
 export interface UserRepository {
   /**

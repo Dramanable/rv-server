@@ -1,13 +1,13 @@
-import { Service } from '../../../domain/entities/service.entity';
-import { ServiceRepository } from '../../../domain/repositories/service.repository.interface';
-import { BusinessId } from '../../../domain/value-objects/business-id.value-object';
+import { Service } from "../../../domain/entities/service.entity";
+import { ServiceRepository } from "../../../domain/repositories/service.repository.interface";
+import { BusinessId } from "../../../domain/value-objects/business-id.value-object";
 import {
   ApplicationValidationError,
   InsufficientPermissionsError,
-} from '../../exceptions/application.exceptions';
-import { I18nService } from '../../ports/i18n.port';
-import { Logger } from '../../ports/logger.port';
-import { IPermissionService } from '../../ports/permission.service.interface';
+} from "../../exceptions/application.exceptions";
+import { I18nService } from "../../ports/i18n.port";
+import { Logger } from "../../ports/logger.port";
+import { IPermissionService } from "../../ports/permission.service.interface";
 
 export interface ListServicesRequest {
   readonly requestingUserId: string;
@@ -18,7 +18,7 @@ export interface ListServicesRequest {
   };
   readonly sorting: {
     readonly sortBy: string;
-    readonly sortOrder: 'asc' | 'desc';
+    readonly sortOrder: "asc" | "desc";
   };
   readonly filters: {
     readonly name?: string;
@@ -86,7 +86,7 @@ export class ListServicesUseCase {
 
       const { requestingUserId, businessId, pagination, filters } = request;
 
-      this.logger.info('Attempting to list services', {
+      this.logger.info("Attempting to list services", {
         businessId,
         requestingUserId,
         page: pagination.page,
@@ -100,19 +100,19 @@ export class ListServicesUseCase {
       try {
         await this.permissionService.requirePermission(
           requestingUserId,
-          'VIEW_SERVICES',
+          "VIEW_SERVICES",
           {
             businessId,
           },
         );
       } catch (error) {
         this.logger.error(
-          'Permission denied for service listing',
+          "Permission denied for service listing",
           error instanceof Error ? error : new Error(String(error)),
           {
             requestingUserId,
             businessId,
-            requiredPermission: 'VIEW_SERVICES',
+            requiredPermission: "VIEW_SERVICES",
           },
         );
 
@@ -122,7 +122,7 @@ export class ListServicesUseCase {
 
         throw new InsufficientPermissionsError(
           requestingUserId,
-          'VIEW_SERVICES',
+          "VIEW_SERVICES",
           businessId,
         );
       }
@@ -147,7 +147,7 @@ export class ListServicesUseCase {
       const hasNextPage = pagination.page < totalPages;
       const hasPrevPage = pagination.page > 1;
 
-      this.logger.info('Services listed successfully', {
+      this.logger.info("Services listed successfully", {
         businessId,
         requestingUserId,
         totalFound: total,
@@ -173,7 +173,7 @@ export class ListServicesUseCase {
       }
 
       this.logger.error(
-        'Error listing services',
+        "Error listing services",
         error instanceof Error ? error : new Error(String(error)),
         {
           businessId: request.businessId,
@@ -186,42 +186,42 @@ export class ListServicesUseCase {
   }
 
   private validateRequest(request: ListServicesRequest): void {
-    if (!request.requestingUserId || request.requestingUserId.trim() === '') {
+    if (!request.requestingUserId || request.requestingUserId.trim() === "") {
       throw new ApplicationValidationError(
-        'requestingUserId',
+        "requestingUserId",
         request.requestingUserId,
-        'Requesting user ID is required and cannot be empty',
+        "Requesting user ID is required and cannot be empty",
       );
     }
 
-    if (!request.businessId || request.businessId.trim() === '') {
+    if (!request.businessId || request.businessId.trim() === "") {
       throw new ApplicationValidationError(
-        'businessId',
+        "businessId",
         request.businessId,
-        'Business ID is required and cannot be empty',
+        "Business ID is required and cannot be empty",
       );
     }
 
     if (request.pagination.page < 1) {
       throw new ApplicationValidationError(
-        'page',
+        "page",
         request.pagination.page,
-        'Page number must be greater than 0',
+        "Page number must be greater than 0",
       );
     }
 
     if (request.pagination.limit < 1 || request.pagination.limit > 100) {
       throw new ApplicationValidationError(
-        'limit',
+        "limit",
         request.pagination.limit,
-        'Limit must be between 1 and 100',
+        "Limit must be between 1 and 100",
       );
     }
   }
 
   private mapServiceToResponse(
     service: Service,
-  ): ListServicesResponse['data'][0] {
+  ): ListServicesResponse["data"][0] {
     return {
       id: service.id.getValue(),
       name: service.name,

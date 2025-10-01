@@ -9,14 +9,14 @@
 import {
   GetAppointmentStatsUseCase,
   GetAppointmentStatsRequest,
-} from '../../../../application/use-cases/appointments/get-appointment-stats.use-case';
-import { UserRole } from '../../../../shared/enums/user-role.enum';
-import { PeriodType } from '../../../../domain/value-objects/statistics-period.vo';
-import { AppointmentStatisticsData } from '../../../../domain/value-objects/appointment-statistics.vo';
+} from "../../../../application/use-cases/appointments/get-appointment-stats.use-case";
+import { UserRole } from "../../../../shared/enums/user-role.enum";
+import { PeriodType } from "../../../../domain/value-objects/statistics-period.vo";
+import { AppointmentStatisticsData } from "../../../../domain/value-objects/appointment-statistics.vo";
 import {
   AppointmentStatisticsCriteria,
   AppointmentRepository,
-} from '../../../../domain/repositories/appointment.repository.interface';
+} from "../../../../domain/repositories/appointment.repository.interface";
 
 // 🧪 Mock Repository - Défini directement dans les tests
 class MockAppointmentStatisticsRepository {
@@ -52,7 +52,7 @@ class MockAppointmentStatisticsRepository {
   }
 }
 
-describe('GetAppointmentStatsUseCase', () => {
+describe("GetAppointmentStatsUseCase", () => {
   let useCase: GetAppointmentStatsUseCase;
   let mockRepository: MockAppointmentStatisticsRepository;
 
@@ -63,10 +63,10 @@ describe('GetAppointmentStatsUseCase', () => {
     );
   });
 
-  describe('🔐 Authorization Tests', () => {
-    it('should allow platform admin to view any statistics', async () => {
+  describe("🔐 Authorization Tests", () => {
+    it("should allow platform admin to view any statistics", async () => {
       const request: GetAppointmentStatsRequest = {
-        userId: 'f1b252e7-fdf0-4791-ab6f-7f501d523bce',
+        userId: "f1b252e7-fdf0-4791-ab6f-7f501d523bce",
         userRole: UserRole.PLATFORM_ADMIN,
         periodType: PeriodType.MONTH,
       };
@@ -77,11 +77,11 @@ describe('GetAppointmentStatsUseCase', () => {
       expect(result.value).toBeDefined();
     });
 
-    it('should allow business owner to view own business statistics', async () => {
+    it("should allow business owner to view own business statistics", async () => {
       const request: GetAppointmentStatsRequest = {
-        userId: '80420cd1-44c2-421c-b5f5-45942624c010',
+        userId: "80420cd1-44c2-421c-b5f5-45942624c010",
         userRole: UserRole.BUSINESS_OWNER,
-        businessId: '2cf1b18e-3f83-4ec8-949c-3e0a80602546',
+        businessId: "2cf1b18e-3f83-4ec8-949c-3e0a80602546",
         periodType: PeriodType.MONTH,
       };
 
@@ -91,9 +91,9 @@ describe('GetAppointmentStatsUseCase', () => {
       expect(result.value).toBeDefined();
     });
 
-    it('should reject business owner without business ID', async () => {
+    it("should reject business owner without business ID", async () => {
       const request: GetAppointmentStatsRequest = {
-        userId: 'bdb941f0-41a8-4443-bd54-829f1d08de79',
+        userId: "bdb941f0-41a8-4443-bd54-829f1d08de79",
         userRole: UserRole.BUSINESS_OWNER,
         periodType: PeriodType.MONTH,
       };
@@ -101,15 +101,15 @@ describe('GetAppointmentStatsUseCase', () => {
       const result = await useCase.execute(request);
 
       expect(result.isFailure).toBe(true);
-      expect(result.error).toContain('Business ID is required');
+      expect(result.error).toContain("Business ID is required");
     });
 
-    it('should allow practitioner to view own statistics', async () => {
+    it("should allow practitioner to view own statistics", async () => {
       const request: GetAppointmentStatsRequest = {
-        userId: '4ca6a342-776f-4a15-ba07-ce886dfb55cd',
+        userId: "4ca6a342-776f-4a15-ba07-ce886dfb55cd",
         userRole: UserRole.PRACTITIONER,
-        businessId: '6930e91e-24c6-4164-aa16-87b47cfcfa61', // Practitioner needs businessId too
-        staffId: '4ca6a342-776f-4a15-ba07-ce886dfb55cd',
+        businessId: "6930e91e-24c6-4164-aa16-87b47cfcfa61", // Practitioner needs businessId too
+        staffId: "4ca6a342-776f-4a15-ba07-ce886dfb55cd",
         periodType: PeriodType.MONTH,
       };
 
@@ -119,23 +119,23 @@ describe('GetAppointmentStatsUseCase', () => {
       expect(result.value).toBeDefined();
     });
 
-    it('should reject practitioner viewing other staff statistics', async () => {
+    it("should reject practitioner viewing other staff statistics", async () => {
       const request: GetAppointmentStatsRequest = {
-        userId: '4ca6a342-776f-4a15-ba07-ce886dfb55cd',
+        userId: "4ca6a342-776f-4a15-ba07-ce886dfb55cd",
         userRole: UserRole.PRACTITIONER,
-        staffId: 'staff-456', // Different staff ID
+        staffId: "staff-456", // Different staff ID
         periodType: PeriodType.MONTH,
       };
 
       const result = await useCase.execute(request);
 
       expect(result.isFailure).toBe(true);
-      expect(result.error).toContain('only view their own statistics');
+      expect(result.error).toContain("only view their own statistics");
     });
 
-    it('should reject client access', async () => {
+    it("should reject client access", async () => {
       const request: GetAppointmentStatsRequest = {
-        userId: 'ee4c8003-1ccb-4dff-b119-4a61f3214aa6',
+        userId: "ee4c8003-1ccb-4dff-b119-4a61f3214aa6",
         userRole: UserRole.REGULAR_CLIENT,
         periodType: PeriodType.MONTH,
       };
@@ -143,16 +143,16 @@ describe('GetAppointmentStatsUseCase', () => {
       const result = await useCase.execute(request);
 
       expect(result.isFailure).toBe(true);
-      expect(result.error).toContain('Insufficient permissions');
+      expect(result.error).toContain("Insufficient permissions");
     });
   });
 
-  describe('📊 Statistics Content Tests', () => {
-    it('should return complete statistics structure', async () => {
+  describe("📊 Statistics Content Tests", () => {
+    it("should return complete statistics structure", async () => {
       const request: GetAppointmentStatsRequest = {
-        userId: 'f1b252e7-fdf0-4791-ab6f-7f501d523bce',
+        userId: "f1b252e7-fdf0-4791-ab6f-7f501d523bce",
         userRole: UserRole.PLATFORM_ADMIN,
-        businessId: '6930e91e-24c6-4164-aa16-87b47cfcfa61',
+        businessId: "6930e91e-24c6-4164-aa16-87b47cfcfa61",
         periodType: PeriodType.MONTH,
       };
 
@@ -183,11 +183,11 @@ describe('GetAppointmentStatsUseCase', () => {
       });
     });
 
-    it('should calculate correct performance indicators', async () => {
+    it("should calculate correct performance indicators", async () => {
       const request: GetAppointmentStatsRequest = {
-        userId: 'f1b252e7-fdf0-4791-ab6f-7f501d523bce',
+        userId: "f1b252e7-fdf0-4791-ab6f-7f501d523bce",
         userRole: UserRole.PLATFORM_ADMIN,
-        businessId: '6930e91e-24c6-4164-aa16-87b47cfcfa61',
+        businessId: "6930e91e-24c6-4164-aa16-87b47cfcfa61",
         periodType: PeriodType.MONTH,
       };
 
@@ -206,12 +206,12 @@ describe('GetAppointmentStatsUseCase', () => {
     });
   });
 
-  describe('📅 Period Management Tests', () => {
-    it('should handle current week period', async () => {
+  describe("📅 Period Management Tests", () => {
+    it("should handle current week period", async () => {
       const request: GetAppointmentStatsRequest = {
-        userId: 'f1b252e7-fdf0-4791-ab6f-7f501d523bce',
+        userId: "f1b252e7-fdf0-4791-ab6f-7f501d523bce",
         userRole: UserRole.PLATFORM_ADMIN,
-        businessId: '6930e91e-24c6-4164-aa16-87b47cfcfa61',
+        businessId: "6930e91e-24c6-4164-aa16-87b47cfcfa61",
         periodType: PeriodType.WEEK,
       };
 
@@ -222,14 +222,14 @@ describe('GetAppointmentStatsUseCase', () => {
       expect(result.value!.period.durationInDays).toBe(7); // Une semaine = exactement 7 jours
     });
 
-    it('should handle custom period', async () => {
-      const startDate = new Date('2024-01-01');
-      const endDate = new Date('2024-01-31');
+    it("should handle custom period", async () => {
+      const startDate = new Date("2024-01-01");
+      const endDate = new Date("2024-01-31");
 
       const request: GetAppointmentStatsRequest = {
-        userId: 'f1b252e7-fdf0-4791-ab6f-7f501d523bce',
+        userId: "f1b252e7-fdf0-4791-ab6f-7f501d523bce",
         userRole: UserRole.PLATFORM_ADMIN,
-        businessId: '6930e91e-24c6-4164-aa16-87b47cfcfa61',
+        businessId: "6930e91e-24c6-4164-aa16-87b47cfcfa61",
         periodType: PeriodType.CUSTOM,
         startDate,
         endDate,
@@ -243,11 +243,11 @@ describe('GetAppointmentStatsUseCase', () => {
       expect(result.value!.period.endDate).toEqual(endDate);
     });
 
-    it('should reject custom period without dates', async () => {
+    it("should reject custom period without dates", async () => {
       const request: GetAppointmentStatsRequest = {
-        userId: 'f1b252e7-fdf0-4791-ab6f-7f501d523bce',
+        userId: "f1b252e7-fdf0-4791-ab6f-7f501d523bce",
         userRole: UserRole.PLATFORM_ADMIN,
-        businessId: '6930e91e-24c6-4164-aa16-87b47cfcfa61',
+        businessId: "6930e91e-24c6-4164-aa16-87b47cfcfa61",
         periodType: PeriodType.CUSTOM,
         // Missing startDate and endDate
       };
@@ -255,17 +255,17 @@ describe('GetAppointmentStatsUseCase', () => {
       const result = await useCase.execute(request);
 
       expect(result.isFailure).toBe(true);
-      expect(result.error).toContain('Start date and end date are required');
+      expect(result.error).toContain("Start date and end date are required");
     });
   });
 
-  describe('🎯 Filtering Tests', () => {
-    it('should build criteria with staff filter', async () => {
+  describe("🎯 Filtering Tests", () => {
+    it("should build criteria with staff filter", async () => {
       const request: GetAppointmentStatsRequest = {
-        userId: 'f1b252e7-fdf0-4791-ab6f-7f501d523bce',
+        userId: "f1b252e7-fdf0-4791-ab6f-7f501d523bce",
         userRole: UserRole.PLATFORM_ADMIN,
-        businessId: '6930e91e-24c6-4164-aa16-87b47cfcfa61',
-        staffId: '4ca6a342-776f-4a15-ba07-ce886dfb55cd',
+        businessId: "6930e91e-24c6-4164-aa16-87b47cfcfa61",
+        staffId: "4ca6a342-776f-4a15-ba07-ce886dfb55cd",
         periodType: PeriodType.MONTH,
       };
 
@@ -275,12 +275,12 @@ describe('GetAppointmentStatsUseCase', () => {
       expect(result.value!.criteria.staffId).toBeDefined();
     });
 
-    it('should build criteria with service filter', async () => {
+    it("should build criteria with service filter", async () => {
       const request: GetAppointmentStatsRequest = {
-        userId: 'f1b252e7-fdf0-4791-ab6f-7f501d523bce',
+        userId: "f1b252e7-fdf0-4791-ab6f-7f501d523bce",
         userRole: UserRole.PLATFORM_ADMIN,
-        businessId: '6930e91e-24c6-4164-aa16-87b47cfcfa61',
-        serviceId: '5b1f8c2a-3e4d-4f5a-8b7c-8d9e0f1a2b3c', // UUID v4 valide (4ème partie commence par 8)
+        businessId: "6930e91e-24c6-4164-aa16-87b47cfcfa61",
+        serviceId: "5b1f8c2a-3e4d-4f5a-8b7c-8d9e0f1a2b3c", // UUID v4 valide (4ème partie commence par 8)
         periodType: PeriodType.MONTH,
       };
 
@@ -291,13 +291,13 @@ describe('GetAppointmentStatsUseCase', () => {
     });
   });
 
-  describe('⚠️ Error Handling Tests', () => {
-    it('should handle repository errors gracefully', async () => {
+  describe("⚠️ Error Handling Tests", () => {
+    it("should handle repository errors gracefully", async () => {
       // Mock repository to throw error
       const errorRepository = {
         getStatistics: jest
           .fn()
-          .mockRejectedValue(new Error('Database connection failed')),
+          .mockRejectedValue(new Error("Database connection failed")),
       };
 
       const errorUseCase = new GetAppointmentStatsUseCase(
@@ -305,17 +305,17 @@ describe('GetAppointmentStatsUseCase', () => {
       );
 
       const request: GetAppointmentStatsRequest = {
-        userId: 'f1b252e7-fdf0-4791-ab6f-7f501d523bce',
+        userId: "f1b252e7-fdf0-4791-ab6f-7f501d523bce",
         userRole: UserRole.PLATFORM_ADMIN,
-        businessId: '6930e91e-24c6-4164-aa16-87b47cfcfa61',
+        businessId: "6930e91e-24c6-4164-aa16-87b47cfcfa61",
         periodType: PeriodType.MONTH,
       };
 
       const result = await errorUseCase.execute(request);
 
       expect(result.isFailure).toBe(true);
-      expect(result.error).toContain('Failed to get appointment statistics');
-      expect(result.error).toContain('Database connection failed');
+      expect(result.error).toContain("Failed to get appointment statistics");
+      expect(result.error).toContain("Database connection failed");
     });
   });
 });

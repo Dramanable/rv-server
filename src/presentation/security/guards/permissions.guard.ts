@@ -29,12 +29,12 @@ import {
   ExecutionContext,
   ForbiddenException,
   Injectable,
-} from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
-import { IPermissionService } from '../../../application/ports/permission.service.interface';
-import { User } from '../../../domain/entities/user.entity';
-import { Permission, RoleUtils } from '../../../shared/enums/user-role.enum';
-import { PERMISSIONS_KEY } from '../decorators/permissions.decorator';
+} from "@nestjs/common";
+import { Reflector } from "@nestjs/core";
+import { IPermissionService } from "../../../application/ports/permission.service.interface";
+import { User } from "../../../domain/entities/user.entity";
+import { Permission, RoleUtils } from "../../../shared/enums/user-role.enum";
+import { PERMISSIONS_KEY } from "../decorators/permissions.decorator";
 
 export interface PermissionContext {
   businessId?: string;
@@ -68,7 +68,7 @@ export class PermissionsGuard implements CanActivate {
 
     // Si pas d'utilisateur, refuser l'accès
     if (!user) {
-      throw new ForbiddenException('User not authenticated');
+      throw new ForbiddenException("User not authenticated");
     }
 
     try {
@@ -113,7 +113,7 @@ export class PermissionsGuard implements CanActivate {
         }
 
         throw new ForbiddenException(
-          `User lacks any of required permissions: ${permissions.join(', ')}`,
+          `User lacks any of required permissions: ${permissions.join(", ")}`,
         );
       }
     } catch (error) {
@@ -187,7 +187,7 @@ export class RoleHierarchyGuard implements CanActivate {
 
   canActivate(context: ExecutionContext): boolean {
     const requiredLevel = this.reflector.getAllAndOverride<number>(
-      'hierarchyLevel',
+      "hierarchyLevel",
       [context.getHandler(), context.getClass()],
     );
 

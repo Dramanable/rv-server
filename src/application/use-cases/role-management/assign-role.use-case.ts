@@ -5,15 +5,15 @@
  * Respecte les règles métier de validation des assignations de rôles.
  */
 
-import { InsufficientPermissionsError } from '@application/exceptions/auth.exceptions';
-import { IPermissionService } from '@application/ports/permission.service.interface';
+import { InsufficientPermissionsError } from "@application/exceptions/auth.exceptions";
+import { IPermissionService } from "@application/ports/permission.service.interface";
 import {
   RoleAssignment,
   RoleAssignmentContext,
-} from '@domain/entities/role-assignment.entity';
-import { IBusinessContextRepository } from '@domain/repositories/business-context.repository.interface';
-import { IRoleAssignmentRepository } from '@domain/repositories/role-assignment.repository.interface';
-import { UserRole } from '@shared/enums/user-role.enum';
+} from "@domain/entities/role-assignment.entity";
+import { IBusinessContextRepository } from "@domain/repositories/business-context.repository.interface";
+import { IRoleAssignmentRepository } from "@domain/repositories/role-assignment.repository.interface";
+import { UserRole } from "@shared/enums/user-role.enum";
 
 export interface AssignRoleRequest {
   readonly userId: string;
@@ -53,7 +53,7 @@ export class AssignRoleUseCase {
       // 🛡️ SÉCURITÉ CRITIQUE : Vérifier les permissions AVANT toute opération
       await this.permissionService.requirePermission(
         request.assignedBy,
-        'ASSIGN_ROLES',
+        "ASSIGN_ROLES",
         {
           businessId: request.context.businessId,
           userId: request.userId,
@@ -81,7 +81,7 @@ export class AssignRoleUseCase {
       if (!businessContext) {
         return {
           success: false,
-          error: 'Business context not found',
+          error: "Business context not found",
         };
       }
 
@@ -90,18 +90,18 @@ export class AssignRoleUseCase {
         if (request.context.departmentId && request.context.locationId) {
           return {
             success: false,
-            error: 'Department not found in business context',
+            error: "Department not found in business context",
           };
         }
         if (request.context.locationId) {
           return {
             success: false,
-            error: 'Location not found in business context',
+            error: "Location not found in business context",
           };
         }
         return {
           success: false,
-          error: 'Invalid business context',
+          error: "Invalid business context",
         };
       }
 
@@ -116,7 +116,7 @@ export class AssignRoleUseCase {
       if (hasExistingRole) {
         return {
           success: false,
-          error: 'User already has this role in the specified context',
+          error: "User already has this role in the specified context",
         };
       }
 
@@ -156,7 +156,7 @@ export class AssignRoleUseCase {
       return {
         success: false,
         error:
-          error instanceof Error ? error.message : 'Unknown error occurred',
+          error instanceof Error ? error.message : "Unknown error occurred",
       };
     }
   }

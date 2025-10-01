@@ -33,25 +33,25 @@ export interface AuthenticationError {
  */
 export function isAuthenticatedUser(data: unknown): data is AuthenticatedUser {
   return (
-    typeof data === 'object' &&
+    typeof data === "object" &&
     data !== null &&
-    'id' in data &&
-    'email' in data &&
-    'role' in data &&
-    'isActive' in data &&
-    'isVerified' in data &&
-    'createdAt' in data &&
-    'updatedAt' in data &&
-    typeof (data as { id: unknown }).id === 'string' &&
-    (typeof (data as { email: unknown }).email === 'string' ||
-      (typeof (data as { email: unknown }).email === 'object' &&
+    "id" in data &&
+    "email" in data &&
+    "role" in data &&
+    "isActive" in data &&
+    "isVerified" in data &&
+    "createdAt" in data &&
+    "updatedAt" in data &&
+    typeof (data as { id: unknown }).id === "string" &&
+    (typeof (data as { email: unknown }).email === "string" ||
+      (typeof (data as { email: unknown }).email === "object" &&
         (data as { email: unknown }).email !== null &&
-        'value' in (data as { email: { value: unknown } }).email &&
+        "value" in (data as { email: { value: unknown } }).email &&
         typeof (data as { email: { value: unknown } }).email.value ===
-          'string')) &&
-    typeof (data as { role: unknown }).role === 'string' &&
-    typeof (data as { isActive: unknown }).isActive === 'boolean' &&
-    typeof (data as { isVerified: unknown }).isVerified === 'boolean' &&
+          "string")) &&
+    typeof (data as { role: unknown }).role === "string" &&
+    typeof (data as { isActive: unknown }).isActive === "boolean" &&
+    typeof (data as { isVerified: unknown }).isVerified === "boolean" &&
     (data as { createdAt: unknown }).createdAt instanceof Date &&
     (data as { updatedAt: unknown }).updatedAt instanceof Date
   );
@@ -64,12 +64,12 @@ export function isAuthenticationError(
   error: unknown,
 ): error is AuthenticationError {
   return (
-    typeof error === 'object' &&
+    typeof error === "object" &&
     error !== null &&
-    'message' in error &&
-    'name' in error &&
-    typeof (error as { message: unknown }).message === 'string' &&
-    typeof (error as { name: unknown }).name === 'string'
+    "message" in error &&
+    "name" in error &&
+    typeof (error as { message: unknown }).message === "string" &&
+    typeof (error as { name: unknown }).name === "string"
   );
 }
 
@@ -89,17 +89,17 @@ export interface JwtPayload {
  */
 export function isJwtPayload(data: unknown): data is JwtPayload {
   return (
-    typeof data === 'object' &&
+    typeof data === "object" &&
     data !== null &&
-    'sub' in data &&
-    'email' in data &&
-    'role' in data &&
-    'iat' in data &&
-    'exp' in data &&
-    typeof (data as { sub: unknown }).sub === 'string' &&
-    typeof (data as { email: unknown }).email === 'string' &&
-    typeof (data as { role: unknown }).role === 'string' &&
-    typeof (data as { iat: unknown }).iat === 'number' &&
-    typeof (data as { exp: unknown }).exp === 'number'
+    "sub" in data &&
+    "email" in data &&
+    "role" in data &&
+    "iat" in data &&
+    "exp" in data &&
+    typeof (data as { sub: unknown }).sub === "string" &&
+    typeof (data as { email: unknown }).email === "string" &&
+    typeof (data as { role: unknown }).role === "string" &&
+    typeof (data as { iat: unknown }).iat === "number" &&
+    typeof (data as { exp: unknown }).exp === "number"
   );
 }

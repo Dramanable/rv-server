@@ -2,16 +2,16 @@
  * 🧪 TDD - Test pour passwordChangeRequired dans User Entity
  */
 
-import { UserRole } from '@shared/enums/user-role.enum';
-import { Email } from '@domain/value-objects/email.vo';
-import { User } from '@domain/entities/user.entity';
+import { UserRole } from "@shared/enums/user-role.enum";
+import { Email } from "@domain/value-objects/email.vo";
+import { User } from "@domain/entities/user.entity";
 
-describe('User Entity - Password Change Required', () => {
-  describe('Password Change Requirement', () => {
-    it('should create user with passwordChangeRequired false by default', () => {
+describe("User Entity - Password Change Required", () => {
+  describe("Password Change Requirement", () => {
+    it("should create user with passwordChangeRequired false by default", () => {
       // Arrange
-      const email = new Email('test@example.com');
-      const name = 'John Doe';
+      const email = new Email("test@example.com");
+      const name = "John Doe";
       const role = UserRole.REGULAR_CLIENT;
 
       // Act
@@ -21,10 +21,10 @@ describe('User Entity - Password Change Required', () => {
       expect(user.passwordChangeRequired).toBe(false);
     });
 
-    it('should create user with passwordChangeRequired true when specified', () => {
+    it("should create user with passwordChangeRequired true when specified", () => {
       // Arrange
-      const email = new Email('test@example.com');
-      const name = 'John Doe';
+      const email = new Email("test@example.com");
+      const name = "John Doe";
       const role = UserRole.REGULAR_CLIENT;
 
       // Act
@@ -36,10 +36,10 @@ describe('User Entity - Password Change Required', () => {
       expect(user.passwordChangeRequired).toBe(true);
     });
 
-    it('should create user with passwordChangeRequired false when explicitly specified', () => {
+    it("should create user with passwordChangeRequired false when explicitly specified", () => {
       // Arrange
-      const email = new Email('test@example.com');
-      const name = 'John Doe';
+      const email = new Email("test@example.com");
+      const name = "John Doe";
       const role = UserRole.REGULAR_CLIENT;
 
       // Act
@@ -52,11 +52,11 @@ describe('User Entity - Password Change Required', () => {
     });
   });
 
-  describe('Business Rules for Password Change', () => {
-    it('should require password change for new temporary users', () => {
+  describe("Business Rules for Password Change", () => {
+    it("should require password change for new temporary users", () => {
       // Arrange
-      const email = new Email('temp@example.com');
-      const name = 'Temp User';
+      const email = new Email("temp@example.com");
+      const name = "Temp User";
       const role = UserRole.REGULAR_CLIENT;
 
       // Act
@@ -66,10 +66,10 @@ describe('User Entity - Password Change Required', () => {
       expect(user.passwordChangeRequired).toBe(true);
     });
 
-    it('should allow forcing password change requirement', () => {
+    it("should allow forcing password change requirement", () => {
       // Arrange
-      const email = new Email('test@example.com');
-      const name = 'John Doe';
+      const email = new Email("test@example.com");
+      const name = "John Doe";
       const role = UserRole.REGULAR_CLIENT;
       const user = new User(email, name, role);
 
@@ -81,10 +81,10 @@ describe('User Entity - Password Change Required', () => {
       expect(user.passwordChangeRequired).toBe(false); // Original unchanged
     });
 
-    it('should allow clearing password change requirement', () => {
+    it("should allow clearing password change requirement", () => {
       // Arrange
-      const email = new Email('test@example.com');
-      const name = 'John Doe';
+      const email = new Email("test@example.com");
+      const name = "John Doe";
       const role = UserRole.REGULAR_CLIENT;
       const user = new User(email, name, role, {
         passwordChangeRequired: true,

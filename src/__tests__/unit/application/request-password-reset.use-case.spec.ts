@@ -7,14 +7,14 @@
 import {
   IEmailService,
   PasswordResetEmailData,
-} from '../../../application/ports/email.port';
-import { RequestPasswordResetUseCase } from '../../../application/use-cases/password-reset/request-password-reset.use-case';
-import { PasswordResetCode } from '../../../domain/entities/password-reset-code.entity';
-import { User } from '../../../domain/entities/user.entity';
-import { DomainValidationError } from '../../../domain/exceptions/domain.exceptions';
-import { IPasswordResetCodeRepository } from '../../../domain/repositories/password-reset-code.repository';
-import { UserRepository } from '../../../domain/repositories/user.repository.interface';
-import { Email } from '../../../domain/value-objects/email.vo';
+} from "../../../application/ports/email.port";
+import { RequestPasswordResetUseCase } from "../../../application/use-cases/password-reset/request-password-reset.use-case";
+import { PasswordResetCode } from "../../../domain/entities/password-reset-code.entity";
+import { User } from "../../../domain/entities/user.entity";
+import { DomainValidationError } from "../../../domain/exceptions/domain.exceptions";
+import { IPasswordResetCodeRepository } from "../../../domain/repositories/password-reset-code.repository";
+import { UserRepository } from "../../../domain/repositories/user.repository.interface";
+import { Email } from "../../../domain/value-objects/email.vo";
 
 // Mocks pour les tests
 class MockPasswordResetCodeRepository implements IPasswordResetCodeRepository {
@@ -87,11 +87,11 @@ class MockEmailService implements Partial<IEmailService> {
     data: PasswordResetEmailData,
   ): Promise<{ success: boolean; messageId?: string }> {
     this.sentEmails.push(data);
-    return { success: true, messageId: 'mock-message-id' };
+    return { success: true, messageId: "mock-message-id" };
   }
 }
 
-describe('RequestPasswordResetUseCase', () => {
+describe("RequestPasswordResetUseCase", () => {
   let useCase: RequestPasswordResetUseCase;
   let passwordResetRepository: MockPasswordResetCodeRepository;
   let userRepository: MockUserRepository;
@@ -111,26 +111,26 @@ describe('RequestPasswordResetUseCase', () => {
 
     // Créer un utilisateur de test simplifié
     testUser = {
-      id: 'user-123',
-      email: Email.create('test@example.com'),
-      name: 'John Doe',
-      firstName: 'John',
+      id: "user-123",
+      email: Email.create("test@example.com"),
+      name: "John Doe",
+      firstName: "John",
     } as unknown as User;
 
     userRepository.addUser(testUser);
   });
 
-  describe('execute', () => {
-    it('should create and send password reset code for valid email', async () => {
+  describe("execute", () => {
+    it("should create and send password reset code for valid email", async () => {
       // Given
-      const email = 'test@example.com';
+      const email = "test@example.com";
 
       // When
       const result = await useCase.execute({ email });
 
       // Then
       expect(result.success).toBe(true);
-      expect(result.message).toContain('code de réinitialisation');
+      expect(result.message).toContain("code de réinitialisation");
 
       // Vérifier qu'un code a été créé
       const validCodes = await passwordResetRepository.findValidCodesByUserId(
@@ -142,14 +142,14 @@ describe('RequestPasswordResetUseCase', () => {
       // Vérifier qu'un email a été envoyé
       expect(emailService.sentEmails).toHaveLength(1);
       const sentEmail = emailService.sentEmails[0];
-      expect(sentEmail.userName).toBe('John');
+      expect(sentEmail.userName).toBe("John");
       expect(sentEmail.resetCode).toMatch(/^\d{4}$/);
-      expect(sentEmail.expirationTime).toContain('15 minutes');
+      expect(sentEmail.expirationTime).toContain("15 minutes");
     });
 
-    it('should invalidate existing codes before creating new one', async () => {
+    it("should invalidate existing codes before creating new one", async () => {
       // Given
-      const email = 'test@example.com';
+      const email = "test@example.com";
       const existingCode = PasswordResetCode.create(testUser.id);
       await passwordResetRepository.save(existingCode);
 
@@ -173,29 +173,29 @@ describe('RequestPasswordResetUseCase', () => {
       expect(validCodes[0].code).not.toBe(existingCode.code);
     });
 
-    it('should return success even for non-existent email (security)', async () => {
+    it("should return success even for non-existent email (security)", async () => {
       // Given
-      const email = 'nonexistent@example.com';
+      const email = "nonexistent@example.com";
 
       // When
       const result = await useCase.execute({ email });
 
       // Then
       expect(result.success).toBe(true);
-      expect(result.message).toContain('Si cette adresse email existe');
+      expect(result.message).toContain("Si cette adresse email existe");
 
       // Vérifier qu'aucun code n'a été créé
       const allCodes =
-        await passwordResetRepository.findValidCodesByUserId('any-user');
+        await passwordResetRepository.findValidCodesByUserId("any-user");
       expect(allCodes).toHaveLength(0);
 
       // Vérifier qu'aucun email n'a été envoyé
       expect(emailService.sentEmails).toHaveLength(0);
     });
 
-    it('should throw error for invalid email format', async () => {
+    it("should throw error for invalid email format", async () => {
       // Given
-      const invalidEmail = 'invalid-email';
+      const invalidEmail = "invalid-email";
 
       // When & Then
       await expect(useCase.execute({ email: invalidEmail })).rejects.toThrow(
@@ -203,9 +203,9 @@ describe('RequestPasswordResetUseCase', () => {
       );
     });
 
-    it('should throw error for empty email', async () => {
+    it("should throw error for empty email", async () => {
       // Given
-      const emptyEmail = '';
+      const emptyEmail = "";
 
       // When & Then
       await expect(useCase.execute({ email: emptyEmail })).rejects.toThrow(
@@ -213,19 +213,19 @@ describe('RequestPasswordResetUseCase', () => {
       );
     });
 
-    it('should handle email service failure gracefully', async () => {
+    it("should handle email service failure gracefully", async () => {
       // Given
-      const email = 'test@example.com';
+      const email = "test@example.com";
       emailService.sendPasswordResetEmail = jest
         .fn()
-        .mockRejectedValue(new Error('Email service down'));
+        .mockRejectedValue(new Error("Email service down"));
 
       // When
       const result = await useCase.execute({ email });
 
       // Then
       expect(result.success).toBe(false);
-      expect(result.message).toContain('erreur technique');
+      expect(result.message).toContain("erreur technique");
 
       // Le code ne doit pas être sauvegardé si l'email échoue
       const validCodes = await passwordResetRepository.findValidCodesByUserId(
@@ -234,9 +234,9 @@ describe('RequestPasswordResetUseCase', () => {
       expect(validCodes).toHaveLength(0);
     });
 
-    it('should include proper email template data', async () => {
+    it("should include proper email template data", async () => {
       // Given
-      const email = 'test@example.com';
+      const email = "test@example.com";
 
       // When
       await useCase.execute({ email });
@@ -244,16 +244,16 @@ describe('RequestPasswordResetUseCase', () => {
       // Then
       const sentEmail = emailService.sentEmails[0];
       expect(sentEmail).toMatchObject({
-        userName: 'John',
+        userName: "John",
         resetCode: expect.stringMatching(/^\d{4}$/),
-        expirationTime: '15 minutes',
+        expirationTime: "15 minutes",
         companyName: expect.any(String),
       });
     });
 
-    it('should generate different codes for multiple requests', async () => {
+    it("should generate different codes for multiple requests", async () => {
       // Given
-      const email = 'test@example.com';
+      const email = "test@example.com";
 
       // When
       await useCase.execute({ email });
@@ -267,14 +267,14 @@ describe('RequestPasswordResetUseCase', () => {
     });
   });
 
-  describe('Input Validation', () => {
-    it('should validate email format', async () => {
+  describe("Input Validation", () => {
+    it("should validate email format", async () => {
       const invalidEmails = [
-        'invalid',
-        '@example.com',
-        'test@',
-        'test.example.com',
-        '',
+        "invalid",
+        "@example.com",
+        "test@",
+        "test.example.com",
+        "",
         null,
         undefined,
       ];

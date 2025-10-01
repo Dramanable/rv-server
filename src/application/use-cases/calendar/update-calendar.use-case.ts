@@ -5,20 +5,20 @@
  * ✅ Business logic for calendar updates
  */
 
-import type { BusinessRepository } from '../../../domain/repositories/business.repository.interface';
-import type { CalendarRepository } from '../../../domain/repositories/calendar.repository.interface';
-import type { I18nService } from '../../ports/i18n.port';
-import type { Logger } from '../../ports/logger.port';
+import type { BusinessRepository } from "../../../domain/repositories/business.repository.interface";
+import type { CalendarRepository } from "../../../domain/repositories/calendar.repository.interface";
+import type { I18nService } from "../../ports/i18n.port";
+import type { Logger } from "../../ports/logger.port";
 
-import { Calendar } from '../../../domain/entities/calendar.entity';
-import { CalendarId } from '../../../domain/value-objects/calendar-id.value-object';
-import { WorkingHours } from '../../../domain/value-objects/working-hours.value-object';
-import { ResourceNotFoundError } from '../../exceptions/application.exceptions';
+import { Calendar } from "../../../domain/entities/calendar.entity";
+import { CalendarId } from "../../../domain/value-objects/calendar-id.value-object";
+import { WorkingHours } from "../../../domain/value-objects/working-hours.value-object";
+import { ResourceNotFoundError } from "../../exceptions/application.exceptions";
 import {
   CalendarNotFoundError,
   CalendarPermissionError,
   InvalidCalendarDataError,
-} from '../../exceptions/calendar.exceptions';
+} from "../../exceptions/calendar.exceptions";
 
 export interface UpdateCalendarRequest {
   readonly requestingUserId: string;
@@ -58,7 +58,7 @@ export class UpdateCalendarUseCase {
   async execute(
     request: UpdateCalendarRequest,
   ): Promise<UpdateCalendarResponse> {
-    this.logger.info('Updating calendar', {
+    this.logger.info("Updating calendar", {
       calendarId: request.calendarId,
       requestingUserId: request.requestingUserId,
     });
@@ -71,7 +71,7 @@ export class UpdateCalendarUseCase {
     const existingCalendar = await this.calendarRepository.findById(calendarId);
 
     if (!existingCalendar) {
-      this.logger.error('Calendar not found for update', {
+      this.logger.error("Calendar not found for update", {
         calendarId: request.calendarId,
       } as any);
       throw new CalendarNotFoundError(request.calendarId);
@@ -88,22 +88,22 @@ export class UpdateCalendarUseCase {
 
     // 5. Sauvegarde
 
-    this.logger.info('Calendar updated successfully', {
+    this.logger.info("Calendar updated successfully", {
       calendarId: updatedCalendar.id.getValue(),
       requestingUserId: request.requestingUserId,
     });
 
     return {
       calendar: updatedCalendar,
-      message: this.i18n.t('calendar.updated_successfully'),
+      message: this.i18n.t("calendar.updated_successfully"),
     };
   }
 
   private validateRequest(request: UpdateCalendarRequest): void {
     if (!request.calendarId || !request.requestingUserId) {
       throw new InvalidCalendarDataError(
-        'request',
-        this.i18n.t('calendar.invalid_update_request'),
+        "request",
+        this.i18n.t("calendar.invalid_update_request"),
       );
     }
 
@@ -115,8 +115,8 @@ export class UpdateCalendarUseCase {
     // Validation des paramètres de réservation
     if (request.settings?.slotDuration && request.settings.slotDuration < 15) {
       throw new InvalidCalendarDataError(
-        'slotDuration',
-        this.i18n.t('calendar.invalid_slot_duration'),
+        "slotDuration",
+        this.i18n.t("calendar.invalid_slot_duration"),
       );
     }
 
@@ -135,20 +135,20 @@ export class UpdateCalendarUseCase {
     workingHours: Record<string, { start: string; end: string }>,
   ): void {
     const validDays = [
-      'monday',
-      'tuesday',
-      'wednesday',
-      'thursday',
-      'friday',
-      'saturday',
-      'sunday',
+      "monday",
+      "tuesday",
+      "wednesday",
+      "thursday",
+      "friday",
+      "saturday",
+      "sunday",
     ];
 
     for (const [day, hours] of Object.entries(workingHours)) {
       if (!validDays.includes(day)) {
         throw new InvalidCalendarDataError(
-          'workingHours',
-          this.i18n.t('calendar.invalid_day', { day }),
+          "workingHours",
+          this.i18n.t("calendar.invalid_day", { day }),
         );
       }
 
@@ -156,16 +156,16 @@ export class UpdateCalendarUseCase {
       const timeRegex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
       if (!timeRegex.test(hours.start) || !timeRegex.test(hours.end)) {
         throw new InvalidCalendarDataError(
-          'workingHours',
-          this.i18n.t('calendar.invalid_time_format', { day }),
+          "workingHours",
+          this.i18n.t("calendar.invalid_time_format", { day }),
         );
       }
 
       // Validation cohérence horaires
       if (hours.start >= hours.end) {
         throw new InvalidCalendarDataError(
-          'workingHours',
-          this.i18n.t('calendar.invalid_time_range', { day }),
+          "workingHours",
+          this.i18n.t("calendar.invalid_time_range", { day }),
         );
       }
     }
@@ -182,9 +182,9 @@ export class UpdateCalendarUseCase {
 
     if (!business) {
       throw new ResourceNotFoundError(
-        'Business',
+        "Business",
         calendar.businessId.getValue(),
-        { message: this.i18n.t('business.not_found') },
+        { message: this.i18n.t("business.not_found") },
       );
     }
 
@@ -193,7 +193,7 @@ export class UpdateCalendarUseCase {
     // TODO: Ajouter vérification des rôles/permissions pour les employés autorisés
 
     if (!isOwner) {
-      this.logger.warn('Unauthorized calendar update attempt', {
+      this.logger.warn("Unauthorized calendar update attempt", {
         requestingUserId,
         calendarId: calendar.id.getValue(),
         businessId: business.id.getValue(),
@@ -201,7 +201,7 @@ export class UpdateCalendarUseCase {
       throw new CalendarPermissionError(
         calendar.id.getValue(),
         requestingUserId,
-        'update',
+        "update",
       );
     }
   }

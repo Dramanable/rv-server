@@ -1,18 +1,18 @@
-import { DomainError } from '../../exceptions/domain.exceptions';
+import { DomainError } from "../../exceptions/domain.exceptions";
 import {
   SubscriptionPlan,
   BillingFrequency,
   SubscriptionPlanFeatures,
-} from '../../value-objects/billing/subscription-plan.value-object';
-import { NotificationCost } from '../../value-objects/billing/notification-cost.value-object';
+} from "../../value-objects/billing/subscription-plan.value-object";
+import { NotificationCost } from "../../value-objects/billing/notification-cost.value-object";
 
 export type SubscriptionStatus =
-  | 'ACTIVE' // Actif et payé
-  | 'TRIALING' // En période d'essai
-  | 'PAST_DUE' // En retard de paiement
-  | 'CANCELED' // Annulé par le client
-  | 'SUSPENDED' // Suspendu par admin
-  | 'EXPIRED'; // Expiré
+  | "ACTIVE" // Actif et payé
+  | "TRIALING" // En période d'essai
+  | "PAST_DUE" // En retard de paiement
+  | "CANCELED" // Annulé par le client
+  | "SUSPENDED" // Suspendu par admin
+  | "EXPIRED"; // Expiré
 
 export class Subscription {
   private constructor(
@@ -62,7 +62,7 @@ export class Subscription {
       ? new Date(startDate.getTime() + params.trialDays * 24 * 60 * 60 * 1000)
       : null;
 
-    const status: SubscriptionStatus = params.trialDays ? 'TRIALING' : 'ACTIVE';
+    const status: SubscriptionStatus = params.trialDays ? "TRIALING" : "ACTIVE";
 
     return new Subscription(
       id,
@@ -128,7 +128,7 @@ export class Subscription {
 
   private static generateId(): string {
     // Simple UUID v4 generator
-    return 'sub_' + Math.random().toString(36).substr(2, 9);
+    return "sub_" + Math.random().toString(36).substr(2, 9);
   }
 
   private static calculateEndDate(
@@ -136,7 +136,7 @@ export class Subscription {
     frequency: BillingFrequency,
   ): Date {
     const endDate = new Date(startDate);
-    if (frequency === 'MONTHLY') {
+    if (frequency === "MONTHLY") {
       endDate.setMonth(endDate.getMonth() + 1);
     } else {
       endDate.setFullYear(endDate.getFullYear() + 1);
@@ -146,55 +146,55 @@ export class Subscription {
 
   private validate(): void {
     if (!this._id || this._id.trim().length === 0) {
-      throw new DomainError('Subscription ID cannot be empty');
+      throw new DomainError("Subscription ID cannot be empty");
     }
 
     if (!this._businessId || this._businessId.trim().length === 0) {
-      throw new DomainError('Business ID cannot be empty');
+      throw new DomainError("Business ID cannot be empty");
     }
 
     if (this._startDate >= this._endDate) {
-      throw new DomainError('Subscription start date must be before end date');
+      throw new DomainError("Subscription start date must be before end date");
     }
 
     if (this._currentPeriodUsage.notifications < 0) {
       throw new DomainError(
-        'Current period notification usage cannot be negative',
+        "Current period notification usage cannot be negative",
       );
     }
   }
 
   // 🔄 Gestion du cycle de vie
   activate(updatedBy: string): void {
-    if (this._status === 'ACTIVE') {
-      throw new DomainError('Subscription is already active');
+    if (this._status === "ACTIVE") {
+      throw new DomainError("Subscription is already active");
     }
 
-    if (this._status === 'EXPIRED') {
-      throw new DomainError('Cannot activate expired subscription');
+    if (this._status === "EXPIRED") {
+      throw new DomainError("Cannot activate expired subscription");
     }
 
-    this._status = 'ACTIVE';
+    this._status = "ACTIVE";
     this._updatedBy = updatedBy;
     this._updatedAt = new Date();
   }
 
   suspend(updatedBy: string, reason?: string): void {
-    if (this._status === 'SUSPENDED') {
-      throw new DomainError('Subscription is already suspended');
+    if (this._status === "SUSPENDED") {
+      throw new DomainError("Subscription is already suspended");
     }
 
-    this._status = 'SUSPENDED';
+    this._status = "SUSPENDED";
     this._updatedBy = updatedBy;
     this._updatedAt = new Date();
   }
 
   cancel(updatedBy: string, endImmediately: boolean = false): void {
-    if (this._status === 'CANCELED') {
-      throw new DomainError('Subscription is already canceled');
+    if (this._status === "CANCELED") {
+      throw new DomainError("Subscription is already canceled");
     }
 
-    this._status = 'CANCELED';
+    this._status = "CANCELED";
 
     if (endImmediately) {
       this._endDate = new Date();
@@ -205,8 +205,8 @@ export class Subscription {
   }
 
   renew(updatedBy: string): void {
-    if (this._status !== 'ACTIVE' && this._status !== 'PAST_DUE') {
-      throw new DomainError('Can only renew active or past due subscriptions');
+    if (this._status !== "ACTIVE" && this._status !== "PAST_DUE") {
+      throw new DomainError("Can only renew active or past due subscriptions");
     }
 
     // Calculer nouvelle période
@@ -225,7 +225,7 @@ export class Subscription {
       services: this._currentPeriodUsage.services, // Garder le nombre de services
     };
 
-    this._status = 'ACTIVE';
+    this._status = "ACTIVE";
     this._updatedBy = updatedBy;
     this._updatedAt = new Date();
   }
@@ -233,7 +233,7 @@ export class Subscription {
   // 📊 Gestion de l'usage
   recordNotificationUsage(count: number): void {
     if (count < 0) {
-      throw new DomainError('Notification usage count cannot be negative');
+      throw new DomainError("Notification usage count cannot be negative");
     }
 
     this._currentPeriodUsage.notifications += count;
@@ -242,7 +242,7 @@ export class Subscription {
 
   recordBusinessUsage(count: number): void {
     if (count < 0) {
-      throw new DomainError('Business usage count cannot be negative');
+      throw new DomainError("Business usage count cannot be negative");
     }
 
     this._currentPeriodUsage.businesses = count;
@@ -251,7 +251,7 @@ export class Subscription {
 
   recordStaffUsage(count: number): void {
     if (count < 0) {
-      throw new DomainError('Staff usage count cannot be negative');
+      throw new DomainError("Staff usage count cannot be negative");
     }
 
     this._currentPeriodUsage.staff = count;
@@ -260,7 +260,7 @@ export class Subscription {
 
   recordServiceUsage(count: number): void {
     if (count < 0) {
-      throw new DomainError('Service usage count cannot be negative');
+      throw new DomainError("Service usage count cannot be negative");
     }
 
     this._currentPeriodUsage.services = count;
@@ -294,7 +294,7 @@ export class Subscription {
           (24 * 60 * 60 * 1000),
       ),
     );
-    const totalDays = this._billingFrequency === 'MONTHLY' ? 30 : 365;
+    const totalDays = this._billingFrequency === "MONTHLY" ? 30 : 365;
 
     const currentPlanCost = this._plan.calculatePriceForPeriod(
       this._billingFrequency,
@@ -311,7 +311,7 @@ export class Subscription {
       return newPlanCharge.subtract(currentPlanRefund);
     } else {
       return NotificationCost.zero(
-        newPlanCharge.getCurrency() as 'EUR' | 'USD',
+        newPlanCharge.getCurrency() as "EUR" | "USD",
       );
     }
   }
@@ -322,15 +322,15 @@ export class Subscription {
     updatedBy: string,
     effectiveDate?: Date,
   ): void {
-    if (this._status !== 'ACTIVE') {
-      throw new DomainError('Can only change plan for active subscriptions');
+    if (this._status !== "ACTIVE") {
+      throw new DomainError("Can only change plan for active subscriptions");
     }
 
     const changeDate = effectiveDate || new Date();
 
     // Vérifier que les limites actuelles sont compatibles avec le nouveau plan
     if (!this.isUsageCompatibleWithPlan(newPlan)) {
-      throw new DomainError('Current usage exceeds new plan limits');
+      throw new DomainError("Current usage exceeds new plan limits");
     }
 
     this._plan = newPlan;
@@ -353,23 +353,23 @@ export class Subscription {
 
   // 🔍 Vérifications d'état
   isActive(): boolean {
-    return this._status === 'ACTIVE' && !this.isExpired();
+    return this._status === "ACTIVE" && !this.isExpired();
   }
 
   isInTrial(): boolean {
     return (
-      this._status === 'TRIALING' &&
+      this._status === "TRIALING" &&
       this._trialEndDate !== null &&
       new Date() < this._trialEndDate
     );
   }
 
   isExpired(): boolean {
-    return this._status === 'EXPIRED' || new Date() > this._endDate;
+    return this._status === "EXPIRED" || new Date() > this._endDate;
   }
 
   isPastDue(): boolean {
-    return this._status === 'PAST_DUE';
+    return this._status === "PAST_DUE";
   }
 
   hasFeature(feature: keyof SubscriptionPlanFeatures): boolean {
@@ -377,20 +377,20 @@ export class Subscription {
   }
 
   canPerformAction(
-    action: 'createBusiness' | 'addStaff' | 'addService',
+    action: "createBusiness" | "addStaff" | "addService",
   ): boolean {
     if (!this.isActive()) {
       return false;
     }
 
     switch (action) {
-      case 'createBusiness':
+      case "createBusiness":
         return this._plan.canCreateBusiness(
           this._currentPeriodUsage.businesses,
         );
-      case 'addStaff':
+      case "addStaff":
         return this._plan.canAddStaff(this._currentPeriodUsage.staff);
-      case 'addService':
+      case "addService":
         return this._plan.canAddService(this._currentPeriodUsage.services);
       default:
         return false;

@@ -4,11 +4,11 @@
  * ✅ Interface pour la persistence des prospects commerciaux
  */
 
-import { Prospect } from '@domain/entities/prospect.entity';
-import { ProspectId } from '@domain/value-objects/prospect-id.value-object';
-import { UserId } from '@domain/value-objects/user-id.value-object';
-import { ProspectStatus } from '@domain/value-objects/prospect-status.value-object';
-import { BusinessSizeEnum } from '@domain/enums/business-size.enum';
+import { Prospect } from "@domain/entities/prospect.entity";
+import { ProspectId } from "@domain/value-objects/prospect-id.value-object";
+import { UserId } from "@domain/value-objects/user-id.value-object";
+import { ProspectStatus } from "@domain/value-objects/prospect-status.value-object";
+import { BusinessSizeEnum } from "@domain/enums/business-size.enum";
 
 export interface ProspectFilters {
   readonly status?: ProspectStatus;
@@ -29,14 +29,14 @@ export interface ProspectFilters {
 
 export interface ProspectSortOptions {
   readonly field:
-    | 'businessName'
-    | 'contactName'
-    | 'status'
-    | 'estimatedValue'
-    | 'staffCount'
-    | 'createdAt'
-    | 'updatedAt';
-  readonly direction: 'ASC' | 'DESC';
+    | "businessName"
+    | "contactName"
+    | "status"
+    | "estimatedValue"
+    | "staffCount"
+    | "createdAt"
+    | "updatedAt";
+  readonly direction: "ASC" | "DESC";
 }
 
 export interface ProspectPaginationOptions {
@@ -77,7 +77,7 @@ export interface IProspectRepository {
    */
   findByAssignedSalesRep(
     salesRepId: UserId,
-    filters?: Omit<ProspectFilters, 'assignedSalesRep'>,
+    filters?: Omit<ProspectFilters, "assignedSalesRep">,
     sortOptions?: ProspectSortOptions,
     paginationOptions?: ProspectPaginationOptions,
   ): Promise<ProspectSearchResult>;
@@ -87,7 +87,7 @@ export interface IProspectRepository {
    */
   findByStatus(
     status: ProspectStatus,
-    filters?: Omit<ProspectFilters, 'status'>,
+    filters?: Omit<ProspectFilters, "status">,
     sortOptions?: ProspectSortOptions,
     paginationOptions?: ProspectPaginationOptions,
   ): Promise<ProspectSearchResult>;
@@ -131,7 +131,7 @@ export interface IProspectRepository {
    */
   searchByText(
     searchTerm: string,
-    filters?: Omit<ProspectFilters, 'search'>,
+    filters?: Omit<ProspectFilters, "search">,
     sortOptions?: ProspectSortOptions,
     paginationOptions?: ProspectPaginationOptions,
   ): Promise<ProspectSearchResult>;

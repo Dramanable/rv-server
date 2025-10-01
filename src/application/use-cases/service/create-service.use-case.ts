@@ -7,16 +7,16 @@
 import {
   BusinessNotFoundError,
   ServiceValidationError,
-} from '@application/exceptions/application.exceptions';
-import { I18nService } from '@application/ports/i18n.port';
-import { Logger } from '@application/ports/logger.port';
-import { IPermissionService } from '@application/ports/permission.service.interface';
-import { Service, ServiceStatus } from '@domain/entities/service.entity';
-import { BusinessRepository } from '@domain/repositories/business.repository.interface';
-import { ServiceRepository } from '@domain/repositories/service.repository.interface';
-import { BusinessId } from '@domain/value-objects/business-id.value-object';
-import { ServiceTypeId } from '@domain/value-objects/service-type-id.value-object';
-import { AppContext, AppContextFactory } from '@shared/context/app-context';
+} from "@application/exceptions/application.exceptions";
+import { I18nService } from "@application/ports/i18n.port";
+import { Logger } from "@application/ports/logger.port";
+import { IPermissionService } from "@application/ports/permission.service.interface";
+import { Service, ServiceStatus } from "@domain/entities/service.entity";
+import { BusinessRepository } from "@domain/repositories/business.repository.interface";
+import { ServiceRepository } from "@domain/repositories/service.repository.interface";
+import { BusinessId } from "@domain/value-objects/business-id.value-object";
+import { ServiceTypeId } from "@domain/value-objects/service-type-id.value-object";
+import { AppContext, AppContextFactory } from "@shared/context/app-context";
 
 export interface CreateServiceRequest {
   readonly requestingUserId: string;
@@ -75,12 +75,12 @@ export class CreateServiceUseCase {
   async execute(request: CreateServiceRequest): Promise<CreateServiceResponse> {
     // 1. Context pour traçabilité
     const context: AppContext = AppContextFactory.create()
-      .operation('CreateService')
+      .operation("CreateService")
       .requestingUser(request.requestingUserId)
-      .metadata('businessId', request.businessId)
+      .metadata("businessId", request.businessId)
       .build();
 
-    this.logger.info(this.i18n.t('operations.service.creation_attempt'), {
+    this.logger.info(this.i18n.t("operations.service.creation_attempt"), {
       ...context,
     } as Record<string, unknown>);
 
@@ -101,7 +101,7 @@ export class CreateServiceUseCase {
       const service = Service.create({
         businessId,
         name: request.name.trim(),
-        description: request.description?.trim() || '',
+        description: request.description?.trim() || "",
         serviceTypeIds: request.serviceTypeIds.map((id) =>
           ServiceTypeId.fromString(id),
         ),
@@ -133,7 +133,7 @@ export class CreateServiceUseCase {
         createdAt: service.createdAt,
       };
 
-      this.logger.info(this.i18n.t('operations.service.creation_success'), {
+      this.logger.info(this.i18n.t("operations.service.creation_success"), {
         ...context,
         serviceId: service.id.getValue(),
         serviceName: service.name,
@@ -143,7 +143,7 @@ export class CreateServiceUseCase {
       return response;
     } catch (error) {
       this.logger.error(
-        this.i18n.t('operations.service.creation_failed'),
+        this.i18n.t("operations.service.creation_failed"),
         error as Error,
         { ...context } as Record<string, unknown>,
       );
@@ -159,10 +159,10 @@ export class CreateServiceUseCase {
     // 1. 🔐 Vérifier les permissions CREATE_SERVICE avec contexte business
     await this.permissionService.requirePermission(
       requestingUserId,
-      'CREATE_SERVICE',
+      "CREATE_SERVICE",
       {
         businessId,
-        targetResource: 'SERVICE',
+        targetResource: "SERVICE",
       },
     );
 
@@ -177,7 +177,7 @@ export class CreateServiceUseCase {
     }
 
     // 3. ✅ Si on arrive ici, les permissions sont validées
-    this.logger.audit('service_creation_authorized', requestingUserId, {
+    this.logger.audit("service_creation_authorized", requestingUserId, {
       ...context,
       businessId,
     } as Record<string, unknown>);
@@ -190,17 +190,17 @@ export class CreateServiceUseCase {
     // Validation du nom
     if (!request.name || request.name.trim().length < 3) {
       throw new ServiceValidationError(
-        'name',
+        "name",
         request.name,
-        'Service name must be at least 3 characters long',
+        "Service name must be at least 3 characters long",
       );
     }
 
     if (request.name.trim().length > 100) {
       throw new ServiceValidationError(
-        'name',
+        "name",
         request.name,
-        'Service name cannot exceed 100 characters',
+        "Service name cannot exceed 100 characters",
       );
     }
 
@@ -210,54 +210,54 @@ export class CreateServiceUseCase {
     // Validation de la durée
     if (!request.duration || request.duration < 5) {
       throw new ServiceValidationError(
-        'duration',
+        "duration",
         request.duration,
-        'Service duration must be at least 5 minutes',
+        "Service duration must be at least 5 minutes",
       );
     }
 
     if (request.duration > 480) {
       // 8 heures maximum
       throw new ServiceValidationError(
-        'duration',
+        "duration",
         request.duration,
-        'Service duration cannot exceed 480 minutes (8 hours)',
+        "Service duration cannot exceed 480 minutes (8 hours)",
       );
     }
 
     // Validation du prix
     if (!request.price || request.price.amount < 0) {
       throw new ServiceValidationError(
-        'price',
+        "price",
         request.price?.amount,
-        'Service price cannot be negative',
+        "Service price cannot be negative",
       );
     }
 
     if (request.price.amount > 999999.99) {
       throw new ServiceValidationError(
-        'price',
+        "price",
         request.price.amount,
-        'Service price cannot exceed 999,999.99',
+        "Service price cannot exceed 999,999.99",
       );
     }
 
     // Validation de la devise
-    const validCurrencies = ['EUR', 'USD', 'GBP', 'CAD', 'AUD', 'CHF', 'JPY'];
+    const validCurrencies = ["EUR", "USD", "GBP", "CAD", "AUD", "CHF", "JPY"];
     if (!validCurrencies.includes(request.price.currency)) {
       throw new ServiceValidationError(
-        'currency',
+        "currency",
         request.price.currency,
-        `Invalid currency: ${request.price.currency}. Supported currencies: ${validCurrencies.join(', ')}`,
+        `Invalid currency: ${request.price.currency}. Supported currencies: ${validCurrencies.join(", ")}`,
       );
     }
 
     // Validation de la description si fournie
     if (request.description && request.description.trim().length > 1000) {
       throw new ServiceValidationError(
-        'description',
+        "description",
         request.description,
-        'Service description cannot exceed 1000 characters',
+        "Service description cannot exceed 1000 characters",
       );
     }
 
@@ -273,49 +273,49 @@ export class CreateServiceUseCase {
 
       if (maxAdvanceBookingDays !== undefined && maxAdvanceBookingDays < 1) {
         throw new ServiceValidationError(
-          'maxAdvanceBookingDays',
+          "maxAdvanceBookingDays",
           maxAdvanceBookingDays,
-          'Max advance booking days must be at least 1',
+          "Max advance booking days must be at least 1",
         );
       }
 
       if (minAdvanceBookingHours !== undefined && minAdvanceBookingHours < 0) {
         throw new ServiceValidationError(
-          'minAdvanceBookingHours',
+          "minAdvanceBookingHours",
           minAdvanceBookingHours,
-          'Min advance booking hours cannot be negative',
+          "Min advance booking hours cannot be negative",
         );
       }
 
       if (bufferTimeBefore !== undefined && bufferTimeBefore < 0) {
         throw new ServiceValidationError(
-          'bufferTimeBefore',
+          "bufferTimeBefore",
           bufferTimeBefore,
-          'Buffer time before cannot be negative',
+          "Buffer time before cannot be negative",
         );
       }
 
       if (bufferTimeAfter !== undefined && bufferTimeAfter < 0) {
         throw new ServiceValidationError(
-          'bufferTimeAfter',
+          "bufferTimeAfter",
           bufferTimeAfter,
-          'Buffer time after cannot be negative',
+          "Buffer time after cannot be negative",
         );
       }
 
       if (maxGroupSize !== undefined && maxGroupSize < 1) {
         throw new ServiceValidationError(
-          'maxGroupSize',
+          "maxGroupSize",
           maxGroupSize,
-          'Max group size must be at least 1',
+          "Max group size must be at least 1",
         );
       }
 
       if (maxGroupSize !== undefined && maxGroupSize > 50) {
         throw new ServiceValidationError(
-          'maxGroupSize',
+          "maxGroupSize",
           maxGroupSize,
-          'Max group size cannot exceed 50',
+          "Max group size cannot exceed 50",
         );
       }
     }
@@ -327,33 +327,33 @@ export class CreateServiceUseCase {
 
       if (preparation && preparation.trim().length > 500) {
         throw new ServiceValidationError(
-          'preparation',
+          "preparation",
           preparation,
-          'Preparation requirements cannot exceed 500 characters',
+          "Preparation requirements cannot exceed 500 characters",
         );
       }
 
       if (materials && materials.length > 20) {
         throw new ServiceValidationError(
-          'materials',
+          "materials",
           materials.length,
-          'Cannot have more than 20 materials',
+          "Cannot have more than 20 materials",
         );
       }
 
       if (restrictions && restrictions.length > 10) {
         throw new ServiceValidationError(
-          'restrictions',
+          "restrictions",
           restrictions.length,
-          'Cannot have more than 10 restrictions',
+          "Cannot have more than 10 restrictions",
         );
       }
 
       if (cancellationPolicy && cancellationPolicy.trim().length > 500) {
         throw new ServiceValidationError(
-          'cancellationPolicy',
+          "cancellationPolicy",
           cancellationPolicy,
-          'Cancellation policy cannot exceed 500 characters',
+          "Cancellation policy cannot exceed 500 characters",
         );
       }
     }

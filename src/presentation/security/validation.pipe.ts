@@ -9,10 +9,10 @@ import {
   BadRequestException,
   Injectable,
   PipeTransform,
-} from '@nestjs/common';
-import { plainToInstance } from 'class-transformer';
-import { validate } from 'class-validator';
-import DOMPurify from 'isomorphic-dompurify';
+} from "@nestjs/common";
+import { plainToInstance } from "class-transformer";
+import { validate } from "class-validator";
+import DOMPurify from "isomorphic-dompurify";
 
 @Injectable()
 export class SecurityValidationPipe implements PipeTransform<any> {
@@ -21,7 +21,7 @@ export class SecurityValidationPipe implements PipeTransform<any> {
     { metatype, type }: ArgumentMetadata,
   ): Promise<any> {
     // ✅ Ne pas valider les paramètres de custom decorators (comme @GetUser())
-    if (type === 'custom') {
+    if (type === "custom") {
       return value;
     }
 
@@ -45,8 +45,8 @@ export class SecurityValidationPipe implements PipeTransform<any> {
 
     if (errors.length > 0) {
       const errorMessages = errors
-        .map((error) => Object.values(error.constraints || {}).join(', '))
-        .join('; ');
+        .map((error) => Object.values(error.constraints || {}).join(", "))
+        .join("; ");
 
       throw new BadRequestException(`Validation failed: ${errorMessages}`);
     }
@@ -65,11 +65,11 @@ export class SecurityValidationPipe implements PipeTransform<any> {
   private isDomainEntity(metatype: any): boolean {
     // Entités Domain communes qui ne doivent jamais être validées par ce pipe
     const domainEntityNames = [
-      'User',
-      'Business',
-      'Service',
-      'Staff',
-      'Appointment',
+      "User",
+      "Business",
+      "Service",
+      "Staff",
+      "Appointment",
     ];
     return domainEntityNames.includes(metatype.name);
   }
@@ -78,7 +78,7 @@ export class SecurityValidationPipe implements PipeTransform<any> {
    * Sanitization récursive des inputs
    */
   private sanitizeInput(value: any): any {
-    if (typeof value === 'string') {
+    if (typeof value === "string") {
       // Protection XSS
       return DOMPurify.sanitize(value, {
         ALLOWED_TAGS: [], // Aucun tag HTML autorisé
@@ -90,7 +90,7 @@ export class SecurityValidationPipe implements PipeTransform<any> {
       return value.map((item) => this.sanitizeInput(item));
     }
 
-    if (value && typeof value === 'object') {
+    if (value && typeof value === "object") {
       const sanitized: any = {};
       for (const [key, val] of Object.entries(value)) {
         // Sanitize les clés aussi (protection NoSQL injection)
@@ -105,6 +105,6 @@ export class SecurityValidationPipe implements PipeTransform<any> {
 
   private sanitizeString(str: string): string {
     // Supprime les caractères dangereux pour NoSQL
-    return str.replace(/[${}]/g, '').trim();
+    return str.replace(/[${}]/g, "").trim();
   }
 }

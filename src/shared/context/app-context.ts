@@ -4,7 +4,7 @@
  * Contexte d'application pour tracer les requêtes et opérations
  */
 
-import { OperationNameRequiredError } from '../exceptions/shared.exceptions';
+import { OperationNameRequiredError } from "../exceptions/shared.exceptions";
 
 export interface AppContext {
   // Identifiants uniques
@@ -160,7 +160,7 @@ export class AppContextFactory {
   ): AppContext {
     const builder = new AppContextBuilderImpl()
       .operation(operation)
-      .metadata('email', email);
+      .metadata("email", email);
 
     if (clientInfo) {
       builder.clientInfo(

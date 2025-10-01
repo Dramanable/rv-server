@@ -50,7 +50,7 @@ export interface ListProspectsRequest {
   };
   readonly sorting: {
     readonly sortBy: string;
-    readonly sortOrder: 'asc' | 'desc';
+    readonly sortOrder: "asc" | "desc";
   };
   readonly filters: {
     readonly search?: string;

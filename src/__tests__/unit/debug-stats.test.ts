@@ -5,11 +5,11 @@
 import {
   GetAppointmentStatsRequest,
   GetAppointmentStatsUseCase,
-} from '../../application/use-cases/appointments/get-appointment-stats.use-case';
-import { AppointmentStatisticsCriteria } from '../../domain/repositories/appointment.repository.interface';
-import { AppointmentStatisticsData } from '../../domain/value-objects/appointment-statistics.vo';
-import { PeriodType } from '../../domain/value-objects/statistics-period.vo';
-import { UserRole } from '../../shared/enums/user-role.enum';
+} from "../../application/use-cases/appointments/get-appointment-stats.use-case";
+import { AppointmentStatisticsCriteria } from "../../domain/repositories/appointment.repository.interface";
+import { AppointmentStatisticsData } from "../../domain/value-objects/appointment-statistics.vo";
+import { PeriodType } from "../../domain/value-objects/statistics-period.vo";
+import { UserRole } from "../../shared/enums/user-role.enum";
 
 // Mock simple
 class SimpleMockRepository {
@@ -29,28 +29,28 @@ class SimpleMockRepository {
   }
 }
 
-describe('Debug Stats Test', () => {
-  it('should debug platform admin stats', async () => {
-    console.log('🔍 Debug test starting...');
+describe("Debug Stats Test", () => {
+  it("should debug platform admin stats", async () => {
+    console.log("🔍 Debug test starting...");
 
     const mockRepository = new SimpleMockRepository();
     const useCase = new GetAppointmentStatsUseCase(mockRepository as any);
 
     const request: GetAppointmentStatsRequest = {
-      userId: 'test-id',
+      userId: "test-id",
       userRole: UserRole.PLATFORM_ADMIN,
       periodType: PeriodType.MONTH,
     };
 
-    console.log('🔍 About to execute useCase...');
+    console.log("🔍 About to execute useCase...");
 
     try {
       const result = await useCase.execute(request);
-      console.log('🔍 Result:', JSON.stringify(result, null, 2));
+      console.log("🔍 Result:", JSON.stringify(result, null, 2));
 
       expect(result).toBeDefined();
     } catch (error) {
-      console.log('🚨 Error caught:', error);
+      console.log("🚨 Error caught:", error);
       throw error;
     }
   });

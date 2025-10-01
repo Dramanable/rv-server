@@ -4,13 +4,13 @@
  * DTO pour la mise à jour d'une permission existante
  */
 
-import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsBoolean, IsOptional, IsString, Length } from 'class-validator';
+import { ApiPropertyOptional } from "@nestjs/swagger";
+import { IsBoolean, IsOptional, IsString, Length } from "class-validator";
 
 export class UpdatePermissionDto {
   @ApiPropertyOptional({
     description: "Nom d'affichage de la permission",
-    example: 'Gérer les rendez-vous (mis à jour)',
+    example: "Gérer les rendez-vous (mis à jour)",
     minLength: 3,
     maxLength: 200,
   })
@@ -20,9 +20,9 @@ export class UpdatePermissionDto {
   readonly displayName?: string;
 
   @ApiPropertyOptional({
-    description: 'Description détaillée de la permission',
+    description: "Description détaillée de la permission",
     example:
-      'Permet de créer, modifier, annuler et reprogrammer les rendez-vous',
+      "Permet de créer, modifier, annuler et reprogrammer les rendez-vous",
     minLength: 10,
     maxLength: 1000,
   })
@@ -32,7 +32,7 @@ export class UpdatePermissionDto {
   readonly description?: string;
 
   @ApiPropertyOptional({
-    description: 'Statut actif/inactif de la permission',
+    description: "Statut actif/inactif de la permission",
     example: true,
   })
   @IsOptional()

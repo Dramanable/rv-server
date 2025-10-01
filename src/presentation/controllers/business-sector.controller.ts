@@ -18,7 +18,7 @@ import {
   Query,
   Request,
   UsePipes,
-} from '@nestjs/common';
+} from "@nestjs/common";
 import {
   ApiBearerAuth,
   ApiOperation,
@@ -26,10 +26,10 @@ import {
   ApiQuery,
   ApiResponse,
   ApiTags,
-} from '@nestjs/swagger';
+} from "@nestjs/swagger";
 
 // 🔐 Security & Validation
-import { I18nValidationPipe } from '@infrastructure/validation/i18n-validation.pipe';
+import { I18nValidationPipe } from "@infrastructure/validation/i18n-validation.pipe";
 
 // 📝 DTOs
 import {
@@ -38,19 +38,19 @@ import {
   DeleteBusinessSectorDto,
   ListBusinessSectorsDto,
   UpdateBusinessSectorDto,
-} from '@presentation/dtos/business-sector.dto';
+} from "@presentation/dtos/business-sector.dto";
 
 // 🔄 Mappers
-import { BusinessSectorMapper } from '@presentation/mappers/business-sector.mapper';
+import { BusinessSectorMapper } from "@presentation/mappers/business-sector.mapper";
 
 // 💼 Use Cases
-import { CreateBusinessSectorUseCase } from '@application/use-cases/business-sectors/create-business-sector.use-case';
-import { DeleteBusinessSectorUseCase } from '@application/use-cases/business-sectors/delete-business-sector.use-case';
-import { ListBusinessSectorsUseCase } from '@application/use-cases/business-sectors/list-business-sectors.use-case';
-import { UpdateBusinessSectorUseCase } from '@application/use-cases/business-sectors/update-business-sector.use-case';
+import { CreateBusinessSectorUseCase } from "@application/use-cases/business-sectors/create-business-sector.use-case";
+import { DeleteBusinessSectorUseCase } from "@application/use-cases/business-sectors/delete-business-sector.use-case";
+import { ListBusinessSectorsUseCase } from "@application/use-cases/business-sectors/list-business-sectors.use-case";
+import { UpdateBusinessSectorUseCase } from "@application/use-cases/business-sectors/update-business-sector.use-case";
 
 // 🔧 Shared
-import { TOKENS } from '@shared/constants/injection-tokens';
+import { TOKENS } from "@shared/constants/injection-tokens";
 
 /**
  * 🏢 Business Sector REST Controller
@@ -61,8 +61,8 @@ import { TOKENS } from '@shared/constants/injection-tokens';
  * - Update existing business sectors
  * - Delete business sectors (with usage validation)
  */
-@ApiTags('🏭 Business Sectors')
-@Controller('business-sectors')
+@ApiTags("🏭 Business Sectors")
+@Controller("business-sectors")
 @ApiBearerAuth()
 @UsePipes(new I18nValidationPipe())
 export class BusinessSectorController {
@@ -89,33 +89,33 @@ export class BusinessSectorController {
    */
   @Post()
   @ApiOperation({
-    summary: '🎯 Create Business Sector',
+    summary: "🎯 Create Business Sector",
     description:
-      'Creates a new business sector. Only super admin can perform this action.',
+      "Creates a new business sector. Only super admin can perform this action.",
   })
   @ApiResponse({
     status: HttpStatus.CREATED,
-    description: '✅ Business sector created successfully',
+    description: "✅ Business sector created successfully",
     type: BusinessSectorResponseDto,
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
-    description: '❌ Invalid input data',
+    description: "❌ Invalid input data",
   })
   @ApiResponse({
     status: HttpStatus.FORBIDDEN,
-    description: '🚫 Insufficient permissions (super admin required)',
+    description: "🚫 Insufficient permissions (super admin required)",
   })
   @ApiResponse({
     status: HttpStatus.CONFLICT,
-    description: '⚠️ Business sector with this name already exists',
+    description: "⚠️ Business sector with this name already exists",
   })
   async createBusinessSector(
     @Body() dto: CreateBusinessSectorDto,
     @Request() req: any,
   ): Promise<BusinessSectorResponseDto> {
     // 🔐 Extract requesting user ID from JWT token
-    const requestingUserId = req.user?.id || 'anonymous';
+    const requestingUserId = req.user?.id || "anonymous";
 
     // 🔄 Convert DTO to use case request
     const request = BusinessSectorMapper.toCreateRequest(dto, requestingUserId);
@@ -127,7 +127,7 @@ export class BusinessSectorController {
     return {
       id: response.id,
       name: response.name,
-      description: response.description || '',
+      description: response.description || "",
       code: response.code,
       isActive: response.isActive,
       createdAt: response.createdAt,
@@ -143,9 +143,9 @@ export class BusinessSectorController {
    * @param dto Complex filtering, pagination and sorting options
    * @returns Paginated list of business sectors with metadata
    */
-  @Post('list')
+  @Post("list")
   @ApiOperation({
-    summary: '� Search Business Sectors with Advanced Filters',
+    summary: "� Search Business Sectors with Advanced Filters",
     description: `
     **Recherche avancée paginée** des secteurs d'activité avec système de filtrage complet.
 
@@ -183,24 +183,24 @@ export class BusinessSectorController {
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: '✅ Business sectors found successfully',
+    description: "✅ Business sectors found successfully",
     schema: {
-      type: 'object',
+      type: "object",
       properties: {
-        success: { type: 'boolean', example: true },
+        success: { type: "boolean", example: true },
         data: {
-          type: 'array',
-          items: { $ref: '#/components/schemas/BusinessSectorResponseDto' },
+          type: "array",
+          items: { $ref: "#/components/schemas/BusinessSectorResponseDto" },
         },
         meta: {
-          type: 'object',
+          type: "object",
           properties: {
-            currentPage: { type: 'number', example: 1 },
-            totalPages: { type: 'number', example: 5 },
-            totalItems: { type: 'number', example: 47 },
-            itemsPerPage: { type: 'number', example: 10 },
-            hasNextPage: { type: 'boolean', example: true },
-            hasPrevPage: { type: 'boolean', example: false },
+            currentPage: { type: "number", example: 1 },
+            totalPages: { type: "number", example: 5 },
+            totalItems: { type: "number", example: 47 },
+            itemsPerPage: { type: "number", example: 10 },
+            hasNextPage: { type: "boolean", example: true },
+            hasPrevPage: { type: "boolean", example: false },
           },
         },
       },
@@ -208,15 +208,15 @@ export class BusinessSectorController {
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
-    description: '❌ Invalid search parameters',
+    description: "❌ Invalid search parameters",
   })
   @ApiResponse({
     status: HttpStatus.UNAUTHORIZED,
-    description: '🔐 Authentication required',
+    description: "🔐 Authentication required",
   })
   @ApiResponse({
     status: HttpStatus.FORBIDDEN,
-    description: '🚫 Insufficient permissions',
+    description: "🚫 Insufficient permissions",
   })
   async listBusinessSectors(
     @Body() dto: ListBusinessSectorsDto,
@@ -234,7 +234,7 @@ export class BusinessSectorController {
     };
   }> {
     // 🔐 Extract requesting user ID from JWT token
-    const requestingUserId = req.user?.id || 'anonymous';
+    const requestingUserId = req.user?.id || "anonymous";
 
     // 🔄 Convert DTO to use case request
     const request = BusinessSectorMapper.toListRequest(dto, requestingUserId);
@@ -267,41 +267,41 @@ export class BusinessSectorController {
    * @param dto Update data
    * @returns Updated business sector details
    */
-  @Patch(':id')
+  @Patch(":id")
   @ApiOperation({
-    summary: '✏️ Update Business Sector',
+    summary: "✏️ Update Business Sector",
     description:
-      'Updates an existing business sector. Supports partial updates.',
+      "Updates an existing business sector. Supports partial updates.",
   })
   @ApiParam({
-    name: 'id',
-    description: 'Business sector unique identifier',
-    example: '123e4567-e89b-12d3-a456-426614174000',
+    name: "id",
+    description: "Business sector unique identifier",
+    example: "123e4567-e89b-12d3-a456-426614174000",
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: '✅ Business sector updated successfully',
+    description: "✅ Business sector updated successfully",
     type: BusinessSectorResponseDto,
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
-    description: '❌ Invalid input data',
+    description: "❌ Invalid input data",
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
-    description: '🔍 Business sector not found',
+    description: "🔍 Business sector not found",
   })
   @ApiResponse({
     status: HttpStatus.FORBIDDEN,
-    description: '🚫 Insufficient permissions',
+    description: "🚫 Insufficient permissions",
   })
   async updateBusinessSector(
-    @Param('id') id: string,
+    @Param("id") id: string,
     @Body() dto: UpdateBusinessSectorDto,
     @Request() req: any,
   ): Promise<BusinessSectorResponseDto> {
     // � Extract requesting user ID from JWT token
-    const requestingUserId = req.user?.id || 'anonymous';
+    const requestingUserId = req.user?.id || "anonymous";
 
     // �🔄 Convert DTO to use case request
     const request = BusinessSectorMapper.toUpdateRequest(
@@ -317,11 +317,11 @@ export class BusinessSectorController {
     return {
       id: response.id,
       name: response.name,
-      description: response.description || '',
+      description: response.description || "",
       code: response.code,
       isActive: response.isActive,
       createdAt: response.createdAt,
-      createdBy: '', // Not available in UpdateResponse
+      createdBy: "", // Not available in UpdateResponse
       updatedAt: response.updatedAt,
     };
   }
@@ -334,46 +334,46 @@ export class BusinessSectorController {
    * @param query Delete options (force delete)
    * @returns Success confirmation
    */
-  @Delete(':id')
+  @Delete(":id")
   @ApiOperation({
-    summary: '🗑️ Delete Business Sector',
+    summary: "🗑️ Delete Business Sector",
     description:
-      'Deletes a business sector. Validates that no businesses are using it unless force delete is enabled.',
+      "Deletes a business sector. Validates that no businesses are using it unless force delete is enabled.",
   })
   @ApiParam({
-    name: 'id',
-    description: 'Business sector unique identifier',
-    example: '123e4567-e89b-12d3-a456-426614174000',
+    name: "id",
+    description: "Business sector unique identifier",
+    example: "123e4567-e89b-12d3-a456-426614174000",
   })
   @ApiQuery({
-    name: 'force',
+    name: "force",
     required: false,
-    description: 'Force delete even if sector is in use',
+    description: "Force delete even if sector is in use",
     example: false,
   })
   @ApiResponse({
     status: HttpStatus.NO_CONTENT,
-    description: '✅ Business sector deleted successfully',
+    description: "✅ Business sector deleted successfully",
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
-    description: '🔍 Business sector not found',
+    description: "🔍 Business sector not found",
   })
   @ApiResponse({
     status: HttpStatus.CONFLICT,
-    description: '⚠️ Cannot delete sector that is in use by businesses',
+    description: "⚠️ Cannot delete sector that is in use by businesses",
   })
   @ApiResponse({
     status: HttpStatus.FORBIDDEN,
-    description: '🚫 Insufficient permissions',
+    description: "🚫 Insufficient permissions",
   })
   async deleteBusinessSector(
-    @Param('id') id: string,
+    @Param("id") id: string,
     @Query() query: DeleteBusinessSectorDto,
     @Request() req: any,
   ): Promise<void> {
     // 🔐 Extract requesting user ID from JWT token
-    const requestingUserId = req.user?.id || 'anonymous';
+    const requestingUserId = req.user?.id || "anonymous";
 
     // 🔄 Convert to use case request
     const request = BusinessSectorMapper.toDeleteRequest(

@@ -9,16 +9,16 @@
 import {
   AuthenticationFailedError,
   UserNotFoundError,
-} from '@application/exceptions/auth.exceptions';
-import type { AuthenticationService } from '@application/ports/authentication.port';
-import type { IConfigService } from '@application/ports/config.port';
-import type { I18nService } from '@application/ports/i18n.port';
-import type { Logger } from '@application/ports/logger.port';
-import type { IPasswordHasher } from '@application/ports/password-hasher.port';
-import type { UserCacheService } from '@application/services/user-cache.service';
-import type { UserRepository } from '@domain/repositories/user.repository.interface';
-import { Email } from '@domain/value-objects/email.vo';
-import { AppContextFactory } from '@shared/context/app-context';
+} from "@application/exceptions/auth.exceptions";
+import type { AuthenticationService } from "@application/ports/authentication.port";
+import type { IConfigService } from "@application/ports/config.port";
+import type { I18nService } from "@application/ports/i18n.port";
+import type { Logger } from "@application/ports/logger.port";
+import type { IPasswordHasher } from "@application/ports/password-hasher.port";
+import type { UserCacheService } from "@application/services/user-cache.service";
+import type { UserRepository } from "@domain/repositories/user.repository.interface";
+import { Email } from "@domain/value-objects/email.vo";
+import { AppContextFactory } from "@shared/context/app-context";
 
 export interface LoginRequest {
   readonly email: string;
@@ -56,12 +56,12 @@ export class LoginUseCase {
   async execute(request: LoginRequest): Promise<LoginResponse> {
     // 📝 Contexte d'audit
     const context = AppContextFactory.create()
-      .operation('Login')
-      .clientInfo(request.ip || 'unknown', request.userAgent || 'unknown')
+      .operation("Login")
+      .clientInfo(request.ip || "unknown", request.userAgent || "unknown")
       .build();
 
     this.logger.info(
-      this.i18n.t('operations.auth.login_attempt', { email: request.email }),
+      this.i18n.t("operations.auth.login_attempt", { email: request.email }),
       { context: context.correlationId },
     );
 
@@ -72,31 +72,31 @@ export class LoginUseCase {
 
       if (!user) {
         this.logger.warn(
-          this.i18n.translate('operations.auth.user_not_found', {
+          this.i18n.translate("operations.auth.user_not_found", {
             email: request.email,
           }),
           { context: context.correlationId },
         );
         throw new UserNotFoundError(
-          this.i18n.translate('errors.auth.user_not_found'),
+          this.i18n.translate("errors.auth.user_not_found"),
         );
       }
 
       // 2. 🔐 Vérifier le mot de passe avec le port IPasswordHasher
       const isPasswordValid = await this.passwordHasher.verify(
         request.password,
-        user.hashedPassword || '',
+        user.hashedPassword || "",
       );
 
       if (!isPasswordValid) {
         this.logger.warn(
-          this.i18n.translate('operations.auth.invalid_password', {
+          this.i18n.translate("operations.auth.invalid_password", {
             userId: user.id,
           }),
           { context: context.correlationId },
         );
         throw new AuthenticationFailedError(
-          this.i18n.translate('errors.auth.invalid_credentials'),
+          this.i18n.translate("errors.auth.invalid_credentials"),
         );
       }
 
@@ -107,17 +107,17 @@ export class LoginUseCase {
       // 4. � Stocker l'utilisateur en cache Redis pour les requêtes futures
       try {
         await this.userCacheService.execute({ user });
-        this.logger.info(this.i18n.translate('operations.auth.user_cached'), {
+        this.logger.info(this.i18n.translate("operations.auth.user_cached"), {
           userId: user.id,
           context: context.correlationId,
         });
       } catch (error) {
         // ⚠️ Le cache n'est pas critique - on log mais on continue
         this.logger.warn(
-          this.i18n.translate('warnings.auth.user_cache_failed'),
+          this.i18n.translate("warnings.auth.user_cache_failed"),
           {
             userId: user.id,
-            error: error instanceof Error ? error.message : 'Unknown error',
+            error: error instanceof Error ? error.message : "Unknown error",
             context: context.correlationId,
           },
         );
@@ -125,7 +125,7 @@ export class LoginUseCase {
 
       // 5. �📊 Audit de succès
       this.logger.info(
-        this.i18n.translate('operations.auth.login_success', {
+        this.i18n.translate("operations.auth.login_success", {
           userId: user.id,
         }),
         { context: context.correlationId },
@@ -144,12 +144,12 @@ export class LoginUseCase {
           refreshToken,
           expiresIn,
         },
-        message: this.i18n.translate('success.auth.login_successful'),
+        message: this.i18n.translate("success.auth.login_successful"),
       };
     } catch (error) {
       this.logger.error(
-        this.i18n.translate('operations.auth.login_failed', {
-          error: error instanceof Error ? error.message : 'Unknown error',
+        this.i18n.translate("operations.auth.login_failed", {
+          error: error instanceof Error ? error.message : "Unknown error",
         }),
         error instanceof Error ? error : undefined,
         { context: context.correlationId },

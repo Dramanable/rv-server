@@ -4,12 +4,12 @@
  * Application layer use case for updating business configuration (timezone, currency, locale)
  */
 
-import { BusinessConfiguration } from '@domain/value-objects/business-configuration.value-object';
-import { BusinessId } from '@domain/value-objects/business-id.value-object';
-import { BusinessRepository } from '@domain/repositories/business.repository';
-import { ApplicationValidationError } from '@application/exceptions/application.exceptions';
-import { I18nService } from '@application/ports/i18n.port';
-import { Logger } from '@application/ports/logger.port';
+import { BusinessConfiguration } from "@domain/value-objects/business-configuration.value-object";
+import { BusinessId } from "@domain/value-objects/business-id.value-object";
+import { BusinessRepository } from "@domain/repositories/business.repository";
+import { ApplicationValidationError } from "@application/exceptions/application.exceptions";
+import { I18nService } from "@application/ports/i18n.port";
+import { Logger } from "@application/ports/logger.port";
 
 export interface UpdateBusinessConfigurationRequest {
   readonly businessId: string;
@@ -41,7 +41,7 @@ export class UpdateBusinessConfigurationUseCase {
   async execute(
     request: UpdateBusinessConfigurationRequest,
   ): Promise<UpdateBusinessConfigurationResponse> {
-    this.logger.info('Starting business configuration update', {
+    this.logger.info("Starting business configuration update", {
       businessId: request.businessId,
       requestingUserId: request.requestingUserId,
       correlationId: request.correlationId,
@@ -59,9 +59,9 @@ export class UpdateBusinessConfigurationUseCase {
       const business = await this.businessRepository.findById(businessId);
       if (!business) {
         throw new ApplicationValidationError(
-          'businessId',
+          "businessId",
           request.businessId,
-          'Business not found',
+          "Business not found",
         );
       }
 
@@ -92,7 +92,7 @@ export class UpdateBusinessConfigurationUseCase {
       // 7. Sauvegarde
       await this.businessRepository.save(updatedBusiness);
 
-      this.logger.info('Business configuration updated successfully', {
+      this.logger.info("Business configuration updated successfully", {
         businessId: request.businessId,
         correlationId: request.correlationId,
         changes: this.getChanges(currentConfig, newConfiguration),
@@ -104,8 +104,8 @@ export class UpdateBusinessConfigurationUseCase {
       };
     } catch (error) {
       this.logger.error(
-        'Failed to update business configuration',
-        error instanceof Error ? error : new Error('Unknown error'),
+        "Failed to update business configuration",
+        error instanceof Error ? error : new Error("Unknown error"),
       );
       throw error;
     }
@@ -114,9 +114,9 @@ export class UpdateBusinessConfigurationUseCase {
   private validateRequest(request: UpdateBusinessConfigurationRequest): void {
     if (!request.businessId || request.businessId.trim().length === 0) {
       throw new ApplicationValidationError(
-        'businessId',
+        "businessId",
         request.businessId,
-        'Business ID is required',
+        "Business ID is required",
       );
     }
 
@@ -125,9 +125,9 @@ export class UpdateBusinessConfigurationUseCase {
       request.requestingUserId.trim().length === 0
     ) {
       throw new ApplicationValidationError(
-        'requestingUserId',
+        "requestingUserId",
         request.requestingUserId,
-        'Requesting user ID is required',
+        "Requesting user ID is required",
       );
     }
 
@@ -137,17 +137,17 @@ export class UpdateBusinessConfigurationUseCase {
       (request.firstDayOfWeek < 0 || request.firstDayOfWeek > 6)
     ) {
       throw new ApplicationValidationError(
-        'firstDayOfWeek',
+        "firstDayOfWeek",
         request.firstDayOfWeek,
-        'First day of week must be between 0 and 6',
+        "First day of week must be between 0 and 6",
       );
     }
 
     if (request.businessWeekDays && request.businessWeekDays.length === 0) {
       throw new ApplicationValidationError(
-        'businessWeekDays',
+        "businessWeekDays",
         request.businessWeekDays,
-        'Business week days cannot be empty',
+        "Business week days cannot be empty",
       );
     }
   }
@@ -161,7 +161,7 @@ export class UpdateBusinessConfigurationUseCase {
     // - Admin de l'organisation
     // - Super admin
 
-    this.logger.debug('Checking business configuration permissions', {
+    this.logger.debug("Checking business configuration permissions", {
       businessId: business.id.getValue(),
       requestingUserId,
     });

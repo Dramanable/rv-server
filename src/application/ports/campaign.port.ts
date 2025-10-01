@@ -77,7 +77,7 @@ export interface CreateCampaignRequest {
   readonly segmentId?: string;
   readonly targetAudience: AudienceFilter;
   readonly channels: string[];
-  readonly priority: 'LOW' | 'NORMAL' | 'HIGH';
+  readonly priority: "LOW" | "NORMAL" | "HIGH";
   readonly scheduledAt?: Date;
   readonly expiresAt?: Date;
   readonly metadata?: Record<string, any>;
@@ -92,7 +92,7 @@ export interface Campaign {
   readonly templateId: string;
   readonly targetAudience: AudienceFilter;
   readonly channels: string[];
-  readonly priority: 'LOW' | 'NORMAL' | 'HIGH';
+  readonly priority: "LOW" | "NORMAL" | "HIGH";
   readonly scheduledAt?: Date;
   readonly launchedAt?: Date;
   readonly completedAt?: Date;
@@ -159,20 +159,20 @@ export interface LaunchOptions {
 }
 
 export enum CampaignType {
-  TRANSACTIONAL = 'TRANSACTIONAL',
-  MARKETING = 'MARKETING',
-  SYSTEM = 'SYSTEM',
-  PROMOTIONAL = 'PROMOTIONAL',
-  EDUCATIONAL = 'EDUCATIONAL',
-  SURVEY = 'SURVEY',
+  TRANSACTIONAL = "TRANSACTIONAL",
+  MARKETING = "MARKETING",
+  SYSTEM = "SYSTEM",
+  PROMOTIONAL = "PROMOTIONAL",
+  EDUCATIONAL = "EDUCATIONAL",
+  SURVEY = "SURVEY",
 }
 
 export enum CampaignStatus {
-  DRAFT = 'DRAFT',
-  SCHEDULED = 'SCHEDULED',
-  RUNNING = 'RUNNING',
-  PAUSED = 'PAUSED',
-  COMPLETED = 'COMPLETED',
-  CANCELLED = 'CANCELLED',
-  FAILED = 'FAILED',
+  DRAFT = "DRAFT",
+  SCHEDULED = "SCHEDULED",
+  RUNNING = "RUNNING",
+  PAUSED = "PAUSED",
+  COMPLETED = "COMPLETED",
+  CANCELLED = "CANCELLED",
+  FAILED = "FAILED",
 }

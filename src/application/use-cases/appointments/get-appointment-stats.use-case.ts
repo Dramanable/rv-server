@@ -15,17 +15,17 @@
 import {
   AppointmentRepository,
   AppointmentStatisticsCriteria,
-} from '../../../domain/repositories/appointment.repository.interface';
-import { AppointmentStatistics } from '../../../domain/value-objects/appointment-statistics.vo';
-import { BusinessId } from '../../../domain/value-objects/business-id.value-object';
-import { ServiceId } from '../../../domain/value-objects/service-id.value-object';
+} from "../../../domain/repositories/appointment.repository.interface";
+import { AppointmentStatistics } from "../../../domain/value-objects/appointment-statistics.vo";
+import { BusinessId } from "../../../domain/value-objects/business-id.value-object";
+import { ServiceId } from "../../../domain/value-objects/service-id.value-object";
 import {
   PeriodType,
   StatisticsPeriod,
-} from '../../../domain/value-objects/statistics-period.vo';
-import { UserId } from '../../../domain/value-objects/user-id.value-object';
-import { UserRole } from '../../../shared/enums/user-role.enum';
-import { Result } from '../../../shared/result';
+} from "../../../domain/value-objects/statistics-period.vo";
+import { UserId } from "../../../domain/value-objects/user-id.value-object";
+import { UserRole } from "../../../shared/enums/user-role.enum";
+import { Result } from "../../../shared/result";
 
 export interface GetAppointmentStatsCriteria {
   readonly businessId?: BusinessId;
@@ -62,7 +62,7 @@ export class GetAppointmentStatsUseCase {
       const authorizationResult = this.validateAuthorization(request);
       if (!authorizationResult.isSuccess) {
         return Result.failure(
-          authorizationResult.error || 'Authorization failed',
+          authorizationResult.error || "Authorization failed",
         );
       }
 
@@ -89,7 +89,7 @@ export class GetAppointmentStatsUseCase {
       });
     } catch (error) {
       const errorMessage =
-        error instanceof Error ? error.message : 'Unknown error occurred';
+        error instanceof Error ? error.message : "Unknown error occurred";
       return Result.failure(
         `Failed to get appointment statistics: ${errorMessage}`,
       );
@@ -107,7 +107,7 @@ export class GetAppointmentStatsUseCase {
       case UserRole.BUSINESS_OWNER:
         // Business owner peut voir les stats de son business seulement
         if (!request.businessId) {
-          return Result.failure('Business ID is required for business owner');
+          return Result.failure("Business ID is required for business owner");
         }
         return Result.success(void 0);
 
@@ -117,7 +117,7 @@ export class GetAppointmentStatsUseCase {
         // Les praticiens peuvent voir leurs propres stats seulement
         if (!request.staffId || request.staffId !== request.userId) {
           return Result.failure(
-            'Practitioners can only view their own statistics',
+            "Practitioners can only view their own statistics",
           );
         }
         return Result.success(void 0);
@@ -128,7 +128,7 @@ export class GetAppointmentStatsUseCase {
       case UserRole.GUEST_CLIENT:
       default:
         return Result.failure(
-          'Insufficient permissions to view appointment statistics',
+          "Insufficient permissions to view appointment statistics",
         );
     }
   }
@@ -146,7 +146,7 @@ export class GetAppointmentStatsUseCase {
       case PeriodType.CUSTOM:
         if (!request.startDate || !request.endDate) {
           throw new Error(
-            'Start date and end date are required for custom period',
+            "Start date and end date are required for custom period",
           );
         }
         return StatisticsPeriod.createCustom(

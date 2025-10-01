@@ -1,4 +1,4 @@
-import { DomainException } from './domain.exception';
+import { DomainException } from "./domain.exception";
 
 /**
  * 🎯 Skill Domain Exceptions - Exceptions spécialisées pour les compétences
@@ -12,7 +12,7 @@ import { DomainException } from './domain.exception';
 export class SkillValidationException extends DomainException {
   constructor(code: string, message: string, context?: Record<string, any>) {
     super(message, code, context);
-    this.name = 'SkillValidationException';
+    this.name = "SkillValidationException";
   }
 }
 
@@ -21,11 +21,11 @@ export class SkillValidationException extends DomainException {
  */
 export class SkillNotFoundException extends DomainException {
   constructor(skillId: string, businessId?: string) {
-    super(`Skill not found: ${skillId}`, 'SKILL_NOT_FOUND', {
+    super(`Skill not found: ${skillId}`, "SKILL_NOT_FOUND", {
       skillId,
       businessId,
     });
-    this.name = 'SkillNotFoundException';
+    this.name = "SkillNotFoundException";
   }
 }
 
@@ -36,10 +36,10 @@ export class SkillNameConflictException extends DomainException {
   constructor(skillName: string, businessId: string) {
     super(
       `Skill name already exists in business: ${skillName}`,
-      'SKILL_NAME_CONFLICT',
+      "SKILL_NAME_CONFLICT",
       { skillName, businessId },
     );
-    this.name = 'SkillNameConflictException';
+    this.name = "SkillNameConflictException";
   }
 }
 
@@ -55,11 +55,11 @@ export class SkillInUseException extends DomainException {
       appointmentsCount?: number;
     },
   ) {
-    super(`Cannot delete skill in use: ${skillId}`, 'SKILL_IN_USE', {
+    super(`Cannot delete skill in use: ${skillId}`, "SKILL_IN_USE", {
       skillId,
       ...usageContext,
     });
-    this.name = 'SkillInUseException';
+    this.name = "SkillInUseException";
   }
 }
 
@@ -74,10 +74,10 @@ export class SkillOperationNotAllowedException extends DomainException {
   ) {
     super(
       `Skill operation not allowed: ${operation} - ${reason}`,
-      'SKILL_OPERATION_NOT_ALLOWED',
+      "SKILL_OPERATION_NOT_ALLOWED",
       { operation, reason, ...context },
     );
-    this.name = 'SkillOperationNotAllowedException';
+    this.name = "SkillOperationNotAllowedException";
   }
 }
 
@@ -88,9 +88,9 @@ export class CriticalSkillException extends DomainException {
   constructor(skillId: string, operation: string, reason: string) {
     super(
       `Critical skill operation restricted: ${operation} on ${skillId} - ${reason}`,
-      'CRITICAL_SKILL_RESTRICTED',
+      "CRITICAL_SKILL_RESTRICTED",
       { skillId, operation, reason },
     );
-    this.name = 'CriticalSkillException';
+    this.name = "CriticalSkillException";
   }
 }

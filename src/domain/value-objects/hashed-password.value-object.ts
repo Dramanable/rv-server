@@ -5,7 +5,7 @@
  * ✅ Encapsule seulement la validation et l'égalité
  */
 
-import { DomainError } from '../exceptions/domain.error';
+import { DomainError } from "../exceptions/domain.error";
 
 export class HashedPassword {
   private constructor(private readonly _value: string) {
@@ -43,7 +43,7 @@ export class HashedPassword {
    */
   private validateNotEmpty(hash: string): void {
     if (!hash || hash.trim().length === 0) {
-      throw new DomainError('Hashed password cannot be empty');
+      throw new DomainError("Hashed password cannot be empty");
     }
   }
 

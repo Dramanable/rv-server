@@ -6,34 +6,34 @@
  * accordées ou retirées sur des ressources spécifiques.
  */
 
-import { generateId } from '@shared/utils/id.utils';
+import { generateId } from "@shared/utils/id.utils";
 
 /**
  * 🎯 Types d'actions CRUD
  */
 export enum PermissionAction {
-  CREATE = 'CREATE',
-  READ = 'READ',
-  UPDATE = 'UPDATE',
-  DELETE = 'DELETE',
-  LIST = 'LIST',
-  MANAGE = 'MANAGE', // Toutes les actions
+  CREATE = "CREATE",
+  READ = "READ",
+  UPDATE = "UPDATE",
+  DELETE = "DELETE",
+  LIST = "LIST",
+  MANAGE = "MANAGE", // Toutes les actions
 }
 
 /**
  * 🏷️ Types de ressources
  */
 export enum ResourceType {
-  USER = 'USER',
-  BUSINESS = 'BUSINESS',
-  PROSPECT = 'PROSPECT',
-  APPOINTMENT = 'APPOINTMENT',
-  SERVICE = 'SERVICE',
-  STAFF = 'STAFF',
-  CALENDAR = 'CALENDAR',
-  NOTIFICATION = 'NOTIFICATION',
-  ROLE = 'ROLE',
-  PERMISSION = 'PERMISSION',
+  USER = "USER",
+  BUSINESS = "BUSINESS",
+  PROSPECT = "PROSPECT",
+  APPOINTMENT = "APPOINTMENT",
+  SERVICE = "SERVICE",
+  STAFF = "STAFF",
+  CALENDAR = "CALENDAR",
+  NOTIFICATION = "NOTIFICATION",
+  ROLE = "ROLE",
+  PERMISSION = "PERMISSION",
 }
 
 /**

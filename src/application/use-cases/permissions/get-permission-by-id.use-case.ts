@@ -1,7 +1,7 @@
-import { I18nService } from '@application/ports/i18n.port';
-import { Logger } from '@application/ports/logger.port';
-import { PermissionNotFoundError } from '@domain/exceptions/permission.exceptions';
-import { IPermissionRepository } from '@domain/repositories/permission.repository';
+import { I18nService } from "@application/ports/i18n.port";
+import { Logger } from "@application/ports/logger.port";
+import { PermissionNotFoundError } from "@domain/exceptions/permission.exceptions";
+import { IPermissionRepository } from "@domain/repositories/permission.repository";
 
 /**
  * Get Permission By ID Use Case
@@ -41,7 +41,7 @@ export class GetPermissionByIdUseCase {
   async execute(
     request: GetPermissionByIdRequest,
   ): Promise<GetPermissionByIdResponse> {
-    this.logger.info('🔍 Getting permission by ID', {
+    this.logger.info("🔍 Getting permission by ID", {
       permissionId: request.permissionId,
       requestingUserId: request.requestingUserId,
       correlationId: request.correlationId,
@@ -58,21 +58,21 @@ export class GetPermissionByIdUseCase {
 
       // 2. Vérifier si la permission existe
       if (!permission) {
-        this.logger.warn('❌ Permission not found', {
+        this.logger.warn("❌ Permission not found", {
           permissionId: request.permissionId,
           requestingUserId: request.requestingUserId,
           correlationId: request.correlationId,
         });
 
         throw new PermissionNotFoundError(
-          this.i18n.translate('permission.errors.notFound', {
+          this.i18n.translate("permission.errors.notFound", {
             id: request.permissionId,
           }),
-          'id',
+          "id",
         );
       }
 
-      this.logger.info('✅ Permission retrieved successfully', {
+      this.logger.info("✅ Permission retrieved successfully", {
         permissionId: permission.getId(),
         permissionName: permission.getName(),
         requestingUserId: request.requestingUserId,
@@ -85,7 +85,7 @@ export class GetPermissionByIdUseCase {
       const actualError =
         error instanceof Error ? error : new Error(String(error));
 
-      this.logger.error('💥 Failed to get permission by ID', actualError, {
+      this.logger.error("💥 Failed to get permission by ID", actualError, {
         permissionId: request.permissionId,
         requestingUserId: request.requestingUserId,
         correlationId: request.correlationId,

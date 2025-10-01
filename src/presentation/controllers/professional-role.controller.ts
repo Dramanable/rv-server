@@ -15,18 +15,18 @@ import {
   Post,
   Put,
   UseGuards,
-} from '@nestjs/common';
+} from "@nestjs/common";
 import {
   ApiBearerAuth,
   ApiOperation,
   ApiParam,
   ApiResponse,
   ApiTags,
-} from '@nestjs/swagger';
+} from "@nestjs/swagger";
 
-import { GetUser } from '@presentation/security/decorators/get-user.decorator';
-import { JwtAuthGuard } from '@presentation/security/guards/jwt-auth.guard';
-import { TOKENS } from '@shared/constants/injection-tokens';
+import { GetUser } from "@presentation/security/decorators/get-user.decorator";
+import { JwtAuthGuard } from "@presentation/security/guards/jwt-auth.guard";
+import { TOKENS } from "@shared/constants/injection-tokens";
 
 // DTOs
 import {
@@ -38,20 +38,20 @@ import {
   ProfessionalRoleDto,
   UpdateProfessionalRoleDto,
   UpdateProfessionalRoleResponseDto,
-} from '@presentation/dtos/professional-roles/professional-role.dto';
+} from "@presentation/dtos/professional-roles/professional-role.dto";
 
 // Mappers
-import { ProfessionalRoleMapper } from '@presentation/mappers/professional-role.mapper';
+import { ProfessionalRoleMapper } from "@presentation/mappers/professional-role.mapper";
 
 // Use Cases
-import { CreateProfessionalRoleUseCase } from '@application/use-cases/professional-roles/create-professional-role.use-case';
-import { DeleteProfessionalRoleUseCase } from '@application/use-cases/professional-roles/delete-professional-role.use-case';
-import { GetProfessionalRoleUseCase } from '@application/use-cases/professional-roles/get-professional-role.use-case';
-import { ListProfessionalRolesUseCase } from '@application/use-cases/professional-roles/list-professional-roles.use-case';
-import { UpdateProfessionalRoleUseCase } from '@application/use-cases/professional-roles/update-professional-role.use-case';
+import { CreateProfessionalRoleUseCase } from "@application/use-cases/professional-roles/create-professional-role.use-case";
+import { DeleteProfessionalRoleUseCase } from "@application/use-cases/professional-roles/delete-professional-role.use-case";
+import { GetProfessionalRoleUseCase } from "@application/use-cases/professional-roles/get-professional-role.use-case";
+import { ListProfessionalRolesUseCase } from "@application/use-cases/professional-roles/list-professional-roles.use-case";
+import { UpdateProfessionalRoleUseCase } from "@application/use-cases/professional-roles/update-professional-role.use-case";
 
-@ApiTags('🎭 Professional Roles')
-@Controller('professional-roles')
+@ApiTags("🎭 Professional Roles")
+@Controller("professional-roles")
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 export class ProfessionalRoleController {
@@ -72,9 +72,9 @@ export class ProfessionalRoleController {
     private readonly deleteProfessionalRoleUseCase: DeleteProfessionalRoleUseCase,
   ) {}
 
-  @Post('list')
+  @Post("list")
   @ApiOperation({
-    summary: '🔍 Search Professional Roles with Advanced Filters',
+    summary: "🔍 Search Professional Roles with Advanced Filters",
     description: `
     **Recherche avancée paginée** des rôles professionnels avec système de filtrage complet.
 
@@ -108,20 +108,20 @@ export class ProfessionalRoleController {
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: '✅ Professional roles found successfully',
+    description: "✅ Professional roles found successfully",
     type: ListProfessionalRolesResponseDto,
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
-    description: '❌ Invalid search parameters',
+    description: "❌ Invalid search parameters",
   })
   @ApiResponse({
     status: HttpStatus.UNAUTHORIZED,
-    description: '🔐 Authentication required',
+    description: "🔐 Authentication required",
   })
   @ApiResponse({
     status: HttpStatus.FORBIDDEN,
-    description: '🚫 Insufficient permissions',
+    description: "🚫 Insufficient permissions",
   })
   async list(
     @Body() dto: ListProfessionalRolesDto,
@@ -132,28 +132,28 @@ export class ProfessionalRoleController {
     return ProfessionalRoleMapper.toListResponse(response);
   }
 
-  @Get(':id')
+  @Get(":id")
   @ApiOperation({
-    summary: '📄 Get Professional Role by ID',
+    summary: "📄 Get Professional Role by ID",
     description:
-      'Récupère un rôle professionnel spécifique par son identifiant unique',
+      "Récupère un rôle professionnel spécifique par son identifiant unique",
   })
   @ApiParam({
-    name: 'id',
-    description: 'Professional role unique identifier',
-    example: '12345678-1234-1234-1234-123456789012',
+    name: "id",
+    description: "Professional role unique identifier",
+    example: "12345678-1234-1234-1234-123456789012",
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: '✅ Professional role found',
+    description: "✅ Professional role found",
     type: ProfessionalRoleDto,
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
-    description: '❌ Professional role not found',
+    description: "❌ Professional role not found",
   })
   async findById(
-    @Param('id') id: string,
+    @Param("id") id: string,
     @GetUser() user: any,
   ): Promise<ProfessionalRoleDto> {
     const request = {
@@ -166,7 +166,7 @@ export class ProfessionalRoleController {
 
   @Post()
   @ApiOperation({
-    summary: '➕ Create New Professional Role',
+    summary: "➕ Create New Professional Role",
     description: `
     **Crée un nouveau rôle professionnel** avec validation complète.
 
@@ -184,16 +184,16 @@ export class ProfessionalRoleController {
   })
   @ApiResponse({
     status: HttpStatus.CREATED,
-    description: '✅ Professional role created successfully',
+    description: "✅ Professional role created successfully",
     type: CreateProfessionalRoleResponseDto,
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
-    description: '❌ Validation errors',
+    description: "❌ Validation errors",
   })
   @ApiResponse({
     status: HttpStatus.CONFLICT,
-    description: '❌ Professional role code already exists',
+    description: "❌ Professional role code already exists",
   })
   async create(
     @Body() dto: CreateProfessionalRoleDto,
@@ -205,9 +205,9 @@ export class ProfessionalRoleController {
     return ProfessionalRoleMapper.toCreateResponse(domainEntity);
   }
 
-  @Put(':id')
+  @Put(":id")
   @ApiOperation({
-    summary: '✏️ Update Professional Role',
+    summary: "✏️ Update Professional Role",
     description: `
     **Met à jour un rôle professionnel existant** avec validation partielle.
 
@@ -228,25 +228,25 @@ export class ProfessionalRoleController {
     `,
   })
   @ApiParam({
-    name: 'id',
-    description: 'Professional role unique identifier',
-    example: '12345678-1234-1234-1234-123456789012',
+    name: "id",
+    description: "Professional role unique identifier",
+    example: "12345678-1234-1234-1234-123456789012",
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: '✅ Professional role updated successfully',
+    description: "✅ Professional role updated successfully",
     type: UpdateProfessionalRoleResponseDto,
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
-    description: '❌ Professional role not found',
+    description: "❌ Professional role not found",
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
-    description: '❌ Validation errors',
+    description: "❌ Validation errors",
   })
   async update(
-    @Param('id') id: string,
+    @Param("id") id: string,
     @Body() dto: UpdateProfessionalRoleDto,
     @GetUser() user: any,
   ): Promise<UpdateProfessionalRoleResponseDto> {
@@ -256,9 +256,9 @@ export class ProfessionalRoleController {
     return ProfessionalRoleMapper.toUpdateResponse(domainEntity);
   }
 
-  @Delete(':id')
+  @Delete(":id")
   @ApiOperation({
-    summary: '🗑️ Delete Professional Role',
+    summary: "🗑️ Delete Professional Role",
     description: `
     **Supprime un rôle professionnel** après vérification des contraintes.
 
@@ -273,25 +273,25 @@ export class ProfessionalRoleController {
     `,
   })
   @ApiParam({
-    name: 'id',
-    description: 'Professional role unique identifier',
-    example: '12345678-1234-1234-1234-123456789012',
+    name: "id",
+    description: "Professional role unique identifier",
+    example: "12345678-1234-1234-1234-123456789012",
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: '✅ Professional role deleted successfully',
+    description: "✅ Professional role deleted successfully",
     type: DeleteProfessionalRoleResponseDto,
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
-    description: '❌ Professional role not found',
+    description: "❌ Professional role not found",
   })
   @ApiResponse({
     status: HttpStatus.CONFLICT,
-    description: '❌ Cannot delete: role is still in use',
+    description: "❌ Cannot delete: role is still in use",
   })
   async delete(
-    @Param('id') id: string,
+    @Param("id") id: string,
     @GetUser() user: any,
   ): Promise<DeleteProfessionalRoleResponseDto> {
     const request = {

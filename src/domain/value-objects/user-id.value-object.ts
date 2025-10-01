@@ -1,12 +1,12 @@
-import { v4 as uuidv4 } from 'uuid';
-import { ValueObjectValidationError } from '../exceptions/domain.exceptions';
+import { v4 as uuidv4 } from "uuid";
+import { ValueObjectValidationError } from "../exceptions/domain.exceptions";
 
 export class UserId {
   constructor(private readonly value: string) {
     if (!value || value.trim().length === 0) {
       throw new ValueObjectValidationError(
-        'USER_ID_EMPTY',
-        'UserId cannot be empty',
+        "USER_ID_EMPTY",
+        "UserId cannot be empty",
         { value },
       );
     }
@@ -19,8 +19,8 @@ export class UserId {
       /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
     if (!uuidRegex.test(value)) {
       throw new ValueObjectValidationError(
-        'USER_ID_INVALID_FORMAT',
-        'UserId must be a valid UUID v4',
+        "USER_ID_INVALID_FORMAT",
+        "UserId must be a valid UUID v4",
         { value },
       );
     }

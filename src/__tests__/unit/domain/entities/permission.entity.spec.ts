@@ -1,15 +1,15 @@
-import { Permission } from '@domain/entities/permission.entity';
+import { Permission } from "@domain/entities/permission.entity";
 
-describe('Permission Entity', () => {
-  describe('Creation', () => {
-    it('should create a permission with valid data', () => {
+describe("Permission Entity", () => {
+  describe("Creation", () => {
+    it("should create a permission with valid data", () => {
       // Given
       const permissionData = {
-        id: 'permission-123',
-        name: 'MANAGE_APPOINTMENTS',
-        displayName: 'Gérer les rendez-vous',
-        description: 'Permet de créer, modifier et supprimer les rendez-vous',
-        category: 'APPOINTMENTS',
+        id: "permission-123",
+        name: "MANAGE_APPOINTMENTS",
+        displayName: "Gérer les rendez-vous",
+        description: "Permet de créer, modifier et supprimer les rendez-vous",
+        category: "APPOINTMENTS",
         isSystemPermission: false,
       };
 
@@ -26,14 +26,14 @@ describe('Permission Entity', () => {
       expect(permission.isActive()).toBe(true); // Default active
     });
 
-    it('should create a system permission', () => {
+    it("should create a system permission", () => {
       // Given
       const systemPermissionData = {
-        id: 'sys-permission-123',
-        name: 'SYSTEM_ADMIN',
-        displayName: 'Administration Système',
-        description: 'Accès complet au système',
-        category: 'SYSTEM',
+        id: "sys-permission-123",
+        name: "SYSTEM_ADMIN",
+        displayName: "Administration Système",
+        description: "Accès complet au système",
+        category: "SYSTEM",
         isSystemPermission: true,
       };
 
@@ -46,68 +46,68 @@ describe('Permission Entity', () => {
     });
   });
 
-  describe('Validation Rules', () => {
-    it('should throw error if name is empty', () => {
+  describe("Validation Rules", () => {
+    it("should throw error if name is empty", () => {
       // Given
       const invalidData = {
-        id: 'permission-123',
-        name: '',
-        displayName: 'Test Permission',
-        description: 'Test description',
-        category: 'APPOINTMENTS',
+        id: "permission-123",
+        name: "",
+        displayName: "Test Permission",
+        description: "Test description",
+        category: "APPOINTMENTS",
         isSystemPermission: false,
       };
 
       // When & Then
       expect(() => Permission.create(invalidData)).toThrow(
-        'Permission name must be between 2 and 100 characters',
+        "Permission name must be between 2 and 100 characters",
       );
     });
 
-    it('should throw error if name is too long', () => {
+    it("should throw error if name is too long", () => {
       // Given
       const invalidData = {
-        id: 'permission-123',
-        name: 'A'.repeat(101), // Too long
-        displayName: 'Test Permission',
-        description: 'Test description',
-        category: 'APPOINTMENTS',
+        id: "permission-123",
+        name: "A".repeat(101), // Too long
+        displayName: "Test Permission",
+        description: "Test description",
+        category: "APPOINTMENTS",
         isSystemPermission: false,
       };
 
       // When & Then
       expect(() => Permission.create(invalidData)).toThrow(
-        'Permission name must be between 2 and 100 characters',
+        "Permission name must be between 2 and 100 characters",
       );
     });
 
-    it('should throw error if displayName is empty', () => {
+    it("should throw error if displayName is empty", () => {
       // Given
       const invalidData = {
-        id: 'permission-123',
-        name: 'VALID_NAME',
-        displayName: '',
-        description: 'Test description',
-        category: 'APPOINTMENTS',
+        id: "permission-123",
+        name: "VALID_NAME",
+        displayName: "",
+        description: "Test description",
+        category: "APPOINTMENTS",
         isSystemPermission: false,
       };
 
       // When & Then
       expect(() => Permission.create(invalidData)).toThrow(
-        'Permission display name must be between 2 and 200 characters',
+        "Permission display name must be between 2 and 200 characters",
       );
     });
   });
 
-  describe('Business Logic', () => {
-    it('should allow activation and deactivation for non-system permissions', () => {
+  describe("Business Logic", () => {
+    it("should allow activation and deactivation for non-system permissions", () => {
       // Given
       const permission = Permission.create({
-        id: 'permission-123',
-        name: 'MANAGE_APPOINTMENTS',
-        displayName: 'Gérer les rendez-vous',
-        description: 'Permet de gérer les rendez-vous',
-        category: 'APPOINTMENTS',
+        id: "permission-123",
+        name: "MANAGE_APPOINTMENTS",
+        displayName: "Gérer les rendez-vous",
+        description: "Permet de gérer les rendez-vous",
+        category: "APPOINTMENTS",
         isSystemPermission: false,
       });
 
@@ -124,56 +124,56 @@ describe('Permission Entity', () => {
       expect(permission.isActive()).toBe(true);
     });
 
-    it('should not allow deactivation of system permissions', () => {
+    it("should not allow deactivation of system permissions", () => {
       // Given
       const systemPermission = Permission.create({
-        id: 'sys-permission-123',
-        name: 'SYSTEM_ADMIN',
-        displayName: 'Administration Système',
-        description: 'Accès complet système',
-        category: 'SYSTEM',
+        id: "sys-permission-123",
+        name: "SYSTEM_ADMIN",
+        displayName: "Administration Système",
+        description: "Accès complet système",
+        category: "SYSTEM",
         isSystemPermission: true,
       });
 
       // When & Then
       expect(() => systemPermission.deactivate()).toThrow(
-        'Cannot deactivate system permission: SYSTEM_ADMIN',
+        "Cannot deactivate system permission: SYSTEM_ADMIN",
       );
     });
 
-    it('should check if permission belongs to category', () => {
+    it("should check if permission belongs to category", () => {
       // Given
       const permission = Permission.create({
-        id: 'permission-123',
-        name: 'MANAGE_APPOINTMENTS',
-        displayName: 'Gérer les rendez-vous',
-        description: 'Permet de gérer les rendez-vous',
-        category: 'APPOINTMENTS',
+        id: "permission-123",
+        name: "MANAGE_APPOINTMENTS",
+        displayName: "Gérer les rendez-vous",
+        description: "Permet de gérer les rendez-vous",
+        category: "APPOINTMENTS",
         isSystemPermission: false,
       });
 
       // When & Then
-      expect(permission.belongsToCategory('APPOINTMENTS')).toBe(true);
-      expect(permission.belongsToCategory('STAFF')).toBe(false);
+      expect(permission.belongsToCategory("APPOINTMENTS")).toBe(true);
+      expect(permission.belongsToCategory("STAFF")).toBe(false);
     });
   });
 
-  describe('Update Functionality', () => {
-    it('should update permission properties', () => {
+  describe("Update Functionality", () => {
+    it("should update permission properties", () => {
       // Given
       const permission = Permission.create({
-        id: 'permission-123',
-        name: 'MANAGE_APPOINTMENTS',
-        displayName: 'Gérer les rendez-vous',
-        description: 'Permet de gérer les rendez-vous',
-        category: 'APPOINTMENTS',
+        id: "permission-123",
+        name: "MANAGE_APPOINTMENTS",
+        displayName: "Gérer les rendez-vous",
+        description: "Permet de gérer les rendez-vous",
+        category: "APPOINTMENTS",
         isSystemPermission: false,
       });
 
       const updateData = {
-        displayName: 'Gestion Complète des Rendez-vous',
+        displayName: "Gestion Complète des Rendez-vous",
         description:
-          'Permet de créer, modifier, annuler et consulter tous les rendez-vous',
+          "Permet de créer, modifier, annuler et consulter tous les rendez-vous",
       };
 
       // When
@@ -182,39 +182,39 @@ describe('Permission Entity', () => {
       // Then
       expect(permission.getDisplayName()).toBe(updateData.displayName);
       expect(permission.getDescription()).toBe(updateData.description);
-      expect(permission.getName()).toBe('MANAGE_APPOINTMENTS'); // Name cannot be updated
+      expect(permission.getName()).toBe("MANAGE_APPOINTMENTS"); // Name cannot be updated
     });
 
-    it('should not update system permission critical properties', () => {
+    it("should not update system permission critical properties", () => {
       // Given
       const systemPermission = Permission.create({
-        id: 'sys-permission-123',
-        name: 'SYSTEM_ADMIN',
-        displayName: 'Administration Système',
-        description: 'Accès complet système',
-        category: 'SYSTEM',
+        id: "sys-permission-123",
+        name: "SYSTEM_ADMIN",
+        displayName: "Administration Système",
+        description: "Accès complet système",
+        category: "SYSTEM",
         isSystemPermission: true,
       });
 
       // When & Then
       expect(() =>
         systemPermission.update({
-          displayName: 'Updated Name',
-          description: 'Updated description',
+          displayName: "Updated Name",
+          description: "Updated description",
         }),
-      ).toThrow('Cannot modify system permission: SYSTEM_ADMIN');
+      ).toThrow("Cannot modify system permission: SYSTEM_ADMIN");
     });
   });
 
-  describe('JSON Serialization', () => {
-    it('should serialize to JSON correctly', () => {
+  describe("JSON Serialization", () => {
+    it("should serialize to JSON correctly", () => {
       // Given
       const permission = Permission.create({
-        id: 'permission-123',
-        name: 'MANAGE_APPOINTMENTS',
-        displayName: 'Gérer les rendez-vous',
-        description: 'Permet de gérer les rendez-vous',
-        category: 'APPOINTMENTS',
+        id: "permission-123",
+        name: "MANAGE_APPOINTMENTS",
+        displayName: "Gérer les rendez-vous",
+        description: "Permet de gérer les rendez-vous",
+        category: "APPOINTMENTS",
         isSystemPermission: false,
       });
 
@@ -223,11 +223,11 @@ describe('Permission Entity', () => {
 
       // Then
       expect(json).toMatchObject({
-        id: 'permission-123',
-        name: 'MANAGE_APPOINTMENTS',
-        displayName: 'Gérer les rendez-vous',
-        description: 'Permet de gérer les rendez-vous',
-        category: 'APPOINTMENTS',
+        id: "permission-123",
+        name: "MANAGE_APPOINTMENTS",
+        displayName: "Gérer les rendez-vous",
+        description: "Permet de gérer les rendez-vous",
+        category: "APPOINTMENTS",
         isSystemPermission: false,
         isActive: true,
         canBeDeleted: true,

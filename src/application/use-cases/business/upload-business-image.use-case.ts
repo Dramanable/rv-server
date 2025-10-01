@@ -6,20 +6,20 @@
  * ✅ TDD Implementation - GREEN phase
  */
 
-import { BusinessRepository } from '../../../domain/repositories/business.repository';
-import { BusinessId } from '../../../domain/value-objects/business-id.value-object';
+import { BusinessRepository } from "../../../domain/repositories/business.repository";
+import { BusinessId } from "../../../domain/value-objects/business-id.value-object";
 import {
   BusinessImage,
   ImageCategory,
-} from '../../../domain/value-objects/business-image.value-object';
-import { ImageUploadSettings } from '../../../domain/value-objects/image-upload-settings.value-object';
-import { AwsS3ImageService } from '../../../infrastructure/services/aws-s3-image.service';
+} from "../../../domain/value-objects/business-image.value-object";
+import { ImageUploadSettings } from "../../../domain/value-objects/image-upload-settings.value-object";
+import { AwsS3ImageService } from "../../../infrastructure/services/aws-s3-image.service";
 import {
   BusinessValidationError,
   ExternalServiceError,
   InsufficientPermissionsError,
   ResourceNotFoundError,
-} from '../../exceptions/application.exceptions';
+} from "../../exceptions/application.exceptions";
 
 export interface UploadBusinessImageRequest {
   readonly businessId: string;
@@ -66,14 +66,14 @@ export class UploadBusinessImageUseCase {
     const business = await this.businessRepository.findById(businessId);
 
     if (!business) {
-      throw new ResourceNotFoundError('Business', request.businessId);
+      throw new ResourceNotFoundError("Business", request.businessId);
     }
 
     // 2. Validate permissions
     if (business.getOwnerId() !== request.requestingUserId) {
       throw new InsufficientPermissionsError(
         request.requestingUserId,
-        'UPLOAD_BUSINESS_IMAGE',
+        "UPLOAD_BUSINESS_IMAGE",
         request.businessId,
       );
     }
@@ -83,9 +83,9 @@ export class UploadBusinessImageUseCase {
       const currentImageCount = business.getGallery().images.length;
       if (!request.uploadSettings.canBusinessAddMoreImages(currentImageCount)) {
         throw new BusinessValidationError(
-          'image_count',
+          "image_count",
           currentImageCount,
-          'quota_exceeded',
+          "quota_exceeded",
           request.businessId,
         );
       }
@@ -114,7 +114,7 @@ export class UploadBusinessImageUseCase {
         category: request.metadata.category,
         metadata: {
           size: request.metadata.size,
-          format: request.metadata.contentType.split('/')[1] || 'unknown',
+          format: request.metadata.contentType.split("/")[1] || "unknown",
           dimensions: request.metadata.dimensions,
           uploadedAt: new Date(),
         },
@@ -178,22 +178,22 @@ export class UploadBusinessImageUseCase {
         signedUrl,
         thumbnailUrl: uploadResult.variants?.thumbnail,
         variants,
-        message: 'Image uploaded successfully',
+        message: "Image uploaded successfully",
       };
     } catch (error) {
       if (error instanceof Error) {
-        if (error.message.includes('Image validation failed')) {
+        if (error.message.includes("Image validation failed")) {
           throw error; // Re-throw validation errors
         }
-        if (error.message.includes('S3')) {
-          throw new ExternalServiceError('AWS_S3', 'upload_failed', error);
+        if (error.message.includes("S3")) {
+          throw new ExternalServiceError("AWS_S3", "upload_failed", error);
         }
-        throw new ExternalServiceError('IMAGE_SERVICE', 'upload_failed', error);
+        throw new ExternalServiceError("IMAGE_SERVICE", "upload_failed", error);
       }
       const unknownError = new Error(String(error));
       throw new ExternalServiceError(
-        'IMAGE_SERVICE',
-        'upload_failed',
+        "IMAGE_SERVICE",
+        "upload_failed",
         unknownError,
       );
     }

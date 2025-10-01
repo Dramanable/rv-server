@@ -5,7 +5,7 @@
  * Immutable et auto-validant
  */
 
-import { ValueObjectValidationError } from '../exceptions/domain.exceptions';
+import { ValueObjectValidationError } from "../exceptions/domain.exceptions";
 
 export class Email {
   private readonly value: string;
@@ -36,8 +36,8 @@ export class Email {
   private validateNotEmpty(email: string): void {
     if (!email || email.trim().length === 0) {
       throw new ValueObjectValidationError(
-        'EMAIL_EMPTY',
-        'Email cannot be empty',
+        "EMAIL_EMPTY",
+        "Email cannot be empty",
         { email },
       );
     }
@@ -46,7 +46,7 @@ export class Email {
   private validateLength(email: string): void {
     if (email.length > 254) {
       // RFC 5321 limite
-      throw new ValueObjectValidationError('EMAIL_TOO_LONG', 'Email too long', {
+      throw new ValueObjectValidationError("EMAIL_TOO_LONG", "Email too long", {
         email,
         length: email.length,
       });
@@ -57,8 +57,8 @@ export class Email {
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (!emailRegex.test(email.trim())) {
       throw new ValueObjectValidationError(
-        'EMAIL_INVALID_FORMAT',
-        'Invalid email format',
+        "EMAIL_INVALID_FORMAT",
+        "Invalid email format",
         { email },
       );
     }
@@ -82,13 +82,13 @@ export class Email {
    * Extrait le domaine de l'email
    */
   getDomain(): string {
-    return this.value.split('@')[1];
+    return this.value.split("@")[1];
   }
 
   /**
    * Extrait la partie locale (avant @)
    */
   getLocalPart(): string {
-    return this.value.split('@')[0];
+    return this.value.split("@")[0];
   }
 }

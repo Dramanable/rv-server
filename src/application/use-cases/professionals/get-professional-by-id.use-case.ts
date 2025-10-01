@@ -4,11 +4,11 @@
  * @description Use Case pour récupérer un professionnel par son ID avec logging, i18n et contexte
  */
 
-import { I18nService } from '@application/ports/i18n.port';
-import { Logger } from '@application/ports/logger.port';
-import { ProfessionalNotFoundError } from '@domain/exceptions/professional.exceptions';
-import { IProfessionalRepository } from '@domain/repositories/professional.repository';
-import { ProfessionalId } from '@domain/value-objects/professional-id.value-object';
+import { I18nService } from "@application/ports/i18n.port";
+import { Logger } from "@application/ports/logger.port";
+import { ProfessionalNotFoundError } from "@domain/exceptions/professional.exceptions";
+import { IProfessionalRepository } from "@domain/repositories/professional.repository";
+import { ProfessionalId } from "@domain/value-objects/professional-id.value-object";
 
 export interface GetProfessionalByIdRequest {
   readonly professionalId: string;
@@ -54,7 +54,7 @@ export class GetProfessionalByIdUseCase {
     request: GetProfessionalByIdRequest,
   ): Promise<GetProfessionalByIdResponse> {
     // ✅ OBLIGATOIRE - Logging avec contexte complet
-    this.logger.info('Retrieving professional by ID', {
+    this.logger.info("Retrieving professional by ID", {
       professionalId: request.professionalId,
       requestingUserId: request.requestingUserId,
       correlationId: request.correlationId,
@@ -70,13 +70,13 @@ export class GetProfessionalByIdUseCase {
 
       if (!professional) {
         const errorMessage = this.i18n.translate(
-          'professional.errors.notFound',
+          "professional.errors.notFound",
           {
             professionalId: request.professionalId,
           },
         );
 
-        this.logger.error('Professional not found', new Error(errorMessage), {
+        this.logger.error("Professional not found", new Error(errorMessage), {
           professionalId: request.professionalId,
           correlationId: request.correlationId,
         });
@@ -85,7 +85,7 @@ export class GetProfessionalByIdUseCase {
       }
 
       // ✅ OBLIGATOIRE - Logging de succès avec contexte business
-      this.logger.info('Professional retrieved successfully', {
+      this.logger.info("Professional retrieved successfully", {
         professionalId: request.professionalId, // ✅ Utiliser la valeur de la requête pour cohérence
         businessId: professional.getBusinessId().getValue(),
         correlationId: request.correlationId,
@@ -102,7 +102,7 @@ export class GetProfessionalByIdUseCase {
           firstName: professional.getFirstName(),
           lastName: professional.getLastName(),
           speciality: professional.getSpeciality(),
-          licenseNumber: professional.getLicenseNumber() || '',
+          licenseNumber: professional.getLicenseNumber() || "",
           phone: professional.getPhoneNumber(),
           bio: professional.getBio(),
           experience: professional.getExperience(),
@@ -120,7 +120,7 @@ export class GetProfessionalByIdUseCase {
       };
     } catch (error) {
       // ✅ OBLIGATOIRE - Logging d'erreur avec contexte complet
-      this.logger.error('Failed to retrieve professional', error as Error, {
+      this.logger.error("Failed to retrieve professional", error as Error, {
         professionalId: request.professionalId,
         requestingUserId: request.requestingUserId,
         correlationId: request.correlationId,

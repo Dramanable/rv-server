@@ -4,7 +4,7 @@
  * @version 1.0.0
  */
 
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 /**
  * DTO de réponse pour l'envoi de notification
@@ -17,8 +17,8 @@ export class SendNotificationResponseDto {
   readonly success!: boolean;
 
   @ApiProperty({
-    description: 'Données de la notification envoyée',
-    type: 'object',
+    description: "Données de la notification envoyée",
+    type: "object",
     additionalProperties: true,
   })
   readonly data!: {
@@ -30,8 +30,8 @@ export class SendNotificationResponseDto {
   };
 
   @ApiPropertyOptional({
-    description: 'Métadonnées de la réponse',
-    type: 'object',
+    description: "Métadonnées de la réponse",
+    type: "object",
     additionalProperties: true,
   })
   readonly meta?: {
@@ -46,102 +46,102 @@ export class SendNotificationResponseDto {
  */
 export class NotificationDto {
   @ApiProperty({
-    description: 'ID unique de la notification',
-    example: 'notif_123e4567-e89b-12d3-a456-426614174000',
+    description: "ID unique de la notification",
+    example: "notif_123e4567-e89b-12d3-a456-426614174000",
   })
   readonly id!: string;
 
   @ApiProperty({
-    description: 'ID du destinataire',
-    example: 'user_123e4567-e89b-12d3-a456-426614174000',
+    description: "ID du destinataire",
+    example: "user_123e4567-e89b-12d3-a456-426614174000",
   })
   readonly recipientId!: string;
 
   @ApiProperty({
-    description: 'Titre de la notification',
-    example: 'Confirmation de rendez-vous',
+    description: "Titre de la notification",
+    example: "Confirmation de rendez-vous",
   })
   readonly title!: string;
 
   @ApiProperty({
-    description: 'Contenu de la notification',
-    example: 'Votre rendez-vous du 23/09/2025 à 14h30 est confirmé.',
+    description: "Contenu de la notification",
+    example: "Votre rendez-vous du 23/09/2025 à 14h30 est confirmé.",
   })
   readonly content!: string;
 
   @ApiProperty({
-    description: 'Canal de diffusion',
-    enum: ['EMAIL', 'SMS', 'PUSH', 'IN_APP'],
-    example: 'EMAIL',
+    description: "Canal de diffusion",
+    enum: ["EMAIL", "SMS", "PUSH", "IN_APP"],
+    example: "EMAIL",
   })
   readonly channel!: string;
 
   @ApiProperty({
-    description: 'Priorité de la notification',
-    enum: ['LOW', 'NORMAL', 'HIGH', 'URGENT'],
-    example: 'HIGH',
+    description: "Priorité de la notification",
+    enum: ["LOW", "NORMAL", "HIGH", "URGENT"],
+    example: "HIGH",
   })
   readonly priority!: string;
 
   @ApiProperty({
-    description: 'Statut actuel de la notification',
-    enum: ['PENDING', 'SENT', 'DELIVERED', 'READ', 'FAILED'],
-    example: 'SENT',
+    description: "Statut actuel de la notification",
+    enum: ["PENDING", "SENT", "DELIVERED", "READ", "FAILED"],
+    example: "SENT",
   })
   readonly status!: string;
 
   @ApiPropertyOptional({
     description: "Date et heure d'envoi",
-    example: '2025-09-22T10:30:00.000Z',
+    example: "2025-09-22T10:30:00.000Z",
   })
   readonly sentAt?: string;
 
   @ApiPropertyOptional({
-    description: 'Date et heure de livraison',
-    example: '2025-09-22T10:30:15.000Z',
+    description: "Date et heure de livraison",
+    example: "2025-09-22T10:30:15.000Z",
   })
   readonly deliveredAt?: string;
 
   @ApiPropertyOptional({
-    description: 'Date et heure de lecture',
-    example: '2025-09-22T10:35:00.000Z',
+    description: "Date et heure de lecture",
+    example: "2025-09-22T10:35:00.000Z",
   })
   readonly readAt?: string;
 
   @ApiPropertyOptional({
     description: "Raison de l'échec (si applicable)",
-    example: 'Email address not found',
+    example: "Email address not found",
   })
   readonly failureReason?: string;
 
   @ApiPropertyOptional({
-    description: 'Nombre de tentatives de relivraison',
+    description: "Nombre de tentatives de relivraison",
     example: 0,
   })
   readonly retryCount?: number;
 
   @ApiPropertyOptional({
-    description: 'Date et heure de planification',
-    example: '2025-09-23T14:30:00.000Z',
+    description: "Date et heure de planification",
+    example: "2025-09-23T14:30:00.000Z",
   })
   readonly scheduledFor?: string;
 
   @ApiPropertyOptional({
-    description: 'Métadonnées de la notification',
-    type: 'object',
+    description: "Métadonnées de la notification",
+    type: "object",
     additionalProperties: true,
   })
   readonly metadata?: any;
 
   @ApiProperty({
-    description: 'Date de création',
-    example: '2025-09-22T10:30:00.000Z',
+    description: "Date de création",
+    example: "2025-09-22T10:30:00.000Z",
   })
   readonly createdAt!: string;
 
   @ApiProperty({
-    description: 'Date de dernière mise à jour',
-    example: '2025-09-22T10:30:15.000Z',
+    description: "Date de dernière mise à jour",
+    example: "2025-09-22T10:30:15.000Z",
   })
   readonly updatedAt!: string;
 }
@@ -157,8 +157,8 @@ export class SendBulkNotificationResponseDto {
   readonly success!: boolean;
 
   @ApiProperty({
-    description: 'Données des notifications envoyées',
-    type: 'object',
+    description: "Données des notifications envoyées",
+    type: "object",
     additionalProperties: true,
   })
   readonly data!: {
@@ -170,8 +170,8 @@ export class SendBulkNotificationResponseDto {
   };
 
   @ApiPropertyOptional({
-    description: 'Métadonnées de la réponse',
-    type: 'object',
+    description: "Métadonnées de la réponse",
+    type: "object",
     additionalProperties: true,
   })
   readonly meta?: {
@@ -192,14 +192,14 @@ export class ListNotificationsResponseDto {
   readonly success!: boolean;
 
   @ApiProperty({
-    description: 'Liste des notifications',
+    description: "Liste des notifications",
     type: [NotificationDto],
   })
   readonly data!: NotificationDto[];
 
   @ApiProperty({
-    description: 'Métadonnées de pagination',
-    type: 'object',
+    description: "Métadonnées de pagination",
+    type: "object",
     additionalProperties: true,
   })
   readonly meta!: {
@@ -223,14 +223,14 @@ export class GetNotificationByIdResponseDto {
   readonly success!: boolean;
 
   @ApiProperty({
-    description: 'Données de la notification',
+    description: "Données de la notification",
     type: NotificationDto,
   })
   readonly data!: NotificationDto;
 
   @ApiPropertyOptional({
-    description: 'Métadonnées de la réponse',
-    type: 'object',
+    description: "Métadonnées de la réponse",
+    type: "object",
     additionalProperties: true,
   })
   readonly meta?: {
@@ -250,8 +250,8 @@ export class MarkAsReadResponseDto {
   readonly success!: boolean;
 
   @ApiProperty({
-    description: 'Données de confirmation',
-    type: 'object',
+    description: "Données de confirmation",
+    type: "object",
     additionalProperties: true,
   })
   readonly data!: {
@@ -261,8 +261,8 @@ export class MarkAsReadResponseDto {
   };
 
   @ApiPropertyOptional({
-    description: 'Métadonnées de la réponse',
-    type: 'object',
+    description: "Métadonnées de la réponse",
+    type: "object",
     additionalProperties: true,
   })
   readonly meta?: {
@@ -282,8 +282,8 @@ export class DeleteNotificationResponseDto {
   readonly success!: boolean;
 
   @ApiProperty({
-    description: 'Données de confirmation de suppression',
-    type: 'object',
+    description: "Données de confirmation de suppression",
+    type: "object",
     additionalProperties: true,
   })
   readonly data!: {
@@ -292,8 +292,8 @@ export class DeleteNotificationResponseDto {
   };
 
   @ApiPropertyOptional({
-    description: 'Métadonnées de la réponse',
-    type: 'object',
+    description: "Métadonnées de la réponse",
+    type: "object",
     additionalProperties: true,
   })
   readonly meta?: {
@@ -313,8 +313,8 @@ export class NotificationAnalyticsResponseDto {
   readonly success!: boolean;
 
   @ApiProperty({
-    description: 'Données analytiques des notifications',
-    type: 'object',
+    description: "Données analytiques des notifications",
+    type: "object",
     additionalProperties: true,
   })
   readonly data!: {
@@ -329,8 +329,8 @@ export class NotificationAnalyticsResponseDto {
   };
 
   @ApiPropertyOptional({
-    description: 'Métadonnées de la réponse',
-    type: 'object',
+    description: "Métadonnées de la réponse",
+    type: "object",
     additionalProperties: true,
   })
   readonly meta?: {

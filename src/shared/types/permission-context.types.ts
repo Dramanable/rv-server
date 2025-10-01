@@ -5,7 +5,7 @@
  * dans un système de gestion de rendez-vous professionnel.
  */
 
-import { UserRole, Permission, BusinessType } from '../enums/user-role.enum';
+import { UserRole, Permission, BusinessType } from "../enums/user-role.enum";
 
 /**
  * 🏢 Contexte Organisationnel
@@ -49,24 +49,24 @@ export interface RelationshipContext {
  */
 export enum RelationshipType {
   // Relations hiérarchiques
-  DIRECT_REPORT = 'DIRECT_REPORT', // Subordonné direct
-  MANAGER = 'MANAGER', // Supérieur hiérarchique
-  PEER = 'PEER', // Collègue de même niveau
+  DIRECT_REPORT = "DIRECT_REPORT", // Subordonné direct
+  MANAGER = "MANAGER", // Supérieur hiérarchique
+  PEER = "PEER", // Collègue de même niveau
 
   // Relations fonctionnelles
-  MENTOR = 'MENTOR', // Mentor
-  MENTEE = 'MENTEE', // Mentoré
-  COLLABORATOR = 'COLLABORATOR', // Collaborateur
+  MENTOR = "MENTOR", // Mentor
+  MENTEE = "MENTEE", // Mentoré
+  COLLABORATOR = "COLLABORATOR", // Collaborateur
 
   // Relations client-praticien
-  ASSIGNED_CLIENT = 'ASSIGNED_CLIENT', // Client assigné
-  FAMILY_MEMBER = 'FAMILY_MEMBER', // Membre de famille
-  CORPORATE_EMPLOYEE = 'CORPORATE_EMPLOYEE', // Employé d'entreprise cliente
+  ASSIGNED_CLIENT = "ASSIGNED_CLIENT", // Client assigné
+  FAMILY_MEMBER = "FAMILY_MEMBER", // Membre de famille
+  CORPORATE_EMPLOYEE = "CORPORATE_EMPLOYEE", // Employé d'entreprise cliente
 
   // Relations spécialisées
-  SUPERVISOR = 'SUPERVISOR', // Superviseur
-  TRAINEE = 'TRAINEE', // Stagiaire/formation
-  SUBSTITUTE = 'SUBSTITUTE', // Remplaçant
+  SUPERVISOR = "SUPERVISOR", // Superviseur
+  TRAINEE = "TRAINEE", // Stagiaire/formation
+  SUBSTITUTE = "SUBSTITUTE", // Remplaçant
 }
 
 /**
@@ -80,19 +80,19 @@ export interface PermissionConstraint {
 
 export enum ConstraintType {
   // Contraintes temporelles
-  MAX_ADVANCE_BOOKING = 'MAX_ADVANCE_BOOKING', // Jours max à l'avance
-  MIN_NOTICE_REQUIRED = 'MIN_NOTICE_REQUIRED', // Préavis minimum (minutes)
-  WORKING_HOURS_ONLY = 'WORKING_HOURS_ONLY', // Horaires ouvrables seulement
+  MAX_ADVANCE_BOOKING = "MAX_ADVANCE_BOOKING", // Jours max à l'avance
+  MIN_NOTICE_REQUIRED = "MIN_NOTICE_REQUIRED", // Préavis minimum (minutes)
+  WORKING_HOURS_ONLY = "WORKING_HOURS_ONLY", // Horaires ouvrables seulement
 
   // Contraintes quantitatives
-  MAX_DAILY_BOOKINGS = 'MAX_DAILY_BOOKINGS', // Réservations max/jour
-  MAX_CONCURRENT_ACTIONS = 'MAX_CONCURRENT_ACTIONS', // Actions simultanées max
-  APPROVAL_REQUIRED = 'APPROVAL_REQUIRED', // Approbation nécessaire
+  MAX_DAILY_BOOKINGS = "MAX_DAILY_BOOKINGS", // Réservations max/jour
+  MAX_CONCURRENT_ACTIONS = "MAX_CONCURRENT_ACTIONS", // Actions simultanées max
+  APPROVAL_REQUIRED = "APPROVAL_REQUIRED", // Approbation nécessaire
 
   // Contraintes contextuelles
-  SAME_LOCATION_ONLY = 'SAME_LOCATION_ONLY', // Même site seulement
-  ASSIGNED_CLIENTS_ONLY = 'ASSIGNED_CLIENTS_ONLY', // Clients assignés seulement
-  BUSINESS_HOURS_ONLY = 'BUSINESS_HOURS_ONLY', // Heures d'ouverture seulement
+  SAME_LOCATION_ONLY = "SAME_LOCATION_ONLY", // Même site seulement
+  ASSIGNED_CLIENTS_ONLY = "ASSIGNED_CLIENTS_ONLY", // Clients assignés seulement
+  BUSINESS_HOURS_ONLY = "BUSINESS_HOURS_ONLY", // Heures d'ouverture seulement
 }
 
 /**
@@ -138,11 +138,11 @@ export interface ApprovalWorkflowStep {
 }
 
 export enum UrgencyLevel {
-  LOW = 'LOW',
-  NORMAL = 'NORMAL',
-  HIGH = 'HIGH',
-  CRITICAL = 'CRITICAL',
-  EMERGENCY = 'EMERGENCY',
+  LOW = "LOW",
+  NORMAL = "NORMAL",
+  HIGH = "HIGH",
+  CRITICAL = "CRITICAL",
+  EMERGENCY = "EMERGENCY",
 }
 
 /**
@@ -170,26 +170,26 @@ export interface ContextualRule {
 }
 
 export interface ContextualCondition {
-  readonly type: 'TEMPORAL' | 'RELATIONAL' | 'ORGANIZATIONAL' | 'QUANTITATIVE';
+  readonly type: "TEMPORAL" | "RELATIONAL" | "ORGANIZATIONAL" | "QUANTITATIVE";
   readonly field: string;
   readonly operator:
-    | 'EQUALS'
-    | 'NOT_EQUALS'
-    | 'GREATER_THAN'
-    | 'LESS_THAN'
-    | 'IN'
-    | 'NOT_IN'
-    | 'BETWEEN';
+    | "EQUALS"
+    | "NOT_EQUALS"
+    | "GREATER_THAN"
+    | "LESS_THAN"
+    | "IN"
+    | "NOT_IN"
+    | "BETWEEN";
   readonly value: unknown;
 }
 
 export interface ContextualAction {
   readonly type:
-    | 'ALLOW'
-    | 'DENY'
-    | 'REQUIRE_APPROVAL'
-    | 'ADD_CONSTRAINT'
-    | 'MODIFY_PERMISSION';
+    | "ALLOW"
+    | "DENY"
+    | "REQUIRE_APPROVAL"
+    | "ADD_CONSTRAINT"
+    | "MODIFY_PERMISSION";
   readonly parameters?: Record<string, unknown>;
   readonly message?: string;
 }

@@ -4,14 +4,14 @@
  * ✅ Clean Architecture - Pure logique applicative
  */
 
-import { Logger } from '@application/ports/logger.port';
-import { I18nService } from '@application/ports/i18n.port';
-import { ISimplePermissionService } from '@application/ports/simple-permission.port';
-import { IProspectRepository } from '@domain/repositories/prospect.repository';
-import { Prospect } from '@domain/entities/prospect.entity';
-import { UserRole } from '@shared/enums/user-role.enum';
-import { BusinessSizeEnum } from '@domain/enums/business-size.enum';
-import { ProspectPermissionError } from '@domain/exceptions/prospect.exceptions';
+import { Logger } from "@application/ports/logger.port";
+import { I18nService } from "@application/ports/i18n.port";
+import { ISimplePermissionService } from "@application/ports/simple-permission.port";
+import { IProspectRepository } from "@domain/repositories/prospect.repository";
+import { Prospect } from "@domain/entities/prospect.entity";
+import { UserRole } from "@shared/enums/user-role.enum";
+import { BusinessSizeEnum } from "@domain/enums/business-size.enum";
+import { ProspectPermissionError } from "@domain/exceptions/prospect.exceptions";
 
 export interface CreateProspectRequest {
   readonly businessName: string;
@@ -65,7 +65,7 @@ export class CreateProspectSimpleUseCase {
   async execute(
     request: CreateProspectRequest,
   ): Promise<CreateProspectResponse> {
-    this.logger.info('Creating new prospect with simple permissions', {
+    this.logger.info("Creating new prospect with simple permissions", {
       businessName: request.businessName,
       contactEmail: request.contactEmail,
       requestingUserId: request.requestingUserId,
@@ -87,7 +87,7 @@ export class CreateProspectSimpleUseCase {
       const savedProspect = await this.prospectRepository.save(prospect);
 
       this.logger.info(
-        'Prospect created successfully with simple permissions',
+        "Prospect created successfully with simple permissions",
         {
           prospectId: savedProspect.getId().getValue(),
           businessName: request.businessName,
@@ -99,7 +99,7 @@ export class CreateProspectSimpleUseCase {
       return this.buildResponse(savedProspect);
     } catch (error) {
       const errorMessage =
-        error instanceof Error ? error.message : 'Unknown error';
+        error instanceof Error ? error.message : "Unknown error";
       this.logger.error(`Failed to create prospect: ${errorMessage}`);
       throw error;
     }
@@ -111,35 +111,35 @@ export class CreateProspectSimpleUseCase {
   private async validatePermissions(
     request: CreateProspectRequest,
   ): Promise<void> {
-    console.log('🔐 Validating permissions with simplified system:', {
+    console.log("🔐 Validating permissions with simplified system:", {
       userId: request.requestingUserId,
       userRole: request.requestingUserRole,
-      action: 'CREATE',
-      resource: 'PROSPECT',
+      action: "CREATE",
+      resource: "PROSPECT",
     });
 
     const hasCreatePermission =
       await this.simplePermissionService.hasPermission(
         request.requestingUserId,
         request.requestingUserRole,
-        'CREATE',
-        'PROSPECT',
+        "CREATE",
+        "PROSPECT",
         null, // Permission globale pour les prospects
       );
 
-    console.log('🔐 Create permission result:', hasCreatePermission);
+    console.log("🔐 Create permission result:", hasCreatePermission);
 
     if (!hasCreatePermission) {
-      this.logger.warn('Permission denied for creating prospect', {
+      this.logger.warn("Permission denied for creating prospect", {
         userId: request.requestingUserId,
         userRole: request.requestingUserRole,
-        action: 'CREATE',
-        resource: 'PROSPECT',
+        action: "CREATE",
+        resource: "PROSPECT",
       });
 
       throw new ProspectPermissionError(
         request.requestingUserId,
-        'create prospect',
+        "create prospect",
       );
     }
   }
@@ -153,21 +153,21 @@ export class CreateProspectSimpleUseCase {
     // Valider le nom de l'entreprise
     if (!request.businessName || request.businessName.trim().length < 2) {
       throw new Error(
-        this.i18n.translate('prospect.validation.businessNameRequired'),
+        this.i18n.translate("prospect.validation.businessNameRequired"),
       );
     }
 
     // Valider l'email
-    if (!request.contactEmail || !request.contactEmail.includes('@')) {
+    if (!request.contactEmail || !request.contactEmail.includes("@")) {
       throw new Error(
-        this.i18n.translate('prospect.validation.contactEmailInvalid'),
+        this.i18n.translate("prospect.validation.contactEmailInvalid"),
       );
     }
 
     // Valider le nom du contact
     if (!request.contactName || request.contactName.trim().length < 2) {
       throw new Error(
-        this.i18n.translate('prospect.validation.contactNameRequired'),
+        this.i18n.translate("prospect.validation.contactNameRequired"),
       );
     }
   }
@@ -179,11 +179,11 @@ export class CreateProspectSimpleUseCase {
     return Prospect.create({
       businessName: request.businessName.trim(),
       contactEmail: request.contactEmail.toLowerCase().trim(),
-      contactPhone: request.contactPhone?.trim() || '',
+      contactPhone: request.contactPhone?.trim() || "",
       contactName: request.contactName.trim(),
       assignedSalesRep: request.assignedSalesRep || request.requestingUserId,
       estimatedValue: request.estimatedValue,
-      currency: request.currency || 'EUR',
+      currency: request.currency || "EUR",
       notes: request.notes?.trim(),
       source: request.source?.trim(),
       businessSize: request.businessSize,

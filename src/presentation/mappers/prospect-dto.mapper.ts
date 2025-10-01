@@ -1,16 +1,16 @@
-import { v4 as uuidv4 } from 'uuid';
-import { AuthenticatedUser } from '../security/types/guard.types';
-import { CreateProspectDto } from '../dtos/prospects/create-prospect.dto';
-import { UpdateProspectDto } from '../dtos/prospects/update-prospect.dto';
-import { ListProspectsDto } from '../dtos/prospects/list-prospects.dto';
-import { ProspectResponseDto } from '../dtos/prospects/prospect-response.dto';
-import { ListProspectsResponseDto } from '../dtos/prospects/list-prospects-response.dto';
+import { v4 as uuidv4 } from "uuid";
+import { AuthenticatedUser } from "../security/types/guard.types";
+import { CreateProspectDto } from "../dtos/prospects/create-prospect.dto";
+import { UpdateProspectDto } from "../dtos/prospects/update-prospect.dto";
+import { ListProspectsDto } from "../dtos/prospects/list-prospects.dto";
+import { ProspectResponseDto } from "../dtos/prospects/prospect-response.dto";
+import { ListProspectsResponseDto } from "../dtos/prospects/list-prospects-response.dto";
 import {
   CreateProspectRequest,
   UpdateProspectRequest,
   ListProspectsRequest,
   ListProspectsResponse,
-} from '../types/prospect.types';
+} from "../types/prospect.types";
 
 export class ProspectDtoMapper {
   static toCreateProspectRequest(
@@ -21,11 +21,11 @@ export class ProspectDtoMapper {
       businessName: dto.businessName,
       contactEmail: dto.email,
       contactName: dto.contactName,
-      contactPhone: dto.phone || '',
+      contactPhone: dto.phone || "",
       estimatedValue: dto.estimatedValue || 0,
-      currency: dto.estimatedValueCurrency || 'EUR',
-      notes: dto.notes || '',
-      source: dto.source || 'DIRECT',
+      currency: dto.estimatedValueCurrency || "EUR",
+      notes: dto.notes || "",
+      source: dto.source || "DIRECT",
       assignedSalesRep: dto.assignedSalesRep || user.id,
       requestingUserId: user.id,
       correlationId: uuidv4(),
@@ -102,29 +102,29 @@ export class ProspectDtoMapper {
       businessName: response.businessName,
       contactName: response.contactName,
       email: response.contactEmail,
-      phone: response.contactPhone || '',
+      phone: response.contactPhone || "",
       status: response.status,
       source: response.source,
       assignedSalesRep: response.assignedSalesRep,
       estimatedValue: response.estimatedValue?.amount || 0,
-      estimatedValueCurrency: response.estimatedValue?.currency || 'EUR',
+      estimatedValueCurrency: response.estimatedValue?.currency || "EUR",
       proposedMonthlyPrice: response.estimatedMonthlyPrice?.amount || 0,
-      proposedCurrency: response.estimatedMonthlyPrice?.currency || 'EUR',
+      proposedCurrency: response.estimatedMonthlyPrice?.currency || "EUR",
       createdAt: response.createdAt,
       updatedAt: response.updatedAt,
-      description: response.notes || '',
+      description: response.notes || "",
       businessSize: response.businessSize,
       estimatedStaffCount: response.staffCount,
       lastContactDate: undefined,
-      notes: response.notes || '',
+      notes: response.notes || "",
       pricingProposal: undefined,
       expectedClosingDate: undefined,
       priorityScore: response.isHotProspect ? 8 : 5,
       interactionCount: 0,
       tags: [],
       customFields: {},
-      createdBy: 'system',
-      updatedBy: 'system',
+      createdBy: "system",
+      updatedBy: "system",
     };
   }
 
@@ -138,7 +138,7 @@ export class ProspectDtoMapper {
         businessName: prospect.businessName,
         contactName: prospect.contactName,
         email: prospect.contactEmail,
-        phone: '',
+        phone: "",
         status: prospect.status.value,
         source: prospect.source,
         assignedSalesRep: prospect.assignedSalesRep,
@@ -148,19 +148,19 @@ export class ProspectDtoMapper {
         proposedCurrency: prospect.estimatedMonthlyPrice.currency,
         createdAt: prospect.createdAt,
         updatedAt: prospect.updatedAt,
-        description: '',
+        description: "",
         businessSize: prospect.businessSize.value,
         estimatedStaffCount: prospect.staffCount,
         lastContactDate: undefined,
-        notes: '',
+        notes: "",
         pricingProposal: undefined,
         expectedClosingDate: undefined,
         priorityScore: prospect.isHotProspect ? 8 : 5,
         interactionCount: 0,
         tags: [],
         customFields: {},
-        createdBy: 'system',
-        updatedBy: 'system',
+        createdBy: "system",
+        updatedBy: "system",
       })),
       meta: response.meta,
     };

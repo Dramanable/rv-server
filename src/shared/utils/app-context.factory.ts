@@ -5,8 +5,8 @@
  * Utilisé pour le logging, l'audit trail et le tracing
  */
 
-import { v4 as uuidv4 } from 'uuid';
-import { OperationRequiredError } from '../exceptions/shared.exceptions';
+import { v4 as uuidv4 } from "uuid";
+import { OperationRequiredError } from "../exceptions/shared.exceptions";
 
 export interface AppContext {
   correlationId: string;

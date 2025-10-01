@@ -4,7 +4,7 @@
  * @version 1.0.0
  */
 
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import {
   IsString,
   IsNotEmpty,
@@ -20,24 +20,24 @@ import {
   ValidateNested,
   IsDateString,
   IsBoolean,
-} from 'class-validator';
-import { Type } from 'class-transformer';
-import { NotificationTemplateType } from '../../../domain/value-objects/notification-template.value-object';
+} from "class-validator";
+import { Type } from "class-transformer";
+import { NotificationTemplateType } from "../../../domain/value-objects/notification-template.value-object";
 
 /**
  * DTO pour envoyer une notification simple
  */
 export class SendNotificationDto {
   @ApiProperty({
-    description: 'ID du destinataire de la notification',
-    example: 'user-123',
+    description: "ID du destinataire de la notification",
+    example: "user-123",
   })
   @IsString()
   @IsNotEmpty()
   readonly recipientId!: string;
 
   @ApiProperty({
-    description: 'Type de template de notification',
+    description: "Type de template de notification",
     enum: NotificationTemplateType,
     example: NotificationTemplateType.APPOINTMENT_CONFIRMATION,
   })
@@ -45,65 +45,65 @@ export class SendNotificationDto {
   readonly templateType!: NotificationTemplateType;
 
   @ApiProperty({
-    description: 'Variables dynamiques pour le template',
-    type: 'object',
+    description: "Variables dynamiques pour le template",
+    type: "object",
     additionalProperties: true,
     example: {
-      clientName: 'Jean Dupont',
-      businessName: 'Salon Belle Vue',
-      appointmentDate: '15 janvier 2025',
-      appointmentTime: '14:30',
-      serviceName: 'Coupe de cheveux',
+      clientName: "Jean Dupont",
+      businessName: "Salon Belle Vue",
+      appointmentDate: "15 janvier 2025",
+      appointmentTime: "14:30",
+      serviceName: "Coupe de cheveux",
     },
   })
   @IsObject()
   readonly variables!: Record<string, any>;
 
   @ApiPropertyOptional({
-    description: 'Langue de la notification (fr/en)',
-    example: 'fr',
-    default: 'fr',
+    description: "Langue de la notification (fr/en)",
+    example: "fr",
+    default: "fr",
   })
   @IsOptional()
   @IsString()
-  @IsIn(['fr', 'en'])
-  readonly language?: string = 'fr';
+  @IsIn(["fr", "en"])
+  readonly language?: string = "fr";
 
   @ApiPropertyOptional({
-    description: 'Canal de notification prioritaire',
-    example: 'EMAIL',
-    enum: ['EMAIL', 'SMS', 'PUSH', 'IN_APP'],
+    description: "Canal de notification prioritaire",
+    example: "EMAIL",
+    enum: ["EMAIL", "SMS", "PUSH", "IN_APP"],
   })
   @IsOptional()
   @IsString()
-  @IsIn(['EMAIL', 'SMS', 'PUSH', 'IN_APP'])
+  @IsIn(["EMAIL", "SMS", "PUSH", "IN_APP"])
   readonly preferredChannel?: string;
 
   @ApiPropertyOptional({
-    description: 'Priorité de la notification',
-    example: 'NORMAL',
-    enum: ['LOW', 'NORMAL', 'HIGH', 'URGENT'],
+    description: "Priorité de la notification",
+    example: "NORMAL",
+    enum: ["LOW", "NORMAL", "HIGH", "URGENT"],
   })
   @IsOptional()
   @IsString()
-  @IsIn(['LOW', 'NORMAL', 'HIGH', 'URGENT'])
-  readonly priority?: string = 'NORMAL';
+  @IsIn(["LOW", "NORMAL", "HIGH", "URGENT"])
+  readonly priority?: string = "NORMAL";
 
   @ApiPropertyOptional({
-    description: 'Date de programmation (optionnelle pour envoi différé)',
-    example: '2025-01-20T10:00:00.000Z',
+    description: "Date de programmation (optionnelle pour envoi différé)",
+    example: "2025-01-20T10:00:00.000Z",
   })
   @IsOptional()
   @IsDateString()
   readonly scheduledAt?: string;
 
   @ApiPropertyOptional({
-    description: 'Métadonnées additionnelles',
-    type: 'object',
+    description: "Métadonnées additionnelles",
+    type: "object",
     additionalProperties: true,
     example: {
-      appointmentId: 'appointment-123',
-      businessId: 'business-456',
+      appointmentId: "appointment-123",
+      businessId: "business-456",
     },
   })
   @IsOptional()
@@ -116,9 +116,9 @@ export class SendNotificationDto {
  */
 export class SendBulkNotificationDto {
   @ApiProperty({
-    description: 'Liste des IDs des destinataires',
+    description: "Liste des IDs des destinataires",
     type: [String],
-    example: ['user-123', 'user-456', 'user-789'],
+    example: ["user-123", "user-456", "user-789"],
   })
   @IsArray()
   @IsString({ each: true })
@@ -126,7 +126,7 @@ export class SendBulkNotificationDto {
   readonly recipientIds!: string[];
 
   @ApiProperty({
-    description: 'Type de template de notification',
+    description: "Type de template de notification",
     enum: NotificationTemplateType,
     example: NotificationTemplateType.APPOINTMENT_REMINDER,
   })
@@ -134,24 +134,24 @@ export class SendBulkNotificationDto {
   readonly templateType!: NotificationTemplateType;
 
   @ApiProperty({
-    description: 'Variables communes pour tous les destinataires',
-    type: 'object',
+    description: "Variables communes pour tous les destinataires",
+    type: "object",
     additionalProperties: true,
     example: {
-      businessName: 'Salon Belle Vue',
-      promotionEndDate: '31 janvier 2025',
+      businessName: "Salon Belle Vue",
+      promotionEndDate: "31 janvier 2025",
     },
   })
   @IsObject()
   readonly commonVariables!: Record<string, any>;
 
   @ApiPropertyOptional({
-    description: 'Variables spécifiques par destinataire',
-    type: 'object',
+    description: "Variables spécifiques par destinataire",
+    type: "object",
     additionalProperties: true,
     example: {
-      'user-123': { clientName: 'Jean Dupont', appointmentTime: '14:30' },
-      'user-456': { clientName: 'Marie Martin', appointmentTime: '15:00' },
+      "user-123": { clientName: "Jean Dupont", appointmentTime: "14:30" },
+      "user-456": { clientName: "Marie Martin", appointmentTime: "15:00" },
     },
   })
   @IsOptional()
@@ -159,34 +159,34 @@ export class SendBulkNotificationDto {
   readonly recipientVariables?: Record<string, Record<string, any>>;
 
   @ApiPropertyOptional({
-    description: 'Langue de la notification (fr/en)',
-    example: 'fr',
-    default: 'fr',
+    description: "Langue de la notification (fr/en)",
+    example: "fr",
+    default: "fr",
   })
   @IsOptional()
   @IsString()
-  @IsIn(['fr', 'en'])
-  readonly language?: string = 'fr';
+  @IsIn(["fr", "en"])
+  readonly language?: string = "fr";
 
   @ApiPropertyOptional({
-    description: 'Canal de notification prioritaire',
-    example: 'EMAIL',
-    enum: ['EMAIL', 'SMS', 'PUSH', 'IN_APP'],
+    description: "Canal de notification prioritaire",
+    example: "EMAIL",
+    enum: ["EMAIL", "SMS", "PUSH", "IN_APP"],
   })
   @IsOptional()
   @IsString()
-  @IsIn(['EMAIL', 'SMS', 'PUSH', 'IN_APP'])
+  @IsIn(["EMAIL", "SMS", "PUSH", "IN_APP"])
   readonly preferredChannel?: string;
 
   @ApiPropertyOptional({
-    description: 'Priorité de la notification',
-    example: 'NORMAL',
-    enum: ['LOW', 'NORMAL', 'HIGH', 'URGENT'],
+    description: "Priorité de la notification",
+    example: "NORMAL",
+    enum: ["LOW", "NORMAL", "HIGH", "URGENT"],
   })
   @IsOptional()
   @IsString()
-  @IsIn(['LOW', 'NORMAL', 'HIGH', 'URGENT'])
-  readonly priority?: string = 'NORMAL';
+  @IsIn(["LOW", "NORMAL", "HIGH", "URGENT"])
+  readonly priority?: string = "NORMAL";
 }
 
 /**
@@ -194,7 +194,7 @@ export class SendBulkNotificationDto {
  */
 export class ListNotificationsDto {
   @ApiPropertyOptional({
-    description: 'Numéro de page',
+    description: "Numéro de page",
     minimum: 1,
     default: 1,
     example: 1,
@@ -218,67 +218,67 @@ export class ListNotificationsDto {
   readonly limit?: number = 10;
 
   @ApiPropertyOptional({
-    description: 'Champ de tri',
-    enum: ['createdAt', 'scheduledAt', 'priority', 'status'],
-    default: 'createdAt',
-    example: 'createdAt',
+    description: "Champ de tri",
+    enum: ["createdAt", "scheduledAt", "priority", "status"],
+    default: "createdAt",
+    example: "createdAt",
   })
   @IsOptional()
   @IsString()
-  @IsIn(['createdAt', 'scheduledAt', 'priority', 'status'])
-  readonly sortBy?: string = 'createdAt';
+  @IsIn(["createdAt", "scheduledAt", "priority", "status"])
+  readonly sortBy?: string = "createdAt";
 
   @ApiPropertyOptional({
-    description: 'Ordre de tri',
-    enum: ['asc', 'desc'],
-    default: 'desc',
-    example: 'desc',
+    description: "Ordre de tri",
+    enum: ["asc", "desc"],
+    default: "desc",
+    example: "desc",
   })
   @IsOptional()
   @IsString()
-  @IsIn(['asc', 'desc'])
-  readonly sortOrder?: 'asc' | 'desc' = 'desc';
+  @IsIn(["asc", "desc"])
+  readonly sortOrder?: "asc" | "desc" = "desc";
 
   @ApiPropertyOptional({
-    description: 'Filtrer par destinataire',
-    example: 'user-123',
+    description: "Filtrer par destinataire",
+    example: "user-123",
   })
   @IsOptional()
   @IsString()
   readonly recipientId?: string;
 
   @ApiPropertyOptional({
-    description: 'Filtrer par statut',
-    enum: ['PENDING', 'SENT', 'DELIVERED', 'FAILED', 'READ'],
-    example: 'SENT',
+    description: "Filtrer par statut",
+    enum: ["PENDING", "SENT", "DELIVERED", "FAILED", "READ"],
+    example: "SENT",
   })
   @IsOptional()
   @IsString()
-  @IsIn(['PENDING', 'SENT', 'DELIVERED', 'FAILED', 'READ'])
+  @IsIn(["PENDING", "SENT", "DELIVERED", "FAILED", "READ"])
   readonly status?: string;
 
   @ApiPropertyOptional({
-    description: 'Filtrer par canal',
-    enum: ['EMAIL', 'SMS', 'PUSH', 'IN_APP'],
-    example: 'EMAIL',
+    description: "Filtrer par canal",
+    enum: ["EMAIL", "SMS", "PUSH", "IN_APP"],
+    example: "EMAIL",
   })
   @IsOptional()
   @IsString()
-  @IsIn(['EMAIL', 'SMS', 'PUSH', 'IN_APP'])
+  @IsIn(["EMAIL", "SMS", "PUSH", "IN_APP"])
   readonly channel?: string;
 
   @ApiPropertyOptional({
-    description: 'Filtrer par priorité',
-    enum: ['LOW', 'NORMAL', 'HIGH', 'URGENT'],
-    example: 'HIGH',
+    description: "Filtrer par priorité",
+    enum: ["LOW", "NORMAL", "HIGH", "URGENT"],
+    example: "HIGH",
   })
   @IsOptional()
   @IsString()
-  @IsIn(['LOW', 'NORMAL', 'HIGH', 'URGENT'])
+  @IsIn(["LOW", "NORMAL", "HIGH", "URGENT"])
   readonly priority?: string;
 
   @ApiPropertyOptional({
-    description: 'Filtrer par type de template',
+    description: "Filtrer par type de template",
     enum: NotificationTemplateType,
     example: NotificationTemplateType.APPOINTMENT_CONFIRMATION,
   })
@@ -287,31 +287,31 @@ export class ListNotificationsDto {
   readonly templateType?: NotificationTemplateType;
 
   @ApiPropertyOptional({
-    description: 'Date de début pour la recherche',
-    example: '2025-01-01T00:00:00.000Z',
+    description: "Date de début pour la recherche",
+    example: "2025-01-01T00:00:00.000Z",
   })
   @IsOptional()
   @IsDateString()
   readonly dateFrom?: string;
 
   @ApiPropertyOptional({
-    description: 'Date de fin pour la recherche',
-    example: '2025-01-31T23:59:59.000Z',
+    description: "Date de fin pour la recherche",
+    example: "2025-01-31T23:59:59.000Z",
   })
   @IsOptional()
   @IsDateString()
   readonly dateTo?: string;
 
   @ApiPropertyOptional({
-    description: 'Recherche textuelle dans le contenu',
-    example: 'rendez-vous',
+    description: "Recherche textuelle dans le contenu",
+    example: "rendez-vous",
   })
   @IsOptional()
   @IsString()
   readonly search?: string;
 
   @ApiPropertyOptional({
-    description: 'Inclure seulement les non lues',
+    description: "Inclure seulement les non lues",
     default: false,
     example: false,
   })
@@ -325,8 +325,8 @@ export class ListNotificationsDto {
  */
 export class MarkNotificationAsReadDto {
   @ApiProperty({
-    description: 'ID de la notification à marquer comme lue',
-    example: 'notification-123',
+    description: "ID de la notification à marquer comme lue",
+    example: "notification-123",
   })
   @IsString()
   @IsUUID()
@@ -338,9 +338,9 @@ export class MarkNotificationAsReadDto {
  */
 export class MarkMultipleNotificationsAsReadDto {
   @ApiProperty({
-    description: 'Liste des IDs des notifications à marquer comme lues',
+    description: "Liste des IDs des notifications à marquer comme lues",
     type: [String],
-    example: ['notification-123', 'notification-456'],
+    example: ["notification-123", "notification-456"],
   })
   @IsArray()
   @IsString({ each: true })
@@ -353,31 +353,31 @@ export class MarkMultipleNotificationsAsReadDto {
  */
 export class GetNotificationAnalyticsDto {
   @ApiPropertyOptional({
-    description: 'Date de début pour les statistiques',
-    example: '2025-01-01T00:00:00.000Z',
+    description: "Date de début pour les statistiques",
+    example: "2025-01-01T00:00:00.000Z",
   })
   @IsOptional()
   @IsDateString()
   readonly dateFrom?: string;
 
   @ApiPropertyOptional({
-    description: 'Date de fin pour les statistiques',
-    example: '2025-01-31T23:59:59.000Z',
+    description: "Date de fin pour les statistiques",
+    example: "2025-01-31T23:59:59.000Z",
   })
   @IsOptional()
   @IsDateString()
   readonly dateTo?: string;
 
   @ApiPropertyOptional({
-    description: 'Filtrer par destinataire',
-    example: 'user-123',
+    description: "Filtrer par destinataire",
+    example: "user-123",
   })
   @IsOptional()
   @IsString()
   readonly recipientId?: string;
 
   @ApiPropertyOptional({
-    description: 'Filtrer par type de template',
+    description: "Filtrer par type de template",
     enum: NotificationTemplateType,
     example: NotificationTemplateType.APPOINTMENT_CONFIRMATION,
   })
@@ -386,13 +386,13 @@ export class GetNotificationAnalyticsDto {
   readonly templateType?: NotificationTemplateType;
 
   @ApiPropertyOptional({
-    description: 'Granularité des statistiques',
-    enum: ['daily', 'weekly', 'monthly'],
-    default: 'daily',
-    example: 'daily',
+    description: "Granularité des statistiques",
+    enum: ["daily", "weekly", "monthly"],
+    default: "daily",
+    example: "daily",
   })
   @IsOptional()
   @IsString()
-  @IsIn(['daily', 'weekly', 'monthly'])
-  readonly granularity?: string = 'daily';
+  @IsIn(["daily", "weekly", "monthly"])
+  readonly granularity?: string = "daily";
 }

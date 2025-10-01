@@ -9,9 +9,9 @@ import {
   Max,
   Length,
   IsIn,
-} from 'class-validator';
-import { ApiPropertyOptional } from '@nestjs/swagger';
-import { Transform, Type } from 'class-transformer';
+} from "class-validator";
+import { ApiPropertyOptional } from "@nestjs/swagger";
+import { Transform, Type } from "class-transformer";
 
 /**
  * 🎯 ListProspectsDto - DTO pour la recherche paginée des prospects
@@ -24,7 +24,7 @@ export class ListProspectsDto {
   @ApiPropertyOptional({
     minimum: 1,
     default: 1,
-    description: 'Numéro de page (commence à 1)',
+    description: "Numéro de page (commence à 1)",
   })
   @IsOptional()
   @IsInt()
@@ -48,97 +48,97 @@ export class ListProspectsDto {
   // 🔄 TRI
   @ApiPropertyOptional({
     enum: [
-      'businessName',
-      'contactName',
-      'email',
-      'status',
-      'businessSize',
-      'estimatedValue',
-      'priorityScore',
-      'createdAt',
-      'lastContactDate',
+      "businessName",
+      "contactName",
+      "email",
+      "status",
+      "businessSize",
+      "estimatedValue",
+      "priorityScore",
+      "createdAt",
+      "lastContactDate",
     ],
-    default: 'createdAt',
-    description: 'Champ sur lequel trier les résultats',
+    default: "createdAt",
+    description: "Champ sur lequel trier les résultats",
   })
   @IsOptional()
   @IsIn([
-    'businessName',
-    'contactName',
-    'email',
-    'status',
-    'businessSize',
-    'estimatedValue',
-    'priorityScore',
-    'createdAt',
-    'lastContactDate',
+    "businessName",
+    "contactName",
+    "email",
+    "status",
+    "businessSize",
+    "estimatedValue",
+    "priorityScore",
+    "createdAt",
+    "lastContactDate",
   ])
-  readonly sortBy?: string = 'createdAt';
+  readonly sortBy?: string = "createdAt";
 
   @ApiPropertyOptional({
-    enum: ['asc', 'desc'],
-    default: 'desc',
-    description: 'Ordre de tri (croissant ou décroissant)',
+    enum: ["asc", "desc"],
+    default: "desc",
+    description: "Ordre de tri (croissant ou décroissant)",
   })
   @IsOptional()
-  @IsIn(['asc', 'desc'])
-  readonly sortOrder?: 'asc' | 'desc' = 'desc';
+  @IsIn(["asc", "desc"])
+  readonly sortOrder?: "asc" | "desc" = "desc";
 
   // 🔍 RECHERCHE TEXTUELLE
   @ApiPropertyOptional({
     description:
-      'Recherche textuelle dans businessName, contactName, email, notes',
+      "Recherche textuelle dans businessName, contactName, email, notes",
     minLength: 1,
     maxLength: 100,
-    example: 'TechCorp',
+    example: "TechCorp",
   })
   @IsOptional()
   @IsString()
   @Length(1, 100)
   @Transform(({ value }: { value: unknown }) => {
-    if (typeof value !== 'string') return value;
+    if (typeof value !== "string") return value;
     return value.trim();
   })
   readonly search?: string;
 
   // 🎯 FILTRES MÉTIER
   @ApiPropertyOptional({
-    description: 'Filtrer par statut',
+    description: "Filtrer par statut",
     enum: [
-      'LEAD',
-      'CONTACTED',
-      'QUALIFIED',
-      'PROPOSAL',
-      'NEGOTIATION',
-      'CLOSED_WON',
-      'CLOSED_LOST',
+      "LEAD",
+      "CONTACTED",
+      "QUALIFIED",
+      "PROPOSAL",
+      "NEGOTIATION",
+      "CLOSED_WON",
+      "CLOSED_LOST",
     ],
-    example: 'QUALIFIED',
+    example: "QUALIFIED",
   })
   @IsOptional()
   @IsEnum([
-    'LEAD',
-    'CONTACTED',
-    'QUALIFIED',
-    'PROPOSAL',
-    'NEGOTIATION',
-    'CLOSED_WON',
-    'CLOSED_LOST',
+    "LEAD",
+    "CONTACTED",
+    "QUALIFIED",
+    "PROPOSAL",
+    "NEGOTIATION",
+    "CLOSED_WON",
+    "CLOSED_LOST",
   ])
   readonly status?: string;
 
   @ApiPropertyOptional({
     description: "Filtrer par taille d'entreprise",
-    enum: ['SMALL', 'MEDIUM', 'LARGE', 'ENTERPRISE'],
-    example: 'MEDIUM',
+    enum: ["SMALL", "MEDIUM", "LARGE", "ENTERPRISE"],
+    example: "MEDIUM",
   })
   @IsOptional()
-  @IsEnum(['SMALL', 'MEDIUM', 'LARGE', 'ENTERPRISE'])
+  @IsEnum(["SMALL", "MEDIUM", "LARGE", "ENTERPRISE"])
   readonly businessSize?: string;
 
   @ApiPropertyOptional({
-    description: 'Filtrer par commercial assigné',
-    example: '550e8400-e29b-41d4-a716-446655440000',
+    description: "Filtrer par commercial assigné",
+    example: "550e8400-e29b-41d4-a716-446655440000",
   })
   @IsOptional()
   @IsUUID()
@@ -146,7 +146,7 @@ export class ListProspectsDto {
 
   @ApiPropertyOptional({
     description: "Filtrer par source d'acquisition",
-    example: 'WEBSITE',
+    example: "WEBSITE",
     maxLength: 50,
   })
   @IsOptional()
@@ -155,7 +155,7 @@ export class ListProspectsDto {
   readonly source?: string;
 
   @ApiPropertyOptional({
-    description: 'Filtrer par score de priorité minimum',
+    description: "Filtrer par score de priorité minimum",
     minimum: 0,
     maximum: 100,
     example: 50,
@@ -168,7 +168,7 @@ export class ListProspectsDto {
   readonly minPriorityScore?: number;
 
   @ApiPropertyOptional({
-    description: 'Filtrer par valeur estimée minimum',
+    description: "Filtrer par valeur estimée minimum",
     minimum: 0,
     example: 1000.0,
   })
@@ -179,14 +179,14 @@ export class ListProspectsDto {
   readonly minEstimatedValue?: number;
 
   @ApiPropertyOptional({
-    description: 'Inclure uniquement les prospects avec propositions de prix',
+    description: "Inclure uniquement les prospects avec propositions de prix",
     example: true,
   })
   @IsOptional()
   @IsBoolean()
   @Transform(({ value }: { value: unknown }) => {
-    if (typeof value === 'string') {
-      return value.toLowerCase() === 'true';
+    if (typeof value === "string") {
+      return value.toLowerCase() === "true";
     }
     return Boolean(value);
   })
@@ -194,24 +194,24 @@ export class ListProspectsDto {
 
   // 📅 FILTRES TEMPORELS
   @ApiPropertyOptional({
-    description: 'Filtrer par date de création après (ISO 8601)',
-    example: '2024-01-01T00:00:00Z',
+    description: "Filtrer par date de création après (ISO 8601)",
+    example: "2024-01-01T00:00:00Z",
   })
   @IsOptional()
   @IsString()
   readonly createdAfter?: string;
 
   @ApiPropertyOptional({
-    description: 'Filtrer par date de création avant (ISO 8601)',
-    example: '2024-12-31T23:59:59Z',
+    description: "Filtrer par date de création avant (ISO 8601)",
+    example: "2024-12-31T23:59:59Z",
   })
   @IsOptional()
   @IsString()
   readonly createdBefore?: string;
 
   @ApiPropertyOptional({
-    description: 'Filtrer par dernier contact après (ISO 8601)',
-    example: '2024-01-15T00:00:00Z',
+    description: "Filtrer par dernier contact après (ISO 8601)",
+    example: "2024-01-15T00:00:00Z",
   })
   @IsOptional()
   @IsString()

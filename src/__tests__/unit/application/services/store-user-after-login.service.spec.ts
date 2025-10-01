@@ -3,16 +3,16 @@
  * ✅ Clean Architecture - Application Layer Only
  */
 
-import type { IConfigService } from '@application/ports/config.port';
-import type { I18nService } from '@application/ports/i18n.port';
-import type { Logger } from '@application/ports/logger.port';
-import type { IUserCache } from '@application/ports/user-cache.port';
-import type { StoreUserRequest } from '@application/services/user-cache.service';
-import { UserCacheService } from '@application/services/user-cache.service';
-import { User } from '@domain/entities/user.entity';
-import { UserRole } from '@shared/enums/user-role.enum';
+import type { IConfigService } from "@application/ports/config.port";
+import type { I18nService } from "@application/ports/i18n.port";
+import type { Logger } from "@application/ports/logger.port";
+import type { IUserCache } from "@application/ports/user-cache.port";
+import type { StoreUserRequest } from "@application/services/user-cache.service";
+import { UserCacheService } from "@application/services/user-cache.service";
+import { User } from "@domain/entities/user.entity";
+import { UserRole } from "@shared/enums/user-role.enum";
 
-describe('UserCacheService - TDD Clean Architecture', () => {
+describe("UserCacheService - TDD Clean Architecture", () => {
   let storeUserService: UserCacheService;
   let mockUserCache: jest.Mocked<IUserCache>;
   let mockLogger: jest.Mocked<Logger>;
@@ -50,9 +50,9 @@ describe('UserCacheService - TDD Clean Architecture', () => {
       t: jest.fn(),
       translate: jest.fn().mockImplementation((key: string) => {
         const translations: Record<string, string> = {
-          'operations.cache.storing_user': 'Storing user in cache',
-          'operations.cache.user_stored': 'User stored successfully in cache',
-          'operations.cache.cache_error': 'Error storing user in cache',
+          "operations.cache.storing_user": "Storing user in cache",
+          "operations.cache.user_stored": "User stored successfully in cache",
+          "operations.cache.cache_error": "Error storing user in cache",
         };
         return translations[key] || key;
       }),
@@ -74,13 +74,13 @@ describe('UserCacheService - TDD Clean Architecture', () => {
     );
   });
 
-  describe('✅ Successful User Storage', () => {
-    it('should store user in cache with default TTL after successful login', async () => {
+  describe("✅ Successful User Storage", () => {
+    it("should store user in cache with default TTL after successful login", async () => {
       // 📋 Arrange
       const user = {
-        id: 'user-123',
-        email: { value: 'test@example.com' },
-        name: 'John Doe',
+        id: "user-123",
+        email: { value: "test@example.com" },
+        name: "John Doe",
         role: UserRole.REGULAR_CLIENT,
         createdAt: new Date(),
         passwordChangeRequired: false,
@@ -114,18 +114,18 @@ describe('UserCacheService - TDD Clean Architecture', () => {
         user,
         60, // TTL par défaut du configService
       );
-      expect(mockLogger.info).toHaveBeenCalledWith('Storing user in cache', {
+      expect(mockLogger.info).toHaveBeenCalledWith("Storing user in cache", {
         userId: user.id,
         ttlMinutes: 60,
       });
     });
 
-    it('should store user in cache with custom TTL', async () => {
+    it("should store user in cache with custom TTL", async () => {
       // 📋 Arrange
       const user = {
-        id: 'admin-123',
-        email: { value: 'admin@example.com' },
-        name: 'Admin User',
+        id: "admin-123",
+        email: { value: "admin@example.com" },
+        name: "Admin User",
         role: UserRole.PLATFORM_ADMIN,
         createdAt: new Date(),
         passwordChangeRequired: false,
@@ -160,20 +160,20 @@ describe('UserCacheService - TDD Clean Architecture', () => {
         user,
         customTTL,
       );
-      expect(mockLogger.info).toHaveBeenCalledWith('Storing user in cache', {
+      expect(mockLogger.info).toHaveBeenCalledWith("Storing user in cache", {
         userId: user.id,
         ttlMinutes: customTTL,
       });
     });
   });
 
-  describe('❌ Error Handling', () => {
-    it('should handle cache storage errors gracefully', async () => {
+  describe("❌ Error Handling", () => {
+    it("should handle cache storage errors gracefully", async () => {
       // 📋 Arrange
       const user = {
-        id: 'test-123',
-        email: { value: 'test@example.com' },
-        name: 'Test User',
+        id: "test-123",
+        email: { value: "test@example.com" },
+        name: "Test User",
         role: UserRole.REGULAR_CLIENT,
         createdAt: new Date(),
         passwordChangeRequired: false,
@@ -197,23 +197,23 @@ describe('UserCacheService - TDD Clean Architecture', () => {
         user,
       };
 
-      const cacheError = new Error('Redis connection failed');
+      const cacheError = new Error("Redis connection failed");
       mockUserCache.storeUser.mockRejectedValue(cacheError);
 
       // 🎬 Act & Assert
       await expect(storeUserService.execute(request)).rejects.toThrow(
-        'Redis connection failed',
+        "Redis connection failed",
       );
 
       // Vérifier que logger.error a été appelé avec le bon message
       expect(mockLogger.error).toHaveBeenCalledTimes(1);
       const errorCall = mockLogger.error.mock.calls[0];
-      expect(errorCall[0]).toBe('Error storing user in cache');
+      expect(errorCall[0]).toBe("Error storing user in cache");
     });
   });
 
-  describe('🔧 Configuration Integration', () => {
-    it('should use configured cache retention time', async () => {
+  describe("🔧 Configuration Integration", () => {
+    it("should use configured cache retention time", async () => {
       // 📋 Arrange
       const customRetentionTime = 180;
       mockConfigService.getUserCacheRetentionMinutes.mockReturnValue(
@@ -229,9 +229,9 @@ describe('UserCacheService - TDD Clean Architecture', () => {
       );
 
       const user = {
-        id: 'configured-123',
-        email: { value: 'configured@example.com' },
-        name: 'Configured User',
+        id: "configured-123",
+        email: { value: "configured@example.com" },
+        name: "Configured User",
         role: UserRole.REGULAR_CLIENT,
         createdAt: new Date(),
         passwordChangeRequired: false,

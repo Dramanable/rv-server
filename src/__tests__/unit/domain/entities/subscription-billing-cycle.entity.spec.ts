@@ -1,17 +1,17 @@
-import { SubscriptionBillingCycle } from '@domain/entities/billing/subscription-billing-cycle.entity';
-import { Subscription } from '@domain/entities/billing/subscription.entity';
-import { SubscriptionPlan } from '@domain/value-objects/billing/subscription-plan.value-object';
-import { DomainError } from '@domain/exceptions/domain.exceptions';
+import { SubscriptionBillingCycle } from "@domain/entities/billing/subscription-billing-cycle.entity";
+import { Subscription } from "@domain/entities/billing/subscription.entity";
+import { SubscriptionPlan } from "@domain/value-objects/billing/subscription-plan.value-object";
+import { DomainError } from "@domain/exceptions/domain.exceptions";
 
-describe('SubscriptionBillingCycle Entity', () => {
-  const mockSubscriptionId = 'subscription-123';
-  const mockBusinessId = 'business-456';
+describe("SubscriptionBillingCycle Entity", () => {
+  const mockSubscriptionId = "subscription-123";
+  const mockBusinessId = "business-456";
 
-  describe('🔴 RED - Billing Cycle Creation', () => {
-    it('should create pending billing cycle with valid dates', () => {
+  describe("🔴 RED - Billing Cycle Creation", () => {
+    it("should create pending billing cycle with valid dates", () => {
       // Arrange
-      const startDate = new Date('2025-01-01');
-      const endDate = new Date('2025-01-31');
+      const startDate = new Date("2025-01-01");
+      const endDate = new Date("2025-01-31");
 
       // Act
       const cycle = SubscriptionBillingCycle.create({
@@ -27,14 +27,14 @@ describe('SubscriptionBillingCycle Entity', () => {
       expect(cycle.getBusinessId()).toBe(mockBusinessId);
       expect(cycle.getStartDate()).toEqual(startDate);
       expect(cycle.getEndDate()).toEqual(endDate);
-      expect(cycle.getStatus()).toBe('PENDING');
+      expect(cycle.getStatus()).toBe("PENDING");
       expect(cycle.isPending()).toBe(true);
     });
 
-    it('should initialize all usage counters to zero', () => {
+    it("should initialize all usage counters to zero", () => {
       // Arrange
-      const startDate = new Date('2025-01-01');
-      const endDate = new Date('2025-01-31');
+      const startDate = new Date("2025-01-01");
+      const endDate = new Date("2025-01-31");
 
       // Act
       const cycle = SubscriptionBillingCycle.create({
@@ -54,10 +54,10 @@ describe('SubscriptionBillingCycle Entity', () => {
       expect(usage.storageUsedGB).toBe(0);
     });
 
-    it('should initialize all charges to zero', () => {
+    it("should initialize all charges to zero", () => {
       // Arrange
-      const startDate = new Date('2025-01-01');
-      const endDate = new Date('2025-01-31');
+      const startDate = new Date("2025-01-01");
+      const endDate = new Date("2025-01-31");
 
       // Act
       const cycle = SubscriptionBillingCycle.create({
@@ -77,10 +77,10 @@ describe('SubscriptionBillingCycle Entity', () => {
       expect(charges.totalCost.isZero()).toBe(true);
     });
 
-    it('should throw error when start date is after end date', () => {
+    it("should throw error when start date is after end date", () => {
       // Arrange
-      const startDate = new Date('2025-01-31');
-      const endDate = new Date('2025-01-01'); // Before start date
+      const startDate = new Date("2025-01-31");
+      const endDate = new Date("2025-01-01"); // Before start date
 
       // Act & Assert
       expect(() =>
@@ -90,25 +90,25 @@ describe('SubscriptionBillingCycle Entity', () => {
           startDate,
           endDate,
         }),
-      ).toThrow('Start date must be before end date');
+      ).toThrow("Start date must be before end date");
     });
 
-    it('should create billing cycle from subscription', () => {
+    it("should create billing cycle from subscription", () => {
       // Arrange
       const plan = SubscriptionPlan.premium();
       const subscription = Subscription.create({
         businessId: mockBusinessId,
         plan: plan,
-        billingFrequency: 'MONTHLY',
-        createdBy: 'user-123',
+        billingFrequency: "MONTHLY",
+        createdBy: "user-123",
       });
 
       // Ajouter de l'usage à l'abonnement
       subscription.recordNotificationUsage(100);
       subscription.recordBusinessUsage(2);
 
-      const startDate = new Date('2025-01-01');
-      const endDate = new Date('2025-01-31');
+      const startDate = new Date("2025-01-01");
+      const endDate = new Date("2025-01-31");
 
       // Act
       const cycle = SubscriptionBillingCycle.fromSubscription(
@@ -127,12 +127,12 @@ describe('SubscriptionBillingCycle Entity', () => {
     });
   });
 
-  describe('🔴 RED - Usage Recording', () => {
+  describe("🔴 RED - Usage Recording", () => {
     let cycle: SubscriptionBillingCycle;
 
     beforeEach(() => {
-      const startDate = new Date('2025-01-01');
-      const endDate = new Date('2025-01-31');
+      const startDate = new Date("2025-01-01");
+      const endDate = new Date("2025-01-31");
       cycle = SubscriptionBillingCycle.create({
         subscriptionId: mockSubscriptionId,
         businessId: mockBusinessId,
@@ -141,7 +141,7 @@ describe('SubscriptionBillingCycle Entity', () => {
       });
     });
 
-    it('should record notification usage correctly', () => {
+    it("should record notification usage correctly", () => {
       // Act
       cycle.recordNotificationUsage(50);
       cycle.recordNotificationUsage(25);
@@ -150,7 +150,7 @@ describe('SubscriptionBillingCycle Entity', () => {
       expect(cycle.getUsage().notifications).toBe(75);
     });
 
-    it('should record business usage with maximum logic', () => {
+    it("should record business usage with maximum logic", () => {
       // Act
       cycle.recordBusinessUsage(2);
       cycle.recordBusinessUsage(1); // Should not decrease
@@ -160,7 +160,7 @@ describe('SubscriptionBillingCycle Entity', () => {
       expect(cycle.getUsage().businesses).toBe(3);
     });
 
-    it('should record staff usage with maximum logic', () => {
+    it("should record staff usage with maximum logic", () => {
       // Act
       cycle.recordStaffUsage(10);
       cycle.recordStaffUsage(5); // Should not decrease
@@ -170,7 +170,7 @@ describe('SubscriptionBillingCycle Entity', () => {
       expect(cycle.getUsage().staff).toBe(15);
     });
 
-    it('should record service usage with maximum logic', () => {
+    it("should record service usage with maximum logic", () => {
       // Act
       cycle.recordServiceUsage(20);
       cycle.recordServiceUsage(10); // Should not decrease
@@ -180,7 +180,7 @@ describe('SubscriptionBillingCycle Entity', () => {
       expect(cycle.getUsage().services).toBe(25);
     });
 
-    it('should record API usage correctly', () => {
+    it("should record API usage correctly", () => {
       // Act
       cycle.recordApiUsage(100);
       cycle.recordApiUsage(50);
@@ -189,7 +189,7 @@ describe('SubscriptionBillingCycle Entity', () => {
       expect(cycle.getUsage().apiCalls).toBe(150);
     });
 
-    it('should record storage usage with maximum logic', () => {
+    it("should record storage usage with maximum logic", () => {
       // Act
       cycle.recordStorageUsage(5.5);
       cycle.recordStorageUsage(3.2); // Should not decrease
@@ -199,29 +199,29 @@ describe('SubscriptionBillingCycle Entity', () => {
       expect(cycle.getUsage().storageUsedGB).toBe(8.1);
     });
 
-    it('should throw error for negative notification usage', () => {
+    it("should throw error for negative notification usage", () => {
       // Act & Assert
       expect(() => cycle.recordNotificationUsage(-10)).toThrow(
-        'Notification usage count cannot be negative',
+        "Notification usage count cannot be negative",
       );
     });
 
-    it('should throw error for negative business usage', () => {
+    it("should throw error for negative business usage", () => {
       // Act & Assert
       expect(() => cycle.recordBusinessUsage(-1)).toThrow(
-        'Business usage count cannot be negative',
+        "Business usage count cannot be negative",
       );
     });
 
-    it('should throw error for negative storage usage', () => {
+    it("should throw error for negative storage usage", () => {
       // Act & Assert
       expect(() => cycle.recordStorageUsage(-1.5)).toThrow(
-        'Storage usage cannot be negative',
+        "Storage usage cannot be negative",
       );
     });
   });
 
-  describe('🔴 RED - Charge Calculations', () => {
+  describe("🔴 RED - Charge Calculations", () => {
     let cycle: SubscriptionBillingCycle;
     let subscription: Subscription;
 
@@ -230,12 +230,12 @@ describe('SubscriptionBillingCycle Entity', () => {
       subscription = Subscription.create({
         businessId: mockBusinessId,
         plan: plan,
-        billingFrequency: 'MONTHLY',
-        createdBy: 'user-123',
+        billingFrequency: "MONTHLY",
+        createdBy: "user-123",
       });
 
-      const startDate = new Date('2025-01-01');
-      const endDate = new Date('2025-01-31');
+      const startDate = new Date("2025-01-01");
+      const endDate = new Date("2025-01-31");
       cycle = SubscriptionBillingCycle.create({
         subscriptionId: subscription.getId(),
         businessId: mockBusinessId,
@@ -244,7 +244,7 @@ describe('SubscriptionBillingCycle Entity', () => {
       });
     });
 
-    it('should calculate charges without overage', () => {
+    it("should calculate charges without overage", () => {
       // Arrange
       cycle.recordNotificationUsage(500); // Under limit (1000)
 
@@ -258,7 +258,7 @@ describe('SubscriptionBillingCycle Entity', () => {
       expect(charges.totalCost.getAmount()).toBe(29.99);
     });
 
-    it('should calculate charges with overage', () => {
+    it("should calculate charges with overage", () => {
       // Arrange
       cycle.recordNotificationUsage(1200); // Over limit by 200
 
@@ -272,13 +272,13 @@ describe('SubscriptionBillingCycle Entity', () => {
       expect(charges.totalCost.getAmount()).toBe(35.99);
     });
 
-    it('should handle yearly subscription charges', () => {
+    it("should handle yearly subscription charges", () => {
       // Arrange
       const yearlySubscription = Subscription.create({
         businessId: mockBusinessId,
         plan: SubscriptionPlan.premium(),
-        billingFrequency: 'YEARLY',
-        createdBy: 'user-123',
+        billingFrequency: "YEARLY",
+        createdBy: "user-123",
       });
       cycle.recordNotificationUsage(500);
 
@@ -291,12 +291,12 @@ describe('SubscriptionBillingCycle Entity', () => {
     });
   });
 
-  describe('🔴 RED - Status Management', () => {
+  describe("🔴 RED - Status Management", () => {
     let cycle: SubscriptionBillingCycle;
 
     beforeEach(() => {
-      const startDate = new Date('2025-01-01');
-      const endDate = new Date('2025-01-31');
+      const startDate = new Date("2025-01-01");
+      const endDate = new Date("2025-01-31");
       cycle = SubscriptionBillingCycle.create({
         subscriptionId: mockSubscriptionId,
         businessId: mockBusinessId,
@@ -305,17 +305,17 @@ describe('SubscriptionBillingCycle Entity', () => {
       });
     });
 
-    it('should transition from pending to processing', () => {
+    it("should transition from pending to processing", () => {
       // Act
       cycle.markAsProcessing();
 
       // Assert
-      expect(cycle.getStatus()).toBe('PROCESSING');
+      expect(cycle.getStatus()).toBe("PROCESSING");
       expect(cycle.isProcessing()).toBe(true);
       expect(cycle.isPending()).toBe(false);
     });
 
-    it('should transition from processing to completed', () => {
+    it("should transition from processing to completed", () => {
       // Arrange
       cycle.markAsProcessing();
 
@@ -323,103 +323,103 @@ describe('SubscriptionBillingCycle Entity', () => {
       cycle.markAsCompleted();
 
       // Assert
-      expect(cycle.getStatus()).toBe('COMPLETED');
+      expect(cycle.getStatus()).toBe("COMPLETED");
       expect(cycle.isCompleted()).toBe(true);
       expect(cycle.getProcessedAt()).toBeDefined();
       expect(cycle.getFailureReason()).toBeNull();
     });
 
-    it('should transition from processing to failed', () => {
+    it("should transition from processing to failed", () => {
       // Arrange
       cycle.markAsProcessing();
-      const failureReason = 'Payment method declined';
+      const failureReason = "Payment method declined";
 
       // Act
       cycle.markAsFailed(failureReason);
 
       // Assert
-      expect(cycle.getStatus()).toBe('FAILED');
+      expect(cycle.getStatus()).toBe("FAILED");
       expect(cycle.isFailed()).toBe(true);
       expect(cycle.getFailureReason()).toBe(failureReason);
     });
 
-    it('should retry failed cycle', () => {
+    it("should retry failed cycle", () => {
       // Arrange
       cycle.markAsProcessing();
-      cycle.markAsFailed('Payment failed');
+      cycle.markAsFailed("Payment failed");
 
       // Act
       cycle.retry();
 
       // Assert
-      expect(cycle.getStatus()).toBe('PENDING');
+      expect(cycle.getStatus()).toBe("PENDING");
       expect(cycle.isPending()).toBe(true);
       expect(cycle.getFailureReason()).toBeNull();
     });
 
-    it('should refund completed cycle', () => {
+    it("should refund completed cycle", () => {
       // Arrange
       cycle.markAsProcessing();
       cycle.markAsCompleted();
-      const refundReason = 'Customer cancellation';
+      const refundReason = "Customer cancellation";
 
       // Act
       cycle.refund(refundReason);
 
       // Assert
-      expect(cycle.getStatus()).toBe('REFUNDED');
+      expect(cycle.getStatus()).toBe("REFUNDED");
       expect(cycle.isRefunded()).toBe(true);
       expect(cycle.getFailureReason()).toBe(refundReason);
     });
 
-    it('should throw error when processing non-pending cycle', () => {
+    it("should throw error when processing non-pending cycle", () => {
       // Arrange
       cycle.markAsProcessing();
 
       // Act & Assert
       expect(() => cycle.markAsProcessing()).toThrow(
-        'Cannot process billing cycle with status PROCESSING',
+        "Cannot process billing cycle with status PROCESSING",
       );
     });
 
-    it('should throw error when completing non-processing cycle', () => {
+    it("should throw error when completing non-processing cycle", () => {
       // Act & Assert
       expect(() => cycle.markAsCompleted()).toThrow(
-        'Can only complete processing billing cycles',
+        "Can only complete processing billing cycles",
       );
     });
 
-    it('should throw error when failing without reason', () => {
+    it("should throw error when failing without reason", () => {
       // Arrange
       cycle.markAsProcessing();
 
       // Act & Assert
-      expect(() => cycle.markAsFailed('')).toThrow(
-        'Failure reason is required',
+      expect(() => cycle.markAsFailed("")).toThrow(
+        "Failure reason is required",
       );
     });
 
-    it('should throw error when retrying non-failed cycle', () => {
+    it("should throw error when retrying non-failed cycle", () => {
       // Act & Assert
       expect(() => cycle.retry()).toThrow(
-        'Can only retry failed billing cycles',
+        "Can only retry failed billing cycles",
       );
     });
 
-    it('should throw error when refunding non-completed cycle', () => {
+    it("should throw error when refunding non-completed cycle", () => {
       // Act & Assert
-      expect(() => cycle.refund('Test reason')).toThrow(
-        'Can only refund completed billing cycles',
+      expect(() => cycle.refund("Test reason")).toThrow(
+        "Can only refund completed billing cycles",
       );
     });
   });
 
-  describe('🔴 RED - Metrics and Calculations', () => {
+  describe("🔴 RED - Metrics and Calculations", () => {
     let cycle: SubscriptionBillingCycle;
 
     beforeEach(() => {
-      const startDate = new Date('2025-01-01');
-      const endDate = new Date('2025-01-31'); // 30 days
+      const startDate = new Date("2025-01-01");
+      const endDate = new Date("2025-01-31"); // 30 days
       cycle = SubscriptionBillingCycle.create({
         subscriptionId: mockSubscriptionId,
         businessId: mockBusinessId,
@@ -428,12 +428,12 @@ describe('SubscriptionBillingCycle Entity', () => {
       });
     });
 
-    it('should calculate duration in days correctly', () => {
+    it("should calculate duration in days correctly", () => {
       // Act & Assert
       expect(cycle.getDurationInDays()).toBe(30); // 30 days from Jan 1 to Jan 31
     });
 
-    it('should identify current period correctly', () => {
+    it("should identify current period correctly", () => {
       // Arrange
       const now = new Date();
       const currentStart = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -451,7 +451,7 @@ describe('SubscriptionBillingCycle Entity', () => {
       expect(cycle.isCurrentPeriod()).toBe(false); // January 2025 cycle
     });
 
-    it('should calculate usage ratio correctly', () => {
+    it("should calculate usage ratio correctly", () => {
       // Note: Ce test dépend de la date actuelle, donc on mock indirectement
       // En pratique, le ratio devrait être entre 0 and 1
       const ratio = cycle.getUsageRatio();
@@ -459,14 +459,14 @@ describe('SubscriptionBillingCycle Entity', () => {
       expect(ratio).toBeLessThanOrEqual(1);
     });
 
-    it('should predict total cost for completed cycle', () => {
+    it("should predict total cost for completed cycle", () => {
       // Arrange
       const plan = SubscriptionPlan.premium();
       const subscription = Subscription.create({
         businessId: mockBusinessId,
         plan: plan,
-        billingFrequency: 'MONTHLY',
-        createdBy: 'user-123',
+        billingFrequency: "MONTHLY",
+        createdBy: "user-123",
       });
 
       cycle.calculateCharges(subscription);
@@ -481,11 +481,11 @@ describe('SubscriptionBillingCycle Entity', () => {
     });
   });
 
-  describe('🔴 RED - Serialization', () => {
-    it('should serialize to JSON correctly', () => {
+  describe("🔴 RED - Serialization", () => {
+    it("should serialize to JSON correctly", () => {
       // Arrange
-      const startDate = new Date('2025-01-01');
-      const endDate = new Date('2025-01-31');
+      const startDate = new Date("2025-01-01");
+      const endDate = new Date("2025-01-31");
       const cycle = SubscriptionBillingCycle.create({
         subscriptionId: mockSubscriptionId,
         businessId: mockBusinessId,
@@ -506,7 +506,7 @@ describe('SubscriptionBillingCycle Entity', () => {
       expect(json.period.startDate).toBe(startDate.toISOString());
       expect(json.period.endDate).toBe(endDate.toISOString());
       expect(json.period.durationDays).toBe(30);
-      expect(json.status).toBe('PENDING');
+      expect(json.status).toBe("PENDING");
       expect(json.usage.notifications).toBe(100);
       expect(json.usage.businesses).toBe(2);
       expect(json.charges.baseCost).toBeDefined();
@@ -514,10 +514,10 @@ describe('SubscriptionBillingCycle Entity', () => {
       expect(json.metrics.usageRatio).toBeDefined();
     });
 
-    it('should have meaningful string representation', () => {
+    it("should have meaningful string representation", () => {
       // Arrange
-      const startDate = new Date('2025-01-01');
-      const endDate = new Date('2025-01-31');
+      const startDate = new Date("2025-01-01");
+      const endDate = new Date("2025-01-31");
       const cycle = SubscriptionBillingCycle.create({
         subscriptionId: mockSubscriptionId,
         businessId: mockBusinessId,
@@ -527,10 +527,10 @@ describe('SubscriptionBillingCycle Entity', () => {
 
       // Act & Assert
       const str = cycle.toString();
-      expect(str).toContain('SubscriptionBillingCycle');
-      expect(str).toContain('2025-01-01');
-      expect(str).toContain('2025-01-31');
-      expect(str).toContain('PENDING');
+      expect(str).toContain("SubscriptionBillingCycle");
+      expect(str).toContain("2025-01-01");
+      expect(str).toContain("2025-01-31");
+      expect(str).toContain("PENDING");
     });
   });
 });

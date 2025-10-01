@@ -7,13 +7,13 @@
  * 2. Permissions granulaires CRUD par ressource (niveau business)
  */
 
-import { IUserPermissionRepository } from '@domain/repositories/user-permission.repository';
+import { IUserPermissionRepository } from "@domain/repositories/user-permission.repository";
 import {
   UserPermission,
   PermissionAction,
   ResourceType,
-} from '@domain/entities/user-permission.entity';
-import { UserRole } from '@shared/enums/user-role.enum';
+} from "@domain/entities/user-permission.entity";
+import { UserRole } from "@shared/enums/user-role.enum";
 
 export interface ISimplePermissionService {
   /**
@@ -85,7 +85,7 @@ export class SimplePermissionService implements ISimplePermissionService {
     resource: ResourceType,
     businessId?: string | null,
   ): Promise<boolean> {
-    console.log('🔐 SimplePermissionService.hasPermission:', {
+    console.log("🔐 SimplePermissionService.hasPermission:", {
       userId,
       userRole,
       action,
@@ -95,13 +95,13 @@ export class SimplePermissionService implements ISimplePermissionService {
 
     // 🎯 SUPER_ADMIN peut tout faire
     if (userRole === UserRole.SUPER_ADMIN) {
-      console.log('✅ SUPER_ADMIN access granted');
+      console.log("✅ SUPER_ADMIN access granted");
       return true;
     }
 
     // 🎯 PLATFORM_ADMIN peut tout faire au niveau plateforme (businessId null)
     if (userRole === UserRole.PLATFORM_ADMIN && businessId === null) {
-      console.log('✅ PLATFORM_ADMIN platform access granted');
+      console.log("✅ PLATFORM_ADMIN platform access granted");
       return true;
     }
 
@@ -114,7 +114,7 @@ export class SimplePermissionService implements ISimplePermissionService {
         businessId,
       );
 
-    console.log('🔍 Granular permission check:', hasGranularPermission);
+    console.log("🔍 Granular permission check:", hasGranularPermission);
     return hasGranularPermission;
   }
 

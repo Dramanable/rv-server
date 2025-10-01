@@ -4,13 +4,13 @@
  * Value Object pour représenter les périodes de statistiques avec validation métier.
  */
 
-import { DomainValidationError } from '../exceptions/domain.exceptions';
+import { DomainValidationError } from "../exceptions/domain.exceptions";
 
 export enum PeriodType {
-  WEEK = 'week',
-  MONTH = 'month',
-  QUARTER = 'quarter',
-  YEAR = 'year',
+  WEEK = "week",
+  MONTH = "month",
+  QUARTER = "quarter",
+  YEAR = "year",
 }
 
 export interface StatisticsPeriodData {
@@ -48,7 +48,7 @@ export class StatisticsPeriod {
   static createWeek(weekStart: string): StatisticsPeriod {
     const startDate = new Date(weekStart);
     if (isNaN(startDate.getTime())) {
-      throw new DomainValidationError('Invalid week start date format');
+      throw new DomainValidationError("Invalid week start date format");
     }
 
     // Calculer la fin de semaine (6 jours après le début)
@@ -99,7 +99,7 @@ export class StatisticsPeriod {
         const dayOfWeek = now.getDay();
         const daysToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
         startOfWeek.setDate(now.getDate() - daysToMonday);
-        return this.createWeek(startOfWeek.toISOString().split('T')[0]);
+        return this.createWeek(startOfWeek.toISOString().split("T")[0]);
       }
 
       case PeriodType.MONTH:
@@ -210,18 +210,18 @@ export class StatisticsPeriod {
 
       case PeriodType.MONTH: {
         const monthNames = [
-          'Janvier',
-          'Février',
-          'Mars',
-          'Avril',
-          'Mai',
-          'Juin',
-          'Juillet',
-          'Août',
-          'Septembre',
-          'Octobre',
-          'Novembre',
-          'Décembre',
+          "Janvier",
+          "Février",
+          "Mars",
+          "Avril",
+          "Mai",
+          "Juin",
+          "Juillet",
+          "Août",
+          "Septembre",
+          "Octobre",
+          "Novembre",
+          "Décembre",
         ];
         return `${monthNames[this._month! - 1]} ${this._year}`;
       }
@@ -264,8 +264,8 @@ export class StatisticsPeriod {
       year: this._year,
       month: this._month,
       quarter: this._quarter,
-      weekStart: this._weekStart?.toISOString().split('T')[0],
-      weekEnd: this._weekEnd?.toISOString().split('T')[0],
+      weekStart: this._weekStart?.toISOString().split("T")[0],
+      weekEnd: this._weekEnd?.toISOString().split("T")[0],
     };
   }
 
@@ -286,7 +286,7 @@ export class StatisticsPeriod {
    */
   private static validateMonth(month: number): void {
     if (month < 1 || month > 12) {
-      throw new DomainValidationError('Month must be between 1 and 12');
+      throw new DomainValidationError("Month must be between 1 and 12");
     }
   }
 
@@ -295,7 +295,7 @@ export class StatisticsPeriod {
    */
   private static validateQuarter(quarter: number): void {
     if (quarter < 1 || quarter > 4) {
-      throw new DomainValidationError('Quarter must be between 1 and 4');
+      throw new DomainValidationError("Quarter must be between 1 and 4");
     }
   }
 

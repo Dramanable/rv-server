@@ -21,23 +21,23 @@
  * - Applique les permissions granulaires selon contexte business
  */
 
-import { I18nService } from '@application/ports/i18n.port';
-import { Logger } from '@application/ports/logger.port';
-import { IPermissionService } from '@application/ports/permission.service.interface';
-import { RoleAssignment } from '@domain/entities/role-assignment.entity';
-import { IBusinessContextRepository } from '@domain/repositories/business-context.repository.interface';
-import { IRoleAssignmentRepository } from '@domain/repositories/role-assignment.repository.interface';
-import { UserRepository } from '@domain/repositories/user.repository.interface';
-import { PermissionServiceError } from '@infrastructure/exceptions/infrastructure.exceptions';
-import { Injectable } from '@nestjs/common';
+import { I18nService } from "@application/ports/i18n.port";
+import { Logger } from "@application/ports/logger.port";
+import { IPermissionService } from "@application/ports/permission.service.interface";
+import { RoleAssignment } from "@domain/entities/role-assignment.entity";
+import { IBusinessContextRepository } from "@domain/repositories/business-context.repository.interface";
+import { IRoleAssignmentRepository } from "@domain/repositories/role-assignment.repository.interface";
+import { UserRepository } from "@domain/repositories/user.repository.interface";
+import { PermissionServiceError } from "@infrastructure/exceptions/infrastructure.exceptions";
+import { Injectable } from "@nestjs/common";
 import {
   Permission,
   ROLE_HIERARCHY,
   ROLE_PERMISSIONS,
   RoleUtils,
   UserRole,
-} from '@shared/enums/user-role.enum';
-import { InfrastructureException } from '@shared/exceptions/shared.exceptions';
+} from "@shared/enums/user-role.enum";
+import { InfrastructureException } from "@shared/exceptions/shared.exceptions";
 
 /**
  * 🎯 Business Context for Permission Checks
@@ -69,7 +69,7 @@ export class RbacPermissionService implements IPermissionService {
     context?: Record<string, unknown>,
   ): Promise<boolean> {
     try {
-      this.logger.info('Checking user permission', {
+      this.logger.info("Checking user permission", {
         userId,
         permission,
         context,
@@ -84,7 +84,7 @@ export class RbacPermissionService implements IPermissionService {
       const userRoles = await this.getUserRoles(userId, context);
 
       console.log(
-        '🚨 DEBUG PERMISSIONS - User roles retrieved in hasPermission',
+        "🚨 DEBUG PERMISSIONS - User roles retrieved in hasPermission",
         {
           userId,
           permission,
@@ -101,7 +101,7 @@ export class RbacPermissionService implements IPermissionService {
         },
       );
 
-      this.logger.info('🚨 DEBUG PERMISSIONS - User roles retrieved', {
+      this.logger.info("🚨 DEBUG PERMISSIONS - User roles retrieved", {
         userId,
         permission,
         context,
@@ -119,7 +119,7 @@ export class RbacPermissionService implements IPermissionService {
       // 🔧 TEMPORAIRE : Si aucun rôle assigné, vérifier si c'est un admin système
       if (userRoles.length === 0) {
         this.logger.warn(
-          'No role assignments found for user - checking system roles',
+          "No role assignments found for user - checking system roles",
           {
             userId,
             permission,
@@ -138,7 +138,7 @@ export class RbacPermissionService implements IPermissionService {
             context,
           )
         ) {
-          this.logger.info('Permission granted', {
+          this.logger.info("Permission granted", {
             userId,
             permission,
             grantingRole: roleAssignment.getRole(),
@@ -148,7 +148,7 @@ export class RbacPermissionService implements IPermissionService {
         }
       }
 
-      this.logger.warn('Permission denied', {
+      this.logger.warn("Permission denied", {
         userId,
         permission,
         userRoles: userRoles.map((ra) => ra.getRole()),
@@ -157,7 +157,7 @@ export class RbacPermissionService implements IPermissionService {
 
       return false;
     } catch (error) {
-      this.logger.error('Error checking permission', error as Error, {
+      this.logger.error("Error checking permission", error as Error, {
         userId,
         permission,
         context,
@@ -181,7 +181,7 @@ export class RbacPermissionService implements IPermissionService {
       // 2. Vérifier si l'un des rôles peut agir sur le rôle cible
       for (const roleAssignment of actorRoles) {
         if (RoleUtils.canActOnRole(roleAssignment.getRole(), targetRole)) {
-          this.logger.info('Role action authorized', {
+          this.logger.info("Role action authorized", {
             actorUserId,
             actorRole: roleAssignment.getRole(),
             targetRole,
@@ -191,7 +191,7 @@ export class RbacPermissionService implements IPermissionService {
         }
       }
 
-      this.logger.warn('Role action denied', {
+      this.logger.warn("Role action denied", {
         actorUserId,
         actorRoles: actorRoles.map((ra) => ra.getRole()),
         targetRole,
@@ -200,7 +200,7 @@ export class RbacPermissionService implements IPermissionService {
 
       return false;
     } catch (error) {
-      this.logger.error('Error checking role hierarchy', error as Error, {
+      this.logger.error("Error checking role hierarchy", error as Error, {
         actorUserId,
         targetRole,
         context,
@@ -220,12 +220,12 @@ export class RbacPermissionService implements IPermissionService {
     const hasPermission = await this.hasPermission(userId, permission, context);
 
     if (!hasPermission) {
-      const errorMessage = this.i18n.translate('permission.denied', {
+      const errorMessage = this.i18n.translate("permission.denied", {
         permission,
       });
 
       this.logger.error(
-        'Permission requirement failed',
+        "Permission requirement failed",
         new Error(errorMessage),
         {
           userId,
@@ -234,7 +234,7 @@ export class RbacPermissionService implements IPermissionService {
         },
       );
 
-      throw new InfrastructureException(errorMessage, 'RBAC_PERMISSION_DENIED');
+      throw new InfrastructureException(errorMessage, "RBAC_PERMISSION_DENIED");
     }
   }
 
@@ -254,7 +254,7 @@ export class RbacPermissionService implements IPermissionService {
         rolePermissions.forEach((permission) => allPermissions.add(permission));
       }
 
-      this.logger.info('Retrieved user permissions', {
+      this.logger.info("Retrieved user permissions", {
         userId,
         permissionCount: allPermissions.size,
         roles: userRoles.map((ra) => ra.getRole()),
@@ -262,7 +262,7 @@ export class RbacPermissionService implements IPermissionService {
 
       return Array.from(allPermissions);
     } catch (error) {
-      this.logger.error('Error retrieving user permissions', error as Error, {
+      this.logger.error("Error retrieving user permissions", error as Error, {
         userId,
       });
       return [];
@@ -287,7 +287,7 @@ export class RbacPermissionService implements IPermissionService {
         return currentLevel > highestLevel ? current : highest;
       });
 
-      this.logger.info('Retrieved primary user role', {
+      this.logger.info("Retrieved primary user role", {
         userId,
         primaryRole: primaryRole.getRole(),
         totalRoles: userRoles.length,
@@ -295,7 +295,7 @@ export class RbacPermissionService implements IPermissionService {
 
       return primaryRole.getRole();
     } catch (error) {
-      this.logger.error('Error retrieving user role', error as Error, {
+      this.logger.error("Error retrieving user role", error as Error, {
         userId,
       });
       return UserRole.GUEST_CLIENT;
@@ -310,7 +310,7 @@ export class RbacPermissionService implements IPermissionService {
       const userRoles = await this.getUserRoles(userId);
       const hasRole = userRoles.some((ra) => ra.getRole() === role);
 
-      this.logger.info('Checked user role', {
+      this.logger.info("Checked user role", {
         userId,
         role,
         hasRole,
@@ -318,7 +318,7 @@ export class RbacPermissionService implements IPermissionService {
 
       return hasRole;
     } catch (error) {
-      this.logger.error('Error checking user role', error as Error, {
+      this.logger.error("Error checking user role", error as Error, {
         userId,
         role,
       });
@@ -370,7 +370,7 @@ export class RbacPermissionService implements IPermissionService {
           );
 
           if (hasCommonContext) {
-            this.logger.info('User management authorized', {
+            this.logger.info("User management authorized", {
               actorUserId,
               targetUserId,
               actorRole: roleAssignment.getRole(),
@@ -381,16 +381,16 @@ export class RbacPermissionService implements IPermissionService {
         }
       }
 
-      this.logger.warn('User management denied', {
+      this.logger.warn("User management denied", {
         actorUserId,
         targetUserId,
-        reason: 'insufficient_hierarchy_or_context',
+        reason: "insufficient_hierarchy_or_context",
       });
 
       return false;
     } catch (error) {
       this.logger.error(
-        'Error checking user management permission',
+        "Error checking user management permission",
         error as Error,
         {
           actorUserId,
@@ -408,17 +408,17 @@ export class RbacPermissionService implements IPermissionService {
     const isSuperAdmin = await this.isSuperAdmin(userId);
 
     if (!isSuperAdmin) {
-      const errorMessage = this.i18n.translate('permission.superAdminRequired');
+      const errorMessage = this.i18n.translate("permission.superAdminRequired");
 
       this.logger.error(
-        'Super admin permission required',
+        "Super admin permission required",
         new Error(errorMessage),
         {
           userId,
         },
       );
 
-      throw new PermissionServiceError('Super admin permission required', {
+      throw new PermissionServiceError("Super admin permission required", {
         userId,
       });
     }
@@ -434,7 +434,7 @@ export class RbacPermissionService implements IPermissionService {
       UserRole.PLATFORM_ADMIN,
     ].includes(userRole);
 
-    this.logger.info('Checked super admin status', {
+    this.logger.info("Checked super admin status", {
       userId,
       userRole,
       isSuperAdmin,
@@ -452,16 +452,16 @@ export class RbacPermissionService implements IPermissionService {
     userId: string,
     context?: Record<string, unknown>,
   ): Promise<RoleAssignment[]> {
-    console.log('🚨 DEBUG PERMISSIONS - getUserRoles called', {
+    console.log("🚨 DEBUG PERMISSIONS - getUserRoles called", {
       userId,
       context,
-      operation: 'getUserRoles',
+      operation: "getUserRoles",
     });
 
     const assignments =
       await this.roleAssignmentRepository.findByUserId(userId);
 
-    console.log('🚨 DEBUG PERMISSIONS - Raw assignments from DB', {
+    console.log("🚨 DEBUG PERMISSIONS - Raw assignments from DB", {
       userId,
       assignmentsCount: assignments.length,
       assignments: assignments.map((a) => ({
@@ -473,13 +473,13 @@ export class RbacPermissionService implements IPermissionService {
       })),
     });
 
-    this.logger.info('🚨 DEBUG PERMISSIONS - getUserRoles called', {
+    this.logger.info("🚨 DEBUG PERMISSIONS - getUserRoles called", {
       userId,
       context,
-      operation: 'getUserRoles',
+      operation: "getUserRoles",
     });
 
-    this.logger.info('🚨 DEBUG PERMISSIONS - Raw assignments from DB', {
+    this.logger.info("🚨 DEBUG PERMISSIONS - Raw assignments from DB", {
       userId,
       assignmentsCount: assignments.length,
       assignments: assignments.map((a) => ({
@@ -498,7 +498,7 @@ export class RbacPermissionService implements IPermissionService {
           assignment.getContext().businessId === context.businessId,
       );
 
-      this.logger.info('🚨 DEBUG PERMISSIONS - Filtered by business context', {
+      this.logger.info("🚨 DEBUG PERMISSIONS - Filtered by business context", {
         userId,
         originalCount: assignments.length,
         filteredCount: filtered.length,
@@ -583,10 +583,10 @@ export class RbacPermissionService implements IPermissionService {
     businessId: string,
   ): Promise<boolean> {
     try {
-      this.logger.info('Checking business access', {
+      this.logger.info("Checking business access", {
         userId,
         businessId,
-        context: 'hasAccessToBusiness',
+        context: "hasAccessToBusiness",
       });
 
       // ✅ Super admin a accès à tout
@@ -604,8 +604,8 @@ export class RbacPermissionService implements IPermissionService {
       return assignments.length > 0;
     } catch (error) {
       this.logger.error(
-        'Failed to check business access',
-        error instanceof Error ? error : new Error('Unknown error'),
+        "Failed to check business access",
+        error instanceof Error ? error : new Error("Unknown error"),
         {
           userId,
           businessId,

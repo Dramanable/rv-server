@@ -75,7 +75,7 @@ export interface ListNotificationsRequest {
   readonly page: number;
   readonly limit: number;
   readonly sortBy: string;
-  readonly sortOrder: 'asc' | 'desc';
+  readonly sortOrder: "asc" | "desc";
   readonly requestingUserId: string;
   readonly correlationId: string;
 }

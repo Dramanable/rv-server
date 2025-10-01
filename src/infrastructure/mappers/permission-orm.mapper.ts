@@ -1,5 +1,5 @@
-import { Permission } from '@domain/entities/permission.entity';
-import { PermissionOrmEntity } from '@infrastructure/database/sql/postgresql/entities/permission-orm.entity';
+import { Permission } from "@domain/entities/permission.entity";
+import { PermissionOrmEntity } from "@infrastructure/database/sql/postgresql/entities/permission-orm.entity";
 
 /**
  * Permission ORM Mapper

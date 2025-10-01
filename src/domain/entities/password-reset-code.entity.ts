@@ -11,7 +11,7 @@
  * - Évite les patterns prévisibles
  */
 
-import { DomainValidationError } from '../exceptions/domain.exceptions';
+import { DomainValidationError } from "../exceptions/domain.exceptions";
 
 export interface PasswordResetCodeData {
   readonly id?: string;
@@ -54,9 +54,9 @@ export class PasswordResetCode {
   // === FACTORY METHODS ===
 
   static create(userId: string): PasswordResetCode {
-    if (!userId || typeof userId !== 'string' || userId.trim().length === 0) {
+    if (!userId || typeof userId !== "string" || userId.trim().length === 0) {
       throw new DomainValidationError(
-        'UserId is required for password reset code',
+        "UserId is required for password reset code",
       );
     }
 
@@ -136,12 +136,12 @@ export class PasswordResetCode {
 
   markAsUsed(): void {
     if (this.isExpired) {
-      throw new DomainValidationError('Cannot use expired password reset code');
+      throw new DomainValidationError("Cannot use expired password reset code");
     }
 
     if (this.isUsed) {
       throw new DomainValidationError(
-        'Password reset code has already been used',
+        "Password reset code has already been used",
       );
     }
 
@@ -167,18 +167,18 @@ export class PasswordResetCode {
 
   private static generateSecureCode(): string {
     const avoidPatterns = [
-      '0000',
-      '1111',
-      '2222',
-      '3333',
-      '4444',
-      '5555',
-      '6666',
-      '7777',
-      '8888',
-      '9999',
-      '1234',
-      '4321',
+      "0000",
+      "1111",
+      "2222",
+      "3333",
+      "4444",
+      "5555",
+      "6666",
+      "7777",
+      "8888",
+      "9999",
+      "1234",
+      "4321",
     ];
 
     let code: string;
@@ -200,12 +200,12 @@ export class PasswordResetCode {
   private validateCode(code: string): void {
     if (
       !code ||
-      typeof code !== 'string' ||
+      typeof code !== "string" ||
       code.length !== 4 ||
       !/^\d{4}$/.test(code)
     ) {
       throw new DomainValidationError(
-        'Password reset code must be exactly 4 digits',
+        "Password reset code must be exactly 4 digits",
       );
     }
   }

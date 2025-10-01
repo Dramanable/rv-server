@@ -6,20 +6,20 @@
  */
 
 // Authentication Guards
-export { JwtAuthGuard } from './jwt-auth.guard';
-export { LocalAuthGuard } from './local-auth.guard';
+export { JwtAuthGuard } from "./jwt-auth.guard";
+export { LocalAuthGuard } from "./local-auth.guard";
 
 // Authorization Guards
 export {
   BusinessContextGuard,
   PermissionsGuard,
   RoleHierarchyGuard,
-} from './permissions.guard';
-export { RolesGuard } from './roles.guard';
+} from "./permissions.guard";
+export { RolesGuard } from "./roles.guard";
 
 // Guards Combinés pour usage courant
-import { JwtAuthGuard } from './jwt-auth.guard';
-import { BusinessContextGuard, PermissionsGuard } from './permissions.guard';
+import { JwtAuthGuard } from "./jwt-auth.guard";
+import { BusinessContextGuard, PermissionsGuard } from "./permissions.guard";
 
 /**
  * 🔒 Guard combiné : Authentication + Permissions

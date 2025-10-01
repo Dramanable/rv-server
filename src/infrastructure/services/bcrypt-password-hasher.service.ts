@@ -5,10 +5,10 @@
  * ✅ Respecte le port IPasswordHasher
  */
 
-import { IPasswordHasher } from '@application/ports/password-hasher.port';
-import { InvalidInputError } from '@infrastructure/exceptions/infrastructure.exceptions';
-import { Injectable } from '@nestjs/common';
-import * as bcrypt from 'bcrypt';
+import { IPasswordHasher } from "@application/ports/password-hasher.port";
+import { InvalidInputError } from "@infrastructure/exceptions/infrastructure.exceptions";
+import { Injectable } from "@nestjs/common";
+import * as bcrypt from "bcrypt";
 
 @Injectable()
 export class BcryptPasswordHasher implements IPasswordHasher {
@@ -20,7 +20,7 @@ export class BcryptPasswordHasher implements IPasswordHasher {
    */
   async hash(plainPassword: string): Promise<string> {
     if (!plainPassword || plainPassword.trim().length === 0) {
-      throw new InvalidInputError('plainPassword', 'Cannot be empty');
+      throw new InvalidInputError("plainPassword", "Cannot be empty");
     }
 
     const salt = await bcrypt.genSalt(BcryptPasswordHasher.BCRYPT_ROUNDS);
@@ -62,7 +62,7 @@ export class BcryptPasswordHasher implements IPasswordHasher {
    */
   async hashForTesting(plainPassword: string): Promise<string> {
     if (!plainPassword || plainPassword.trim().length === 0) {
-      throw new InvalidInputError('plainPassword', 'Cannot be empty');
+      throw new InvalidInputError("plainPassword", "Cannot be empty");
     }
 
     const salt = await bcrypt.genSalt(4); // Rounds faibles pour tests

@@ -41,8 +41,8 @@ export class SharedException extends Error {
  * Exception jetée quand l'utilisateur n'est pas authentifié
  */
 export class UserNotAuthenticatedError extends SharedException {
-  constructor(message: string = 'User not authenticated') {
-    super(message, 'USER_NOT_AUTHENTICATED');
+  constructor(message: string = "User not authenticated") {
+    super(message, "USER_NOT_AUTHENTICATED");
   }
 }
 
@@ -51,9 +51,9 @@ export class UserNotAuthenticatedError extends SharedException {
  */
 export class UserNotAuthenticatedNoFallbackError extends SharedException {
   constructor(
-    message: string = 'User not authenticated and no fallback provided',
+    message: string = "User not authenticated and no fallback provided",
   ) {
-    super(message, 'USER_NOT_AUTHENTICATED_NO_FALLBACK');
+    super(message, "USER_NOT_AUTHENTICATED_NO_FALLBACK");
   }
 }
 
@@ -61,8 +61,8 @@ export class UserNotAuthenticatedNoFallbackError extends SharedException {
  * Exception jetée quand l'opération est requise pour AppContext
  */
 export class OperationRequiredError extends SharedException {
-  constructor(message: string = 'Operation is required for AppContext') {
-    super(message, 'OPERATION_REQUIRED');
+  constructor(message: string = "Operation is required for AppContext") {
+    super(message, "OPERATION_REQUIRED");
   }
 }
 
@@ -71,7 +71,7 @@ export class OperationRequiredError extends SharedException {
  */
 export class UnknownLayerError extends SharedException {
   constructor(layer: unknown) {
-    super(`Unknown layer: ${String(layer)}`, 'UNKNOWN_LAYER', { layer });
+    super(`Unknown layer: ${String(layer)}`, "UNKNOWN_LAYER", { layer });
   }
 }
 
@@ -79,8 +79,8 @@ export class UnknownLayerError extends SharedException {
  * Exception jetée quand le nom d'opération est requis
  */
 export class OperationNameRequiredError extends SharedException {
-  constructor(message: string = 'Operation name is required') {
-    super(message, 'OPERATION_NAME_REQUIRED');
+  constructor(message: string = "Operation name is required") {
+    super(message, "OPERATION_NAME_REQUIRED");
   }
 }
 
@@ -94,6 +94,6 @@ export class InfrastructureException extends SharedException {
     context?: Record<string, unknown>,
   ) {
     super(message, code, context);
-    this.name = 'InfrastructureException';
+    this.name = "InfrastructureException";
   }
 }

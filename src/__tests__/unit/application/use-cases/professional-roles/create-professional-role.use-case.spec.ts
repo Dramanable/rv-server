@@ -1,9 +1,9 @@
-import { CreateProfessionalRoleUseCase } from '@application/use-cases/professional-roles/create-professional-role.use-case';
-import { ProfessionalRole } from '@domain/entities/professional-role.entity';
-import { ProfessionalRoleCodeAlreadyExistsError } from '@domain/exceptions/professional-role.exceptions';
-import { IProfessionalRoleRepository } from '@domain/repositories/professional-role.repository';
+import { CreateProfessionalRoleUseCase } from "@application/use-cases/professional-roles/create-professional-role.use-case";
+import { ProfessionalRole } from "@domain/entities/professional-role.entity";
+import { ProfessionalRoleCodeAlreadyExistsError } from "@domain/exceptions/professional-role.exceptions";
+import { IProfessionalRoleRepository } from "@domain/repositories/professional-role.repository";
 
-describe('CreateProfessionalRoleUseCase', () => {
+describe("CreateProfessionalRoleUseCase", () => {
   let useCase: CreateProfessionalRoleUseCase;
   let mockRepository: jest.Mocked<IProfessionalRoleRepository>;
 
@@ -24,17 +24,17 @@ describe('CreateProfessionalRoleUseCase', () => {
     useCase = new CreateProfessionalRoleUseCase(mockRepository);
   });
 
-  describe('Successful Creation', () => {
-    it('should create a professional role successfully', async () => {
+  describe("Successful Creation", () => {
+    it("should create a professional role successfully", async () => {
       // Given
       const request = {
-        code: 'SPECIALIST',
-        name: 'Specialist',
-        displayName: 'Spécialiste',
-        category: 'SERVICE_PROVIDER',
-        description: 'Professionnel spécialisé dans un domaine particulier',
+        code: "SPECIALIST",
+        name: "Specialist",
+        displayName: "Spécialiste",
+        category: "SERVICE_PROVIDER",
+        description: "Professionnel spécialisé dans un domaine particulier",
         canLead: true,
-        requestingUserId: 'user-123',
+        requestingUserId: "user-123",
       };
 
       const createdRole = ProfessionalRole.create({
@@ -72,15 +72,15 @@ describe('CreateProfessionalRoleUseCase', () => {
       );
     });
 
-    it('should create a professional role with canLead defaulting to false', async () => {
+    it("should create a professional role with canLead defaulting to false", async () => {
       // Given
       const request = {
-        code: 'ASSISTANT',
-        name: 'Assistant',
-        displayName: 'Assistant',
-        category: 'SUPPORT',
-        description: 'Assistant professionnel pour support',
-        requestingUserId: 'user-123',
+        code: "ASSISTANT",
+        name: "Assistant",
+        displayName: "Assistant",
+        category: "SUPPORT",
+        description: "Assistant professionnel pour support",
+        requestingUserId: "user-123",
         // canLead non spécifié - doit valoir false par défaut
       };
 
@@ -108,25 +108,25 @@ describe('CreateProfessionalRoleUseCase', () => {
     });
   });
 
-  describe('Business Rule Violations', () => {
-    it('should throw error if professional role code already exists', async () => {
+  describe("Business Rule Violations", () => {
+    it("should throw error if professional role code already exists", async () => {
       // Given
       const request = {
-        code: 'EXISTING_CODE',
-        name: 'Existing Role',
-        displayName: 'Rôle Existant',
-        category: 'SERVICE_PROVIDER',
-        description: 'Un rôle qui existe déjà',
+        code: "EXISTING_CODE",
+        name: "Existing Role",
+        displayName: "Rôle Existant",
+        category: "SERVICE_PROVIDER",
+        description: "Un rôle qui existe déjà",
         canLead: false,
-        requestingUserId: 'user-123',
+        requestingUserId: "user-123",
       };
 
       const existingRole = ProfessionalRole.create({
         code: request.code,
-        name: 'Previous Name',
-        displayName: 'Nom Précédent',
-        category: 'SERVICE_PROVIDER',
-        description: 'Description précédente',
+        name: "Previous Name",
+        displayName: "Nom Précédent",
+        category: "SERVICE_PROVIDER",
+        description: "Description précédente",
         canLead: false,
       });
 
@@ -140,17 +140,17 @@ describe('CreateProfessionalRoleUseCase', () => {
     });
   });
 
-  describe('Repository Interactions', () => {
-    it('should call repository methods in correct order', async () => {
+  describe("Repository Interactions", () => {
+    it("should call repository methods in correct order", async () => {
       // Given
       const request = {
-        code: 'TEST_ROLE',
-        name: 'Test Role',
-        displayName: 'Rôle de Test',
-        category: 'SERVICE_PROVIDER',
-        description: 'Description de test pour le rôle',
+        code: "TEST_ROLE",
+        name: "Test Role",
+        displayName: "Rôle de Test",
+        category: "SERVICE_PROVIDER",
+        description: "Description de test pour le rôle",
         canLead: true,
-        requestingUserId: 'user-123',
+        requestingUserId: "user-123",
       };
 
       const createdRole = ProfessionalRole.create({
@@ -175,19 +175,19 @@ describe('CreateProfessionalRoleUseCase', () => {
       );
     });
 
-    it('should handle repository errors gracefully', async () => {
+    it("should handle repository errors gracefully", async () => {
       // Given
       const request = {
-        code: 'ERROR_ROLE',
-        name: 'Error Role',
-        displayName: 'Rôle Erreur',
-        category: 'SERVICE_PROVIDER',
-        description: 'Description pour test erreur',
+        code: "ERROR_ROLE",
+        name: "Error Role",
+        displayName: "Rôle Erreur",
+        category: "SERVICE_PROVIDER",
+        description: "Description pour test erreur",
         canLead: false,
-        requestingUserId: 'user-123',
+        requestingUserId: "user-123",
       };
 
-      const repositoryError = new Error('Database connection failed');
+      const repositoryError = new Error("Database connection failed");
       mockRepository.findByCode.mockRejectedValue(repositoryError);
 
       // When & Then

@@ -1,5 +1,5 @@
-import { BusinessId } from '../value-objects/business-id.value-object';
-import { CalendarType } from './calendar-type.entity';
+import { BusinessId } from "../value-objects/business-id.value-object";
+import { CalendarType } from "./calendar-type.entity";
 
 /**
  * 📅 Built-in Calendar Types
@@ -17,12 +17,12 @@ export class BuiltInCalendarTypes {
   ): CalendarType {
     return CalendarType.create({
       businessId,
-      name: 'Calendrier Principal',
-      code: 'BUSINESS',
+      name: "Calendrier Principal",
+      code: "BUSINESS",
       description:
         "Calendrier principal de l'entreprise pour la planification générale",
-      icon: 'building',
-      color: '#2563eb', // Bleu professionnel
+      icon: "building",
+      color: "#2563eb", // Bleu professionnel
       isBuiltin: true,
       isActive: true,
       sortOrder: 1,
@@ -38,11 +38,11 @@ export class BuiltInCalendarTypes {
   ): CalendarType {
     return CalendarType.create({
       businessId,
-      name: 'Calendrier Personnel',
-      code: 'STAFF',
-      description: 'Calendrier personnel pour les membres du personnel',
-      icon: 'user',
-      color: '#059669', // Vert pour le personnel
+      name: "Calendrier Personnel",
+      code: "STAFF",
+      description: "Calendrier personnel pour les membres du personnel",
+      icon: "user",
+      color: "#059669", // Vert pour le personnel
       isBuiltin: true,
       isActive: true,
       sortOrder: 2,
@@ -58,11 +58,11 @@ export class BuiltInCalendarTypes {
   ): CalendarType {
     return CalendarType.create({
       businessId,
-      name: 'Calendrier Ressource',
-      code: 'RESOURCE',
-      description: 'Calendrier pour la gestion des ressources et équipements',
-      icon: 'cog',
-      color: '#dc2626', // Rouge pour les ressources
+      name: "Calendrier Ressource",
+      code: "RESOURCE",
+      description: "Calendrier pour la gestion des ressources et équipements",
+      icon: "cog",
+      color: "#dc2626", // Rouge pour les ressources
       isBuiltin: true,
       isActive: true,
       sortOrder: 3,
@@ -78,11 +78,11 @@ export class BuiltInCalendarTypes {
   ): CalendarType {
     return CalendarType.create({
       businessId,
-      name: 'Calendrier Service',
-      code: 'SERVICE',
-      description: 'Calendrier spécialisé pour un service ou département',
-      icon: 'briefcase',
-      color: '#7c3aed', // Violet pour les services
+      name: "Calendrier Service",
+      code: "SERVICE",
+      description: "Calendrier spécialisé pour un service ou département",
+      icon: "briefcase",
+      color: "#7c3aed", // Violet pour les services
       isBuiltin: true,
       isActive: true,
       sortOrder: 4,
@@ -108,7 +108,7 @@ export class BuiltInCalendarTypes {
    * Vérifie si un code correspond à un type intégré
    */
   static isBuiltInCode(code: string): boolean {
-    return ['BUSINESS', 'STAFF', 'RESOURCE', 'SERVICE'].includes(
+    return ["BUSINESS", "STAFF", "RESOURCE", "SERVICE"].includes(
       code.toUpperCase(),
     );
   }
@@ -117,6 +117,6 @@ export class BuiltInCalendarTypes {
    * Obtient la liste des codes intégrés
    */
   static getBuiltInCodes(): string[] {
-    return ['BUSINESS', 'STAFF', 'RESOURCE', 'SERVICE'];
+    return ["BUSINESS", "STAFF", "RESOURCE", "SERVICE"];
   }
 }

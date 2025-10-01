@@ -1,9 +1,9 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger } from "@nestjs/common";
 
-import { User } from '../../domain/entities/user.entity';
+import { User } from "../../domain/entities/user.entity";
 
-import { InvalidCachedDataError } from '@infrastructure/exceptions/infrastructure.exceptions';
-import type { UserRepository } from '../../domain/repositories/user.repository.interface';
+import { InvalidCachedDataError } from "@infrastructure/exceptions/infrastructure.exceptions";
+import type { UserRepository } from "../../domain/repositories/user.repository.interface";
 
 // Interface temporaire pour éviter les erreurs d'import
 interface ICacheService {
@@ -26,13 +26,13 @@ interface ICacheService {
 @Injectable()
 export class UserCacheService {
   private readonly logger = new Logger(UserCacheService.name);
-  private readonly CACHE_PREFIX = 'user:';
+  private readonly CACHE_PREFIX = "user:";
   private readonly CACHE_TTL = 900; // 15 minutes en secondes
 
   constructor(
-    @Inject('UserRepository')
+    @Inject("UserRepository")
     private readonly userRepository: UserRepository,
-    @Inject('CacheService')
+    @Inject("CacheService")
     private readonly cacheService: ICacheService,
   ) {}
 
@@ -52,7 +52,7 @@ export class UserCacheService {
       if (cachedUser) {
         this.logger.debug(`User ${userId} found in cache`, {
           userId,
-          source: 'cache',
+          source: "cache",
         });
         return cachedUser;
       }
@@ -66,7 +66,7 @@ export class UserCacheService {
 
         this.logger.debug(`User ${userId} loaded from database and cached`, {
           userId,
-          source: 'database',
+          source: "database",
         });
       }
 
@@ -236,10 +236,10 @@ export class UserCacheService {
         userData.passwordChangeRequired,
       );
     } catch (error) {
-      this.logger.error('Failed to deserialize user from cache', error);
+      this.logger.error("Failed to deserialize user from cache", error);
       throw new InvalidCachedDataError(
-        'user',
-        'Failed to deserialize user from cache',
+        "user",
+        "Failed to deserialize user from cache",
       );
     }
   }

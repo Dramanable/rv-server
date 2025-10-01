@@ -16,26 +16,26 @@ import {
   Param,
   Post,
   Put,
-} from '@nestjs/common';
+} from "@nestjs/common";
 import {
   ApiBearerAuth,
   ApiOperation,
   ApiParam,
   ApiResponse,
   ApiTags,
-} from '@nestjs/swagger';
+} from "@nestjs/swagger";
 
-import { User } from '@domain/entities/user.entity';
-import { TOKENS } from '@shared/constants/injection-tokens';
-import { GetUser } from '../security/decorators/get-user.decorator';
+import { User } from "@domain/entities/user.entity";
+import { TOKENS } from "@shared/constants/injection-tokens";
+import { GetUser } from "../security/decorators/get-user.decorator";
 
 // Use Cases
-import { BookAppointmentUseCase } from '@application/use-cases/appointments/book-appointment.use-case';
-import { CancelAppointmentUseCase } from '@application/use-cases/appointments/cancel-appointment.use-case';
-import { GetAppointmentByIdUseCase } from '@application/use-cases/appointments/get-appointment-by-id.use-case';
-import { GetAvailableSlotsUseCase } from '@application/use-cases/appointments/get-available-slots-simple.use-case';
-import { ListAppointmentsUseCase } from '@application/use-cases/appointments/list-appointments.use-case';
-import { UpdateAppointmentUseCase } from '@application/use-cases/appointments/update-appointment.use-case';
+import { BookAppointmentUseCase } from "@application/use-cases/appointments/book-appointment.use-case";
+import { CancelAppointmentUseCase } from "@application/use-cases/appointments/cancel-appointment.use-case";
+import { GetAppointmentByIdUseCase } from "@application/use-cases/appointments/get-appointment-by-id.use-case";
+import { GetAvailableSlotsUseCase } from "@application/use-cases/appointments/get-available-slots-simple.use-case";
+import { ListAppointmentsUseCase } from "@application/use-cases/appointments/list-appointments.use-case";
+import { UpdateAppointmentUseCase } from "@application/use-cases/appointments/update-appointment.use-case";
 
 // DTOs
 import {
@@ -49,13 +49,13 @@ import {
   ListAppointmentsDto,
   ListAppointmentsResponseDto,
   UpdateAppointmentDto,
-} from '../dtos/appointments';
+} from "../dtos/appointments";
 
 // Mapper
-import { AppointmentMapper } from '../mappers/appointment.mapper';
+import { AppointmentMapper } from "../mappers/appointment.mapper";
 
-@ApiTags('📅 Appointments')
-@Controller('appointments')
+@ApiTags("📅 Appointments")
+@Controller("appointments")
 @ApiBearerAuth()
 export class AppointmentController {
   constructor(
@@ -77,10 +77,10 @@ export class AppointmentController {
    * 🔍 GET AVAILABLE SLOTS
    * Récupère les créneaux disponibles pour un service
    */
-  @Post('available-slots')
+  @Post("available-slots")
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
-    summary: '🔍 Get Available Time Slots',
+    summary: "🔍 Get Available Time Slots",
     description: `
     Récupère les créneaux disponibles pour un service donné.
 
@@ -97,12 +97,12 @@ export class AppointmentController {
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: '✅ Available slots found successfully',
+    description: "✅ Available slots found successfully",
     type: [AvailableSlotResponseDto],
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
-    description: '❌ Invalid request parameters',
+    description: "❌ Invalid request parameters",
   })
   async getAvailableSlots(
     @Body() dto: GetAvailableSlotsDto,
@@ -122,7 +122,7 @@ export class AppointmentController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
-    summary: '📅 Book New Appointment',
+    summary: "📅 Book New Appointment",
     description: `
     Réserve un nouveau rendez-vous avec validation complète.
 
@@ -144,16 +144,16 @@ export class AppointmentController {
   })
   @ApiResponse({
     status: HttpStatus.CREATED,
-    description: '✅ Appointment booked successfully',
+    description: "✅ Appointment booked successfully",
     type: BookAppointmentResponseDto,
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
-    description: '❌ Invalid booking data or business rules violation',
+    description: "❌ Invalid booking data or business rules violation",
   })
   @ApiResponse({
     status: HttpStatus.CONFLICT,
-    description: '❌ Time slot no longer available',
+    description: "❌ Time slot no longer available",
   })
   async bookAppointment(
     @Body() dto: BookAppointmentDto,
@@ -168,10 +168,10 @@ export class AppointmentController {
    * 📋 LIST APPOINTMENTS
    * Recherche avancée paginée des rendez-vous
    */
-  @Post('list')
+  @Post("list")
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
-    summary: '📋 List Appointments with Advanced Search',
+    summary: "📋 List Appointments with Advanced Search",
     description: `
     Recherche avancée paginée des rendez-vous.
 
@@ -189,7 +189,7 @@ export class AppointmentController {
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: '✅ Appointments found successfully',
+    description: "✅ Appointments found successfully",
     type: ListAppointmentsResponseDto,
   })
   async listAppointments(
@@ -205,28 +205,28 @@ export class AppointmentController {
    * 🔍 GET APPOINTMENT BY ID
    * Récupère un rendez-vous par son ID
    */
-  @Get(':id')
+  @Get(":id")
   @ApiOperation({
-    summary: '🔍 Get Appointment by ID',
+    summary: "🔍 Get Appointment by ID",
     description:
       "Récupère les détails complets d'un rendez-vous par son identifiant.",
   })
   @ApiParam({
-    name: 'id',
+    name: "id",
     description: "UUID de l'appointment",
-    format: 'uuid',
+    format: "uuid",
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: '✅ Appointment found successfully',
+    description: "✅ Appointment found successfully",
     type: AppointmentResponseDto,
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
-    description: '❌ Appointment not found',
+    description: "❌ Appointment not found",
   })
   async getAppointmentById(
-    @Param('id') id: string,
+    @Param("id") id: string,
     @GetUser() user: User,
   ): Promise<AppointmentResponseDto> {
     const response = await this.getAppointmentByIdUseCase.execute({
@@ -240,9 +240,9 @@ export class AppointmentController {
    * ✏️ UPDATE APPOINTMENT
    * Mise à jour d'un rendez-vous existant
    */
-  @Put(':id')
+  @Put(":id")
   @ApiOperation({
-    summary: '✏️ Update Appointment',
+    summary: "✏️ Update Appointment",
     description: `
     Met à jour un rendez-vous existant avec validation des règles métier.
 
@@ -257,17 +257,17 @@ export class AppointmentController {
     `,
   })
   @ApiParam({
-    name: 'id',
+    name: "id",
     description: "UUID de l'appointment à modifier",
-    format: 'uuid',
+    format: "uuid",
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: '✅ Appointment updated successfully',
+    description: "✅ Appointment updated successfully",
     type: AppointmentResponseDto,
   })
   async updateAppointment(
-    @Param('id') id: string,
+    @Param("id") id: string,
     @Body() dto: UpdateAppointmentDto,
     @GetUser() user: User,
   ): Promise<AppointmentResponseDto> {
@@ -284,9 +284,9 @@ export class AppointmentController {
    * ❌ CANCEL APPOINTMENT
    * Annulation d'un rendez-vous
    */
-  @Delete(':id')
+  @Delete(":id")
   @ApiOperation({
-    summary: '❌ Cancel Appointment',
+    summary: "❌ Cancel Appointment",
     description: `
     Annule un rendez-vous avec gestion des notifications.
 
@@ -301,17 +301,17 @@ export class AppointmentController {
     `,
   })
   @ApiParam({
-    name: 'id',
+    name: "id",
     description: "UUID de l'appointment à annuler",
-    format: 'uuid',
+    format: "uuid",
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: '✅ Appointment cancelled successfully',
+    description: "✅ Appointment cancelled successfully",
     type: CancelAppointmentResponseDto,
   })
   async cancelAppointment(
-    @Param('id') id: string,
+    @Param("id") id: string,
     @Body() dto: CancelAppointmentDto,
     @GetUser() user: User,
   ): Promise<CancelAppointmentResponseDto> {

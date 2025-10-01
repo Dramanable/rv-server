@@ -11,17 +11,17 @@
  * - Permissions cumulatives (hérite des niveaux supérieurs)
  */
 
-import { I18nService } from '@application/ports/i18n.port';
-import { Logger } from '@application/ports/logger.port';
-import { IPermissionService } from '@application/ports/permission.service.interface';
-import { RoleAssignmentContext } from '@domain/entities/role-assignment.entity';
-import { IBusinessContextRepository } from '@domain/repositories/business-context.repository.interface';
-import { IRoleAssignmentRepository } from '@domain/repositories/role-assignment.repository.interface';
+import { I18nService } from "@application/ports/i18n.port";
+import { Logger } from "@application/ports/logger.port";
+import { IPermissionService } from "@application/ports/permission.service.interface";
+import { RoleAssignmentContext } from "@domain/entities/role-assignment.entity";
+import { IBusinessContextRepository } from "@domain/repositories/business-context.repository.interface";
+import { IRoleAssignmentRepository } from "@domain/repositories/role-assignment.repository.interface";
 import {
   Permission,
   ROLE_HIERARCHY,
   UserRole,
-} from '@shared/enums/user-role.enum';
+} from "@shared/enums/user-role.enum";
 
 // === REQUEST & RESPONSE DTOs ===
 
@@ -39,7 +39,7 @@ export interface GetUserEffectivePermissionsResponse {
   readonly effectivePermissions: Permission[];
   readonly assignedRoles: Array<{
     readonly role: UserRole;
-    readonly scope: 'BUSINESS' | 'LOCATION' | 'DEPARTMENT';
+    readonly scope: "BUSINESS" | "LOCATION" | "DEPARTMENT";
     readonly assignedAt: Date;
     readonly expiresAt?: Date;
     readonly assignedBy: string;
@@ -61,7 +61,7 @@ export class GetUserEffectivePermissionsUseCase {
   async execute(
     request: GetUserEffectivePermissionsRequest,
   ): Promise<GetUserEffectivePermissionsResponse> {
-    this.logger.info('Retrieving user effective permissions', {
+    this.logger.info("Retrieving user effective permissions", {
       requestingUserId: request.requestingUserId,
       targetUserId: request.targetUserId,
       businessId: request.context.businessId,
@@ -79,7 +79,7 @@ export class GetUserEffectivePermissionsUseCase {
       );
 
       if (activeAssignments.length === 0) {
-        this.logger.warn('No active role assignments found for user', {
+        this.logger.warn("No active role assignments found for user", {
           targetUserId: request.targetUserId,
           context: request.context,
           correlationId: request.correlationId,
@@ -117,7 +117,7 @@ export class GetUserEffectivePermissionsUseCase {
         assignedBy: assignment.getAssignedBy(),
       }));
 
-      this.logger.info('User effective permissions retrieved successfully', {
+      this.logger.info("User effective permissions retrieved successfully", {
         targetUserId: request.targetUserId,
         effectivePermissionsCount: effectivePermissions.length,
         assignedRolesCount: assignedRoles.length,
@@ -136,8 +136,8 @@ export class GetUserEffectivePermissionsUseCase {
       };
     } catch (error) {
       this.logger.error(
-        'Failed to retrieve user effective permissions',
-        error instanceof Error ? error : new Error('Unknown error'),
+        "Failed to retrieve user effective permissions",
+        error instanceof Error ? error : new Error("Unknown error"),
         {
           requestingUserId: request.requestingUserId,
           targetUserId: request.targetUserId,
@@ -158,7 +158,7 @@ export class GetUserEffectivePermissionsUseCase {
     if (request.requestingUserId !== request.targetUserId) {
       await this.permissionService.requirePermission(
         request.requestingUserId,
-        'MANAGE_ALL_STAFF',
+        "MANAGE_ALL_STAFF",
         {
           businessId: request.context.businessId,
           locationId: request.context.locationId,

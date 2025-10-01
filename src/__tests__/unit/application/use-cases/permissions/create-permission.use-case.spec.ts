@@ -1,9 +1,9 @@
-import { CreatePermissionUseCase } from '@application/use-cases/permissions/create-permission.use-case';
-import { Permission } from '@domain/entities/permission.entity';
-import { PermissionAlreadyExistsError } from '@domain/exceptions/permission.exceptions';
-import { IPermissionRepository } from '@domain/repositories/permission.repository';
+import { CreatePermissionUseCase } from "@application/use-cases/permissions/create-permission.use-case";
+import { Permission } from "@domain/entities/permission.entity";
+import { PermissionAlreadyExistsError } from "@domain/exceptions/permission.exceptions";
+import { IPermissionRepository } from "@domain/repositories/permission.repository";
 
-describe('CreatePermissionUseCase', () => {
+describe("CreatePermissionUseCase", () => {
   let useCase: CreatePermissionUseCase;
   let mockPermissionRepository: jest.Mocked<IPermissionRepository>;
 
@@ -22,17 +22,17 @@ describe('CreatePermissionUseCase', () => {
     useCase = new CreatePermissionUseCase(mockPermissionRepository);
   });
 
-  describe('TDD - RED Phase', () => {
-    it('should throw error when permission name already exists', async () => {
+  describe("TDD - RED Phase", () => {
+    it("should throw error when permission name already exists", async () => {
       // Given
       const request = {
-        name: 'MANAGE_APPOINTMENTS',
-        displayName: 'Gérer les rendez-vous',
-        description: 'Permet de créer, modifier et supprimer les rendez-vous',
-        category: 'APPOINTMENTS',
+        name: "MANAGE_APPOINTMENTS",
+        displayName: "Gérer les rendez-vous",
+        description: "Permet de créer, modifier et supprimer les rendez-vous",
+        category: "APPOINTMENTS",
         isSystemPermission: false,
-        requestingUserId: 'user-123',
-        correlationId: 'req-123',
+        requestingUserId: "user-123",
+        correlationId: "req-123",
       };
 
       mockPermissionRepository.existsByName.mockResolvedValue(true);
@@ -43,49 +43,49 @@ describe('CreatePermissionUseCase', () => {
       );
 
       expect(mockPermissionRepository.existsByName).toHaveBeenCalledWith(
-        'MANAGE_APPOINTMENTS',
+        "MANAGE_APPOINTMENTS",
       );
       expect(mockPermissionRepository.save).not.toHaveBeenCalled();
     });
 
-    it('should validate permission name format', async () => {
+    it("should validate permission name format", async () => {
       // Given
       const request = {
-        name: 'invalid-name', // Lowercase with dashes instead of uppercase with underscores
-        displayName: 'Invalid Permission',
-        description: 'This is an invalid permission name',
-        category: 'TEST',
+        name: "invalid-name", // Lowercase with dashes instead of uppercase with underscores
+        displayName: "Invalid Permission",
+        description: "This is an invalid permission name",
+        category: "TEST",
         isSystemPermission: false,
-        requestingUserId: 'user-123',
-        correlationId: 'req-123',
+        requestingUserId: "user-123",
+        correlationId: "req-123",
       };
 
       mockPermissionRepository.existsByName.mockResolvedValue(false);
 
       // When & Then
       await expect(useCase.execute(request)).rejects.toThrow(
-        'Permission name must be uppercase with underscores (e.g., MANAGE_APPOINTMENTS)',
+        "Permission name must be uppercase with underscores (e.g., MANAGE_APPOINTMENTS)",
       );
 
       expect(mockPermissionRepository.save).not.toHaveBeenCalled();
     });
   });
 
-  describe('TDD - GREEN Phase', () => {
-    it('should create permission successfully', async () => {
+  describe("TDD - GREEN Phase", () => {
+    it("should create permission successfully", async () => {
       // Given
       const request = {
-        name: 'MANAGE_APPOINTMENTS',
-        displayName: 'Gérer les rendez-vous',
-        description: 'Permet de créer, modifier et supprimer les rendez-vous',
-        category: 'APPOINTMENTS',
+        name: "MANAGE_APPOINTMENTS",
+        displayName: "Gérer les rendez-vous",
+        description: "Permet de créer, modifier et supprimer les rendez-vous",
+        category: "APPOINTMENTS",
         isSystemPermission: false,
-        requestingUserId: 'user-123',
-        correlationId: 'req-123',
+        requestingUserId: "user-123",
+        correlationId: "req-123",
       };
 
       const savedPermission = Permission.create({
-        id: 'permission-123',
+        id: "permission-123",
         name: request.name,
         displayName: request.displayName,
         description: request.description,
@@ -101,11 +101,11 @@ describe('CreatePermissionUseCase', () => {
 
       // Then
       expect(result).toEqual({
-        id: 'permission-123',
-        name: 'MANAGE_APPOINTMENTS',
-        displayName: 'Gérer les rendez-vous',
-        description: 'Permet de créer, modifier et supprimer les rendez-vous',
-        category: 'APPOINTMENTS',
+        id: "permission-123",
+        name: "MANAGE_APPOINTMENTS",
+        displayName: "Gérer les rendez-vous",
+        description: "Permet de créer, modifier et supprimer les rendez-vous",
+        category: "APPOINTMENTS",
         isSystemPermission: false,
         isActive: true,
         canBeDeleted: true,
@@ -114,27 +114,27 @@ describe('CreatePermissionUseCase', () => {
       });
 
       expect(mockPermissionRepository.existsByName).toHaveBeenCalledWith(
-        'MANAGE_APPOINTMENTS',
+        "MANAGE_APPOINTMENTS",
       );
       expect(mockPermissionRepository.save).toHaveBeenCalledWith(
         expect.any(Permission),
       );
     });
 
-    it('should create system permission correctly', async () => {
+    it("should create system permission correctly", async () => {
       // Given
       const request = {
-        name: 'SYSTEM_ADMIN',
-        displayName: 'Administration Système',
-        description: 'Accès complet au système',
-        category: 'SYSTEM',
+        name: "SYSTEM_ADMIN",
+        displayName: "Administration Système",
+        description: "Accès complet au système",
+        category: "SYSTEM",
         isSystemPermission: true,
-        requestingUserId: 'admin-123',
-        correlationId: 'req-456',
+        requestingUserId: "admin-123",
+        correlationId: "req-456",
       };
 
       const savedPermission = Permission.create({
-        id: 'system-permission-123',
+        id: "system-permission-123",
         name: request.name,
         displayName: request.displayName,
         description: request.description,
@@ -154,17 +154,17 @@ describe('CreatePermissionUseCase', () => {
     });
   });
 
-  describe('TDD - REFACTOR Phase', () => {
-    it('should generate unique ID for new permission', async () => {
+  describe("TDD - REFACTOR Phase", () => {
+    it("should generate unique ID for new permission", async () => {
       // Given
       const request = {
-        name: 'TEST_PERMISSION',
-        displayName: 'Test Permission',
-        description: 'This is a test permission',
-        category: 'TEST',
+        name: "TEST_PERMISSION",
+        displayName: "Test Permission",
+        description: "This is a test permission",
+        category: "TEST",
         isSystemPermission: false,
-        requestingUserId: 'user-123',
-        correlationId: 'req-123',
+        requestingUserId: "user-123",
+        correlationId: "req-123",
       };
 
       mockPermissionRepository.existsByName.mockResolvedValue(false);
@@ -177,30 +177,30 @@ describe('CreatePermissionUseCase', () => {
 
       // Then
       expect(result.id).toBeDefined();
-      expect(typeof result.id).toBe('string');
+      expect(typeof result.id).toBe("string");
       expect(result.id.length).toBeGreaterThan(0);
     });
 
-    it('should handle repository errors gracefully', async () => {
+    it("should handle repository errors gracefully", async () => {
       // Given
       const request = {
-        name: 'TEST_PERMISSION',
-        displayName: 'Test Permission',
-        description: 'This is a test permission',
-        category: 'TEST',
+        name: "TEST_PERMISSION",
+        displayName: "Test Permission",
+        description: "This is a test permission",
+        category: "TEST",
         isSystemPermission: false,
-        requestingUserId: 'user-123',
-        correlationId: 'req-123',
+        requestingUserId: "user-123",
+        correlationId: "req-123",
       };
 
       mockPermissionRepository.existsByName.mockResolvedValue(false);
       mockPermissionRepository.save.mockRejectedValue(
-        new Error('Database connection failed'),
+        new Error("Database connection failed"),
       );
 
       // When & Then
       await expect(useCase.execute(request)).rejects.toThrow(
-        'Database connection failed',
+        "Database connection failed",
       );
     });
   });

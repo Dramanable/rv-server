@@ -17,12 +17,12 @@
  * - Rate limiting sur les tentatives
  */
 
-import { DomainValidationError } from '../../../domain/exceptions/domain.exceptions';
-import { IPasswordResetCodeRepository } from '../../../domain/repositories/password-reset-code.repository';
-import { UserRepository } from '../../../domain/repositories/user.repository.interface';
-import { UserId } from '../../../domain/value-objects/user-id.value-object';
-import { I18nService } from '../../ports/i18n.port';
-import { Logger } from '../../ports/logger.port';
+import { DomainValidationError } from "../../../domain/exceptions/domain.exceptions";
+import { IPasswordResetCodeRepository } from "../../../domain/repositories/password-reset-code.repository";
+import { UserRepository } from "../../../domain/repositories/user.repository.interface";
+import { UserId } from "../../../domain/value-objects/user-id.value-object";
+import { I18nService } from "../../ports/i18n.port";
+import { Logger } from "../../ports/logger.port";
 
 export interface VerifyPasswordResetCodeRequest {
   readonly code: string;
@@ -53,9 +53,9 @@ export class VerifyPasswordResetCodeUseCase {
   ): Promise<VerifyPasswordResetCodeResponse> {
     const correlationId = `verify-code-${Date.now()}`;
 
-    this.logger.info('🔍 Password reset code verification started', {
+    this.logger.info("🔍 Password reset code verification started", {
       correlationId,
-      code: request.code.substring(0, 2) + '**', // Partial logging pour sécurité
+      code: request.code.substring(0, 2) + "**", // Partial logging pour sécurité
       ip: request.clientInfo?.ip,
     });
 
@@ -67,24 +67,24 @@ export class VerifyPasswordResetCodeUseCase {
       const resetCode = await this.resetCodeRepository.findByCode(request.code);
 
       if (!resetCode) {
-        this.logger.warn('🚫 Invalid password reset code attempted', {
+        this.logger.warn("🚫 Invalid password reset code attempted", {
           correlationId,
-          code: request.code.substring(0, 2) + '**',
+          code: request.code.substring(0, 2) + "**",
           ip: request.clientInfo?.ip,
         });
 
         return {
           success: false,
-          message: this.i18n.t('auth.password_reset.invalid_code'),
-          messageKey: 'auth.password_reset.invalid_code',
+          message: this.i18n.t("auth.password_reset.invalid_code"),
+          messageKey: "auth.password_reset.invalid_code",
         };
       }
 
       // 3. Vérifier la validité du code (expiration + usage)
       if (!resetCode.isValid) {
-        const reason = resetCode.isExpired ? 'expired' : 'already_used';
+        const reason = resetCode.isExpired ? "expired" : "already_used";
 
-        this.logger.warn('🚫 Invalid password reset code (expired or used)', {
+        this.logger.warn("🚫 Invalid password reset code (expired or used)", {
           correlationId,
           reason,
           userId: resetCode.userId,
@@ -103,8 +103,8 @@ export class VerifyPasswordResetCodeUseCase {
 
       if (!user) {
         this.logger.error(
-          '🚫 User not found for valid reset code',
-          new Error('User not found'),
+          "🚫 User not found for valid reset code",
+          new Error("User not found"),
           {
             correlationId,
             userId: resetCode.userId,
@@ -113,8 +113,8 @@ export class VerifyPasswordResetCodeUseCase {
 
         return {
           success: false,
-          message: this.i18n.t('auth.password_reset.user_not_found'),
-          messageKey: 'auth.password_reset.user_not_found',
+          message: this.i18n.t("auth.password_reset.user_not_found"),
+          messageKey: "auth.password_reset.user_not_found",
         };
       }
 
@@ -124,21 +124,21 @@ export class VerifyPasswordResetCodeUseCase {
       // 6. Générer un token temporaire pour la session de reset (5 minutes)
       const resetToken = this.generateResetSessionToken(user.id);
 
-      this.logger.info('✅ Password reset code verified successfully', {
+      this.logger.info("✅ Password reset code verified successfully", {
         correlationId,
         userId: user.id,
       });
 
       return {
         success: true,
-        message: this.i18n.t('auth.password_reset.code_verified'),
-        messageKey: 'auth.password_reset.code_verified',
+        message: this.i18n.t("auth.password_reset.code_verified"),
+        messageKey: "auth.password_reset.code_verified",
         userId: user.id,
         resetToken,
       };
     } catch (error) {
       this.logger.error(
-        '❌ Password reset code verification failed',
+        "❌ Password reset code verification failed",
         error instanceof Error ? error : new Error(String(error)),
         {
           correlationId,
@@ -149,29 +149,29 @@ export class VerifyPasswordResetCodeUseCase {
         return {
           success: false,
           message: error.message,
-          messageKey: 'validation.invalid_code_format',
+          messageKey: "validation.invalid_code_format",
         };
       }
 
       return {
         success: false,
-        message: this.i18n.t('auth.password_reset.verification_failed'),
-        messageKey: 'auth.password_reset.verification_failed',
+        message: this.i18n.t("auth.password_reset.verification_failed"),
+        messageKey: "auth.password_reset.verification_failed",
       };
     }
   }
 
   private validateCodeFormat(code: string): void {
-    if (!code || typeof code !== 'string') {
-      throw new DomainValidationError('Code must be a string');
+    if (!code || typeof code !== "string") {
+      throw new DomainValidationError("Code must be a string");
     }
 
     if (code.length !== 4) {
-      throw new DomainValidationError('Code must be exactly 4 digits');
+      throw new DomainValidationError("Code must be exactly 4 digits");
     }
 
     if (!/^\d{4}$/.test(code)) {
-      throw new DomainValidationError('Code must contain only digits');
+      throw new DomainValidationError("Code must contain only digits");
     }
   }
 

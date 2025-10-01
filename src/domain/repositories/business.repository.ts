@@ -4,8 +4,8 @@
  * ✅ Clean Architecture compliance
  */
 
-import { Business } from '../entities/business.entity';
-import { BusinessId } from '../value-objects/business-id.value-object';
+import { Business } from "../entities/business.entity";
+import { BusinessId } from "../value-objects/business-id.value-object";
 
 export interface BusinessRepository {
   findById(id: BusinessId): Promise<Business | null>;

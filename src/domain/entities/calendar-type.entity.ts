@@ -1,6 +1,6 @@
-import { RequiredValueError } from '../exceptions/value-object.exceptions';
-import { BusinessId } from '../value-objects/business-id.value-object';
-import { CalendarTypeId } from '../value-objects/calendar-type-id.value-object';
+import { RequiredValueError } from "../exceptions/value-object.exceptions";
+import { BusinessId } from "../value-objects/business-id.value-object";
+import { CalendarTypeId } from "../value-objects/calendar-type-id.value-object";
 
 export class CalendarType {
   constructor(
@@ -24,15 +24,15 @@ export class CalendarType {
 
   private validate(): void {
     if (!this._name || this._name.trim().length === 0) {
-      throw new RequiredValueError('calendar_type_name');
+      throw new RequiredValueError("calendar_type_name");
     }
 
     if (!this._code || this._code.trim().length === 0) {
-      throw new RequiredValueError('calendar_type_code');
+      throw new RequiredValueError("calendar_type_code");
     }
 
     if (!this._color || this._color.trim().length === 0) {
-      throw new RequiredValueError('calendar_type_color');
+      throw new RequiredValueError("calendar_type_color");
     }
   }
 
@@ -99,7 +99,7 @@ export class CalendarType {
   }
 
   getIcon(): string {
-    return this._icon || '';
+    return this._icon || "";
   }
 
   getSortOrder(): number {
@@ -119,7 +119,7 @@ export class CalendarType {
   }
 
   getUpdatedBy(): string {
-    return this._updatedBy || '';
+    return this._updatedBy || "";
   }
 
   getCreatedAt(): Date {
@@ -143,11 +143,11 @@ export class CalendarType {
   }): void {
     // Empêcher la modification des types built-in
     if (this._isBuiltIn) {
-      throw new Error('Cannot modify built-in CalendarType');
+      throw new Error("Cannot modify built-in CalendarType");
     }
     if (data.name !== undefined) {
       if (!data.name || data.name.trim().length === 0) {
-        throw new Error('CalendarType name cannot be empty');
+        throw new Error("CalendarType name cannot be empty");
       }
       (this as any)._name = data.name;
     }
@@ -196,7 +196,7 @@ export class CalendarType {
       data.code,
       data.description,
       data.color,
-      data.createdBy || '',
+      data.createdBy || "",
       data.sortOrder || 0,
       data.isActive !== false,
       data.isBuiltin || false,
@@ -225,7 +225,7 @@ export class CalendarType {
     updatedAt?: Date;
   }): CalendarType {
     return new CalendarType(
-      typeof data.id === 'string'
+      typeof data.id === "string"
         ? CalendarTypeId.fromString(data.id)
         : data.id,
       data.businessId,
@@ -233,11 +233,11 @@ export class CalendarType {
       data.code,
       data.description,
       data.color,
-      data.createdBy || '',
+      data.createdBy || "",
       data.sortOrder || 0,
       data.isActive !== false,
       data.isBuiltIn || false,
-      data.icon || '',
+      data.icon || "",
       data.createdAt || new Date(),
       data.updatedAt || new Date(),
     );

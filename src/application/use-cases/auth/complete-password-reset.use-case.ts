@@ -19,14 +19,14 @@
  * - Force un changement de mot de passe ultérieur
  */
 
-import { User } from '../../../domain/entities/user.entity';
-import { DomainValidationError } from '../../../domain/exceptions/domain.exceptions';
-import { IPasswordResetCodeRepository } from '../../../domain/repositories/password-reset-code.repository';
-import { UserRepository } from '../../../domain/repositories/user.repository.interface';
-import { AuthenticationService } from '../../ports/authentication.port';
-import { I18nService } from '../../ports/i18n.port';
-import { Logger } from '../../ports/logger.port';
-import { IPasswordService } from '../../ports/password.port';
+import { User } from "../../../domain/entities/user.entity";
+import { DomainValidationError } from "../../../domain/exceptions/domain.exceptions";
+import { IPasswordResetCodeRepository } from "../../../domain/repositories/password-reset-code.repository";
+import { UserRepository } from "../../../domain/repositories/user.repository.interface";
+import { AuthenticationService } from "../../ports/authentication.port";
+import { I18nService } from "../../ports/i18n.port";
+import { Logger } from "../../ports/logger.port";
+import { IPasswordService } from "../../ports/password.port";
 
 export interface CompletePasswordResetRequest {
   readonly resetToken: string;
@@ -67,7 +67,7 @@ export class CompletePasswordResetUseCase {
   ): Promise<CompletePasswordResetResponse> {
     const correlationId = `complete-reset-${Date.now()}`;
 
-    this.logger.info('🔄 Password reset completion started', {
+    this.logger.info("🔄 Password reset completion started", {
       correlationId,
       ip: request.clientInfo?.ip,
     });
@@ -83,15 +83,15 @@ export class CompletePasswordResetUseCase {
       const user = await this.userRepository.findById(userId);
 
       if (!user) {
-        this.logger.error('🚫 User not found for password reset', undefined, {
+        this.logger.error("🚫 User not found for password reset", undefined, {
           correlationId,
           userId,
         });
 
         return {
           success: false,
-          message: this.i18n.t('auth.password_reset.user_not_found'),
-          messageKey: 'auth.password_reset.user_not_found',
+          message: this.i18n.t("auth.password_reset.user_not_found"),
+          messageKey: "auth.password_reset.user_not_found",
         };
       }
 
@@ -123,15 +123,15 @@ export class CompletePasswordResetUseCase {
       // 7. Générer les tokens d'authentification
       const tokens = await this.authService.generateTokens(updatedUser);
 
-      this.logger.info('✅ Password reset completed successfully', {
+      this.logger.info("✅ Password reset completed successfully", {
         correlationId,
         userId: updatedUser.id,
       });
 
       return {
         success: true,
-        message: this.i18n.t('auth.password_reset.completed'),
-        messageKey: 'auth.password_reset.completed',
+        message: this.i18n.t("auth.password_reset.completed"),
+        messageKey: "auth.password_reset.completed",
         accessToken: tokens.accessToken,
         refreshToken: tokens.refreshToken,
         user: {
@@ -143,7 +143,7 @@ export class CompletePasswordResetUseCase {
       };
     } catch (error) {
       this.logger.error(
-        '❌ Password reset completion failed',
+        "❌ Password reset completion failed",
         error instanceof Error ? error : new Error(String(error)),
         {
           correlationId,
@@ -154,35 +154,35 @@ export class CompletePasswordResetUseCase {
         return {
           success: false,
           message: error.message,
-          messageKey: 'validation.password_reset_failed',
+          messageKey: "validation.password_reset_failed",
         };
       }
 
       return {
         success: false,
-        message: this.i18n.t('auth.password_reset.completion_failed'),
-        messageKey: 'auth.password_reset.completion_failed',
+        message: this.i18n.t("auth.password_reset.completion_failed"),
+        messageKey: "auth.password_reset.completion_failed",
       };
     }
   }
 
   private validateAndExtractUserId(resetToken: string): string {
-    if (!resetToken || typeof resetToken !== 'string') {
-      throw new DomainValidationError('Reset token is required');
+    if (!resetToken || typeof resetToken !== "string") {
+      throw new DomainValidationError("Reset token is required");
     }
 
     // Vérifier le format du token: reset_userId_timestamp_random
-    const tokenParts = resetToken.split('_');
+    const tokenParts = resetToken.split("_");
 
-    if (tokenParts.length !== 4 || tokenParts[0] !== 'reset') {
-      throw new DomainValidationError('Invalid reset token format');
+    if (tokenParts.length !== 4 || tokenParts[0] !== "reset") {
+      throw new DomainValidationError("Invalid reset token format");
     }
 
     const userId = tokenParts[1];
     const timestamp = parseInt(tokenParts[2], 10);
 
     if (!userId || isNaN(timestamp)) {
-      throw new DomainValidationError('Invalid reset token data');
+      throw new DomainValidationError("Invalid reset token data");
     }
 
     // Vérifier l'expiration (5 minutes)
@@ -191,7 +191,7 @@ export class CompletePasswordResetUseCase {
     const fiveMinutes = 5 * 60 * 1000;
 
     if (tokenAge > fiveMinutes) {
-      throw new DomainValidationError('Reset token has expired');
+      throw new DomainValidationError("Reset token has expired");
     }
 
     return userId;
@@ -202,41 +202,41 @@ export class CompletePasswordResetUseCase {
     confirmPassword: string,
   ): void {
     if (!newPassword || !confirmPassword) {
-      throw new DomainValidationError('Password and confirmation are required');
+      throw new DomainValidationError("Password and confirmation are required");
     }
 
     if (newPassword !== confirmPassword) {
-      throw new DomainValidationError('Passwords do not match');
+      throw new DomainValidationError("Passwords do not match");
     }
 
     // Validation de la force du mot de passe
     if (newPassword.length < 8) {
       throw new DomainValidationError(
-        'Password must be at least 8 characters long',
+        "Password must be at least 8 characters long",
       );
     }
 
     if (!/(?=.*[a-z])/.test(newPassword)) {
       throw new DomainValidationError(
-        'Password must contain at least one lowercase letter',
+        "Password must contain at least one lowercase letter",
       );
     }
 
     if (!/(?=.*[A-Z])/.test(newPassword)) {
       throw new DomainValidationError(
-        'Password must contain at least one uppercase letter',
+        "Password must contain at least one uppercase letter",
       );
     }
 
     if (!/(?=.*\d)/.test(newPassword)) {
       throw new DomainValidationError(
-        'Password must contain at least one number',
+        "Password must contain at least one number",
       );
     }
 
     if (!/(?=.*[@$!%*?&])/.test(newPassword)) {
       throw new DomainValidationError(
-        'Password must contain at least one special character (@$!%*?&)',
+        "Password must contain at least one special character (@$!%*?&)",
       );
     }
   }

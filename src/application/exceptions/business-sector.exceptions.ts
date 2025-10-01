@@ -5,7 +5,7 @@
  * Utilisées par les use cases pour signaler des erreurs métier précises.
  */
 
-import { ApplicationException } from './application.exceptions';
+import { ApplicationException } from "./application.exceptions";
 
 /**
  * 🔍 Erreur : Secteur d'activité introuvable
@@ -13,7 +13,7 @@ import { ApplicationException } from './application.exceptions';
 export class BusinessSectorNotFoundError extends ApplicationException {
   constructor(
     identifier: string,
-    identifierType: 'id' | 'code' = 'id',
+    identifierType: "id" | "code" = "id",
     message?: string,
   ) {
     const defaultMessage =
@@ -22,8 +22,8 @@ export class BusinessSectorNotFoundError extends ApplicationException {
 
     super(
       defaultMessage,
-      'BUSINESS_SECTOR_NOT_FOUND',
-      'business-sector.not-found',
+      "BUSINESS_SECTOR_NOT_FOUND",
+      "business-sector.not-found",
       { identifier, identifierType },
     );
   }
@@ -39,8 +39,8 @@ export class BusinessSectorAlreadyExistsError extends ApplicationException {
 
     super(
       defaultMessage,
-      'BUSINESS_SECTOR_ALREADY_EXISTS',
-      'business-sector.already-exists',
+      "BUSINESS_SECTOR_ALREADY_EXISTS",
+      "business-sector.already-exists",
       { code },
     );
   }
@@ -51,12 +51,12 @@ export class BusinessSectorAlreadyExistsError extends ApplicationException {
  */
 export class InvalidBusinessSectorDataError extends ApplicationException {
   constructor(validationErrors: string[], message?: string) {
-    const defaultMessage = message || 'Invalid business sector data provided';
+    const defaultMessage = message || "Invalid business sector data provided";
 
     super(
       defaultMessage,
-      'INVALID_BUSINESS_SECTOR_DATA',
-      'business-sector.invalid-data',
+      "INVALID_BUSINESS_SECTOR_DATA",
+      "business-sector.invalid-data",
       { validationErrors },
     );
   }
@@ -72,8 +72,8 @@ export class InsufficientPermissionsError extends ApplicationException {
 
     super(
       defaultMessage,
-      'INSUFFICIENT_PERMISSIONS',
-      'business-sector.insufficient-permissions',
+      "INSUFFICIENT_PERMISSIONS",
+      "business-sector.insufficient-permissions",
       { requiredPermission, userId },
     );
   }
@@ -88,7 +88,7 @@ export class BusinessSectorInUseError extends ApplicationException {
       message ||
       `Cannot delete business sector. It is currently used by ${usageCount} users`;
 
-    super(defaultMessage, 'BUSINESS_SECTOR_IN_USE', 'business-sector.in-use', {
+    super(defaultMessage, "BUSINESS_SECTOR_IN_USE", "business-sector.in-use", {
       sectorId,
       usageCount,
     });
@@ -110,8 +110,8 @@ export class BusinessSectorOperationError extends ApplicationException {
 
     super(
       defaultMessage,
-      'BUSINESS_SECTOR_OPERATION_FAILED',
-      'business-sector.operation-failed',
+      "BUSINESS_SECTOR_OPERATION_FAILED",
+      "business-sector.operation-failed",
       { operation, sectorIdentifier, cause: cause?.message },
     );
   }

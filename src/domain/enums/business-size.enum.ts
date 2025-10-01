@@ -5,10 +5,10 @@
  */
 
 export enum BusinessSizeEnum {
-  SMALL = 'SMALL', // 1-5 employés
-  MEDIUM = 'MEDIUM', // 6-20 employés
-  LARGE = 'LARGE', // 21-100 employés
-  ENTERPRISE = 'ENTERPRISE', // 100+ employés
+  SMALL = "SMALL", // 1-5 employés
+  MEDIUM = "MEDIUM", // 6-20 employés
+  LARGE = "LARGE", // 21-100 employés
+  ENTERPRISE = "ENTERPRISE", // 100+ employés
 }
 
 export class BusinessSize {
@@ -17,10 +17,10 @@ export class BusinessSize {
    */
   static getLabel(size: BusinessSizeEnum): string {
     const labels: Record<BusinessSizeEnum, string> = {
-      [BusinessSizeEnum.SMALL]: 'Petite entreprise (1-5 employés)',
-      [BusinessSizeEnum.MEDIUM]: 'Moyenne entreprise (6-20 employés)',
-      [BusinessSizeEnum.LARGE]: 'Grande entreprise (21-100 employés)',
-      [BusinessSizeEnum.ENTERPRISE]: 'Très grande entreprise (100+ employés)',
+      [BusinessSizeEnum.SMALL]: "Petite entreprise (1-5 employés)",
+      [BusinessSizeEnum.MEDIUM]: "Moyenne entreprise (6-20 employés)",
+      [BusinessSizeEnum.LARGE]: "Grande entreprise (21-100 employés)",
+      [BusinessSizeEnum.ENTERPRISE]: "Très grande entreprise (100+ employés)",
     };
 
     return labels[size] || size;
@@ -83,13 +83,13 @@ export class BusinessSize {
    */
   static getColor(size: BusinessSizeEnum): string {
     const colors: Record<BusinessSizeEnum, string> = {
-      [BusinessSizeEnum.SMALL]: '#10B981', // Vert
-      [BusinessSizeEnum.MEDIUM]: '#3B82F6', // Bleu
-      [BusinessSizeEnum.LARGE]: '#8B5CF6', // Violet
-      [BusinessSizeEnum.ENTERPRISE]: '#F59E0B', // Orange
+      [BusinessSizeEnum.SMALL]: "#10B981", // Vert
+      [BusinessSizeEnum.MEDIUM]: "#3B82F6", // Bleu
+      [BusinessSizeEnum.LARGE]: "#8B5CF6", // Violet
+      [BusinessSizeEnum.ENTERPRISE]: "#F59E0B", // Orange
     };
 
-    return colors[size] || '#6B7280';
+    return colors[size] || "#6B7280";
   }
 
   /**
@@ -97,12 +97,12 @@ export class BusinessSize {
    */
   static getIcon(size: BusinessSizeEnum): string {
     const icons: Record<BusinessSizeEnum, string> = {
-      [BusinessSizeEnum.SMALL]: '🏪',
-      [BusinessSizeEnum.MEDIUM]: '🏢',
-      [BusinessSizeEnum.LARGE]: '🏬',
-      [BusinessSizeEnum.ENTERPRISE]: '🏭',
+      [BusinessSizeEnum.SMALL]: "🏪",
+      [BusinessSizeEnum.MEDIUM]: "🏢",
+      [BusinessSizeEnum.LARGE]: "🏬",
+      [BusinessSizeEnum.ENTERPRISE]: "🏭",
     };
 
-    return icons[size] || '🏪';
+    return icons[size] || "🏪";
   }
 }

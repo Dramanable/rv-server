@@ -1,6 +1,6 @@
-import { CalendarType } from '@domain/entities/calendar-type.entity';
-import { BusinessId } from '@domain/value-objects/business-id.value-object';
-import { CalendarTypeId } from '@domain/value-objects/calendar-type-id.value-object';
+import { CalendarType } from "@domain/entities/calendar-type.entity";
+import { BusinessId } from "@domain/value-objects/business-id.value-object";
+import { CalendarTypeId } from "@domain/value-objects/calendar-type-id.value-object";
 
 export interface CalendarTypeSearchCriteria {
   readonly businessId?: BusinessId;
@@ -14,7 +14,7 @@ export interface CalendarTypeSearchCriteria {
   readonly page?: number;
   readonly limit?: number;
   readonly sortBy?: string;
-  readonly sortOrder?: 'asc' | 'desc';
+  readonly sortOrder?: "asc" | "desc";
 }
 
 export interface CalendarTypeSearchResult {

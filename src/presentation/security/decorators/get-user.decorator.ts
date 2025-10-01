@@ -9,9 +9,9 @@ import {
   createParamDecorator,
   ExecutionContext,
   UnauthorizedException,
-} from '@nestjs/common';
-import type { Request } from 'express';
-import { User } from '../../../domain/entities/user.entity';
+} from "@nestjs/common";
+import type { Request } from "express";
+import { User } from "../../../domain/entities/user.entity";
 
 /**
  * 👤 Décorateur @GetUser()
@@ -41,7 +41,7 @@ export const GetUser = createParamDecorator(
 
     if (!user) {
       throw new UnauthorizedException(
-        'User not found in request. Make sure JwtAuthGuard is applied.',
+        "User not found in request. Make sure JwtAuthGuard is applied.",
       );
     }
 

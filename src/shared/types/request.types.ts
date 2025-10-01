@@ -4,11 +4,11 @@
  * Types pour les requêtes HTTP étendues avec informations utilisateur
  */
 
-import { Request } from 'express';
+import { Request } from "express";
 import {
   UserNotAuthenticatedError,
   UserNotAuthenticatedNoFallbackError,
-} from '../exceptions/shared.exceptions';
+} from "../exceptions/shared.exceptions";
 
 /**
  * Interface pour les informations utilisateur dans la requête

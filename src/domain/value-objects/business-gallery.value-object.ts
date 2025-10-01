@@ -10,8 +10,8 @@ import {
   RequiredValueError,
   ValueNotFoundError,
   ValueOutOfRangeError,
-} from '@domain/exceptions/value-object.exceptions';
-import { BusinessImage, ImageCategory } from './business-image.value-object';
+} from "@domain/exceptions/value-object.exceptions";
+import { BusinessImage, ImageCategory } from "./business-image.value-object";
 
 export class BusinessGallery {
   private readonly _images: Map<string, BusinessImage>;
@@ -59,13 +59,13 @@ export class BusinessGallery {
 
     // Check maximum images limit
     if (this._images.size >= 20) {
-      throw new ValueOutOfRangeError('gallery.size', this._images.size, 0, 19);
+      throw new ValueOutOfRangeError("gallery.size", this._images.size, 0, 19);
     }
 
     // Check for duplicate URLs
     const existingImage = this.findByUrl(image.url);
     if (existingImage) {
-      throw new DuplicateValueError('image.url', image.url);
+      throw new DuplicateValueError("image.url", image.url);
     }
 
     const newImages = new Map(this._images);
@@ -76,7 +76,7 @@ export class BusinessGallery {
 
   removeImage(imageId: string): BusinessGallery {
     if (!this._images.has(imageId)) {
-      throw new ValueNotFoundError('imageId', imageId);
+      throw new ValueNotFoundError("imageId", imageId);
     }
 
     const newImages = new Map(this._images);
@@ -88,12 +88,12 @@ export class BusinessGallery {
   updateImageOrder(imageId: string, newOrder: number): BusinessGallery {
     const image = this._images.get(imageId);
     if (!image) {
-      throw new ValueNotFoundError('imageId', imageId);
+      throw new ValueNotFoundError("imageId", imageId);
     }
 
     if (newOrder < 0) {
       throw new ValueOutOfRangeError(
-        'newOrder',
+        "newOrder",
         newOrder,
         0,
         Number.MAX_SAFE_INTEGER,
@@ -120,7 +120,7 @@ export class BusinessGallery {
   updateImageVisibility(imageId: string, isPublic: boolean): BusinessGallery {
     const image = this._images.get(imageId);
     if (!image) {
-      throw new ValueNotFoundError('imageId', imageId);
+      throw new ValueNotFoundError("imageId", imageId);
     }
 
     // Create new image with updated visibility
@@ -146,7 +146,7 @@ export class BusinessGallery {
   ): BusinessGallery {
     const image = this._images.get(imageId);
     if (!image) {
-      throw new ValueNotFoundError('imageId', imageId);
+      throw new ValueNotFoundError("imageId", imageId);
     }
 
     // Create new image with updated metadata
@@ -258,14 +258,14 @@ export class BusinessGallery {
   // Validation methods
   private validateImageBeforeAdd(image: BusinessImage): void {
     if (!image) {
-      throw new RequiredValueError('image');
+      throw new RequiredValueError("image");
     }
 
     if (!image.isOptimizedForWeb()) {
       throw new InvalidValueError(
-        'image',
+        "image",
         image,
-        'Image must be optimized for web (max 2MB, supported format)',
+        "Image must be optimized for web (max 2MB, supported format)",
       );
     }
   }
@@ -277,7 +277,7 @@ export class BusinessGallery {
     // Business rule: Maximum 1 logo
     if (logoImages.length > 1) {
       throw new ValueOutOfRangeError(
-        'logoImages.length',
+        "logoImages.length",
         logoImages.length,
         0,
         1,
@@ -287,7 +287,7 @@ export class BusinessGallery {
     // Business rule: Maximum 1 cover image
     if (coverImages.length > 1) {
       throw new ValueOutOfRangeError(
-        'coverImages.length',
+        "coverImages.length",
         coverImages.length,
         0,
         1,

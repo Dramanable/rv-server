@@ -9,7 +9,7 @@ import {
   UserPermission,
   PermissionAction,
   ResourceType,
-} from '../entities/user-permission.entity';
+} from "../entities/user-permission.entity";
 
 export interface IUserPermissionRepository {
   /**

@@ -19,7 +19,7 @@ import {
   ValidationPipe,
   HttpStatus,
   HttpCode,
-} from '@nestjs/common';
+} from "@nestjs/common";
 import {
   ApiTags,
   ApiOperation,
@@ -27,13 +27,13 @@ import {
   ApiBearerAuth,
   ApiParam,
   ApiQuery,
-} from '@nestjs/swagger';
+} from "@nestjs/swagger";
 
-import { CreateServiceUseCase } from '../../application/use-cases/services/create-service.use-case';
-import { GetServiceUseCase } from '../../application/use-cases/services/get-service.use-case';
-import { UpdateServiceUseCase } from '../../application/use-cases/services/update-service.use-case';
-import { DeleteServiceUseCase } from '../../application/use-cases/service/delete-service.use-case';
-import { ListServicesUseCase } from '../../application/use-cases/service/list-services.use-case';
+import { CreateServiceUseCase } from "../../application/use-cases/services/create-service.use-case";
+import { GetServiceUseCase } from "../../application/use-cases/services/get-service.use-case";
+import { UpdateServiceUseCase } from "../../application/use-cases/services/update-service.use-case";
+import { DeleteServiceUseCase } from "../../application/use-cases/service/delete-service.use-case";
+import { ListServicesUseCase } from "../../application/use-cases/service/list-services.use-case";
 
 // DTOs
 export class CreateServiceDto {
@@ -65,7 +65,7 @@ export class ListServicesQueryDto {
   page?: string;
   limit?: string;
   sortBy?: string;
-  sortOrder?: 'asc' | 'desc';
+  sortOrder?: "asc" | "desc";
   name?: string;
   isActive?: boolean;
   minPrice?: number;
@@ -116,8 +116,8 @@ export class DeleteServiceResponseDto {
   serviceId!: string;
 }
 
-@ApiTags('Services')
-@Controller('services')
+@ApiTags("Services")
+@Controller("services")
 @ApiBearerAuth()
 export class ServicesController {
   constructor(
@@ -130,19 +130,19 @@ export class ServicesController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Create a new service' })
+  @ApiOperation({ summary: "Create a new service" })
   @ApiResponse({
     status: HttpStatus.CREATED,
-    description: 'Service created successfully',
+    description: "Service created successfully",
     type: ServiceResponseDto,
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
-    description: 'Invalid input data',
+    description: "Invalid input data",
   })
   @ApiResponse({
     status: HttpStatus.UNAUTHORIZED,
-    description: 'Authentication required',
+    description: "Authentication required",
   })
   async createService(
     @Body(ValidationPipe) createServiceDto: CreateServiceDto,
@@ -152,10 +152,10 @@ export class ServicesController {
       requestingUserId: req.user.id,
       businessId: createServiceDto.businessId,
       name: createServiceDto.name,
-      description: createServiceDto.description || '',
+      description: createServiceDto.description || "",
       serviceTypeIds: createServiceDto.serviceTypeIds,
       basePrice: createServiceDto.basePrice || 0,
-      currency: createServiceDto.currency || 'EUR',
+      currency: createServiceDto.currency || "EUR",
       duration: createServiceDto.duration,
       allowOnlineBooking: createServiceDto.allowOnlineBooking,
       requiresApproval: createServiceDto.requiresApproval,
@@ -164,22 +164,22 @@ export class ServicesController {
     return this.mapServiceToResponse(result.service);
   }
 
-  @Get(':id')
-  @ApiOperation({ summary: 'Get service by ID' })
-  @ApiParam({ name: 'id', description: 'Service ID' })
-  @ApiQuery({ name: 'businessId', description: 'Business ID' })
+  @Get(":id")
+  @ApiOperation({ summary: "Get service by ID" })
+  @ApiParam({ name: "id", description: "Service ID" })
+  @ApiQuery({ name: "businessId", description: "Business ID" })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: 'Service retrieved successfully',
+    description: "Service retrieved successfully",
     type: ServiceResponseDto,
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
-    description: 'Service not found',
+    description: "Service not found",
   })
   async getService(
-    @Param('id') serviceId: string,
-    @Query('businessId') businessId: string,
+    @Param("id") serviceId: string,
+    @Query("businessId") businessId: string,
     @Request() req: any,
   ): Promise<ServiceResponseDto> {
     const result = await this.getServiceUseCase.execute({
@@ -192,18 +192,18 @@ export class ServicesController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'List services with filters and pagination' })
+  @ApiOperation({ summary: "List services with filters and pagination" })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: 'Services retrieved successfully',
+    description: "Services retrieved successfully",
     type: ListServicesResponseDto,
   })
   async listServices(
     @Query() query: ListServicesQueryDto,
     @Request() req: any,
   ): Promise<ListServicesResponseDto> {
-    const page = parseInt(query.page || '1', 10);
-    const limit = parseInt(query.limit || '10', 10);
+    const page = parseInt(query.page || "1", 10);
+    const limit = parseInt(query.limit || "10", 10);
 
     const result = await this.listServicesUseCase.execute({
       requestingUserId: req.user.id,
@@ -213,8 +213,8 @@ export class ServicesController {
         limit,
       },
       sorting: {
-        sortBy: query.sortBy || 'name',
-        sortOrder: query.sortOrder || 'asc',
+        sortBy: query.sortBy || "name",
+        sortOrder: query.sortOrder || "asc",
       },
       filters: {
         name: query.name,
@@ -229,20 +229,20 @@ export class ServicesController {
     return result as ListServicesResponseDto;
   }
 
-  @Put(':id')
-  @ApiOperation({ summary: 'Update service' })
-  @ApiParam({ name: 'id', description: 'Service ID' })
+  @Put(":id")
+  @ApiOperation({ summary: "Update service" })
+  @ApiParam({ name: "id", description: "Service ID" })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: 'Service updated successfully',
+    description: "Service updated successfully",
     type: ServiceResponseDto,
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
-    description: 'Service not found',
+    description: "Service not found",
   })
   async updateService(
-    @Param('id') serviceId: string,
+    @Param("id") serviceId: string,
     @Body(ValidationPipe) updateServiceDto: UpdateServiceDto,
     @Request() req: any,
   ): Promise<ServiceResponseDto> {
@@ -263,23 +263,23 @@ export class ServicesController {
     return this.mapServiceToResponse(result.service);
   }
 
-  @Delete(':id')
+  @Delete(":id")
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Delete service' })
-  @ApiParam({ name: 'id', description: 'Service ID' })
-  @ApiQuery({ name: 'businessId', description: 'Business ID' })
+  @ApiOperation({ summary: "Delete service" })
+  @ApiParam({ name: "id", description: "Service ID" })
+  @ApiQuery({ name: "businessId", description: "Business ID" })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: 'Service deleted successfully',
+    description: "Service deleted successfully",
     type: DeleteServiceResponseDto,
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
-    description: 'Service not found',
+    description: "Service not found",
   })
   async deleteService(
-    @Param('id') serviceId: string,
-    @Query('businessId') businessId: string,
+    @Param("id") serviceId: string,
+    @Query("businessId") businessId: string,
     @Request() req: any,
   ): Promise<DeleteServiceResponseDto> {
     const result = await this.deleteServiceUseCase.execute({

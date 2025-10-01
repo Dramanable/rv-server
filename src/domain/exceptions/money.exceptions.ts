@@ -18,7 +18,7 @@ export class MoneyDomainError extends Error {
     public readonly timestamp: Date = new Date(),
   ) {
     super(message);
-    this.name = 'MoneyDomainError';
+    this.name = "MoneyDomainError";
   }
 }
 
@@ -27,11 +27,11 @@ export class MoneyDomainError extends Error {
  */
 export class InvalidAmountError extends MoneyDomainError {
   constructor(amount: number, reason: string) {
-    super(`Invalid amount: ${amount}. ${reason}`, 'MONEY_INVALID_AMOUNT', {
+    super(`Invalid amount: ${amount}. ${reason}`, "MONEY_INVALID_AMOUNT", {
       amount,
       reason,
     });
-    this.name = 'InvalidAmountError';
+    this.name = "InvalidAmountError";
   }
 }
 
@@ -40,10 +40,10 @@ export class InvalidAmountError extends MoneyDomainError {
  */
 export class NegativeAmountError extends MoneyDomainError {
   constructor(amount: number) {
-    super(`Amount cannot be negative: ${amount}`, 'MONEY_NEGATIVE_AMOUNT', {
+    super(`Amount cannot be negative: ${amount}`, "MONEY_NEGATIVE_AMOUNT", {
       amount,
     });
-    this.name = 'NegativeAmountError';
+    this.name = "NegativeAmountError";
   }
 }
 
@@ -54,10 +54,10 @@ export class InvalidDecimalPrecisionError extends MoneyDomainError {
   constructor(amount: number) {
     super(
       `Amount cannot have more than 2 decimal places: ${amount}`,
-      'MONEY_INVALID_DECIMAL_PRECISION',
+      "MONEY_INVALID_DECIMAL_PRECISION",
       { amount, maxDecimalPlaces: 2 },
     );
-    this.name = 'InvalidDecimalPrecisionError';
+    this.name = "InvalidDecimalPrecisionError";
   }
 }
 
@@ -68,10 +68,10 @@ export class NonFiniteAmountError extends MoneyDomainError {
   constructor(amount: number) {
     super(
       `Amount must be a finite number, got: ${amount}`,
-      'MONEY_NON_FINITE_AMOUNT',
+      "MONEY_NON_FINITE_AMOUNT",
       { amount, isFinite: Number.isFinite(amount) },
     );
-    this.name = 'NonFiniteAmountError';
+    this.name = "NonFiniteAmountError";
   }
 }
 
@@ -82,10 +82,10 @@ export class InvalidCurrencyError extends MoneyDomainError {
   constructor(currency: string, reason: string) {
     super(
       `Invalid currency: ${currency}. ${reason}`,
-      'MONEY_INVALID_CURRENCY',
+      "MONEY_INVALID_CURRENCY",
       { currency, reason },
     );
-    this.name = 'InvalidCurrencyError';
+    this.name = "InvalidCurrencyError";
   }
 }
 
@@ -95,11 +95,11 @@ export class InvalidCurrencyError extends MoneyDomainError {
 export class UnsupportedCurrencyError extends MoneyDomainError {
   constructor(currency: string, supportedCurrencies: string[]) {
     super(
-      `Currency ${currency} is not supported. Supported currencies: ${supportedCurrencies.join(', ')}`,
-      'MONEY_UNSUPPORTED_CURRENCY',
+      `Currency ${currency} is not supported. Supported currencies: ${supportedCurrencies.join(", ")}`,
+      "MONEY_UNSUPPORTED_CURRENCY",
       { currency, supportedCurrencies },
     );
-    this.name = 'UnsupportedCurrencyError';
+    this.name = "UnsupportedCurrencyError";
   }
 }
 
@@ -110,10 +110,10 @@ export class CurrencyMismatchError extends MoneyDomainError {
   constructor(operation: string, currency1: string, currency2: string) {
     super(
       `Cannot ${operation} amounts with different currencies: ${currency1} and ${currency2}`,
-      'MONEY_CURRENCY_MISMATCH',
+      "MONEY_CURRENCY_MISMATCH",
       { operation, currency1, currency2 },
     );
-    this.name = 'CurrencyMismatchError';
+    this.name = "CurrencyMismatchError";
   }
 }
 
@@ -129,10 +129,10 @@ export class NegativeResultError extends MoneyDomainError {
   ) {
     super(
       `${operation} operation would result in negative amount: ${amount1} - ${amount2}`,
-      'MONEY_NEGATIVE_RESULT',
+      "MONEY_NEGATIVE_RESULT",
       { operation, amount1, amount2, currency, result: amount1 - amount2 },
     );
-    this.name = 'NegativeResultError';
+    this.name = "NegativeResultError";
   }
 }
 
@@ -143,10 +143,10 @@ export class InvalidMultiplierError extends MoneyDomainError {
   constructor(multiplier: number) {
     super(
       `Cannot multiply by negative number: ${multiplier}`,
-      'MONEY_INVALID_MULTIPLIER',
+      "MONEY_INVALID_MULTIPLIER",
       { multiplier },
     );
-    this.name = 'InvalidMultiplierError';
+    this.name = "InvalidMultiplierError";
   }
 }
 
@@ -157,9 +157,9 @@ export class InvalidDivisorError extends MoneyDomainError {
   constructor(divisor: number) {
     super(
       `Cannot divide by zero or negative number: ${divisor}`,
-      'MONEY_INVALID_DIVISOR',
+      "MONEY_INVALID_DIVISOR",
       { divisor },
     );
-    this.name = 'InvalidDivisorError';
+    this.name = "InvalidDivisorError";
   }
 }

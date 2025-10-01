@@ -4,25 +4,25 @@
  * ✅ Lister les prospects avec filtres et pagination
  */
 
-import { Prospect } from '@domain/entities/prospect.entity';
+import { Prospect } from "@domain/entities/prospect.entity";
 import {
   IProspectRepository,
   ProspectFilters,
   ProspectSortOptions,
-} from '@domain/repositories/prospect.repository';
+} from "@domain/repositories/prospect.repository";
 import {
   ProspectStatus,
   ProspectStatusEnum,
-} from '@domain/value-objects/prospect-status.value-object';
-import { UserId } from '@domain/value-objects/user-id.value-object';
+} from "@domain/value-objects/prospect-status.value-object";
+import { UserId } from "@domain/value-objects/user-id.value-object";
 import {
   BusinessSizeEnum,
   BusinessSize,
-} from '@domain/enums/business-size.enum';
-import { Logger } from '@application/ports/logger.port';
-import { I18nService } from '@application/ports/i18n.port';
-import { IPermissionService } from '@application/ports/permission.port';
-import { ProspectPermissionError } from '@domain/exceptions/prospect.exceptions';
+} from "@domain/enums/business-size.enum";
+import { Logger } from "@application/ports/logger.port";
+import { I18nService } from "@application/ports/i18n.port";
+import { IPermissionService } from "@application/ports/permission.port";
+import { ProspectPermissionError } from "@domain/exceptions/prospect.exceptions";
 
 export interface ListProspectsRequest {
   // 🔍 Filtres de recherche
@@ -41,14 +41,14 @@ export interface ListProspectsRequest {
 
   // 📊 Tri et pagination
   readonly sortBy?:
-    | 'businessName'
-    | 'contactName'
-    | 'status'
-    | 'estimatedValue'
-    | 'staffCount'
-    | 'createdAt'
-    | 'updatedAt';
-  readonly sortOrder?: 'asc' | 'desc';
+    | "businessName"
+    | "contactName"
+    | "status"
+    | "estimatedValue"
+    | "staffCount"
+    | "createdAt"
+    | "updatedAt";
+  readonly sortOrder?: "asc" | "desc";
   readonly page?: number;
   readonly limit?: number;
 
@@ -134,7 +134,7 @@ export class ListProspectsUseCase {
   ) {}
 
   async execute(request: ListProspectsRequest): Promise<ListProspectsResponse> {
-    this.logger.info('Listing prospects with filters', {
+    this.logger.info("Listing prospects with filters", {
       filters: {
         search: request.search,
         status: request.status,
@@ -168,7 +168,7 @@ export class ListProspectsUseCase {
       // 📊 ÉTAPE 4 : Récupérer les métriques additionnelles
       const summary = await this.buildSummary(searchResult.prospects);
 
-      this.logger.info('Prospects listed successfully', {
+      this.logger.info("Prospects listed successfully", {
         totalFound: searchResult.total,
         page: searchResult.page,
         correlationId: request.correlationId,
@@ -178,7 +178,7 @@ export class ListProspectsUseCase {
       return this.buildResponse(searchResult, summary, request);
     } catch (error) {
       this.logger.error(
-        'Failed to list prospects',
+        "Failed to list prospects",
         error instanceof Error ? error : new Error(String(error)),
         {
           requestingUserId: request.requestingUserId,
@@ -197,24 +197,24 @@ export class ListProspectsUseCase {
   ): Promise<ProspectFilters> {
     // 🎯 RÈGLE SPÉCIALE : ADMIN et SUPER_ADMIN ont toutes les permissions
     const isSystemAdmin =
-      request.requestingUserRole === 'ADMIN' ||
-      request.requestingUserRole === 'SUPER_ADMIN';
+      request.requestingUserRole === "ADMIN" ||
+      request.requestingUserRole === "SUPER_ADMIN";
 
     if (!isSystemAdmin) {
       // Vérifier la permission de base seulement pour les utilisateurs non-admin
       const hasPermission = await this.permissionService.hasPermission(
         request.requestingUserId,
-        'VIEW_PROSPECTS',
+        "VIEW_PROSPECTS",
       );
 
       if (!hasPermission) {
         throw new ProspectPermissionError(
           request.requestingUserId,
-          'view prospects',
+          "view prospects",
         );
       }
     } else {
-      this.logger.info('Admin user bypassing permission check', {
+      this.logger.info("Admin user bypassing permission check", {
         userId: request.requestingUserId,
         role: request.requestingUserRole,
         correlationId: request.correlationId,
@@ -247,7 +247,7 @@ export class ListProspectsUseCase {
     // Vérifier si l'utilisateur peut voir tous les prospects ou seulement les siens
     const canViewAllProspects = await this.permissionService.hasPermission(
       request.requestingUserId,
-      'VIEW_ALL_PROSPECTS',
+      "VIEW_ALL_PROSPECTS",
     );
 
     // Construire filtre assignedSalesRep selon permissions
@@ -276,8 +276,8 @@ export class ListProspectsUseCase {
    */
   private buildSortOptions(request: ListProspectsRequest): ProspectSortOptions {
     return {
-      field: request.sortBy || 'updatedAt',
-      direction: request.sortOrder?.toUpperCase() === 'ASC' ? 'ASC' : 'DESC',
+      field: request.sortBy || "updatedAt",
+      direction: request.sortOrder?.toUpperCase() === "ASC" ? "ASC" : "DESC",
     };
   }
 
@@ -422,13 +422,13 @@ export class ListProspectsUseCase {
           icon: BusinessSize.getIcon(size),
         })),
         sources: [
-          'DIRECT',
-          'WEBSITE',
-          'REFERRAL',
-          'ADVERTISING',
-          'SOCIAL_MEDIA',
-          'COLD_CALLING',
-          'EMAIL_CAMPAIGN',
+          "DIRECT",
+          "WEBSITE",
+          "REFERRAL",
+          "ADVERTISING",
+          "SOCIAL_MEDIA",
+          "COLD_CALLING",
+          "EMAIL_CAMPAIGN",
         ],
       },
     };

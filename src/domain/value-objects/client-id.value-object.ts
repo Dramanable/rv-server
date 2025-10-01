@@ -3,11 +3,11 @@
  * ✅ Clean Architecture - Domain Layer
  */
 
-import { generateId } from '@shared/utils/id.utils';
+import { generateId } from "@shared/utils/id.utils";
 import {
   InvalidFormatError,
   RequiredValueError,
-} from '../exceptions/value-object.exceptions';
+} from "../exceptions/value-object.exceptions";
 
 export class ClientId {
   constructor(private readonly value: string) {
@@ -15,15 +15,15 @@ export class ClientId {
   }
 
   private validate(value: string): void {
-    if (!value || value.trim() === '') {
-      throw new RequiredValueError('client_id');
+    if (!value || value.trim() === "") {
+      throw new RequiredValueError("client_id");
     }
 
     // UUID format validation (basic)
     const uuidRegex =
       /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
     if (!uuidRegex.test(value)) {
-      throw new InvalidFormatError('client_id', value, 'UUID format');
+      throw new InvalidFormatError("client_id", value, "UUID format");
     }
   }
 

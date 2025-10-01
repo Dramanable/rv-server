@@ -1,8 +1,8 @@
-import { ListPermissionsUseCase } from '@application/use-cases/permissions/list-permissions.use-case';
-import { Permission } from '@domain/entities/permission.entity';
-import { IPermissionRepository } from '@domain/repositories/permission.repository';
+import { ListPermissionsUseCase } from "@application/use-cases/permissions/list-permissions.use-case";
+import { Permission } from "@domain/entities/permission.entity";
+import { IPermissionRepository } from "@domain/repositories/permission.repository";
 
-describe('ListPermissionsUseCase', () => {
+describe("ListPermissionsUseCase", () => {
   let useCase: ListPermissionsUseCase;
   let mockPermissionRepository: jest.Mocked<IPermissionRepository>;
 
@@ -21,30 +21,30 @@ describe('ListPermissionsUseCase', () => {
     useCase = new ListPermissionsUseCase(mockPermissionRepository);
   });
 
-  describe('TDD - GREEN Phase', () => {
-    it('should list all permissions without filters', async () => {
+  describe("TDD - GREEN Phase", () => {
+    it("should list all permissions without filters", async () => {
       // Given
       const request = {
-        requestingUserId: 'user-123',
-        correlationId: 'req-123',
+        requestingUserId: "user-123",
+        correlationId: "req-123",
         timestamp: new Date(),
       };
 
       const permissions = [
         Permission.create({
-          id: 'permission-1',
-          name: 'MANAGE_APPOINTMENTS',
-          displayName: 'Gérer les rendez-vous',
-          description: 'Permet de gérer les rendez-vous',
-          category: 'APPOINTMENTS',
+          id: "permission-1",
+          name: "MANAGE_APPOINTMENTS",
+          displayName: "Gérer les rendez-vous",
+          description: "Permet de gérer les rendez-vous",
+          category: "APPOINTMENTS",
           isSystemPermission: false,
         }),
         Permission.create({
-          id: 'permission-2',
-          name: 'SYSTEM_ADMIN',
-          displayName: 'Administration Système',
-          description: 'Accès complet système',
-          category: 'SYSTEM',
+          id: "permission-2",
+          name: "SYSTEM_ADMIN",
+          displayName: "Administration Système",
+          description: "Accès complet système",
+          category: "SYSTEM",
           isSystemPermission: true,
         }),
       ];
@@ -59,15 +59,15 @@ describe('ListPermissionsUseCase', () => {
       expect(result).toEqual({
         permissions: [
           expect.objectContaining({
-            id: 'permission-1',
-            name: 'MANAGE_APPOINTMENTS',
-            category: 'APPOINTMENTS',
+            id: "permission-1",
+            name: "MANAGE_APPOINTMENTS",
+            category: "APPOINTMENTS",
             isSystemPermission: false,
           }),
           expect.objectContaining({
-            id: 'permission-2',
-            name: 'SYSTEM_ADMIN',
-            category: 'SYSTEM',
+            id: "permission-2",
+            name: "SYSTEM_ADMIN",
+            category: "SYSTEM",
             isSystemPermission: true,
           }),
         ],
@@ -84,29 +84,29 @@ describe('ListPermissionsUseCase', () => {
       // Vérifier que les repositories sont appelés avec les options par défaut
       expect(mockPermissionRepository.findAll).toHaveBeenCalledWith(
         {},
-        { limit: 10, offset: 0, sortBy: 'createdAt', sortOrder: 'desc' },
+        { limit: 10, offset: 0, sortBy: "createdAt", sortOrder: "desc" },
       );
       expect(mockPermissionRepository.count).toHaveBeenCalledWith({});
     });
 
-    it('should filter permissions by category', async () => {
+    it("should filter permissions by category", async () => {
       // Given
       const request = {
         filters: {
-          category: 'APPOINTMENTS',
+          category: "APPOINTMENTS",
         },
-        requestingUserId: 'user-123',
-        correlationId: 'req-123',
+        requestingUserId: "user-123",
+        correlationId: "req-123",
         timestamp: new Date(),
       };
 
       const appointmentPermissions = [
         Permission.create({
-          id: 'permission-1',
-          name: 'MANAGE_APPOINTMENTS',
-          displayName: 'Gérer les rendez-vous',
-          description: 'Permet de gérer les rendez-vous',
-          category: 'APPOINTMENTS',
+          id: "permission-1",
+          name: "MANAGE_APPOINTMENTS",
+          displayName: "Gérer les rendez-vous",
+          description: "Permet de gérer les rendez-vous",
+          category: "APPOINTMENTS",
           isSystemPermission: false,
         }),
       ];
@@ -121,40 +121,40 @@ describe('ListPermissionsUseCase', () => {
 
       // Then
       expect(result.permissions).toHaveLength(1);
-      expect(result.permissions[0].category).toBe('APPOINTMENTS');
+      expect(result.permissions[0].category).toBe("APPOINTMENTS");
       expect(result.meta.totalItems).toBe(1);
       expect(result.meta.currentPage).toBe(1);
       expect(result.meta.itemsPerPage).toBe(10);
 
       expect(mockPermissionRepository.findAll).toHaveBeenCalledWith(
         {
-          category: 'APPOINTMENTS',
+          category: "APPOINTMENTS",
         },
-        { limit: 10, offset: 0, sortBy: 'createdAt', sortOrder: 'desc' },
+        { limit: 10, offset: 0, sortBy: "createdAt", sortOrder: "desc" },
       );
       expect(mockPermissionRepository.count).toHaveBeenCalledWith({
-        category: 'APPOINTMENTS',
+        category: "APPOINTMENTS",
       });
     });
 
-    it('should filter permissions by active status', async () => {
+    it("should filter permissions by active status", async () => {
       // Given
       const request = {
         filters: {
           isActive: true,
         },
-        requestingUserId: 'user-123',
-        correlationId: 'req-123',
+        requestingUserId: "user-123",
+        correlationId: "req-123",
         timestamp: new Date(),
       };
 
       const activePermissions = [
         Permission.create({
-          id: 'permission-1',
-          name: 'MANAGE_APPOINTMENTS',
-          displayName: 'Gérer les rendez-vous',
-          description: 'Permet de gérer les rendez-vous',
-          category: 'APPOINTMENTS',
+          id: "permission-1",
+          name: "MANAGE_APPOINTMENTS",
+          displayName: "Gérer les rendez-vous",
+          description: "Permet de gérer les rendez-vous",
+          category: "APPOINTMENTS",
           isSystemPermission: false,
         }),
       ];
@@ -172,31 +172,31 @@ describe('ListPermissionsUseCase', () => {
         {
           isActive: true,
         },
-        { limit: 10, offset: 0, sortBy: 'createdAt', sortOrder: 'desc' },
+        { limit: 10, offset: 0, sortBy: "createdAt", sortOrder: "desc" },
       );
       expect(mockPermissionRepository.count).toHaveBeenCalledWith({
         isActive: true,
       });
     });
 
-    it('should filter permissions by system permission status', async () => {
+    it("should filter permissions by system permission status", async () => {
       // Given
       const request = {
         filters: {
           isSystemPermission: false,
         },
-        requestingUserId: 'user-123',
-        correlationId: 'req-123',
+        requestingUserId: "user-123",
+        correlationId: "req-123",
         timestamp: new Date(),
       };
 
       const customPermissions = [
         Permission.create({
-          id: 'permission-1',
-          name: 'CUSTOM_PERMISSION',
-          displayName: 'Permission Personnalisée',
-          description: 'Une permission personnalisée',
-          category: 'CUSTOM',
+          id: "permission-1",
+          name: "CUSTOM_PERMISSION",
+          displayName: "Permission Personnalisée",
+          description: "Une permission personnalisée",
+          category: "CUSTOM",
           isSystemPermission: false,
         }),
       ];
@@ -215,20 +215,20 @@ describe('ListPermissionsUseCase', () => {
         {
           isSystemPermission: false,
         },
-        { limit: 10, offset: 0, sortBy: 'createdAt', sortOrder: 'desc' },
+        { limit: 10, offset: 0, sortBy: "createdAt", sortOrder: "desc" },
       );
     });
 
-    it('should combine multiple filters', async () => {
+    it("should combine multiple filters", async () => {
       // Given
       const request = {
         filters: {
-          category: 'APPOINTMENTS',
+          category: "APPOINTMENTS",
           isActive: true,
           isSystemPermission: false,
         },
-        requestingUserId: 'user-123',
-        correlationId: 'req-123',
+        requestingUserId: "user-123",
+        correlationId: "req-123",
         timestamp: new Date(),
       };
 
@@ -241,36 +241,36 @@ describe('ListPermissionsUseCase', () => {
       // Then
       expect(mockPermissionRepository.findAll).toHaveBeenCalledWith(
         {
-          category: 'APPOINTMENTS',
+          category: "APPOINTMENTS",
           isActive: true,
           isSystemPermission: false,
         },
-        { limit: 10, offset: 0, sortBy: 'createdAt', sortOrder: 'desc' },
+        { limit: 10, offset: 0, sortBy: "createdAt", sortOrder: "desc" },
       );
       expect(mockPermissionRepository.count).toHaveBeenCalledWith({
-        category: 'APPOINTMENTS',
+        category: "APPOINTMENTS",
         isActive: true,
         isSystemPermission: false,
       });
     });
   });
 
-  describe('Error Handling', () => {
-    it('should handle repository errors gracefully', async () => {
+  describe("Error Handling", () => {
+    it("should handle repository errors gracefully", async () => {
       // Given
       const request = {
-        requestingUserId: 'user-123',
-        correlationId: 'req-123',
+        requestingUserId: "user-123",
+        correlationId: "req-123",
         timestamp: new Date(),
       };
 
       mockPermissionRepository.findAll.mockRejectedValue(
-        new Error('Database connection failed'),
+        new Error("Database connection failed"),
       );
 
       // When & Then
       await expect(useCase.execute(request)).rejects.toThrow(
-        'Database connection failed',
+        "Database connection failed",
       );
     });
   });

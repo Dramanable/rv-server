@@ -2,14 +2,14 @@
  * ✅ TDD Test - CreateServiceTypeUseCase avec IPermissionService
  */
 
-import { IAuditService } from '@application/ports/audit.port';
-import { Logger } from '@application/ports/logger.port';
-import { IPermissionService } from '@application/ports/permission.service.interface';
+import { IAuditService } from "@application/ports/audit.port";
+import { Logger } from "@application/ports/logger.port";
+import { IPermissionService } from "@application/ports/permission.service.interface";
 import {
   CreateServiceTypeRequest,
   CreateServiceTypeUseCase,
-} from '@application/use-cases/service-types/create-service-type.use-case';
-import { IServiceTypeRepository } from '@domain/repositories/service-type.repository';
+} from "@application/use-cases/service-types/create-service-type.use-case";
+import { IServiceTypeRepository } from "@domain/repositories/service-type.repository";
 
 // Mock helpers
 function createMockServiceTypeRepository(): jest.Mocked<IServiceTypeRepository> {
@@ -45,7 +45,7 @@ interface I18nTranslateFunction {
 
 function createMockI18n(): jest.Mocked<I18nTranslateFunction> {
   return {
-    translate: jest.fn().mockReturnValue('Mock message'),
+    translate: jest.fn().mockReturnValue("Mock message"),
   } as any;
 }
 
@@ -55,7 +55,7 @@ function createMockAuditService(): jest.Mocked<IAuditService> {
   } as any;
 }
 
-describe('CreateServiceTypeUseCase - IPermissionService TDD', () => {
+describe("CreateServiceTypeUseCase - IPermissionService TDD", () => {
   let useCase: CreateServiceTypeUseCase;
   let mockServiceTypeRepository: jest.Mocked<IServiceTypeRepository>;
   let mockPermissionService: jest.Mocked<IPermissionService>;
@@ -89,29 +89,29 @@ describe('CreateServiceTypeUseCase - IPermissionService TDD', () => {
     );
   });
 
-  describe('🟢 GREEN Phase - IPermissionService Integrated', () => {
-    it('should use IPermissionService.requirePermission for authorization', async () => {
+  describe("🟢 GREEN Phase - IPermissionService Integrated", () => {
+    it("should use IPermissionService.requirePermission for authorization", async () => {
       // Arrange
       const request: CreateServiceTypeRequest = {
-        businessId: '550e8400-e29b-41d4-a716-446655440001',
-        name: 'Test Service Type',
-        code: 'TEST_TYPE',
-        description: 'Test description',
-        requestingUserId: '550e8400-e29b-41d4-a716-446655440002',
-        correlationId: '550e8400-e29b-41d4-a716-446655440003',
+        businessId: "550e8400-e29b-41d4-a716-446655440001",
+        name: "Test Service Type",
+        code: "TEST_TYPE",
+        description: "Test description",
+        requestingUserId: "550e8400-e29b-41d4-a716-446655440002",
+        correlationId: "550e8400-e29b-41d4-a716-446655440003",
         timestamp: new Date(),
       };
 
       const mockServiceType = {
         getId: () => ({
-          getValue: () => '550e8400-e29b-41d4-a716-446655440004',
+          getValue: () => "550e8400-e29b-41d4-a716-446655440004",
         }),
         getBusinessId: () => ({
-          getValue: () => '550e8400-e29b-41d4-a716-446655440001',
+          getValue: () => "550e8400-e29b-41d4-a716-446655440001",
         }),
-        getName: () => 'Test Service Type',
-        getCode: () => 'TEST_TYPE',
-        getDescription: () => 'Test description',
+        getName: () => "Test Service Type",
+        getCode: () => "TEST_TYPE",
+        getDescription: () => "Test description",
         getSortOrder: () => 0,
         isActive: () => true,
         getCreatedAt: () => new Date(),
@@ -128,38 +128,38 @@ describe('CreateServiceTypeUseCase - IPermissionService TDD', () => {
 
       // Assert
       expect(mockPermissionService.requirePermission).toHaveBeenCalledWith(
-        '550e8400-e29b-41d4-a716-446655440002',
-        'MANAGE_SERVICES',
-        { businessId: '550e8400-e29b-41d4-a716-446655440001' },
+        "550e8400-e29b-41d4-a716-446655440002",
+        "MANAGE_SERVICES",
+        { businessId: "550e8400-e29b-41d4-a716-446655440001" },
       );
     });
 
-    it('should throw error when user lacks MANAGE_SERVICES permission', async () => {
+    it("should throw error when user lacks MANAGE_SERVICES permission", async () => {
       // Arrange
       const request: CreateServiceTypeRequest = {
-        businessId: '550e8400-e29b-41d4-a716-446655440001',
-        name: 'Test Service Type',
-        code: 'TEST_TYPE',
-        description: 'Test description',
-        requestingUserId: '550e8400-e29b-41d4-a716-446655440002',
-        correlationId: '550e8400-e29b-41d4-a716-446655440003',
+        businessId: "550e8400-e29b-41d4-a716-446655440001",
+        name: "Test Service Type",
+        code: "TEST_TYPE",
+        description: "Test description",
+        requestingUserId: "550e8400-e29b-41d4-a716-446655440002",
+        correlationId: "550e8400-e29b-41d4-a716-446655440003",
         timestamp: new Date(),
       };
 
       // Mock permission service to throw error (user lacks permission)
       mockPermissionService.requirePermission.mockRejectedValue(
-        new Error('Insufficient permissions'),
+        new Error("Insufficient permissions"),
       );
 
       // Act & Assert
       await expect(useCase.execute(request)).rejects.toThrow(
-        'Insufficient permissions',
+        "Insufficient permissions",
       );
 
       expect(mockPermissionService.requirePermission).toHaveBeenCalledWith(
-        '550e8400-e29b-41d4-a716-446655440002',
-        'MANAGE_SERVICES',
-        { businessId: '550e8400-e29b-41d4-a716-446655440001' },
+        "550e8400-e29b-41d4-a716-446655440002",
+        "MANAGE_SERVICES",
+        { businessId: "550e8400-e29b-41d4-a716-446655440001" },
       );
     });
   });

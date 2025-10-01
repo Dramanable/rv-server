@@ -3,8 +3,8 @@
  * ✅ Clean Architecture - Domain Layer
  */
 
-import { generateId } from '@shared/utils/id.utils';
-import { ValueObjectValidationError } from '../exceptions/domain.exceptions';
+import { generateId } from "@shared/utils/id.utils";
+import { ValueObjectValidationError } from "../exceptions/domain.exceptions";
 
 export class ProfessionalId {
   constructor(private readonly value: string) {
@@ -12,10 +12,10 @@ export class ProfessionalId {
   }
 
   private validate(value: string): void {
-    if (!value || value.trim() === '') {
+    if (!value || value.trim() === "") {
       throw new ValueObjectValidationError(
-        'PROFESSIONAL_ID_EMPTY',
-        'Professional ID cannot be empty',
+        "PROFESSIONAL_ID_EMPTY",
+        "Professional ID cannot be empty",
         { value },
       );
     }
@@ -25,8 +25,8 @@ export class ProfessionalId {
       /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
     if (!uuidRegex.test(value)) {
       throw new ValueObjectValidationError(
-        'PROFESSIONAL_ID_INVALID_FORMAT',
-        'Professional ID must be a valid UUID',
+        "PROFESSIONAL_ID_INVALID_FORMAT",
+        "Professional ID must be a valid UUID",
         { value },
       );
     }

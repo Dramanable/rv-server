@@ -5,8 +5,8 @@
  * Respecte les principes Clean Architecture en séparant la logique de conversion
  */
 
-import { BusinessSector } from '@domain/entities/business-sector.entity';
-import { BusinessSectorOrmEntity } from '../database/sql/postgresql/entities/business-sector-orm.entity';
+import { BusinessSector } from "@domain/entities/business-sector.entity";
+import { BusinessSectorOrmEntity } from "../database/sql/postgresql/entities/business-sector-orm.entity";
 
 export class BusinessSectorOrmMapper {
   /**
@@ -33,11 +33,11 @@ export class BusinessSectorOrmMapper {
     return BusinessSector.restore(
       orm.id,
       orm.name,
-      orm.description || '', // Valeur par défaut si manquante
+      orm.description || "", // Valeur par défaut si manquante
       orm.code,
       orm.isActive,
       orm.createdAt,
-      orm.createdBy || 'system', // Valeur par défaut si manquante
+      orm.createdBy || "system", // Valeur par défaut si manquante
       orm.updatedAt,
       orm.updatedBy,
     );

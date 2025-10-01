@@ -5,12 +5,12 @@
  * Orientée développeurs frontend avec exemples détaillés
  */
 
-import { INestApplication } from '@nestjs/common';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { INestApplication } from "@nestjs/common";
+import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 
 export function setupSwagger(app: INestApplication): void {
   const config = new DocumentBuilder()
-    .setTitle('🚀 Enterprise Business Management API')
+    .setTitle("🚀 Enterprise Business Management API")
     .setDescription(
       `
 # 🎯 Clean Architecture Business Management System
@@ -201,88 +201,88 @@ All endpoints return standardized error responses:
 }
 \`\`\``,
     )
-    .setVersion('2.0.0')
+    .setVersion("2.0.0")
     .addTag(
-      '🔐 Authentication',
-      '🔐 Login, Register, Refresh, Logout operations',
+      "🔐 Authentication",
+      "🔐 Login, Register, Refresh, Logout operations",
     )
-    .addTag('👥 Users', '👥 User management and profile operations')
-    .addTag('🔄 Password Reset', '🔄 Password recovery and reset operations')
-    .addTag('🏢 Business Management', '🏢 Business and location management')
+    .addTag("👥 Users", "👥 User management and profile operations")
+    .addTag("🔄 Password Reset", "🔄 Password recovery and reset operations")
+    .addTag("🏢 Business Management", "🏢 Business and location management")
     .addTag(
-      '⏰ Business Hours',
-      '⏰ Business hours and scheduling configuration',
+      "⏰ Business Hours",
+      "⏰ Business hours and scheduling configuration",
     )
-    .addTag('🏭 Business Sectors', '🏭 Business sector categorization')
-    .addTag('📅 Calendars', '� Calendar management and synchronization')
+    .addTag("🏭 Business Sectors", "🏭 Business sector categorization")
+    .addTag("📅 Calendars", "� Calendar management and synchronization")
     .addTag(
-      '📅 Calendar Types',
-      '📋 Calendar type configuration and management',
+      "📅 Calendar Types",
+      "📋 Calendar type configuration and management",
     )
-    .addTag('💼 Services', '💼 Service catalog and pricing management')
-    .addTag('🏷️ Service Types Management', '🏷️ Service type configuration')
-    .addTag('👨‍💼 Staff Management', '👨‍💼 Staff member management and permissions')
+    .addTag("💼 Services", "💼 Service catalog and pricing management")
+    .addTag("🏷️ Service Types Management", "🏷️ Service type configuration")
+    .addTag("👨‍💼 Staff Management", "👨‍💼 Staff member management and permissions")
     .addTag(
-      '👨‍💼 Staff Availability Management',
-      '📅 Staff scheduling and availability',
+      "👨‍💼 Staff Availability Management",
+      "📅 Staff scheduling and availability",
     )
     .addTag(
-      '🖼️ Business Image Management',
-      '🖼️ Logo and profile image management',
+      "🖼️ Business Image Management",
+      "🖼️ Logo and profile image management",
     )
-    .addTag('🖼️ Business Gallery', '�️ Business image galleries and media')
-    .addTag('📅 Appointments', '📅 Appointment booking and management')
-    .addTag('📢 Notifications', '� Multi-channel notification delivery')
-    .addTag('👨‍💼 Professional Management', '👨‍💼 Professional services management')
-    .addTag('🔐 Permissions', '🔐 Permission and access control management')
-    .addTag('🎭 Role Management', '🎭 Role assignment and hierarchy management')
-    .addTag(' Health', '💚 System health and monitoring endpoints')
+    .addTag("🖼️ Business Gallery", "�️ Business image galleries and media")
+    .addTag("📅 Appointments", "📅 Appointment booking and management")
+    .addTag("📢 Notifications", "� Multi-channel notification delivery")
+    .addTag("👨‍💼 Professional Management", "👨‍💼 Professional services management")
+    .addTag("🔐 Permissions", "🔐 Permission and access control management")
+    .addTag("🎭 Role Management", "🎭 Role assignment and hierarchy management")
+    .addTag(" Health", "💚 System health and monitoring endpoints")
 
     // 🍪 Cookie-based authentication (production)
-    .addCookieAuth('accessToken', {
-      type: 'http',
-      scheme: 'bearer',
-      bearerFormat: 'JWT',
+    .addCookieAuth("accessToken", {
+      type: "http",
+      scheme: "bearer",
+      bearerFormat: "JWT",
       description:
-        '🔐 Access token stored in secure HttpOnly cookie (automatically handled by browser)',
+        "🔐 Access token stored in secure HttpOnly cookie (automatically handled by browser)",
     })
-    .addCookieAuth('refreshToken', {
-      type: 'http',
-      scheme: 'bearer',
-      bearerFormat: 'JWT',
+    .addCookieAuth("refreshToken", {
+      type: "http",
+      scheme: "bearer",
+      bearerFormat: "JWT",
       description:
-        '🔄 Refresh token stored in secure HttpOnly cookie (automatically handled by browser)',
+        "🔄 Refresh token stored in secure HttpOnly cookie (automatically handled by browser)",
     })
 
     // 🔑 Bearer token auth (development/testing only)
     .addBearerAuth(
       {
-        type: 'http',
-        scheme: 'bearer',
-        bearerFormat: 'JWT',
-        name: 'Authorization',
+        type: "http",
+        scheme: "bearer",
+        bearerFormat: "JWT",
+        name: "Authorization",
         description:
-          '🔐 JWT Bearer token for API testing (use cookies in production)',
-        in: 'header',
+          "🔐 JWT Bearer token for API testing (use cookies in production)",
+        in: "header",
       },
-      'JWT',
+      "JWT",
     )
 
     // 🌍 Servers
-    .addServer('http://localhost:3000', '🔧 Development server (local testing)')
-    .addServer('https://api.yourdomain.com', '🚀 Production server')
-    .addServer('https://staging-api.yourdomain.com', '🧪 Staging server')
+    .addServer("http://localhost:3000", "🔧 Development server (local testing)")
+    .addServer("https://api.yourdomain.com", "🚀 Production server")
+    .addServer("https://staging-api.yourdomain.com", "🧪 Staging server")
 
     // 📞 Contact & License
     .setContact(
-      'Development Team',
-      'https://yourdomain.com/support',
-      'dev-support@yourdomain.com',
+      "Development Team",
+      "https://yourdomain.com/support",
+      "dev-support@yourdomain.com",
     )
-    .setLicense('Proprietary', 'https://yourdomain.com/license')
+    .setLicense("Proprietary", "https://yourdomain.com/license")
     .setExternalDoc(
-      'Complete API Documentation',
-      'https://docs.yourdomain.com/api',
+      "Complete API Documentation",
+      "https://docs.yourdomain.com/api",
     )
     .build();
 
@@ -292,31 +292,31 @@ All endpoints return standardized error responses:
   });
 
   // 🎨 Enhanced Swagger UI setup
-  SwaggerModule.setup('api/docs', app, document, {
+  SwaggerModule.setup("api/docs", app, document, {
     explorer: true,
     swaggerOptions: {
       filter: true,
       showRequestDuration: true,
-      docExpansion: 'none', // Start collapsed for better UX
+      docExpansion: "none", // Start collapsed for better UX
       persistAuthorization: true,
       displayOperationId: false,
       displayRequestDuration: true,
       defaultModelsExpandDepth: 3,
       defaultModelExpandDepth: 3,
       tryItOutEnabled: true,
-      supportedSubmitMethods: ['get', 'post', 'put', 'delete', 'patch'],
+      supportedSubmitMethods: ["get", "post", "put", "delete", "patch"],
       deepLinking: true,
       showExtensions: true,
       showCommonExtensions: true,
-      tagsSorter: 'alpha',
-      operationsSorter: 'method',
+      tagsSorter: "alpha",
+      operationsSorter: "method",
       syntaxHighlight: {
         activated: true,
-        theme: 'agate',
+        theme: "agate",
       },
     },
-    customSiteTitle: '🚀 Enterprise Authentication API - Developer Portal',
-    customfavIcon: '/favicon.ico',
+    customSiteTitle: "🚀 Enterprise Authentication API - Developer Portal",
+    customfavIcon: "/favicon.ico",
     customCss: `
       .swagger-ui .topbar {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);

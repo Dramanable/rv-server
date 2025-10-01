@@ -10,19 +10,19 @@ import {
   Injectable,
   Logger,
   UnauthorizedException,
-} from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
-import { AuthGuard } from '@nestjs/passport';
-import type { Request } from 'express';
-import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
+} from "@nestjs/common";
+import { Reflector } from "@nestjs/core";
+import { AuthGuard } from "@nestjs/passport";
+import type { Request } from "express";
+import { IS_PUBLIC_KEY } from "../decorators/public.decorator";
 import {
   AuthenticatedUser,
   isAuthenticatedUser,
   isAuthenticationError,
-} from '../types/guard.types';
+} from "../types/guard.types";
 
 @Injectable()
-export class JwtAuthGuard extends AuthGuard('jwt') {
+export class JwtAuthGuard extends AuthGuard("jwt") {
   private readonly logger = new Logger(JwtAuthGuard.name);
 
   constructor(private readonly reflector: Reflector) {
@@ -42,7 +42,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     const request = context.switchToHttp().getRequest<Request>();
 
     // Log de la tentative d'authentification
-    this.logger.debug('JWT authentication attempt', {
+    this.logger.debug("JWT authentication attempt", {
       method: request.method,
       path: request.path,
       ip: request.ip,
@@ -55,7 +55,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     const token = this.extractTokenFromRequest(request);
 
     if (!token) {
-      this.logger.warn('No authentication token found', {
+      this.logger.warn("No authentication token found", {
         method: request.method,
         path: request.path,
         ip: request.ip,
@@ -67,9 +67,9 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       return (await super.canActivate(context)) as boolean;
     } catch (error) {
       const errorMessage =
-        error instanceof Error ? error.message : 'Unknown authentication error';
+        error instanceof Error ? error.message : "Unknown authentication error";
 
-      this.logger.error('JWT authentication failed', {
+      this.logger.error("JWT authentication failed", {
         method: request.method,
         path: request.path,
         ip: request.ip,
@@ -92,19 +92,19 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       method: request.method,
       path: request.path,
       ip: request.ip,
-      userAgent: request.get('User-Agent'),
+      userAgent: request.get("User-Agent"),
     };
 
     // ❌ Gestion des erreurs d'authentification
     if (err) {
       const errorMessage = isAuthenticationError(err)
         ? err.message
-        : 'Authentication failed';
+        : "Authentication failed";
 
-      this.logger.warn('JWT authentication error', {
+      this.logger.warn("JWT authentication error", {
         ...requestContext,
         error: errorMessage,
-        errorName: isAuthenticationError(err) ? err.name : 'Unknown',
+        errorName: isAuthenticationError(err) ? err.name : "Unknown",
       });
 
       throw new UnauthorizedException(errorMessage);
@@ -113,24 +113,24 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     // ❌ Utilisateur non trouvé ou invalide
     if (!user || !isAuthenticatedUser(user)) {
       const infoMessage =
-        typeof info === 'object' && info !== null && 'message' in info
+        typeof info === "object" && info !== null && "message" in info
           ? String((info as { message: unknown }).message)
-          : 'No user in JWT payload';
+          : "No user in JWT payload";
 
-      this.logger.warn('JWT authentication failed - no user found', {
+      this.logger.warn("JWT authentication failed - no user found", {
         ...requestContext,
         reason: infoMessage,
       });
 
-      throw new UnauthorizedException('Invalid authentication token');
+      throw new UnauthorizedException("Invalid authentication token");
     }
 
     // ✅ Authentification réussie
-    this.logger.debug('JWT authentication successful', {
+    this.logger.debug("JWT authentication successful", {
       ...requestContext,
       userId: user.id,
       userEmail:
-        typeof user.email === 'string'
+        typeof user.email === "string"
           ? user.email
           : (user.email as any).value || user.email,
       userRole: user.role,
@@ -147,16 +147,16 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     const authHeader = request.headers.authorization;
     if (
       authHeader &&
-      typeof authHeader === 'string' &&
-      authHeader.startsWith('Bearer ')
+      typeof authHeader === "string" &&
+      authHeader.startsWith("Bearer ")
     ) {
       return authHeader.substring(7);
     }
 
     // Vérifier les cookies avec nom par défaut (même que dans .env)
     const cookies = request.cookies as Record<string, unknown> | undefined;
-    const cookieName = process.env.ACCESS_TOKEN_COOKIE_NAME || 'accessToken';
-    if (cookies && typeof cookies[cookieName] === 'string') {
+    const cookieName = process.env.ACCESS_TOKEN_COOKIE_NAME || "accessToken";
+    if (cookies && typeof cookies[cookieName] === "string") {
       return cookies[cookieName];
     }
 

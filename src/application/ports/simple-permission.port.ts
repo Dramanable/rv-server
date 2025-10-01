@@ -5,7 +5,7 @@
  * Port de l'architecture hexagonale.
  */
 
-import { UserRole } from '@shared/enums/user-role.enum';
+import { UserRole } from "@shared/enums/user-role.enum";
 
 export interface ISimplePermissionService {
   /**

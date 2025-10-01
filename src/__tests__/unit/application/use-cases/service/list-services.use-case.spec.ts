@@ -5,17 +5,17 @@
  * Phase RED → GREEN → REFACTOR
  */
 
-import { ListServicesUseCase } from '../../../../../application/use-cases/service/list-services.use-case';
-import { Service } from '../../../../../domain/entities/service.entity';
-import { BusinessId } from '../../../../../domain/value-objects/business-id.value-object';
-import { ServiceId } from '../../../../../domain/value-objects/service-id.value-object';
-import { ServiceTypeId } from '../../../../../domain/value-objects/service-type-id.value-object';
+import { ListServicesUseCase } from "../../../../../application/use-cases/service/list-services.use-case";
+import { Service } from "../../../../../domain/entities/service.entity";
+import { BusinessId } from "../../../../../domain/value-objects/business-id.value-object";
+import { ServiceId } from "../../../../../domain/value-objects/service-id.value-object";
+import { ServiceTypeId } from "../../../../../domain/value-objects/service-type-id.value-object";
 import {
   ApplicationValidationError,
   InsufficientPermissionsError,
-} from '../../../../../application/exceptions/application.exceptions';
+} from "../../../../../application/exceptions/application.exceptions";
 
-describe('ListServicesUseCase', () => {
+describe("ListServicesUseCase", () => {
   let listServicesUseCase: ListServicesUseCase;
   let mockServiceRepository: any;
   let mockPermissionService: any;
@@ -24,27 +24,27 @@ describe('ListServicesUseCase', () => {
 
   const mockServices = [
     Service.create({
-      businessId: BusinessId.create('550e8400-e29b-41d4-a716-446655440000'),
-      name: 'Service 1',
-      description: 'First service',
+      businessId: BusinessId.create("550e8400-e29b-41d4-a716-446655440000"),
+      name: "Service 1",
+      description: "First service",
       serviceTypeIds: [
-        ServiceTypeId.fromString('550e8400-e29b-41d4-a716-446655440001'),
+        ServiceTypeId.fromString("550e8400-e29b-41d4-a716-446655440001"),
       ],
       basePrice: 100,
-      currency: 'EUR',
+      currency: "EUR",
       duration: 60,
       allowOnlineBooking: true,
       requiresApproval: false,
     }),
     Service.create({
-      businessId: BusinessId.create('550e8400-e29b-41d4-a716-446655440000'),
-      name: 'Service 2',
-      description: 'Second service',
+      businessId: BusinessId.create("550e8400-e29b-41d4-a716-446655440000"),
+      name: "Service 2",
+      description: "Second service",
       serviceTypeIds: [
-        ServiceTypeId.fromString('550e8400-e29b-41d4-a716-446655440002'),
+        ServiceTypeId.fromString("550e8400-e29b-41d4-a716-446655440002"),
       ],
       basePrice: 200,
-      currency: 'EUR',
+      currency: "EUR",
       duration: 90,
       allowOnlineBooking: false,
       requiresApproval: true,
@@ -77,14 +77,14 @@ describe('ListServicesUseCase', () => {
     );
   });
 
-  describe('🔴 RED Phase - Parameter Validation', () => {
-    it('should throw ApplicationValidationError when requestingUserId is missing', async () => {
+  describe("🔴 RED Phase - Parameter Validation", () => {
+    it("should throw ApplicationValidationError when requestingUserId is missing", async () => {
       // Arrange
       const request = {
-        requestingUserId: '',
-        businessId: '550e8400-e29b-41d4-a716-446655440000',
+        requestingUserId: "",
+        businessId: "550e8400-e29b-41d4-a716-446655440000",
         pagination: { page: 1, limit: 10 },
-        sorting: { sortBy: 'name', sortOrder: 'asc' as const },
+        sorting: { sortBy: "name", sortOrder: "asc" as const },
         filters: {},
       };
 
@@ -94,13 +94,13 @@ describe('ListServicesUseCase', () => {
       );
     });
 
-    it('should throw ApplicationValidationError when businessId is missing', async () => {
+    it("should throw ApplicationValidationError when businessId is missing", async () => {
       // Arrange
       const request = {
-        requestingUserId: '550e8400-e29b-41d4-a716-446655440001',
-        businessId: '',
+        requestingUserId: "550e8400-e29b-41d4-a716-446655440001",
+        businessId: "",
         pagination: { page: 1, limit: 10 },
-        sorting: { sortBy: 'name', sortOrder: 'asc' as const },
+        sorting: { sortBy: "name", sortOrder: "asc" as const },
         filters: {},
       };
 
@@ -110,13 +110,13 @@ describe('ListServicesUseCase', () => {
       );
     });
 
-    it('should throw ApplicationValidationError when page is less than 1', async () => {
+    it("should throw ApplicationValidationError when page is less than 1", async () => {
       // Arrange
       const request = {
-        requestingUserId: '550e8400-e29b-41d4-a716-446655440001',
-        businessId: '550e8400-e29b-41d4-a716-446655440000',
+        requestingUserId: "550e8400-e29b-41d4-a716-446655440001",
+        businessId: "550e8400-e29b-41d4-a716-446655440000",
         pagination: { page: 0, limit: 10 },
-        sorting: { sortBy: 'name', sortOrder: 'asc' as const },
+        sorting: { sortBy: "name", sortOrder: "asc" as const },
         filters: {},
       };
 
@@ -126,13 +126,13 @@ describe('ListServicesUseCase', () => {
       );
     });
 
-    it('should throw ApplicationValidationError when limit exceeds maximum', async () => {
+    it("should throw ApplicationValidationError when limit exceeds maximum", async () => {
       // Arrange
       const request = {
-        requestingUserId: '550e8400-e29b-41d4-a716-446655440001',
-        businessId: '550e8400-e29b-41d4-a716-446655440000',
+        requestingUserId: "550e8400-e29b-41d4-a716-446655440001",
+        businessId: "550e8400-e29b-41d4-a716-446655440000",
         pagination: { page: 1, limit: 101 },
-        sorting: { sortBy: 'name', sortOrder: 'asc' as const },
+        sorting: { sortBy: "name", sortOrder: "asc" as const },
         filters: {},
       };
 
@@ -143,21 +143,21 @@ describe('ListServicesUseCase', () => {
     });
   });
 
-  describe('🔴 RED Phase - Permissions', () => {
-    it('should throw InsufficientPermissionsError when user lacks VIEW_SERVICES permission', async () => {
+  describe("🔴 RED Phase - Permissions", () => {
+    it("should throw InsufficientPermissionsError when user lacks VIEW_SERVICES permission", async () => {
       // Arrange
       const request = {
-        requestingUserId: '550e8400-e29b-41d4-a716-446655440001',
-        businessId: '550e8400-e29b-41d4-a716-446655440000',
+        requestingUserId: "550e8400-e29b-41d4-a716-446655440001",
+        businessId: "550e8400-e29b-41d4-a716-446655440000",
         pagination: { page: 1, limit: 10 },
-        sorting: { sortBy: 'name', sortOrder: 'asc' as const },
+        sorting: { sortBy: "name", sortOrder: "asc" as const },
         filters: {},
       };
 
       mockPermissionService.requirePermission.mockRejectedValue(
         new InsufficientPermissionsError(
           request.requestingUserId,
-          'VIEW_SERVICES',
+          "VIEW_SERVICES",
           request.businessId,
         ),
       );
@@ -169,18 +169,18 @@ describe('ListServicesUseCase', () => {
     });
   });
 
-  describe('🔴 RED Phase - Successful Listing', () => {
+  describe("🔴 RED Phase - Successful Listing", () => {
     beforeEach(() => {
       mockPermissionService.requirePermission.mockResolvedValue(true);
     });
 
-    it('should list services with pagination successfully', async () => {
+    it("should list services with pagination successfully", async () => {
       // Arrange
       const request = {
-        requestingUserId: '550e8400-e29b-41d4-a716-446655440001',
-        businessId: '550e8400-e29b-41d4-a716-446655440000',
+        requestingUserId: "550e8400-e29b-41d4-a716-446655440001",
+        businessId: "550e8400-e29b-41d4-a716-446655440000",
         pagination: { page: 1, limit: 10 },
-        sorting: { sortBy: 'name', sortOrder: 'asc' as const },
+        sorting: { sortBy: "name", sortOrder: "asc" as const },
         filters: {},
       };
 
@@ -194,8 +194,8 @@ describe('ListServicesUseCase', () => {
 
       // Assert
       expect(result.data).toHaveLength(2);
-      expect(result.data[0].name).toBe('Service 1');
-      expect(result.data[1].name).toBe('Service 2');
+      expect(result.data[0].name).toBe("Service 1");
+      expect(result.data[1].name).toBe("Service 2");
       expect(result.meta.currentPage).toBe(1);
       expect(result.meta.totalItems).toBe(2);
       expect(result.meta.totalPages).toBe(1);
@@ -203,15 +203,15 @@ describe('ListServicesUseCase', () => {
       expect(result.meta.hasPrevPage).toBe(false);
     });
 
-    it('should apply filters correctly', async () => {
+    it("should apply filters correctly", async () => {
       // Arrange
       const request = {
-        requestingUserId: '550e8400-e29b-41d4-a716-446655440001',
-        businessId: '550e8400-e29b-41d4-a716-446655440000',
+        requestingUserId: "550e8400-e29b-41d4-a716-446655440001",
+        businessId: "550e8400-e29b-41d4-a716-446655440000",
         pagination: { page: 1, limit: 10 },
-        sorting: { sortBy: 'name', sortOrder: 'asc' as const },
+        sorting: { sortBy: "name", sortOrder: "asc" as const },
         filters: {
-          name: 'Service 1',
+          name: "Service 1",
           isActive: true,
           minPrice: 50,
           maxPrice: 150,
@@ -229,7 +229,7 @@ describe('ListServicesUseCase', () => {
       // Assert
       expect(mockServiceRepository.search).toHaveBeenCalledWith(
         expect.objectContaining({
-          name: 'Service 1',
+          name: "Service 1",
           isActive: true,
           minPrice: 50,
           maxPrice: 150,
@@ -240,13 +240,13 @@ describe('ListServicesUseCase', () => {
       expect(result.data).toHaveLength(1);
     });
 
-    it('should calculate pagination metadata correctly for multiple pages', async () => {
+    it("should calculate pagination metadata correctly for multiple pages", async () => {
       // Arrange
       const request = {
-        requestingUserId: '550e8400-e29b-41d4-a716-446655440001',
-        businessId: '550e8400-e29b-41d4-a716-446655440000',
+        requestingUserId: "550e8400-e29b-41d4-a716-446655440001",
+        businessId: "550e8400-e29b-41d4-a716-446655440000",
         pagination: { page: 2, limit: 1 },
-        sorting: { sortBy: 'name', sortOrder: 'asc' as const },
+        sorting: { sortBy: "name", sortOrder: "asc" as const },
         filters: {},
       };
 
@@ -272,7 +272,7 @@ describe('ListServicesUseCase', () => {
     });
   });
 
-  describe('🔴 RED Phase - Logging', () => {
+  describe("🔴 RED Phase - Logging", () => {
     beforeEach(() => {
       mockPermissionService.requirePermission.mockResolvedValue(true);
       mockServiceRepository.search.mockResolvedValue({
@@ -281,13 +281,13 @@ describe('ListServicesUseCase', () => {
       });
     });
 
-    it('should log listing attempt and success', async () => {
+    it("should log listing attempt and success", async () => {
       // Arrange
       const request = {
-        requestingUserId: '550e8400-e29b-41d4-a716-446655440001',
-        businessId: '550e8400-e29b-41d4-a716-446655440000',
+        requestingUserId: "550e8400-e29b-41d4-a716-446655440001",
+        businessId: "550e8400-e29b-41d4-a716-446655440000",
         pagination: { page: 1, limit: 10 },
-        sorting: { sortBy: 'name', sortOrder: 'asc' as const },
+        sorting: { sortBy: "name", sortOrder: "asc" as const },
         filters: {},
       };
 
@@ -296,7 +296,7 @@ describe('ListServicesUseCase', () => {
 
       // Assert
       expect(mockLogger.info).toHaveBeenCalledWith(
-        'Attempting to list services',
+        "Attempting to list services",
         {
           businessId: request.businessId,
           requestingUserId: request.requestingUserId,
@@ -305,7 +305,7 @@ describe('ListServicesUseCase', () => {
         },
       );
       expect(mockLogger.info).toHaveBeenCalledWith(
-        'Services listed successfully',
+        "Services listed successfully",
         {
           businessId: request.businessId,
           requestingUserId: request.requestingUserId,
@@ -316,26 +316,26 @@ describe('ListServicesUseCase', () => {
       );
     });
 
-    it('should log errors when listing fails', async () => {
+    it("should log errors when listing fails", async () => {
       // Arrange
       const request = {
-        requestingUserId: '550e8400-e29b-41d4-a716-446655440001',
-        businessId: '550e8400-e29b-41d4-a716-446655440000',
+        requestingUserId: "550e8400-e29b-41d4-a716-446655440001",
+        businessId: "550e8400-e29b-41d4-a716-446655440000",
         pagination: { page: 1, limit: 10 },
-        sorting: { sortBy: 'name', sortOrder: 'asc' as const },
+        sorting: { sortBy: "name", sortOrder: "asc" as const },
         filters: {},
       };
 
       mockServiceRepository.search.mockRejectedValue(
-        new Error('Database error'),
+        new Error("Database error"),
       );
 
       // Act & Assert
       await expect(listServicesUseCase.execute(request)).rejects.toThrow(
-        'Database error',
+        "Database error",
       );
       expect(mockLogger.error).toHaveBeenCalledWith(
-        'Error listing services',
+        "Error listing services",
         expect.any(Error),
         {
           businessId: request.businessId,

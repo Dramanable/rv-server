@@ -5,10 +5,10 @@
  */
 
 export enum ReminderFrequency {
-  ONCE = 'ONCE',
-  HOURLY = 'HOURLY',
-  DAILY = 'DAILY',
-  WEEKLY = 'WEEKLY',
+  ONCE = "ONCE",
+  HOURLY = "HOURLY",
+  DAILY = "DAILY",
+  WEEKLY = "WEEKLY",
 }
 
 export interface ScheduleParams {
@@ -53,12 +53,12 @@ export class ReminderSchedule {
     }
 
     if (params.appointmentStartTime <= new Date()) {
-      throw new Error('La date de rendez-vous doit être dans le futur');
+      throw new Error("La date de rendez-vous doit être dans le futur");
     }
 
     const maxReminders = params.maxReminders || 1;
     if (maxReminders < 1) {
-      throw new Error('Le nombre maximum de rappels doit être au moins 1');
+      throw new Error("Le nombre maximum de rappels doit être au moins 1");
     }
 
     return new ReminderSchedule(

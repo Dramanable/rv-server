@@ -7,8 +7,8 @@
 import {
   PermissionNotFoundError,
   SystemPermissionModificationError,
-} from '@domain/exceptions/permission.exceptions';
-import type { IPermissionRepository } from '@domain/repositories/permission.repository';
+} from "@domain/exceptions/permission.exceptions";
+import type { IPermissionRepository } from "@domain/repositories/permission.repository";
 
 export interface DeletePermissionRequest {
   readonly permissionId: string;
@@ -44,7 +44,7 @@ export class DeletePermissionUseCase {
     if (!existingPermission.canBeDeleted()) {
       throw new SystemPermissionModificationError(
         existingPermission.getName(),
-        'deletion',
+        "deletion",
       );
     }
 

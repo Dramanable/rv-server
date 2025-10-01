@@ -1,5 +1,5 @@
-import { PermissionJSON } from '@domain/entities/permission.entity';
-import { IPermissionRepository } from '@domain/repositories/permission.repository';
+import { PermissionJSON } from "@domain/entities/permission.entity";
+import { IPermissionRepository } from "@domain/repositories/permission.repository";
 
 /**
  * List Permissions Use Case
@@ -13,7 +13,7 @@ export interface ListPermissionsRequest {
   };
   readonly sorting?: {
     readonly sortBy: string;
-    readonly sortOrder: 'asc' | 'desc';
+    readonly sortOrder: "asc" | "desc";
   };
   readonly filters?: {
     readonly search?: string;
@@ -47,8 +47,8 @@ export class ListPermissionsUseCase {
     // Valeurs par défaut pour pagination et tri
     const page = request.pagination?.page || 1;
     const limit = request.pagination?.limit || 10;
-    const sortBy = request.sorting?.sortBy || 'createdAt';
-    const sortOrder = request.sorting?.sortOrder || 'desc';
+    const sortBy = request.sorting?.sortBy || "createdAt";
+    const sortOrder = request.sorting?.sortOrder || "desc";
 
     // Construire les filtres
     const filters: any = {};

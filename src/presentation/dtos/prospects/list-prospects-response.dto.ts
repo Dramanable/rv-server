@@ -1,5 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { ProspectResponseDto } from './prospect-response.dto';
+import { ApiProperty } from "@nestjs/swagger";
+import { ProspectResponseDto } from "./prospect-response.dto";
 
 /**
  * 🎯 ListProspectsResponseDto - DTO de réponse pour la liste paginée des prospects
@@ -9,13 +9,13 @@ import { ProspectResponseDto } from './prospect-response.dto';
  */
 export class ListProspectsResponseDto {
   @ApiProperty({
-    description: 'Liste des prospects',
+    description: "Liste des prospects",
     type: [ProspectResponseDto],
   })
   readonly data!: ProspectResponseDto[];
 
   @ApiProperty({
-    description: 'Métadonnées de pagination',
+    description: "Métadonnées de pagination",
     example: {
       currentPage: 1,
       totalPages: 5,
@@ -35,7 +35,7 @@ export class ListProspectsResponseDto {
   };
 
   @ApiProperty({
-    description: 'Indicateur de succès',
+    description: "Indicateur de succès",
     example: true,
   })
   readonly success!: boolean;

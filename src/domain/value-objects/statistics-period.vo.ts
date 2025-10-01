@@ -5,14 +5,14 @@
  * Gère les calculs de dates pour différents types de périodes
  */
 
-import { DomainValidationError } from '../exceptions/domain.exceptions';
+import { DomainValidationError } from "../exceptions/domain.exceptions";
 
 export enum PeriodType {
-  WEEK = 'week',
-  MONTH = 'month',
-  QUARTER = 'quarter',
-  YEAR = 'year',
-  CUSTOM = 'custom',
+  WEEK = "week",
+  MONTH = "month",
+  QUARTER = "quarter",
+  YEAR = "year",
+  CUSTOM = "custom",
 }
 
 export class StatisticsPeriod {
@@ -148,27 +148,27 @@ export class StatisticsPeriod {
   }
 
   private formatDate(date: Date): string {
-    return date.toLocaleDateString('fr-FR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
+    return date.toLocaleDateString("fr-FR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
     });
   }
 
   private getMonthName(monthIndex: number): string {
     const months = [
-      'Janvier',
-      'Février',
-      'Mars',
-      'Avril',
-      'Mai',
-      'Juin',
-      'Juillet',
-      'Août',
-      'Septembre',
-      'Octobre',
-      'Novembre',
-      'Décembre',
+      "Janvier",
+      "Février",
+      "Mars",
+      "Avril",
+      "Mai",
+      "Juin",
+      "Juillet",
+      "Août",
+      "Septembre",
+      "Octobre",
+      "Novembre",
+      "Décembre",
     ];
     return months[monthIndex];
   }
@@ -176,24 +176,24 @@ export class StatisticsPeriod {
   private validatePeriod(startDate: Date, endDate: Date): void {
     if (!(startDate instanceof Date) || !(endDate instanceof Date)) {
       throw new DomainValidationError(
-        'Start date and end date must be valid Date objects',
+        "Start date and end date must be valid Date objects",
       );
     }
 
     if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
       throw new DomainValidationError(
-        'Start date and end date must be valid dates',
+        "Start date and end date must be valid dates",
       );
     }
 
     if (startDate > endDate) {
-      throw new DomainValidationError('Start date cannot be after end date');
+      throw new DomainValidationError("Start date cannot be after end date");
     }
 
     // Validation business : la période ne peut pas être trop longue (max 5 ans)
     const maxDuration = 5 * 365 * 24 * 60 * 60 * 1000; // 5 ans en millisecondes
     if (endDate.getTime() - startDate.getTime() > maxDuration) {
-      throw new DomainValidationError('Period duration cannot exceed 5 years');
+      throw new DomainValidationError("Period duration cannot exceed 5 years");
     }
   }
 }

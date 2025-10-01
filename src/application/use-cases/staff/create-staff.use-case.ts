@@ -4,18 +4,18 @@
  * Création d'un membre du personnel avec validation métier et permissions
  * ✅ AUCUNE dépendance NestJS - Respect de la Clean Architecture
  */
-import { StaffValidationError } from '../../../application/exceptions/application.exceptions';
-import { I18nService } from '../../../application/ports/i18n.port';
-import { Logger } from '../../../application/ports/logger.port';
-import { Staff } from '../../../domain/entities/staff.entity';
-import { BusinessRepository } from '../../../domain/repositories/business.repository.interface';
-import { StaffRepository } from '../../../domain/repositories/staff.repository.interface';
-import { BusinessId } from '../../../domain/value-objects/business-id.value-object';
-import { Email } from '../../../domain/value-objects/email.value-object';
-import { Phone } from '../../../domain/value-objects/phone.value-object';
-import { Permission } from '../../../shared/enums/permission.enum';
-import { StaffRole } from '../../../shared/enums/staff-role.enum';
-import { IPermissionService } from '../../ports/permission.service.interface';
+import { StaffValidationError } from "../../../application/exceptions/application.exceptions";
+import { I18nService } from "../../../application/ports/i18n.port";
+import { Logger } from "../../../application/ports/logger.port";
+import { Staff } from "../../../domain/entities/staff.entity";
+import { BusinessRepository } from "../../../domain/repositories/business.repository.interface";
+import { StaffRepository } from "../../../domain/repositories/staff.repository.interface";
+import { BusinessId } from "../../../domain/value-objects/business-id.value-object";
+import { Email } from "../../../domain/value-objects/email.value-object";
+import { Phone } from "../../../domain/value-objects/phone.value-object";
+import { Permission } from "../../../shared/enums/permission.enum";
+import { StaffRole } from "../../../shared/enums/staff-role.enum";
+import { IPermissionService } from "../../ports/permission.service.interface";
 
 export interface CreateStaffRequest {
   readonly requestingUserId: string;
@@ -74,8 +74,8 @@ export class CreateStaffUseCase {
       { businessId: request.businessId },
     );
 
-    this.logger.info(this.i18n.t('operations.staff.creation_attempt'), {
-      operation: 'CreateStaff',
+    this.logger.info(this.i18n.t("operations.staff.creation_attempt"), {
+      operation: "CreateStaff",
       requestingUserId: request.requestingUserId,
       businessId: request.businessId,
     });
@@ -116,8 +116,8 @@ export class CreateStaffUseCase {
         createdAt: staff.createdAt,
       };
 
-      this.logger.info(this.i18n.t('operations.staff.creation_success'), {
-        operation: 'CreateStaff',
+      this.logger.info(this.i18n.t("operations.staff.creation_success"), {
+        operation: "CreateStaff",
         requestingUserId: request.requestingUserId,
         staffId: staff.id.getValue(),
         staffRole: staff.role,
@@ -126,10 +126,10 @@ export class CreateStaffUseCase {
       return response;
     } catch (error) {
       this.logger.error(
-        this.i18n.t('operations.staff.creation_failed'),
+        this.i18n.t("operations.staff.creation_failed"),
         error as Error,
         {
-          operation: 'CreateStaff',
+          operation: "CreateStaff",
           requestingUserId: request.requestingUserId,
           businessId: request.businessId,
         },
@@ -144,34 +144,34 @@ export class CreateStaffUseCase {
     // Validation du prénom
     if (!request.firstName || request.firstName.trim().length < 2) {
       throw new StaffValidationError(
-        'firstName',
+        "firstName",
         request.firstName,
-        'First name must be at least 2 characters long',
+        "First name must be at least 2 characters long",
       );
     }
 
     if (request.firstName.trim().length > 50) {
       throw new StaffValidationError(
-        'firstName',
+        "firstName",
         request.firstName,
-        'First name cannot exceed 50 characters',
+        "First name cannot exceed 50 characters",
       );
     }
 
     // Validation du nom de famille
     if (!request.lastName || request.lastName.trim().length < 2) {
       throw new StaffValidationError(
-        'lastName',
+        "lastName",
         request.lastName,
-        'Last name must be at least 2 characters long',
+        "Last name must be at least 2 characters long",
       );
     }
 
     if (request.lastName.trim().length > 50) {
       throw new StaffValidationError(
-        'lastName',
+        "lastName",
         request.lastName,
-        'Last name cannot exceed 50 characters',
+        "Last name cannot exceed 50 characters",
       );
     }
 
@@ -182,12 +182,12 @@ export class CreateStaffUseCase {
     // TODO: Ajouter findByEmailAndBusiness method au repository interface
 
     if (existingStaff) {
-      this.logger.warn(this.i18n.t('warnings.staff.email_already_exists'), {
+      this.logger.warn(this.i18n.t("warnings.staff.email_already_exists"), {
         email: request.email,
         businessId: request.businessId,
       });
       throw new StaffValidationError(
-        'email',
+        "email",
         request.email,
         `Staff member with email "${request.email}" already exists in this business`,
       );
@@ -196,7 +196,7 @@ export class CreateStaffUseCase {
     // Validation du rôle
     if (!Object.values(StaffRole).includes(request.role)) {
       throw new StaffValidationError(
-        'role',
+        "role",
         request.role,
         `Invalid staff role: ${request.role}`,
       );
@@ -205,13 +205,13 @@ export class CreateStaffUseCase {
     // Validation des horaires de travail si fournis
     if (request.workingHours) {
       const days = [
-        'monday',
-        'tuesday',
-        'wednesday',
-        'thursday',
-        'friday',
-        'saturday',
-        'sunday',
+        "monday",
+        "tuesday",
+        "wednesday",
+        "thursday",
+        "friday",
+        "saturday",
+        "sunday",
       ];
 
       for (const day of days) {
@@ -223,7 +223,7 @@ export class CreateStaffUseCase {
             !this.isValidTimeFormat(hours.end)
           ) {
             throw new StaffValidationError(
-              'workingHours',
+              "workingHours",
               `${day}: ${hours.start}-${hours.end}`,
               `Invalid time format for ${day}. Use HH:MM format`,
             );
@@ -231,7 +231,7 @@ export class CreateStaffUseCase {
 
           if (hours.start >= hours.end) {
             throw new StaffValidationError(
-              'workingHours',
+              "workingHours",
               `${day}: ${hours.start}-${hours.end}`,
               `Start time must be before end time for ${day}`,
             );
@@ -243,18 +243,18 @@ export class CreateStaffUseCase {
     // Validation du département si fourni
     if (request.department && request.department.trim().length > 100) {
       throw new StaffValidationError(
-        'department',
+        "department",
         request.department,
-        'Department name cannot exceed 100 characters',
+        "Department name cannot exceed 100 characters",
       );
     }
 
     // Validation du titre de poste si fourni
     if (request.jobTitle && request.jobTitle.trim().length > 100) {
       throw new StaffValidationError(
-        'jobTitle',
+        "jobTitle",
         request.jobTitle,
-        'Job title cannot exceed 100 characters',
+        "Job title cannot exceed 100 characters",
       );
     }
   }

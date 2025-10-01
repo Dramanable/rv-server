@@ -1,18 +1,18 @@
 // 🎯 UpdateServiceTypeUseCase - Implémentation Clean Architecture
 // Pattern TDD : GREEN phase - Implementation minimale qui fait passer les tests
 
-import { ApplicationValidationError } from '@application/exceptions/application.exceptions';
-import { I18nService } from '@application/ports/i18n.port';
-import { Logger } from '@application/ports/logger.port';
-import { ServiceType } from '@domain/entities/service-type.entity';
+import { ApplicationValidationError } from "@application/exceptions/application.exceptions";
+import { I18nService } from "@application/ports/i18n.port";
+import { Logger } from "@application/ports/logger.port";
+import { ServiceType } from "@domain/entities/service-type.entity";
 import {
   ServiceTypeCodeConflictError,
   ServiceTypeNameConflictError,
   ServiceTypeNotFoundError,
-} from '@domain/exceptions/service-type.exceptions';
-import { IServiceTypeRepository } from '@domain/repositories/service-type.repository';
-import { BusinessId } from '@domain/value-objects/business-id.value-object';
-import { ServiceTypeId } from '@domain/value-objects/service-type-id.value-object';
+} from "@domain/exceptions/service-type.exceptions";
+import { IServiceTypeRepository } from "@domain/repositories/service-type.repository";
+import { BusinessId } from "@domain/value-objects/business-id.value-object";
+import { ServiceTypeId } from "@domain/value-objects/service-type-id.value-object";
 
 /**
  * 📝 Request interface for updating service type
@@ -55,7 +55,7 @@ export class UpdateServiceTypeUseCase {
     // 🔍 Input validation
     this.validateRequest(request);
 
-    this.logger.info('Updating service type', {
+    this.logger.info("Updating service type", {
       serviceTypeId: request.serviceTypeId.getValue(),
       businessId: request.businessId.getValue(),
       requestingUserId: request.requestingUserId,
@@ -69,7 +69,7 @@ export class UpdateServiceTypeUseCase {
       );
       if (!existingServiceType) {
         throw new ServiceTypeNotFoundError(
-          this.i18n.translate('serviceType.notFound', {
+          this.i18n.translate("serviceType.notFound", {
             id: request.serviceTypeId.getValue(),
           }),
         );
@@ -107,7 +107,7 @@ export class UpdateServiceTypeUseCase {
       const updatedServiceType =
         await this.serviceTypeRepository.save(existingServiceType);
 
-      this.logger.info('Service type updated successfully', {
+      this.logger.info("Service type updated successfully", {
         serviceTypeId: request.serviceTypeId.getValue(),
         businessId: request.businessId.getValue(),
         correlationId: request.correlationId,
@@ -118,7 +118,7 @@ export class UpdateServiceTypeUseCase {
       };
     } catch (error) {
       this.logger.error(
-        'Failed to update service type',
+        "Failed to update service type",
         error instanceof Error ? error : undefined,
         {
           serviceTypeId: request.serviceTypeId.getValue(),
@@ -138,23 +138,23 @@ export class UpdateServiceTypeUseCase {
   private validateRequest(request: UpdateServiceTypeRequest): void {
     if (
       !request.serviceTypeId ||
-      typeof request.serviceTypeId.getValue !== 'function'
+      typeof request.serviceTypeId.getValue !== "function"
     ) {
       throw new ApplicationValidationError(
-        'serviceTypeId',
+        "serviceTypeId",
         request.serviceTypeId,
-        'required',
+        "required",
       );
     }
 
     if (
       !request.businessId ||
-      typeof request.businessId.getValue !== 'function'
+      typeof request.businessId.getValue !== "function"
     ) {
       throw new ApplicationValidationError(
-        'businessId',
+        "businessId",
         request.businessId,
-        'required',
+        "required",
       );
     }
 
@@ -163,17 +163,17 @@ export class UpdateServiceTypeUseCase {
       request.requestingUserId.trim().length === 0
     ) {
       throw new ApplicationValidationError(
-        'requestingUserId',
+        "requestingUserId",
         request.requestingUserId,
-        'required',
+        "required",
       );
     }
 
     if (!request.correlationId || request.correlationId.trim().length === 0) {
       throw new ApplicationValidationError(
-        'correlationId',
+        "correlationId",
         request.correlationId,
-        'required',
+        "required",
       );
     }
 
@@ -188,9 +188,9 @@ export class UpdateServiceTypeUseCase {
 
     if (!hasUpdateFields) {
       throw new ApplicationValidationError(
-        'updateFields',
-        'none provided',
-        'at_least_one_required',
+        "updateFields",
+        "none provided",
+        "at_least_one_required",
       );
     }
   }

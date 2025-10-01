@@ -10,9 +10,9 @@
  * - Utilisée par les Use Cases via injection de dépendance
  */
 
-import { RefreshToken } from '../entities/refresh-token.entity';
+import { RefreshToken } from "../entities/refresh-token.entity";
 
-export const REFRESH_TOKEN_REPOSITORY = 'REFRESH_TOKEN_REPOSITORY';
+export const REFRESH_TOKEN_REPOSITORY = "REFRESH_TOKEN_REPOSITORY";
 
 export interface RefreshTokenRepository {
   /**

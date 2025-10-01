@@ -4,11 +4,11 @@
  * @version 1.0.0
  */
 
-import { Logger } from '@application/ports/logger.port';
-import { I18nService } from '@application/ports/i18n.port';
-import { INotificationRepository } from '@domain/repositories/notification.repository.interface';
-import { Notification } from '@domain/entities/notification.entity';
-import { NotificationException } from '@application/exceptions/notification.exceptions';
+import { Logger } from "@application/ports/logger.port";
+import { I18nService } from "@application/ports/i18n.port";
+import { INotificationRepository } from "@domain/repositories/notification.repository.interface";
+import { Notification } from "@domain/entities/notification.entity";
+import { NotificationException } from "@application/exceptions/notification.exceptions";
 
 /**
  * Requête pour supprimer une notification
@@ -50,7 +50,7 @@ export class DeleteNotificationUseCase {
     this.validateRequest(request);
 
     // 📊 Log de l'opération
-    this.logger.info('Deleting notification', {
+    this.logger.info("Deleting notification", {
       notificationId: request.notificationId,
       requestingUserId: request.requestingUserId,
       force: request.force || false,
@@ -65,9 +65,9 @@ export class DeleteNotificationUseCase {
 
       if (!notification) {
         throw new NotificationException(
-          this.i18n.translate('errors.notifications.not_found'),
-          'NOT_FOUND',
-          'errors.notifications.not_found',
+          this.i18n.translate("errors.notifications.not_found"),
+          "NOT_FOUND",
+          "errors.notifications.not_found",
           { notificationId: request.notificationId },
         );
       }
@@ -91,7 +91,7 @@ export class DeleteNotificationUseCase {
       await this.notificationRepository.delete(request.notificationId);
 
       // 📊 Log de succès
-      this.logger.info('Notification deleted successfully', {
+      this.logger.info("Notification deleted successfully", {
         notificationId: request.notificationId,
         recipientId: notification.getRecipientId(),
         deletedAt,
@@ -100,7 +100,7 @@ export class DeleteNotificationUseCase {
       });
 
       // 🔍 Log d'audit pour traçabilité
-      this.logger.audit('DELETE_NOTIFICATION', request.requestingUserId, {
+      this.logger.audit("DELETE_NOTIFICATION", request.requestingUserId, {
         notificationId: request.notificationId,
         recipientId: notification.getRecipientId(),
         channel: notification.getChannel().getValue(),
@@ -117,9 +117,9 @@ export class DeleteNotificationUseCase {
     } catch (error) {
       // 🚨 Log d'erreur
       const errorMessage =
-        error instanceof Error ? error.message : 'Unknown error';
+        error instanceof Error ? error.message : "Unknown error";
       this.logger.error(
-        'Failed to delete notification',
+        "Failed to delete notification",
         error instanceof Error ? error : undefined,
         {
           notificationId: request.notificationId,
@@ -133,9 +133,9 @@ export class DeleteNotificationUseCase {
       }
 
       throw new NotificationException(
-        this.i18n.translate('errors.notifications.delete_failed'),
-        'DELETE_FAILED',
-        'errors.notifications.delete_failed',
+        this.i18n.translate("errors.notifications.delete_failed"),
+        "DELETE_FAILED",
+        "errors.notifications.delete_failed",
         { originalError: errorMessage },
       );
     }
@@ -147,9 +147,9 @@ export class DeleteNotificationUseCase {
   private validateRequest(request: DeleteNotificationRequest): void {
     if (!request.notificationId || request.notificationId.trim().length === 0) {
       throw new NotificationException(
-        this.i18n.translate('errors.notifications.id_required'),
-        'VALIDATION_ERROR',
-        'errors.notifications.id_required',
+        this.i18n.translate("errors.notifications.id_required"),
+        "VALIDATION_ERROR",
+        "errors.notifications.id_required",
       );
     }
 
@@ -158,9 +158,9 @@ export class DeleteNotificationUseCase {
       request.requestingUserId.trim().length === 0
     ) {
       throw new NotificationException(
-        this.i18n.translate('errors.notifications.requesting_user_required'),
-        'VALIDATION_ERROR',
-        'errors.notifications.requesting_user_required',
+        this.i18n.translate("errors.notifications.requesting_user_required"),
+        "VALIDATION_ERROR",
+        "errors.notifications.requesting_user_required",
       );
     }
   }
@@ -181,10 +181,10 @@ export class DeleteNotificationUseCase {
         // TODO: Vérifier si l'utilisateur est admin/platform_admin
         throw new NotificationException(
           this.i18n.translate(
-            'errors.notifications.admin_permission_required_for_hard_delete',
+            "errors.notifications.admin_permission_required_for_hard_delete",
           ),
-          'ADMIN_PERMISSION_REQUIRED',
-          'errors.notifications.admin_permission_required_for_hard_delete',
+          "ADMIN_PERMISSION_REQUIRED",
+          "errors.notifications.admin_permission_required_for_hard_delete",
           {
             notificationId: notification.getId(),
             requestingUserId,
@@ -195,9 +195,9 @@ export class DeleteNotificationUseCase {
 
       // Pour le soft delete, seul le destinataire peut supprimer
       throw new NotificationException(
-        this.i18n.translate('errors.notifications.permission_denied'),
-        'PERMISSION_DENIED',
-        'errors.notifications.permission_denied',
+        this.i18n.translate("errors.notifications.permission_denied"),
+        "PERMISSION_DENIED",
+        "errors.notifications.permission_denied",
         {
           notificationId: notification.getId(),
           requestingUserId,
@@ -210,7 +210,7 @@ export class DeleteNotificationUseCase {
     if (force) {
       // TODO: Implémenter la vérification des permissions admin
       // Pour l'instant, on autorise le propriétaire à faire un hard delete
-      this.logger.warn('Hard delete requested by notification owner', {
+      this.logger.warn("Hard delete requested by notification owner", {
         notificationId: notification.getId(),
         requestingUserId,
       });
@@ -231,7 +231,7 @@ export class DeleteNotificationUseCase {
       // Pour le soft delete, vérifier les contraintes métier
       if (status.isPending()) {
         // On peut supprimer une notification en attente (elle sera annulée)
-        this.logger.info('Deleting pending notification will cancel it', {
+        this.logger.info("Deleting pending notification will cancel it", {
           notificationId: notification.getId(),
           currentStatus: status.getValue(),
         });
@@ -239,7 +239,7 @@ export class DeleteNotificationUseCase {
 
       if (status.isSent() && notification.getPriority().isHigh()) {
         // Les notifications importantes déjà envoyées nécessitent une attention particulière
-        this.logger.warn('Deleting important sent notification', {
+        this.logger.warn("Deleting important sent notification", {
           notificationId: notification.getId(),
           priority: notification.getPriority().getValue(),
         });
@@ -252,16 +252,16 @@ export class DeleteNotificationUseCase {
     // Règles pour les notifications système critiques (basées sur le type d'événement)
     const metadata = notification.getMetadata();
     const isSystemNotification =
-      metadata.originalEventType === 'SYSTEM' ||
-      metadata.templateId?.startsWith('system_');
+      metadata.originalEventType === "SYSTEM" ||
+      metadata.templateId?.startsWith("system_");
 
     if (isSystemNotification && !force) {
       throw new NotificationException(
         this.i18n.translate(
-          'errors.notifications.cannot_delete_system_notification',
+          "errors.notifications.cannot_delete_system_notification",
         ),
-        'SYSTEM_NOTIFICATION_PROTECTED',
-        'errors.notifications.cannot_delete_system_notification',
+        "SYSTEM_NOTIFICATION_PROTECTED",
+        "errors.notifications.cannot_delete_system_notification",
         {
           notificationId: notification.getId(),
         },

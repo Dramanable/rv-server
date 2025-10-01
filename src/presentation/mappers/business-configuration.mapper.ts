@@ -5,8 +5,8 @@
  * Presentation layer mapping for clean API responses
  */
 
-import { BusinessConfiguration } from '@domain/value-objects/business-configuration.value-object';
-import { BusinessConfigurationResponseDto } from '@presentation/dtos/business-configuration.dto';
+import { BusinessConfiguration } from "@domain/value-objects/business-configuration.value-object";
+import { BusinessConfigurationResponseDto } from "@presentation/dtos/business-configuration.dto";
 
 export class BusinessConfigurationMapper {
   /**
@@ -26,7 +26,7 @@ export class BusinessConfigurationMapper {
         businessWeekDays: configuration.getBusinessWeekDays(),
       },
       lastUpdated: lastUpdated.toISOString(),
-      message: 'Business configuration retrieved successfully',
+      message: "Business configuration retrieved successfully",
     };
   }
 
@@ -47,7 +47,7 @@ export class BusinessConfigurationMapper {
         businessWeekDays: defaultConfig.getBusinessWeekDays(),
       },
       lastUpdated: new Date().toISOString(),
-      message: 'Default configuration loaded',
+      message: "Default configuration loaded",
     };
   }
 }

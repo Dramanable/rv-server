@@ -4,8 +4,8 @@
  * Entité métier pour les rôles professionnels dans une équipe (MVP neutre)
  */
 
-import { generateId } from '@shared/utils/id.utils';
-import { ProfessionalRoleValidationError } from '../exceptions/professional-role.exceptions';
+import { generateId } from "@shared/utils/id.utils";
+import { ProfessionalRoleValidationError } from "../exceptions/professional-role.exceptions";
 
 export class ProfessionalRole {
   private constructor(
@@ -39,35 +39,35 @@ export class ProfessionalRole {
       params.code.trim().length > 20
     ) {
       throw new ProfessionalRoleValidationError(
-        'Professional role code must be between 2 and 20 characters',
+        "Professional role code must be between 2 and 20 characters",
       );
     }
 
     // Validation du nom
     if (!params.name || params.name.trim().length < 2) {
       throw new ProfessionalRoleValidationError(
-        'Professional role name must be at least 2 characters',
+        "Professional role name must be at least 2 characters",
       );
     }
 
     // Validation du displayName
     if (!params.displayName || params.displayName.trim().length < 2) {
       throw new ProfessionalRoleValidationError(
-        'Professional role display name must be at least 2 characters',
+        "Professional role display name must be at least 2 characters",
       );
     }
 
     // Validation de la description
     if (!params.description || params.description.trim().length < 10) {
       throw new ProfessionalRoleValidationError(
-        'Professional role description must be at least 10 characters',
+        "Professional role description must be at least 10 characters",
       );
     }
 
     // Validation de la catégorie (flexible pour MVP)
     if (!params.category || params.category.trim().length < 2) {
       throw new ProfessionalRoleValidationError(
-        'Professional category must be at least 2 characters',
+        "Professional category must be at least 2 characters",
       );
     }
 
@@ -184,7 +184,7 @@ export class ProfessionalRole {
   updateDisplayName(newDisplayName: string): void {
     if (!newDisplayName || newDisplayName.trim().length < 2) {
       throw new ProfessionalRoleValidationError(
-        'Display name must be at least 2 characters',
+        "Display name must be at least 2 characters",
       );
     }
     this._displayName = newDisplayName.trim();
@@ -194,7 +194,7 @@ export class ProfessionalRole {
   updateDescription(newDescription: string): void {
     if (!newDescription || newDescription.trim().length < 10) {
       throw new ProfessionalRoleValidationError(
-        'Description must be at least 10 characters',
+        "Description must be at least 10 characters",
       );
     }
     this._description = newDescription.trim();
@@ -284,19 +284,19 @@ export type ProfessionalCategory = string;
 
 // 🎯 Default categories for MVP (can be extended)
 export const DefaultProfessionalCategories = {
-  PRIMARY: 'PRIMARY',
-  SUPPORT: 'SUPPORT',
-  MANAGEMENT: 'MANAGEMENT',
+  PRIMARY: "PRIMARY",
+  SUPPORT: "SUPPORT",
+  MANAGEMENT: "MANAGEMENT",
 } as const;
 
 // 🎯 Predefined professional roles for MVP
 export class PredefinedProfessionalRoles {
-  static readonly SPECIALIST = 'SPECIALIST';
-  static readonly ASSISTANT = 'ASSISTANT';
-  static readonly SUPERVISOR = 'SUPERVISOR';
-  static readonly COORDINATOR = 'COORDINATOR';
-  static readonly TECHNICIAN = 'TECHNICIAN';
-  static readonly RECEPTIONIST = 'RECEPTIONIST';
+  static readonly SPECIALIST = "SPECIALIST";
+  static readonly ASSISTANT = "ASSISTANT";
+  static readonly SUPERVISOR = "SUPERVISOR";
+  static readonly COORDINATOR = "COORDINATOR";
+  static readonly TECHNICIAN = "TECHNICIAN";
+  static readonly RECEPTIONIST = "RECEPTIONIST";
 
   static getAllPredefinedRoles(): Array<{
     code: string;
@@ -309,50 +309,50 @@ export class PredefinedProfessionalRoles {
     return [
       {
         code: this.SPECIALIST,
-        name: 'Specialist',
-        displayName: 'Spécialiste',
+        name: "Specialist",
+        displayName: "Spécialiste",
         category: DefaultProfessionalCategories.PRIMARY,
-        description: 'Professionnel spécialisé dans la prestation de services',
+        description: "Professionnel spécialisé dans la prestation de services",
         canLead: true,
       },
       {
         code: this.ASSISTANT,
-        name: 'Assistant',
-        displayName: 'Assistant(e)',
+        name: "Assistant",
+        displayName: "Assistant(e)",
         category: DefaultProfessionalCategories.SUPPORT,
         description: "Assistant pour l'accompagnement et le support",
         canLead: false,
       },
       {
         code: this.SUPERVISOR,
-        name: 'Supervisor',
-        displayName: 'Superviseur',
+        name: "Supervisor",
+        displayName: "Superviseur",
         category: DefaultProfessionalCategories.MANAGEMENT,
-        description: 'Responsable de la supervision et du management',
+        description: "Responsable de la supervision et du management",
         canLead: true,
       },
       {
         code: this.COORDINATOR,
-        name: 'Coordinator',
-        displayName: 'Coordinateur',
+        name: "Coordinator",
+        displayName: "Coordinateur",
         category: DefaultProfessionalCategories.MANAGEMENT,
-        description: 'Responsable de la coordination des activités',
+        description: "Responsable de la coordination des activités",
         canLead: true,
       },
       {
         code: this.TECHNICIAN,
-        name: 'Technician',
-        displayName: 'Technicien',
-        category: 'TECHNICAL', // Flexible category
-        description: 'Support technique et maintenance',
+        name: "Technician",
+        displayName: "Technicien",
+        category: "TECHNICAL", // Flexible category
+        description: "Support technique et maintenance",
         canLead: false,
       },
       {
         code: this.RECEPTIONIST,
-        name: 'Receptionist',
-        displayName: 'Réceptionniste',
-        category: 'ADMINISTRATIVE', // Flexible category
-        description: 'Accueil et gestion administrative',
+        name: "Receptionist",
+        displayName: "Réceptionniste",
+        category: "ADMINISTRATIVE", // Flexible category
+        description: "Accueil et gestion administrative",
         canLead: false,
       },
     ];

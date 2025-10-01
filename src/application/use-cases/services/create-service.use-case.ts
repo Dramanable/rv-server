@@ -5,11 +5,11 @@
  * Respecte les principes Clean Architecture
  */
 
-import { Business } from '../../../domain/entities/business.entity';
-import { Service } from '../../../domain/entities/service.entity';
-import { BusinessId } from '../../../domain/value-objects/business-id.value-object';
-import { ServiceTypeId } from '../../../domain/value-objects/service-type-id.value-object';
-import type { Logger } from '../../ports/logger.port';
+import { Business } from "../../../domain/entities/business.entity";
+import { Service } from "../../../domain/entities/service.entity";
+import { BusinessId } from "../../../domain/value-objects/business-id.value-object";
+import { ServiceTypeId } from "../../../domain/value-objects/service-type-id.value-object";
+import type { Logger } from "../../ports/logger.port";
 
 // Interfaces Repository (Domain Layer)
 export interface ServiceRepository {
@@ -53,7 +53,7 @@ export class CreateServiceUseCase {
   ) {}
 
   async execute(request: CreateServiceRequest): Promise<CreateServiceResponse> {
-    this.logger.info('Creating new service', {
+    this.logger.info("Creating new service", {
       businessId: request.businessId,
       serviceName: request.name,
       requestingUserId: request.requestingUserId,
@@ -64,12 +64,12 @@ export class CreateServiceUseCase {
     const business = await this.businessRepository.findById(businessId);
 
     if (!business) {
-      throw new Error('Business not found');
+      throw new Error("Business not found");
     }
 
     // 2. Validation prix positif
     if (request.basePrice <= 0) {
-      throw new Error('Price must be positive');
+      throw new Error("Price must be positive");
     }
 
     // 3. Vérification unicité du nom
@@ -79,7 +79,7 @@ export class CreateServiceUseCase {
     );
 
     if (existingService) {
-      throw new Error('Service name already exists');
+      throw new Error("Service name already exists");
     }
 
     // 4. Création du service (Domain Entity)
@@ -100,7 +100,7 @@ export class CreateServiceUseCase {
     // 5. Persistence
     const savedService = await this.serviceRepository.save(service);
 
-    this.logger.info('Service created successfully', {
+    this.logger.info("Service created successfully", {
       serviceId: savedService.id.getValue(),
       serviceName: savedService.name,
       businessId: request.businessId,

@@ -18,13 +18,13 @@ import {
   RoleContextViolationError,
   RoleDepartmentLevelOnlyError,
   RoleLocationLevelOnlyError,
-} from '@domain/exceptions';
+} from "@domain/exceptions";
 import {
   Permission,
   ROLE_HIERARCHY,
   ROLE_PERMISSIONS,
   UserRole,
-} from '@shared/enums/user-role.enum';
+} from "@shared/enums/user-role.enum";
 
 export interface RoleAssignmentContext {
   readonly businessId: string;
@@ -287,14 +287,14 @@ export class RoleAssignment {
   /**
    * 🏢 Obtenir le scope de l'assignation (BUSINESS, LOCATION, DEPARTMENT)
    */
-  getAssignmentScope(): 'BUSINESS' | 'LOCATION' | 'DEPARTMENT' {
+  getAssignmentScope(): "BUSINESS" | "LOCATION" | "DEPARTMENT" {
     if (this._context.departmentId) {
-      return 'DEPARTMENT';
+      return "DEPARTMENT";
     }
     if (this._context.locationId) {
-      return 'LOCATION';
+      return "LOCATION";
     }
-    return 'BUSINESS';
+    return "BUSINESS";
   }
 
   /**
@@ -329,7 +329,7 @@ export class RoleAssignment {
     // Validation du rôle selon le contexte
     if (role === UserRole.SUPER_ADMIN || role === UserRole.PLATFORM_ADMIN) {
       throw new RoleContextViolationError(
-        'Super admin and platform admin roles cannot be assigned in business context',
+        "Super admin and platform admin roles cannot be assigned in business context",
         role,
       );
     }
@@ -368,7 +368,7 @@ export class RoleAssignment {
 
   private static generateId(): string {
     return (
-      'role_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9)
+      "role_" + Date.now() + "_" + Math.random().toString(36).substring(2, 9)
     );
   }
 }

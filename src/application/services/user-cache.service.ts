@@ -4,11 +4,11 @@
  * ✅ Clean Architecture - Pure Application Logic
  */
 
-import type { IUserCache } from '../ports/user-cache.port';
-import type { Logger } from '../ports/logger.port';
-import type { I18nService } from '../ports/i18n.port';
-import type { IConfigService } from '../ports/config.port';
-import type { User } from '../../domain/entities/user.entity';
+import type { IUserCache } from "../ports/user-cache.port";
+import type { Logger } from "../ports/logger.port";
+import type { I18nService } from "../ports/i18n.port";
+import type { IConfigService } from "../ports/config.port";
+import type { User } from "../../domain/entities/user.entity";
 
 export interface StoreUserRequest {
   readonly user: User;
@@ -39,7 +39,7 @@ export class UserCacheService {
 
     try {
       // 📝 Log de l'opération
-      this.logger.info(this.i18n.translate('operations.cache.storing_user'), {
+      this.logger.info(this.i18n.translate("operations.cache.storing_user"), {
         userId,
         ttlMinutes: effectiveTTL,
       });
@@ -52,7 +52,7 @@ export class UserCacheService {
       cachedUntil.setMinutes(cachedUntil.getMinutes() + effectiveTTL);
 
       // 📝 Log de succès
-      this.logger.info(this.i18n.translate('operations.cache.user_stored'), {
+      this.logger.info(this.i18n.translate("operations.cache.user_stored"), {
         userId,
         ttlMinutes: effectiveTTL,
         cachedUntil: cachedUntil.toISOString(),
@@ -60,17 +60,17 @@ export class UserCacheService {
 
       return {
         success: true,
-        message: this.i18n.translate('success.cache.user_stored'),
+        message: this.i18n.translate("success.cache.user_stored"),
         cachedUntil,
       };
     } catch (error) {
       // 🚨 Log et propagation de l'erreur
       this.logger.error(
-        this.i18n.translate('operations.cache.cache_error'),
+        this.i18n.translate("operations.cache.cache_error"),
         error instanceof Error ? error : new Error(String(error)),
         {
           userId,
-          error: error instanceof Error ? error.message : 'Unknown error',
+          error: error instanceof Error ? error.message : "Unknown error",
         },
       );
 

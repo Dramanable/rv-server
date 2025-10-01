@@ -4,17 +4,17 @@
  * ✅ Immutable value object for business image management
  */
 
-import { ValueObjectValidationError } from '../exceptions/domain.exceptions';
+import { ValueObjectValidationError } from "../exceptions/domain.exceptions";
 
 export enum ImageCategory {
-  LOGO = 'LOGO',
-  COVER = 'COVER',
-  INTERIOR = 'INTERIOR',
-  EXTERIOR = 'EXTERIOR',
-  STAFF = 'STAFF',
-  EQUIPMENT = 'EQUIPMENT',
-  SERVICES = 'SERVICES',
-  GALLERY = 'GALLERY',
+  LOGO = "LOGO",
+  COVER = "COVER",
+  INTERIOR = "INTERIOR",
+  EXTERIOR = "EXTERIOR",
+  STAFF = "STAFF",
+  EQUIPMENT = "EQUIPMENT",
+  SERVICES = "SERVICES",
+  GALLERY = "GALLERY",
 }
 
 export interface ImageDimensions {
@@ -102,7 +102,7 @@ export class BusinessImage {
   // Business rules
   isOptimizedForWeb(): boolean {
     const maxSize = 2 * 1024 * 1024; // 2MB
-    const supportedFormats = ['jpg', 'jpeg', 'png', 'webp'];
+    const supportedFormats = ["jpg", "jpeg", "png", "webp"];
 
     return (
       this._metadata.size <= maxSize &&
@@ -120,9 +120,9 @@ export class BusinessImage {
 
   generateThumbnailUrl(): string {
     // Simple thumbnail generation logic
-    const urlParts = this._url.split('.');
+    const urlParts = this._url.split(".");
     const extension = urlParts.pop();
-    const baseName = urlParts.join('.');
+    const baseName = urlParts.join(".");
 
     return `${baseName}_thumb.${extension}`;
   }
@@ -133,9 +133,9 @@ export class BusinessImage {
     large: string;
     original: string;
   } {
-    const urlParts = this._url.split('.');
+    const urlParts = this._url.split(".");
     const extension = urlParts.pop();
-    const baseName = urlParts.join('.');
+    const baseName = urlParts.join(".");
 
     return {
       small: `${baseName}_small.${extension}`,
@@ -149,8 +149,8 @@ export class BusinessImage {
   private validateUrl(): void {
     if (!this._url || this._url.trim().length === 0) {
       throw new ValueObjectValidationError(
-        'BUSINESS_IMAGE_URL_EMPTY',
-        'Image URL cannot be empty',
+        "BUSINESS_IMAGE_URL_EMPTY",
+        "Image URL cannot be empty",
         { url: this._url },
       );
     }
@@ -159,8 +159,8 @@ export class BusinessImage {
       new URL(this._url);
     } catch {
       throw new ValueObjectValidationError(
-        'BUSINESS_IMAGE_URL_INVALID',
-        'Invalid image URL format',
+        "BUSINESS_IMAGE_URL_INVALID",
+        "Invalid image URL format",
         { url: this._url },
       );
     }
@@ -169,16 +169,16 @@ export class BusinessImage {
   private validateAlt(): void {
     if (!this._alt || this._alt.trim().length === 0) {
       throw new ValueObjectValidationError(
-        'BUSINESS_IMAGE_ALT_REQUIRED',
-        'Alt text is required for accessibility',
+        "BUSINESS_IMAGE_ALT_REQUIRED",
+        "Alt text is required for accessibility",
         { alt: this._alt },
       );
     }
 
     if (this._alt.length > 200) {
       throw new ValueObjectValidationError(
-        'BUSINESS_IMAGE_ALT_TOO_LONG',
-        'Alt text must be less than 200 characters',
+        "BUSINESS_IMAGE_ALT_TOO_LONG",
+        "Alt text must be less than 200 characters",
         { alt: this._alt, length: this._alt.length },
       );
     }
@@ -187,8 +187,8 @@ export class BusinessImage {
   private validateOrder(): void {
     if (this._order < 0) {
       throw new ValueObjectValidationError(
-        'BUSINESS_IMAGE_ORDER_NEGATIVE',
-        'Image order must be non-negative',
+        "BUSINESS_IMAGE_ORDER_NEGATIVE",
+        "Image order must be non-negative",
         { order: this._order },
       );
     }

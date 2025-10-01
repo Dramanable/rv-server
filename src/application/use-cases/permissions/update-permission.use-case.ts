@@ -4,12 +4,12 @@
  * Use case pour mettre à jour une permission existante
  */
 
-import type { Permission } from '@domain/entities/permission.entity';
+import type { Permission } from "@domain/entities/permission.entity";
 import {
   PermissionNotFoundError,
   SystemPermissionModificationError,
-} from '@domain/exceptions/permission.exceptions';
-import type { IPermissionRepository } from '@domain/repositories/permission.repository';
+} from "@domain/exceptions/permission.exceptions";
+import type { IPermissionRepository } from "@domain/repositories/permission.repository";
 
 export interface UpdatePermissionRequest {
   readonly permissionId: string;
@@ -47,7 +47,7 @@ export class UpdatePermissionUseCase {
     if (existingPermission.isSystemPermission() && request.isActive === false) {
       throw new SystemPermissionModificationError(
         existingPermission.getName(),
-        'deactivation',
+        "deactivation",
       );
     }
 

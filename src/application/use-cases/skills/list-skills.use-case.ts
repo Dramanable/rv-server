@@ -1,9 +1,9 @@
-import { Skill } from '../../../domain/entities/skill.entity';
-import { ISkillRepository } from '../../../domain/repositories/skill.repository';
-import { BusinessId } from '../../../domain/value-objects/business-id.value-object';
-import { ApplicationValidationError } from '../../exceptions/application.exceptions';
-import { I18nService } from '../../ports/i18n.port';
-import { Logger } from '../../ports/logger.port';
+import { Skill } from "../../../domain/entities/skill.entity";
+import { ISkillRepository } from "../../../domain/repositories/skill.repository";
+import { BusinessId } from "../../../domain/value-objects/business-id.value-object";
+import { ApplicationValidationError } from "../../exceptions/application.exceptions";
+import { I18nService } from "../../ports/i18n.port";
+import { Logger } from "../../ports/logger.port";
 
 export interface ListSkillsRequest {
   readonly businessId: string;
@@ -21,8 +21,8 @@ export interface ListSkillsRequest {
     readonly isCritical?: boolean;
   };
   readonly sorting?: {
-    readonly sortBy: 'name' | 'category' | 'createdAt' | 'updatedAt';
-    readonly sortOrder: 'asc' | 'desc';
+    readonly sortBy: "name" | "category" | "createdAt" | "updatedAt";
+    readonly sortOrder: "asc" | "desc";
   };
   readonly clientIp?: string;
   readonly userAgent?: string;
@@ -52,7 +52,7 @@ export interface SkillSearchCriteria {
   readonly page: number;
   readonly limit: number;
   readonly sortBy: string;
-  readonly sortOrder: 'asc' | 'desc';
+  readonly sortOrder: "asc" | "desc";
 }
 
 export class ListSkillsUseCase {
@@ -63,7 +63,7 @@ export class ListSkillsUseCase {
   ) {}
 
   async execute(request: ListSkillsRequest): Promise<ListSkillsResponse> {
-    this.logger.info('Listing skills with criteria', {
+    this.logger.info("Listing skills with criteria", {
       businessId: request.businessId,
       requestingUserId: request.requestingUserId,
       correlationId: request.correlationId,
@@ -88,10 +88,10 @@ export class ListSkillsUseCase {
         page: criteria.page,
         limit: criteria.limit,
         sortBy: criteria.sortBy as
-          | 'name'
-          | 'category'
-          | 'createdAt'
-          | 'updatedAt',
+          | "name"
+          | "category"
+          | "createdAt"
+          | "updatedAt",
         sortOrder: criteria.sortOrder,
       });
 
@@ -107,7 +107,7 @@ export class ListSkillsUseCase {
       const hasNextPage = resultCurrentPage < totalPages;
       const hasPrevPage = resultCurrentPage > 1;
 
-      this.logger.info('Skills retrieved successfully', {
+      this.logger.info("Skills retrieved successfully", {
         businessId: request.businessId,
         skillsCount: skills.length,
         totalCount,
@@ -131,8 +131,8 @@ export class ListSkillsUseCase {
       };
     } catch (error) {
       this.logger.error(
-        'Failed to list skills',
-        error instanceof Error ? error : new Error('Unknown error'),
+        "Failed to list skills",
+        error instanceof Error ? error : new Error("Unknown error"),
         {
           businessId: request.businessId,
           correlationId: request.correlationId,
@@ -145,33 +145,33 @@ export class ListSkillsUseCase {
   private validateRequest(request: ListSkillsRequest): void {
     if (!request.correlationId) {
       throw new ApplicationValidationError(
-        'correlationId',
-        'required',
-        this.i18n.translate('skill.validation.correlationIdRequired'),
+        "correlationId",
+        "required",
+        this.i18n.translate("skill.validation.correlationIdRequired"),
       );
     }
 
     if (!request.requestingUserId) {
       throw new ApplicationValidationError(
-        'requestingUserId',
-        'required',
-        this.i18n.translate('skill.validation.requestingUserIdRequired'),
+        "requestingUserId",
+        "required",
+        this.i18n.translate("skill.validation.requestingUserIdRequired"),
       );
     }
 
     if (!request.timestamp) {
       throw new ApplicationValidationError(
-        'timestamp',
-        'required',
-        this.i18n.translate('skill.validation.timestampRequired'),
+        "timestamp",
+        "required",
+        this.i18n.translate("skill.validation.timestampRequired"),
       );
     }
 
     if (!request.businessId) {
       throw new ApplicationValidationError(
-        'businessId',
-        'required',
-        this.i18n.translate('skill.validation.businessIdRequired'),
+        "businessId",
+        "required",
+        this.i18n.translate("skill.validation.businessIdRequired"),
       );
     }
 
@@ -179,9 +179,9 @@ export class ListSkillsUseCase {
     const requestAge = Date.now() - request.timestamp.getTime();
     if (requestAge > 5 * 60 * 1000) {
       throw new ApplicationValidationError(
-        'timestamp',
-        'too_old',
-        this.i18n.translate('skill.validation.requestTooOld'),
+        "timestamp",
+        "too_old",
+        this.i18n.translate("skill.validation.requestTooOld"),
       );
     }
 
@@ -189,16 +189,16 @@ export class ListSkillsUseCase {
     if (request.pagination) {
       if (request.pagination.page < 1) {
         throw new ApplicationValidationError(
-          'pagination.page',
-          'invalid',
-          'Page must be greater than 0',
+          "pagination.page",
+          "invalid",
+          "Page must be greater than 0",
         );
       }
       if (request.pagination.limit < 1 || request.pagination.limit > 100) {
         throw new ApplicationValidationError(
-          'pagination.limit',
-          'invalid',
-          'Limit must be between 1 and 100',
+          "pagination.limit",
+          "invalid",
+          "Limit must be between 1 and 100",
         );
       }
     }
@@ -213,8 +213,8 @@ export class ListSkillsUseCase {
       isCritical: request.filters?.isCritical,
       page: request.pagination?.page || 1,
       limit: request.pagination?.limit || 10,
-      sortBy: request.sorting?.sortBy || 'createdAt',
-      sortOrder: request.sorting?.sortOrder || 'desc',
+      sortBy: request.sorting?.sortBy || "createdAt",
+      sortOrder: request.sorting?.sortOrder || "desc",
     };
   }
 }

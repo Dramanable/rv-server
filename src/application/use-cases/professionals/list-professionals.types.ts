@@ -4,7 +4,7 @@
  * @description Type definitions for listing professionals with advanced search and pagination
  */
 
-import { Professional } from '@domain/entities/professional.entity';
+import { Professional } from "@domain/entities/professional.entity";
 
 // ✅ Pagination interface
 export interface PaginationOptions {
@@ -15,7 +15,7 @@ export interface PaginationOptions {
 // ✅ Sorting options
 export interface SortingOptions {
   readonly sortBy: string;
-  readonly sortOrder: 'asc' | 'desc';
+  readonly sortOrder: "asc" | "desc";
 }
 
 // ✅ Search and filter options

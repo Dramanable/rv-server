@@ -4,13 +4,13 @@
  * ✅ Business rules for image management
  */
 
-import { BusinessRepository } from '../../../domain/repositories/business.repository.interface';
-import { BusinessId } from '../../../domain/value-objects/business-id.value-object';
+import { BusinessRepository } from "../../../domain/repositories/business.repository.interface";
+import { BusinessId } from "../../../domain/value-objects/business-id.value-object";
 import {
   BusinessImage,
   ImageCategory,
-} from '../../../domain/value-objects/business-image.value-object';
-import { BusinessNotFoundError } from '../../exceptions/business.exceptions';
+} from "../../../domain/value-objects/business-image.value-object";
+import { BusinessNotFoundError } from "../../exceptions/business.exceptions";
 
 export interface AddImageToGalleryRequest {
   readonly requestingUserId: string;

@@ -3,7 +3,7 @@ import {
   RequiredValueError,
   ValueTooLongError,
   ValueTooShortError,
-} from '../exceptions/value-object.exceptions';
+} from "../exceptions/value-object.exceptions";
 
 export class BusinessName {
   private static readonly MIN_LENGTH = 2;
@@ -15,14 +15,14 @@ export class BusinessName {
 
   private validate(value: string): void {
     if (!value || value.trim().length === 0) {
-      throw new RequiredValueError('business_name');
+      throw new RequiredValueError("business_name");
     }
 
     const trimmedValue = value.trim();
 
     if (trimmedValue.length < BusinessName.MIN_LENGTH) {
       throw new ValueTooShortError(
-        'business_name',
+        "business_name",
         BusinessName.MIN_LENGTH,
         trimmedValue.length,
       );
@@ -30,7 +30,7 @@ export class BusinessName {
 
     if (trimmedValue.length > BusinessName.MAX_LENGTH) {
       throw new ValueTooLongError(
-        'business_name',
+        "business_name",
         BusinessName.MAX_LENGTH,
         trimmedValue.length,
       );
@@ -40,9 +40,9 @@ export class BusinessName {
     const forbiddenChars = /[<>{}[\]\\/]/;
     if (forbiddenChars.test(trimmedValue)) {
       throw new InvalidFormatError(
-        'business_name',
+        "business_name",
         trimmedValue,
-        'valid business name format',
+        "valid business name format",
       );
     }
   }
@@ -59,9 +59,9 @@ export class BusinessName {
     return this.value
       .trim()
       .toLowerCase()
-      .replace(/[^a-z0-9\s-]/g, '') // Supprimer les caractères spéciaux
-      .replace(/\s+/g, '-') // Remplacer les espaces par des tirets
-      .replace(/-+/g, '-') // Supprimer les tirets multiples
+      .replace(/[^a-z0-9\s-]/g, "") // Supprimer les caractères spéciaux
+      .replace(/\s+/g, "-") // Remplacer les espaces par des tirets
+      .replace(/-+/g, "-") // Supprimer les tirets multiples
       .trim();
   }
 

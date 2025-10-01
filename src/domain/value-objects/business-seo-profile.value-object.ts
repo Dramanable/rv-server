@@ -7,25 +7,25 @@
 import {
   RequiredValueError,
   ValueOutOfRangeError,
-} from '@domain/exceptions/value-object.exceptions';
+} from "@domain/exceptions/value-object.exceptions";
 
 export interface SchemaOrgBusiness {
-  '@context': string;
-  '@type': string;
+  "@context": string;
+  "@type": string;
   name: string;
   description: string;
   url?: string;
   telephone?: string;
   email?: string;
   address?: {
-    '@type': string;
+    "@type": string;
     streetAddress: string;
     addressLocality: string;
     postalCode: string;
     addressCountry: string;
   };
   geo?: {
-    '@type': string;
+    "@type": string;
     latitude: number;
     longitude: number;
   };
@@ -33,7 +33,7 @@ export interface SchemaOrgBusiness {
   image?: string[];
   priceRange?: string;
   aggregateRating?: {
-    '@type': string;
+    "@type": string;
     ratingValue: number;
     reviewCount: number;
   };
@@ -138,22 +138,22 @@ export class BusinessSeoProfile {
     const tags: Record<string, string> = {
       title: this._metaTitle,
       description: this._metaDescription,
-      keywords: this._keywords.join(', '),
+      keywords: this._keywords.join(", "),
     };
 
     if (this._canonicalUrl) {
-      tags['canonical'] = this._canonicalUrl;
+      tags["canonical"] = this._canonicalUrl;
     }
 
     // Open Graph tags
     if (this._openGraphTitle) {
-      tags['og:title'] = this._openGraphTitle;
+      tags["og:title"] = this._openGraphTitle;
     }
     if (this._openGraphDescription) {
-      tags['og:description'] = this._openGraphDescription;
+      tags["og:description"] = this._openGraphDescription;
     }
     if (this._openGraphImage) {
-      tags['og:image'] = this._openGraphImage;
+      tags["og:image"] = this._openGraphImage;
     }
 
     // Custom tags
@@ -188,10 +188,10 @@ Allow: /about`;
     priority: string;
   } {
     return {
-      url: this._canonicalUrl || '',
-      lastmod: this._lastOptimized.toISOString().split('T')[0],
-      changefreq: 'weekly',
-      priority: '1.0',
+      url: this._canonicalUrl || "",
+      lastmod: this._lastOptimized.toISOString().split("T")[0],
+      changefreq: "weekly",
+      priority: "1.0",
     };
   }
 
@@ -231,7 +231,7 @@ Allow: /about`;
 
     if (uniqueKeywords.length > 10) {
       throw new ValueOutOfRangeError(
-        'keywords.length',
+        "keywords.length",
         uniqueKeywords.length,
         1,
         10,
@@ -286,33 +286,33 @@ Allow: /about`;
 
     if (this._metaTitle.length < 30) {
       suggestions.push(
-        'Meta title too short - consider adding location or business type',
+        "Meta title too short - consider adding location or business type",
       );
     }
     if (this._metaTitle.length > 60) {
-      suggestions.push('Meta title too long - shorten to under 60 characters');
+      suggestions.push("Meta title too long - shorten to under 60 characters");
     }
     if (this._metaDescription.length < 120) {
       suggestions.push(
-        'Meta description too short - expand to 120-160 characters',
+        "Meta description too short - expand to 120-160 characters",
       );
     }
     if (this._metaDescription.length > 160) {
       suggestions.push(
-        'Meta description too long - shorten to under 160 characters',
+        "Meta description too long - shorten to under 160 characters",
       );
     }
     if (this._keywords.length < 3) {
-      suggestions.push('Add more relevant keywords (3-10 recommended)');
+      suggestions.push("Add more relevant keywords (3-10 recommended)");
     }
     if (this._keywords.length > 10) {
-      suggestions.push('Too many keywords - focus on 3-10 most relevant ones');
+      suggestions.push("Too many keywords - focus on 3-10 most relevant ones");
     }
     if (!this._canonicalUrl) {
-      suggestions.push('Add canonical URL to prevent duplicate content issues');
+      suggestions.push("Add canonical URL to prevent duplicate content issues");
     }
     if (!this._openGraphImage) {
-      suggestions.push('Add Open Graph image for better social media sharing');
+      suggestions.push("Add Open Graph image for better social media sharing");
     }
 
     return suggestions;
@@ -322,7 +322,7 @@ Allow: /about`;
     const content = `${this._metaTitle} ${this._metaDescription}`.toLowerCase();
     const words = content.split(/\s+/);
     const keywordMatches = this._keywords.reduce((count, keyword) => {
-      const regex = new RegExp(keyword.toLowerCase(), 'g');
+      const regex = new RegExp(keyword.toLowerCase(), "g");
       const matches = content.match(regex);
       return count + (matches ? matches.length : 0);
     }, 0);
@@ -333,11 +333,11 @@ Allow: /about`;
   // Validation methods
   private validateMetaTitle(): void {
     if (!this._metaTitle || this._metaTitle.trim().length === 0) {
-      throw new RequiredValueError('metaTitle');
+      throw new RequiredValueError("metaTitle");
     }
     if (this._metaTitle.length > 60) {
       throw new ValueOutOfRangeError(
-        'metaTitle.length',
+        "metaTitle.length",
         this._metaTitle.length,
         1,
         60,
@@ -347,11 +347,11 @@ Allow: /about`;
 
   private validateMetaDescription(): void {
     if (!this._metaDescription || this._metaDescription.trim().length === 0) {
-      throw new RequiredValueError('metaDescription');
+      throw new RequiredValueError("metaDescription");
     }
     if (this._metaDescription.length > 160) {
       throw new ValueOutOfRangeError(
-        'metaDescription.length',
+        "metaDescription.length",
         this._metaDescription.length,
         1,
         160,
@@ -361,11 +361,11 @@ Allow: /about`;
 
   private validateKeywords(): void {
     if (this._keywords.length === 0) {
-      throw new RequiredValueError('keywords');
+      throw new RequiredValueError("keywords");
     }
     if (this._keywords.length > 10) {
       throw new ValueOutOfRangeError(
-        'keywords.length',
+        "keywords.length",
         this._keywords.length,
         1,
         10,
@@ -374,20 +374,20 @@ Allow: /about`;
 
     this._keywords.forEach((keyword) => {
       if (!keyword || keyword.trim().length === 0) {
-        throw new RequiredValueError('keyword');
+        throw new RequiredValueError("keyword");
       }
       if (keyword.length > 50) {
-        throw new ValueOutOfRangeError('keyword.length', keyword.length, 1, 50);
+        throw new ValueOutOfRangeError("keyword.length", keyword.length, 1, 50);
       }
     });
   }
 
   private validateStructuredData(): void {
-    if (!this._structuredData['@context'] || !this._structuredData['@type']) {
-      throw new RequiredValueError('structuredData.@context/@type');
+    if (!this._structuredData["@context"] || !this._structuredData["@type"]) {
+      throw new RequiredValueError("structuredData.@context/@type");
     }
     if (!this._structuredData.name || !this._structuredData.description) {
-      throw new RequiredValueError('structuredData.name/description');
+      throw new RequiredValueError("structuredData.name/description");
     }
   }
 

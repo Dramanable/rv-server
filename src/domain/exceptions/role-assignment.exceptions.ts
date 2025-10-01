@@ -5,15 +5,15 @@
  * Respectent les principes de Clean Architecture
  */
 
-import { DomainException } from './domain.exception';
-import { UserRole } from '@shared/enums/user-role.enum';
+import { DomainException } from "./domain.exception";
+import { UserRole } from "@shared/enums/user-role.enum";
 
 /**
  * Exception jetée quand l'assignation de rôle ne respecte pas les contraintes métier
  */
 export class InvalidRoleAssignmentError extends DomainException {
   constructor(message: string, details?: Record<string, unknown>) {
-    super(message, 'INVALID_ROLE_ASSIGNMENT', details);
+    super(message, "INVALID_ROLE_ASSIGNMENT", details);
   }
 }
 
@@ -21,8 +21,8 @@ export class InvalidRoleAssignmentError extends DomainException {
  * Exception jetée quand une date d'expiration est invalide
  */
 export class InvalidExpirationDateError extends DomainException {
-  constructor(message: string = 'New expiration date must be in the future') {
-    super(message, 'INVALID_EXPIRATION_DATE');
+  constructor(message: string = "New expiration date must be in the future") {
+    super(message, "INVALID_EXPIRATION_DATE");
   }
 }
 
@@ -30,8 +30,8 @@ export class InvalidExpirationDateError extends DomainException {
  * Exception jetée quand l'ID de business est manquant
  */
 export class BusinessIdRequiredError extends DomainException {
-  constructor(message: string = 'Business ID is required') {
-    super(message, 'BUSINESS_ID_REQUIRED');
+  constructor(message: string = "Business ID is required") {
+    super(message, "BUSINESS_ID_REQUIRED");
   }
 }
 
@@ -40,9 +40,9 @@ export class BusinessIdRequiredError extends DomainException {
  */
 export class DepartmentContextError extends DomainException {
   constructor(
-    message: string = 'Department assignments must include location context',
+    message: string = "Department assignments must include location context",
   ) {
-    super(message, 'DEPARTMENT_CONTEXT_REQUIRED');
+    super(message, "DEPARTMENT_CONTEXT_REQUIRED");
   }
 }
 
@@ -53,7 +53,7 @@ export class RoleBusinessLevelOnlyError extends DomainException {
   constructor(role: UserRole) {
     super(
       `Role ${role} must be assigned at business level only`,
-      'ROLE_BUSINESS_LEVEL_ONLY',
+      "ROLE_BUSINESS_LEVEL_ONLY",
       { role },
     );
   }
@@ -66,7 +66,7 @@ export class RoleLocationLevelOnlyError extends DomainException {
   constructor(role: UserRole) {
     super(
       `Role ${role} must be assigned at location level only`,
-      'ROLE_LOCATION_LEVEL_ONLY',
+      "ROLE_LOCATION_LEVEL_ONLY",
       { role },
     );
   }
@@ -79,7 +79,7 @@ export class RoleDepartmentLevelOnlyError extends DomainException {
   constructor(role: UserRole) {
     super(
       `Role ${role} must be assigned at department level`,
-      'ROLE_DEPARTMENT_LEVEL_ONLY',
+      "ROLE_DEPARTMENT_LEVEL_ONLY",
       { role },
     );
   }
@@ -94,6 +94,6 @@ export class RoleContextViolationError extends DomainException {
     role: UserRole,
     context?: Record<string, unknown>,
   ) {
-    super(message, 'ROLE_CONTEXT_VIOLATION', { role, ...context });
+    super(message, "ROLE_CONTEXT_VIOLATION", { role, ...context });
   }
 }

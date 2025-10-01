@@ -5,13 +5,13 @@
  * avec gestion complète des types et erreurs.
  */
 
-import { Professional } from '@domain/entities/professional.entity';
+import { Professional } from "@domain/entities/professional.entity";
 
-import { CreateProfessionalResponseDto } from '../dtos/professionals/create-professional.dto';
-import { DeleteProfessionalResponseDto } from '../dtos/professionals/delete-professional.dto';
-import { GetProfessionalResponseDto } from '../dtos/professionals/get-professional.dto';
-import { ListProfessionalsResponseDto } from '../dtos/professionals/list-professionals.dto';
-import { UpdateProfessionalResponseDto } from '../dtos/professionals/update-professional.dto';
+import { CreateProfessionalResponseDto } from "../dtos/professionals/create-professional.dto";
+import { DeleteProfessionalResponseDto } from "../dtos/professionals/delete-professional.dto";
+import { GetProfessionalResponseDto } from "../dtos/professionals/get-professional.dto";
+import { ListProfessionalsResponseDto } from "../dtos/professionals/list-professionals.dto";
+import { UpdateProfessionalResponseDto } from "../dtos/professionals/update-professional.dto";
 
 export class ProfessionalMapper {
   /**

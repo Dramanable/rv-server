@@ -4,24 +4,24 @@
  * DTO pour les réponses de liste paginée des permissions
  */
 
-import { ApiProperty } from '@nestjs/swagger';
-import { PermissionResponseDto } from './permission-response.dto';
+import { ApiProperty } from "@nestjs/swagger";
+import { PermissionResponseDto } from "./permission-response.dto";
 
 export class ListPermissionsResponseDto {
   @ApiProperty({
-    description: 'Succès de la requête',
+    description: "Succès de la requête",
     example: true,
   })
   readonly success!: boolean;
 
   @ApiProperty({
-    description: 'Liste des permissions',
+    description: "Liste des permissions",
     type: [PermissionResponseDto],
   })
   readonly data!: PermissionResponseDto[];
 
   @ApiProperty({
-    description: 'Métadonnées de pagination',
+    description: "Métadonnées de pagination",
     example: {
       currentPage: 1,
       totalPages: 5,
@@ -43,13 +43,13 @@ export class ListPermissionsResponseDto {
 
 export class CreatePermissionResponseDto {
   @ApiProperty({
-    description: 'Succès de la requête',
+    description: "Succès de la requête",
     example: true,
   })
   readonly success!: boolean;
 
   @ApiProperty({
-    description: 'Permission créée',
+    description: "Permission créée",
     type: PermissionResponseDto,
   })
   readonly data!: PermissionResponseDto;
@@ -57,13 +57,13 @@ export class CreatePermissionResponseDto {
 
 export class UpdatePermissionResponseDto {
   @ApiProperty({
-    description: 'Succès de la requête',
+    description: "Succès de la requête",
     example: true,
   })
   readonly success!: boolean;
 
   @ApiProperty({
-    description: 'Permission mise à jour',
+    description: "Permission mise à jour",
     type: PermissionResponseDto,
   })
   readonly data!: PermissionResponseDto;
@@ -71,14 +71,14 @@ export class UpdatePermissionResponseDto {
 
 export class DeletePermissionResponseDto {
   @ApiProperty({
-    description: 'Succès de la requête',
+    description: "Succès de la requête",
     example: true,
   })
   readonly success!: boolean;
 
   @ApiProperty({
-    description: 'Message de confirmation',
-    example: 'Permission supprimée avec succès',
+    description: "Message de confirmation",
+    example: "Permission supprimée avec succès",
   })
   readonly message!: string;
 }

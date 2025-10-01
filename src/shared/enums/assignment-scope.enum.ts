@@ -6,17 +6,17 @@ export enum AssignmentScope {
   /**
    * Niveau Business : Rôle s'applique à tout le business
    */
-  BUSINESS = 'BUSINESS',
+  BUSINESS = "BUSINESS",
 
   /**
    * Niveau Location : Rôle s'applique uniquement à une location spécifique
    */
-  LOCATION = 'LOCATION',
+  LOCATION = "LOCATION",
 
   /**
    * Niveau Department : Rôle s'applique uniquement à un département spécifique
    */
-  DEPARTMENT = 'DEPARTMENT',
+  DEPARTMENT = "DEPARTMENT",
 }
 
 /**
@@ -49,9 +49,9 @@ export function isScopeBroader(
  */
 export function getAssignmentScopeDescription(scope: AssignmentScope): string {
   const descriptions = {
-    [AssignmentScope.BUSINESS]: 'Accès complet au business',
-    [AssignmentScope.LOCATION]: 'Accès limité à la location',
-    [AssignmentScope.DEPARTMENT]: 'Accès limité au département',
+    [AssignmentScope.BUSINESS]: "Accès complet au business",
+    [AssignmentScope.LOCATION]: "Accès limité à la location",
+    [AssignmentScope.DEPARTMENT]: "Accès limité au département",
   };
 
   return descriptions[scope];

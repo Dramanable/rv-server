@@ -4,7 +4,7 @@
  * ✅ Gestion des erreurs d'authentification
  */
 
-import type { IConfigService } from '@application/ports/config.port';
+import type { IConfigService } from "@application/ports/config.port";
 import {
   CanActivate,
   ExecutionContext,
@@ -13,12 +13,12 @@ import {
   Injectable,
   SetMetadata,
   UnauthorizedException,
-} from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
-import { JwtService } from '@nestjs/jwt';
-import { TOKENS } from '@shared/constants/injection-tokens';
-import { Request } from 'express';
-import { IS_PUBLIC_KEY } from './decorators/public.decorator';
+} from "@nestjs/common";
+import { Reflector } from "@nestjs/core";
+import { JwtService } from "@nestjs/jwt";
+import { TOKENS } from "@shared/constants/injection-tokens";
+import { Request } from "express";
+import { IS_PUBLIC_KEY } from "./decorators/public.decorator";
 
 @Injectable()
 export class LegacyJwtAuthGuard implements CanActivate {
@@ -46,7 +46,7 @@ export class LegacyJwtAuthGuard implements CanActivate {
       this.extractTokenFromCookie(request);
 
     if (!token) {
-      throw new UnauthorizedException('Access token required');
+      throw new UnauthorizedException("Access token required");
     }
 
     try {
@@ -57,11 +57,11 @@ export class LegacyJwtAuthGuard implements CanActivate {
 
       // Vérifier l'expiration
       if (payload.exp && payload.exp < Date.now() / 1000) {
-        throw new UnauthorizedException('Token expired');
+        throw new UnauthorizedException("Token expired");
       }
 
       // Attacher les infos utilisateur à la requête
-      request['user'] = {
+      request["user"] = {
         id: payload.userId,
         email: payload.email,
         role: payload.role,
@@ -72,13 +72,13 @@ export class LegacyJwtAuthGuard implements CanActivate {
       if (error instanceof UnauthorizedException) {
         throw error;
       }
-      throw new UnauthorizedException('Invalid token');
+      throw new UnauthorizedException("Invalid token");
     }
   }
 
   private extractTokenFromHeader(request: Request): string | undefined {
-    const [type, token] = request.headers.authorization?.split(' ') ?? [];
-    return type === 'Bearer' ? token : undefined;
+    const [type, token] = request.headers.authorization?.split(" ") ?? [];
+    return type === "Bearer" ? token : undefined;
   }
 
   private extractTokenFromCookie(request: Request): string | undefined {
@@ -91,7 +91,7 @@ export class LegacyJwtAuthGuard implements CanActivate {
  * 🎭 Role-Based Access Control Guard
  */
 
-export const ROLES_KEY = 'roles';
+export const ROLES_KEY = "roles";
 export const Roles = (...roles: string[]) => SetMetadata(ROLES_KEY, roles);
 
 @Injectable()
@@ -111,13 +111,13 @@ export class RolesGuard implements CanActivate {
     const { user } = context.switchToHttp().getRequest();
 
     if (!user) {
-      throw new UnauthorizedException('User not authenticated');
+      throw new UnauthorizedException("User not authenticated");
     }
 
     const hasRole = requiredRoles.some((role) => user.role === role);
 
     if (!hasRole) {
-      throw new ForbiddenException('Insufficient permissions');
+      throw new ForbiddenException("Insufficient permissions");
     }
 
     return true;

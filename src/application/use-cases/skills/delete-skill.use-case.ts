@@ -1,12 +1,12 @@
-import { ISkillRepository } from '../../../domain/repositories/skill.repository';
-import { Logger } from '../../ports/logger.port';
-import { I18nService } from '../../ports/i18n.port';
-import { IAuditService } from '../../ports/audit.port';
+import { ISkillRepository } from "../../../domain/repositories/skill.repository";
+import { Logger } from "../../ports/logger.port";
+import { I18nService } from "../../ports/i18n.port";
+import { IAuditService } from "../../ports/audit.port";
 import {
   SkillNotFoundException,
   SkillInUseException,
   SkillValidationException,
-} from '../../../domain/exceptions/skill.exceptions';
+} from "../../../domain/exceptions/skill.exceptions";
 
 export interface DeleteSkillRequest {
   readonly skillId: string;
@@ -43,7 +43,7 @@ export class DeleteSkillUseCase {
   ) {}
 
   async execute(request: DeleteSkillRequest): Promise<DeleteSkillResponse> {
-    this.logger.info('Deleting skill', {
+    this.logger.info("Deleting skill", {
       skillId: request.skillId,
       businessId: request.businessId,
       requestingUserId: request.requestingUserId,
@@ -60,7 +60,7 @@ export class DeleteSkillUseCase {
         request.skillId,
       );
       if (!existingSkill) {
-        this.logger.warn('Skill not found for deletion', {
+        this.logger.warn("Skill not found for deletion", {
           skillId: request.skillId,
           businessId: request.businessId,
           correlationId: request.correlationId,
@@ -70,7 +70,7 @@ export class DeleteSkillUseCase {
 
       // Validate business ownership
       if (existingSkill.getBusinessId().getValue() !== request.businessId) {
-        this.logger.warn('Skill deletion denied - wrong business', {
+        this.logger.warn("Skill deletion denied - wrong business", {
           skillId: request.skillId,
           skillBusinessId: existingSkill.getBusinessId().getValue(),
           requestingBusinessId: request.businessId,
@@ -85,7 +85,7 @@ export class DeleteSkillUseCase {
           request.skillId,
         );
         if (isInUse) {
-          this.logger.warn('Cannot delete skill - currently in use', {
+          this.logger.warn("Cannot delete skill - currently in use", {
             skillId: request.skillId,
             skillName: existingSkill.getName(),
             businessId: request.businessId,
@@ -101,17 +101,17 @@ export class DeleteSkillUseCase {
 
       // Validate critical skill deletion (extra security)
       if (existingSkill.isCritical() && !request.force) {
-        this.logger.warn('Cannot delete critical skill without force flag', {
+        this.logger.warn("Cannot delete critical skill without force flag", {
           skillId: request.skillId,
           skillName: existingSkill.getName(),
           businessId: request.businessId,
           correlationId: request.correlationId,
         });
         throw new SkillValidationException(
-          this.i18n.translate('skill.errors.criticalSkillRestricted', {
-            operation: 'DELETE',
+          this.i18n.translate("skill.errors.criticalSkillRestricted", {
+            operation: "DELETE",
           }),
-          'CRITICAL_SKILL_DELETE_RESTRICTED',
+          "CRITICAL_SKILL_DELETE_RESTRICTED",
           { skillId: request.skillId, skillName: existingSkill.getName() },
         );
       }
@@ -134,8 +134,8 @@ export class DeleteSkillUseCase {
 
       // Audit the operation
       await this.auditService.logOperation({
-        operation: 'DELETE_SKILL',
-        entityType: 'SKILL',
+        operation: "DELETE_SKILL",
+        entityType: "SKILL",
         entityId: request.skillId,
         businessId: request.businessId,
         userId: request.requestingUserId,
@@ -151,7 +151,7 @@ export class DeleteSkillUseCase {
         timestamp: new Date(),
       });
 
-      this.logger.info('Skill deleted successfully', {
+      this.logger.info("Skill deleted successfully", {
         skillId: request.skillId,
         skillName: skillData.name,
         businessId: request.businessId,
@@ -175,8 +175,8 @@ export class DeleteSkillUseCase {
       };
     } catch (error) {
       this.logger.error(
-        'Failed to delete skill',
-        error instanceof Error ? error : new Error('Unknown error'),
+        "Failed to delete skill",
+        error instanceof Error ? error : new Error("Unknown error"),
         {
           skillId: request.skillId,
           businessId: request.businessId,
@@ -190,40 +190,40 @@ export class DeleteSkillUseCase {
   private validateRequest(request: DeleteSkillRequest): void {
     if (!request.correlationId) {
       throw new SkillValidationException(
-        this.i18n.translate('skill.validation.correlationIdRequired'),
-        'CORRELATION_ID_REQUIRED',
+        this.i18n.translate("skill.validation.correlationIdRequired"),
+        "CORRELATION_ID_REQUIRED",
         { skillId: request.skillId },
       );
     }
 
     if (!request.requestingUserId) {
       throw new SkillValidationException(
-        this.i18n.translate('skill.validation.requestingUserIdRequired'),
-        'REQUESTING_USER_ID_REQUIRED',
+        this.i18n.translate("skill.validation.requestingUserIdRequired"),
+        "REQUESTING_USER_ID_REQUIRED",
         { skillId: request.skillId },
       );
     }
 
     if (!request.timestamp) {
       throw new SkillValidationException(
-        this.i18n.translate('skill.validation.timestampRequired'),
-        'TIMESTAMP_REQUIRED',
+        this.i18n.translate("skill.validation.timestampRequired"),
+        "TIMESTAMP_REQUIRED",
         { skillId: request.skillId },
       );
     }
 
     if (!request.businessId) {
       throw new SkillValidationException(
-        this.i18n.translate('skill.validation.businessIdRequired'),
-        'BUSINESS_ID_REQUIRED',
+        this.i18n.translate("skill.validation.businessIdRequired"),
+        "BUSINESS_ID_REQUIRED",
         { skillId: request.skillId },
       );
     }
 
     if (!request.skillId) {
       throw new SkillValidationException(
-        'Skill ID is required',
-        'SKILL_ID_REQUIRED',
+        "Skill ID is required",
+        "SKILL_ID_REQUIRED",
         {},
       );
     }
@@ -232,8 +232,8 @@ export class DeleteSkillUseCase {
     const requestAge = Date.now() - request.timestamp.getTime();
     if (requestAge > 5 * 60 * 1000) {
       throw new SkillValidationException(
-        this.i18n.translate('skill.validation.requestTooOld'),
-        'REQUEST_TOO_OLD',
+        this.i18n.translate("skill.validation.requestTooOld"),
+        "REQUEST_TOO_OLD",
         { skillId: request.skillId },
       );
     }

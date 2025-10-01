@@ -6,180 +6,180 @@
  * ✅ Swagger configuration
  */
 
-import { Module } from '@nestjs/common';
+import { Module } from "@nestjs/common";
 
 // 🏗️ Modules d'infrastructure
-import { DatabaseModule } from '@infrastructure/database/database.module';
-import { InfrastructureModule } from '@infrastructure/infrastructure.module';
+import { DatabaseModule } from "@infrastructure/database/database.module";
+import { InfrastructureModule } from "@infrastructure/infrastructure.module";
 
 // 📝 Tokens pour l'injection de dépendances
-import { APPLICATION_TOKENS, TOKENS } from '@shared/constants/injection-tokens';
+import { APPLICATION_TOKENS, TOKENS } from "@shared/constants/injection-tokens";
 
 // 💼 Use Cases pour l'inversion de dépendances (Presentation Layer responsability)
 // Auth Use Cases
-import { LoginUseCase } from '@application/use-cases/auth/login.use-case';
-import { LogoutUseCase } from '@application/use-cases/auth/logout.use-case';
-import { RefreshTokenUseCase } from '@application/use-cases/auth/refresh-token.use-case';
-import { RegisterUseCase } from '@application/use-cases/auth/register.use-case';
+import { LoginUseCase } from "@application/use-cases/auth/login.use-case";
+import { LogoutUseCase } from "@application/use-cases/auth/logout.use-case";
+import { RefreshTokenUseCase } from "@application/use-cases/auth/refresh-token.use-case";
+import { RegisterUseCase } from "@application/use-cases/auth/register.use-case";
 
 // Password Reset Use Cases
-import { CompletePasswordResetUseCase } from '@application/use-cases/password-reset/complete-password-reset.use-case';
-import { RequestPasswordResetUseCase } from '@application/use-cases/password-reset/request-password-reset.use-case';
-import { VerifyPasswordResetCodeUseCase } from '@application/use-cases/password-reset/verify-password-reset-code.use-case';
+import { CompletePasswordResetUseCase } from "@application/use-cases/password-reset/complete-password-reset.use-case";
+import { RequestPasswordResetUseCase } from "@application/use-cases/password-reset/request-password-reset.use-case";
+import { VerifyPasswordResetCodeUseCase } from "@application/use-cases/password-reset/verify-password-reset-code.use-case";
 
 // User Use Cases
-import { CreateUserUseCase } from '@application/use-cases/users/create-user.use-case';
-import { DeleteUserUseCase } from '@application/use-cases/users/delete-user.use-case';
-import { GetMeUseCase } from '@application/use-cases/users/get-me.use-case';
-import { GetUserByIdUseCase } from '@application/use-cases/users/get-user-by-id.use-case';
-import { ListUsersUseCase } from '@application/use-cases/users/list-users.use-case';
-import { UpdateUserUseCase } from '@application/use-cases/users/update-user.use-case';
+import { CreateUserUseCase } from "@application/use-cases/users/create-user.use-case";
+import { DeleteUserUseCase } from "@application/use-cases/users/delete-user.use-case";
+import { GetMeUseCase } from "@application/use-cases/users/get-me.use-case";
+import { GetUserByIdUseCase } from "@application/use-cases/users/get-user-by-id.use-case";
+import { ListUsersUseCase } from "@application/use-cases/users/list-users.use-case";
+import { UpdateUserUseCase } from "@application/use-cases/users/update-user.use-case";
 
 // Business Sector Use Cases
-import { CreateBusinessSectorUseCase } from '@application/use-cases/business-sectors/create-business-sector.use-case';
-import { DeleteBusinessSectorUseCase } from '@application/use-cases/business-sectors/delete-business-sector.use-case';
-import { ListBusinessSectorsUseCase } from '@application/use-cases/business-sectors/list-business-sectors.use-case';
-import { UpdateBusinessSectorUseCase } from '@application/use-cases/business-sectors/update-business-sector.use-case';
+import { CreateBusinessSectorUseCase } from "@application/use-cases/business-sectors/create-business-sector.use-case";
+import { DeleteBusinessSectorUseCase } from "@application/use-cases/business-sectors/delete-business-sector.use-case";
+import { ListBusinessSectorsUseCase } from "@application/use-cases/business-sectors/list-business-sectors.use-case";
+import { UpdateBusinessSectorUseCase } from "@application/use-cases/business-sectors/update-business-sector.use-case";
 
 // Business Use Cases
-import { CreateBusinessUseCase } from '@application/use-cases/business/create-business.use-case';
-import { GetBusinessUseCase } from '@application/use-cases/business/get-business.use-case';
-import { ListBusinessUseCase } from '@application/use-cases/business/list-business.use-case';
-import { ManageBusinessHoursUseCase } from '@application/use-cases/business/manage-business-hours.use-case';
-import { UpdateBusinessConfigurationUseCase } from '@application/use-cases/business/update-business-configuration.use-case';
-import { UpdateBusinessUseCase } from '@application/use-cases/business/update-business.use-case';
+import { CreateBusinessUseCase } from "@application/use-cases/business/create-business.use-case";
+import { GetBusinessUseCase } from "@application/use-cases/business/get-business.use-case";
+import { ListBusinessUseCase } from "@application/use-cases/business/list-business.use-case";
+import { ManageBusinessHoursUseCase } from "@application/use-cases/business/manage-business-hours.use-case";
+import { UpdateBusinessConfigurationUseCase } from "@application/use-cases/business/update-business-configuration.use-case";
+import { UpdateBusinessUseCase } from "@application/use-cases/business/update-business.use-case";
 
 // Calendar Use Cases
-import { CreateCalendarUseCase } from '@application/use-cases/calendar/create-calendar.use-case';
-import { DeleteCalendarUseCase } from '@application/use-cases/calendar/delete-calendar.use-case';
-import { GetCalendarByIdUseCase } from '@application/use-cases/calendar/get-calendar-by-id.use-case';
-import { ListCalendarsUseCase } from '@application/use-cases/calendar/list-calendars.use-case';
-import { UpdateCalendarUseCase } from '@application/use-cases/calendar/update-calendar.use-case';
+import { CreateCalendarUseCase } from "@application/use-cases/calendar/create-calendar.use-case";
+import { DeleteCalendarUseCase } from "@application/use-cases/calendar/delete-calendar.use-case";
+import { GetCalendarByIdUseCase } from "@application/use-cases/calendar/get-calendar-by-id.use-case";
+import { ListCalendarsUseCase } from "@application/use-cases/calendar/list-calendars.use-case";
+import { UpdateCalendarUseCase } from "@application/use-cases/calendar/update-calendar.use-case";
 
 // 🌩️ AWS S3 Image Management Use Cases
-import { AddImageToBusinessGalleryUseCase } from '@application/use-cases/business/add-image-to-gallery.use-case';
-import { UpdateBusinessSeoProfileUseCase } from '@application/use-cases/business/update-business-seo.use-case';
-import { UploadBusinessImageUseCase } from '@application/use-cases/business/upload-business-image.use-case';
+import { AddImageToBusinessGalleryUseCase } from "@application/use-cases/business/add-image-to-gallery.use-case";
+import { UpdateBusinessSeoProfileUseCase } from "@application/use-cases/business/update-business-seo.use-case";
+import { UploadBusinessImageUseCase } from "@application/use-cases/business/upload-business-image.use-case";
 
 // 🖼️ Business Gallery Use Cases
-import { CreateBusinessGalleryUseCase } from '@application/use-cases/business/create-business-gallery.use-case';
-import { DeleteBusinessGalleryUseCase } from '@application/use-cases/business/delete-business-gallery.use-case';
-import { GetBusinessGalleryUseCase } from '@application/use-cases/business/get-business-gallery.use-case';
-import { UpdateBusinessGalleryUseCase } from '@application/use-cases/business/update-business-gallery.use-case';
+import { CreateBusinessGalleryUseCase } from "@application/use-cases/business/create-business-gallery.use-case";
+import { DeleteBusinessGalleryUseCase } from "@application/use-cases/business/delete-business-gallery.use-case";
+import { GetBusinessGalleryUseCase } from "@application/use-cases/business/get-business-gallery.use-case";
+import { UpdateBusinessGalleryUseCase } from "@application/use-cases/business/update-business-gallery.use-case";
 
 // Service Use Cases
-import { CreateServiceUseCase } from '@application/use-cases/service/create-service.use-case';
-import { DeleteServiceUseCase } from '@application/use-cases/service/delete-service.use-case';
-import { GetServiceUseCase } from '@application/use-cases/service/get-service.use-case';
-import { ListServicesUseCase } from '@application/use-cases/service/list-services.use-case';
-import { UpdateServiceUseCase } from '@application/use-cases/service/update-service.use-case';
+import { CreateServiceUseCase } from "@application/use-cases/service/create-service.use-case";
+import { DeleteServiceUseCase } from "@application/use-cases/service/delete-service.use-case";
+import { GetServiceUseCase } from "@application/use-cases/service/get-service.use-case";
+import { ListServicesUseCase } from "@application/use-cases/service/list-services.use-case";
+import { UpdateServiceUseCase } from "@application/use-cases/service/update-service.use-case";
 
 // ServiceType Use Cases
-import { CreateServiceTypeUseCase } from '@application/use-cases/service-types/create-service-type.use-case';
-import { DeleteServiceTypeUseCase } from '@application/use-cases/service-types/delete-service-type.use-case';
+import { CreateServiceTypeUseCase } from "@application/use-cases/service-types/create-service-type.use-case";
+import { DeleteServiceTypeUseCase } from "@application/use-cases/service-types/delete-service-type.use-case";
 // import { GetServiceTypeByIdUseCase } from '@application/use-cases/service-types/get-service-type-by-id.use-case';
-import { ListServiceTypesUseCase } from '@application/use-cases/service-types/list-service-types.use-case';
-import { UpdateServiceTypeUseCase } from '@application/use-cases/service-types/update-service-type.use-case';
+import { ListServiceTypesUseCase } from "@application/use-cases/service-types/list-service-types.use-case";
+import { UpdateServiceTypeUseCase } from "@application/use-cases/service-types/update-service-type.use-case";
 
 // Skill Use Cases
-import { CreateSkillUseCase } from '@application/use-cases/skills/create-skill.use-case';
-import { DeleteSkillUseCase } from '@application/use-cases/skills/delete-skill.use-case';
-import { GetSkillByIdUseCase } from '@application/use-cases/skills/get-skill-by-id.use-case';
-import { ListSkillsUseCase } from '@application/use-cases/skills/list-skills.use-case';
-import { UpdateSkillUseCase } from '@application/use-cases/skills/update-skill.use-case';
+import { CreateSkillUseCase } from "@application/use-cases/skills/create-skill.use-case";
+import { DeleteSkillUseCase } from "@application/use-cases/skills/delete-skill.use-case";
+import { GetSkillByIdUseCase } from "@application/use-cases/skills/get-skill-by-id.use-case";
+import { ListSkillsUseCase } from "@application/use-cases/skills/list-skills.use-case";
+import { UpdateSkillUseCase } from "@application/use-cases/skills/update-skill.use-case";
 
 // Staff Use Cases
-import { CreateStaffUseCase } from '@application/use-cases/staff/create-staff.use-case';
-import { DeleteStaffUseCase } from '@application/use-cases/staff/delete-staff.use-case';
-import { GetStaffUseCase } from '@application/use-cases/staff/get-staff.use-case';
-import { ListStaffUseCase } from '@application/use-cases/staff/list-staff.use-case';
-import { UpdateStaffUseCase } from '@application/use-cases/staff/update-staff.use-case';
+import { CreateStaffUseCase } from "@application/use-cases/staff/create-staff.use-case";
+import { DeleteStaffUseCase } from "@application/use-cases/staff/delete-staff.use-case";
+import { GetStaffUseCase } from "@application/use-cases/staff/get-staff.use-case";
+import { ListStaffUseCase } from "@application/use-cases/staff/list-staff.use-case";
+import { UpdateStaffUseCase } from "@application/use-cases/staff/update-staff.use-case";
 // 📅 Staff Availability Use Cases - NEW
-import { GetAvailableStaffUseCase } from '@application/use-cases/staff/get-available-staff.use-case';
-import { GetStaffAvailabilityUseCase } from '@application/use-cases/staff/get-staff-availability.use-case';
-import { SetStaffAvailabilityUseCase } from '@application/use-cases/staff/set-staff-availability.use-case';
+import { GetAvailableStaffUseCase } from "@application/use-cases/staff/get-available-staff.use-case";
+import { GetStaffAvailabilityUseCase } from "@application/use-cases/staff/get-staff-availability.use-case";
+import { SetStaffAvailabilityUseCase } from "@application/use-cases/staff/set-staff-availability.use-case";
 
 // Appointment Use Cases
-import { BookAppointmentUseCase } from '@application/use-cases/appointments/book-appointment.use-case';
-import { CancelAppointmentUseCase } from '@application/use-cases/appointments/cancel-appointment.use-case';
-import { GetAppointmentByIdUseCase } from '@application/use-cases/appointments/get-appointment-by-id.use-case';
-import { GetAvailableSlotsUseCase } from '@application/use-cases/appointments/get-available-slots-simple.use-case';
-import { ListAppointmentsUseCase } from '@application/use-cases/appointments/list-appointments.use-case';
-import { UpdateAppointmentUseCase } from '@application/use-cases/appointments/update-appointment.use-case';
+import { BookAppointmentUseCase } from "@application/use-cases/appointments/book-appointment.use-case";
+import { CancelAppointmentUseCase } from "@application/use-cases/appointments/cancel-appointment.use-case";
+import { GetAppointmentByIdUseCase } from "@application/use-cases/appointments/get-appointment-by-id.use-case";
+import { GetAvailableSlotsUseCase } from "@application/use-cases/appointments/get-available-slots-simple.use-case";
+import { ListAppointmentsUseCase } from "@application/use-cases/appointments/list-appointments.use-case";
+import { UpdateAppointmentUseCase } from "@application/use-cases/appointments/update-appointment.use-case";
 
 // Notification Use Cases
-import { SendBulkNotificationUseCase } from '@application/use-cases/notification/send-bulk-notification.use-case';
-import { SendNotificationUseCase } from '@application/use-cases/notification/send-notification.use-case';
+import { SendBulkNotificationUseCase } from "@application/use-cases/notification/send-bulk-notification.use-case";
+import { SendNotificationUseCase } from "@application/use-cases/notification/send-notification.use-case";
 
-import { CreatePermissionUseCase } from '@application/use-cases/permissions/create-permission.use-case';
-import { DeletePermissionUseCase } from '@application/use-cases/permissions/delete-permission.use-case';
-import { GetPermissionByIdUseCase } from '@application/use-cases/permissions/get-permission-by-id.use-case';
-import { ListPermissionsUseCase } from '@application/use-cases/permissions/list-permissions.use-case';
-import { UpdatePermissionUseCase } from '@application/use-cases/permissions/update-permission.use-case';
+import { CreatePermissionUseCase } from "@application/use-cases/permissions/create-permission.use-case";
+import { DeletePermissionUseCase } from "@application/use-cases/permissions/delete-permission.use-case";
+import { GetPermissionByIdUseCase } from "@application/use-cases/permissions/get-permission-by-id.use-case";
+import { ListPermissionsUseCase } from "@application/use-cases/permissions/list-permissions.use-case";
+import { UpdatePermissionUseCase } from "@application/use-cases/permissions/update-permission.use-case";
 
 // CalendarType Use Cases
-import { CreateCalendarTypeUseCase } from '@application/use-cases/calendar-types/create-calendar-type.use-case';
-import { DeleteCalendarTypeUseCase } from '@application/use-cases/calendar-types/delete-calendar-type.use-case';
-import { GetCalendarTypeByIdUseCase } from '@application/use-cases/calendar-types/get-calendar-type-by-id.use-case';
-import { ListCalendarTypesUseCase } from '@application/use-cases/calendar-types/list-calendar-types.use-case';
-import { UpdateCalendarTypeUseCase } from '@application/use-cases/calendar-types/update-calendar-type.use-case';
+import { CreateCalendarTypeUseCase } from "@application/use-cases/calendar-types/create-calendar-type.use-case";
+import { DeleteCalendarTypeUseCase } from "@application/use-cases/calendar-types/delete-calendar-type.use-case";
+import { GetCalendarTypeByIdUseCase } from "@application/use-cases/calendar-types/get-calendar-type-by-id.use-case";
+import { ListCalendarTypesUseCase } from "@application/use-cases/calendar-types/list-calendar-types.use-case";
+import { UpdateCalendarTypeUseCase } from "@application/use-cases/calendar-types/update-calendar-type.use-case";
 
 // Prospect Use Cases
-import { CreateProspectUseCase } from '@application/use-cases/prospects/create-prospect.use-case';
-import { DeleteProspectUseCase } from '@application/use-cases/prospects/delete-prospect.use-case';
-import { GetProspectByIdUseCase } from '@application/use-cases/prospects/get-prospect-by-id.use-case';
-import { ListProspectsUseCase } from '@application/use-cases/prospects/list-prospects.use-case';
-import { UpdateProspectUseCase } from '@application/use-cases/prospects/update-prospect.use-case';
+import { CreateProspectUseCase } from "@application/use-cases/prospects/create-prospect.use-case";
+import { DeleteProspectUseCase } from "@application/use-cases/prospects/delete-prospect.use-case";
+import { GetProspectByIdUseCase } from "@application/use-cases/prospects/get-prospect-by-id.use-case";
+import { ListProspectsUseCase } from "@application/use-cases/prospects/list-prospects.use-case";
+import { UpdateProspectUseCase } from "@application/use-cases/prospects/update-prospect.use-case";
 
 // Professional Role Use Cases
-import { CreateProfessionalRoleUseCase } from '@application/use-cases/professional-roles/create-professional-role.use-case';
-import { DeleteProfessionalRoleUseCase } from '@application/use-cases/professional-roles/delete-professional-role.use-case';
-import { GetProfessionalRoleUseCase } from '@application/use-cases/professional-roles/get-professional-role.use-case';
-import { ListProfessionalRolesUseCase } from '@application/use-cases/professional-roles/list-professional-roles.use-case';
-import { UpdateProfessionalRoleUseCase } from '@application/use-cases/professional-roles/update-professional-role.use-case';
+import { CreateProfessionalRoleUseCase } from "@application/use-cases/professional-roles/create-professional-role.use-case";
+import { DeleteProfessionalRoleUseCase } from "@application/use-cases/professional-roles/delete-professional-role.use-case";
+import { GetProfessionalRoleUseCase } from "@application/use-cases/professional-roles/get-professional-role.use-case";
+import { ListProfessionalRolesUseCase } from "@application/use-cases/professional-roles/list-professional-roles.use-case";
+import { UpdateProfessionalRoleUseCase } from "@application/use-cases/professional-roles/update-professional-role.use-case";
 
 // Practitioner Use Cases
-import { SetPractitionerAvailabilityUseCase } from '@application/use-cases/practitioners/set-practitioner-availability.use-case';
+import { SetPractitionerAvailabilityUseCase } from "@application/use-cases/practitioners/set-practitioner-availability.use-case";
 
 // Role Management Use Cases
-import { AssignRoleUseCase } from '@application/use-cases/role-management/assign-role.use-case';
+import { AssignRoleUseCase } from "@application/use-cases/role-management/assign-role.use-case";
 
 // 🎮 Controllers
-import { AppointmentController } from './controllers/appointment.controller';
-import { AuthController } from './controllers/auth.controller';
-import { BusinessConfigurationController } from './controllers/business-configuration.controller';
-import { BusinessGalleryController } from './controllers/business-gallery.controller';
-import { BusinessHoursController } from './controllers/business-hours.controller';
-import { BusinessImageController } from './controllers/business-image.controller';
-import { BusinessSectorController } from './controllers/business-sector.controller';
-import { BusinessController } from './controllers/business.controller';
-import { CalendarTypesController } from './controllers/calendar-types.controller';
-import { CalendarController } from './controllers/calendar.controller';
-import { NotificationController } from './controllers/notification.controller';
-import { PasswordResetController } from './controllers/PasswordResetController';
-import { PermissionController } from './controllers/permission.controller';
-import { ProfessionalRoleController } from './controllers/professional-role.controller';
-import { ProspectController } from './controllers/prospect.controller';
-import { RoleManagementController } from './controllers/role-management.controller';
-import { ServiceTypeController } from './controllers/service-type.controller';
-import { ServiceController } from './controllers/service.controller';
-import { SkillController } from './controllers/skill.controller';
+import { AppointmentController } from "./controllers/appointment.controller";
+import { AuthController } from "./controllers/auth.controller";
+import { BusinessConfigurationController } from "./controllers/business-configuration.controller";
+import { BusinessGalleryController } from "./controllers/business-gallery.controller";
+import { BusinessHoursController } from "./controllers/business-hours.controller";
+import { BusinessImageController } from "./controllers/business-image.controller";
+import { BusinessSectorController } from "./controllers/business-sector.controller";
+import { BusinessController } from "./controllers/business.controller";
+import { CalendarTypesController } from "./controllers/calendar-types.controller";
+import { CalendarController } from "./controllers/calendar.controller";
+import { NotificationController } from "./controllers/notification.controller";
+import { PasswordResetController } from "./controllers/PasswordResetController";
+import { PermissionController } from "./controllers/permission.controller";
+import { ProfessionalRoleController } from "./controllers/professional-role.controller";
+import { ProspectController } from "./controllers/prospect.controller";
+import { RoleManagementController } from "./controllers/role-management.controller";
+import { ServiceTypeController } from "./controllers/service-type.controller";
+import { ServiceController } from "./controllers/service.controller";
+import { SkillController } from "./controllers/skill.controller";
 // Removed ServiceTestController - debugging completed
-import { StaffAvailabilityController } from './controllers/staff-availability.controller';
-import { StaffController } from './controllers/staff.controller';
-import { UserController } from './controllers/user.controller';
+import { StaffAvailabilityController } from "./controllers/staff-availability.controller";
+import { StaffController } from "./controllers/staff.controller";
+import { UserController } from "./controllers/user.controller";
 
 // 🛡️ Security
-import { JwtAuthGuard } from './security/guards/jwt-auth.guard';
-import { RolesGuard } from './security/guards/roles.guard';
-import { NotificationRateLimitGuard } from './security/notification-rate-limit.guard';
-import { JwtStrategy } from './security/strategies/jwt.strategy';
-import { SecurityValidationPipe } from './security/validation.pipe';
+import { JwtAuthGuard } from "./security/guards/jwt-auth.guard";
+import { RolesGuard } from "./security/guards/roles.guard";
+import { NotificationRateLimitGuard } from "./security/notification-rate-limit.guard";
+import { JwtStrategy } from "./security/strategies/jwt.strategy";
+import { SecurityValidationPipe } from "./security/validation.pipe";
 
 // 🔧 Services
-import { MockI18nService } from '@application/mocks/mock-i18n.service';
-import { AuditService } from '@infrastructure/services/audit.service';
-import { PresentationCookieService } from './services/cookie.service';
+import { MockI18nService } from "@application/mocks/mock-i18n.service";
+import { AuditService } from "@infrastructure/services/audit.service";
+import { PresentationCookieService } from "./services/cookie.service";
 
 @Module({
   imports: [

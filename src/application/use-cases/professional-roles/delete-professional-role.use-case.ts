@@ -8,8 +8,8 @@ import {
   ProfessionalRoleInUseError,
   ProfessionalRoleNotFoundError,
   ProfessionalRoleValidationError,
-} from '@domain/exceptions/professional-role.exceptions';
-import { IProfessionalRoleRepository } from '@domain/repositories/professional-role.repository';
+} from "@domain/exceptions/professional-role.exceptions";
+import { IProfessionalRoleRepository } from "@domain/repositories/professional-role.repository";
 
 export interface DeleteProfessionalRoleRequest {
   readonly professionalRoleId: string;
@@ -32,13 +32,13 @@ export class DeleteProfessionalRoleUseCase {
     // 🔍 Validate request
     if (!request.professionalRoleId) {
       throw new ProfessionalRoleValidationError(
-        'Professional role ID is required',
+        "Professional role ID is required",
       );
     }
 
     if (!request.requestingUserId) {
       throw new ProfessionalRoleValidationError(
-        'Requesting user ID is required',
+        "Requesting user ID is required",
       );
     }
 
@@ -52,14 +52,14 @@ export class DeleteProfessionalRoleUseCase {
 
     // 🔒 Business rule: Cannot delete predefined roles
     const predefinedCodes = [
-      'DOCTOR',
-      'SURGEON',
-      'NURSE',
-      'DENTIST',
-      'DENTAL_HYGIENIST',
-      'PSYCHOLOGIST',
-      'LAWYER',
-      'CONSULTANT',
+      "DOCTOR",
+      "SURGEON",
+      "NURSE",
+      "DENTIST",
+      "DENTAL_HYGIENIST",
+      "PSYCHOLOGIST",
+      "LAWYER",
+      "CONSULTANT",
     ];
     if (predefinedCodes.includes(professionalRole.getCode())) {
       throw new ProfessionalRoleInUseError(professionalRole.getCode());

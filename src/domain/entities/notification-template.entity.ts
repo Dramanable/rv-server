@@ -4,28 +4,28 @@
  * @version 1.0.0
  */
 
-import { DomainError } from '../exceptions/domain.exceptions';
-import { NotificationChannel } from '../value-objects/notification-channel.value-object';
+import { DomainError } from "../exceptions/domain.exceptions";
+import { NotificationChannel } from "../value-objects/notification-channel.value-object";
 
 /**
  * Types d'événements pour les templates
  */
 export enum NotificationEventType {
-  APPOINTMENT_CREATED = 'APPOINTMENT_CREATED',
-  APPOINTMENT_CONFIRMED = 'APPOINTMENT_CONFIRMED',
-  APPOINTMENT_CANCELLED = 'APPOINTMENT_CANCELLED',
-  APPOINTMENT_RESCHEDULED = 'APPOINTMENT_RESCHEDULED',
-  APPOINTMENT_REMINDER = 'APPOINTMENT_REMINDER',
-  APPOINTMENT_COMPLETED = 'APPOINTMENT_COMPLETED',
-  APPOINTMENT_NO_SHOW = 'APPOINTMENT_NO_SHOW',
-  USER_WELCOME = 'USER_WELCOME',
-  USER_PASSWORD_RESET = 'USER_PASSWORD_RESET',
-  USER_EMAIL_VERIFICATION = 'USER_EMAIL_VERIFICATION',
-  STAFF_SHIFT_ASSIGNED = 'STAFF_SHIFT_ASSIGNED',
-  STAFF_SCHEDULE_CHANGED = 'STAFF_SCHEDULE_CHANGED',
-  BUSINESS_NOTIFICATION = 'BUSINESS_NOTIFICATION',
-  SYSTEM_MAINTENANCE = 'SYSTEM_MAINTENANCE',
-  SYSTEM_ALERT = 'SYSTEM_ALERT',
+  APPOINTMENT_CREATED = "APPOINTMENT_CREATED",
+  APPOINTMENT_CONFIRMED = "APPOINTMENT_CONFIRMED",
+  APPOINTMENT_CANCELLED = "APPOINTMENT_CANCELLED",
+  APPOINTMENT_RESCHEDULED = "APPOINTMENT_RESCHEDULED",
+  APPOINTMENT_REMINDER = "APPOINTMENT_REMINDER",
+  APPOINTMENT_COMPLETED = "APPOINTMENT_COMPLETED",
+  APPOINTMENT_NO_SHOW = "APPOINTMENT_NO_SHOW",
+  USER_WELCOME = "USER_WELCOME",
+  USER_PASSWORD_RESET = "USER_PASSWORD_RESET",
+  USER_EMAIL_VERIFICATION = "USER_EMAIL_VERIFICATION",
+  STAFF_SHIFT_ASSIGNED = "STAFF_SHIFT_ASSIGNED",
+  STAFF_SCHEDULE_CHANGED = "STAFF_SCHEDULE_CHANGED",
+  BUSINESS_NOTIFICATION = "BUSINESS_NOTIFICATION",
+  SYSTEM_MAINTENANCE = "SYSTEM_MAINTENANCE",
+  SYSTEM_ALERT = "SYSTEM_ALERT",
 }
 
 /**
@@ -99,7 +99,7 @@ export class NotificationTemplate {
    */
   static create(data: CreateNotificationTemplateData): NotificationTemplate {
     const id = this.generateId();
-    const description = data.description || '';
+    const description = data.description || "";
     const isActive = data.isActive !== false; // Default to true
 
     return new NotificationTemplate(
@@ -127,7 +127,7 @@ export class NotificationTemplate {
       data.id,
       data.name,
       data.eventType,
-      data.description || '',
+      data.description || "",
       data.businessId,
       data.language,
       new Map(data.channelConfigs),
@@ -150,23 +150,23 @@ export class NotificationTemplate {
    */
   private validateInvariants(): void {
     if (!this._id || this._id.trim().length === 0) {
-      throw new DomainError('Template ID is required');
+      throw new DomainError("Template ID is required");
     }
 
     if (!this._name || this._name.trim().length === 0) {
-      throw new DomainError('Template name is required');
+      throw new DomainError("Template name is required");
     }
 
     if (this._name.length > 100) {
-      throw new DomainError('Template name cannot exceed 100 characters');
+      throw new DomainError("Template name cannot exceed 100 characters");
     }
 
     if (!Object.values(NotificationEventType).includes(this._eventType)) {
-      throw new DomainError('Invalid notification event type');
+      throw new DomainError("Invalid notification event type");
     }
 
     if (!this._language || this._language.trim().length === 0) {
-      throw new DomainError('Template language is required');
+      throw new DomainError("Template language is required");
     }
 
     if (!/^[a-z]{2}(-[A-Z]{2})?$/.test(this._language)) {
@@ -176,11 +176,11 @@ export class NotificationTemplate {
     }
 
     if (this._channelConfigs.size === 0) {
-      throw new DomainError('At least one channel configuration is required');
+      throw new DomainError("At least one channel configuration is required");
     }
 
     if (this._version < 1) {
-      throw new DomainError('Template version must be at least 1');
+      throw new DomainError("Template version must be at least 1");
     }
 
     // Valider chaque configuration de canal
@@ -223,25 +223,25 @@ export class NotificationTemplate {
     // Validation spécifique pour EMAIL
     if (channel.isEmail()) {
       if (!config.subject || config.subject.trim().length === 0) {
-        throw new DomainError('Subject is required for EMAIL channel');
+        throw new DomainError("Subject is required for EMAIL channel");
       }
 
       if (config.subject.length > 255) {
-        throw new DomainError('Email subject cannot exceed 255 characters');
+        throw new DomainError("Email subject cannot exceed 255 characters");
       }
     }
 
     // Validation spécifique pour SMS
     if (channel.isSms()) {
       if (config.content.length > 160) {
-        throw new DomainError('SMS content cannot exceed 160 characters');
+        throw new DomainError("SMS content cannot exceed 160 characters");
       }
     }
 
     // Valider que les variables sont des chaînes non vides
     config.variables.forEach((variable) => {
       if (!variable || variable.trim().length === 0) {
-        throw new DomainError('Variable names cannot be empty');
+        throw new DomainError("Variable names cannot be empty");
       }
 
       if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(variable)) {
@@ -344,7 +344,7 @@ export class NotificationTemplate {
     htmlContent?: string;
   } {
     if (!this._isActive) {
-      throw new DomainError('Cannot generate content from inactive template');
+      throw new DomainError("Cannot generate content from inactive template");
     }
 
     const config = this._channelConfigs.get(channel);
@@ -360,7 +360,7 @@ export class NotificationTemplate {
     );
     if (missingVariables.length > 0) {
       throw new DomainError(
-        `Missing required variables: ${missingVariables.join(', ')}`,
+        `Missing required variables: ${missingVariables.join(", ")}`,
       );
     }
 
@@ -391,7 +391,7 @@ export class NotificationTemplate {
     Object.entries(variables).forEach(([key, value]) => {
       const placeholder = `{{${key}}}`;
       const replacement = this.formatVariableValue(value);
-      result = result.replace(new RegExp(placeholder, 'g'), replacement);
+      result = result.replace(new RegExp(placeholder, "g"), replacement);
     });
 
     return result;
@@ -405,8 +405,8 @@ export class NotificationTemplate {
       return value.toLocaleString(this._language);
     }
 
-    if (typeof value === 'boolean') {
-      return value ? 'true' : 'false';
+    if (typeof value === "boolean") {
+      return value ? "true" : "false";
     }
 
     return String(value);

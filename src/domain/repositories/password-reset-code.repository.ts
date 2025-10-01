@@ -10,7 +10,7 @@
  * - Utilisée par les use cases d'application
  */
 
-import { PasswordResetCode } from '../entities/password-reset-code.entity';
+import { PasswordResetCode } from "../entities/password-reset-code.entity";
 
 export interface IPasswordResetCodeRepository {
   /**

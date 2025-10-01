@@ -2,14 +2,14 @@ import {
   Appointment,
   AppointmentId,
   AppointmentStatus,
-} from '../entities/appointment.entity';
-import { AppointmentStatisticsData } from '../value-objects/appointment-statistics.vo';
-import { BusinessId } from '../value-objects/business-id.value-object';
-import { CalendarId } from '../value-objects/calendar-id.value-object';
-import { Email } from '../value-objects/email.value-object';
-import { ServiceId } from '../value-objects/service-id.value-object';
-import { StatisticsPeriod } from '../value-objects/statistics-period.vo';
-import { UserId } from '../value-objects/user-id.value-object';
+} from "../entities/appointment.entity";
+import { AppointmentStatisticsData } from "../value-objects/appointment-statistics.vo";
+import { BusinessId } from "../value-objects/business-id.value-object";
+import { CalendarId } from "../value-objects/calendar-id.value-object";
+import { Email } from "../value-objects/email.value-object";
+import { ServiceId } from "../value-objects/service-id.value-object";
+import { StatisticsPeriod } from "../value-objects/statistics-period.vo";
+import { UserId } from "../value-objects/user-id.value-object";
 
 /**
  * 📅 APPOINTMENT REPOSITORY INTERFACE
@@ -18,7 +18,7 @@ import { UserId } from '../value-objects/user-id.value-object';
  * ✅ Rich queries for appointment management
  */
 
-export const APPOINTMENT_REPOSITORY = 'APPOINTMENT_REPOSITORY';
+export const APPOINTMENT_REPOSITORY = "APPOINTMENT_REPOSITORY";
 
 export interface AppointmentSearchCriteria {
   businessId?: BusinessId;

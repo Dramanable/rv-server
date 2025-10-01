@@ -3,15 +3,15 @@
  * ✅ Clean Architecture compliant
  */
 
-import { AuthenticationService } from '@application/ports/authentication.port';
-import { IConfigService } from '@application/ports/config.port';
-import { I18nService } from '@application/ports/i18n.port';
-import { Logger } from '@application/ports/logger.port';
+import { AuthenticationService } from "@application/ports/authentication.port";
+import { IConfigService } from "@application/ports/config.port";
+import { I18nService } from "@application/ports/i18n.port";
+import { Logger } from "@application/ports/logger.port";
 import {
   LogoutRequest,
   LogoutResponse,
   LogoutUseCase,
-} from '@application/use-cases/auth/logout.use-case';
+} from "@application/use-cases/auth/logout.use-case";
 // Mock créés directement ici avec les méthodes nécessaires
 const createMockAuthService = (): jest.Mocked<AuthenticationService> => ({
   generateTokens: jest.fn(),
@@ -30,11 +30,11 @@ const createMockConfigService = (): jest.Mocked<IConfigService> =>
     getAccessTokenExpirationTime: jest.fn().mockReturnValue(3600), // 1 hour
     getRefreshTokenExpirationDays: jest.fn().mockReturnValue(30), // 30 days
     getUserSessionDurationMinutes: jest.fn().mockReturnValue(30),
-    getAccessTokenSecret: jest.fn().mockReturnValue('test-secret'),
-    getRefreshTokenSecret: jest.fn().mockReturnValue('test-refresh-secret'),
-    getJwtIssuer: jest.fn().mockReturnValue('test-issuer'),
-    getJwtAudience: jest.fn().mockReturnValue('test-audience'),
-    getAccessTokenAlgorithm: jest.fn().mockReturnValue('HS256'),
+    getAccessTokenSecret: jest.fn().mockReturnValue("test-secret"),
+    getRefreshTokenSecret: jest.fn().mockReturnValue("test-refresh-secret"),
+    getJwtIssuer: jest.fn().mockReturnValue("test-issuer"),
+    getJwtAudience: jest.fn().mockReturnValue("test-audience"),
+    getAccessTokenAlgorithm: jest.fn().mockReturnValue("HS256"),
   }) as any;
 
 const createMockLogger = (): jest.Mocked<Logger> => ({
@@ -56,14 +56,14 @@ const createMockI18nService = (): jest.Mocked<I18nService> => ({
     .fn()
     .mockImplementation((key: string, params?: Record<string, any>) => {
       const translations: Record<string, string> = {
-        'success.auth.logout_successful': 'Logged out successfully',
-        'operations.auth.logout_attempt': 'Logout attempt',
-        'operations.auth.current_token_revoked':
-          'Current refresh token revoked',
-        'operations.auth.logout_success': 'Logout success',
-        'operations.auth.all_tokens_revoked':
-          'All tokens revoked for user: {{userId}}',
-        'operations.auth.logout_error': 'Logout error: {{error}}',
+        "success.auth.logout_successful": "Logged out successfully",
+        "operations.auth.logout_attempt": "Logout attempt",
+        "operations.auth.current_token_revoked":
+          "Current refresh token revoked",
+        "operations.auth.logout_success": "Logout success",
+        "operations.auth.all_tokens_revoked":
+          "All tokens revoked for user: {{userId}}",
+        "operations.auth.logout_error": "Logout error: {{error}}",
       };
 
       let message = translations[key] || key;
@@ -79,7 +79,7 @@ const createMockI18nService = (): jest.Mocked<I18nService> => ({
     }),
 });
 
-describe('LogoutUseCase', () => {
+describe("LogoutUseCase", () => {
   let useCase: LogoutUseCase;
   let mockAuthService: jest.Mocked<AuthenticationService>;
   let mockLogger: jest.Mocked<Logger>;
@@ -102,14 +102,14 @@ describe('LogoutUseCase', () => {
     );
   });
 
-  describe('🎯 Successful Logout Cases', () => {
-    it('should logout successfully with refresh token revocation', async () => {
+  describe("🎯 Successful Logout Cases", () => {
+    it("should logout successfully with refresh token revocation", async () => {
       // 📋 Arrange
       const request: LogoutRequest = {
-        refreshToken: 'valid.refresh.token',
-        userId: 'user-123',
-        ip: '192.168.1.1',
-        userAgent: 'TestAgent',
+        refreshToken: "valid.refresh.token",
+        userId: "user-123",
+        ip: "192.168.1.1",
+        userAgent: "TestAgent",
         logoutAllDevices: false,
       };
 
@@ -124,7 +124,7 @@ describe('LogoutUseCase', () => {
         cookieSettings: {
           isProduction: false,
         },
-        message: 'Logged out successfully',
+        message: "Logged out successfully",
       });
 
       // 🔍 Assert - Appels de méthodes
@@ -135,32 +135,32 @@ describe('LogoutUseCase', () => {
 
       // 🔍 Assert - Token revocation should be logged
       expect(mockLogger.info).toHaveBeenCalledWith(
-        'Logout attempt',
+        "Logout attempt",
         expect.objectContaining({
           context: expect.any(String),
         }),
       );
       expect(mockLogger.info).toHaveBeenCalledWith(
-        'Current refresh token revoked',
+        "Current refresh token revoked",
         expect.objectContaining({
           context: expect.any(String),
         }),
       );
       expect(mockLogger.info).toHaveBeenCalledWith(
-        'Logout success',
+        "Logout success",
         expect.objectContaining({
           context: expect.any(String),
         }),
       );
     });
 
-    it('should logout from all devices when logoutAllDevices is true', async () => {
+    it("should logout from all devices when logoutAllDevices is true", async () => {
       // 📋 Arrange
       const request: LogoutRequest = {
-        refreshToken: 'valid.refresh.token',
-        userId: 'user-123',
-        ip: '192.168.1.1',
-        userAgent: 'TestAgent',
+        refreshToken: "valid.refresh.token",
+        userId: "user-123",
+        ip: "192.168.1.1",
+        userAgent: "TestAgent",
         logoutAllDevices: true, // 👈 Logout from all devices
       };
 
@@ -175,7 +175,7 @@ describe('LogoutUseCase', () => {
         cookieSettings: {
           isProduction: false,
         },
-        message: 'Logged out successfully',
+        message: "Logged out successfully",
       });
 
       // 🔍 Assert - Appels de méthodes - Should revoke all tokens
@@ -186,19 +186,19 @@ describe('LogoutUseCase', () => {
 
       // 🔍 Assert - Logging for all devices logout
       expect(mockLogger.info).toHaveBeenCalledWith(
-        'All tokens revoked for user: user-123',
+        "All tokens revoked for user: user-123",
         expect.objectContaining({
           context: expect.any(String),
         }),
       );
     });
 
-    it('should logout successfully without refresh token', async () => {
+    it("should logout successfully without refresh token", async () => {
       // 📋 Arrange - No refresh token provided
       const request: LogoutRequest = {
-        userId: 'user-123',
-        ip: '192.168.1.1',
-        userAgent: 'TestAgent',
+        userId: "user-123",
+        ip: "192.168.1.1",
+        userAgent: "TestAgent",
       };
 
       // 🎬 Act
@@ -209,7 +209,7 @@ describe('LogoutUseCase', () => {
         cookieSettings: {
           isProduction: false,
         },
-        message: 'Logged out successfully',
+        message: "Logged out successfully",
       });
 
       // 🔍 Assert - No token revocation should be called
@@ -218,18 +218,18 @@ describe('LogoutUseCase', () => {
 
       // 🔍 Assert - Success should still be logged
       expect(mockLogger.info).toHaveBeenCalledWith(
-        'Logout success',
+        "Logout success",
         expect.objectContaining({
           context: expect.any(String),
         }),
       );
     });
 
-    it('should return production cookie settings when in production', async () => {
+    it("should return production cookie settings when in production", async () => {
       // 📋 Arrange
       const request: LogoutRequest = {
-        refreshToken: 'valid.refresh.token',
-        userId: 'user-123',
+        refreshToken: "valid.refresh.token",
+        userId: "user-123",
       };
 
       // 🔧 Setup mocks - Production environment
@@ -244,17 +244,17 @@ describe('LogoutUseCase', () => {
     });
   });
 
-  describe('🚨 Error Handling with Graceful Degradation', () => {
-    it('should return success even when token revocation fails', async () => {
+  describe("🚨 Error Handling with Graceful Degradation", () => {
+    it("should return success even when token revocation fails", async () => {
       // 📋 Arrange
       const request: LogoutRequest = {
-        refreshToken: 'valid.refresh.token',
-        userId: 'user-123',
-        ip: '192.168.1.1',
-        userAgent: 'TestAgent',
+        refreshToken: "valid.refresh.token",
+        userId: "user-123",
+        ip: "192.168.1.1",
+        userAgent: "TestAgent",
       };
 
-      const revocationError = new Error('Token revocation failed');
+      const revocationError = new Error("Token revocation failed");
 
       // 🔧 Setup mocks - Revocation fails
       mockAuthService.revokeRefreshToken.mockRejectedValue(revocationError);
@@ -267,7 +267,7 @@ describe('LogoutUseCase', () => {
         cookieSettings: {
           isProduction: false,
         },
-        message: 'Logged out successfully',
+        message: "Logged out successfully",
       });
 
       // 🔍 Assert - Error should be logged
@@ -280,15 +280,15 @@ describe('LogoutUseCase', () => {
       );
     });
 
-    it('should return success even when revoking all user tokens fails', async () => {
+    it("should return success even when revoking all user tokens fails", async () => {
       // 📋 Arrange
       const request: LogoutRequest = {
-        refreshToken: 'valid.refresh.token',
-        userId: 'user-123',
+        refreshToken: "valid.refresh.token",
+        userId: "user-123",
         logoutAllDevices: true,
       };
 
-      const revocationError = new Error('Failed to revoke all user tokens');
+      const revocationError = new Error("Failed to revoke all user tokens");
 
       // 🔧 Setup mocks - Revoke all tokens fails
       mockAuthService.revokeAllUserTokens.mockRejectedValue(revocationError);
@@ -301,7 +301,7 @@ describe('LogoutUseCase', () => {
         cookieSettings: {
           isProduction: false,
         },
-        message: 'Logged out successfully',
+        message: "Logged out successfully",
       });
 
       // 🔍 Assert - Error should be logged
@@ -314,14 +314,14 @@ describe('LogoutUseCase', () => {
       );
     });
 
-    it('should handle unknown error types gracefully', async () => {
+    it("should handle unknown error types gracefully", async () => {
       // 📋 Arrange
       const request: LogoutRequest = {
-        refreshToken: 'valid.refresh.token',
-        userId: 'user-123',
+        refreshToken: "valid.refresh.token",
+        userId: "user-123",
       };
 
-      const unknownError = { message: 'Unknown error type', code: 'UNKNOWN' };
+      const unknownError = { message: "Unknown error type", code: "UNKNOWN" };
 
       // 🔧 Setup mocks - Non-Error object thrown
       mockAuthService.revokeRefreshToken.mockRejectedValue(unknownError);
@@ -334,12 +334,12 @@ describe('LogoutUseCase', () => {
         cookieSettings: {
           isProduction: false,
         },
-        message: 'Logged out successfully',
+        message: "Logged out successfully",
       });
 
       // 🔍 Assert - Unknown error should be logged appropriately
       expect(mockLogger.error).toHaveBeenCalledWith(
-        'Logout error: Unknown error',
+        "Logout error: Unknown error",
         undefined, // Not an Error instance
         expect.objectContaining({
           context: expect.any(String),
@@ -348,14 +348,14 @@ describe('LogoutUseCase', () => {
     });
   });
 
-  describe('🔧 Edge Cases and Security', () => {
-    it('should handle logout with missing userId but logoutAllDevices true', async () => {
+  describe("🔧 Edge Cases and Security", () => {
+    it("should handle logout with missing userId but logoutAllDevices true", async () => {
       // 📋 Arrange - Missing userId but wants to logout all devices
       const request: LogoutRequest = {
-        refreshToken: 'valid.refresh.token',
+        refreshToken: "valid.refresh.token",
         logoutAllDevices: true, // But no userId provided
-        ip: '192.168.1.1',
-        userAgent: 'TestAgent',
+        ip: "192.168.1.1",
+        userAgent: "TestAgent",
       };
 
       // 🔧 Setup mocks
@@ -371,10 +371,10 @@ describe('LogoutUseCase', () => {
       expect(mockAuthService.revokeAllUserTokens).not.toHaveBeenCalled();
 
       // 🔍 Assert - Should still succeed
-      expect(result.message).toBe('Logged out successfully');
+      expect(result.message).toBe("Logged out successfully");
     });
 
-    it('should handle minimal logout request', async () => {
+    it("should handle minimal logout request", async () => {
       // 📋 Arrange - Minimal request (no optional fields)
       const request: LogoutRequest = {};
 
@@ -386,7 +386,7 @@ describe('LogoutUseCase', () => {
         cookieSettings: {
           isProduction: false,
         },
-        message: 'Logged out successfully',
+        message: "Logged out successfully",
       });
 
       // 🔍 Assert - No token operations should be performed
@@ -394,11 +394,11 @@ describe('LogoutUseCase', () => {
       expect(mockAuthService.revokeAllUserTokens).not.toHaveBeenCalled();
     });
 
-    it('should use default client info when not provided', async () => {
+    it("should use default client info when not provided", async () => {
       // 📋 Arrange - No IP or UserAgent
       const request: LogoutRequest = {
-        refreshToken: 'valid.refresh.token',
-        userId: 'user-123',
+        refreshToken: "valid.refresh.token",
+        userId: "user-123",
       };
 
       // 🔧 Setup mocks
@@ -409,7 +409,7 @@ describe('LogoutUseCase', () => {
 
       // 🔍 Assert - Should use default values in logging context
       expect(mockLogger.info).toHaveBeenCalledWith(
-        'Logout attempt',
+        "Logout attempt",
         expect.objectContaining({
           context: expect.any(String),
         }),

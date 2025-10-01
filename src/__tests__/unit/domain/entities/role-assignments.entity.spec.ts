@@ -1,36 +1,36 @@
 import {
   RoleAssignment,
   RoleAssignmentContext,
-} from '@domain/entities/role-assignment.entity';
-import { Permission, UserRole } from '@shared/enums/user-role.enum';
+} from "@domain/entities/role-assignment.entity";
+import { Permission, UserRole } from "@shared/enums/user-role.enum";
 
 /**
  * 🧪 TESTS UNITAIRES - Role Assignment Entity
  * Tests TDD pour l'entité métier RoleAssignment avec validation
  * des contextes hiérarchiques et permissions effectives.
  */
-describe('RoleAssignment Entity', () => {
+describe("RoleAssignment Entity", () => {
   // Setup test data
-  const mockUserId = 'user-123';
-  const mockAssignedBy = 'admin-456';
+  const mockUserId = "user-123";
+  const mockAssignedBy = "admin-456";
 
   const businessContext: RoleAssignmentContext = {
-    businessId: 'business-123',
+    businessId: "business-123",
   };
 
   const locationContext: RoleAssignmentContext = {
-    businessId: 'business-123',
-    locationId: 'location-456',
+    businessId: "business-123",
+    locationId: "location-456",
   };
 
   const departmentContext: RoleAssignmentContext = {
-    businessId: 'business-123',
-    locationId: 'location-456',
-    departmentId: 'department-789',
+    businessId: "business-123",
+    locationId: "location-456",
+    departmentId: "department-789",
   };
 
-  describe('create', () => {
-    it('should create a valid role assignment', () => {
+  describe("create", () => {
+    it("should create a valid role assignment", () => {
       const roleAssignment = RoleAssignment.create({
         userId: mockUserId,
         role: UserRole.BUSINESS_ADMIN,
@@ -47,7 +47,7 @@ describe('RoleAssignment Entity', () => {
       expect(roleAssignment.isActiveAssignment()).toBe(true);
     });
 
-    it('should create role assignment with expiration date', () => {
+    it("should create role assignment with expiration date", () => {
       const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days
 
       const roleAssignment = RoleAssignment.create({
@@ -56,14 +56,14 @@ describe('RoleAssignment Entity', () => {
         context: departmentContext,
         assignedBy: mockAssignedBy,
         expiresAt,
-        notes: 'Temporary assignment',
+        notes: "Temporary assignment",
       });
 
       expect(roleAssignment.getExpiresAt()).toEqual(expiresAt);
-      expect(roleAssignment.getNotes()).toBe('Temporary assignment');
+      expect(roleAssignment.getNotes()).toBe("Temporary assignment");
     });
 
-    it('should throw error when BUSINESS_OWNER assigned at location level', () => {
+    it("should throw error when BUSINESS_OWNER assigned at location level", () => {
       expect(() => {
         RoleAssignment.create({
           userId: mockUserId,
@@ -71,10 +71,10 @@ describe('RoleAssignment Entity', () => {
           context: locationContext,
           assignedBy: mockAssignedBy,
         });
-      }).toThrow('Role BUSINESS_OWNER must be assigned at business level only');
+      }).toThrow("Role BUSINESS_OWNER must be assigned at business level only");
     });
 
-    it('should throw error when LOCATION_MANAGER assigned at department level', () => {
+    it("should throw error when LOCATION_MANAGER assigned at department level", () => {
       expect(() => {
         RoleAssignment.create({
           userId: mockUserId,
@@ -83,11 +83,11 @@ describe('RoleAssignment Entity', () => {
           assignedBy: mockAssignedBy,
         });
       }).toThrow(
-        'Role LOCATION_MANAGER must be assigned at location level only',
+        "Role LOCATION_MANAGER must be assigned at location level only",
       );
     });
 
-    it('should throw error when DEPARTMENT_HEAD assigned without department', () => {
+    it("should throw error when DEPARTMENT_HEAD assigned without department", () => {
       expect(() => {
         RoleAssignment.create({
           userId: mockUserId,
@@ -95,10 +95,10 @@ describe('RoleAssignment Entity', () => {
           context: locationContext,
           assignedBy: mockAssignedBy,
         });
-      }).toThrow('Role DEPARTMENT_HEAD must be assigned at department level');
+      }).toThrow("Role DEPARTMENT_HEAD must be assigned at department level");
     });
 
-    it('should throw error for SUPER_ADMIN role', () => {
+    it("should throw error for SUPER_ADMIN role", () => {
       expect(() => {
         RoleAssignment.create({
           userId: mockUserId,
@@ -107,24 +107,24 @@ describe('RoleAssignment Entity', () => {
           assignedBy: mockAssignedBy,
         });
       }).toThrow(
-        'Super admin and platform admin roles cannot be assigned in business context',
+        "Super admin and platform admin roles cannot be assigned in business context",
       );
     });
 
-    it('should validate required businessId', () => {
+    it("should validate required businessId", () => {
       expect(() => {
         RoleAssignment.create({
           userId: mockUserId,
           role: UserRole.STAFF_MEMBER,
-          context: { businessId: '' },
+          context: { businessId: "" },
           assignedBy: mockAssignedBy,
         });
-      }).toThrow('Business ID is required');
+      }).toThrow("Business ID is required");
     });
   });
 
-  describe('getEffectivePermissions', () => {
-    it('should return permissions for active assignments', () => {
+  describe("getEffectivePermissions", () => {
+    it("should return permissions for active assignments", () => {
       const assignment = RoleAssignment.create({
         userId: mockUserId,
         role: UserRole.BUSINESS_ADMIN,
@@ -138,7 +138,7 @@ describe('RoleAssignment Entity', () => {
       expect(permissions).toContain(Permission.CONFIGURE_BUSINESS_SETTINGS);
     });
 
-    it('should return empty permissions for inactive assignments', () => {
+    it("should return empty permissions for inactive assignments", () => {
       const assignment = RoleAssignment.create({
         userId: mockUserId,
         role: UserRole.DEPARTMENT_HEAD,
@@ -151,7 +151,7 @@ describe('RoleAssignment Entity', () => {
       expect(permissions).toEqual([]);
     });
 
-    it('should return empty permissions for expired assignments', () => {
+    it("should return empty permissions for expired assignments", () => {
       const pastDate = new Date(Date.now() - 86400000); // -24h
       const assignment = RoleAssignment.create({
         userId: mockUserId,
@@ -166,8 +166,8 @@ describe('RoleAssignment Entity', () => {
     });
   });
 
-  describe('isValidInContext', () => {
-    it('should validate context hierarchy', () => {
+  describe("isValidInContext", () => {
+    it("should validate context hierarchy", () => {
       const assignment = RoleAssignment.create({
         userId: mockUserId,
         role: UserRole.DEPARTMENT_HEAD,
@@ -180,7 +180,7 @@ describe('RoleAssignment Entity', () => {
       expect(assignment.isValidInContext(businessContext)).toBe(false);
     });
 
-    it('should validate business level assignment for any context in same business', () => {
+    it("should validate business level assignment for any context in same business", () => {
       const assignment = RoleAssignment.create({
         userId: mockUserId,
         role: UserRole.BUSINESS_OWNER,
@@ -194,13 +194,13 @@ describe('RoleAssignment Entity', () => {
 
       // Different business
       expect(
-        assignment.isValidInContext({ businessId: 'other-business' }),
+        assignment.isValidInContext({ businessId: "other-business" }),
       ).toBe(false);
     });
   });
 
-  describe('deactivate', () => {
-    it('should deactivate role assignment', () => {
+  describe("deactivate", () => {
+    it("should deactivate role assignment", () => {
       const assignment = RoleAssignment.create({
         userId: mockUserId,
         role: UserRole.STAFF_MEMBER,
@@ -217,8 +217,8 @@ describe('RoleAssignment Entity', () => {
     });
   });
 
-  describe('hasExpired', () => {
-    it('should detect expired assignments', () => {
+  describe("hasExpired", () => {
+    it("should detect expired assignments", () => {
       const pastDate = new Date(Date.now() - 86400000); // -24h
       const assignment = RoleAssignment.create({
         userId: mockUserId,
@@ -231,7 +231,7 @@ describe('RoleAssignment Entity', () => {
       expect(assignment.hasExpired()).toBe(true);
     });
 
-    it('should detect non-expired assignments', () => {
+    it("should detect non-expired assignments", () => {
       const futureDate = new Date(Date.now() + 86400000); // +24h
       const assignment = RoleAssignment.create({
         userId: mockUserId,
@@ -244,7 +244,7 @@ describe('RoleAssignment Entity', () => {
       expect(assignment.hasExpired()).toBe(false);
     });
 
-    it('should handle assignments without expiration', () => {
+    it("should handle assignments without expiration", () => {
       const assignment = RoleAssignment.create({
         userId: mockUserId,
         role: UserRole.STAFF_MEMBER,
@@ -256,8 +256,8 @@ describe('RoleAssignment Entity', () => {
     });
   });
 
-  describe('getAssignmentScope', () => {
-    it('should return DEPARTMENT for department-level assignment', () => {
+  describe("getAssignmentScope", () => {
+    it("should return DEPARTMENT for department-level assignment", () => {
       const assignment = RoleAssignment.create({
         userId: mockUserId,
         role: UserRole.DEPARTMENT_HEAD,
@@ -265,10 +265,10 @@ describe('RoleAssignment Entity', () => {
         assignedBy: mockAssignedBy,
       });
 
-      expect(assignment.getAssignmentScope()).toBe('DEPARTMENT');
+      expect(assignment.getAssignmentScope()).toBe("DEPARTMENT");
     });
 
-    it('should return LOCATION for location-level assignment', () => {
+    it("should return LOCATION for location-level assignment", () => {
       const assignment = RoleAssignment.create({
         userId: mockUserId,
         role: UserRole.LOCATION_MANAGER,
@@ -276,10 +276,10 @@ describe('RoleAssignment Entity', () => {
         assignedBy: mockAssignedBy,
       });
 
-      expect(assignment.getAssignmentScope()).toBe('LOCATION');
+      expect(assignment.getAssignmentScope()).toBe("LOCATION");
     });
 
-    it('should return BUSINESS for business-level assignment', () => {
+    it("should return BUSINESS for business-level assignment", () => {
       const assignment = RoleAssignment.create({
         userId: mockUserId,
         role: UserRole.BUSINESS_OWNER,
@@ -287,12 +287,12 @@ describe('RoleAssignment Entity', () => {
         assignedBy: mockAssignedBy,
       });
 
-      expect(assignment.getAssignmentScope()).toBe('BUSINESS');
+      expect(assignment.getAssignmentScope()).toBe("BUSINESS");
     });
   });
 
-  describe('hasPermission', () => {
-    it('should return true for valid permission of active assignment', () => {
+  describe("hasPermission", () => {
+    it("should return true for valid permission of active assignment", () => {
       const assignment = RoleAssignment.create({
         userId: mockUserId,
         role: UserRole.BUSINESS_OWNER,
@@ -303,7 +303,7 @@ describe('RoleAssignment Entity', () => {
       expect(assignment.hasPermission(Permission.MANAGE_ALL_STAFF)).toBe(true);
     });
 
-    it('should return false for permission not assigned to role', () => {
+    it("should return false for permission not assigned to role", () => {
       const assignment = RoleAssignment.create({
         userId: mockUserId,
         role: UserRole.REGULAR_CLIENT,
@@ -314,7 +314,7 @@ describe('RoleAssignment Entity', () => {
       expect(assignment.hasPermission(Permission.MANAGE_BUSINESS)).toBe(false);
     });
 
-    it('should return false for expired assignment', () => {
+    it("should return false for expired assignment", () => {
       const pastDate = new Date(Date.now() - 24 * 60 * 60 * 1000); // 1 day ago
       const assignment = RoleAssignment.create({
         userId: mockUserId,
@@ -328,8 +328,8 @@ describe('RoleAssignment Entity', () => {
     });
   });
 
-  describe('canActOnRole', () => {
-    it('should allow higher hierarchy role to act on lower role', () => {
+  describe("canActOnRole", () => {
+    it("should allow higher hierarchy role to act on lower role", () => {
       const businessOwner = RoleAssignment.create({
         userId: mockUserId,
         role: UserRole.BUSINESS_OWNER,
@@ -342,7 +342,7 @@ describe('RoleAssignment Entity', () => {
       expect(businessOwner.canActOnRole(UserRole.PRACTITIONER)).toBe(true);
     });
 
-    it('should not allow lower hierarchy role to act on higher role', () => {
+    it("should not allow lower hierarchy role to act on higher role", () => {
       const practitioner = RoleAssignment.create({
         userId: mockUserId,
         role: UserRole.PRACTITIONER,
@@ -355,7 +355,7 @@ describe('RoleAssignment Entity', () => {
       expect(practitioner.canActOnRole(UserRole.BUSINESS_OWNER)).toBe(false);
     });
 
-    it('should not allow inactive assignment to act on any role', () => {
+    it("should not allow inactive assignment to act on any role", () => {
       const assignment = RoleAssignment.create({
         userId: mockUserId,
         role: UserRole.BUSINESS_OWNER,

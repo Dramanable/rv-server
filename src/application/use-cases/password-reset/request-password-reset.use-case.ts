@@ -5,12 +5,12 @@
  * Implémentation TDD basée sur les tests définis.
  */
 
-import { PasswordResetCode } from '../../../domain/entities/password-reset-code.entity';
-import { DomainValidationError } from '../../../domain/exceptions/domain.exceptions';
-import { IPasswordResetCodeRepository } from '../../../domain/repositories/password-reset-code.repository';
-import { UserRepository } from '../../../domain/repositories/user.repository.interface';
-import { Email } from '../../../domain/value-objects/email.vo';
-import { IEmailService, PasswordResetEmailData } from '../../ports/email.port';
+import { PasswordResetCode } from "../../../domain/entities/password-reset-code.entity";
+import { DomainValidationError } from "../../../domain/exceptions/domain.exceptions";
+import { IPasswordResetCodeRepository } from "../../../domain/repositories/password-reset-code.repository";
+import { UserRepository } from "../../../domain/repositories/user.repository.interface";
+import { Email } from "../../../domain/value-objects/email.vo";
+import { IEmailService, PasswordResetEmailData } from "../../ports/email.port";
 
 export interface RequestPasswordResetCommand {
   email: string;
@@ -44,7 +44,7 @@ export class RequestPasswordResetUseCase {
         return {
           success: true,
           message:
-            'Si cette adresse email existe dans notre système, vous recevrez un code de réinitialisation dans quelques minutes.',
+            "Si cette adresse email existe dans notre système, vous recevrez un code de réinitialisation dans quelques minutes.",
         };
       }
 
@@ -56,10 +56,10 @@ export class RequestPasswordResetUseCase {
 
       // Préparer les données de l'email
       const emailData: PasswordResetEmailData = {
-        userName: user.firstName || user.name?.split(' ')[0] || 'Utilisateur',
+        userName: user.firstName || user.name?.split(" ")[0] || "Utilisateur",
         resetCode: resetCode.code,
-        expirationTime: '15 minutes',
-        companyName: process.env.COMPANY_NAME || 'Notre équipe',
+        expirationTime: "15 minutes",
+        companyName: process.env.COMPANY_NAME || "Notre équipe",
       };
 
       // Envoyer l'email avec le code
@@ -67,7 +67,7 @@ export class RequestPasswordResetUseCase {
         await this.emailService.sendPasswordResetEmail(emailData);
 
       if (!emailResult.success) {
-        throw new Error('Failed to send email');
+        throw new Error("Failed to send email");
       }
 
       // Sauvegarder le code seulement si l'email a été envoyé avec succès
@@ -76,26 +76,26 @@ export class RequestPasswordResetUseCase {
       return {
         success: true,
         message:
-          'Un code de réinitialisation à 4 chiffres a été envoyé à votre adresse email. Il expire dans 15 minutes.',
+          "Un code de réinitialisation à 4 chiffres a été envoyé à votre adresse email. Il expire dans 15 minutes.",
       };
     } catch {
       // En cas d'erreur technique (email, db, etc.), on renvoie une erreur
       return {
         success: false,
         message:
-          'Une erreur technique est survenue. Veuillez réessayer plus tard.',
+          "Une erreur technique est survenue. Veuillez réessayer plus tard.",
       };
     }
   }
 
   private validateEmail(email: string): void {
-    if (!email || typeof email !== 'string' || email.trim().length === 0) {
-      throw new DomainValidationError('Email is required');
+    if (!email || typeof email !== "string" || email.trim().length === 0) {
+      throw new DomainValidationError("Email is required");
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      throw new DomainValidationError('Invalid email format');
+      throw new DomainValidationError("Invalid email format");
     }
   }
 }

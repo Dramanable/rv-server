@@ -5,10 +5,10 @@
  * Respecte les principes Clean Architecture
  */
 
-import { Service } from '../../../domain/entities/service.entity';
-import { BusinessId } from '../../../domain/value-objects/business-id.value-object';
-import { ServiceId } from '../../../domain/value-objects/service-id.value-object';
-import type { Logger } from '../../ports/logger.port';
+import { Service } from "../../../domain/entities/service.entity";
+import { BusinessId } from "../../../domain/value-objects/business-id.value-object";
+import { ServiceId } from "../../../domain/value-objects/service-id.value-object";
+import type { Logger } from "../../ports/logger.port";
 
 // Interfaces Repository (Domain Layer)
 export interface ServiceRepository {
@@ -61,7 +61,7 @@ export class GetServiceUseCase {
   ) {}
 
   async execute(request: GetServiceRequest): Promise<GetServiceResponse> {
-    this.logger.info('Getting service by ID', {
+    this.logger.info("Getting service by ID", {
       serviceId: request.serviceId,
       businessId: request.businessId,
       requestingUserId: request.requestingUserId,
@@ -74,28 +74,28 @@ export class GetServiceUseCase {
     try {
       serviceId = ServiceId.create(request.serviceId);
     } catch (error) {
-      throw new Error('Invalid service ID format');
+      throw new Error("Invalid service ID format");
     }
 
     try {
       businessId = BusinessId.fromString(request.businessId);
     } catch (error) {
-      throw new Error('Invalid business ID format');
+      throw new Error("Invalid business ID format");
     }
 
     // 2. Récupération du service
     const service = await this.serviceRepository.findById(serviceId);
 
     if (!service) {
-      throw new Error('Service not found');
+      throw new Error("Service not found");
     }
 
     // 3. Vérification appartenance au business
     if (!service.businessId.equals(businessId)) {
-      throw new Error('Service does not belong to the specified business');
+      throw new Error("Service does not belong to the specified business");
     }
 
-    this.logger.info('Service retrieved successfully', {
+    this.logger.info("Service retrieved successfully", {
       serviceId: service.id.getValue(),
       serviceName: service.name,
       businessId: request.businessId,
@@ -109,7 +109,7 @@ export class GetServiceUseCase {
   async executeList(
     request: ListServicesRequest,
   ): Promise<ListServicesResponse> {
-    this.logger.info('Listing services for business', {
+    this.logger.info("Listing services for business", {
       businessId: request.businessId,
       requestingUserId: request.requestingUserId,
       page: request.page || 1,
@@ -122,7 +122,7 @@ export class GetServiceUseCase {
     try {
       businessId = BusinessId.fromString(request.businessId);
     } catch (error) {
-      throw new Error('Invalid business ID format');
+      throw new Error("Invalid business ID format");
     }
 
     // 2. Récupération des services
@@ -131,7 +131,7 @@ export class GetServiceUseCase {
       limit: request.limit || 10,
     });
 
-    this.logger.info('Services listed successfully', {
+    this.logger.info("Services listed successfully", {
       businessId: request.businessId,
       totalServices: result.total,
       returnedServices: result.services.length,

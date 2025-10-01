@@ -1,25 +1,25 @@
-import { IAuditService } from '@application/ports/audit.port';
-import { I18nService } from '@application/ports/i18n.port';
-import { Logger } from '@application/ports/logger.port';
-import { CreateCalendarTypeRequest } from '@application/use-cases/calendar-types/calendar-type.types';
-import { CreateCalendarTypeUseCase } from '@application/use-cases/calendar-types/create-calendar-type.use-case';
-import { CalendarType } from '@domain/entities/calendar-type.entity';
+import { IAuditService } from "@application/ports/audit.port";
+import { I18nService } from "@application/ports/i18n.port";
+import { Logger } from "@application/ports/logger.port";
+import { CreateCalendarTypeRequest } from "@application/use-cases/calendar-types/calendar-type.types";
+import { CreateCalendarTypeUseCase } from "@application/use-cases/calendar-types/create-calendar-type.use-case";
+import { CalendarType } from "@domain/entities/calendar-type.entity";
 import {
   CalendarTypeAlreadyExistsError,
   CalendarTypeValidationError,
-} from '@domain/exceptions/calendar-type.exceptions';
-import { ICalendarTypeRepository } from '@domain/repositories/calendar-type.repository';
-import { BusinessId } from '@domain/value-objects/business-id.value-object';
+} from "@domain/exceptions/calendar-type.exceptions";
+import { ICalendarTypeRepository } from "@domain/repositories/calendar-type.repository";
+import { BusinessId } from "@domain/value-objects/business-id.value-object";
 
-describe('CreateCalendarTypeUseCase', () => {
+describe("CreateCalendarTypeUseCase", () => {
   let useCase: CreateCalendarTypeUseCase;
   let mockRepository: jest.Mocked<ICalendarTypeRepository>;
   let mockLogger: jest.Mocked<Logger>;
   let mockI18n: jest.Mocked<I18nService>;
   let mockAuditService: jest.Mocked<IAuditService>;
 
-  const validBusinessId = '550e8400-e29b-41d4-a716-446655440000';
-  const validUserId = '550e8400-e29b-41d4-a716-446655440001';
+  const validBusinessId = "550e8400-e29b-41d4-a716-446655440000";
+  const validUserId = "550e8400-e29b-41d4-a716-446655440001";
 
   beforeEach(() => {
     // Mock repository
@@ -78,16 +78,16 @@ describe('CreateCalendarTypeUseCase', () => {
     );
   });
 
-  describe('🔴 RED Phase - Parameter Validation', () => {
-    it('should throw CalendarTypeValidationError when businessId is missing', async () => {
+  describe("🔴 RED Phase - Parameter Validation", () => {
+    it("should throw CalendarTypeValidationError when businessId is missing", async () => {
       // Given
       const request: CreateCalendarTypeRequest = {
-        businessId: '', // Empty businessId
-        name: 'Test Calendar Type',
-        code: 'TEST',
-        icon: 'calendar',
+        businessId: "", // Empty businessId
+        name: "Test Calendar Type",
+        code: "TEST",
+        icon: "calendar",
         requestingUserId: validUserId,
-        correlationId: 'test-correlation-id',
+        correlationId: "test-correlation-id",
         timestamp: new Date(),
       };
 
@@ -96,19 +96,19 @@ describe('CreateCalendarTypeUseCase', () => {
         CalendarTypeValidationError,
       );
       expect(mockI18n.translate).toHaveBeenCalledWith(
-        'calendarTypes.validation.businessIdRequired',
+        "calendarTypes.validation.businessIdRequired",
       );
     });
 
-    it('should throw CalendarTypeValidationError when name is missing', async () => {
+    it("should throw CalendarTypeValidationError when name is missing", async () => {
       // Given
       const request: CreateCalendarTypeRequest = {
         businessId: validBusinessId,
-        name: '', // Empty name
-        code: 'TEST',
-        icon: 'calendar',
+        name: "", // Empty name
+        code: "TEST",
+        icon: "calendar",
         requestingUserId: validUserId,
-        correlationId: 'test-correlation-id',
+        correlationId: "test-correlation-id",
         timestamp: new Date(),
       };
 
@@ -117,18 +117,18 @@ describe('CreateCalendarTypeUseCase', () => {
         CalendarTypeValidationError,
       );
       expect(mockI18n.translate).toHaveBeenCalledWith(
-        'calendarTypes.validation.nameRequired',
+        "calendarTypes.validation.nameRequired",
       );
     });
 
-    it('should throw CalendarTypeValidationError when code is missing', async () => {
+    it("should throw CalendarTypeValidationError when code is missing", async () => {
       // Given
       const request: CreateCalendarTypeRequest = {
         businessId: validBusinessId,
-        name: 'Test Calendar Type',
-        code: '', // Empty code
+        name: "Test Calendar Type",
+        code: "", // Empty code
         requestingUserId: validUserId,
-        correlationId: 'test-correlation-id',
+        correlationId: "test-correlation-id",
         timestamp: new Date(),
       };
 
@@ -137,18 +137,18 @@ describe('CreateCalendarTypeUseCase', () => {
         CalendarTypeValidationError,
       );
       expect(mockI18n.translate).toHaveBeenCalledWith(
-        'calendarTypes.validation.codeRequired',
+        "calendarTypes.validation.codeRequired",
       );
     });
 
-    it('should throw CalendarTypeValidationError when requestingUserId is missing', async () => {
+    it("should throw CalendarTypeValidationError when requestingUserId is missing", async () => {
       // Given
       const request: CreateCalendarTypeRequest = {
         businessId: validBusinessId,
-        name: 'Test Calendar Type',
-        code: 'TEST',
-        requestingUserId: '', // Empty requestingUserId
-        correlationId: 'test-correlation-id',
+        name: "Test Calendar Type",
+        code: "TEST",
+        requestingUserId: "", // Empty requestingUserId
+        correlationId: "test-correlation-id",
         timestamp: new Date(),
       };
 
@@ -157,23 +157,23 @@ describe('CreateCalendarTypeUseCase', () => {
         CalendarTypeValidationError,
       );
       expect(mockI18n.translate).toHaveBeenCalledWith(
-        'calendarTypes.validation.requestingUserRequired',
+        "calendarTypes.validation.requestingUserRequired",
       );
     });
   });
 
-  describe('🔴 RED Phase - Business Rules Validation', () => {
-    it('should throw CalendarTypeAlreadyExistsError when code already exists', async () => {
+  describe("🔴 RED Phase - Business Rules Validation", () => {
+    it("should throw CalendarTypeAlreadyExistsError when code already exists", async () => {
       // Given
       const request: CreateCalendarTypeRequest = {
         businessId: validBusinessId,
-        name: 'Standard Appointment',
-        code: 'STANDARD',
-        description: 'Standard appointment type',
-        icon: 'calendar',
-        color: '#007bff',
+        name: "Standard Appointment",
+        code: "STANDARD",
+        description: "Standard appointment type",
+        icon: "calendar",
+        color: "#007bff",
         requestingUserId: validUserId,
-        correlationId: 'test-correlation-id',
+        correlationId: "test-correlation-id",
         timestamp: new Date(),
       };
 
@@ -185,21 +185,21 @@ describe('CreateCalendarTypeUseCase', () => {
       );
       expect(mockRepository.existsByBusinessIdAndCode).toHaveBeenCalledWith(
         expect.objectContaining({ value: validBusinessId }),
-        'STANDARD',
+        "STANDARD",
       );
     });
 
-    it('should throw CalendarTypeAlreadyExistsError when name already exists', async () => {
+    it("should throw CalendarTypeAlreadyExistsError when name already exists", async () => {
       // Given
       const request: CreateCalendarTypeRequest = {
         businessId: validBusinessId,
-        name: 'Standard Appointment',
-        code: 'STANDARD2',
-        description: 'Another standard appointment type',
-        icon: 'calendar-check',
-        color: '#28a745',
+        name: "Standard Appointment",
+        code: "STANDARD2",
+        description: "Another standard appointment type",
+        icon: "calendar-check",
+        color: "#28a745",
         requestingUserId: validUserId,
-        correlationId: 'test-correlation-id',
+        correlationId: "test-correlation-id",
         timestamp: new Date(),
       };
 
@@ -212,35 +212,35 @@ describe('CreateCalendarTypeUseCase', () => {
       );
       expect(mockRepository.existsByBusinessIdAndName).toHaveBeenCalledWith(
         expect.objectContaining({ value: validBusinessId }),
-        'Standard Appointment',
+        "Standard Appointment",
       );
     });
   });
 
-  describe('🔴 RED Phase - Successful Creation', () => {
-    it('should create calendar type successfully with valid data', async () => {
+  describe("🔴 RED Phase - Successful Creation", () => {
+    it("should create calendar type successfully with valid data", async () => {
       // Given
       const request: CreateCalendarTypeRequest = {
         businessId: validBusinessId,
-        name: 'Standard Appointment',
-        code: 'STANDARD',
-        description: 'Standard appointment type',
-        icon: 'calendar',
-        color: '#007bff',
+        name: "Standard Appointment",
+        code: "STANDARD",
+        description: "Standard appointment type",
+        icon: "calendar",
+        color: "#007bff",
         sortOrder: 1,
         isActive: true,
         requestingUserId: validUserId,
-        correlationId: 'test-correlation-id',
+        correlationId: "test-correlation-id",
         timestamp: new Date(),
       };
 
       const mockCalendarType = CalendarType.create({
         businessId: BusinessId.create(validBusinessId),
-        name: 'Standard Appointment',
-        code: 'STANDARD',
-        description: 'Standard appointment type',
-        icon: 'calendar',
-        color: '#007bff',
+        name: "Standard Appointment",
+        code: "STANDARD",
+        description: "Standard appointment type",
+        icon: "calendar",
+        color: "#007bff",
         sortOrder: 1,
         isActive: true,
         createdBy: validUserId,
@@ -257,37 +257,37 @@ describe('CreateCalendarTypeUseCase', () => {
       expect(result.calendarType).toBeDefined();
       expect(mockRepository.save).toHaveBeenCalledWith(
         expect.objectContaining({
-          _name: 'Standard Appointment',
-          _code: 'STANDARD',
+          _name: "Standard Appointment",
+          _code: "STANDARD",
         }),
       );
       expect(mockLogger.info).toHaveBeenCalledWith(
-        'Calendar type created successfully',
+        "Calendar type created successfully",
         expect.any(Object),
       );
     });
 
-    it('should create calendar type with minimal required data', async () => {
+    it("should create calendar type with minimal required data", async () => {
       // Given
       const request: CreateCalendarTypeRequest = {
         businessId: validBusinessId,
-        name: 'Basic Appointment',
-        code: 'BASIC',
-        description: 'Basic appointment type',
+        name: "Basic Appointment",
+        code: "BASIC",
+        description: "Basic appointment type",
         // icon: omise volontairement pour tester la valeur par défaut
-        color: '#6c757d',
+        color: "#6c757d",
         requestingUserId: validUserId,
-        correlationId: 'test-correlation-id',
+        correlationId: "test-correlation-id",
         timestamp: new Date(),
       };
 
       const mockCalendarType = CalendarType.create({
         businessId: BusinessId.create(validBusinessId),
-        name: 'Basic Appointment',
-        code: 'BASIC',
-        description: 'Basic appointment type',
-        icon: 'calendar-basic',
-        color: '#6c757d',
+        name: "Basic Appointment",
+        code: "BASIC",
+        description: "Basic appointment type",
+        icon: "calendar-basic",
+        color: "#6c757d",
         createdBy: validUserId,
       });
 
@@ -302,73 +302,73 @@ describe('CreateCalendarTypeUseCase', () => {
       expect(result.calendarType).toBeDefined();
       expect(mockRepository.save).toHaveBeenCalledWith(
         expect.objectContaining({
-          _name: 'Basic Appointment',
-          _code: 'BASIC',
+          _name: "Basic Appointment",
+          _code: "BASIC",
         }),
       );
     });
   });
 
-  describe('🔴 RED Phase - Error Handling', () => {
-    it('should handle repository save errors gracefully', async () => {
+  describe("🔴 RED Phase - Error Handling", () => {
+    it("should handle repository save errors gracefully", async () => {
       // Given
       const request: CreateCalendarTypeRequest = {
         businessId: validBusinessId,
-        name: 'Error Test',
-        code: 'ERROR',
-        description: 'Error test appointment type',
+        name: "Error Test",
+        code: "ERROR",
+        description: "Error test appointment type",
         // icon: omise volontairement pour tester la valeur par défaut
-        color: '#dc3545',
+        color: "#dc3545",
         requestingUserId: validUserId,
-        correlationId: 'test-correlation-id',
+        correlationId: "test-correlation-id",
         timestamp: new Date(),
       };
 
       mockRepository.existsByBusinessIdAndCode.mockResolvedValue(false);
       mockRepository.existsByBusinessIdAndName.mockResolvedValue(false);
       mockRepository.save.mockRejectedValue(
-        new Error('Database connection failed'),
+        new Error("Database connection failed"),
       );
 
       // When & Then
       await expect(useCase.execute(request)).rejects.toThrow(
-        'Database connection failed',
+        "Database connection failed",
       );
 
       expect(mockLogger.error).toHaveBeenCalledWith(
-        'Failed to create calendar type',
+        "Failed to create calendar type",
         expect.any(Error),
         expect.objectContaining({
-          businessId: '550e8400-e29b-41d4-a716-446655440000',
-          calendarTypeName: 'Error Test',
-          correlationId: 'test-correlation-id',
+          businessId: "550e8400-e29b-41d4-a716-446655440000",
+          calendarTypeName: "Error Test",
+          correlationId: "test-correlation-id",
         }),
       );
     });
   });
 
-  describe('🔴 RED Phase - Logging', () => {
-    it('should log operation attempt and success', async () => {
+  describe("🔴 RED Phase - Logging", () => {
+    it("should log operation attempt and success", async () => {
       // Given
       const request: CreateCalendarTypeRequest = {
         businessId: validBusinessId,
-        name: 'Logged Appointment',
-        code: 'LOGGED',
-        description: 'Logged appointment type',
-        icon: 'log',
-        color: '#28a745',
+        name: "Logged Appointment",
+        code: "LOGGED",
+        description: "Logged appointment type",
+        icon: "log",
+        color: "#28a745",
         requestingUserId: validUserId,
-        correlationId: 'test-correlation-id',
+        correlationId: "test-correlation-id",
         timestamp: new Date(),
       };
 
       const mockCalendarType = CalendarType.create({
         businessId: BusinessId.create(validBusinessId),
-        name: 'Logged Appointment',
-        code: 'LOGGED',
-        description: 'Logged appointment type',
-        icon: 'calendar-log',
-        color: '#28a745',
+        name: "Logged Appointment",
+        code: "LOGGED",
+        description: "Logged appointment type",
+        icon: "calendar-log",
+        color: "#28a745",
         createdBy: validUserId,
       });
 
@@ -381,21 +381,21 @@ describe('CreateCalendarTypeUseCase', () => {
 
       // Then
       expect(mockLogger.info).toHaveBeenCalledWith(
-        'Creating calendar type',
+        "Creating calendar type",
         expect.objectContaining({
           businessId: validBusinessId,
-          name: 'Logged Appointment',
-          code: 'LOGGED',
-          correlationId: 'test-correlation-id',
+          name: "Logged Appointment",
+          code: "LOGGED",
+          correlationId: "test-correlation-id",
         }),
       );
 
       expect(mockLogger.info).toHaveBeenCalledWith(
-        'Calendar type created successfully',
+        "Calendar type created successfully",
         expect.objectContaining({
           businessId: validBusinessId,
-          calendarTypeName: 'Logged Appointment',
-          correlationId: 'test-correlation-id',
+          calendarTypeName: "Logged Appointment",
+          correlationId: "test-correlation-id",
         }),
       );
     });

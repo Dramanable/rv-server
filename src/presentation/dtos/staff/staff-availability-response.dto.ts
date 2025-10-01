@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty } from "@nestjs/swagger";
 
 /**
  * 📅 Staff Availability Response DTO
@@ -8,50 +8,50 @@ import { ApiProperty } from '@nestjs/swagger';
  */
 export class StaffAvailabilityResponseDto {
   @ApiProperty({
-    description: 'Staff member ID',
-    example: 'f47ac10b-58cc-4372-a567-0e02b2c3d479',
+    description: "Staff member ID",
+    example: "f47ac10b-58cc-4372-a567-0e02b2c3d479",
   })
   readonly staffId!: string;
 
   @ApiProperty({
-    description: 'Working hours configuration',
-    type: 'object',
+    description: "Working hours configuration",
+    type: "object",
     additionalProperties: true,
     example: {
       weeklySchedule: {
-        '1': {
+        "1": {
           isOpen: true,
           timeSlots: [
-            { startTime: '09:00', endTime: '12:00' },
-            { startTime: '14:00', endTime: '18:00' },
+            { startTime: "09:00", endTime: "12:00" },
+            { startTime: "14:00", endTime: "18:00" },
           ],
         },
-        '2': {
+        "2": {
           isOpen: true,
-          timeSlots: [{ startTime: '09:00', endTime: '17:00' }],
+          timeSlots: [{ startTime: "09:00", endTime: "17:00" }],
         },
       },
       specialDates: [
         {
-          date: '2024-01-15',
+          date: "2024-01-15",
           isOpen: false,
-          reason: 'Formation professionnelle',
+          reason: "Formation professionnelle",
         },
       ],
-      timezone: 'Europe/Paris',
+      timezone: "Europe/Paris",
     },
   })
   readonly workingHours!: any;
 
   @ApiProperty({
-    description: 'Last update timestamp',
-    example: '2024-01-10T14:30:00Z',
+    description: "Last update timestamp",
+    example: "2024-01-10T14:30:00Z",
   })
   readonly lastUpdated!: string;
 
   @ApiProperty({
-    description: 'User who last updated the availability',
-    example: 'manager-uuid-123',
+    description: "User who last updated the availability",
+    example: "manager-uuid-123",
   })
   readonly updatedBy!: string;
 
@@ -64,7 +64,7 @@ export class StaffAvailabilityResponseDto {
       workingHours: domainResult.workingHours,
       lastUpdated:
         domainResult.lastUpdated?.toISOString() || new Date().toISOString(),
-      updatedBy: domainResult.updatedBy || 'system',
+      updatedBy: domainResult.updatedBy || "system",
     };
   }
 }

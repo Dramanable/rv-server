@@ -16,14 +16,14 @@
  * - Un seul code actif par utilisateur (invalide les précédents)
  */
 
-import { PasswordResetCode } from '../../../domain/entities/password-reset-code.entity';
-import { ValidationError } from '../../../domain/exceptions/domain.exceptions';
-import { IPasswordResetCodeRepository } from '../../../domain/repositories/password-reset-code.repository';
-import { UserRepository } from '../../../domain/repositories/user.repository.interface';
-import { Email } from '../../../domain/value-objects/email.vo';
-import { IEmailService } from '../../ports/email.port';
-import { I18nService } from '../../ports/i18n.port';
-import { Logger } from '../../ports/logger.port';
+import { PasswordResetCode } from "../../../domain/entities/password-reset-code.entity";
+import { ValidationError } from "../../../domain/exceptions/domain.exceptions";
+import { IPasswordResetCodeRepository } from "../../../domain/repositories/password-reset-code.repository";
+import { UserRepository } from "../../../domain/repositories/user.repository.interface";
+import { Email } from "../../../domain/value-objects/email.vo";
+import { IEmailService } from "../../ports/email.port";
+import { I18nService } from "../../ports/i18n.port";
+import { Logger } from "../../ports/logger.port";
 
 export interface RequestPasswordResetRequest {
   readonly email: string;
@@ -53,7 +53,7 @@ export class RequestPasswordResetUseCase {
   ): Promise<RequestPasswordResetResponse> {
     const correlationId = `pwd-reset-${Date.now()}`;
 
-    this.logger.info('🔄 Password reset requested', {
+    this.logger.info("🔄 Password reset requested", {
       correlationId,
       email: request.email,
       ip: request.clientInfo?.ip,
@@ -67,7 +67,7 @@ export class RequestPasswordResetUseCase {
       const user = await this.userRepository.findByEmail(emailVO);
 
       if (!user) {
-        this.logger.warn('🚫 Password reset requested for non-existent email', {
+        this.logger.warn("🚫 Password reset requested for non-existent email", {
           correlationId,
           email: request.email,
         });
@@ -75,8 +75,8 @@ export class RequestPasswordResetUseCase {
         // Retourner succès pour éviter l'énumération d'emails
         return {
           success: true,
-          message: this.i18n.t('auth.password_reset.code_sent'),
-          messageKey: 'auth.password_reset.code_sent',
+          message: this.i18n.t("auth.password_reset.code_sent"),
+          messageKey: "auth.password_reset.code_sent",
         };
       }
 
@@ -94,22 +94,22 @@ export class RequestPasswordResetUseCase {
         userName: user.name,
         resetCode: resetCode.code,
         expirationTime: this.formatExpirationTime(resetCode.expiresAt),
-        companyName: 'RV Project',
+        companyName: "RV Project",
       });
 
-      this.logger.info('✅ Password reset code sent successfully', {
+      this.logger.info("✅ Password reset code sent successfully", {
         correlationId,
         userId: user.id,
       });
 
       return {
         success: true,
-        message: this.i18n.t('auth.password_reset.code_sent'),
-        messageKey: 'auth.password_reset.code_sent',
+        message: this.i18n.t("auth.password_reset.code_sent"),
+        messageKey: "auth.password_reset.code_sent",
       };
     } catch (error) {
       this.logger.error(
-        '❌ Password reset request failed',
+        "❌ Password reset request failed",
         error instanceof Error ? error : new Error(String(error)),
         {
           correlationId,
@@ -120,15 +120,15 @@ export class RequestPasswordResetUseCase {
         return {
           success: false,
           message: error.message,
-          messageKey: 'validation.invalid_email',
+          messageKey: "validation.invalid_email",
         };
       }
 
       // En cas d'erreur technique, on retourne succès pour ne pas révéler l'information
       return {
         success: true,
-        message: this.i18n.t('auth.password_reset.code_sent'),
-        messageKey: 'auth.password_reset.code_sent',
+        message: this.i18n.t("auth.password_reset.code_sent"),
+        messageKey: "auth.password_reset.code_sent",
       };
     }
   }
@@ -139,7 +139,7 @@ export class RequestPasswordResetUseCase {
       (expiresAt.getTime() - now.getTime()) / (1000 * 60),
     );
 
-    return this.i18n.t('auth.password_reset.expires_in_minutes', {
+    return this.i18n.t("auth.password_reset.expires_in_minutes", {
       minutes: diffMinutes,
     });
   }

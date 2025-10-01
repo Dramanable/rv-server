@@ -5,18 +5,18 @@
  * Couche présentation/sécurité - configuration et extraction des tokens HTTP
  */
 
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
-import { PassportStrategy } from '@nestjs/passport';
-import type { Request } from 'express';
-import { ExtractJwt, Strategy } from 'passport-jwt';
-import type { ICacheService } from '../../../application/ports/cache.port';
-import type { IConfigService } from '../../../application/ports/config.port';
-import type { I18nService } from '../../../application/ports/i18n.port';
-import type { Logger } from '../../../application/ports/logger.port';
-import { User } from '../../../domain/entities/user.entity';
-import type { UserRepository } from '../../../domain/repositories/user.repository.interface';
-import { TOKENS } from '../../../shared/constants/injection-tokens';
-import { UserRole } from '../../../shared/enums/user-role.enum';
+import { Inject, Injectable, UnauthorizedException } from "@nestjs/common";
+import { PassportStrategy } from "@nestjs/passport";
+import type { Request } from "express";
+import { ExtractJwt, Strategy } from "passport-jwt";
+import type { ICacheService } from "../../../application/ports/cache.port";
+import type { IConfigService } from "../../../application/ports/config.port";
+import type { I18nService } from "../../../application/ports/i18n.port";
+import type { Logger } from "../../../application/ports/logger.port";
+import { User } from "../../../domain/entities/user.entity";
+import type { UserRepository } from "../../../domain/repositories/user.repository.interface";
+import { TOKENS } from "../../../shared/constants/injection-tokens";
+import { UserRole } from "../../../shared/enums/user-role.enum";
 
 interface JwtPayload {
   sub: string; // User ID
@@ -27,7 +27,7 @@ interface JwtPayload {
 }
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
+export class JwtStrategy extends PassportStrategy(Strategy, "jwt") {
   constructor(
     @Inject(TOKENS.APP_CONFIG)
     private readonly configService: IConfigService,
@@ -54,7 +54,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
 
           // 2. Fallback vers Authorization header (développement/tests)
           const authHeader = request?.headers?.authorization;
-          if (authHeader && authHeader.startsWith('Bearer ')) {
+          if (authHeader && authHeader.startsWith("Bearer ")) {
             return authHeader.substring(7);
           }
 
@@ -74,42 +74,42 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
    */
   async validate(req: Request, payload: JwtPayload): Promise<User> {
     const context = {
-      operation: 'JwtStrategy.validate',
+      operation: "JwtStrategy.validate",
       userId: payload.sub,
-      userAgent: req.headers['user-agent'],
+      userAgent: req.headers["user-agent"],
       ip: req.ip,
       path: req.path,
     };
 
-    this.logger.debug('JWT validation attempt', context);
+    this.logger.debug("JWT validation attempt", context);
 
     try {
       // 👤 Récupérer l'utilisateur avec cache (pattern optimisé)
       const user = await this.getUserWithCache(payload.sub);
 
       if (!user) {
-        this.logger.warn('JWT validation failed - user not found', {
+        this.logger.warn("JWT validation failed - user not found", {
           ...context,
           email: payload.email,
         });
-        throw new UnauthorizedException('User not found or account disabled');
+        throw new UnauthorizedException("User not found or account disabled");
       }
 
       // ✅ Vérification additionnelle de cohérence
       if (user.email.getValue() !== payload.email) {
         this.logger.error(
-          'JWT payload email mismatch',
-          new Error('Token integrity violation'),
+          "JWT payload email mismatch",
+          new Error("Token integrity violation"),
           {
             ...context,
             payloadEmail: payload.email,
             userEmail: user.email.getValue(),
           },
         );
-        throw new UnauthorizedException('Token integrity violation');
+        throw new UnauthorizedException("Token integrity violation");
       }
 
-      this.logger.debug('JWT validation successful', {
+      this.logger.debug("JWT validation successful", {
         ...context,
         userEmail: user.email.getValue(),
         userRole: user.role,
@@ -118,13 +118,13 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
       // ✅ Retourner l'utilisateur (Passport l'injectera dans req.user)
       return user;
     } catch (error) {
-      this.logger.error('JWT validation error', error as Error, context);
+      this.logger.error("JWT validation error", error as Error, context);
 
       if (error instanceof UnauthorizedException) {
         throw error;
       }
 
-      throw new UnauthorizedException('Invalid or expired token');
+      throw new UnauthorizedException("Invalid or expired token");
     }
   }
 
@@ -140,9 +140,9 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
       const cachedUserJson = await this.cacheService.get(cacheKey);
 
       if (cachedUserJson) {
-        this.logger.debug('User found in cache (JWT Strategy)', {
+        this.logger.debug("User found in cache (JWT Strategy)", {
           userId,
-          operation: 'getUserWithCache',
+          operation: "getUserWithCache",
         });
 
         // 🔄 Reconstruire l'objet User depuis le cache JSON
@@ -187,18 +187,18 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
 
         await this.cacheService.set(cacheKey, userJson, 15 * 60);
 
-        this.logger.debug('User cached from database (JWT Strategy)', {
+        this.logger.debug("User cached from database (JWT Strategy)", {
           userId,
-          operation: 'getUserWithCache',
+          operation: "getUserWithCache",
         });
       }
 
       return user;
     } catch (cacheError) {
       // 🛡️ Si Redis est indisponible, fallback direct vers DB
-      this.logger.warn('Cache unavailable, using database fallback (JWT)', {
+      this.logger.warn("Cache unavailable, using database fallback (JWT)", {
         userId,
-        operation: 'getUserWithCache',
+        operation: "getUserWithCache",
         error: (cacheError as Error).message,
       });
 

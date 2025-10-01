@@ -7,7 +7,7 @@ import {
   Post,
   UsePipes,
   ValidationPipe,
-} from '@nestjs/common';
+} from "@nestjs/common";
 import {
   ApiBadRequestResponse,
   ApiOperation,
@@ -15,7 +15,7 @@ import {
   ApiTags,
   ApiTooManyRequestsResponse,
   ApiUnauthorizedResponse,
-} from '@nestjs/swagger';
+} from "@nestjs/swagger";
 
 // DTOs
 import {
@@ -25,18 +25,18 @@ import {
   RequestPasswordResetResponseDto,
   VerifyPasswordResetCodeDto,
   VerifyPasswordResetCodeResponseDto,
-} from '../dtos/password-reset.dto';
+} from "../dtos/password-reset.dto";
 
 // Use Cases - Types only for typing
-import { CompletePasswordResetUseCase } from '../../application/use-cases/password-reset/complete-password-reset.use-case';
-import { RequestPasswordResetUseCase } from '../../application/use-cases/password-reset/request-password-reset.use-case';
-import { VerifyPasswordResetCodeUseCase } from '../../application/use-cases/password-reset/verify-password-reset-code.use-case';
+import { CompletePasswordResetUseCase } from "../../application/use-cases/password-reset/complete-password-reset.use-case";
+import { RequestPasswordResetUseCase } from "../../application/use-cases/password-reset/request-password-reset.use-case";
+import { VerifyPasswordResetCodeUseCase } from "../../application/use-cases/password-reset/verify-password-reset-code.use-case";
 
 // Domain Errors
-import { ValidationError } from '../../domain/exceptions/domain.error';
+import { ValidationError } from "../../domain/exceptions/domain.error";
 
 // Injection Tokens
-import { APPLICATION_TOKENS } from '../../shared/constants/injection-tokens';
+import { APPLICATION_TOKENS } from "../../shared/constants/injection-tokens";
 
 /**
  * Contrôleur pour la gestion de la réinitialisation de mot de passe
@@ -46,8 +46,8 @@ import { APPLICATION_TOKENS } from '../../shared/constants/injection-tokens';
  * - POST /auth/password-reset/verify - Vérifier le code reçu par email
  * - POST /auth/password-reset/complete - Finaliser avec nouveau mot de passe
  */
-@ApiTags('Authentication - Password Reset')
-@Controller('auth/password-reset')
+@ApiTags("Authentication - Password Reset")
+@Controller("auth/password-reset")
 @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
 export class PasswordResetController {
   constructor(
@@ -63,23 +63,23 @@ export class PasswordResetController {
    * Demander la réinitialisation du mot de passe
    * Envoie un code à 4 chiffres par email
    */
-  @Post('request')
+  @Post("request")
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
-    summary: 'Demander la réinitialisation du mot de passe',
+    summary: "Demander la réinitialisation du mot de passe",
     description:
-      'Envoie un code de vérification à 4 chiffres par email. Le code expire après 15 minutes.',
+      "Envoie un code de vérification à 4 chiffres par email. Le code expire après 15 minutes.",
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: 'Code de réinitialisation envoyé avec succès',
+    description: "Code de réinitialisation envoyé avec succès",
     type: RequestPasswordResetResponseDto,
   })
   @ApiBadRequestResponse({
-    description: 'Email invalide ou données manquantes',
+    description: "Email invalide ou données manquantes",
   })
   @ApiTooManyRequestsResponse({
-    description: 'Trop de tentatives, veuillez patienter',
+    description: "Trop de tentatives, veuillez patienter",
   })
   async requestPasswordReset(
     @Body() dto: RequestPasswordResetDto,
@@ -88,7 +88,7 @@ export class PasswordResetController {
       await this.requestPasswordResetUseCase.execute({ email: dto.email });
 
       return {
-        message: 'Un code de vérification a été envoyé à votre adresse email',
+        message: "Un code de vérification a été envoyé à votre adresse email",
         success: true,
         expiresInMinutes: 15,
       };
@@ -104,23 +104,23 @@ export class PasswordResetController {
    * Vérifier le code de réinitialisation
    * Retourne un token de session temporaire
    */
-  @Post('verify')
+  @Post("verify")
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
-    summary: 'Vérifier le code de réinitialisation',
+    summary: "Vérifier le code de réinitialisation",
     description:
-      'Vérifie le code à 4 chiffres et retourne un token de session temporaire.',
+      "Vérifie le code à 4 chiffres et retourne un token de session temporaire.",
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: 'Code vérifié avec succès',
+    description: "Code vérifié avec succès",
     type: VerifyPasswordResetCodeResponseDto,
   })
   @ApiBadRequestResponse({
-    description: 'Code invalide, expiré ou déjà utilisé',
+    description: "Code invalide, expiré ou déjà utilisé",
   })
   @ApiUnauthorizedResponse({
-    description: 'Code non trouvé ou utilisateur non trouvé',
+    description: "Code non trouvé ou utilisateur non trouvé",
   })
   async verifyPasswordResetCode(
     @Body() dto: VerifyPasswordResetCodeDto,
@@ -133,7 +133,7 @@ export class PasswordResetController {
       return {
         sessionToken: result.sessionToken!,
         remainingTimeSeconds: (result.remainingTimeMinutes || 5) * 60,
-        message: 'Code vérifié avec succès',
+        message: "Code vérifié avec succès",
       };
     } catch (error) {
       if (error instanceof ValidationError) {
@@ -147,23 +147,23 @@ export class PasswordResetController {
    * Finaliser la réinitialisation du mot de passe
    * Connecte automatiquement l'utilisateur
    */
-  @Post('complete')
+  @Post("complete")
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
-    summary: 'Finaliser la réinitialisation du mot de passe',
+    summary: "Finaliser la réinitialisation du mot de passe",
     description:
       "Définit le nouveau mot de passe et connecte automatiquement l'utilisateur.",
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: 'Mot de passe réinitialisé avec succès, utilisateur connecté',
+    description: "Mot de passe réinitialisé avec succès, utilisateur connecté",
     type: CompletePasswordResetResponseDto,
   })
   @ApiBadRequestResponse({
-    description: 'Token invalide ou mot de passe faible',
+    description: "Token invalide ou mot de passe faible",
   })
   @ApiUnauthorizedResponse({
-    description: 'Token de session expiré ou invalide',
+    description: "Token de session expiré ou invalide",
   })
   async completePasswordReset(
     @Body() dto: CompletePasswordResetDto,
@@ -180,11 +180,11 @@ export class PasswordResetController {
         user: {
           id: result.user!.id,
           email: result.user!.email,
-          firstName: result.user!.name.split(' ')[0] || '',
-          lastName: result.user!.name.split(' ')[1] || '',
+          firstName: result.user!.name.split(" ")[0] || "",
+          lastName: result.user!.name.split(" ")[1] || "",
         },
         message:
-          'Mot de passe réinitialisé avec succès. Vous êtes maintenant connecté.',
+          "Mot de passe réinitialisé avec succès. Vous êtes maintenant connecté.",
       };
     } catch (error) {
       if (error instanceof ValidationError) {

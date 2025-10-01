@@ -4,8 +4,8 @@
  * Mapper bidirectionnel entre Domain et ORM pour ProfessionalRole
  */
 
-import { ProfessionalRole } from '@domain/entities/professional-role.entity';
-import { ProfessionalRoleOrmEntity } from '@infrastructure/database/sql/postgresql/entities/professional-role-orm.entity';
+import { ProfessionalRole } from "@domain/entities/professional-role.entity";
+import { ProfessionalRoleOrmEntity } from "@infrastructure/database/sql/postgresql/entities/professional-role-orm.entity";
 
 export class ProfessionalRoleOrmMapper {
   /**

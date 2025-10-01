@@ -6,23 +6,23 @@
 import {
   BusinessNotFoundError,
   BusinessValidationError,
-} from '../../../application/exceptions/application.exceptions';
-import type { I18nService } from '../../../application/ports/i18n.port';
-import type { Logger } from '../../../application/ports/logger.port';
-import type { IPermissionService } from '../../../application/ports/permission.service.interface';
+} from "../../../application/exceptions/application.exceptions";
+import type { I18nService } from "../../../application/ports/i18n.port";
+import type { Logger } from "../../../application/ports/logger.port";
+import type { IPermissionService } from "../../../application/ports/permission.service.interface";
 import {
   Business,
   BusinessStatus,
-} from '../../../domain/entities/business.entity';
-import type { BusinessRepository } from '../../../domain/repositories/business.repository.interface';
-import { BusinessId } from '../../../domain/value-objects/business-id.value-object';
-import { BusinessName } from '../../../domain/value-objects/business-name.value-object';
-import { Email } from '../../../domain/value-objects/email.value-object';
-import { Phone } from '../../../domain/value-objects/phone.value-object';
+} from "../../../domain/entities/business.entity";
+import type { BusinessRepository } from "../../../domain/repositories/business.repository.interface";
+import { BusinessId } from "../../../domain/value-objects/business-id.value-object";
+import { BusinessName } from "../../../domain/value-objects/business-name.value-object";
+import { Email } from "../../../domain/value-objects/email.value-object";
+import { Phone } from "../../../domain/value-objects/phone.value-object";
 import {
   AppContext,
   AppContextFactory,
-} from '../../../shared/context/app-context';
+} from "../../../shared/context/app-context";
 
 export interface UpdateBusinessRequest {
   readonly requestingUserId: string;
@@ -92,12 +92,12 @@ export class UpdateBusinessUseCase {
   ): Promise<UpdateBusinessResponse> {
     // 1. Context pour traçabilité
     const context: AppContext = AppContextFactory.create()
-      .operation('UpdateBusiness')
+      .operation("UpdateBusiness")
       .requestingUser(request.requestingUserId)
-      .metadata('businessId', request.businessId)
+      .metadata("businessId", request.businessId)
       .build();
 
-    this.logger.info(this.i18n.t('operations.business.update_attempt'), {
+    this.logger.info(this.i18n.t("operations.business.update_attempt"), {
       ...context,
     } as Record<string, unknown>);
 
@@ -139,7 +139,7 @@ export class UpdateBusinessUseCase {
         updatedAt: business.updatedAt,
       };
 
-      this.logger.info(this.i18n.t('operations.business.update_success'), {
+      this.logger.info(this.i18n.t("operations.business.update_success"), {
         ...context,
         businessId: business.id.getValue(),
       } as Record<string, unknown>);
@@ -147,7 +147,7 @@ export class UpdateBusinessUseCase {
       return response;
     } catch (error) {
       this.logger.error(
-        this.i18n.t('operations.business.update_failed'),
+        this.i18n.t("operations.business.update_failed"),
         error as Error,
         { ...context } as Record<string, unknown>,
       );
@@ -160,7 +160,7 @@ export class UpdateBusinessUseCase {
     businessId: string,
     context: AppContext,
   ): Promise<Business> {
-    this.logger.info('🔐 Validating permissions for business update', {
+    this.logger.info("🔐 Validating permissions for business update", {
       requestingUserId,
       businessId,
     });
@@ -168,7 +168,7 @@ export class UpdateBusinessUseCase {
     // 🎯 Use new permission service for validation
     await this.permissionService.requirePermission(
       requestingUserId,
-      'MANAGE_BUSINESS',
+      "MANAGE_BUSINESS",
       { businessId },
     );
 
@@ -182,7 +182,7 @@ export class UpdateBusinessUseCase {
       );
     }
 
-    this.logger.info('✅ Permissions validated successfully', {
+    this.logger.info("✅ Permissions validated successfully", {
       requestingUserId,
       businessId,
     });
@@ -198,18 +198,18 @@ export class UpdateBusinessUseCase {
     if (request.name !== undefined) {
       if (!request.name || request.name.trim().length < 3) {
         throw new BusinessValidationError(
-          'name',
+          "name",
           request.name,
-          'Business name must be at least 3 characters long',
+          "Business name must be at least 3 characters long",
           request.businessId,
         );
       }
 
       if (request.name.trim().length > 100) {
         throw new BusinessValidationError(
-          'name',
+          "name",
           request.name,
-          'Business name cannot exceed 100 characters',
+          "Business name cannot exceed 100 characters",
           request.businessId,
         );
       }
@@ -223,12 +223,12 @@ export class UpdateBusinessUseCase {
         existingBusiness &&
         existingBusiness.id.getValue() !== request.businessId
       ) {
-        this.logger.warn(this.i18n.t('warnings.business.name_already_exists'), {
+        this.logger.warn(this.i18n.t("warnings.business.name_already_exists"), {
           ...context,
           businessName: request.name,
         });
         throw new BusinessValidationError(
-          'name',
+          "name",
           request.name,
           `Business with name "${request.name}" already exists`,
           request.businessId,
@@ -242,9 +242,9 @@ export class UpdateBusinessUseCase {
         Email.create(request.contactInfo.primaryEmail);
       } catch (error) {
         throw new BusinessValidationError(
-          'primaryEmail',
+          "primaryEmail",
           request.contactInfo.primaryEmail,
-          'Invalid primary email address',
+          "Invalid primary email address",
           request.businessId,
         );
       }
@@ -256,9 +256,9 @@ export class UpdateBusinessUseCase {
         Phone.create(request.contactInfo.primaryPhone);
       } catch (error) {
         throw new BusinessValidationError(
-          'primaryPhone',
+          "primaryPhone",
           request.contactInfo.primaryPhone,
-          'Invalid primary phone number',
+          "Invalid primary phone number",
           request.businessId,
         );
       }
@@ -270,27 +270,27 @@ export class UpdateBusinessUseCase {
 
       if (primary && !this.isValidHexColor(primary)) {
         throw new BusinessValidationError(
-          'primaryColor',
+          "primaryColor",
           primary,
-          'Primary color must be a valid hex color',
+          "Primary color must be a valid hex color",
           request.businessId,
         );
       }
 
       if (secondary && !this.isValidHexColor(secondary)) {
         throw new BusinessValidationError(
-          'secondaryColor',
+          "secondaryColor",
           secondary,
-          'Secondary color must be a valid hex color',
+          "Secondary color must be a valid hex color",
           request.businessId,
         );
       }
 
       if (accent && !this.isValidHexColor(accent)) {
         throw new BusinessValidationError(
-          'accentColor',
+          "accentColor",
           accent,
-          'Accent color must be a valid hex color',
+          "Accent color must be a valid hex color",
           request.businessId,
         );
       }
@@ -303,27 +303,27 @@ export class UpdateBusinessUseCase {
 
       if (defaultDuration !== undefined && defaultDuration < 5) {
         throw new BusinessValidationError(
-          'defaultDuration',
+          "defaultDuration",
           defaultDuration,
-          'Default duration must be at least 5 minutes',
+          "Default duration must be at least 5 minutes",
           request.businessId,
         );
       }
 
       if (bufferTime !== undefined && bufferTime < 0) {
         throw new BusinessValidationError(
-          'bufferTime',
+          "bufferTime",
           bufferTime,
-          'Buffer time cannot be negative',
+          "Buffer time cannot be negative",
           request.businessId,
         );
       }
 
       if (advanceBookingLimit !== undefined && advanceBookingLimit < 1) {
         throw new BusinessValidationError(
-          'advanceBookingLimit',
+          "advanceBookingLimit",
           advanceBookingLimit,
-          'Advance booking limit must be at least 1 day',
+          "Advance booking limit must be at least 1 day",
           request.businessId,
         );
       }

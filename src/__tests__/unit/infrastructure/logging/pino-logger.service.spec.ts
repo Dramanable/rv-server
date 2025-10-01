@@ -1,12 +1,12 @@
-import { PinoLoggerService } from '@infrastructure/logging/pino-logger.service';
+import { PinoLoggerService } from "@infrastructure/logging/pino-logger.service";
 
-describe('PinoLoggerService', () => {
+describe("PinoLoggerService", () => {
   // Tests simplifiés pour éviter les problèmes de configuration complexe
-  describe('Class validation', () => {
-    it('should validate PinoLoggerService class structure', () => {
+  describe("Class validation", () => {
+    it("should validate PinoLoggerService class structure", () => {
       // Test basique de validation de la classe
       expect(PinoLoggerService).toBeDefined();
-      expect(typeof PinoLoggerService).toBe('function');
+      expect(typeof PinoLoggerService).toBe("function");
     });
   });
 });

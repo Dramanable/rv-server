@@ -11,8 +11,8 @@ export class DomainError extends Error {
 
   constructor(message: string, code?: string, context?: Record<string, any>) {
     super(message);
-    this.name = 'DomainError';
-    this.code = code || 'DOMAIN_ERROR';
+    this.name = "DomainError";
+    this.code = code || "DOMAIN_ERROR";
     this.timestamp = new Date();
     this.context = context;
 

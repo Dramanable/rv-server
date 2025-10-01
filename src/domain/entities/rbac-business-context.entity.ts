@@ -22,12 +22,12 @@ import {
   ContextNameTooLongError,
   ContextNameTooShortError,
   InvalidContextTypeError,
-} from '@domain/exceptions';
+} from "@domain/exceptions";
 
 export enum RbacContextType {
-  BUSINESS = 'BUSINESS',
-  LOCATION = 'LOCATION',
-  DEPARTMENT = 'DEPARTMENT',
+  BUSINESS = "BUSINESS",
+  LOCATION = "LOCATION",
+  DEPARTMENT = "DEPARTMENT",
 }
 
 export interface RbacBusinessContextData {
@@ -318,11 +318,11 @@ export class RbacBusinessContext {
   /**
    * 🎯 Construire le chemin hiérarchique complet
    */
-  buildHierarchicalPath(separator: string = ' > '): string {
+  buildHierarchicalPath(separator: string = " > "): string {
     if (!this._path) {
       return this._name;
     }
-    return this._path.split('/').join(separator);
+    return this._path.split("/").join(separator);
   }
 
   /**
@@ -451,9 +451,9 @@ export class RbacBusinessContext {
   private static generateId(): string {
     // Simulation d'un générateur UUID simple
     return (
-      'rbac-ctx-' +
+      "rbac-ctx-" +
       Date.now() +
-      '-' +
+      "-" +
       Math.random().toString(36).substring(2, 15)
     );
   }

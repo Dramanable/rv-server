@@ -9,12 +9,12 @@ import {
   BusinessSectorAlreadyExistsError,
   InsufficientPermissionsError,
   InvalidBusinessSectorDataError,
-} from '@application/exceptions/business-sector.exceptions';
-import { IBusinessSectorRepository } from '@application/ports/business-sector.repository.interface';
-import { I18nService } from '@application/ports/i18n.port';
-import { Logger } from '@application/ports/logger.port';
-import { IPermissionService } from '@application/ports/permission.service.interface';
-import { BusinessSector } from '@domain/entities/business-sector.entity';
+} from "@application/exceptions/business-sector.exceptions";
+import { IBusinessSectorRepository } from "@application/ports/business-sector.repository.interface";
+import { I18nService } from "@application/ports/i18n.port";
+import { Logger } from "@application/ports/logger.port";
+import { IPermissionService } from "@application/ports/permission.service.interface";
+import { BusinessSector } from "@domain/entities/business-sector.entity";
 
 /**
  * 📝 Requête de création de secteur d'activité
@@ -61,7 +61,7 @@ export class CreateBusinessSectorUseCase {
   ): Promise<CreateBusinessSectorResponse> {
     const { requestingUserId, name, code, description } = request;
 
-    this.logger.debug('Starting business sector creation', {
+    this.logger.debug("Starting business sector creation", {
       requestingUserId,
       sectorCode: code,
       sectorName: name,
@@ -85,7 +85,7 @@ export class CreateBusinessSectorUseCase {
         await this.businessSectorRepository.save(businessSector);
 
       // 📊 Logging de succès
-      this.logger.info('Business sector created successfully', {
+      this.logger.info("Business sector created successfully", {
         sectorId: savedSector.id,
         sectorCode: savedSector.code,
         sectorName: savedSector.name,
@@ -96,7 +96,7 @@ export class CreateBusinessSectorUseCase {
       return this.buildResponse(savedSector);
     } catch (error) {
       this.logger.error(
-        'Failed to create business sector',
+        "Failed to create business sector",
         error instanceof Error ? error : new Error(String(error)),
         {
           requestingUserId,
@@ -115,23 +115,23 @@ export class CreateBusinessSectorUseCase {
     try {
       const hasPermission = await this.permissionService.hasPermission(
         requestingUserId,
-        'MANAGE_BUSINESS_SECTORS',
+        "MANAGE_BUSINESS_SECTORS",
       );
 
       if (!hasPermission) {
         const errorMessage = this.i18n.t(
-          'business-sector.insufficient-permissions',
-          { permission: 'MANAGE_BUSINESS_SECTORS' },
+          "business-sector.insufficient-permissions",
+          { permission: "MANAGE_BUSINESS_SECTORS" },
         );
 
-        this.logger.warn('Permission denied for business sector creation', {
+        this.logger.warn("Permission denied for business sector creation", {
           requestingUserId,
-          attemptedAction: 'CREATE_BUSINESS_SECTOR',
-          requiredPermission: 'MANAGE_BUSINESS_SECTORS',
+          attemptedAction: "CREATE_BUSINESS_SECTOR",
+          requiredPermission: "MANAGE_BUSINESS_SECTORS",
         });
 
         throw new InsufficientPermissionsError(
-          'MANAGE_BUSINESS_SECTORS',
+          "MANAGE_BUSINESS_SECTORS",
           requestingUserId,
           errorMessage,
         );
@@ -142,7 +142,7 @@ export class CreateBusinessSectorUseCase {
       }
 
       this.logger.error(
-        'Error checking permissions for business sector creation',
+        "Error checking permissions for business sector creation",
         error instanceof Error ? error : new Error(String(error)),
         {
           requestingUserId,
@@ -160,25 +160,25 @@ export class CreateBusinessSectorUseCase {
 
     // Validation du nom
     if (!request.name) {
-      errors.push(this.i18n.t('business-sector.validation.name-required'));
+      errors.push(this.i18n.t("business-sector.validation.name-required"));
     } else if (request.name.trim().length === 0) {
-      errors.push(this.i18n.t('business-sector.validation.name-empty'));
+      errors.push(this.i18n.t("business-sector.validation.name-empty"));
     } else if (request.name.trim().length < 2) {
-      errors.push(this.i18n.t('business-sector.validation.name-too-short'));
+      errors.push(this.i18n.t("business-sector.validation.name-too-short"));
     } else if (request.name.trim().length > 100) {
-      errors.push(this.i18n.t('business-sector.validation.name-too-long'));
+      errors.push(this.i18n.t("business-sector.validation.name-too-long"));
     }
 
     // Validation du code
     if (!request.code) {
-      errors.push(this.i18n.t('business-sector.validation.code-required'));
+      errors.push(this.i18n.t("business-sector.validation.code-required"));
     } else if (request.code.trim().length === 0) {
-      errors.push(this.i18n.t('business-sector.validation.code-empty'));
+      errors.push(this.i18n.t("business-sector.validation.code-empty"));
     } else {
       const normalizedCode = this.normalizeCode(request.code);
       if (!this.isValidCodeFormat(normalizedCode)) {
         errors.push(
-          this.i18n.t('business-sector.validation.code-invalid-format'),
+          this.i18n.t("business-sector.validation.code-invalid-format"),
         );
       }
     }
@@ -186,13 +186,13 @@ export class CreateBusinessSectorUseCase {
     // Validation de la description (optionnelle)
     if (request.description && request.description.trim().length > 500) {
       errors.push(
-        this.i18n.t('business-sector.validation.description-too-long'),
+        this.i18n.t("business-sector.validation.description-too-long"),
       );
     }
 
     if (errors.length > 0) {
       const errorMessage = this.i18n.t(
-        'business-sector.validation.invalid-data',
+        "business-sector.validation.invalid-data",
       );
       throw new InvalidBusinessSectorDataError(errors, errorMessage);
     }
@@ -210,11 +210,11 @@ export class CreateBusinessSectorUseCase {
       await this.businessSectorRepository.isCodeUnique(normalizedCode);
 
     if (!isUnique) {
-      const errorMessage = this.i18n.t('business-sector.already-exists', {
+      const errorMessage = this.i18n.t("business-sector.already-exists", {
         code: normalizedCode,
       });
 
-      this.logger.warn('Duplicate business sector code attempted', {
+      this.logger.warn("Duplicate business sector code attempted", {
         code: normalizedCode,
         requestingUserId,
       });
@@ -230,7 +230,7 @@ export class CreateBusinessSectorUseCase {
     request: CreateBusinessSectorRequest,
   ): BusinessSector {
     const normalizedName = request.name.trim();
-    const normalizedDescription = request.description?.trim() || '';
+    const normalizedDescription = request.description?.trim() || "";
     const normalizedCode = this.normalizeCode(request.code);
 
     return BusinessSector.create(
@@ -263,7 +263,7 @@ export class CreateBusinessSectorUseCase {
     return code
       .trim()
       .toUpperCase()
-      .replace(/[^A-Z0-9]/g, '_');
+      .replace(/[^A-Z0-9]/g, "_");
   }
 
   /**

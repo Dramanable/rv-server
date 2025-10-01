@@ -7,8 +7,8 @@
 import {
   ProfessionalRoleNotFoundError,
   ProfessionalRoleValidationError,
-} from '@domain/exceptions/professional-role.exceptions';
-import { IProfessionalRoleRepository } from '@domain/repositories/professional-role.repository';
+} from "@domain/exceptions/professional-role.exceptions";
+import { IProfessionalRoleRepository } from "@domain/repositories/professional-role.repository";
 
 export interface GetProfessionalRoleRequest {
   readonly professionalRoleId: string;
@@ -39,13 +39,13 @@ export class GetProfessionalRoleUseCase {
     // 🔍 Validate request
     if (!request.professionalRoleId) {
       throw new ProfessionalRoleValidationError(
-        'Professional role ID is required',
+        "Professional role ID is required",
       );
     }
 
     if (!request.requestingUserId) {
       throw new ProfessionalRoleValidationError(
-        'Requesting user ID is required',
+        "Requesting user ID is required",
       );
     }
 

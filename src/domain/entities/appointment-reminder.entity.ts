@@ -4,14 +4,14 @@
  * ✅ Gestion des rappels pour différents acteurs
  */
 
-import { AppointmentId } from '../value-objects/appointment-id.value-object';
-import { UserId } from '../value-objects/user-id.value-object';
-import { BusinessId } from '../value-objects/business-id.value-object';
-import { NotificationChannel } from '../value-objects/notification-channel.value-object';
-import { NotificationPriority } from '../value-objects/notification-priority.value-object';
-import { ReminderSchedule } from '../value-objects/reminder-schedule.value-object';
-import { ActorType } from '../value-objects/actor-type.value-object';
-import { DomainError } from './base/domain-error';
+import { AppointmentId } from "../value-objects/appointment-id.value-object";
+import { UserId } from "../value-objects/user-id.value-object";
+import { BusinessId } from "../value-objects/business-id.value-object";
+import { NotificationChannel } from "../value-objects/notification-channel.value-object";
+import { NotificationPriority } from "../value-objects/notification-priority.value-object";
+import { ReminderSchedule } from "../value-objects/reminder-schedule.value-object";
+import { ActorType } from "../value-objects/actor-type.value-object";
+import { DomainError } from "./base/domain-error";
 
 export interface CreateAppointmentReminderParams {
   readonly appointmentId: AppointmentId;
@@ -58,14 +58,14 @@ export class AppointmentReminder {
   static create(params: CreateAppointmentReminderParams): AppointmentReminder {
     // Validation métier
     if (params.channels.length === 0) {
-      throw new DomainError('Au moins un canal de notification est requis');
+      throw new DomainError("Au moins un canal de notification est requis");
     }
 
     // Calcul de la première exécution programmée
     const nextScheduledAt = params.reminderSchedule.calculateNextExecution();
 
     if (nextScheduledAt && nextScheduledAt <= new Date()) {
-      throw new DomainError('La date de rappel doit être dans le futur');
+      throw new DomainError("La date de rappel doit être dans le futur");
     }
 
     const now = new Date();
@@ -155,7 +155,7 @@ export class AppointmentReminder {
    */
   cancel(updatedBy: string): void {
     if (!this._isActive) {
-      throw new DomainError('Le rappel est déjà inactif');
+      throw new DomainError("Le rappel est déjà inactif");
     }
 
     this._isActive = false;
@@ -169,7 +169,7 @@ export class AppointmentReminder {
    */
   updateSchedule(newSchedule: ReminderSchedule, updatedBy: string): void {
     if (!this._isActive) {
-      throw new DomainError('Impossible de modifier un rappel inactif');
+      throw new DomainError("Impossible de modifier un rappel inactif");
     }
 
     this._reminderSchedule = newSchedule;
@@ -183,7 +183,7 @@ export class AppointmentReminder {
    */
   updateChannels(newChannels: NotificationChannel[], updatedBy: string): void {
     if (newChannels.length === 0) {
-      throw new DomainError('Au moins un canal de notification est requis');
+      throw new DomainError("Au moins un canal de notification est requis");
     }
 
     this._channels = [...newChannels];

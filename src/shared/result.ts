@@ -14,12 +14,12 @@ export abstract class Result<T, E> {
   protected constructor(isSuccess: boolean, error?: E, value?: T) {
     if (isSuccess && error) {
       throw new Error(
-        'InvalidOperation: A result cannot be successful and contain an error',
+        "InvalidOperation: A result cannot be successful and contain an error",
       );
     }
     if (!isSuccess && !error) {
       throw new Error(
-        'InvalidOperation: A failing result needs to contain an error message',
+        "InvalidOperation: A failing result needs to contain an error message",
       );
     }
 

@@ -5,7 +5,7 @@
  * ✅ Architecture Clean - Port dans Application Layer
  */
 
-import { TemplateVariables } from '@domain/value-objects/notification-template.value-object';
+import { TemplateVariables } from "@domain/value-objects/notification-template.value-object";
 
 export interface EnrichBusinessDataRequest {
   readonly businessId: string;

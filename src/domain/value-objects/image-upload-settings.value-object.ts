@@ -6,13 +6,13 @@
  * ✅ TDD Implementation - GREEN phase
  */
 
-import { ValueObjectValidationError } from '../exceptions/domain.exceptions';
+import { ValueObjectValidationError } from "../exceptions/domain.exceptions";
 
 export enum ImageFormat {
-  JPEG = 'JPEG',
-  PNG = 'PNG',
-  WEBP = 'WEBP',
-  GIF = 'GIF',
+  JPEG = "JPEG",
+  PNG = "PNG",
+  WEBP = "WEBP",
+  GIF = "GIF",
 }
 
 export interface ImagePolicy {
@@ -51,24 +51,24 @@ export class ImageUploadSettings {
     // Validation
     if (data.maxFileSize <= 0) {
       throw new ValueObjectValidationError(
-        'IMAGE_MAX_FILE_SIZE_INVALID',
-        'Max file size must be positive',
+        "IMAGE_MAX_FILE_SIZE_INVALID",
+        "Max file size must be positive",
         { maxFileSize: data.maxFileSize },
       );
     }
 
     if (data.allowedFormats.length === 0) {
       throw new ValueObjectValidationError(
-        'IMAGE_ALLOWED_FORMATS_EMPTY',
-        'At least one image format must be allowed',
+        "IMAGE_ALLOWED_FORMATS_EMPTY",
+        "At least one image format must be allowed",
         { allowedFormats: data.allowedFormats },
       );
     }
 
     if (data.maxImagesPerBusiness < 1) {
       throw new ValueObjectValidationError(
-        'IMAGE_MAX_IMAGES_INVALID',
-        'Max images per business must be at least 1',
+        "IMAGE_MAX_IMAGES_INVALID",
+        "Max images per business must be at least 1",
         { maxImagesPerBusiness: data.maxImagesPerBusiness },
       );
     }
@@ -196,8 +196,8 @@ export class ImageUploadSettings {
     );
 
     if (!policyFormatsNormalized.includes(formatNormalized)) {
-      if (policy.category === 'LOGO') {
-        errors.push('Logo images must be in PNG format');
+      if (policy.category === "LOGO") {
+        errors.push("Logo images must be in PNG format");
       } else {
         errors.push(`${policy.category} images must use allowed formats`);
       }

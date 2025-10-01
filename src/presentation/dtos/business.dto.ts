@@ -7,8 +7,8 @@
  * ✅ Support i18n pour messages d'erreur
  */
 
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { Type } from "class-transformer";
 import {
   IsArray,
   IsBoolean,
@@ -25,86 +25,86 @@ import {
   Max,
   Min,
   ValidateNested,
-} from 'class-validator';
+} from "class-validator";
 // DTO pour BusinessSectorDto entity
 export class BusinessSectorDto {
   @ApiProperty({
-    description: 'Business sector unique identifier',
-    example: 'bs123e4567-e89b-12d3-a456-426614174000',
+    description: "Business sector unique identifier",
+    example: "bs123e4567-e89b-12d3-a456-426614174000",
   })
   readonly id!: string;
 
   @ApiProperty({
-    description: 'Business sector name',
-    example: 'Médical',
+    description: "Business sector name",
+    example: "Médical",
   })
   readonly name!: string;
 
   @ApiProperty({
-    description: 'Business sector code',
-    example: 'MEDICAL',
+    description: "Business sector code",
+    example: "MEDICAL",
   })
   readonly code!: string;
 
   @ApiPropertyOptional({
-    description: 'Business sector description',
-    example: 'Médecins généralistes et spécialistes, Dentistes',
+    description: "Business sector description",
+    example: "Médecins généralistes et spécialistes, Dentistes",
   })
   readonly description?: string;
 
   @ApiProperty({
-    description: 'Whether the sector is active',
+    description: "Whether the sector is active",
     example: true,
   })
   readonly isActive!: boolean;
 }
 
 export enum BusinessStatus {
-  ACTIVE = 'ACTIVE',
-  INACTIVE = 'INACTIVE',
-  SUSPENDED = 'SUSPENDED',
-  PENDING_VERIFICATION = 'PENDING_VERIFICATION',
+  ACTIVE = "ACTIVE",
+  INACTIVE = "INACTIVE",
+  SUSPENDED = "SUSPENDED",
+  PENDING_VERIFICATION = "PENDING_VERIFICATION",
 }
 
 // === ADDRESS DTO ===
 export class AddressDto {
   @ApiProperty({
-    description: 'Street address',
-    example: '123 Rue de la Paix',
+    description: "Street address",
+    example: "123 Rue de la Paix",
   })
   @IsString()
   @Length(5, 200, {
-    message: 'Street address must be between 5 and 200 characters',
+    message: "Street address must be between 5 and 200 characters",
   })
   readonly street!: string;
 
   @ApiProperty({
-    description: 'City name',
-    example: 'Paris',
+    description: "City name",
+    example: "Paris",
   })
   @IsString()
-  @Length(2, 100, { message: 'City must be between 2 and 100 characters' })
+  @Length(2, 100, { message: "City must be between 2 and 100 characters" })
   readonly city!: string;
 
   @ApiProperty({
-    description: 'Postal code',
-    example: '75001',
+    description: "Postal code",
+    example: "75001",
   })
   @IsString()
-  @Length(4, 10, { message: 'Postal code must be between 4 and 10 characters' })
+  @Length(4, 10, { message: "Postal code must be between 4 and 10 characters" })
   readonly postalCode!: string;
 
   @ApiProperty({
-    description: 'Country name',
-    example: 'France',
+    description: "Country name",
+    example: "France",
   })
   @IsString()
-  @Length(2, 100, { message: 'Country must be between 2 and 100 characters' })
+  @Length(2, 100, { message: "Country must be between 2 and 100 characters" })
   readonly country!: string;
 
   @ApiPropertyOptional({
-    description: 'Region or state',
-    example: 'Île-de-France',
+    description: "Region or state",
+    example: "Île-de-France",
   })
   @IsOptional()
   @IsString()
@@ -115,52 +115,52 @@ export class AddressDto {
 // === CONTACT INFO DTO ===
 export class ContactInfoDto {
   @ApiProperty({
-    description: 'Primary email address',
-    example: 'contact@cabinet-exemple.fr',
+    description: "Primary email address",
+    example: "contact@cabinet-exemple.fr",
   })
-  @IsEmail({}, { message: 'Primary email must be a valid email address' })
+  @IsEmail({}, { message: "Primary email must be a valid email address" })
   readonly primaryEmail!: string;
 
   @ApiPropertyOptional({
-    description: 'Secondary email addresses',
-    example: ['admin@cabinet-exemple.fr', 'info@cabinet-exemple.fr'],
+    description: "Secondary email addresses",
+    example: ["admin@cabinet-exemple.fr", "info@cabinet-exemple.fr"],
   })
   @IsOptional()
   @IsArray()
-  @IsEmail({}, { each: true, message: 'Each secondary email must be valid' })
+  @IsEmail({}, { each: true, message: "Each secondary email must be valid" })
   readonly secondaryEmails?: string[];
 
   @ApiProperty({
-    description: 'Primary phone number',
-    example: '+33123456789',
+    description: "Primary phone number",
+    example: "+33123456789",
   })
-  @IsPhoneNumber('FR', {
-    message: 'Primary phone must be a valid French phone number',
+  @IsPhoneNumber("FR", {
+    message: "Primary phone must be a valid French phone number",
   })
   readonly primaryPhone!: string;
 
   @ApiPropertyOptional({
-    description: 'Secondary phone numbers',
-    example: ['+33987654321'],
+    description: "Secondary phone numbers",
+    example: ["+33987654321"],
   })
   @IsOptional()
   @IsArray()
-  @IsPhoneNumber('FR', { each: true })
+  @IsPhoneNumber("FR", { each: true })
   readonly secondaryPhones?: string[];
 
   @ApiPropertyOptional({
-    description: 'Business website URL',
-    example: 'https://www.cabinet-exemple.fr',
+    description: "Business website URL",
+    example: "https://www.cabinet-exemple.fr",
   })
   @IsOptional()
-  @IsUrl({}, { message: 'Website must be a valid URL' })
+  @IsUrl({}, { message: "Website must be a valid URL" })
   readonly website?: string;
 
   @ApiPropertyOptional({
-    description: 'Social media links',
+    description: "Social media links",
     example: {
-      facebook: 'https://facebook.com/cabinet-exemple',
-      instagram: 'https://instagram.com/cabinet_exemple',
+      facebook: "https://facebook.com/cabinet-exemple",
+      instagram: "https://instagram.com/cabinet_exemple",
     },
   })
   @IsOptional()
@@ -176,28 +176,28 @@ export class ContactInfoDto {
 // === SETTINGS DTO ===
 export class BusinessSettingsDto {
   @ApiPropertyOptional({
-    description: 'Business timezone',
-    example: 'Europe/Paris',
-    default: 'Europe/Paris',
+    description: "Business timezone",
+    example: "Europe/Paris",
+    default: "Europe/Paris",
   })
   @IsOptional()
   @IsString()
   readonly timezone?: string;
 
   @ApiPropertyOptional({
-    description: 'Business currency',
-    example: 'EUR',
-    default: 'EUR',
+    description: "Business currency",
+    example: "EUR",
+    default: "EUR",
   })
   @IsOptional()
   @IsString()
-  @Length(3, 3, { message: 'Currency must be a 3-letter code' })
+  @Length(3, 3, { message: "Currency must be a 3-letter code" })
   readonly currency?: string;
 
   @ApiPropertyOptional({
-    description: 'Business language',
-    example: 'fr',
-    default: 'fr',
+    description: "Business language",
+    example: "fr",
+    default: "fr",
   })
   @IsOptional()
   @IsString()
@@ -205,12 +205,12 @@ export class BusinessSettingsDto {
   readonly language?: string;
 
   @ApiPropertyOptional({
-    description: 'Appointment settings',
+    description: "Appointment settings",
     example: {
       defaultDuration: 30,
       bufferTime: 5,
       advanceBookingLimit: 30,
-      cancellationPolicy: '24h before appointment',
+      cancellationPolicy: "24h before appointment",
     },
   })
   @IsOptional()
@@ -223,7 +223,7 @@ export class BusinessSettingsDto {
   };
 
   @ApiPropertyOptional({
-    description: 'Notification settings',
+    description: "Notification settings",
     example: {
       emailNotifications: true,
       smsNotifications: true,
@@ -242,31 +242,31 @@ export class BusinessSettingsDto {
 // === CREATE BUSINESS DTO ===
 export class CreateBusinessDto {
   @ApiProperty({
-    description: 'Business name',
-    example: 'Cabinet Médical Centre Ville',
+    description: "Business name",
+    example: "Cabinet Médical Centre Ville",
     minLength: 3,
     maxLength: 100,
   })
-  @IsString({ message: 'Business name must be a string' })
+  @IsString({ message: "Business name must be a string" })
   @Length(3, 100, {
-    message: 'Business name must be between 3 and 100 characters',
+    message: "Business name must be between 3 and 100 characters",
   })
   readonly name!: string;
 
   @ApiProperty({
-    description: 'Business description',
-    example: 'Cabinet médical spécialisé en médecine générale et pédiatrie',
+    description: "Business description",
+    example: "Cabinet médical spécialisé en médecine générale et pédiatrie",
     maxLength: 500,
   })
-  @IsString({ message: 'Description must be a string' })
+  @IsString({ message: "Description must be a string" })
   @Length(10, 500, {
-    message: 'Description must be between 10 and 500 characters',
+    message: "Description must be between 10 and 500 characters",
   })
   readonly description!: string;
 
   @ApiPropertyOptional({
-    description: 'Business slogan',
-    example: 'Votre santé, notre priorité',
+    description: "Business slogan",
+    example: "Votre santé, notre priorité",
     maxLength: 200,
   })
   @IsOptional()
@@ -275,13 +275,13 @@ export class CreateBusinessDto {
   readonly slogan?: string;
 
   @ApiPropertyOptional({
-    description: 'Business sector',
+    description: "Business sector",
     type: BusinessSectorDto,
     example: {
-      id: 'bs123e4567-e89b-12d3-a456-426614174000',
-      name: 'Médical',
-      code: 'MEDICAL',
-      description: 'Médecins généralistes et spécialistes',
+      id: "bs123e4567-e89b-12d3-a456-426614174000",
+      name: "Médical",
+      code: "MEDICAL",
+      description: "Médecins généralistes et spécialistes",
       isActive: true,
     },
   })
@@ -291,7 +291,7 @@ export class CreateBusinessDto {
   readonly sector?: BusinessSectorDto;
 
   @ApiProperty({
-    description: 'Business address',
+    description: "Business address",
     type: AddressDto,
   })
   @ValidateNested()
@@ -299,7 +299,7 @@ export class CreateBusinessDto {
   readonly address!: AddressDto;
 
   @ApiProperty({
-    description: 'Contact information',
+    description: "Contact information",
     type: ContactInfoDto,
   })
   @ValidateNested()
@@ -307,7 +307,7 @@ export class CreateBusinessDto {
   readonly contactInfo!: ContactInfoDto;
 
   @ApiPropertyOptional({
-    description: 'Business settings',
+    description: "Business settings",
     type: BusinessSettingsDto,
   })
   @IsOptional()
@@ -319,33 +319,33 @@ export class CreateBusinessDto {
 // === UPDATE BUSINESS DTO ===
 export class UpdateBusinessDto {
   @ApiPropertyOptional({
-    description: 'Business name',
-    example: 'Cabinet Médical Centre Ville - Nouveau nom',
+    description: "Business name",
+    example: "Cabinet Médical Centre Ville - Nouveau nom",
     minLength: 3,
     maxLength: 100,
   })
   @IsOptional()
-  @IsString({ message: 'Business name must be a string' })
+  @IsString({ message: "Business name must be a string" })
   @Length(3, 100, {
-    message: 'Business name must be between 3 and 100 characters',
+    message: "Business name must be between 3 and 100 characters",
   })
   readonly name?: string;
 
   @ApiPropertyOptional({
-    description: 'Business description',
-    example: 'Cabinet médical rénové avec nouvelles spécialités',
+    description: "Business description",
+    example: "Cabinet médical rénové avec nouvelles spécialités",
     maxLength: 500,
   })
   @IsOptional()
-  @IsString({ message: 'Description must be a string' })
+  @IsString({ message: "Description must be a string" })
   @Length(10, 500, {
-    message: 'Description must be between 10 and 500 characters',
+    message: "Description must be between 10 and 500 characters",
   })
   readonly description?: string;
 
   @ApiPropertyOptional({
-    description: 'Business slogan',
-    example: 'Excellence médicale depuis 1995',
+    description: "Business slogan",
+    example: "Excellence médicale depuis 1995",
     maxLength: 200,
   })
   @IsOptional()
@@ -354,15 +354,15 @@ export class UpdateBusinessDto {
   readonly slogan?: string;
 
   @ApiPropertyOptional({
-    description: 'Business sector ID',
-    example: 'bs123e4567-e89b-12d3-a456-426614174000',
+    description: "Business sector ID",
+    example: "bs123e4567-e89b-12d3-a456-426614174000",
   })
   @IsOptional()
   @IsString()
   readonly sectorId?: string;
 
   @ApiPropertyOptional({
-    description: 'Business address',
+    description: "Business address",
     type: AddressDto,
   })
   @IsOptional()
@@ -371,7 +371,7 @@ export class UpdateBusinessDto {
   readonly address?: AddressDto;
 
   @ApiPropertyOptional({
-    description: 'Contact information',
+    description: "Contact information",
     type: ContactInfoDto,
   })
   @IsOptional()
@@ -380,7 +380,7 @@ export class UpdateBusinessDto {
   readonly contactInfo?: ContactInfoDto;
 
   @ApiPropertyOptional({
-    description: 'Business settings',
+    description: "Business settings",
     type: BusinessSettingsDto,
   })
   @IsOptional()
@@ -392,51 +392,51 @@ export class UpdateBusinessDto {
 // === BUSINESS RESPONSE DTO ===
 export class BusinessResponseDto {
   @ApiProperty({
-    description: 'Business unique identifier',
-    example: 'b123e4567-e89b-12d3-a456-426614174000',
+    description: "Business unique identifier",
+    example: "b123e4567-e89b-12d3-a456-426614174000",
   })
   readonly id!: string;
 
   @ApiProperty({
-    description: 'Business name',
-    example: 'Cabinet Médical Centre Ville',
+    description: "Business name",
+    example: "Cabinet Médical Centre Ville",
   })
   readonly name!: string;
 
   @ApiProperty({
-    description: 'Business description',
-    example: 'Cabinet médical spécialisé en médecine générale et pédiatrie',
+    description: "Business description",
+    example: "Cabinet médical spécialisé en médecine générale et pédiatrie",
   })
   readonly description!: string;
 
   @ApiPropertyOptional({
-    description: 'Business slogan',
-    example: 'Votre santé, notre priorité',
+    description: "Business slogan",
+    example: "Votre santé, notre priorité",
   })
   readonly slogan?: string;
 
   @ApiProperty({
-    description: 'Business sector',
+    description: "Business sector",
     type: BusinessSectorDto,
-    example: { id: 'bs123', name: 'Médical', code: 'MEDICAL', isActive: true },
+    example: { id: "bs123", name: "Médical", code: "MEDICAL", isActive: true },
   })
   readonly sector?: BusinessSectorDto | null;
 
   @ApiProperty({
-    description: 'Business status',
+    description: "Business status",
     enum: BusinessStatus,
     example: BusinessStatus.ACTIVE,
   })
   readonly status!: BusinessStatus;
 
   @ApiProperty({
-    description: 'Business address',
+    description: "Business address",
     example: {
-      street: '123 Rue de la Paix',
-      city: 'Paris',
-      postalCode: '75001',
-      country: 'France',
-      region: 'Île-de-France',
+      street: "123 Rue de la Paix",
+      city: "Paris",
+      postalCode: "75001",
+      country: "France",
+      region: "Île-de-France",
     },
   })
   readonly address!: {
@@ -448,11 +448,11 @@ export class BusinessResponseDto {
   };
 
   @ApiProperty({
-    description: 'Contact information',
+    description: "Contact information",
     example: {
-      primaryEmail: 'contact@cabinet-exemple.fr',
-      primaryPhone: '+33123456789',
-      website: 'https://www.cabinet-exemple.fr',
+      primaryEmail: "contact@cabinet-exemple.fr",
+      primaryPhone: "+33123456789",
+      website: "https://www.cabinet-exemple.fr",
     },
   })
   readonly contactInfo!: {
@@ -470,10 +470,10 @@ export class BusinessResponseDto {
   };
 
   @ApiPropertyOptional({
-    description: 'Business branding information',
+    description: "Business branding information",
     example: {
-      logoUrl: 'https://example.com/logo.png',
-      coverImageUrl: 'https://example.com/cover.jpg',
+      logoUrl: "https://example.com/logo.png",
+      coverImageUrl: "https://example.com/cover.jpg",
     },
   })
   readonly branding?: {
@@ -488,11 +488,11 @@ export class BusinessResponseDto {
   };
 
   @ApiProperty({
-    description: 'Business settings',
+    description: "Business settings",
     example: {
-      timezone: 'Europe/Paris',
-      currency: 'EUR',
-      language: 'fr',
+      timezone: "Europe/Paris",
+      currency: "EUR",
+      language: "fr",
     },
   })
   readonly settings!: {
@@ -513,14 +513,14 @@ export class BusinessResponseDto {
   };
 
   @ApiProperty({
-    description: 'Creation timestamp',
-    example: '2024-01-15T10:30:00Z',
+    description: "Creation timestamp",
+    example: "2024-01-15T10:30:00Z",
   })
   readonly createdAt!: Date;
 
   @ApiProperty({
-    description: 'Last update timestamp',
-    example: '2024-01-20T14:45:00Z',
+    description: "Last update timestamp",
+    example: "2024-01-20T14:45:00Z",
   })
   readonly updatedAt!: Date;
 }
@@ -528,82 +528,82 @@ export class BusinessResponseDto {
 // === LIST BUSINESSES DTO ===
 export class ListBusinessesDto {
   @ApiPropertyOptional({
-    description: 'Page number (1-based)',
+    description: "Page number (1-based)",
     minimum: 1,
     default: 1,
     example: 1,
   })
   @IsOptional()
-  @IsInt({ message: 'Page must be an integer' })
-  @Min(1, { message: 'Page must be at least 1' })
+  @IsInt({ message: "Page must be an integer" })
+  @Min(1, { message: "Page must be at least 1" })
   readonly page?: number = 1;
 
   @ApiPropertyOptional({
-    description: 'Number of items per page',
+    description: "Number of items per page",
     minimum: 1,
     maximum: 100,
     default: 10,
     example: 10,
   })
   @IsOptional()
-  @IsInt({ message: 'Limit must be an integer' })
-  @Min(1, { message: 'Limit must be at least 1' })
-  @Max(100, { message: 'Limit must not exceed 100' })
+  @IsInt({ message: "Limit must be an integer" })
+  @Min(1, { message: "Limit must be at least 1" })
+  @Max(100, { message: "Limit must not exceed 100" })
   readonly limit?: number = 10;
 
   @ApiPropertyOptional({
-    description: 'Field to sort by',
-    enum: ['name', 'sector', 'status', 'createdAt', 'updatedAt'],
-    default: 'createdAt',
-    example: 'createdAt',
+    description: "Field to sort by",
+    enum: ["name", "sector", "status", "createdAt", "updatedAt"],
+    default: "createdAt",
+    example: "createdAt",
   })
   @IsOptional()
-  @IsIn(['name', 'sector', 'status', 'createdAt', 'updatedAt'])
-  readonly sortBy?: string = 'createdAt';
+  @IsIn(["name", "sector", "status", "createdAt", "updatedAt"])
+  readonly sortBy?: string = "createdAt";
 
   @ApiPropertyOptional({
-    description: 'Sort order',
-    enum: ['asc', 'desc'],
-    default: 'desc',
-    example: 'desc',
+    description: "Sort order",
+    enum: ["asc", "desc"],
+    default: "desc",
+    example: "desc",
   })
   @IsOptional()
-  @IsIn(['asc', 'desc'])
-  readonly sortOrder?: 'asc' | 'desc' = 'desc';
+  @IsIn(["asc", "desc"])
+  readonly sortOrder?: "asc" | "desc" = "desc";
 
   @ApiPropertyOptional({
-    description: 'Search term for business name or description',
+    description: "Search term for business name or description",
     maxLength: 100,
-    example: 'médical',
+    example: "médical",
   })
   @IsOptional()
-  @IsString({ message: 'Search term must be a string' })
+  @IsString({ message: "Search term must be a string" })
   @Length(1, 100, {
-    message: 'Search term must be between 1 and 100 characters',
+    message: "Search term must be between 1 and 100 characters",
   })
   readonly search?: string;
 
   @ApiPropertyOptional({
-    description: 'Filter by business sector',
+    description: "Filter by business sector",
     type: BusinessSectorDto,
-    example: { id: 'bs123', name: 'Médical', code: 'MEDICAL', isActive: true },
+    example: { id: "bs123", name: "Médical", code: "MEDICAL", isActive: true },
   })
   @IsOptional()
   readonly sector?: BusinessSectorDto;
 
   @ApiPropertyOptional({
-    description: 'Filter by business status',
+    description: "Filter by business status",
     enum: BusinessStatus,
     example: BusinessStatus.ACTIVE,
   })
   @IsOptional()
-  @IsEnum(BusinessStatus, { message: 'Invalid business status' })
+  @IsEnum(BusinessStatus, { message: "Invalid business status" })
   readonly status?: BusinessStatus;
 
   @ApiPropertyOptional({
-    description: 'Filter by city',
+    description: "Filter by city",
     maxLength: 100,
-    example: 'Paris',
+    example: "Paris",
   })
   @IsOptional()
   @IsString()
@@ -611,7 +611,7 @@ export class ListBusinessesDto {
   readonly city?: string;
 
   @ApiPropertyOptional({
-    description: 'Filter by active status',
+    description: "Filter by active status",
     example: true,
   })
   @IsOptional()
@@ -622,70 +622,70 @@ export class ListBusinessesDto {
 // === BUSINESS SUMMARY (FOR LIST) ===
 export class BusinessSummaryDto {
   @ApiProperty({
-    description: 'Business unique identifier',
-    example: 'b123e4567-e89b-12d3-a456-426614174000',
+    description: "Business unique identifier",
+    example: "b123e4567-e89b-12d3-a456-426614174000",
   })
   readonly id!: string;
 
   @ApiProperty({
-    description: 'Business name',
-    example: 'Cabinet Médical Centre Ville',
+    description: "Business name",
+    example: "Cabinet Médical Centre Ville",
   })
   readonly name!: string;
 
   @ApiProperty({
-    description: 'Business description (truncated)',
-    example: 'Cabinet médical spécialisé en médecine générale...',
+    description: "Business description (truncated)",
+    example: "Cabinet médical spécialisé en médecine générale...",
   })
   readonly description!: string;
 
   @ApiProperty({
-    description: 'Business sector',
+    description: "Business sector",
     type: BusinessSectorDto,
-    example: { id: 'bs123', name: 'Médical', code: 'MEDICAL', isActive: true },
+    example: { id: "bs123", name: "Médical", code: "MEDICAL", isActive: true },
   })
   readonly sector?: BusinessSectorDto | null;
 
   @ApiProperty({
-    description: 'Business status',
+    description: "Business status",
     enum: BusinessStatus,
     example: BusinessStatus.ACTIVE,
   })
   readonly status!: BusinessStatus;
 
   @ApiProperty({
-    description: 'Primary email',
-    example: 'contact@cabinet-exemple.fr',
+    description: "Primary email",
+    example: "contact@cabinet-exemple.fr",
   })
   readonly primaryEmail!: string;
 
   @ApiProperty({
-    description: 'Primary phone',
-    example: '+33123456789',
+    description: "Primary phone",
+    example: "+33123456789",
   })
   readonly primaryPhone!: string;
 
   @ApiProperty({
-    description: 'City location',
-    example: 'Paris',
+    description: "City location",
+    example: "Paris",
   })
   readonly city!: string;
 
   @ApiPropertyOptional({
-    description: 'Logo URL',
-    example: 'https://example.com/logo.png',
+    description: "Logo URL",
+    example: "https://example.com/logo.png",
   })
   readonly logoUrl?: string;
 
   @ApiProperty({
-    description: 'Creation timestamp',
-    example: '2024-01-15T10:30:00Z',
+    description: "Creation timestamp",
+    example: "2024-01-15T10:30:00Z",
   })
   readonly createdAt!: Date;
 
   @ApiProperty({
-    description: 'Last update timestamp',
-    example: '2024-01-20T14:45:00Z',
+    description: "Last update timestamp",
+    example: "2024-01-20T14:45:00Z",
   })
   readonly updatedAt!: Date;
 }
@@ -693,13 +693,13 @@ export class BusinessSummaryDto {
 // === LIST BUSINESSES RESPONSE ===
 export class ListBusinessesResponseDto {
   @ApiProperty({
-    description: 'Array of business summaries',
+    description: "Array of business summaries",
     type: [BusinessSummaryDto],
   })
   readonly data!: BusinessSummaryDto[];
 
   @ApiProperty({
-    description: 'Pagination metadata',
+    description: "Pagination metadata",
     example: {
       currentPage: 1,
       totalPages: 10,
@@ -722,40 +722,40 @@ export class ListBusinessesResponseDto {
 // === CREATE BUSINESS RESPONSE ===
 export class CreateBusinessResponseDto {
   @ApiProperty({
-    description: 'Created business unique identifier',
-    example: 'b123e4567-e89b-12d3-a456-426614174000',
+    description: "Created business unique identifier",
+    example: "b123e4567-e89b-12d3-a456-426614174000",
   })
   readonly id!: string;
 
   @ApiProperty({
-    description: 'Business name',
-    example: 'Cabinet Médical Centre Ville',
+    description: "Business name",
+    example: "Cabinet Médical Centre Ville",
   })
   readonly name!: string;
 
   @ApiProperty({
-    description: 'Business description',
-    example: 'Cabinet médical spécialisé en médecine générale',
+    description: "Business description",
+    example: "Cabinet médical spécialisé en médecine générale",
   })
   readonly description!: string;
 
   @ApiProperty({
-    description: 'Business sector',
+    description: "Business sector",
     type: BusinessSectorDto,
-    example: { id: 'bs123', name: 'Médical', code: 'MEDICAL', isActive: true },
+    example: { id: "bs123", name: "Médical", code: "MEDICAL", isActive: true },
   })
   readonly sector?: BusinessSectorDto | null;
 
   @ApiProperty({
-    description: 'Initial business status',
+    description: "Initial business status",
     enum: BusinessStatus,
     example: BusinessStatus.PENDING_VERIFICATION,
   })
   readonly status!: BusinessStatus;
 
   @ApiProperty({
-    description: 'Creation timestamp',
-    example: '2024-01-15T10:30:00Z',
+    description: "Creation timestamp",
+    example: "2024-01-15T10:30:00Z",
   })
   readonly createdAt!: Date;
 }
@@ -763,40 +763,40 @@ export class CreateBusinessResponseDto {
 // === UPDATE BUSINESS RESPONSE ===
 export class UpdateBusinessResponseDto {
   @ApiProperty({
-    description: 'Updated business unique identifier',
-    example: 'b123e4567-e89b-12d3-a456-426614174000',
+    description: "Updated business unique identifier",
+    example: "b123e4567-e89b-12d3-a456-426614174000",
   })
   readonly id!: string;
 
   @ApiProperty({
-    description: 'Updated business name',
-    example: 'Cabinet Médical Centre Ville - Rénové',
+    description: "Updated business name",
+    example: "Cabinet Médical Centre Ville - Rénové",
   })
   readonly name!: string;
 
   @ApiProperty({
-    description: 'Updated business description',
-    example: 'Cabinet médical entièrement rénové avec nouvelles spécialités',
+    description: "Updated business description",
+    example: "Cabinet médical entièrement rénové avec nouvelles spécialités",
   })
   readonly description!: string;
 
   @ApiProperty({
-    description: 'Business sector',
+    description: "Business sector",
     type: BusinessSectorDto,
-    example: { id: 'bs123', name: 'Médical', code: 'MEDICAL', isActive: true },
+    example: { id: "bs123", name: "Médical", code: "MEDICAL", isActive: true },
   })
   readonly sector?: BusinessSectorDto | null;
 
   @ApiProperty({
-    description: 'Business status',
+    description: "Business status",
     enum: BusinessStatus,
     example: BusinessStatus.ACTIVE,
   })
   readonly status!: BusinessStatus;
 
   @ApiProperty({
-    description: 'Last update timestamp',
-    example: '2024-01-20T14:45:00Z',
+    description: "Last update timestamp",
+    example: "2024-01-20T14:45:00Z",
   })
   readonly updatedAt!: Date;
 }
@@ -804,26 +804,26 @@ export class UpdateBusinessResponseDto {
 // === DELETE BUSINESS RESPONSE ===
 export class DeleteBusinessResponseDto {
   @ApiProperty({
-    description: 'Success confirmation',
+    description: "Success confirmation",
     example: true,
   })
   readonly success!: boolean;
 
   @ApiProperty({
-    description: 'Confirmation message',
-    example: 'Business successfully deleted',
+    description: "Confirmation message",
+    example: "Business successfully deleted",
   })
   readonly message!: string;
 
   @ApiProperty({
-    description: 'Deleted business ID',
-    example: 'b123e4567-e89b-12d3-a456-426614174000',
+    description: "Deleted business ID",
+    example: "b123e4567-e89b-12d3-a456-426614174000",
   })
   readonly deletedId!: string;
 
   @ApiProperty({
-    description: 'Deletion timestamp',
-    example: '2024-01-25T16:20:00Z',
+    description: "Deletion timestamp",
+    example: "2024-01-25T16:20:00Z",
   })
   readonly deletedAt!: Date;
 }

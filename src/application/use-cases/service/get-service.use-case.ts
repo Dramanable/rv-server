@@ -1,8 +1,8 @@
-import { ApplicationValidationError } from '@application/exceptions/application.exceptions';
-import { Service, ServiceStatus } from '@domain/entities/service.entity';
-import { ServiceNotFoundError } from '@domain/exceptions/service.exceptions';
-import { ServiceRepository } from '@domain/repositories/service.repository.interface';
-import { ServiceId } from '@domain/value-objects/service-id.value-object';
+import { ApplicationValidationError } from "@application/exceptions/application.exceptions";
+import { Service, ServiceStatus } from "@domain/entities/service.entity";
+import { ServiceNotFoundError } from "@domain/exceptions/service.exceptions";
+import { ServiceRepository } from "@domain/repositories/service.repository.interface";
+import { ServiceId } from "@domain/value-objects/service-id.value-object";
 
 export interface GetServiceRequest {
   readonly serviceId: string;
@@ -61,17 +61,17 @@ export class GetServiceUseCase {
   private validateRequest(request: GetServiceRequest): void {
     if (!request) {
       throw new ApplicationValidationError(
-        'request',
+        "request",
         request,
-        'Request object cannot be null or undefined',
+        "Request object cannot be null or undefined",
       );
     }
 
     if (!request.serviceId || request.serviceId.trim().length === 0) {
       throw new ApplicationValidationError(
-        'serviceId',
+        "serviceId",
         request.serviceId,
-        'Service ID is required and cannot be empty',
+        "Service ID is required and cannot be empty",
       );
     }
 
@@ -80,9 +80,9 @@ export class GetServiceUseCase {
       request.requestingUserId.trim().length === 0
     ) {
       throw new ApplicationValidationError(
-        'requestingUserId',
+        "requestingUserId",
         request.requestingUserId,
-        'User ID is required for authorization',
+        "User ID is required for authorization",
       );
     }
   }

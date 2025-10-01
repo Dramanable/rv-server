@@ -5,15 +5,15 @@
  */
 
 export enum ActorTypeEnum {
-  CLIENT = 'CLIENT',
-  STAFF = 'STAFF',
-  ADMIN = 'ADMIN',
-  BUSINESS_OWNER = 'BUSINESS_OWNER',
-  PLATFORM_ADMIN = 'PLATFORM_ADMIN',
+  CLIENT = "CLIENT",
+  STAFF = "STAFF",
+  ADMIN = "ADMIN",
+  BUSINESS_OWNER = "BUSINESS_OWNER",
+  PLATFORM_ADMIN = "PLATFORM_ADMIN",
   // 🆕 Nouveaux rôles éditeur SaaS
-  SUPER_ADMIN = 'SUPER_ADMIN',
-  SALES_MANAGER = 'SALES_MANAGER',
-  SALES_REP = 'SALES_REP',
+  SUPER_ADMIN = "SUPER_ADMIN",
+  SALES_MANAGER = "SALES_MANAGER",
+  SALES_REP = "SALES_REP",
 }
 
 export class ActorType {
@@ -134,29 +134,29 @@ export class ActorType {
   getDefaultNotificationPriority(): string {
     switch (this._value) {
       case ActorTypeEnum.CLIENT:
-        return 'HIGH'; // Les clients ont la priorité pour les notifications
+        return "HIGH"; // Les clients ont la priorité pour les notifications
 
       case ActorTypeEnum.STAFF:
-        return 'HIGH'; // Notifications importantes pour le staff
+        return "HIGH"; // Notifications importantes pour le staff
 
       case ActorTypeEnum.ADMIN:
       case ActorTypeEnum.BUSINESS_OWNER:
-        return 'NORMAL'; // Priorité normale pour l'administration
+        return "NORMAL"; // Priorité normale pour l'administration
 
       case ActorTypeEnum.PLATFORM_ADMIN:
-        return 'LOW'; // Priorité basse pour l'admin plateforme
+        return "LOW"; // Priorité basse pour l'admin plateforme
 
       case ActorTypeEnum.SUPER_ADMIN:
-        return 'HIGH'; // Priorité haute pour le super admin
+        return "HIGH"; // Priorité haute pour le super admin
 
       case ActorTypeEnum.SALES_MANAGER:
-        return 'HIGH'; // Priorité haute pour les managers commerciaux
+        return "HIGH"; // Priorité haute pour les managers commerciaux
 
       case ActorTypeEnum.SALES_REP:
-        return 'NORMAL'; // Priorité normale pour les commerciaux
+        return "NORMAL"; // Priorité normale pour les commerciaux
 
       default:
-        return 'NORMAL';
+        return "NORMAL";
     }
   }
 

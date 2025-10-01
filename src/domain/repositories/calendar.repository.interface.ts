@@ -1,10 +1,10 @@
-import { Calendar } from '../entities/calendar.entity';
-import { CalendarId } from '../value-objects/calendar-id.value-object';
-import { BusinessId } from '../value-objects/business-id.value-object';
-import { UserId } from '../value-objects/user-id.value-object';
-import { TimeSlot } from '../value-objects/time-slot.value-object';
+import { Calendar } from "../entities/calendar.entity";
+import { CalendarId } from "../value-objects/calendar-id.value-object";
+import { BusinessId } from "../value-objects/business-id.value-object";
+import { UserId } from "../value-objects/user-id.value-object";
+import { TimeSlot } from "../value-objects/time-slot.value-object";
 
-export const CALENDAR_REPOSITORY = 'CALENDAR_REPOSITORY';
+export const CALENDAR_REPOSITORY = "CALENDAR_REPOSITORY";
 
 export interface CalendarRepository {
   /**

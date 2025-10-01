@@ -1,38 +1,38 @@
-import { Repository } from 'typeorm';
+import { Repository } from "typeorm";
 
-import { NotificationOrmEntity } from '@infrastructure/database/sql/postgresql/entities/notification-orm.entity';
-import { TypeOrmNotificationRepository } from '@infrastructure/database/sql/postgresql/repositories/typeorm-notification.repository';
+import { NotificationOrmEntity } from "@infrastructure/database/sql/postgresql/entities/notification-orm.entity";
+import { TypeOrmNotificationRepository } from "@infrastructure/database/sql/postgresql/repositories/typeorm-notification.repository";
 
-import { Notification } from '@domain/entities/notification.entity';
-import { NotificationChannel } from '@domain/value-objects/notification-channel.value-object';
-import { NotificationPriority } from '@domain/value-objects/notification-priority.value-object';
-import { NotificationStatus } from '@domain/value-objects/notification-status.value-object';
+import { Notification } from "@domain/entities/notification.entity";
+import { NotificationChannel } from "@domain/value-objects/notification-channel.value-object";
+import { NotificationPriority } from "@domain/value-objects/notification-priority.value-object";
+import { NotificationStatus } from "@domain/value-objects/notification-status.value-object";
 
-describe('TypeOrmNotificationRepository - TDD Implementation', () => {
+describe("TypeOrmNotificationRepository - TDD Implementation", () => {
   let repository: TypeOrmNotificationRepository;
   let mockOrmRepository: jest.Mocked<Repository<NotificationOrmEntity>>;
 
   const createValidNotification = (): Notification => {
     return Notification.create({
-      recipientId: 'user-123',
-      title: 'Test Notification',
-      content: 'Test content for notification',
+      recipientId: "user-123",
+      title: "Test Notification",
+      content: "Test content for notification",
       channel: NotificationChannel.email(),
       priority: NotificationPriority.medium(),
-      metadata: { correlationId: 'test-correlation-id' },
+      metadata: { correlationId: "test-correlation-id" },
     });
   };
 
   const createValidOrmEntity = (): NotificationOrmEntity => {
     const entity = new NotificationOrmEntity();
-    entity.id = 'notification-123';
-    entity.recipient_id = 'user-123';
-    entity.title = 'Test Notification';
-    entity.content = 'Test content for notification';
-    entity.channel = 'EMAIL';
-    entity.priority = 'MEDIUM';
-    entity.status = 'PENDING';
-    entity.metadata = { correlationId: 'test-correlation-id' };
+    entity.id = "notification-123";
+    entity.recipient_id = "user-123";
+    entity.title = "Test Notification";
+    entity.content = "Test content for notification";
+    entity.channel = "EMAIL";
+    entity.priority = "MEDIUM";
+    entity.status = "PENDING";
+    entity.metadata = { correlationId: "test-correlation-id" };
     entity.retry_count = 0;
     entity.created_at = new Date();
     entity.updated_at = new Date();
@@ -53,8 +53,8 @@ describe('TypeOrmNotificationRepository - TDD Implementation', () => {
     repository = new TypeOrmNotificationRepository(mockOrmRepository);
   });
 
-  describe('🔴 RED Phase - Save Notification', () => {
-    it('should save notification entity and return saved result', async () => {
+  describe("🔴 RED Phase - Save Notification", () => {
+    it("should save notification entity and return saved result", async () => {
       // Given
       const notification = createValidNotification();
       const ormEntity = createValidOrmEntity();
@@ -67,32 +67,32 @@ describe('TypeOrmNotificationRepository - TDD Implementation', () => {
       // Then
       expect(mockOrmRepository.save).toHaveBeenCalledWith(
         expect.objectContaining({
-          recipient_id: 'user-123',
-          title: 'Test Notification',
-          content: 'Test content for notification',
-          channel: 'EMAIL',
-          priority: 'MEDIUM',
-          status: 'PENDING',
+          recipient_id: "user-123",
+          title: "Test Notification",
+          content: "Test content for notification",
+          channel: "EMAIL",
+          priority: "MEDIUM",
+          status: "PENDING",
         }),
       );
-      expect(result.id).toBe('notification-123');
+      expect(result.id).toBe("notification-123");
       expect(result.status).toEqual(NotificationStatus.pending());
     });
 
-    it('should handle repository save errors', async () => {
+    it("should handle repository save errors", async () => {
       // Given
       const notification = createValidNotification();
       mockOrmRepository.save.mockRejectedValue(
-        new Error('Database connection failed'),
+        new Error("Database connection failed"),
       );
 
       // When & Then
       await expect(repository.save(notification)).rejects.toThrow(
-        'Database connection failed',
+        "Database connection failed",
       );
     });
 
-    it('should map domain entity to ORM entity correctly', async () => {
+    it("should map domain entity to ORM entity correctly", async () => {
       // Given
       const notification = createValidNotification();
       const ormEntity = createValidOrmEntity();
@@ -118,81 +118,81 @@ describe('TypeOrmNotificationRepository - TDD Implementation', () => {
     });
   });
 
-  describe('🔴 RED Phase - Find Notification by ID', () => {
-    it('should find notification by ID and return domain entity', async () => {
+  describe("🔴 RED Phase - Find Notification by ID", () => {
+    it("should find notification by ID and return domain entity", async () => {
       // Given
       const ormEntity = createValidOrmEntity();
       mockOrmRepository.findOne.mockResolvedValue(ormEntity);
 
       // When
-      const result = await repository.findById('notification-123');
+      const result = await repository.findById("notification-123");
 
       // Then
       expect(mockOrmRepository.findOne).toHaveBeenCalledWith({
-        where: { id: 'notification-123' },
+        where: { id: "notification-123" },
       });
       expect(result).toBeDefined();
-      expect(result!.getId()).toBe('notification-123');
-      expect(result!.getRecipientId()).toBe('user-123');
-      expect(result!.getTitle()).toBe('Test Notification');
+      expect(result!.getId()).toBe("notification-123");
+      expect(result!.getRecipientId()).toBe("user-123");
+      expect(result!.getTitle()).toBe("Test Notification");
     });
 
-    it('should return null when notification not found', async () => {
+    it("should return null when notification not found", async () => {
       // Given
       mockOrmRepository.findOne.mockResolvedValue(null);
 
       // When
-      const result = await repository.findById('non-existent');
+      const result = await repository.findById("non-existent");
 
       // Then
       expect(result).toBeNull();
     });
 
-    it('should handle database errors during find', async () => {
+    it("should handle database errors during find", async () => {
       // Given
       mockOrmRepository.findOne.mockRejectedValue(
-        new Error('Connection timeout'),
+        new Error("Connection timeout"),
       );
 
       // When & Then
-      await expect(repository.findById('notification-123')).rejects.toThrow(
-        'Connection timeout',
+      await expect(repository.findById("notification-123")).rejects.toThrow(
+        "Connection timeout",
       );
     });
   });
 
-  describe('🔴 RED Phase - Find Notifications by Recipient', () => {
-    it('should find all notifications for recipient', async () => {
+  describe("🔴 RED Phase - Find Notifications by Recipient", () => {
+    it("should find all notifications for recipient", async () => {
       // Given
       const ormEntities = [createValidOrmEntity(), createValidOrmEntity()];
       mockOrmRepository.find.mockResolvedValue(ormEntities);
 
       // When
-      const result = await repository.findByRecipient('user-123');
+      const result = await repository.findByRecipient("user-123");
 
       // Then
       expect(mockOrmRepository.find).toHaveBeenCalledWith({
-        where: { recipient_id: 'user-123' },
-        order: { created_at: 'DESC' },
+        where: { recipient_id: "user-123" },
+        order: { created_at: "DESC" },
       });
       expect(result).toHaveLength(2);
-      expect(result[0].getRecipientId()).toBe('user-123');
+      expect(result[0].getRecipientId()).toBe("user-123");
     });
 
-    it('should return empty array when no notifications found', async () => {
+    it("should return empty array when no notifications found", async () => {
       // Given
       mockOrmRepository.find.mockResolvedValue([]);
 
       // When
-      const result = await repository.findByRecipient('user-123');
+      const result = await repository.findByRecipient("user-123");
 
       // Then
       expect(result).toEqual([]);
     });
   });
 
-  describe('🔴 RED Phase - Find Notifications by Status', () => {
-    it('should find notifications by status', async () => {
+  describe("🔴 RED Phase - Find Notifications by Status", () => {
+    it("should find notifications by status", async () => {
       // Given
       const ormEntities = [createValidOrmEntity()];
       mockOrmRepository.find.mockResolvedValue(ormEntities);
@@ -204,77 +204,77 @@ describe('TypeOrmNotificationRepository - TDD Implementation', () => {
 
       // Then
       expect(mockOrmRepository.find).toHaveBeenCalledWith({
-        where: { status: 'PENDING' },
-        order: { created_at: 'DESC' },
+        where: { status: "PENDING" },
+        order: { created_at: "DESC" },
       });
       expect(result).toHaveLength(1);
-      expect(result[0].getStatus().toString()).toBe('PENDING');
+      expect(result[0].getStatus().toString()).toBe("PENDING");
     });
   });
 
-  describe('🔴 RED Phase - Update Notification Status', () => {
-    it('should update notification status', async () => {
+  describe("🔴 RED Phase - Update Notification Status", () => {
+    it("should update notification status", async () => {
       // Given
       const ormEntity = createValidOrmEntity();
-      ormEntity.status = 'SENT';
+      ormEntity.status = "SENT";
       mockOrmRepository.save.mockResolvedValue(ormEntity);
       mockOrmRepository.findOne.mockResolvedValue(createValidOrmEntity());
 
       // When
       const result = await repository.updateStatus(
-        'notification-123',
+        "notification-123",
         NotificationStatus.sent(),
       );
 
       // Then
       expect(mockOrmRepository.findOne).toHaveBeenCalledWith({
-        where: { id: 'notification-123' },
+        where: { id: "notification-123" },
       });
       expect(mockOrmRepository.save).toHaveBeenCalledWith(
         expect.objectContaining({
-          status: 'SENT',
+          status: "SENT",
           updated_at: expect.any(Date),
         }),
       );
-      expect(result.getStatus().toString()).toBe('SENT');
+      expect(result.getStatus().toString()).toBe("SENT");
     });
 
-    it('should throw error when notification not found for update', async () => {
+    it("should throw error when notification not found for update", async () => {
       // Given
       mockOrmRepository.findOne.mockResolvedValue(null);
 
       // When & Then
       await expect(
-        repository.updateStatus('non-existent', NotificationStatus.sent()),
-      ).rejects.toThrow('Notification not found');
+        repository.updateStatus("non-existent", NotificationStatus.sent()),
+      ).rejects.toThrow("Notification not found");
     });
   });
 
-  describe('🔴 RED Phase - Delete Notification', () => {
-    it('should delete notification by ID', async () => {
+  describe("🔴 RED Phase - Delete Notification", () => {
+    it("should delete notification by ID", async () => {
       // Given
       mockOrmRepository.delete.mockResolvedValue({ affected: 1 } as any);
 
       // When
-      await repository.delete('notification-123');
+      await repository.delete("notification-123");
 
       // Then
-      expect(mockOrmRepository.delete).toHaveBeenCalledWith('notification-123');
+      expect(mockOrmRepository.delete).toHaveBeenCalledWith("notification-123");
     });
 
-    it('should throw error when notification not found for deletion', async () => {
+    it("should throw error when notification not found for deletion", async () => {
       // Given
       mockOrmRepository.delete.mockResolvedValue({ affected: 0 } as any);
 
       // When & Then
-      await expect(repository.delete('non-existent')).rejects.toThrow(
-        'Notification not found',
+      await expect(repository.delete("non-existent")).rejects.toThrow(
+        "Notification not found",
       );
     });
   });
 
-  describe('🔴 RED Phase - Count Notifications', () => {
-    it('should count total notifications', async () => {
+  describe("🔴 RED Phase - Count Notifications", () => {
+    it("should count total notifications", async () => {
       // Given
       mockOrmRepository.count.mockResolvedValue(42);
 
@@ -286,23 +286,23 @@ describe('TypeOrmNotificationRepository - TDD Implementation', () => {
       expect(mockOrmRepository.count).toHaveBeenCalled();
     });
 
-    it('should count notifications by recipient', async () => {
+    it("should count notifications by recipient", async () => {
       // Given
       mockOrmRepository.count.mockResolvedValue(5);
 
       // When
-      const count = await repository.countByRecipient('user-123');
+      const count = await repository.countByRecipient("user-123");
 
       // Then
       expect(count).toBe(5);
       expect(mockOrmRepository.count).toHaveBeenCalledWith({
-        where: { recipient_id: 'user-123' },
+        where: { recipient_id: "user-123" },
       });
     });
   });
 
-  describe('🔴 RED Phase - Complex Queries', () => {
-    it('should find pending notifications older than date', async () => {
+  describe("🔴 RED Phase - Complex Queries", () => {
+    it("should find pending notifications older than date", async () => {
       // Given
       const cutoffDate = new Date(Date.now() - 24 * 60 * 60 * 1000); // 24h ago
       const queryBuilder = {
@@ -318,14 +318,14 @@ describe('TypeOrmNotificationRepository - TDD Implementation', () => {
 
       // Then
       expect(mockOrmRepository.createQueryBuilder).toHaveBeenCalledWith(
-        'notification',
+        "notification",
       );
       expect(queryBuilder.where).toHaveBeenCalledWith(
-        'notification.status = :status',
-        { status: 'PENDING' },
+        "notification.status = :status",
+        { status: "PENDING" },
       );
       expect(queryBuilder.andWhere).toHaveBeenCalledWith(
-        'notification.created_at < :cutoffDate',
+        "notification.created_at < :cutoffDate",
         { cutoffDate },
       );
       expect(result).toHaveLength(1);

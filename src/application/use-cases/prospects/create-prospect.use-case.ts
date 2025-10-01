@@ -4,17 +4,17 @@
  * ✅ Créer un nouveau prospect commercial
  */
 
-import { Prospect } from '@domain/entities/prospect.entity';
-import { IProspectRepository } from '@domain/repositories/prospect.repository';
-import { BusinessSizeEnum } from '@domain/enums/business-size.enum';
-import { Logger } from '@application/ports/logger.port';
-import { I18nService } from '@application/ports/i18n.port';
-import { IPermissionService } from '@application/ports/permission.port';
+import { Prospect } from "@domain/entities/prospect.entity";
+import { IProspectRepository } from "@domain/repositories/prospect.repository";
+import { BusinessSizeEnum } from "@domain/enums/business-size.enum";
+import { Logger } from "@application/ports/logger.port";
+import { I18nService } from "@application/ports/i18n.port";
+import { IPermissionService } from "@application/ports/permission.port";
 import {
   ProspectValidationError,
   ProspectPermissionError,
   ProspectBusinessRuleError,
-} from '@domain/exceptions/prospect.exceptions';
+} from "@domain/exceptions/prospect.exceptions";
 
 export interface CreateProspectRequest {
   readonly businessName: string;
@@ -79,7 +79,7 @@ export class CreateProspectUseCase {
   async execute(
     request: CreateProspectRequest,
   ): Promise<CreateProspectResponse> {
-    this.logger.info('Creating new prospect', {
+    this.logger.info("Creating new prospect", {
       businessName: request.businessName,
       contactEmail: request.contactEmail,
       requestingUserId: request.requestingUserId,
@@ -99,7 +99,7 @@ export class CreateProspectUseCase {
       // 💾 ÉTAPE 4 : Sauvegarder
       const savedProspect = await this.prospectRepository.save(prospect);
 
-      this.logger.info('Prospect created successfully', {
+      this.logger.info("Prospect created successfully", {
         prospectId: savedProspect.getId().getValue(),
         businessName: request.businessName,
         assignedSalesRep: savedProspect.getAssignedSalesRep().getValue(),
@@ -111,7 +111,7 @@ export class CreateProspectUseCase {
       return this.buildResponse(savedProspect);
     } catch (error) {
       this.logger.error(
-        'Failed to create prospect',
+        "Failed to create prospect",
         error instanceof Error ? error : new Error(String(error)),
         {
           businessName: request.businessName,
@@ -132,13 +132,13 @@ export class CreateProspectUseCase {
     // Vérifier que l'utilisateur est dans un rôle commercial ou admin
     const hasPermission = await this.permissionService.hasPermission(
       request.requestingUserId,
-      'CREATE_PROSPECT',
+      "CREATE_PROSPECT",
     );
 
     if (!hasPermission) {
       throw new ProspectPermissionError(
         request.requestingUserId,
-        'create prospect',
+        "create prospect",
       );
     }
 
@@ -149,13 +149,13 @@ export class CreateProspectUseCase {
     ) {
       const canAssign = await this.permissionService.hasPermission(
         request.requestingUserId,
-        'ASSIGN_PROSPECTS',
+        "ASSIGN_PROSPECTS",
       );
 
       if (!canAssign) {
         throw new ProspectPermissionError(
           request.requestingUserId,
-          'assign prospects to other sales reps',
+          "assign prospects to other sales reps",
         );
       }
     }
@@ -173,7 +173,7 @@ export class CreateProspectUseCase {
     );
     if (emailExists) {
       throw new ProspectBusinessRuleError(
-        'A prospect with this email already exists',
+        "A prospect with this email already exists",
       );
     }
 
@@ -183,17 +183,17 @@ export class CreateProspectUseCase {
     );
     if (businessExists) {
       throw new ProspectBusinessRuleError(
-        'A prospect with this business name already exists',
+        "A prospect with this business name already exists",
       );
     }
 
     // Validation des valeurs numériques
     if (request.estimatedValue < 0) {
-      throw new ProspectValidationError('Estimated value must be positive');
+      throw new ProspectValidationError("Estimated value must be positive");
     }
 
     if (request.staffCount && request.staffCount < 1) {
-      throw new ProspectValidationError('Staff count must be at least 1');
+      throw new ProspectValidationError("Staff count must be at least 1");
     }
   }
 
@@ -208,7 +208,7 @@ export class CreateProspectUseCase {
       contactName: request.contactName,
       assignedSalesRep: request.assignedSalesRep || request.requestingUserId,
       estimatedValue: request.estimatedValue,
-      currency: request.currency || 'EUR',
+      currency: request.currency || "EUR",
       notes: request.notes,
       source: request.source,
       businessSize: request.businessSize,

@@ -1,5 +1,5 @@
-import { PartialType } from '@nestjs/swagger';
-import { CreateProspectDto } from './create-prospect.dto';
+import { PartialType } from "@nestjs/swagger";
+import { CreateProspectDto } from "./create-prospect.dto";
 
 /**
  * 🎯 UpdateProspectDto - DTO pour mettre à jour un prospect

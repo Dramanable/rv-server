@@ -5,7 +5,7 @@
  * Respectent les principes de Clean Architecture
  */
 
-import { DomainException } from './domain.exception';
+import { DomainException } from "./domain.exception";
 
 /**
  * Exception de base pour tous les Value Objects
@@ -29,7 +29,7 @@ export class InvalidValueError extends ValueObjectException {
       ? `Invalid ${fieldName}: ${reason}`
       : `Invalid ${fieldName}: ${String(value)}`;
 
-    super(message, 'INVALID_VALUE', { fieldName, value, reason });
+    super(message, "INVALID_VALUE", { fieldName, value, reason });
   }
 }
 
@@ -38,7 +38,7 @@ export class InvalidValueError extends ValueObjectException {
  */
 export class RequiredValueError extends ValueObjectException {
   constructor(fieldName: string) {
-    super(`${fieldName} is required`, 'REQUIRED_VALUE', { fieldName });
+    super(`${fieldName} is required`, "REQUIRED_VALUE", { fieldName });
   }
 }
 
@@ -49,7 +49,7 @@ export class ValueTooShortError extends ValueObjectException {
   constructor(fieldName: string, minLength: number, actualLength: number) {
     super(
       `${fieldName} must be at least ${minLength} characters long (got ${actualLength})`,
-      'VALUE_TOO_SHORT',
+      "VALUE_TOO_SHORT",
       { fieldName, minLength, actualLength },
     );
   }
@@ -62,7 +62,7 @@ export class ValueTooLongError extends ValueObjectException {
   constructor(fieldName: string, maxLength: number, actualLength: number) {
     super(
       `${fieldName} must be at most ${maxLength} characters long (got ${actualLength})`,
-      'VALUE_TOO_LONG',
+      "VALUE_TOO_LONG",
       { fieldName, maxLength, actualLength },
     );
   }
@@ -75,7 +75,7 @@ export class InvalidFormatError extends ValueObjectException {
   constructor(fieldName: string, value: string, expectedFormat: string) {
     super(
       `Invalid ${fieldName} format: ${value} (expected: ${expectedFormat})`,
-      'INVALID_FORMAT',
+      "INVALID_FORMAT",
       { fieldName, value, expectedFormat },
     );
   }
@@ -88,7 +88,7 @@ export class ValueOutOfRangeError extends ValueObjectException {
   constructor(fieldName: string, value: number, min: number, max: number) {
     super(
       `${fieldName} must be between ${min} and ${max} (got ${value})`,
-      'VALUE_OUT_OF_RANGE',
+      "VALUE_OUT_OF_RANGE",
       { fieldName, value, min, max },
     );
   }
@@ -99,7 +99,7 @@ export class ValueOutOfRangeError extends ValueObjectException {
  */
 export class EmptyArrayError extends ValueObjectException {
   constructor(fieldName: string) {
-    super(`${fieldName} cannot be empty`, 'EMPTY_ARRAY', { fieldName });
+    super(`${fieldName} cannot be empty`, "EMPTY_ARRAY", { fieldName });
   }
 }
 
@@ -110,7 +110,7 @@ export class ElementNotFoundError extends ValueObjectException {
   constructor(fieldName: string, element: unknown) {
     super(
       `Element not found in ${fieldName}: ${String(element)}`,
-      'ELEMENT_NOT_FOUND',
+      "ELEMENT_NOT_FOUND",
       { fieldName, element },
     );
   }
@@ -123,7 +123,7 @@ export class DuplicateElementError extends ValueObjectException {
   constructor(fieldName: string, element: unknown) {
     super(
       `Duplicate element in ${fieldName}: ${String(element)}`,
-      'DUPLICATE_ELEMENT',
+      "DUPLICATE_ELEMENT",
       { fieldName, element },
     );
   }
@@ -136,7 +136,7 @@ export class DuplicateValueError extends ValueObjectException {
   constructor(fieldName: string, value: unknown) {
     super(
       `Duplicate value for ${fieldName}: ${String(value)}`,
-      'DUPLICATE_VALUE',
+      "DUPLICATE_VALUE",
       { fieldName, value },
     );
   }
@@ -149,7 +149,7 @@ export class ValueNotFoundError extends ValueObjectException {
   constructor(fieldName: string, value: unknown) {
     super(
       `Value not found for ${fieldName}: ${String(value)}`,
-      'VALUE_NOT_FOUND',
+      "VALUE_NOT_FOUND",
       { fieldName, value },
     );
   }

@@ -11,52 +11,52 @@
  */
 
 // Domain Entities
-import { InfrastructureException } from '../../shared/exceptions/shared.exceptions';
-import { BusinessSector as BusinessSectorEntity } from '../../domain/entities/business-sector.entity';
+import { InfrastructureException } from "../../shared/exceptions/shared.exceptions";
+import { BusinessSector as BusinessSectorEntity } from "../../domain/entities/business-sector.entity";
 import {
   Business,
   BusinessBranding,
-} from '../../domain/entities/business.entity';
-import { Service } from '../../domain/entities/service.entity';
-import { Staff } from '../../domain/entities/staff.entity';
-import { User } from '../../domain/entities/user.entity';
+} from "../../domain/entities/business.entity";
+import { Service } from "../../domain/entities/service.entity";
+import { Staff } from "../../domain/entities/staff.entity";
+import { User } from "../../domain/entities/user.entity";
 
 // Domain Value Objects
-import { BusinessGallery } from '../../domain/value-objects/business-gallery.value-object';
-import { BusinessHours } from '../../domain/value-objects/business-hours.value-object';
+import { BusinessGallery } from "../../domain/value-objects/business-gallery.value-object";
+import { BusinessHours } from "../../domain/value-objects/business-hours.value-object";
 
 // Domain Value Objects
-import { Address } from '../../domain/value-objects/address.value-object';
-import { BusinessId } from '../../domain/value-objects/business-id.value-object';
-import { BusinessName } from '../../domain/value-objects/business-name.value-object';
-import { Email as EmailVO } from '../../domain/value-objects/email.value-object';
-import { Email } from '../../domain/value-objects/email.vo';
+import { Address } from "../../domain/value-objects/address.value-object";
+import { BusinessId } from "../../domain/value-objects/business-id.value-object";
+import { BusinessName } from "../../domain/value-objects/business-name.value-object";
+import { Email as EmailVO } from "../../domain/value-objects/email.value-object";
+import { Email } from "../../domain/value-objects/email.vo";
 import {
   CloudProvider,
   FileUrl,
-} from '../../domain/value-objects/file-url.value-object';
-import { Money } from '../../domain/value-objects/money.value-object';
-import { Phone } from '../../domain/value-objects/phone.value-object';
-import { PricingConfig } from '../../domain/value-objects/pricing-config.value-object';
-import { ServiceId } from '../../domain/value-objects/service-id.value-object';
-import { UserId } from '../../domain/value-objects/user-id.value-object';
+} from "../../domain/value-objects/file-url.value-object";
+import { Money } from "../../domain/value-objects/money.value-object";
+import { Phone } from "../../domain/value-objects/phone.value-object";
+import { PricingConfig } from "../../domain/value-objects/pricing-config.value-object";
+import { ServiceId } from "../../domain/value-objects/service-id.value-object";
+import { UserId } from "../../domain/value-objects/user-id.value-object";
 
 // Shared Enums
-import { UserRole } from '../../shared/enums/user-role.enum';
+import { UserRole } from "../../shared/enums/user-role.enum";
 
 // Infrastructure Entities
-import { BusinessOrmEntity } from '../database/sql/postgresql/entities/business-orm.entity';
-import { BusinessSectorOrmEntity } from '../database/sql/postgresql/entities/business-sector-orm.entity';
-import { ServiceOrmEntity } from '../database/sql/postgresql/entities/service-orm.entity';
-import { StaffOrmEntity } from '../database/sql/postgresql/entities/staff-orm.entity';
-import { UserOrmEntity } from '../database/sql/postgresql/entities/user-orm.entity';
+import { BusinessOrmEntity } from "../database/sql/postgresql/entities/business-orm.entity";
+import { BusinessSectorOrmEntity } from "../database/sql/postgresql/entities/business-sector-orm.entity";
+import { ServiceOrmEntity } from "../database/sql/postgresql/entities/service-orm.entity";
+import { StaffOrmEntity } from "../database/sql/postgresql/entities/staff-orm.entity";
+import { UserOrmEntity } from "../database/sql/postgresql/entities/user-orm.entity";
 
 // Presentation DTOs
 import {
   LoginResponseDto,
   RegisterResponseDto,
-} from '../../presentation/dtos/auth.dto';
-import { UserResponseDto } from '../../presentation/dtos/user.dto';
+} from "../../presentation/dtos/auth.dto";
+import { UserResponseDto } from "../../presentation/dtos/user.dto";
 
 /**
  * 🏛️ USER MAPPERS - Domain ↔ Infrastructure ↔ Presentation
@@ -70,12 +70,12 @@ export class UserMapper {
     entity.id = domainUser.id;
     entity.email = domainUser.email.getValue();
     entity.firstName =
-      domainUser.firstName || domainUser.name.split(' ')[0] || domainUser.name;
+      domainUser.firstName || domainUser.name.split(" ")[0] || domainUser.name;
     entity.lastName =
       domainUser.lastName ||
-      domainUser.name.split(' ').slice(1).join(' ') ||
-      '';
-    entity.hashedPassword = domainUser.hashedPassword || '';
+      domainUser.name.split(" ").slice(1).join(" ") ||
+      "";
+    entity.hashedPassword = domainUser.hashedPassword || "";
     entity.role = domainUser.role;
     entity.isActive = domainUser.isActive ?? true;
     entity.isVerified = domainUser.isVerified ?? false;
@@ -90,12 +90,12 @@ export class UserMapper {
    */
   static fromTypeOrmEntity(entity: UserOrmEntity): User {
     // Construction sécurisée du nom complet
-    const firstName = entity.firstName || '';
-    const lastName = entity.lastName || '';
+    const firstName = entity.firstName || "";
+    const lastName = entity.lastName || "";
     const fullName = `${firstName} ${lastName}`.trim();
 
     // Assurer qu'il y a au moins un nom valide
-    const safeName = fullName || entity.username || 'Unknown User';
+    const safeName = fullName || entity.username || "Unknown User";
 
     return User.createWithHashedPassword(
       entity.id,
@@ -117,9 +117,9 @@ export class UserMapper {
    */
   static toResponseDto(domainUser: User): UserResponseDto {
     // Parse du nom complet en prénom/nom
-    const nameParts = domainUser.name.split(' ');
-    const firstName = nameParts[0] || '';
-    const lastName = nameParts.slice(1).join(' ') || '';
+    const nameParts = domainUser.name.split(" ");
+    const firstName = nameParts[0] || "";
+    const lastName = nameParts.slice(1).join(" ") || "";
 
     return {
       id: domainUser.id,
@@ -316,8 +316,8 @@ export class ServiceMapper {
       ? FileUrl.create(
           entity.image_url,
           CloudProvider.AWS_S3,
-          'default-bucket',
-          entity.image_url.split('/').pop() || 'file',
+          "default-bucket",
+          entity.image_url.split("/").pop() || "file",
         )
       : undefined;
 
@@ -449,8 +449,8 @@ export class StaffMapper {
         ? FileUrl.create(
             entity.profile.profile_image_url,
             CloudProvider.AWS_S3,
-            'default-bucket',
-            entity.profile.profile_image_url.split('/').pop() || 'file',
+            "default-bucket",
+            entity.profile.profile_image_url.split("/").pop() || "file",
           )
         : undefined,
       certifications: entity.profile.certifications,
@@ -624,8 +624,8 @@ export class BusinessMapper {
         {} as Record<string, any>,
       ),
       special_dates: businessHours.getSpecialDates().map((special) => ({
-        date: special.date.toISOString().split('T')[0], // Format YYYY-MM-DD
-        type: special.isOpen ? 'SPECIAL_HOURS' : 'CLOSED',
+        date: special.date.toISOString().split("T")[0], // Format YYYY-MM-DD
+        type: special.isOpen ? "SPECIAL_HOURS" : "CLOSED",
         label: special.reason,
         time_slots:
           special.timeSlots?.map((slot) => ({
@@ -652,7 +652,7 @@ export class BusinessMapper {
     if (!entity.name) {
       throw new InfrastructureException(
         `Business name is undefined for id: ${entity.id}`,
-        'BUSINESS_NAME_UNDEFINED',
+        "BUSINESS_NAME_UNDEFINED",
       );
     }
 
@@ -662,7 +662,7 @@ export class BusinessMapper {
       primaryEmail: EmailVO.create(
         entity.contact_info?.primary_email ||
           entity.primary_email ||
-          'no-email@example.com',
+          "no-email@example.com",
       ),
       secondaryEmails:
         entity.contact_info?.secondary_emails?.map((e: string) =>
@@ -671,13 +671,13 @@ export class BusinessMapper {
       primaryPhone: Phone.create(
         entity.contact_info?.primary_phone ||
           entity.primary_phone ||
-          '+33000000000',
+          "+33000000000",
       ),
       secondaryPhones:
         entity.contact_info?.secondary_phones?.map((p: string) =>
           Phone.create(p),
         ) || [],
-      website: entity.contact_info?.website || 'https://example.com',
+      website: entity.contact_info?.website || "https://example.com",
       socialMedia:
         entity.contact_info?.social_media ||
         (entity.contact_info as any)?.social ||
@@ -685,14 +685,14 @@ export class BusinessMapper {
     };
 
     const address = Address.create({
-      street: entity.address?.street || 'Unknown Street',
-      city: entity.address?.city || 'Unknown City',
+      street: entity.address?.street || "Unknown Street",
+      city: entity.address?.city || "Unknown City",
       postalCode:
         entity.address?.postal_code ||
         (entity.address as any)?.zipCode ||
-        '00000',
-      country: entity.address?.country || 'Unknown Country',
-      region: entity.address?.region || (entity.address as any)?.state || '',
+        "00000",
+      country: entity.address?.country || "Unknown Country",
+      region: entity.address?.region || (entity.address as any)?.state || "",
     });
 
     const branding: BusinessBranding = entity.branding
@@ -701,7 +701,7 @@ export class BusinessMapper {
             ? FileUrl.create(
                 entity.branding.logo_url,
                 CloudProvider.AWS_S3,
-                'uploads',
+                "uploads",
                 entity.branding.logo_url,
               )
             : undefined,
@@ -709,7 +709,7 @@ export class BusinessMapper {
             ? FileUrl.create(
                 entity.branding.cover_image_url,
                 CloudProvider.AWS_S3,
-                'uploads',
+                "uploads",
                 entity.branding.cover_image_url,
               )
             : undefined,
@@ -734,9 +734,9 @@ export class BusinessMapper {
       : {};
 
     const settings = {
-      timezone: entity.settings?.timezone || 'Europe/Paris',
-      currency: entity.settings?.currency || 'EUR',
-      language: entity.settings?.language || 'fr',
+      timezone: entity.settings?.timezone || "Europe/Paris",
+      currency: entity.settings?.currency || "EUR",
+      language: entity.settings?.language || "fr",
       appointmentSettings: {
         defaultDuration:
           entity.settings?.appointment_settings?.default_duration || 30,
@@ -745,7 +745,7 @@ export class BusinessMapper {
           entity.settings?.appointment_settings?.advance_booking_limit || 30,
         cancellationPolicy:
           entity.settings?.appointment_settings?.cancellation_policy ||
-          'Standard policy',
+          "Standard policy",
       },
       notificationSettings: {
         emailNotifications:
@@ -769,7 +769,7 @@ export class BusinessMapper {
           (entity.business_hours as any)?.specialDates ||
           entity.business_hours?.special_dates ||
           [],
-        timezone: entity.business_hours?.timezone || 'Europe/Paris',
+        timezone: entity.business_hours?.timezone || "Europe/Paris",
       });
     } catch (error) {
       // Fallback to default business hours (Monday to Friday, 9-17)
@@ -790,7 +790,7 @@ export class BusinessMapper {
       businessId,
       businessName,
       entity.description,
-      entity.slogan || '',
+      entity.slogan || "",
       businessSector,
       branding,
       gallery, // Position 7
@@ -799,9 +799,9 @@ export class BusinessMapper {
       contactInfo, // Position 10
       settings, // Position 11
       {
-        timezone: 'Europe/Paris',
-        currency: 'EUR',
-        locale: 'fr-FR',
+        timezone: "Europe/Paris",
+        currency: "EUR",
+        locale: "fr-FR",
         firstDayOfWeek: 1,
         businessWeekDays: [1, 2, 3, 4, 5],
       } as any, // Position 12 - Temp config object
@@ -870,7 +870,7 @@ export class BusinessSectorMapper {
     return BusinessSectorEntity.restore(
       entity.id,
       entity.name,
-      entity.description || '',
+      entity.description || "",
       entity.code,
       entity.isActive,
       entity.createdAt,
@@ -923,7 +923,7 @@ export class MapperValidator {
     if (obj === null || obj === undefined) {
       throw new InfrastructureException(
         `Cannot map ${entityName}: object is null or undefined`,
-        'ENTITY_NULL_OR_UNDEFINED',
+        "ENTITY_NULL_OR_UNDEFINED",
       );
     }
     return obj;
@@ -939,7 +939,7 @@ export class MapperValidator {
     if (arr === null || arr === undefined) {
       throw new InfrastructureException(
         `Cannot map ${entityName} array: array is null or undefined`,
-        'ENTITY_ARRAY_NULL_OR_UNDEFINED',
+        "ENTITY_ARRAY_NULL_OR_UNDEFINED",
       );
     }
     return arr;

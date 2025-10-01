@@ -1,4 +1,4 @@
-import { ValueObjectValidationError } from '../exceptions/domain.exceptions';
+import { ValueObjectValidationError } from "../exceptions/domain.exceptions";
 
 export class Phone {
   private static readonly PHONE_REGEX = /^\+?[\d\s-().]{8,20}$/;
@@ -10,8 +10,8 @@ export class Phone {
   private validate(value: string): void {
     if (!value || value.trim().length === 0) {
       throw new ValueObjectValidationError(
-        'PHONE_EMPTY',
-        'Phone number cannot be empty',
+        "PHONE_EMPTY",
+        "Phone number cannot be empty",
         { value },
       );
     }
@@ -20,15 +20,15 @@ export class Phone {
 
     if (!Phone.PHONE_REGEX.test(cleanValue)) {
       throw new ValueObjectValidationError(
-        'PHONE_INVALID_FORMAT',
-        'Invalid phone number format',
+        "PHONE_INVALID_FORMAT",
+        "Invalid phone number format",
         { value, cleanValue },
       );
     }
   }
 
   private cleanPhoneNumber(phone: string): string {
-    return phone.replace(/[\s-().]/g, '');
+    return phone.replace(/[\s-().]/g, "");
   }
 
   static create(value: string): Phone {
@@ -45,13 +45,13 @@ export class Phone {
 
   getInternationalFormat(): string {
     const clean = this.getCleanValue();
-    if (clean.startsWith('+')) {
+    if (clean.startsWith("+")) {
       return clean;
     }
-    if (clean.startsWith('0')) {
-      return '+33' + clean.substring(1);
+    if (clean.startsWith("0")) {
+      return "+33" + clean.substring(1);
     }
-    return '+' + clean;
+    return "+" + clean;
   }
 
   equals(other: Phone): boolean {

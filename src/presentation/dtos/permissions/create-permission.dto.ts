@@ -4,13 +4,13 @@
  * DTO pour la création d'une nouvelle permission
  */
 
-import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsOptional, IsString, Length } from 'class-validator';
+import { ApiProperty } from "@nestjs/swagger";
+import { IsBoolean, IsOptional, IsString, Length } from "class-validator";
 
 export class CreatePermissionDto {
   @ApiProperty({
-    description: 'Nom unique de la permission',
-    example: 'MANAGE_APPOINTMENTS',
+    description: "Nom unique de la permission",
+    example: "MANAGE_APPOINTMENTS",
     minLength: 3,
     maxLength: 100,
   })
@@ -20,7 +20,7 @@ export class CreatePermissionDto {
 
   @ApiProperty({
     description: "Nom d'affichage de la permission",
-    example: 'Gérer les rendez-vous',
+    example: "Gérer les rendez-vous",
     minLength: 3,
     maxLength: 200,
   })
@@ -29,8 +29,8 @@ export class CreatePermissionDto {
   readonly displayName!: string;
 
   @ApiProperty({
-    description: 'Description détaillée de la permission',
-    example: 'Permet de créer, modifier et annuler les rendez-vous',
+    description: "Description détaillée de la permission",
+    example: "Permet de créer, modifier et annuler les rendez-vous",
     minLength: 10,
     maxLength: 1000,
   })
@@ -39,9 +39,9 @@ export class CreatePermissionDto {
   readonly description!: string;
 
   @ApiProperty({
-    description: 'Catégorie de la permission',
-    example: 'APPOINTMENTS',
-    enum: ['BUSINESS', 'STAFF', 'SERVICES', 'APPOINTMENTS', 'USERS', 'SYSTEM'],
+    description: "Catégorie de la permission",
+    example: "APPOINTMENTS",
+    enum: ["BUSINESS", "STAFF", "SERVICES", "APPOINTMENTS", "USERS", "SYSTEM"],
   })
   @IsString()
   readonly category!: string;

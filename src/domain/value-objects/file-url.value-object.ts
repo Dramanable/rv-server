@@ -1,12 +1,12 @@
 import {
   InvalidValueError,
   RequiredValueError,
-} from '@domain/exceptions/value-object.exceptions';
+} from "@domain/exceptions/value-object.exceptions";
 
 export enum CloudProvider {
-  AWS_S3 = 'AWS_S3',
-  AZURE_BLOB = 'AZURE_BLOB',
-  GCP_STORAGE = 'GCP_STORAGE',
+  AWS_S3 = "AWS_S3",
+  AZURE_BLOB = "AZURE_BLOB",
+  GCP_STORAGE = "GCP_STORAGE",
 }
 
 export class FileUrl {
@@ -24,40 +24,40 @@ export class FileUrl {
 
   private validateUrl(url: string): void {
     if (!url || url.trim().length === 0) {
-      throw new RequiredValueError('fileUrl');
+      throw new RequiredValueError("fileUrl");
     }
 
     try {
       const urlObj = new URL(url);
-      if (!['http:', 'https:'].includes(urlObj.protocol)) {
+      if (!["http:", "https:"].includes(urlObj.protocol)) {
         throw new InvalidValueError(
-          'protocol',
+          "protocol",
           urlObj.protocol,
-          'File URL must use HTTP or HTTPS protocol',
+          "File URL must use HTTP or HTTPS protocol",
         );
       }
     } catch {
-      throw new InvalidValueError('fileUrl', url, 'Invalid file URL format');
+      throw new InvalidValueError("fileUrl", url, "Invalid file URL format");
     }
   }
 
   private validateKey(key: string): void {
     if (!key || key.trim().length === 0) {
-      throw new RequiredValueError('fileKey');
+      throw new RequiredValueError("fileKey");
     }
 
     // Vérifier les caractères interdits (exemple : caractères de contrôle)
     if (
-      key.includes('..') ||
-      key.includes('//') ||
+      key.includes("..") ||
+      key.includes("//") ||
       key
-        .split('')
+        .split("")
         .some((char) => char.charCodeAt(0) < 32 || char.charCodeAt(0) === 127)
     ) {
       throw new InvalidValueError(
-        'fileKey',
+        "fileKey",
         key,
-        'File key contains forbidden characters',
+        "File key contains forbidden characters",
       );
     }
   }
@@ -77,7 +77,7 @@ export class FileUrl {
   static createS3Url(
     bucket: string,
     key: string,
-    region: string = 'eu-west-1',
+    region: string = "eu-west-1",
     contentType?: string,
     size?: number,
   ): FileUrl {
@@ -154,61 +154,61 @@ export class FileUrl {
 
   // Utility methods
   getFileName(): string {
-    return this.key.split('/').pop() || this.key;
+    return this.key.split("/").pop() || this.key;
   }
 
   getFileExtension(): string {
     const fileName = this.getFileName();
-    const lastDotIndex = fileName.lastIndexOf('.');
+    const lastDotIndex = fileName.lastIndexOf(".");
     return lastDotIndex > 0
       ? fileName.substring(lastDotIndex + 1).toLowerCase()
-      : '';
+      : "";
   }
 
   isImage(): boolean {
-    const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg'];
+    const imageExtensions = ["jpg", "jpeg", "png", "gif", "webp", "bmp", "svg"];
     const extension = this.getFileExtension();
     return (
       imageExtensions.includes(extension) ||
-      (this.contentType?.startsWith('image/') ?? false)
+      (this.contentType?.startsWith("image/") ?? false)
     );
   }
 
   isDocument(): boolean {
-    const documentExtensions = ['pdf', 'doc', 'docx', 'txt', 'rtf', 'odt'];
+    const documentExtensions = ["pdf", "doc", "docx", "txt", "rtf", "odt"];
     const extension = this.getFileExtension();
     return (
       documentExtensions.includes(extension) ||
-      (this.contentType?.includes('document') ?? false) ||
-      this.contentType === 'application/pdf'
+      (this.contentType?.includes("document") ?? false) ||
+      this.contentType === "application/pdf"
     );
   }
 
   // Validation methods
   validateImageConstraints(
     maxSizeMB: number = 5,
-    allowedExtensions: string[] = ['jpg', 'jpeg', 'png', 'webp'],
+    allowedExtensions: string[] = ["jpg", "jpeg", "png", "webp"],
   ): void {
     if (!this.isImage()) {
       throw new InvalidValueError(
-        'fileType',
+        "fileType",
         this.contentType,
-        'File is not a valid image',
+        "File is not a valid image",
       );
     }
 
     const extension = this.getFileExtension();
     if (!allowedExtensions.includes(extension)) {
       throw new InvalidValueError(
-        'imageExtension',
+        "imageExtension",
         extension,
-        `Image extension ${extension} is not allowed. Allowed: ${allowedExtensions.join(', ')}`,
+        `Image extension ${extension} is not allowed. Allowed: ${allowedExtensions.join(", ")}`,
       );
     }
 
     if (this.size && this.size > maxSizeMB * 1024 * 1024) {
       throw new InvalidValueError(
-        'imageSize',
+        "imageSize",
         this.size,
         `Image size ${this.size} exceeds maximum allowed size of ${maxSizeMB}MB`,
       );
@@ -217,7 +217,7 @@ export class FileUrl {
 
   // Security methods
   isSecure(): boolean {
-    return this.url.startsWith('https://');
+    return this.url.startsWith("https://");
   }
 
   isSameProvider(other: FileUrl): boolean {

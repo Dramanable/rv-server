@@ -9,18 +9,18 @@ import {
   UseGuards,
   HttpStatus,
   HttpCode,
-} from '@nestjs/common';
+} from "@nestjs/common";
 import {
   ApiTags,
   ApiOperation,
   ApiResponse,
   ApiBearerAuth,
-} from '@nestjs/swagger';
-import { JwtAuthGuard } from '@presentation/security/guards/jwt-auth.guard';
-import { GetUser } from '@presentation/security/decorators/get-user.decorator';
-import { User } from '@domain/entities/user.entity';
-import { Inject } from '@nestjs/common';
-import { TOKENS } from '@shared/constants/injection-tokens';
+} from "@nestjs/swagger";
+import { JwtAuthGuard } from "@presentation/security/guards/jwt-auth.guard";
+import { GetUser } from "@presentation/security/decorators/get-user.decorator";
+import { User } from "@domain/entities/user.entity";
+import { Inject } from "@nestjs/common";
+import { TOKENS } from "@shared/constants/injection-tokens";
 
 // DTOs - Import staff DTOs
 import {
@@ -32,17 +32,17 @@ import {
   ListStaffResponseDto,
   GetStaffResponseDto,
   DeleteStaffResponseDto,
-} from '@presentation/dtos/staff.dto';
+} from "@presentation/dtos/staff.dto";
 
 // Use Cases
-import { CreateStaffUseCase } from '@application/use-cases/staff/create-staff.use-case';
-import { GetStaffUseCase } from '@application/use-cases/staff/get-staff.use-case';
-import { UpdateStaffUseCase } from '@application/use-cases/staff/update-staff.use-case';
-import { DeleteStaffUseCase } from '@application/use-cases/staff/delete-staff.use-case';
-import { ListStaffUseCase } from '@application/use-cases/staff/list-staff.use-case';
+import { CreateStaffUseCase } from "@application/use-cases/staff/create-staff.use-case";
+import { GetStaffUseCase } from "@application/use-cases/staff/get-staff.use-case";
+import { UpdateStaffUseCase } from "@application/use-cases/staff/update-staff.use-case";
+import { DeleteStaffUseCase } from "@application/use-cases/staff/delete-staff.use-case";
+import { ListStaffUseCase } from "@application/use-cases/staff/list-staff.use-case";
 
-@ApiTags('👨‍💼 Staff Management')
-@Controller('staff')
+@ApiTags("👨‍💼 Staff Management")
+@Controller("staff")
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 export class StaffController {
@@ -63,14 +63,14 @@ export class StaffController {
     private readonly listStaffUseCase: ListStaffUseCase,
   ) {}
 
-  @Post('list')
+  @Post("list")
   @ApiOperation({
-    summary: '🔍 Search staff with advanced filters',
-    description: 'Recherche avancée paginée du personnel avec filtres',
+    summary: "🔍 Search staff with advanced filters",
+    description: "Recherche avancée paginée du personnel avec filtres",
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: '✅ Staff found successfully',
+    description: "✅ Staff found successfully",
     type: ListStaffResponseDto,
   })
   @HttpCode(HttpStatus.OK)
@@ -86,8 +86,8 @@ export class StaffController {
         limit: dto.limit || 10,
       },
       sorting: {
-        sortBy: dto.sortBy || 'createdAt',
-        sortOrder: dto.sortOrder || 'desc',
+        sortBy: dto.sortBy || "createdAt",
+        sortOrder: dto.sortOrder || "desc",
       },
       filters: {
         search: dto.search,
@@ -102,18 +102,18 @@ export class StaffController {
     return response as unknown as ListStaffResponseDto;
   }
 
-  @Get(':id')
+  @Get(":id")
   @ApiOperation({
-    summary: '📄 Get staff by ID',
-    description: 'Récupère un membre du personnel par son ID',
+    summary: "📄 Get staff by ID",
+    description: "Récupère un membre du personnel par son ID",
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: '✅ Staff found successfully',
+    description: "✅ Staff found successfully",
     type: GetStaffResponseDto,
   })
   async findById(
-    @Param('id') id: string,
+    @Param("id") id: string,
     @GetUser() user: User,
   ): Promise<GetStaffResponseDto> {
     const request = {
@@ -128,12 +128,12 @@ export class StaffController {
 
   @Post()
   @ApiOperation({
-    summary: '➕ Create new staff member',
-    description: 'Créer un nouveau membre du personnel',
+    summary: "➕ Create new staff member",
+    description: "Créer un nouveau membre du personnel",
   })
   @ApiResponse({
     status: HttpStatus.CREATED,
-    description: '✅ Staff created successfully',
+    description: "✅ Staff created successfully",
     type: CreateStaffResponseDto,
   })
   @HttpCode(HttpStatus.CREATED)
@@ -151,18 +151,18 @@ export class StaffController {
     return response as unknown as CreateStaffResponseDto;
   }
 
-  @Put(':id')
+  @Put(":id")
   @ApiOperation({
-    summary: '✏️ Update staff member',
-    description: 'Mettre à jour un membre du personnel',
+    summary: "✏️ Update staff member",
+    description: "Mettre à jour un membre du personnel",
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: '✅ Staff updated successfully',
+    description: "✅ Staff updated successfully",
     type: UpdateStaffResponseDto,
   })
   async update(
-    @Param('id') id: string,
+    @Param("id") id: string,
     @Body() dto: UpdateStaffDto,
     @GetUser() user: User,
   ): Promise<UpdateStaffResponseDto> {
@@ -178,18 +178,18 @@ export class StaffController {
     return response as unknown as UpdateStaffResponseDto;
   }
 
-  @Delete(':id')
+  @Delete(":id")
   @ApiOperation({
-    summary: '🗑️ Delete staff member',
-    description: 'Supprimer un membre du personnel',
+    summary: "🗑️ Delete staff member",
+    description: "Supprimer un membre du personnel",
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: '✅ Staff deleted successfully',
+    description: "✅ Staff deleted successfully",
     type: DeleteStaffResponseDto,
   })
   async delete(
-    @Param('id') id: string,
+    @Param("id") id: string,
     @GetUser() user: User,
   ): Promise<DeleteStaffResponseDto> {
     const request = {

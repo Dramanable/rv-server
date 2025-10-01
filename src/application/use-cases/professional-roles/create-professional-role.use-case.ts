@@ -7,12 +7,12 @@
 import {
   ProfessionalCategory,
   ProfessionalRole,
-} from '@domain/entities/professional-role.entity';
+} from "@domain/entities/professional-role.entity";
 import {
   ProfessionalRoleCodeAlreadyExistsError,
   ProfessionalRoleValidationError,
-} from '@domain/exceptions/professional-role.exceptions';
-import { IProfessionalRoleRepository } from '@domain/repositories/professional-role.repository';
+} from "@domain/exceptions/professional-role.exceptions";
+import { IProfessionalRoleRepository } from "@domain/repositories/professional-role.repository";
 
 export interface CreateProfessionalRoleRequest {
   readonly code: string;
@@ -52,12 +52,12 @@ export class CreateProfessionalRoleUseCase {
       !request.displayName ||
       !request.description
     ) {
-      throw new ProfessionalRoleValidationError('Missing required fields');
+      throw new ProfessionalRoleValidationError("Missing required fields");
     }
 
     if (!request.requestingUserId) {
       throw new ProfessionalRoleValidationError(
-        'Requesting user ID is required',
+        "Requesting user ID is required",
       );
     }
 

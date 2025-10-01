@@ -1,8 +1,8 @@
-import { NotificationCost } from '@domain/value-objects/billing/notification-cost.value-object';
-import { DomainError } from '@domain/exceptions/domain.exceptions';
+import { NotificationCost } from "@domain/value-objects/billing/notification-cost.value-object";
+import { DomainError } from "@domain/exceptions/domain.exceptions";
 
-export type BillingPeriod = 'MONTHLY' | 'QUARTERLY' | 'YEARLY';
-export type BillingStatus = 'ACTIVE' | 'FINALIZED' | 'CANCELLED';
+export type BillingPeriod = "MONTHLY" | "QUARTERLY" | "YEARLY";
+export type BillingStatus = "ACTIVE" | "FINALIZED" | "CANCELLED";
 
 export interface BillingCycleProps {
   readonly businessId: string;
@@ -48,7 +48,7 @@ export class BillingCycle {
   static create(props: BillingCycleProps): BillingCycle {
     const id = this.generateId();
     const now = new Date();
-    const initialCost = props.initialCost || NotificationCost.zero('EUR');
+    const initialCost = props.initialCost || NotificationCost.zero("EUR");
 
     return new BillingCycle(
       id,
@@ -56,7 +56,7 @@ export class BillingCycle {
       props.startDate,
       props.endDate,
       props.period,
-      'ACTIVE',
+      "ACTIVE",
       initialCost,
       0, // emailCount
       0, // smsCount
@@ -96,34 +96,34 @@ export class BillingCycle {
   }
 
   private static generateId(): string {
-    return 'billing_' + Math.random().toString(36).substring(2, 15);
+    return "billing_" + Math.random().toString(36).substring(2, 15);
   }
 
   private validate(): void {
-    if (!this._businessId || this._businessId.trim() === '') {
-      throw new DomainError('Business ID is required');
+    if (!this._businessId || this._businessId.trim() === "") {
+      throw new DomainError("Business ID is required");
     }
 
     if (this._endDate <= this._startDate) {
-      throw new DomainError('End date must be after start date');
+      throw new DomainError("End date must be after start date");
     }
 
-    if (!['MONTHLY', 'QUARTERLY', 'YEARLY'].includes(this._period)) {
-      throw new DomainError('Period must be MONTHLY, QUARTERLY, or YEARLY');
+    if (!["MONTHLY", "QUARTERLY", "YEARLY"].includes(this._period)) {
+      throw new DomainError("Period must be MONTHLY, QUARTERLY, or YEARLY");
     }
 
     // Validation de la durée pour les cycles mensuels
-    if (this._period === 'MONTHLY') {
+    if (this._period === "MONTHLY") {
       const durationDays = this.getDurationInDays();
       if (durationDays < 28 || durationDays > 31) {
-        throw new DomainError('Monthly cycle must be between 28 and 31 days');
+        throw new DomainError("Monthly cycle must be between 28 and 31 days");
       }
     }
   }
 
   addUsage(cost: NotificationCost): void {
-    if (this._status === 'FINALIZED') {
-      throw new DomainError('Cannot add usage to finalized billing cycle');
+    if (this._status === "FINALIZED") {
+      throw new DomainError("Cannot add usage to finalized billing cycle");
     }
 
     // Vérifier la cohérence des devises
@@ -131,7 +131,7 @@ export class BillingCycle {
       !this._totalCost.isZero() &&
       this._totalCost.getCurrency() !== cost.getCurrency()
     ) {
-      throw new DomainError('All usage costs must be in the same currency');
+      throw new DomainError("All usage costs must be in the same currency");
     }
 
     // Ajouter le coût et les compteurs depuis NotificationCost
@@ -142,11 +142,11 @@ export class BillingCycle {
   }
 
   finalize(): void {
-    if (this._status === 'FINALIZED') {
-      throw new DomainError('Billing cycle is already finalized');
+    if (this._status === "FINALIZED") {
+      throw new DomainError("Billing cycle is already finalized");
     }
 
-    this._status = 'FINALIZED';
+    this._status = "FINALIZED";
     this._finalizedAt = new Date();
     this._updatedAt = new Date();
   }
@@ -268,8 +268,8 @@ export class BillingCycle {
   }
 
   toString(): string {
-    const startStr = this._startDate.toISOString().split('T')[0];
-    const endStr = this._endDate.toISOString().split('T')[0];
+    const startStr = this._startDate.toISOString().split("T")[0];
+    const endStr = this._endDate.toISOString().split("T")[0];
     return `BillingCycle(${this._businessId}, ${this._period}, ${startStr} to ${endStr})`;
   }
 }

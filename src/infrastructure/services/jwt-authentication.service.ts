@@ -9,19 +9,19 @@ import {
   AuthenticationService,
   AuthTokens,
   TokenPayload,
-} from '@application/ports/authentication.port';
-import type { Logger } from '@application/ports/logger.port';
-import { User } from '@domain/entities/user.entity';
-import { Email } from '@domain/value-objects/email.vo';
+} from "@application/ports/authentication.port";
+import type { Logger } from "@application/ports/logger.port";
+import { User } from "@domain/entities/user.entity";
+import { Email } from "@domain/value-objects/email.vo";
 import {
   AuthenticationServiceError,
   TokenGenerationError,
   TokenValidationError,
-} from '@infrastructure/exceptions/infrastructure.exceptions';
-import { Inject, Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { JwtService } from '@nestjs/jwt';
-import { TOKENS } from '@shared/constants/injection-tokens';
+} from "@infrastructure/exceptions/infrastructure.exceptions";
+import { Inject, Injectable } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import { JwtService } from "@nestjs/jwt";
+import { TOKENS } from "@shared/constants/injection-tokens";
 
 @Injectable()
 export class JwtAuthenticationService implements AuthenticationService {
@@ -40,23 +40,23 @@ export class JwtAuthenticationService implements AuthenticationService {
     };
 
     const accessTokenExpiration = this.configService.get<number>(
-      'ACCESS_TOKEN_EXPIRATION',
+      "ACCESS_TOKEN_EXPIRATION",
       3600,
     ); // seconds
     const refreshTokenExpirationDays = this.configService.get<number>(
-      'REFRESH_TOKEN_EXPIRATION_DAYS',
+      "REFRESH_TOKEN_EXPIRATION_DAYS",
       30,
     );
 
     try {
       // Générer l'access token (courte durée)
       const accessToken = this.jwtService.sign(payload, {
-        secret: this.configService.get<string>('ACCESS_TOKEN_SECRET'),
+        secret: this.configService.get<string>("ACCESS_TOKEN_SECRET"),
         expiresIn: `${accessTokenExpiration}s`,
-        issuer: this.configService.get<string>('JWT_ISSUER', 'clean-arch-app'),
+        issuer: this.configService.get<string>("JWT_ISSUER", "clean-arch-app"),
         audience: this.configService.get<string>(
-          'JWT_AUDIENCE',
-          'clean-arch-users',
+          "JWT_AUDIENCE",
+          "clean-arch-users",
         ),
       });
 
@@ -64,15 +64,15 @@ export class JwtAuthenticationService implements AuthenticationService {
       const refreshToken = this.jwtService.sign(
         { userId: user.id }, // Payload minimal pour refresh token
         {
-          secret: this.configService.get<string>('REFRESH_TOKEN_SECRET'),
+          secret: this.configService.get<string>("REFRESH_TOKEN_SECRET"),
           expiresIn: `${refreshTokenExpirationDays}d`,
           issuer: this.configService.get<string>(
-            'JWT_ISSUER',
-            'clean-arch-app',
+            "JWT_ISSUER",
+            "clean-arch-app",
           ),
           audience: this.configService.get<string>(
-            'JWT_AUDIENCE',
-            'clean-arch-users',
+            "JWT_AUDIENCE",
+            "clean-arch-users",
           ),
         },
       );
@@ -89,29 +89,29 @@ export class JwtAuthenticationService implements AuthenticationService {
         `Failed to generate tokens for user ${user.id}`,
         error instanceof Error ? error : new Error(String(error)),
       );
-      throw new TokenGenerationError('access/refresh tokens', error);
+      throw new TokenGenerationError("access/refresh tokens", error);
     }
   }
 
   async validateAccessToken(token: string): Promise<TokenPayload> {
     try {
       const payload = this.jwtService.verify(token, {
-        secret: this.configService.get<string>('ACCESS_TOKEN_SECRET'),
-        issuer: this.configService.get<string>('JWT_ISSUER', 'clean-arch-app'),
+        secret: this.configService.get<string>("ACCESS_TOKEN_SECRET"),
+        issuer: this.configService.get<string>("JWT_ISSUER", "clean-arch-app"),
         audience: this.configService.get<string>(
-          'JWT_AUDIENCE',
-          'clean-arch-users',
+          "JWT_AUDIENCE",
+          "clean-arch-users",
         ),
       });
 
       return payload;
     } catch (error) {
       this.logger.warn(
-        `Invalid access token: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Invalid access token: ${error instanceof Error ? error.message : "Unknown error"}`,
       );
       throw new TokenValidationError(
-        'access token',
-        error instanceof Error ? error.message : 'Unknown error',
+        "access token",
+        error instanceof Error ? error.message : "Unknown error",
       );
     }
   }
@@ -119,22 +119,22 @@ export class JwtAuthenticationService implements AuthenticationService {
   async validateRefreshToken(token: string): Promise<TokenPayload> {
     try {
       const payload = this.jwtService.verify(token, {
-        secret: this.configService.get<string>('REFRESH_TOKEN_SECRET'),
-        issuer: this.configService.get<string>('JWT_ISSUER', 'clean-arch-app'),
+        secret: this.configService.get<string>("REFRESH_TOKEN_SECRET"),
+        issuer: this.configService.get<string>("JWT_ISSUER", "clean-arch-app"),
         audience: this.configService.get<string>(
-          'JWT_AUDIENCE',
-          'clean-arch-users',
+          "JWT_AUDIENCE",
+          "clean-arch-users",
         ),
       });
 
       return payload;
     } catch (error) {
       this.logger.warn(
-        `Invalid refresh token: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Invalid refresh token: ${error instanceof Error ? error.message : "Unknown error"}`,
       );
       throw new TokenValidationError(
-        'refresh token',
-        error instanceof Error ? error.message : 'Unknown error',
+        "refresh token",
+        error instanceof Error ? error.message : "Unknown error",
       );
     }
   }
@@ -150,7 +150,7 @@ export class JwtAuthenticationService implements AuthenticationService {
         id: payload.userId,
         email: Email.create(payload.email),
         role: payload.role,
-        name: 'Unknown',
+        name: "Unknown",
         createdAt: new Date(),
         passwordChangeRequired: false,
       } as unknown as User;
@@ -159,9 +159,9 @@ export class JwtAuthenticationService implements AuthenticationService {
       return this.generateTokens(user);
     } catch (error) {
       this.logger.error(
-        `Failed to refresh tokens: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Failed to refresh tokens: ${error instanceof Error ? error.message : "Unknown error"}`,
       );
-      throw new AuthenticationServiceError('token refresh', error);
+      throw new AuthenticationServiceError("token refresh", error);
     }
   }
 
@@ -169,7 +169,7 @@ export class JwtAuthenticationService implements AuthenticationService {
     // Dans une implémentation complète, vous ajouteriez le token à une blacklist
     // ou le stockeriez dans une base de données avec un statut "révoqué"
     this.logger.info(`Refresh token revoked: ${token.substring(0, 10)}...`, {
-      service: 'JWT Auth Service',
+      service: "JWT Auth Service",
     });
 
     // TODO: Implémenter la logique de révocation (blacklist, DB, etc.)
@@ -179,7 +179,7 @@ export class JwtAuthenticationService implements AuthenticationService {
   async revokeAllUserTokens(userId: string): Promise<void> {
     // Dans une implémentation complète, vous révoqueriez tous les tokens de l'utilisateur
     this.logger.info(`All tokens revoked for user: ${userId}`, {
-      service: 'JWT Auth Service',
+      service: "JWT Auth Service",
     });
 
     // TODO: Implémenter la logique de révocation massive
@@ -193,15 +193,15 @@ export class JwtAuthenticationService implements AuthenticationService {
       const resetToken = `reset_${userId}_${Date.now()}_${Math.random().toString(36).substring(2)}`;
 
       this.logger.info(`Generated reset session token for user: ${userId}`, {
-        service: 'JWT Auth Service',
+        service: "JWT Auth Service",
       });
 
       return resetToken;
     } catch (error) {
       this.logger.error(
-        `Failed to generate reset session token: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Failed to generate reset session token: ${error instanceof Error ? error.message : "Unknown error"}`,
       );
-      throw new TokenGenerationError('reset session token generation', error);
+      throw new TokenGenerationError("reset session token generation", error);
     }
   }
 
@@ -210,17 +210,17 @@ export class JwtAuthenticationService implements AuthenticationService {
   ): Promise<{ userId: string; valid: boolean }> {
     try {
       // Parser le token de format: reset_userId_timestamp_random
-      const parts = token.split('_');
+      const parts = token.split("_");
 
-      if (parts.length !== 4 || parts[0] !== 'reset') {
-        return { userId: '', valid: false };
+      if (parts.length !== 4 || parts[0] !== "reset") {
+        return { userId: "", valid: false };
       }
 
       const userId = parts[1];
       const timestamp = parseInt(parts[2], 10);
 
       if (!userId || isNaN(timestamp)) {
-        return { userId: '', valid: false };
+        return { userId: "", valid: false };
       }
 
       // Vérifier l'expiration (5 minutes)
@@ -233,16 +233,16 @@ export class JwtAuthenticationService implements AuthenticationService {
       this.logger.info(
         `Reset session token validation result: ${valid} for user: ${userId}`,
         {
-          service: 'JWT Auth Service',
+          service: "JWT Auth Service",
         },
       );
 
       return { userId, valid };
     } catch (error) {
       this.logger.error(
-        `Failed to validate reset session token: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Failed to validate reset session token: ${error instanceof Error ? error.message : "Unknown error"}`,
       );
-      return { userId: '', valid: false };
+      return { userId: "", valid: false };
     }
   }
 }

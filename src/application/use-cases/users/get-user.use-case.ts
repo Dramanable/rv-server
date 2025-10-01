@@ -4,15 +4,15 @@
  * Règles métier pour la récupération d'utilisateurs avec autorisation et logging
  */
 
-import { User } from '../../../domain/entities/user.entity';
+import { User } from "../../../domain/entities/user.entity";
 import {
   InsufficientPermissionsError,
   UserNotFoundError,
-} from '../../../domain/exceptions/user.exceptions';
-import { UserRepository } from '../../../domain/repositories/user.repository.interface';
-import { Permission, UserRole } from '../../../shared/enums/user-role.enum';
-import type { I18nService } from '../../ports/i18n.port';
-import { Logger } from '../../ports/logger.port';
+} from "../../../domain/exceptions/user.exceptions";
+import { UserRepository } from "../../../domain/repositories/user.repository.interface";
+import { Permission, UserRole } from "../../../shared/enums/user-role.enum";
+import type { I18nService } from "../../ports/i18n.port";
+import { Logger } from "../../ports/logger.port";
 
 // DTOs
 export interface GetUserRequest {
@@ -40,13 +40,13 @@ export class GetUserUseCase {
   async execute(request: GetUserRequest): Promise<GetUserResponse> {
     const startTime = Date.now();
     const requestContext = {
-      operation: 'GetUser',
+      operation: "GetUser",
       requestingUserId: request.requestingUserId,
       targetUserId: request.userId,
     };
 
     this.logger.info(
-      this.i18n.t('operations.user.retrieval_attempt', {
+      this.i18n.t("operations.user.retrieval_attempt", {
         userId: request.userId,
       }),
       requestContext,
@@ -55,7 +55,7 @@ export class GetUserUseCase {
     try {
       // 1. Validation de l'utilisateur demandeur
       this.logger.debug(
-        this.i18n.t('operations.user.validation_process'),
+        this.i18n.t("operations.user.validation_process"),
         requestContext,
       );
 
@@ -64,7 +64,7 @@ export class GetUserUseCase {
       );
       if (!requestingUser) {
         this.logger.warn(
-          this.i18n.t('warnings.user.not_found'),
+          this.i18n.t("warnings.user.not_found"),
           requestContext,
         );
         throw new UserNotFoundError(request.requestingUserId);
@@ -72,7 +72,7 @@ export class GetUserUseCase {
 
       // 2. Récupération de l'utilisateur cible
       this.logger.debug(
-        this.i18n.t('operations.user.target_lookup', {
+        this.i18n.t("operations.user.target_lookup", {
           userId: request.userId,
         }),
         requestContext,
@@ -81,7 +81,7 @@ export class GetUserUseCase {
       const targetUser = await this.userRepository.findById(request.userId);
       if (!targetUser) {
         this.logger.warn(
-          this.i18n.t('warnings.user.target_not_found', {
+          this.i18n.t("warnings.user.target_not_found", {
             userId: request.userId,
           }),
           requestContext,
@@ -91,7 +91,7 @@ export class GetUserUseCase {
 
       // 3. Vérification des permissions d'accès
       this.logger.debug(
-        this.i18n.t('operations.permission.check', { operation: 'GetUser' }),
+        this.i18n.t("operations.permission.check", { operation: "GetUser" }),
         requestContext,
       );
       this.validateViewPermissions(requestingUser, targetUser);
@@ -100,7 +100,7 @@ export class GetUserUseCase {
 
       // Log de succès
       this.logger.info(
-        this.i18n.t('success.user.retrieval_success', {
+        this.i18n.t("success.user.retrieval_success", {
           email: targetUser.email.getValue(),
           requestingUser: requestingUser.email.getValue(),
         }),
@@ -109,7 +109,7 @@ export class GetUserUseCase {
 
       // Audit trail
       this.logger.audit(
-        this.i18n.t('audit.user.accessed'),
+        this.i18n.t("audit.user.accessed"),
         request.requestingUserId,
         {
           targetUserId: targetUser.id,
@@ -120,7 +120,7 @@ export class GetUserUseCase {
 
       // 4. Retour des données
       return {
-        id: targetUser.id || 'generated-id',
+        id: targetUser.id || "generated-id",
         email: targetUser.email.getValue(),
         name: targetUser.name,
         role: targetUser.role,
@@ -131,7 +131,7 @@ export class GetUserUseCase {
     } catch (error) {
       const duration = Date.now() - startTime;
       this.logger.error(
-        this.i18n.t('operations.failed', { operation: 'GetUser' }),
+        this.i18n.t("operations.failed", { operation: "GetUser" }),
         error as Error,
         { ...requestContext, duration },
       );
@@ -156,7 +156,7 @@ export class GetUserUseCase {
       UserRole.GUEST_CLIENT,
     ];
     if (clientRoles.includes(requestingUser.role)) {
-      this.logger.warn(this.i18n.t('warnings.permission.denied'), {
+      this.logger.warn(this.i18n.t("warnings.permission.denied"), {
         requestingUserId: requestingUser.id,
         requestingUserRole: requestingUser.role,
         requiredPermission: Permission.VIEW_STAFF_PERFORMANCE,
@@ -169,7 +169,7 @@ export class GetUserUseCase {
 
     // 3. Vérification des permissions pour managers et admins
     if (!requestingUser.hasPermission(Permission.VIEW_STAFF_PERFORMANCE)) {
-      this.logger.warn(this.i18n.t('warnings.permission.denied'), {
+      this.logger.warn(this.i18n.t("warnings.permission.denied"), {
         requestingUserId: requestingUser.id,
         requestingUserRole: requestingUser.role,
         requiredPermission: Permission.VIEW_STAFF_PERFORMANCE,
@@ -185,7 +185,7 @@ export class GetUserUseCase {
       const adminRoles = [UserRole.PLATFORM_ADMIN, UserRole.BUSINESS_OWNER];
       if (adminRoles.includes(targetUser.role)) {
         this.logger.warn(
-          this.i18n.t('warnings.permission.admin_access_denied'),
+          this.i18n.t("warnings.permission.admin_access_denied"),
           {
             requestingUserId: requestingUser.id,
             targetUserId: targetUser.id,

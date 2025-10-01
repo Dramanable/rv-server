@@ -5,11 +5,11 @@
  * Respecte les principes Clean Architecture
  */
 
-import { Service } from '../../../domain/entities/service.entity';
-import { BusinessId } from '../../../domain/value-objects/business-id.value-object';
-import { ServiceId } from '../../../domain/value-objects/service-id.value-object';
-import { ServiceTypeId } from '../../../domain/value-objects/service-type-id.value-object';
-import type { Logger } from '../../ports/logger.port';
+import { Service } from "../../../domain/entities/service.entity";
+import { BusinessId } from "../../../domain/value-objects/business-id.value-object";
+import { ServiceId } from "../../../domain/value-objects/service-id.value-object";
+import { ServiceTypeId } from "../../../domain/value-objects/service-type-id.value-object";
+import type { Logger } from "../../ports/logger.port";
 
 // Interfaces Repository (Domain Layer)
 export interface ServiceRepository {
@@ -50,7 +50,7 @@ export class UpdateServiceUseCase {
 
   async execute(request: UpdateServiceRequest): Promise<UpdateServiceResponse> {
     try {
-      this.logger.info('Updating service', {
+      this.logger.info("Updating service", {
         serviceId: request.serviceId,
         businessId: request.businessId,
         requestingUserId: request.requestingUserId,
@@ -74,7 +74,7 @@ export class UpdateServiceUseCase {
       // Persistence et réponse
       const updatedService = await this.serviceRepository.save(existingService);
 
-      this.logger.info('Service updated successfully', {
+      this.logger.info("Service updated successfully", {
         serviceId: updatedService.id.getValue(),
         serviceName: updatedService.name,
         businessId: request.businessId,
@@ -83,7 +83,7 @@ export class UpdateServiceUseCase {
       return { service: updatedService };
     } catch (error) {
       const errorMessage =
-        error instanceof Error ? error.message : 'Unknown error';
+        error instanceof Error ? error.message : "Unknown error";
       this.logger.error(
         `Failed to update service ${request.serviceId}: ${errorMessage}`,
       );
@@ -101,12 +101,12 @@ export class UpdateServiceUseCase {
     const existingService = await this.serviceRepository.findById(serviceId);
 
     if (!existingService) {
-      throw new Error('Service not found');
+      throw new Error("Service not found");
     }
 
     // Vérification appartenance au business
     if (!existingService.businessId.equals(businessId)) {
-      throw new Error('Service does not belong to the specified business');
+      throw new Error("Service does not belong to the specified business");
     }
 
     return { serviceId, businessId, existingService };
@@ -123,7 +123,7 @@ export class UpdateServiceUseCase {
   ) {
     // Validation prix positif
     if (request.basePrice !== undefined && request.basePrice <= 0) {
-      throw new Error('Price must be positive');
+      throw new Error("Price must be positive");
     }
 
     // Vérification unicité du nom (si nom modifié)
@@ -134,7 +134,7 @@ export class UpdateServiceUseCase {
       );
 
       if (serviceWithSameName && !serviceWithSameName.id.equals(serviceId)) {
-        throw new Error('Service name already exists');
+        throw new Error("Service name already exists");
       }
     }
   }

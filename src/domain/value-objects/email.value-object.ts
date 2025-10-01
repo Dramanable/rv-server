@@ -2,7 +2,7 @@ import {
   InvalidFormatError,
   RequiredValueError,
   ValueTooLongError,
-} from '../exceptions/value-object.exceptions';
+} from "../exceptions/value-object.exceptions";
 
 export class Email {
   private static readonly EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -13,17 +13,17 @@ export class Email {
 
   private validate(value: string): void {
     if (!value || value.trim().length === 0) {
-      throw new RequiredValueError('email');
+      throw new RequiredValueError("email");
     }
 
     const trimmedValue = value.trim().toLowerCase();
 
     if (!Email.EMAIL_REGEX.test(trimmedValue)) {
-      throw new InvalidFormatError('email', trimmedValue, 'user@domain.com');
+      throw new InvalidFormatError("email", trimmedValue, "user@domain.com");
     }
 
     if (trimmedValue.length > 254) {
-      throw new ValueTooLongError('email', 254, trimmedValue.length);
+      throw new ValueTooLongError("email", 254, trimmedValue.length);
     }
   }
 
@@ -36,11 +36,11 @@ export class Email {
   }
 
   getDomain(): string {
-    return this.value.split('@')[1];
+    return this.value.split("@")[1];
   }
 
   getLocalPart(): string {
-    return this.value.split('@')[0];
+    return this.value.split("@")[0];
   }
 
   equals(other: Email): boolean {

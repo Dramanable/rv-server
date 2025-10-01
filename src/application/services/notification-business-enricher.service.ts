@@ -5,14 +5,14 @@
  * ✅ Intégration i18n pour templates multilingues
  */
 
-import { Business } from '@domain/entities/business.entity';
-import { BusinessRepository } from '@domain/repositories/business.repository';
-import { BusinessId } from '@domain/value-objects/business-id.value-object';
-import { TemplateVariables } from '@domain/value-objects/notification-template.value-object';
+import { Business } from "@domain/entities/business.entity";
+import { BusinessRepository } from "@domain/repositories/business.repository";
+import { BusinessId } from "@domain/value-objects/business-id.value-object";
+import { TemplateVariables } from "@domain/value-objects/notification-template.value-object";
 import {
   INotificationBusinessEnricher,
   EnrichBusinessDataRequest,
-} from '@application/ports/notification-business-enricher.port';
+} from "@application/ports/notification-business-enricher.port";
 
 export class NotificationBusinessEnricherService
   implements INotificationBusinessEnricher
@@ -62,7 +62,7 @@ export class NotificationBusinessEnricherService
     // Si appointmentData est présent et contient des informations bookedBy
     if (
       baseVariables.appointmentData &&
-      typeof baseVariables.appointmentData === 'object'
+      typeof baseVariables.appointmentData === "object"
     ) {
       const appointmentData = baseVariables.appointmentData as any;
       const clientInfo = appointmentData.clientInfo;
@@ -113,7 +113,7 @@ export class NotificationBusinessEnricherService
           beneficiaryAge: clientInfo.dateOfBirth
             ? this.calculateAge(clientInfo.dateOfBirth).toString()
             : undefined,
-          relationshipToBeneficiary: 'self',
+          relationshipToBeneficiary: "self",
           isBookingForSelf: true,
           contextualGreeting: `Bonjour ${beneficiaryName}`,
           contextualSubject: `Votre rendez-vous`,
@@ -123,23 +123,23 @@ export class NotificationBusinessEnricherService
           patientAge: clientInfo.dateOfBirth
             ? this.calculateAge(clientInfo.dateOfBirth).toString()
             : undefined,
-          relationshipToPatient: 'self',
+          relationshipToPatient: "self",
         };
       }
     }
 
     // Par défaut, utiliser les variables existantes
     const defaultName = String(
-      baseVariables.clientName || baseVariables.userName || '',
+      baseVariables.clientName || baseVariables.userName || "",
     );
     return {
       beneficiaryName: defaultName,
       clientName: defaultName,
       isBookingForSelf: true,
-      relationshipToBeneficiary: 'self',
+      relationshipToBeneficiary: "self",
       // Alias pour compatibilité
       patientName: defaultName,
-      relationshipToPatient: 'self',
+      relationshipToPatient: "self",
     };
   }
 
@@ -148,14 +148,14 @@ export class NotificationBusinessEnricherService
    */
   private formatRelationship(relationship: string): string {
     const relationshipMap: Record<string, string> = {
-      SPOUSE: 'conjoint(e)',
-      PARENT: 'parent',
-      CHILD: 'enfant',
-      SIBLING: 'frère/sœur',
-      GUARDIAN: 'tuteur/tutrice',
-      FAMILY_MEMBER: 'membre de la famille',
-      FRIEND: 'ami(e)',
-      OTHER: 'proche',
+      SPOUSE: "conjoint(e)",
+      PARENT: "parent",
+      CHILD: "enfant",
+      SIBLING: "frère/sœur",
+      GUARDIAN: "tuteur/tutrice",
+      FAMILY_MEMBER: "membre de la famille",
+      FRIEND: "ami(e)",
+      OTHER: "proche",
     };
 
     return relationshipMap[relationship] || relationship.toLowerCase();
@@ -166,7 +166,7 @@ export class NotificationBusinessEnricherService
    */
   private calculateAge(dateOfBirth: Date | string): number {
     const birthDate =
-      typeof dateOfBirth === 'string' ? new Date(dateOfBirth) : dateOfBirth;
+      typeof dateOfBirth === "string" ? new Date(dateOfBirth) : dateOfBirth;
     const today = new Date();
     let age = today.getFullYear() - birthDate.getFullYear();
     const monthDiff = today.getMonth() - birthDate.getMonth();
@@ -207,8 +207,8 @@ export class NotificationBusinessEnricherService
       // Images et branding
       businessLogo: logoUrl,
       businessCoverImage: coverImageUrl,
-      brandPrimaryColor: branding?.brandColors?.primary || '#007bff',
-      brandSecondaryColor: branding?.brandColors?.secondary || '#6c757d',
+      brandPrimaryColor: branding?.brandColors?.primary || "#007bff",
+      brandSecondaryColor: branding?.brandColors?.secondary || "#6c757d",
       // Réseaux sociaux depuis contactInfo
       facebookUrl: contactInfo?.socialMedia?.facebook,
       twitterUrl: contactInfo?.socialMedia?.twitter,
@@ -225,7 +225,7 @@ export class NotificationBusinessEnricherService
   private generateBusinessActionUrls(
     businessId: string,
   ): Partial<TemplateVariables> {
-    const baseUrl = process.env.FRONTEND_BASE_URL || 'https://app.example.com';
+    const baseUrl = process.env.FRONTEND_BASE_URL || "https://app.example.com";
 
     return {
       bookingUrl: `${baseUrl}/business/${businessId}/book`,
@@ -245,11 +245,11 @@ export class NotificationBusinessEnricherService
     missingVariables: string[];
   } {
     const requiredBusinessVariables = [
-      'businessName',
-      'businessPhone',
-      'businessEmail',
-      'businessAddress',
-      'businessCity',
+      "businessName",
+      "businessPhone",
+      "businessEmail",
+      "businessAddress",
+      "businessCity",
     ];
 
     const missingVariables = requiredBusinessVariables.filter(

@@ -4,7 +4,7 @@
  * Mappers bidirectionnels entre DTOs et Domain/Application
  */
 
-import { ProfessionalRole } from '@domain/entities/professional-role.entity';
+import { ProfessionalRole } from "@domain/entities/professional-role.entity";
 import {
   CreateProfessionalRoleDto,
   CreateProfessionalRoleResponseDto,
@@ -14,16 +14,16 @@ import {
   ProfessionalRoleDto,
   UpdateProfessionalRoleDto,
   UpdateProfessionalRoleResponseDto,
-} from '@presentation/dtos/professional-roles/professional-role.dto';
+} from "@presentation/dtos/professional-roles/professional-role.dto";
 
 // Import des interfaces Use Case
-import { CreateProfessionalRoleRequest } from '@application/use-cases/professional-roles/create-professional-role.use-case';
-import { GetProfessionalRoleResponse } from '@application/use-cases/professional-roles/get-professional-role.use-case';
+import { CreateProfessionalRoleRequest } from "@application/use-cases/professional-roles/create-professional-role.use-case";
+import { GetProfessionalRoleResponse } from "@application/use-cases/professional-roles/get-professional-role.use-case";
 import {
   ListProfessionalRolesRequest,
   ListProfessionalRolesResponse,
-} from '@application/use-cases/professional-roles/list-professional-roles.use-case';
-import { UpdateProfessionalRoleRequest } from '@application/use-cases/professional-roles/update-professional-role.use-case';
+} from "@application/use-cases/professional-roles/list-professional-roles.use-case";
+import { UpdateProfessionalRoleRequest } from "@application/use-cases/professional-roles/update-professional-role.use-case";
 
 export class ProfessionalRoleMapper {
   /**
@@ -202,7 +202,7 @@ export class ProfessionalRoleMapper {
   static toDeleteResponse(): DeleteProfessionalRoleResponseDto {
     return {
       success: true,
-      message: 'Professional role deleted successfully',
+      message: "Professional role deleted successfully",
     };
   }
 

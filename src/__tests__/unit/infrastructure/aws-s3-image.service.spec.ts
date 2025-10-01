@@ -5,10 +5,10 @@
  */
 
 // Mock AWS S3 SDK
-jest.mock('@aws-sdk/client-s3');
-jest.mock('@aws-sdk/s3-request-presigner');
+jest.mock("@aws-sdk/client-s3");
+jest.mock("@aws-sdk/s3-request-presigner");
 
-describe('AwsS3ImageService', () => {
+describe("AwsS3ImageService", () => {
   let mockS3Client: jest.Mocked<any>;
 
   beforeEach(() => {
@@ -20,8 +20,8 @@ describe('AwsS3ImageService', () => {
     // service = new AwsS3ImageService(mockS3Client, 'test-bucket');
   });
 
-  describe('🔴 RED - Signed URL Generation', () => {
-    it('should generate signed upload URL for business image', async () => {
+  describe("🔴 RED - Signed URL Generation", () => {
+    it("should generate signed upload URL for business image", async () => {
       // Given
 
       // When
@@ -31,7 +31,7 @@ describe('AwsS3ImageService', () => {
       expect(true).toBe(true); // Intentionally fail to demonstrate RED phase
     });
 
-    it('should generate signed download URL with expiration', async () => {
+    it("should generate signed download URL with expiration", async () => {
       // Given
 
       // When
@@ -41,7 +41,7 @@ describe('AwsS3ImageService', () => {
       expect(true).toBe(true); // Will fail in RED phase
     });
 
-    it('should generate batch signed URLs for gallery images', async () => {
+    it("should generate batch signed URLs for gallery images", async () => {
       // Given
 
       // When
@@ -52,8 +52,8 @@ describe('AwsS3ImageService', () => {
     });
   });
 
-  describe('🔴 RED - Image Upload Management', () => {
-    it('should upload image with proper S3 key structure', async () => {
+  describe("🔴 RED - Image Upload Management", () => {
+    it("should upload image with proper S3 key structure", async () => {
       // Given
 
       // When
@@ -63,7 +63,7 @@ describe('AwsS3ImageService', () => {
       expect(true).toBe(true); // Will fail in RED phase
     });
 
-    it('should generate responsive image variants during upload', async () => {
+    it("should generate responsive image variants during upload", async () => {
       // Given
 
       // When
@@ -73,7 +73,7 @@ describe('AwsS3ImageService', () => {
       expect(true).toBe(true); // Will fail in RED phase
     });
 
-    it('should validate upload against admin settings before processing', async () => {
+    it("should validate upload against admin settings before processing", async () => {
       // Given
 
       // When
@@ -84,8 +84,8 @@ describe('AwsS3ImageService', () => {
     });
   });
 
-  describe('🔴 RED - Image Management Operations', () => {
-    it('should delete image and all its variants from S3', async () => {
+  describe("🔴 RED - Image Management Operations", () => {
+    it("should delete image and all its variants from S3", async () => {
       // Given
 
       // When
@@ -95,7 +95,7 @@ describe('AwsS3ImageService', () => {
       expect(true).toBe(true); // Will fail in RED phase
     });
 
-    it('should update image metadata without re-uploading', async () => {
+    it("should update image metadata without re-uploading", async () => {
       // Given
 
       // When
@@ -105,7 +105,7 @@ describe('AwsS3ImageService', () => {
       expect(true).toBe(true); // Will fail in RED phase
     });
 
-    it('should list all images for a business with pagination', async () => {
+    it("should list all images for a business with pagination", async () => {
       // Given
 
       // When
@@ -116,10 +116,10 @@ describe('AwsS3ImageService', () => {
     });
   });
 
-  describe('🔴 RED - Error Handling and Security', () => {
-    it('should handle S3 service errors gracefully', async () => {
+  describe("🔴 RED - Error Handling and Security", () => {
+    it("should handle S3 service errors gracefully", async () => {
       // Given
-      mockS3Client.send.mockRejectedValue(new Error('S3 service unavailable'));
+      mockS3Client.send.mockRejectedValue(new Error("S3 service unavailable"));
 
       // When & Then
       // await expect(service.uploadImage(businessId, imageBuffer, metadata))
@@ -127,7 +127,7 @@ describe('AwsS3ImageService', () => {
       expect(true).toBe(true); // Will fail in RED phase
     });
 
-    it('should validate business ownership before allowing operations', async () => {
+    it("should validate business ownership before allowing operations", async () => {
       // Given
 
       // When & Then
@@ -136,7 +136,7 @@ describe('AwsS3ImageService', () => {
       expect(true).toBe(true); // Will fail in RED phase
     });
 
-    it('should sanitize file names to prevent S3 key injection', async () => {
+    it("should sanitize file names to prevent S3 key injection", async () => {
       // Given
 
       // When
@@ -147,8 +147,8 @@ describe('AwsS3ImageService', () => {
     });
   });
 
-  describe('🔴 RED - Performance and Optimization', () => {
-    it('should compress large images before upload', async () => {
+  describe("🔴 RED - Performance and Optimization", () => {
+    it("should compress large images before upload", async () => {
       // Given
 
       // When
@@ -158,7 +158,7 @@ describe('AwsS3ImageService', () => {
       expect(true).toBe(true); // Will fail in RED phase
     });
 
-    it('should cache signed URLs to reduce S3 API calls', async () => {
+    it("should cache signed URLs to reduce S3 API calls", async () => {
       // Given
 
       // When
@@ -169,7 +169,7 @@ describe('AwsS3ImageService', () => {
       expect(true).toBe(true); // Will fail in RED phase
     });
 
-    it('should generate optimized thumbnails with WebP format', async () => {
+    it("should generate optimized thumbnails with WebP format", async () => {
       // Given
 
       // When

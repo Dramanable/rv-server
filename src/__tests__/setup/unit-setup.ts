@@ -5,27 +5,27 @@
  * ✅ Isolation complète des dépendances externes
  */
 
-import 'reflect-metadata';
+import "reflect-metadata";
 
 // 🎭 Mocks globaux pour les dépendances externes
-jest.mock('ioredis', () => {
+jest.mock("ioredis", () => {
   return jest.fn().mockImplementation(() => ({
     connect: jest.fn().mockResolvedValue(undefined),
     disconnect: jest.fn().mockResolvedValue(undefined),
-    set: jest.fn().mockResolvedValue('OK'),
+    set: jest.fn().mockResolvedValue("OK"),
     get: jest.fn().mockResolvedValue(null),
     del: jest.fn().mockResolvedValue(1),
     exists: jest.fn().mockResolvedValue(0),
     expire: jest.fn().mockResolvedValue(1),
-    flushall: jest.fn().mockResolvedValue('OK'),
-    status: 'ready',
+    flushall: jest.fn().mockResolvedValue("OK"),
+    status: "ready",
     on: jest.fn(),
     off: jest.fn(),
   }));
 });
 
 // 🗃️ Mock TypeORM
-jest.mock('typeorm', () => ({
+jest.mock("typeorm", () => ({
   Entity: jest.fn(() => jest.fn()),
   PrimaryGeneratedColumn: jest.fn(() => jest.fn()),
   Column: jest.fn(() => jest.fn()),
@@ -45,17 +45,17 @@ jest.mock('typeorm', () => ({
 // }));
 
 // 🔐 Mock bcrypt
-jest.mock('bcrypt', () => ({
-  hash: jest.fn().mockResolvedValue('mocked-hash'),
+jest.mock("bcrypt", () => ({
+  hash: jest.fn().mockResolvedValue("mocked-hash"),
   compare: jest.fn().mockResolvedValue(true),
-  genSalt: jest.fn().mockResolvedValue('mocked-salt'),
-  hashSync: jest.fn().mockReturnValue('mocked-hash-sync'),
+  genSalt: jest.fn().mockResolvedValue("mocked-salt"),
+  hashSync: jest.fn().mockReturnValue("mocked-hash-sync"),
   compareSync: jest.fn().mockReturnValue(true),
 }));
 
 // 📝 Mock filesystem
-jest.mock('fs', () => ({
-  ...jest.requireActual('fs'),
+jest.mock("fs", () => ({
+  ...jest.requireActual("fs"),
   writeFileSync: jest.fn(),
   readFileSync: jest.fn(),
   existsSync: jest.fn().mockReturnValue(true),
@@ -77,11 +77,11 @@ afterEach(() => {
 });
 
 // 🎯 Configuration des variables d'environnement pour les tests
-process.env.NODE_ENV = 'test';
-process.env.JWT_SECRET = 'test-jwt-secret-key-for-unit-tests';
-process.env.DATABASE_URL = 'postgresql://test:test@localhost:5432/test_db';
-process.env.REDIS_URL = 'redis://localhost:6379';
-process.env.USER_CACHE_RETENTION_MINUTES = '60';
+process.env.NODE_ENV = "test";
+process.env.JWT_SECRET = "test-jwt-secret-key-for-unit-tests";
+process.env.DATABASE_URL = "postgresql://test:test@localhost:5432/test_db";
+process.env.REDIS_URL = "redis://localhost:6379";
+process.env.USER_CACHE_RETENTION_MINUTES = "60";
 
 // 📊 Configuration des timeouts par défaut pour les tests unitaires
 jest.setTimeout(5000); // 5 secondes max par test
@@ -91,11 +91,11 @@ const originalConsoleError = console.error;
 beforeAll(() => {
   console.error = (...args: unknown[]) => {
     // Filtrer certaines erreurs connues des tests
-    const message = args[0]?.toString() || '';
+    const message = args[0]?.toString() || "";
     if (
-      message.includes('Warning: ') ||
-      message.includes('ReactDOMTestUtils') ||
-      message.includes('act()')
+      message.includes("Warning: ") ||
+      message.includes("ReactDOMTestUtils") ||
+      message.includes("act()")
     ) {
       return;
     }

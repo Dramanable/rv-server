@@ -4,15 +4,15 @@
  * @version 1.0.0
  */
 
-import { Logger } from '@application/ports/logger.port';
-import { I18nService } from '@application/ports/i18n.port';
-import { INotificationRepository } from '@domain/repositories/notification.repository.interface';
-import { Notification } from '@domain/entities/notification.entity';
-import { NotificationException } from '@application/exceptions/notification.exceptions';
+import { Logger } from "@application/ports/logger.port";
+import { I18nService } from "@application/ports/i18n.port";
+import { INotificationRepository } from "@domain/repositories/notification.repository.interface";
+import { Notification } from "@domain/entities/notification.entity";
+import { NotificationException } from "@application/exceptions/notification.exceptions";
 import {
   NotificationTranslationService,
   TranslatedNotification,
-} from '@application/services/notification-translation.service';
+} from "@application/services/notification-translation.service";
 
 /**
  * Requête pour récupérer une notification par ID
@@ -54,7 +54,7 @@ export class GetNotificationByIdUseCase {
     this.validateRequest(request);
 
     // 📊 Log de l'opération
-    this.logger.info('Getting notification by ID', {
+    this.logger.info("Getting notification by ID", {
       notificationId: request.notificationId,
       requestingUserId: request.requestingUserId,
       language: request.language,
@@ -69,9 +69,9 @@ export class GetNotificationByIdUseCase {
 
       if (!notification) {
         throw new NotificationException(
-          this.i18n.translate('errors.notifications.not_found'),
-          'NOT_FOUND',
-          'errors.notifications.not_found',
+          this.i18n.translate("errors.notifications.not_found"),
+          "NOT_FOUND",
+          "errors.notifications.not_found",
           { notificationId: request.notificationId },
         );
       }
@@ -81,7 +81,7 @@ export class GetNotificationByIdUseCase {
 
       // 🌍 Traduction du contenu si langue spécifiée
       let translatedContent: TranslatedNotification | undefined;
-      if (request.language && request.language !== 'fr') {
+      if (request.language && request.language !== "fr") {
         const metadata = notification.getMetadata();
         translatedContent = this.translationService.translateNotification(
           notification.getTitle(),
@@ -96,7 +96,7 @@ export class GetNotificationByIdUseCase {
       }
 
       // 📊 Log de succès
-      this.logger.info('Notification retrieved successfully', {
+      this.logger.info("Notification retrieved successfully", {
         notificationId: request.notificationId,
         recipientId: notification.getRecipientId(),
         language: request.language,
@@ -111,9 +111,9 @@ export class GetNotificationByIdUseCase {
     } catch (error) {
       // 🚨 Log d'erreur
       const errorMessage =
-        error instanceof Error ? error.message : 'Unknown error';
+        error instanceof Error ? error.message : "Unknown error";
       this.logger.error(
-        'Failed to get notification by ID',
+        "Failed to get notification by ID",
         error instanceof Error ? error : undefined,
         {
           notificationId: request.notificationId,
@@ -127,9 +127,9 @@ export class GetNotificationByIdUseCase {
       }
 
       throw new NotificationException(
-        this.i18n.translate('errors.notifications.get_failed'),
-        'GET_FAILED',
-        'errors.notifications.get_failed',
+        this.i18n.translate("errors.notifications.get_failed"),
+        "GET_FAILED",
+        "errors.notifications.get_failed",
         { originalError: errorMessage },
       );
     }
@@ -141,9 +141,9 @@ export class GetNotificationByIdUseCase {
   private validateRequest(request: GetNotificationByIdRequest): void {
     if (!request.notificationId || request.notificationId.trim().length === 0) {
       throw new NotificationException(
-        this.i18n.translate('errors.notifications.id_required'),
-        'VALIDATION_ERROR',
-        'errors.notifications.id_required',
+        this.i18n.translate("errors.notifications.id_required"),
+        "VALIDATION_ERROR",
+        "errors.notifications.id_required",
       );
     }
 
@@ -152,9 +152,9 @@ export class GetNotificationByIdUseCase {
       request.requestingUserId.trim().length === 0
     ) {
       throw new NotificationException(
-        this.i18n.translate('errors.notifications.requesting_user_required'),
-        'VALIDATION_ERROR',
-        'errors.notifications.requesting_user_required',
+        this.i18n.translate("errors.notifications.requesting_user_required"),
+        "VALIDATION_ERROR",
+        "errors.notifications.requesting_user_required",
       );
     }
 
@@ -164,11 +164,11 @@ export class GetNotificationByIdUseCase {
       !this.translationService.isLanguageSupported(request.language)
     ) {
       throw new NotificationException(
-        this.i18n.translate('notifications.errors.unsupported_language', {
+        this.i18n.translate("notifications.errors.unsupported_language", {
           language: request.language,
         }),
-        'VALIDATION_ERROR',
-        'notifications.errors.unsupported_language',
+        "VALIDATION_ERROR",
+        "notifications.errors.unsupported_language",
         { language: request.language },
       );
     }
@@ -186,9 +186,9 @@ export class GetNotificationByIdUseCase {
     if (notification.getRecipientId() !== requestingUserId) {
       // TODO: Vérifier si l'utilisateur est admin/staff qui peut voir toutes les notifications
       throw new NotificationException(
-        this.i18n.translate('errors.notifications.permission_denied'),
-        'PERMISSION_DENIED',
-        'errors.notifications.permission_denied',
+        this.i18n.translate("errors.notifications.permission_denied"),
+        "PERMISSION_DENIED",
+        "errors.notifications.permission_denied",
         {
           notificationId: notification.getId(),
           requestingUserId,

@@ -6,19 +6,19 @@
  * Auto-registration pour les clients avec rôle CLIENT par défaut
  */
 
-import type { AuthenticationService } from '@application/ports/authentication.port';
-import type { IConfigService } from '@application/ports/config.port';
-import type { I18nService } from '@application/ports/i18n.port';
-import type { Logger } from '@application/ports/logger.port';
-import type { IPasswordHasher } from '@application/ports/password-hasher.port';
-import type { UserCacheService } from '@application/services/user-cache.service';
-import { User } from '@domain/entities/user.entity';
-import { EmailAlreadyExistsError } from '@domain/exceptions/user.exceptions';
-import type { UserRepository } from '@domain/repositories/user.repository.interface';
-import { Email } from '@domain/value-objects/email.vo';
-import { AppContextFactory } from '@shared/context/app-context';
-import { UserRole } from '@shared/enums/user-role.enum';
-import { randomUUID } from 'crypto';
+import type { AuthenticationService } from "@application/ports/authentication.port";
+import type { IConfigService } from "@application/ports/config.port";
+import type { I18nService } from "@application/ports/i18n.port";
+import type { Logger } from "@application/ports/logger.port";
+import type { IPasswordHasher } from "@application/ports/password-hasher.port";
+import type { UserCacheService } from "@application/services/user-cache.service";
+import { User } from "@domain/entities/user.entity";
+import { EmailAlreadyExistsError } from "@domain/exceptions/user.exceptions";
+import type { UserRepository } from "@domain/repositories/user.repository.interface";
+import { Email } from "@domain/value-objects/email.vo";
+import { AppContextFactory } from "@shared/context/app-context";
+import { UserRole } from "@shared/enums/user-role.enum";
+import { randomUUID } from "crypto";
 
 export interface RegisterRequest {
   readonly email: string;
@@ -57,12 +57,12 @@ export class RegisterUseCase {
   async execute(request: RegisterRequest): Promise<RegisterResponse> {
     // 📝 Contexte d'audit
     const context = AppContextFactory.create()
-      .operation('Register')
-      .clientInfo(request.ip || 'unknown', request.userAgent || 'unknown')
+      .operation("Register")
+      .clientInfo(request.ip || "unknown", request.userAgent || "unknown")
       .build();
 
     this.logger.info(
-      this.i18n.t('operations.auth.register_attempt', { email: request.email }),
+      this.i18n.t("operations.auth.register_attempt", { email: request.email }),
       { context: context.correlationId },
     );
 
@@ -74,13 +74,13 @@ export class RegisterUseCase {
       const existingUser = await this.userRepository.findByEmail(email);
       if (existingUser) {
         this.logger.warn(
-          this.i18n.t('warnings.auth.email_already_exists', {
+          this.i18n.t("warnings.auth.email_already_exists", {
             email: request.email,
           }),
           { context: context.correlationId },
         );
         throw new EmailAlreadyExistsError(
-          this.i18n.t('errors.auth.email_already_exists'),
+          this.i18n.t("errors.auth.email_already_exists"),
         );
       }
 
@@ -113,7 +113,7 @@ export class RegisterUseCase {
 
       // 8. 📊 Log de succès
       this.logger.info(
-        this.i18n.t('operations.auth.register_success', {
+        this.i18n.t("operations.auth.register_success", {
           email: savedUser.email.getValue(),
           userId: savedUser.id,
         }),
@@ -133,13 +133,13 @@ export class RegisterUseCase {
           refreshToken: tokens.refreshToken,
           expiresIn: tokens.expiresIn,
         },
-        message: this.i18n.t('success.auth.register_successful'),
+        message: this.i18n.t("success.auth.register_successful"),
       };
     } catch (error) {
       this.logger.error(
-        this.i18n.t('operations.auth.register_failed', {
+        this.i18n.t("operations.auth.register_failed", {
           email: request.email,
-          error: error instanceof Error ? error.message : 'Unknown error',
+          error: error instanceof Error ? error.message : "Unknown error",
         }),
         error instanceof Error ? error : undefined,
         { context: context.correlationId },

@@ -4,7 +4,7 @@
  * @version 1.0.0
  */
 
-import { ValueObjectValidationError } from '../exceptions/domain.exceptions';
+import { ValueObjectValidationError } from "../exceptions/domain.exceptions";
 
 /**
  * Métriques de performance des notifications
@@ -72,8 +72,8 @@ export class NotificationAnalytics {
   private validatePeriod(): void {
     if (this._periodStart >= this._periodEnd) {
       throw new ValueObjectValidationError(
-        'NOTIFICATION_ANALYTICS_PERIOD_INVALID',
-        'Period start must be before period end',
+        "NOTIFICATION_ANALYTICS_PERIOD_INVALID",
+        "Period start must be before period end",
         { periodStart: this._periodStart, periodEnd: this._periodEnd },
       );
     }
@@ -85,7 +85,7 @@ export class NotificationAnalytics {
 
     if (periodDays > maxPeriodDays) {
       throw new ValueObjectValidationError(
-        'NOTIFICATION_ANALYTICS_PERIOD_TOO_LONG',
+        "NOTIFICATION_ANALYTICS_PERIOD_TOO_LONG",
         `Period too long: ${periodDays} days (max: ${maxPeriodDays})`,
         { periodDays, maxPeriodDays },
       );
@@ -132,15 +132,15 @@ export class NotificationAnalytics {
    * Obtient la tendance de croissance
    */
   getGrowthTrend(): {
-    trend: 'increasing' | 'decreasing' | 'stable';
+    trend: "increasing" | "decreasing" | "stable";
     changePercentage: number;
     description: string;
   } {
     if (this._metrics.dailyTrend.length < 2) {
       return {
-        trend: 'stable',
+        trend: "stable",
         changePercentage: 0,
-        description: 'Données insuffisantes pour analyser la tendance',
+        description: "Données insuffisantes pour analyser la tendance",
       };
     }
 
@@ -160,17 +160,17 @@ export class NotificationAnalytics {
     const changePercentage =
       firstAvg > 0 ? ((secondAvg - firstAvg) / firstAvg) * 100 : 0;
 
-    let trend: 'increasing' | 'decreasing' | 'stable';
+    let trend: "increasing" | "decreasing" | "stable";
     let description: string;
 
     if (Math.abs(changePercentage) < 5) {
-      trend = 'stable';
-      description = 'Volume de notifications stable';
+      trend = "stable";
+      description = "Volume de notifications stable";
     } else if (changePercentage > 0) {
-      trend = 'increasing';
+      trend = "increasing";
       description = `Augmentation de ${changePercentage.toFixed(1)}% du volume`;
     } else {
-      trend = 'decreasing';
+      trend = "decreasing";
       description = `Diminution de ${Math.abs(changePercentage).toFixed(1)}% du volume`;
     }
 
@@ -181,8 +181,8 @@ export class NotificationAnalytics {
    * Obtient les recommandations basées sur les métriques
    */
   getRecommendations(): Array<{
-    type: 'performance' | 'optimization' | 'alert';
-    priority: 'low' | 'medium' | 'high';
+    type: "performance" | "optimization" | "alert";
+    priority: "low" | "medium" | "high";
     title: string;
     description: string;
     action: string;
@@ -192,12 +192,12 @@ export class NotificationAnalytics {
     // Recommandation sur le taux de livraison
     if (this._metrics.deliveryRate < 85) {
       recommendations.push({
-        type: 'alert' as const,
-        priority: 'high' as const,
-        title: 'Taux de livraison faible',
+        type: "alert" as const,
+        priority: "high" as const,
+        title: "Taux de livraison faible",
         description: `Le taux de livraison actuel est de ${this._metrics.deliveryRate.toFixed(1)}%, en dessous du seuil recommandé de 85%`,
         action:
-          'Vérifier la configuration des canaux de notification et la validité des adresses',
+          "Vérifier la configuration des canaux de notification et la validité des adresses",
       });
     }
 
@@ -205,12 +205,12 @@ export class NotificationAnalytics {
     if (this._metrics.averageDeliveryTime > 60000) {
       // > 1 minute
       recommendations.push({
-        type: 'performance' as const,
-        priority: 'medium' as const,
-        title: 'Temps de livraison élevé',
+        type: "performance" as const,
+        priority: "medium" as const,
+        title: "Temps de livraison élevé",
         description: `Temps moyen de livraison : ${(this._metrics.averageDeliveryTime / 1000).toFixed(1)}s`,
         action:
-          'Optimiser les fournisseurs de notification ou augmenter la capacité',
+          "Optimiser les fournisseurs de notification ou augmenter la capacité",
       });
     }
 
@@ -218,20 +218,20 @@ export class NotificationAnalytics {
     const peakHours = this.getPeakHours();
     if (peakHours.length > 0 && peakHours[0].percentage > 30) {
       recommendations.push({
-        type: 'optimization' as const,
-        priority: 'low' as const,
-        title: 'Pic de charge concentré',
+        type: "optimization" as const,
+        priority: "low" as const,
+        title: "Pic de charge concentré",
         description: `${peakHours[0].percentage.toFixed(1)}% des notifications sont envoyées à ${peakHours[0].hour}h`,
         action:
-          'Considérer un lissage des envois pour optimiser les performances',
+          "Considérer un lissage des envois pour optimiser les performances",
       });
     }
 
     // Recommandation sur les échecs
     if (this._metrics.totalFailed > this._metrics.totalSent * 0.1) {
       recommendations.push({
-        type: 'alert' as const,
-        priority: 'high' as const,
+        type: "alert" as const,
+        priority: "high" as const,
         title: "Taux d'échec élevé",
         description: `${this._metrics.totalFailed} notifications ont échoué sur ${this._metrics.totalSent} envoyées`,
         action:
@@ -256,7 +256,7 @@ export class NotificationAnalytics {
   } {
     return {
       deliveryRateChart: {
-        labels: ['Livrées', 'Échouées', 'En attente'],
+        labels: ["Livrées", "Échouées", "En attente"],
         data: [
           this._metrics.totalDelivered,
           this._metrics.totalFailed,
@@ -298,7 +298,7 @@ export class NotificationAnalytics {
 Période analysée : ${period} jour(s)
 Total des notifications : ${this._metrics.totalSent}
 Taux de livraison : ${this._metrics.deliveryRate.toFixed(1)}%
-Canal principal : ${topChannel ? `${topChannel[0]} (${topChannel[1]} notifications)` : 'N/A'}
+Canal principal : ${topChannel ? `${topChannel[0]} (${topChannel[1]} notifications)` : "N/A"}
 Tendance : ${growthTrend.description}
 Temps moyen de livraison : ${(this._metrics.averageDeliveryTime / 1000).toFixed(1)}s
     `.trim();

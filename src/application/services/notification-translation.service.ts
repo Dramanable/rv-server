@@ -4,8 +4,8 @@
  * @version 1.0.0
  */
 
-import { I18nService } from '@application/ports/i18n.port';
-import { NotificationTemplateType } from '@domain/value-objects/notification-template.value-object';
+import { I18nService } from "@application/ports/i18n.port";
+import { NotificationTemplateType } from "@domain/value-objects/notification-template.value-object";
 
 /**
  * Interface pour les données de traduction d'une notification
@@ -46,7 +46,7 @@ export class NotificationTranslationService {
   translateNotification(
     originalTitle: string,
     originalContent: string,
-    language: string = 'fr',
+    language: string = "fr",
     data?: NotificationTranslationData,
   ): TranslatedNotification {
     // Si c'est un template prédéfini, utiliser les traductions dédiées
@@ -111,7 +111,7 @@ export class NotificationTranslationService {
     variables?: Record<string, any>,
   ): string {
     // Si le texte commence par une clé de traduction (ex: "notifications.welcome.title")
-    if (text.includes('.') && !text.includes(' ')) {
+    if (text.includes(".") && !text.includes(" ")) {
       return this.i18n.translate(text, variables, language);
     }
 
@@ -124,7 +124,7 @@ export class NotificationTranslationService {
     Object.entries(variables).forEach(([key, value]) => {
       const placeholder = `{{${key}}}`;
       translatedText = translatedText.replace(
-        new RegExp(placeholder, 'g'),
+        new RegExp(placeholder, "g"),
         String(value),
       );
     });
@@ -138,27 +138,27 @@ export class NotificationTranslationService {
   private getTemplateKey(templateType: NotificationTemplateType): string {
     const templateMap: Record<NotificationTemplateType, string> = {
       [NotificationTemplateType.APPOINTMENT_CONFIRMATION]:
-        'appointment_confirmation',
-      [NotificationTemplateType.APPOINTMENT_REMINDER]: 'appointment_reminder',
+        "appointment_confirmation",
+      [NotificationTemplateType.APPOINTMENT_REMINDER]: "appointment_reminder",
       [NotificationTemplateType.APPOINTMENT_CANCELLATION]:
-        'appointment_cancellation',
+        "appointment_cancellation",
       [NotificationTemplateType.APPOINTMENT_RESCHEDULED]:
-        'appointment_rescheduled',
-      [NotificationTemplateType.WELCOME_MESSAGE]: 'welcome_message',
-      [NotificationTemplateType.PASSWORD_RESET]: 'password_reset',
-      [NotificationTemplateType.ACCOUNT_VERIFICATION]: 'account_verification',
-      [NotificationTemplateType.PAYMENT_CONFIRMATION]: 'payment_confirmation',
-      [NotificationTemplateType.CUSTOM]: 'custom',
+        "appointment_rescheduled",
+      [NotificationTemplateType.WELCOME_MESSAGE]: "welcome_message",
+      [NotificationTemplateType.PASSWORD_RESET]: "password_reset",
+      [NotificationTemplateType.ACCOUNT_VERIFICATION]: "account_verification",
+      [NotificationTemplateType.PAYMENT_CONFIRMATION]: "payment_confirmation",
+      [NotificationTemplateType.CUSTOM]: "custom",
     };
 
-    return templateMap[templateType] || 'custom';
+    return templateMap[templateType] || "custom";
   }
 
   /**
    * Obtient les langues supportées
    */
   getSupportedLanguages(): readonly string[] {
-    return ['fr', 'en'] as const;
+    return ["fr", "en"] as const;
   }
 
   /**
@@ -172,7 +172,7 @@ export class NotificationTranslationService {
    * Obtient la langue par défaut
    */
   getDefaultLanguage(): string {
-    return 'fr';
+    return "fr";
   }
 
   /**

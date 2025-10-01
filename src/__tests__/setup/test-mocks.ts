@@ -4,26 +4,26 @@
  * ✅ Compatible avec les interfaces Clean Architecture
  */
 
-import type { IAuditService } from '@application/ports/audit.port';
-import type { ICacheService } from '@application/ports/cache.port';
-import type { I18nService } from '@application/ports/i18n.port';
-import type { Logger } from '@application/ports/logger.port';
-import type { IPasswordService } from '@application/ports/password.service.interface';
-import type { IPermissionService } from '@application/ports/permission.service.interface';
-import type { IServiceTypeRepository } from '@domain/repositories/service-type.repository';
-import type { UserRepository } from '@domain/repositories/user.repository.interface';
-import type { ExecutionContext } from '@nestjs/common';
-import type { Request, Response } from 'express';
+import type { IAuditService } from "@application/ports/audit.port";
+import type { ICacheService } from "@application/ports/cache.port";
+import type { I18nService } from "@application/ports/i18n.port";
+import type { Logger } from "@application/ports/logger.port";
+import type { IPasswordService } from "@application/ports/password.service.interface";
+import type { IPermissionService } from "@application/ports/permission.service.interface";
+import type { IServiceTypeRepository } from "@domain/repositories/service-type.repository";
+import type { UserRepository } from "@domain/repositories/user.repository.interface";
+import type { ExecutionContext } from "@nestjs/common";
+import type { Request, Response } from "express";
 
 // 🎭 Mock ExecutionContext
 export const createMockExecutionContext = (
   request?: Partial<Request>,
 ): jest.Mocked<ExecutionContext> => {
   const mockRequest = {
-    path: '/test',
-    method: 'GET',
-    ip: '127.0.0.1',
-    headers: { 'user-agent': 'test-agent' },
+    path: "/test",
+    method: "GET",
+    ip: "127.0.0.1",
+    headers: { "user-agent": "test-agent" },
     ...request,
   } as Request;
 
@@ -32,8 +32,8 @@ export const createMockExecutionContext = (
       getRequest: jest.fn().mockReturnValue(mockRequest),
       getResponse: jest.fn().mockReturnValue({} as Response),
     }),
-    getHandler: jest.fn().mockReturnValue({ name: 'testHandler' }),
-    getClass: jest.fn().mockReturnValue({ name: 'TestController' }),
+    getHandler: jest.fn().mockReturnValue({ name: "testHandler" }),
+    getClass: jest.fn().mockReturnValue({ name: "TestController" }),
     getArgs: jest.fn(),
     getArgByIndex: jest.fn(),
     switchToRpc: jest.fn(),
@@ -89,8 +89,8 @@ export const createMockLogger = (): jest.Mocked<Logger> => ({
 
 // 🌐 Mock I18nService
 export const createMockI18nService = (): jest.Mocked<I18nService> => ({
-  translate: jest.fn().mockReturnValue('Mocked message'),
-  t: jest.fn().mockReturnValue('Mocked message'),
+  translate: jest.fn().mockReturnValue("Mocked message"),
+  t: jest.fn().mockReturnValue("Mocked message"),
   setDefaultLanguage: jest.fn(),
   exists: jest.fn().mockReturnValue(true),
 });
@@ -105,9 +105,9 @@ export const createMockPasswordService = (): jest.Mocked<IPasswordService> => ({
 export const createMockConfigService = () => ({
   get: jest.fn().mockImplementation((key: string) => {
     const config = {
-      'jwt.secret': 'test-secret',
-      'jwt.expiresIn': '15m',
-      'jwt.refreshExpiresIn': '7d',
+      "jwt.secret": "test-secret",
+      "jwt.expiresIn": "15m",
+      "jwt.refreshExpiresIn": "7d",
     };
     return config[key as keyof typeof config];
   }),

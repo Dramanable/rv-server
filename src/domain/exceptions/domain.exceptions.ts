@@ -15,7 +15,7 @@ export class DomainError extends Error {
     public readonly details?: Record<string, unknown>,
   ) {
     super(message);
-    this.name = 'DomainError';
+    this.name = "DomainError";
 
     // Préserve la stack trace
     Error.captureStackTrace(this, DomainError);
@@ -31,8 +31,8 @@ export class DomainValidationError extends DomainError {
     public readonly field?: string,
     public readonly value?: unknown,
   ) {
-    super(message, 'DOMAIN_VALIDATION_ERROR', { field, value });
-    this.name = 'DomainValidationError';
+    super(message, "DOMAIN_VALIDATION_ERROR", { field, value });
+    this.name = "DomainValidationError";
   }
 }
 
@@ -45,8 +45,8 @@ export class BusinessRuleViolationError extends DomainError {
     public readonly rule: string,
     public readonly context?: Record<string, unknown>,
   ) {
-    super(message, 'BUSINESS_RULE_VIOLATION', { rule, ...context });
-    this.name = 'BusinessRuleViolationError';
+    super(message, "BUSINESS_RULE_VIOLATION", { rule, ...context });
+    this.name = "BusinessRuleViolationError";
   }
 }
 
@@ -59,8 +59,8 @@ export class InvalidStateError extends DomainError {
     public readonly currentState: string,
     public readonly expectedState?: string,
   ) {
-    super(message, 'INVALID_STATE_ERROR', { currentState, expectedState });
-    this.name = 'InvalidStateError';
+    super(message, "INVALID_STATE_ERROR", { currentState, expectedState });
+    this.name = "InvalidStateError";
   }
 }
 
@@ -73,8 +73,8 @@ export class IntegrityConstraintError extends DomainError {
     public readonly constraint: string,
     public readonly violatedValue?: unknown,
   ) {
-    super(message, 'INTEGRITY_CONSTRAINT_ERROR', { constraint, violatedValue });
-    this.name = 'IntegrityConstraintError';
+    super(message, "INTEGRITY_CONSTRAINT_ERROR", { constraint, violatedValue });
+    this.name = "IntegrityConstraintError";
   }
 }
 
@@ -88,7 +88,7 @@ export class ValueObjectValidationError extends DomainError {
     public readonly context?: Record<string, unknown>,
   ) {
     super(message, code, context);
-    this.name = 'ValueObjectValidationError';
+    this.name = "ValueObjectValidationError";
   }
 }
 
@@ -98,6 +98,6 @@ export class ValueObjectValidationError extends DomainError {
 export class ValidationError extends DomainValidationError {
   constructor(message: string, field?: string, value?: unknown) {
     super(message, field, value);
-    this.name = 'ValidationError';
+    this.name = "ValidationError";
   }
 }

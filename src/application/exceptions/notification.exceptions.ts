@@ -4,7 +4,7 @@
  * @version 1.0.0
  */
 
-import { ApplicationException } from './application.exceptions';
+import { ApplicationException } from "./application.exceptions";
 
 /**
  * Exception de base pour les notifications
@@ -12,17 +12,17 @@ import { ApplicationException } from './application.exceptions';
 export class NotificationException extends ApplicationException {
   constructor(
     message: string,
-    code: string = 'NOTIFICATION_ERROR',
+    code: string = "NOTIFICATION_ERROR",
     i18nKey?: string,
     context?: Record<string, unknown>,
   ) {
     super(
       message,
       code,
-      i18nKey || 'errors.notifications.general_error',
+      i18nKey || "errors.notifications.general_error",
       context,
     );
-    this.name = 'NotificationException';
+    this.name = "NotificationException";
   }
 }
 
@@ -38,8 +38,8 @@ export class NotificationTemplateNotFoundError extends NotificationException {
   ) {
     super(
       `No notification template found for event type ${eventType} and channel ${channel}`,
-      'NOTIFICATION_TEMPLATE_NOT_FOUND',
-      'errors.notifications.template_not_found',
+      "NOTIFICATION_TEMPLATE_NOT_FOUND",
+      "errors.notifications.template_not_found",
       { eventType, channel, language, businessId },
     );
   }
@@ -52,8 +52,8 @@ export class UserOptedOutError extends NotificationException {
   constructor(recipientId: string, channel: string) {
     super(
       `User ${recipientId} has opted out from ${channel} notifications`,
-      'USER_OPTED_OUT',
-      'errors.notifications.user_opted_out',
+      "USER_OPTED_OUT",
+      "errors.notifications.user_opted_out",
       { recipientId, channel },
     );
   }
@@ -66,8 +66,8 @@ export class NotificationSendError extends NotificationException {
   constructor(channel: string, reason: string, recipientId?: string) {
     super(
       `Failed to send notification via ${channel}: ${reason}`,
-      'NOTIFICATION_SEND_ERROR',
-      'errors.notifications.send_error',
+      "NOTIFICATION_SEND_ERROR",
+      "errors.notifications.send_error",
       { channel, reason, recipientId },
     );
   }
@@ -80,8 +80,8 @@ export class UnsupportedChannelError extends NotificationException {
   constructor(channel: string) {
     super(
       `Notification channel ${channel} is not supported`,
-      'UNSUPPORTED_CHANNEL',
-      'errors.notifications.unsupported_channel',
+      "UNSUPPORTED_CHANNEL",
+      "errors.notifications.unsupported_channel",
       { channel },
     );
   }
@@ -94,8 +94,8 @@ export class NotificationScheduleError extends NotificationException {
   constructor(scheduledFor: Date, reason: string) {
     super(
       `Failed to schedule notification for ${scheduledFor.toISOString()}: ${reason}`,
-      'NOTIFICATION_SCHEDULE_ERROR',
-      'errors.notifications.schedule_error',
+      "NOTIFICATION_SCHEDULE_ERROR",
+      "errors.notifications.schedule_error",
       { scheduledFor: scheduledFor.toISOString(), reason },
     );
   }
@@ -108,8 +108,8 @@ export class InvalidTemplateError extends NotificationException {
   constructor(templateId: string, reason: string) {
     super(
       `Invalid notification template ${templateId}: ${reason}`,
-      'INVALID_TEMPLATE',
-      'errors.notifications.invalid_template',
+      "INVALID_TEMPLATE",
+      "errors.notifications.invalid_template",
       { templateId, reason },
     );
   }
@@ -121,9 +121,9 @@ export class InvalidTemplateError extends NotificationException {
 export class MissingTemplateVariablesError extends NotificationException {
   constructor(templateId: string, missingVariables: readonly string[]) {
     super(
-      `Missing required template variables for template ${templateId}: ${missingVariables.join(', ')}`,
-      'MISSING_TEMPLATE_VARIABLES',
-      'errors.notifications.missing_template_variables',
+      `Missing required template variables for template ${templateId}: ${missingVariables.join(", ")}`,
+      "MISSING_TEMPLATE_VARIABLES",
+      "errors.notifications.missing_template_variables",
       { templateId, missingVariables },
     );
   }
@@ -136,8 +136,8 @@ export class RecipientNotFoundError extends NotificationException {
   constructor(recipientId: string) {
     super(
       `Notification recipient not found: ${recipientId}`,
-      'RECIPIENT_NOT_FOUND',
-      'errors.notifications.recipient_not_found',
+      "RECIPIENT_NOT_FOUND",
+      "errors.notifications.recipient_not_found",
       { recipientId },
     );
   }
@@ -150,8 +150,8 @@ export class UserPreferencesError extends NotificationException {
   constructor(userId: string, reason: string) {
     super(
       `Failed to retrieve user preferences for ${userId}: ${reason}`,
-      'USER_PREFERENCES_ERROR',
-      'errors.notifications.user_preferences_error',
+      "USER_PREFERENCES_ERROR",
+      "errors.notifications.user_preferences_error",
       { userId, reason },
     );
   }
@@ -164,8 +164,8 @@ export class MaxRetryExceededError extends NotificationException {
   constructor(notificationId: string, retryCount: number) {
     super(
       `Maximum retry count exceeded for notification ${notificationId}: ${retryCount} attempts`,
-      'MAX_RETRY_EXCEEDED',
-      'errors.notifications.max_retry_exceeded',
+      "MAX_RETRY_EXCEEDED",
+      "errors.notifications.max_retry_exceeded",
       { notificationId, retryCount },
     );
   }
@@ -178,8 +178,8 @@ export class NotificationExpiredError extends NotificationException {
   constructor(notificationId: string, expiresAt: Date) {
     super(
       `Notification ${notificationId} has expired at ${expiresAt.toISOString()}`,
-      'NOTIFICATION_EXPIRED',
-      'errors.notifications.notification_expired',
+      "NOTIFICATION_EXPIRED",
+      "errors.notifications.notification_expired",
       { notificationId, expiresAt: expiresAt.toISOString() },
     );
   }
@@ -192,8 +192,8 @@ export class NotificationValidationError extends NotificationException {
   constructor(field: string, value: any, reason: string) {
     super(
       `Notification validation failed for field ${field}: ${reason}`,
-      'NOTIFICATION_VALIDATION_ERROR',
-      'errors.notifications.validation_error',
+      "NOTIFICATION_VALIDATION_ERROR",
+      "errors.notifications.validation_error",
       { field, value, reason },
     );
   }

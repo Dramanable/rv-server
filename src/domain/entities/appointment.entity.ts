@@ -4,29 +4,29 @@
  * Entité métier avec logique de validation
  */
 
-import { AppointmentStatusError } from '@domain/exceptions/appointment.exceptions';
-import { AppointmentId } from '@domain/value-objects/appointment-id.value-object';
-import { BusinessId } from '@domain/value-objects/business-id.value-object';
-import { CalendarId } from '@domain/value-objects/calendar-id.value-object';
-import { Email } from '@domain/value-objects/email.value-object';
-import { Money } from '@domain/value-objects/money.value-object';
-import { Phone } from '@domain/value-objects/phone.value-object';
-import { ServiceId } from '@domain/value-objects/service-id.value-object';
-import { TimeSlot } from '@domain/value-objects/time-slot.value-object';
-import { UserId } from '@domain/value-objects/user-id.value-object';
+import { AppointmentStatusError } from "@domain/exceptions/appointment.exceptions";
+import { AppointmentId } from "@domain/value-objects/appointment-id.value-object";
+import { BusinessId } from "@domain/value-objects/business-id.value-object";
+import { CalendarId } from "@domain/value-objects/calendar-id.value-object";
+import { Email } from "@domain/value-objects/email.value-object";
+import { Money } from "@domain/value-objects/money.value-object";
+import { Phone } from "@domain/value-objects/phone.value-object";
+import { ServiceId } from "@domain/value-objects/service-id.value-object";
+import { TimeSlot } from "@domain/value-objects/time-slot.value-object";
+import { UserId } from "@domain/value-objects/user-id.value-object";
 
 // ✅ OBLIGATOIRE - Export des Value Objects utilisés par les Use Cases
-export { AppointmentId } from '@domain/value-objects/appointment-id.value-object';
+export { AppointmentId } from "@domain/value-objects/appointment-id.value-object";
 
 // ENUMS
 
 export enum AppointmentStatus {
-  REQUESTED = 'REQUESTED',
-  CONFIRMED = 'CONFIRMED',
-  IN_PROGRESS = 'IN_PROGRESS',
-  COMPLETED = 'COMPLETED',
-  CANCELLED = 'CANCELLED',
-  NO_SHOW = 'NO_SHOW',
+  REQUESTED = "REQUESTED",
+  CONFIRMED = "CONFIRMED",
+  IN_PROGRESS = "IN_PROGRESS",
+  COMPLETED = "COMPLETED",
+  CANCELLED = "CANCELLED",
+  NO_SHOW = "NO_SHOW",
 }
 
 // INTERFACES
@@ -54,14 +54,14 @@ export interface ClientInfo {
     readonly email: Email;
     readonly phone?: Phone;
     readonly relationship:
-      | 'SPOUSE'
-      | 'PARENT'
-      | 'CHILD'
-      | 'SIBLING'
-      | 'GUARDIAN'
-      | 'FAMILY_MEMBER'
-      | 'FRIEND'
-      | 'OTHER';
+      | "SPOUSE"
+      | "PARENT"
+      | "CHILD"
+      | "SIBLING"
+      | "GUARDIAN"
+      | "FAMILY_MEMBER"
+      | "FRIEND"
+      | "OTHER";
     readonly relationshipDescription?: string;
   };
 }
@@ -80,7 +80,7 @@ export interface AppointmentPricing {
     readonly rate: number;
     readonly amount: Money;
   }>;
-  readonly paymentStatus: 'PENDING' | 'PAID' | 'PARTIALLY_PAID' | 'REFUNDED';
+  readonly paymentStatus: "PENDING" | "PAID" | "PARTIALLY_PAID" | "REFUNDED";
 }
 
 // MAIN ENTITY
@@ -370,7 +370,7 @@ export class Appointment {
 
   confirm(updatedBy?: string): Appointment {
     if (this._status !== AppointmentStatus.REQUESTED) {
-      throw new AppointmentStatusError(this._status, 'confirm', {
+      throw new AppointmentStatusError(this._status, "confirm", {
         appointmentId: this._id.getValue(),
       });
     }
@@ -397,7 +397,7 @@ export class Appointment {
 
   cancel(reason?: string, updatedBy?: string): Appointment {
     if (!this.canBeModified()) {
-      throw new AppointmentStatusError(this._status, 'cancel', {
+      throw new AppointmentStatusError(this._status, "cancel", {
         appointmentId: this._id.getValue(),
       });
     }
@@ -440,7 +440,7 @@ export class Appointment {
       this._status !== AppointmentStatus.CONFIRMED &&
       this._status !== AppointmentStatus.IN_PROGRESS
     ) {
-      throw new AppointmentStatusError(this._status, 'complete', {
+      throw new AppointmentStatusError(this._status, "complete", {
         appointmentId: this._id.getValue(),
       });
     }
@@ -467,7 +467,7 @@ export class Appointment {
 
   markNoShow(updatedBy?: string): Appointment {
     if (this._status !== AppointmentStatus.CONFIRMED) {
-      throw new AppointmentStatusError(this._status, 'mark as no-show', {
+      throw new AppointmentStatusError(this._status, "mark as no-show", {
         appointmentId: this._id.getValue(),
       });
     }
@@ -511,7 +511,7 @@ export class Appointment {
     return !!this._clientInfo.bookedBy;
   }
 
-  getBookedByInfo(): ClientInfo['bookedBy'] {
+  getBookedByInfo(): ClientInfo["bookedBy"] {
     return this._clientInfo.bookedBy;
   }
 
@@ -523,7 +523,7 @@ export class Appointment {
     const { relationship, relationshipDescription } = this._clientInfo.bookedBy;
 
     // Si relationship est "OTHER", il faut une description
-    if (relationship === 'OTHER' && !relationshipDescription?.trim()) {
+    if (relationship === "OTHER" && !relationshipDescription?.trim()) {
       return false;
     }
 

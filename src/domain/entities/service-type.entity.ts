@@ -1,6 +1,6 @@
-import { DomainValidationError } from '../exceptions/domain.exceptions';
-import { BusinessId } from '../value-objects/business-id.value-object';
-import { ServiceTypeId } from '../value-objects/service-type-id.value-object';
+import { DomainValidationError } from "../exceptions/domain.exceptions";
+import { BusinessId } from "../value-objects/business-id.value-object";
+import { ServiceTypeId } from "../value-objects/service-type-id.value-object";
 
 export interface ServiceTypeProps {
   readonly id?: ServiceTypeId;
@@ -61,8 +61,8 @@ export class ServiceType {
   static reconstruct(props: ServiceTypeProps): ServiceType {
     if (!props.id) {
       throw new DomainValidationError(
-        'SERVICE_TYPE_ID_REQUIRED',
-        'ServiceType ID is required for reconstruction',
+        "SERVICE_TYPE_ID_REQUIRED",
+        "ServiceType ID is required for reconstruction",
         { businessId: props.businessId?.getValue() },
       );
     }

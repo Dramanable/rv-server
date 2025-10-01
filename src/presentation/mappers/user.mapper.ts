@@ -5,15 +5,15 @@
  * Respect strict de la Clean Architecture avec séparation des couches
  */
 
-import { User } from '../../domain/entities/user.entity';
-import { UserOrmEntity } from '../../infrastructure/database/sql/postgresql/entities/user-orm.entity';
-import { UserRole } from '../../shared/enums/user-role.enum';
+import { User } from "../../domain/entities/user.entity";
+import { UserOrmEntity } from "../../infrastructure/database/sql/postgresql/entities/user-orm.entity";
+import { UserRole } from "../../shared/enums/user-role.enum";
 import {
   ListUsersResponseDto,
   PaginationMetaDto,
   UserListItemDto,
   UserResponseDto,
-} from '../dtos/user.dto';
+} from "../dtos/user.dto";
 
 // ═══════════════════════════════════════════════════════════════
 // 🏛️ DOMAIN ENTITY → PRESENTATION DTO
@@ -25,9 +25,9 @@ import {
 export class UserToDtoMapper {
   static toUserResponse(user: User): UserResponseDto {
     // Parse du nom complet en prénom/nom
-    const nameParts = user.name.split(' ');
-    const firstName = nameParts[0] || '';
-    const lastName = nameParts.slice(1).join(' ') || '';
+    const nameParts = user.name.split(" ");
+    const firstName = nameParts[0] || "";
+    const lastName = nameParts.slice(1).join(" ") || "";
 
     return {
       id: user.id,
@@ -45,9 +45,9 @@ export class UserToDtoMapper {
 
   static toUserListItem(user: User): UserListItemDto {
     // Parse du nom complet en prénom/nom
-    const nameParts = user.name.split(' ');
-    const firstName = nameParts[0] || '';
-    const lastName = nameParts.slice(1).join(' ') || '';
+    const nameParts = user.name.split(" ");
+    const firstName = nameParts[0] || "";
+    const lastName = nameParts.slice(1).join(" ") || "";
 
     return {
       id: user.id,
@@ -152,7 +152,7 @@ export class UserListResponseMapper {
     currentPage: number,
     itemsPerPage: number,
     totalItems: number,
-    message: string = 'Users retrieved successfully',
+    message: string = "Users retrieved successfully",
   ): ListUsersResponseDto {
     return {
       data: UserOrmToDtoMapper.toUserListItems(userOrms),
@@ -173,7 +173,7 @@ export class UserListResponseMapper {
     currentPage: number,
     itemsPerPage: number,
     totalItems: number,
-    message: string = 'Users retrieved successfully',
+    message: string = "Users retrieved successfully",
   ): ListUsersResponseDto {
     return {
       data: users.map((user) => UserToDtoMapper.toUserListItem(user)),
@@ -213,10 +213,10 @@ export class UserMapperUtils {
     firstName: string;
     lastName: string;
   } {
-    const parts = fullName.trim().split(' ');
+    const parts = fullName.trim().split(" ");
     return {
-      firstName: parts[0] || '',
-      lastName: parts.slice(1).join(' ') || '',
+      firstName: parts[0] || "",
+      lastName: parts.slice(1).join(" ") || "",
     };
   }
 

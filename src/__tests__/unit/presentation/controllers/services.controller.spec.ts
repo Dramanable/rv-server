@@ -5,18 +5,18 @@
  * Phase RED → GREEN → REFACTOR
  */
 
-import { Test, TestingModule } from '@nestjs/testing';
-import { ServicesController } from '../../../../presentation/controllers/services.controller';
-import { CreateServiceUseCase } from '../../../../application/use-cases/services/create-service.use-case';
-import { GetServiceUseCase } from '../../../../application/use-cases/services/get-service.use-case';
-import { UpdateServiceUseCase } from '../../../../application/use-cases/services/update-service.use-case';
-import { DeleteServiceUseCase } from '../../../../application/use-cases/service/delete-service.use-case';
-import { ListServicesUseCase } from '../../../../application/use-cases/service/list-services.use-case';
-import { Service } from '../../../../domain/entities/service.entity';
-import { BusinessId } from '../../../../domain/value-objects/business-id.value-object';
-import { ServiceTypeId } from '../../../../domain/value-objects/service-type-id.value-object';
+import { Test, TestingModule } from "@nestjs/testing";
+import { ServicesController } from "../../../../presentation/controllers/services.controller";
+import { CreateServiceUseCase } from "../../../../application/use-cases/services/create-service.use-case";
+import { GetServiceUseCase } from "../../../../application/use-cases/services/get-service.use-case";
+import { UpdateServiceUseCase } from "../../../../application/use-cases/services/update-service.use-case";
+import { DeleteServiceUseCase } from "../../../../application/use-cases/service/delete-service.use-case";
+import { ListServicesUseCase } from "../../../../application/use-cases/service/list-services.use-case";
+import { Service } from "../../../../domain/entities/service.entity";
+import { BusinessId } from "../../../../domain/value-objects/business-id.value-object";
+import { ServiceTypeId } from "../../../../domain/value-objects/service-type-id.value-object";
 
-describe('ServicesController', () => {
+describe("ServicesController", () => {
   let controller: ServicesController;
   let mockCreateServiceUseCase: jest.Mocked<CreateServiceUseCase>;
   let mockGetServiceUseCase: jest.Mocked<GetServiceUseCase>;
@@ -25,14 +25,14 @@ describe('ServicesController', () => {
   let mockListServicesUseCase: jest.Mocked<ListServicesUseCase>;
 
   const mockService = Service.create({
-    businessId: BusinessId.create('550e8400-e29b-41d4-a716-446655440000'),
-    name: 'Test Service',
-    description: 'Test service description',
+    businessId: BusinessId.create("550e8400-e29b-41d4-a716-446655440000"),
+    name: "Test Service",
+    description: "Test service description",
     serviceTypeIds: [
-      ServiceTypeId.fromString('550e8400-e29b-41d4-a716-446655440001'),
+      ServiceTypeId.fromString("550e8400-e29b-41d4-a716-446655440001"),
     ],
     basePrice: 100,
-    currency: 'EUR',
+    currency: "EUR",
     duration: 60,
     allowOnlineBooking: true,
     requiresApproval: false,
@@ -90,23 +90,23 @@ describe('ServicesController', () => {
     controller = module.get<ServicesController>(ServicesController);
   });
 
-  describe('🔴 RED Phase - POST /services', () => {
-    it('should create service successfully', async () => {
+  describe("🔴 RED Phase - POST /services", () => {
+    it("should create service successfully", async () => {
       // Arrange
       const createServiceDto = {
-        businessId: '550e8400-e29b-41d4-a716-446655440000',
-        name: 'New Service',
-        description: 'New service description',
-        serviceTypeIds: ['550e8400-e29b-41d4-a716-446655440001'],
+        businessId: "550e8400-e29b-41d4-a716-446655440000",
+        name: "New Service",
+        description: "New service description",
+        serviceTypeIds: ["550e8400-e29b-41d4-a716-446655440001"],
         basePrice: 100,
-        currency: 'EUR',
+        currency: "EUR",
         duration: 60,
         allowOnlineBooking: true,
         requiresApproval: false,
       };
 
       const mockRequest = {
-        user: { id: '550e8400-e29b-41d4-a716-446655440099' },
+        user: { id: "550e8400-e29b-41d4-a716-446655440099" },
       };
 
       mockCreateServiceUseCase.execute.mockResolvedValue({
@@ -137,17 +137,17 @@ describe('ServicesController', () => {
       });
     });
 
-    it('should handle validation errors when creating service', async () => {
+    it("should handle validation errors when creating service", async () => {
       // Arrange
       const invalidDto = {
-        businessId: '',
-        name: '',
+        businessId: "",
+        name: "",
         serviceTypeIds: [],
         duration: -1,
       };
 
       const mockRequest = {
-        user: { id: '550e8400-e29b-41d4-a716-446655440099' },
+        user: { id: "550e8400-e29b-41d4-a716-446655440099" },
       };
 
       // Act & Assert
@@ -157,14 +157,14 @@ describe('ServicesController', () => {
     });
   });
 
-  describe('🔴 RED Phase - GET /services/:id', () => {
-    it('should get service by ID successfully', async () => {
+  describe("🔴 RED Phase - GET /services/:id", () => {
+    it("should get service by ID successfully", async () => {
       // Arrange
-      const serviceId = '550e8400-e29b-41d4-a716-446655440002';
-      const businessId = '550e8400-e29b-41d4-a716-446655440000';
+      const serviceId = "550e8400-e29b-41d4-a716-446655440002";
+      const businessId = "550e8400-e29b-41d4-a716-446655440000";
 
       const mockRequest = {
-        user: { id: '550e8400-e29b-41d4-a716-446655440099' },
+        user: { id: "550e8400-e29b-41d4-a716-446655440099" },
       };
 
       mockGetServiceUseCase.execute.mockResolvedValue({
@@ -188,40 +188,40 @@ describe('ServicesController', () => {
       });
     });
 
-    it('should handle service not found', async () => {
+    it("should handle service not found", async () => {
       // Arrange
-      const serviceId = '550e8400-e29b-41d4-a716-446655440999';
-      const businessId = '550e8400-e29b-41d4-a716-446655440000';
+      const serviceId = "550e8400-e29b-41d4-a716-446655440999";
+      const businessId = "550e8400-e29b-41d4-a716-446655440000";
 
       const mockRequest = {
-        user: { id: '550e8400-e29b-41d4-a716-446655440099' },
+        user: { id: "550e8400-e29b-41d4-a716-446655440099" },
       };
 
       mockGetServiceUseCase.execute.mockRejectedValue(
-        new Error('Service not found'),
+        new Error("Service not found"),
       );
 
       // Act & Assert
       await expect(
         controller.getService(serviceId, businessId, mockRequest),
-      ).rejects.toThrow('Service not found');
+      ).rejects.toThrow("Service not found");
     });
   });
 
-  describe('🔴 RED Phase - GET /services', () => {
-    it('should list services with pagination', async () => {
+  describe("🔴 RED Phase - GET /services", () => {
+    it("should list services with pagination", async () => {
       // Arrange
       const query = {
-        businessId: '550e8400-e29b-41d4-a716-446655440000',
-        page: '1',
-        limit: '10',
-        sortBy: 'name',
-        sortOrder: 'asc' as const,
-        name: 'Test',
+        businessId: "550e8400-e29b-41d4-a716-446655440000",
+        page: "1",
+        limit: "10",
+        sortBy: "name",
+        sortOrder: "asc" as const,
+        name: "Test",
       };
 
       const mockRequest = {
-        user: { id: '550e8400-e29b-41d4-a716-446655440099' },
+        user: { id: "550e8400-e29b-41d4-a716-446655440099" },
       };
 
       mockListServicesUseCase.execute.mockResolvedValue({
@@ -237,7 +237,7 @@ describe('ServicesController', () => {
             pricing: {
               basePrice: {
                 amount: 100,
-                currency: 'EUR',
+                currency: "EUR",
               },
             },
             scheduling: {
@@ -246,7 +246,7 @@ describe('ServicesController', () => {
               requiresApproval: false,
             },
             assignedStaffIds: [],
-            status: 'ACTIVE',
+            status: "ACTIVE",
             createdAt: new Date(),
             updatedAt: new Date(),
           },
@@ -276,30 +276,30 @@ describe('ServicesController', () => {
           limit: 10,
         },
         sorting: {
-          sortBy: 'name',
-          sortOrder: 'asc',
+          sortBy: "name",
+          sortOrder: "asc",
         },
         filters: {
-          name: 'Test',
+          name: "Test",
         },
       });
     });
   });
 
-  describe('🔴 RED Phase - PUT /services/:id', () => {
-    it('should update service successfully', async () => {
+  describe("🔴 RED Phase - PUT /services/:id", () => {
+    it("should update service successfully", async () => {
       // Arrange
-      const serviceId = '550e8400-e29b-41d4-a716-446655440002';
+      const serviceId = "550e8400-e29b-41d4-a716-446655440002";
       const updateServiceDto = {
-        businessId: '550e8400-e29b-41d4-a716-446655440000',
-        name: 'Updated Service',
-        description: 'Updated description',
+        businessId: "550e8400-e29b-41d4-a716-446655440000",
+        name: "Updated Service",
+        description: "Updated description",
         basePrice: 150,
         duration: 90,
       };
 
       const mockRequest = {
-        user: { id: '550e8400-e29b-41d4-a716-446655440099' },
+        user: { id: "550e8400-e29b-41d4-a716-446655440099" },
       };
 
       mockUpdateServiceUseCase.execute.mockResolvedValue({
@@ -328,14 +328,14 @@ describe('ServicesController', () => {
     });
   });
 
-  describe('🔴 RED Phase - DELETE /services/:id', () => {
-    it('should delete service successfully', async () => {
+  describe("🔴 RED Phase - DELETE /services/:id", () => {
+    it("should delete service successfully", async () => {
       // Arrange
-      const serviceId = '550e8400-e29b-41d4-a716-446655440002';
-      const businessId = '550e8400-e29b-41d4-a716-446655440000';
+      const serviceId = "550e8400-e29b-41d4-a716-446655440002";
+      const businessId = "550e8400-e29b-41d4-a716-446655440000";
 
       const mockRequest = {
-        user: { id: '550e8400-e29b-41d4-a716-446655440099' },
+        user: { id: "550e8400-e29b-41d4-a716-446655440099" },
       };
 
       mockDeleteServiceUseCase.execute.mockResolvedValue({

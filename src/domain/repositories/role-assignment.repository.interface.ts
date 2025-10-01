@@ -13,8 +13,8 @@
 import {
   RoleAssignment,
   RoleAssignmentContext,
-} from '@domain/entities/role-assignment.entity';
-import { UserRole } from '@shared/enums/user-role.enum';
+} from "@domain/entities/role-assignment.entity";
+import { UserRole } from "@shared/enums/user-role.enum";
 
 export interface RoleAssignmentCriteria {
   readonly userId?: string;
@@ -34,8 +34,8 @@ export interface RoleAssignmentFilters {
   readonly locationIds?: string[];
   readonly departmentIds?: string[];
   readonly isActive?: boolean;
-  readonly expirationStatus?: 'active' | 'expired' | 'expiring_soon';
-  readonly assignmentScope?: 'BUSINESS' | 'LOCATION' | 'DEPARTMENT';
+  readonly expirationStatus?: "active" | "expired" | "expiring_soon";
+  readonly assignmentScope?: "BUSINESS" | "LOCATION" | "DEPARTMENT";
 }
 
 export interface IRoleAssignmentRepository {
@@ -86,7 +86,7 @@ export interface IRoleAssignmentRepository {
       page: number;
       limit: number;
       sortBy?: string;
-      sortOrder?: 'ASC' | 'DESC';
+      sortOrder?: "ASC" | "DESC";
     },
   ): Promise<{
     data: RoleAssignment[];

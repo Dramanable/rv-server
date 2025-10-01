@@ -1,4 +1,4 @@
-import { User } from '@domain/entities/user.entity';
+import { User } from "@domain/entities/user.entity";
 import {
   Body,
   Controller,
@@ -11,16 +11,16 @@ import {
   Post,
   Put,
   UseGuards,
-} from '@nestjs/common';
+} from "@nestjs/common";
 import {
   ApiBearerAuth,
   ApiOperation,
   ApiResponse,
   ApiTags,
-} from '@nestjs/swagger';
-import { GetUser } from '@presentation/security/decorators/get-user.decorator';
-import { JwtAuthGuard } from '@presentation/security/guards/jwt-auth.guard';
-import { TOKENS } from '@shared/constants/injection-tokens';
+} from "@nestjs/swagger";
+import { GetUser } from "@presentation/security/decorators/get-user.decorator";
+import { JwtAuthGuard } from "@presentation/security/guards/jwt-auth.guard";
+import { TOKENS } from "@shared/constants/injection-tokens";
 
 // DTOs - Import service DTOs
 import {
@@ -32,17 +32,17 @@ import {
   ServiceDto,
   UpdateServiceDto,
   UpdateServiceResponseDto,
-} from '@presentation/dtos/service.dto';
+} from "@presentation/dtos/service.dto";
 
 // Use Cases
-import { CreateServiceUseCase } from '@application/use-cases/service/create-service.use-case';
-import { DeleteServiceUseCase } from '@application/use-cases/service/delete-service.use-case';
-import { GetServiceUseCase } from '@application/use-cases/service/get-service.use-case';
-import { ListServicesUseCase } from '@application/use-cases/service/list-services.use-case';
-import { UpdateServiceUseCase } from '@application/use-cases/service/update-service.use-case';
+import { CreateServiceUseCase } from "@application/use-cases/service/create-service.use-case";
+import { DeleteServiceUseCase } from "@application/use-cases/service/delete-service.use-case";
+import { GetServiceUseCase } from "@application/use-cases/service/get-service.use-case";
+import { ListServicesUseCase } from "@application/use-cases/service/list-services.use-case";
+import { UpdateServiceUseCase } from "@application/use-cases/service/update-service.use-case";
 
-@ApiTags('💼 Services')
-@Controller('services')
+@ApiTags("💼 Services")
+@Controller("services")
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 export class ServiceController {
@@ -63,14 +63,14 @@ export class ServiceController {
     private readonly listServicesUseCase: ListServicesUseCase,
   ) {}
 
-  @Post('list')
+  @Post("list")
   @ApiOperation({
-    summary: '🔍 Search services with advanced filters',
-    description: 'Recherche avancée paginée des services avec filtres',
+    summary: "🔍 Search services with advanced filters",
+    description: "Recherche avancée paginée des services avec filtres",
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: '✅ Services found successfully',
+    description: "✅ Services found successfully",
     type: ListServicesResponseDto,
   })
   @HttpCode(HttpStatus.OK)
@@ -80,14 +80,14 @@ export class ServiceController {
   ): Promise<ListServicesResponseDto> {
     const request = {
       requestingUserId: user.getId(),
-      businessId: dto.businessId || 'default-business-id', // TODO: Récupérer depuis contexte utilisateur
+      businessId: dto.businessId || "default-business-id", // TODO: Récupérer depuis contexte utilisateur
       pagination: {
         page: dto.page || 1,
         limit: dto.limit || 10,
       },
       sorting: {
-        sortBy: dto.sortBy || 'createdAt',
-        sortOrder: dto.sortOrder || 'desc',
+        sortBy: dto.sortBy || "createdAt",
+        sortOrder: dto.sortOrder || "desc",
       },
       filters: {
         search: dto.search,
@@ -104,18 +104,18 @@ export class ServiceController {
     return response as unknown as ListServicesResponseDto;
   }
 
-  @Get(':id')
+  @Get(":id")
   @ApiOperation({
-    summary: '📄 Get service by ID',
-    description: 'Récupère un service par son ID',
+    summary: "📄 Get service by ID",
+    description: "Récupère un service par son ID",
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: '✅ Service found successfully',
+    description: "✅ Service found successfully",
     type: ServiceDto,
   })
   async findById(
-    @Param('id') id: string,
+    @Param("id") id: string,
     @GetUser() user: User,
   ): Promise<ServiceDto> {
     const request = {
@@ -130,12 +130,12 @@ export class ServiceController {
 
   @Post()
   @ApiOperation({
-    summary: '➕ Create new service',
-    description: 'Créer un nouveau service',
+    summary: "➕ Create new service",
+    description: "Créer un nouveau service",
   })
   @ApiResponse({
     status: HttpStatus.CREATED,
-    description: '✅ Service created successfully',
+    description: "✅ Service created successfully",
     type: CreateServiceResponseDto,
   })
   @HttpCode(HttpStatus.CREATED)
@@ -152,7 +152,7 @@ export class ServiceController {
       duration: dto.duration,
       price: dto.price || {
         amount: Number(dto.pricingConfig?.basePrice?.amount || 0),
-        currency: dto.pricingConfig?.basePrice?.currency || 'EUR',
+        currency: dto.pricingConfig?.basePrice?.currency || "EUR",
       },
       settings: {
         isOnlineBookingEnabled: (dto as any).allowOnlineBooking ?? false,
@@ -173,18 +173,18 @@ export class ServiceController {
     return response as unknown as CreateServiceResponseDto;
   }
 
-  @Put(':id')
+  @Put(":id")
   @ApiOperation({
-    summary: '✏️ Update service',
-    description: 'Mettre à jour un service',
+    summary: "✏️ Update service",
+    description: "Mettre à jour un service",
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: '✅ Service updated successfully',
+    description: "✅ Service updated successfully",
     type: UpdateServiceResponseDto,
   })
   async update(
-    @Param('id') id: string,
+    @Param("id") id: string,
     @Body() dto: UpdateServiceDto,
     @GetUser() user: User,
   ): Promise<UpdateServiceResponseDto> {
@@ -225,18 +225,18 @@ export class ServiceController {
     return response as unknown as UpdateServiceResponseDto;
   }
 
-  @Delete(':id')
+  @Delete(":id")
   @ApiOperation({
-    summary: '🗑️ Delete service',
-    description: 'Supprimer un service',
+    summary: "🗑️ Delete service",
+    description: "Supprimer un service",
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: '✅ Service deleted successfully',
+    description: "✅ Service deleted successfully",
     type: DeleteServiceResponseDto,
   })
   async delete(
-    @Param('id') id: string,
+    @Param("id") id: string,
     @GetUser() user: User,
   ): Promise<DeleteServiceResponseDto> {
     const request = {

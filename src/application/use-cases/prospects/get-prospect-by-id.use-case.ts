@@ -4,17 +4,17 @@
  * ✅ Récupérer un prospect par son ID avec vérification de permissions
  */
 
-import { Prospect } from '@domain/entities/prospect.entity';
-import { ProspectId } from '@domain/value-objects/prospect-id.value-object';
-import { IProspectRepository } from '@domain/repositories/prospect.repository';
-import { Logger } from '@application/ports/logger.port';
-import { I18nService } from '@application/ports/i18n.port';
-import { IPermissionService } from '@application/ports/permission.port';
+import { Prospect } from "@domain/entities/prospect.entity";
+import { ProspectId } from "@domain/value-objects/prospect-id.value-object";
+import { IProspectRepository } from "@domain/repositories/prospect.repository";
+import { Logger } from "@application/ports/logger.port";
+import { I18nService } from "@application/ports/i18n.port";
+import { IPermissionService } from "@application/ports/permission.port";
 import {
   ProspectNotFoundError,
   ProspectPermissionError,
-} from '@domain/exceptions/prospect.exceptions';
-import { BusinessSize } from '@domain/enums/business-size.enum';
+} from "@domain/exceptions/prospect.exceptions";
+import { BusinessSize } from "@domain/enums/business-size.enum";
 
 export interface GetProspectByIdRequest {
   readonly prospectId: string;
@@ -67,7 +67,7 @@ export class GetProspectByIdUseCase {
   async execute(
     request: GetProspectByIdRequest,
   ): Promise<GetProspectByIdResponse> {
-    this.logger.info('Getting prospect by ID', {
+    this.logger.info("Getting prospect by ID", {
       prospectId: request.prospectId,
       requestingUserId: request.requestingUserId,
       correlationId: request.correlationId,
@@ -88,7 +88,7 @@ export class GetProspectByIdUseCase {
       // 🔐 Vérification des permissions spécifiques au prospect
       await this.validateProspectAccess(prospect, request.requestingUserId);
 
-      this.logger.info('Prospect retrieved successfully', {
+      this.logger.info("Prospect retrieved successfully", {
         prospectId: request.prospectId,
         businessName: prospect.getBusinessName(),
         requestingUserId: request.requestingUserId,
@@ -98,7 +98,7 @@ export class GetProspectByIdUseCase {
       return this.buildResponse(prospect);
     } catch (error) {
       this.logger.error(
-        'Failed to get prospect by ID',
+        "Failed to get prospect by ID",
         error instanceof Error ? error : new Error(String(error)),
         {
           prospectId: request.prospectId,
@@ -118,13 +118,13 @@ export class GetProspectByIdUseCase {
   ): Promise<void> {
     const hasPermission = await this.permissionService.hasPermission(
       request.requestingUserId,
-      'VIEW_PROSPECTS',
+      "VIEW_PROSPECTS",
     );
 
     if (!hasPermission) {
       throw new ProspectPermissionError(
         request.requestingUserId,
-        'view prospect details',
+        "view prospect details",
       );
     }
   }
@@ -138,7 +138,7 @@ export class GetProspectByIdUseCase {
   ): Promise<void> {
     const canViewAllProspects = await this.permissionService.hasPermission(
       requestingUserId,
-      'VIEW_ALL_PROSPECTS',
+      "VIEW_ALL_PROSPECTS",
     );
 
     if (!canViewAllProspects) {
@@ -146,7 +146,7 @@ export class GetProspectByIdUseCase {
       if (prospect.getAssignedSalesRep().getValue() !== requestingUserId) {
         throw new ProspectPermissionError(
           requestingUserId,
-          'view this prospect (not assigned to you)',
+          "view this prospect (not assigned to you)",
         );
       }
     }

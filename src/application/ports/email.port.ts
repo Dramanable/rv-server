@@ -30,7 +30,7 @@ export interface EmailTemplate {
 }
 
 export interface EmailTemplateOptions
-  extends Omit<EmailOptions, 'html' | 'text'> {
+  extends Omit<EmailOptions, "html" | "text"> {
   readonly template: EmailTemplate;
 }
 

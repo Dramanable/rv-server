@@ -4,11 +4,11 @@
  * Controller REST pour la gestion des permissions
  */
 
-import type { CreatePermissionUseCase } from '@application/use-cases/permissions/create-permission.use-case';
-import type { DeletePermissionUseCase } from '@application/use-cases/permissions/delete-permission.use-case';
-import type { GetPermissionByIdUseCase } from '@application/use-cases/permissions/get-permission-by-id.use-case';
-import type { ListPermissionsUseCase } from '@application/use-cases/permissions/list-permissions.use-case';
-import type { UpdatePermissionUseCase } from '@application/use-cases/permissions/update-permission.use-case';
+import type { CreatePermissionUseCase } from "@application/use-cases/permissions/create-permission.use-case";
+import type { DeletePermissionUseCase } from "@application/use-cases/permissions/delete-permission.use-case";
+import type { GetPermissionByIdUseCase } from "@application/use-cases/permissions/get-permission-by-id.use-case";
+import type { ListPermissionsUseCase } from "@application/use-cases/permissions/list-permissions.use-case";
+import type { UpdatePermissionUseCase } from "@application/use-cases/permissions/update-permission.use-case";
 import {
   Body,
   Controller,
@@ -21,30 +21,30 @@ import {
   Post,
   Put,
   UseGuards,
-} from '@nestjs/common';
+} from "@nestjs/common";
 import {
   ApiBearerAuth,
   ApiOperation,
   ApiResponse,
   ApiTags,
-} from '@nestjs/swagger';
-import { GetUser } from '@presentation/security/decorators/get-user.decorator';
-import { JwtAuthGuard } from '@presentation/security/guards/jwt-auth.guard';
-import { TOKENS } from '@shared/constants/injection-tokens';
-import { CreatePermissionDto } from '../dtos/permissions/create-permission.dto';
-import { ListPermissionsDto } from '../dtos/permissions/list-permissions.dto';
-import { PermissionResponseDto } from '../dtos/permissions/permission-response.dto';
+} from "@nestjs/swagger";
+import { GetUser } from "@presentation/security/decorators/get-user.decorator";
+import { JwtAuthGuard } from "@presentation/security/guards/jwt-auth.guard";
+import { TOKENS } from "@shared/constants/injection-tokens";
+import { CreatePermissionDto } from "../dtos/permissions/create-permission.dto";
+import { ListPermissionsDto } from "../dtos/permissions/list-permissions.dto";
+import { PermissionResponseDto } from "../dtos/permissions/permission-response.dto";
 import {
   CreatePermissionResponseDto,
   DeletePermissionResponseDto,
   ListPermissionsResponseDto,
   UpdatePermissionResponseDto,
-} from '../dtos/permissions/response-dtos.dto';
-import { UpdatePermissionDto } from '../dtos/permissions/update-permission.dto';
-import { PermissionMapper } from '../mappers/permission.mapper';
+} from "../dtos/permissions/response-dtos.dto";
+import { UpdatePermissionDto } from "../dtos/permissions/update-permission.dto";
+import { PermissionMapper } from "../mappers/permission.mapper";
 
-@ApiTags('🔐 Permissions')
-@Controller('permissions')
+@ApiTags("🔐 Permissions")
+@Controller("permissions")
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 export class PermissionController {
@@ -68,10 +68,10 @@ export class PermissionController {
   /**
    * 📋 Recherche et liste paginée des permissions
    */
-  @Post('list')
+  @Post("list")
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
-    summary: '🔍 Rechercher permissions avec filtres avancés',
+    summary: "🔍 Rechercher permissions avec filtres avancés",
     description: `
     **Recherche avancée paginée** des permissions avec système de filtrage complet.
 
@@ -109,20 +109,20 @@ export class PermissionController {
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: '✅ Permissions trouvées avec succès',
+    description: "✅ Permissions trouvées avec succès",
     type: ListPermissionsResponseDto,
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
-    description: '❌ Paramètres de recherche invalides',
+    description: "❌ Paramètres de recherche invalides",
   })
   @ApiResponse({
     status: HttpStatus.UNAUTHORIZED,
-    description: '🔐 Authentification requise',
+    description: "🔐 Authentification requise",
   })
   @ApiResponse({
     status: HttpStatus.FORBIDDEN,
-    description: '🚫 Permissions insuffisantes',
+    description: "🚫 Permissions insuffisantes",
   })
   async list(
     @Body() dto: ListPermissionsDto,
@@ -157,23 +157,23 @@ export class PermissionController {
   /**
    * 📄 Récupérer une permission par ID
    */
-  @Get(':id')
+  @Get(":id")
   @ApiOperation({
-    summary: '📄 Récupérer permission par ID',
+    summary: "📄 Récupérer permission par ID",
     description:
       "Récupère les détails complets d'une permission par son identifiant.",
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: '✅ Permission trouvée',
+    description: "✅ Permission trouvée",
     type: PermissionResponseDto,
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
-    description: '❌ Permission non trouvée',
+    description: "❌ Permission non trouvée",
   })
   async findById(
-    @Param('id') id: string,
+    @Param("id") id: string,
     @GetUser() user: any,
   ): Promise<PermissionResponseDto> {
     const request = {
@@ -193,22 +193,22 @@ export class PermissionController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
-    summary: '➕ Créer nouvelle permission',
+    summary: "➕ Créer nouvelle permission",
     description:
-      'Crée une nouvelle permission avec toutes les validations métier.',
+      "Crée une nouvelle permission avec toutes les validations métier.",
   })
   @ApiResponse({
     status: HttpStatus.CREATED,
-    description: '✅ Permission créée avec succès',
+    description: "✅ Permission créée avec succès",
     type: CreatePermissionResponseDto,
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
-    description: '❌ Données de permission invalides',
+    description: "❌ Données de permission invalides",
   })
   @ApiResponse({
     status: HttpStatus.CONFLICT,
-    description: '❌ Permission avec ce nom existe déjà',
+    description: "❌ Permission avec ce nom existe déjà",
   })
   async create(
     @Body() dto: CreatePermissionDto,
@@ -226,26 +226,26 @@ export class PermissionController {
   /**
    * ✏️ Mettre à jour une permission
    */
-  @Put(':id')
+  @Put(":id")
   @ApiOperation({
-    summary: '✏️ Mettre à jour permission',
-    description: 'Met à jour une permission existante (sauf catégorie et nom).',
+    summary: "✏️ Mettre à jour permission",
+    description: "Met à jour une permission existante (sauf catégorie et nom).",
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: '✅ Permission mise à jour avec succès',
+    description: "✅ Permission mise à jour avec succès",
     type: UpdatePermissionResponseDto,
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
-    description: '❌ Permission non trouvée',
+    description: "❌ Permission non trouvée",
   })
   @ApiResponse({
     status: HttpStatus.FORBIDDEN,
-    description: '🚫 Impossible de modifier permission système',
+    description: "🚫 Impossible de modifier permission système",
   })
   async update(
-    @Param('id') id: string,
+    @Param("id") id: string,
     @Body() dto: UpdatePermissionDto,
     @GetUser() user: any,
   ): Promise<UpdatePermissionResponseDto> {
@@ -265,27 +265,27 @@ export class PermissionController {
   /**
    * 🗑️ Supprimer une permission
    */
-  @Delete(':id')
+  @Delete(":id")
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
-    summary: '🗑️ Supprimer permission',
-    description: 'Supprime une permission (seulement si non-système).',
+    summary: "🗑️ Supprimer permission",
+    description: "Supprime une permission (seulement si non-système).",
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: '✅ Permission supprimée avec succès',
+    description: "✅ Permission supprimée avec succès",
     type: DeletePermissionResponseDto,
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
-    description: '❌ Permission non trouvée',
+    description: "❌ Permission non trouvée",
   })
   @ApiResponse({
     status: HttpStatus.FORBIDDEN,
-    description: '🚫 Impossible de supprimer permission système',
+    description: "🚫 Impossible de supprimer permission système",
   })
   async delete(
-    @Param('id') id: string,
+    @Param("id") id: string,
     @GetUser() user: any,
   ): Promise<DeletePermissionResponseDto> {
     const request = {

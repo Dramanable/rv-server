@@ -11,7 +11,7 @@
  * - Gestion des Value Objects et primitives
  */
 
-import { CalendarOrmEntity } from '../database/sql/postgresql/entities/calendar-orm.entity';
+import { CalendarOrmEntity } from "../database/sql/postgresql/entities/calendar-orm.entity";
 
 /**
  * 🔄 Calendar ORM Mapper
@@ -61,9 +61,9 @@ export class CalendarOrmMapper {
     ormEntity.description = domainObject.description;
     ormEntity.owner_id = domainObject.ownerId || null;
     ormEntity.status = domainObject.status;
-    ormEntity.timezone = domainObject.timezone || 'Europe/Paris';
+    ormEntity.timezone = domainObject.timezone || "Europe/Paris";
     ormEntity.is_default = domainObject.isDefault || false;
-    ormEntity.color = domainObject.color || '#007bff';
+    ormEntity.color = domainObject.color || "#007bff";
     ormEntity.settings = domainObject.settings;
     ormEntity.availability = domainObject.availability;
 

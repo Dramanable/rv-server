@@ -1,19 +1,19 @@
-import { ValueObjectValidationError } from '../exceptions/domain.exceptions';
+import { ValueObjectValidationError } from "../exceptions/domain.exceptions";
 
 export enum TimeSlotStatus {
-  AVAILABLE = 'AVAILABLE',
-  BOOKED = 'BOOKED',
-  BLOCKED = 'BLOCKED',
-  MAINTENANCE = 'MAINTENANCE',
+  AVAILABLE = "AVAILABLE",
+  BOOKED = "BOOKED",
+  BLOCKED = "BLOCKED",
+  MAINTENANCE = "MAINTENANCE",
 }
 
 export enum RecurrenceType {
-  NONE = 'NONE',
-  DAILY = 'DAILY',
-  WEEKLY = 'WEEKLY',
-  MONTHLY = 'MONTHLY',
-  YEARLY = 'YEARLY',
-  CUSTOM = 'CUSTOM',
+  NONE = "NONE",
+  DAILY = "DAILY",
+  WEEKLY = "WEEKLY",
+  MONTHLY = "MONTHLY",
+  YEARLY = "YEARLY",
+  CUSTOM = "CUSTOM",
 }
 
 export enum WeekDay {
@@ -44,8 +44,8 @@ export class TimeSlot {
   private validate(): void {
     if (this.startTime >= this.endTime) {
       throw new ValueObjectValidationError(
-        'TIME_SLOT_START_AFTER_END',
-        'Start time must be before end time',
+        "TIME_SLOT_START_AFTER_END",
+        "Start time must be before end time",
         { startTime: this.startTime, endTime: this.endTime },
       );
     }
@@ -54,8 +54,8 @@ export class TimeSlot {
       (this.endTime.getTime() - this.startTime.getTime()) / (1000 * 60);
     if (diffMinutes < 5) {
       throw new ValueObjectValidationError(
-        'TIME_SLOT_TOO_SHORT',
-        'Time slot must be at least 5 minutes',
+        "TIME_SLOT_TOO_SHORT",
+        "Time slot must be at least 5 minutes",
         { durationMinutes: diffMinutes },
       );
     }
@@ -63,8 +63,8 @@ export class TimeSlot {
     if (diffMinutes > 480) {
       // 8 heures max
       throw new ValueObjectValidationError(
-        'TIME_SLOT_TOO_LONG',
-        'Time slot cannot exceed 8 hours',
+        "TIME_SLOT_TOO_LONG",
+        "Time slot cannot exceed 8 hours",
         { durationMinutes: diffMinutes },
       );
     }
@@ -131,8 +131,8 @@ export class TimeSlot {
   split(splitTime: Date): TimeSlot[] {
     if (!this.contains(splitTime)) {
       throw new ValueObjectValidationError(
-        'TIME_SLOT_SPLIT_OUT_OF_BOUNDS',
-        'Split time must be within the time slot',
+        "TIME_SLOT_SPLIT_OUT_OF_BOUNDS",
+        "Split time must be within the time slot",
         { splitTime, startTime: this.startTime, endTime: this.endTime },
       );
     }
@@ -153,8 +153,8 @@ export class TimeSlot {
   merge(other: TimeSlot): TimeSlot {
     if (!this.canMerge(other)) {
       throw new ValueObjectValidationError(
-        'TIME_SLOT_CANNOT_MERGE',
-        'Time slots cannot be merged',
+        "TIME_SLOT_CANNOT_MERGE",
+        "Time slots cannot be merged",
         {
           thisSlot: { startTime: this.startTime, endTime: this.endTime },
           otherSlot: { startTime: other.startTime, endTime: other.endTime },
@@ -185,13 +185,13 @@ export class TimeSlot {
 
   // Formatting
   format(): string {
-    const start = this.startTime.toLocaleTimeString('fr-FR', {
-      hour: '2-digit',
-      minute: '2-digit',
+    const start = this.startTime.toLocaleTimeString("fr-FR", {
+      hour: "2-digit",
+      minute: "2-digit",
     });
-    const end = this.endTime.toLocaleTimeString('fr-FR', {
-      hour: '2-digit',
-      minute: '2-digit',
+    const end = this.endTime.toLocaleTimeString("fr-FR", {
+      hour: "2-digit",
+      minute: "2-digit",
     });
     return `${start} - ${end}`;
   }

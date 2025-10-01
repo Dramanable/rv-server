@@ -8,16 +8,16 @@ import {
   ApplicationValidationError,
   CalendarValidationError,
   InsufficientPermissionsError,
-} from '@application/exceptions/application.exceptions';
-import { I18nService } from '@application/ports/i18n.port';
-import { Logger } from '@application/ports/logger.port';
-import { IPermissionService } from '@application/ports/permission.service.interface';
-import { Appointment } from '@domain/entities/appointment.entity';
-import { AppointmentRepository } from '@domain/repositories/appointment.repository.interface';
-import { IRoleAssignmentRepository } from '@domain/repositories/role-assignment.repository.interface';
-import { StaffRepository } from '@domain/repositories/staff.repository.interface';
-import { UserId } from '@domain/value-objects/user-id.value-object';
-import { Permission, UserRole } from '@shared/enums/user-role.enum';
+} from "@application/exceptions/application.exceptions";
+import { I18nService } from "@application/ports/i18n.port";
+import { Logger } from "@application/ports/logger.port";
+import { IPermissionService } from "@application/ports/permission.service.interface";
+import { Appointment } from "@domain/entities/appointment.entity";
+import { AppointmentRepository } from "@domain/repositories/appointment.repository.interface";
+import { IRoleAssignmentRepository } from "@domain/repositories/role-assignment.repository.interface";
+import { StaffRepository } from "@domain/repositories/staff.repository.interface";
+import { UserId } from "@domain/value-objects/user-id.value-object";
+import { Permission, UserRole } from "@shared/enums/user-role.enum";
 
 // === USE CASE INTERFACES ===
 
@@ -71,14 +71,14 @@ export interface ConflictingAppointment {
   readonly scheduledTime: Date;
   readonly reason: string;
   readonly status:
-    | 'REQUIRES_MANUAL_INTERVENTION'
-    | 'RESCHEDULED'
-    | 'AUTO_CANCELLED';
+    | "REQUIRES_MANUAL_INTERVENTION"
+    | "RESCHEDULED"
+    | "AUTO_CANCELLED";
   readonly newScheduledTime?: Date;
 }
 
 export interface NotificationResult {
-  readonly type: 'CLIENT_NOTIFIED' | 'STAFF_NOTIFIED' | 'ADMIN_NOTIFIED';
+  readonly type: "CLIENT_NOTIFIED" | "STAFF_NOTIFIED" | "ADMIN_NOTIFIED";
   readonly recipientId: string;
   readonly message: string;
   readonly sentAt: Date;
@@ -107,7 +107,7 @@ export class SetPractitionerAvailabilityUseCase {
   async execute(
     request: SetPractitionerAvailabilityRequest,
   ): Promise<SetPractitionerAvailabilityResponse> {
-    this.logger.info('Setting practitioner availability', {
+    this.logger.info("Setting practitioner availability", {
       requestingUserId: request.requestingUserId,
       practitionerId: request.practitionerId,
       businessId: request.businessId,
@@ -144,7 +144,7 @@ export class SetPractitionerAvailabilityUseCase {
         resolvedConflicts,
       );
 
-      this.logger.info('Practitioner availability set successfully', {
+      this.logger.info("Practitioner availability set successfully", {
         practitionerId: request.practitionerId,
         conflictsResolved: resolvedConflicts.length,
         notificationsSent: notificationsSent.length,
@@ -160,7 +160,7 @@ export class SetPractitionerAvailabilityUseCase {
       };
     } catch (error) {
       this.logger.error(
-        'Failed to set practitioner availability',
+        "Failed to set practitioner availability",
         error as Error,
         {
           requestingUserId: request.requestingUserId,
@@ -203,16 +203,16 @@ export class SetPractitionerAvailabilityUseCase {
     // Vérifications de base pour les tests
     if (!requestingUserRoles || requestingUserRoles.length === 0) {
       throw new ApplicationValidationError(
-        'requestingUserId',
+        "requestingUserId",
         request.requestingUserId,
-        'user_has_no_roles',
+        "user_has_no_roles",
       );
     }
 
     if (!targetUserRoles || targetUserRoles.length === 0) {
       throw new InsufficientPermissionsError(
-        this.i18n.translate('availability.targetMustBePractitioner'),
-        'TARGET_MUST_BE_PRACTITIONER',
+        this.i18n.translate("availability.targetMustBePractitioner"),
+        "TARGET_MUST_BE_PRACTITIONER",
       );
     }
 
@@ -235,16 +235,16 @@ export class SetPractitionerAvailabilityUseCase {
 
     if (!hasSeniorRole) {
       throw new InsufficientPermissionsError(
-        this.i18n.translate('permissions.cannotManageOtherPractitioners'),
-        'CANNOT_MANAGE_OTHER_PRACTITIONERS',
+        this.i18n.translate("permissions.cannotManageOtherPractitioners"),
+        "CANNOT_MANAGE_OTHER_PRACTITIONERS",
       );
     }
 
     if (!targetIsPractitioner) {
       throw new ApplicationValidationError(
-        'practitionerId',
+        "practitionerId",
         request.practitionerId,
-        'target_must_be_practitioner',
+        "target_must_be_practitioner",
       );
     }
   }
@@ -259,17 +259,17 @@ export class SetPractitionerAvailabilityUseCase {
 
     if (!practitioner) {
       throw new ApplicationValidationError(
-        'practitionerId',
+        "practitionerId",
         request.practitionerId,
-        'practitioner_not_found',
+        "practitioner_not_found",
       );
     }
 
     if (!practitioner.isActive()) {
       throw new ApplicationValidationError(
-        'practitionerId',
+        "practitionerId",
         request.practitionerId,
-        'practitioner_not_active',
+        "practitioner_not_active",
       );
     }
 
@@ -280,9 +280,9 @@ export class SetPractitionerAvailabilityUseCase {
 
     if (!roleAssignments || roleAssignments.length === 0) {
       throw new ApplicationValidationError(
-        'practitionerId',
+        "practitionerId",
         request.practitionerId,
-        'not_a_practitioner',
+        "not_a_practitioner",
       );
     }
 
@@ -296,9 +296,9 @@ export class SetPractitionerAvailabilityUseCase {
 
     if (!isPractitioner) {
       throw new ApplicationValidationError(
-        'practitionerId',
+        "practitionerId",
         request.practitionerId,
-        'user_not_practitioner',
+        "user_not_practitioner",
       );
     }
 
@@ -309,9 +309,9 @@ export class SetPractitionerAvailabilityUseCase {
     // 1. Validation des dates
     if (availability.startDate >= availability.endDate) {
       throw new CalendarValidationError(
-        'date_range',
+        "date_range",
         availability.startDate,
-        'start_date_must_be_before_end_date',
+        "start_date_must_be_before_end_date",
       );
     }
 
@@ -321,9 +321,9 @@ export class SetPractitionerAvailabilityUseCase {
       dayAvail.timeSlots.forEach((slot) => {
         if (slot.startTime >= slot.endTime) {
           throw new CalendarValidationError(
-            'time_slot',
+            "time_slot",
             slot.startTime,
-            'start_time_must_be_before_end_time',
+            "start_time_must_be_before_end_time",
           );
         }
       });
@@ -339,9 +339,9 @@ export class SetPractitionerAvailabilityUseCase {
 
         if (!isBreakInWorkingHours) {
           throw new CalendarValidationError(
-            'break_period',
+            "break_period",
             breakPeriod.startTime,
-            'break_must_be_within_working_hours',
+            "break_must_be_within_working_hours",
           );
         }
       });
@@ -356,7 +356,7 @@ export class SetPractitionerAvailabilityUseCase {
       new UserId(request.practitionerId),
       {
         startDate: request.availability.startDate,
-        endDate: request.availability.endDate || new Date('2099-12-31'),
+        endDate: request.availability.endDate || new Date("2099-12-31"),
       },
     );
 
@@ -376,8 +376,8 @@ export class SetPractitionerAvailabilityUseCase {
           appointmentId: appointment.getId().getValue(),
           clientId: appointment.getClientInfo().email.getValue(),
           scheduledTime: appointmentDate,
-          reason: 'Practitioner not available on this day',
-          status: 'REQUIRES_MANUAL_INTERVENTION',
+          reason: "Practitioner not available on this day",
+          status: "REQUIRES_MANUAL_INTERVENTION",
         });
         return;
       }
@@ -401,9 +401,9 @@ export class SetPractitionerAvailabilityUseCase {
           clientId: appointment.getClientInfo().email.getValue(),
           scheduledTime: appointmentDate,
           reason: isDuringBreak
-            ? 'Appointment during break period'
-            : 'Appointment outside available time slots',
-          status: 'REQUIRES_MANUAL_INTERVENTION',
+            ? "Appointment during break period"
+            : "Appointment outside available time slots",
+          status: "REQUIRES_MANUAL_INTERVENTION",
         });
       }
     });
@@ -429,20 +429,20 @@ export class SetPractitionerAvailabilityUseCase {
         if (newSlot) {
           resolvedConflicts.push({
             ...conflict,
-            status: 'RESCHEDULED',
+            status: "RESCHEDULED",
             newScheduledTime: newSlot,
           });
         } else {
           resolvedConflicts.push({
             ...conflict,
-            status: 'REQUIRES_MANUAL_INTERVENTION',
+            status: "REQUIRES_MANUAL_INTERVENTION",
           });
         }
       } else {
         // Marquer pour intervention manuelle
         resolvedConflicts.push({
           ...conflict,
-          status: 'REQUIRES_MANUAL_INTERVENTION',
+          status: "REQUIRES_MANUAL_INTERVENTION",
         });
       }
     }
@@ -474,7 +474,7 @@ export class SetPractitionerAvailabilityUseCase {
       if (dayAvailability?.isAvailable) {
         for (const timeSlot of dayAvailability.timeSlots) {
           const proposedDateTime = new Date(checkDate);
-          const [hours, minutes] = timeSlot.startTime.split(':');
+          const [hours, minutes] = timeSlot.startTime.split(":");
           proposedDateTime.setHours(
             parseInt(hours, 10),
             parseInt(minutes, 10),
@@ -505,7 +505,7 @@ export class SetPractitionerAvailabilityUseCase {
   ): Promise<void> {
     // TODO: Implémenter la sauvegarde des disponibilités
     // Pour maintenant, on log juste l'action
-    this.logger.info('Availability data would be saved here', {
+    this.logger.info("Availability data would be saved here", {
       practitionerId: request.practitionerId,
       availability: request.availability,
       correlationId: request.correlationId,
@@ -520,7 +520,7 @@ export class SetPractitionerAvailabilityUseCase {
 
     if (request.notifyClients && conflicts.length > 0) {
       // TODO: Implémenter les notifications clients
-      this.logger.info('Would send notifications to affected clients', {
+      this.logger.info("Would send notifications to affected clients", {
         conflictCount: conflicts.length,
         correlationId: request.correlationId,
       });

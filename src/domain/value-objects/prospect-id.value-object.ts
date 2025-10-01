@@ -4,8 +4,8 @@
  * ✅ Identifiant unique pour les prospects commerciaux
  */
 
-import { v4 as uuidv4 } from 'uuid';
-import { ProspectValidationError } from '@domain/exceptions/prospect.exceptions';
+import { v4 as uuidv4 } from "uuid";
+import { ProspectValidationError } from "@domain/exceptions/prospect.exceptions";
 
 export class ProspectId {
   private readonly _value: string;
@@ -33,9 +33,9 @@ export class ProspectId {
    * ✅ Validation de l'ID
    */
   private validateId(value: string): void {
-    if (!value || typeof value !== 'string') {
+    if (!value || typeof value !== "string") {
       throw new ProspectValidationError(
-        'Prospect ID must be a non-empty string',
+        "Prospect ID must be a non-empty string",
       );
     }
 
@@ -43,7 +43,7 @@ export class ProspectId {
     const uuidRegex =
       /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
     if (!uuidRegex.test(value)) {
-      throw new ProspectValidationError('Prospect ID must be a valid UUID v4');
+      throw new ProspectValidationError("Prospect ID must be a valid UUID v4");
     }
   }
 

@@ -5,82 +5,82 @@
  * Compatible avec UserRole mais plus granulaire pour les employés
  */
 
-import { UserRole } from './user-role.enum';
+import { UserRole } from "./user-role.enum";
 
 /**
  * 🏥 Rôles du Personnel - Mapping avec UserRole
  */
 export enum StaffRole {
   // 🔴 Direction & Propriété
-  OWNER = 'OWNER', // = BUSINESS_OWNER
-  DIRECTOR = 'DIRECTOR', // = BUSINESS_ADMIN
+  OWNER = "OWNER", // = BUSINESS_OWNER
+  DIRECTOR = "DIRECTOR", // = BUSINESS_ADMIN
 
   // 🟡 Management Opérationnel
-  SITE_MANAGER = 'SITE_MANAGER', // = LOCATION_MANAGER
-  DEPARTMENT_HEAD = 'DEPARTMENT_HEAD', // = DEPARTMENT_HEAD
-  TEAM_LEAD = 'TEAM_LEAD', // Sous-catégorie de DEPARTMENT_HEAD
+  SITE_MANAGER = "SITE_MANAGER", // = LOCATION_MANAGER
+  DEPARTMENT_HEAD = "DEPARTMENT_HEAD", // = DEPARTMENT_HEAD
+  TEAM_LEAD = "TEAM_LEAD", // Sous-catégorie de DEPARTMENT_HEAD
 
   // 🟢 Praticiens Professionnels
-  SENIOR_DOCTOR = 'SENIOR_DOCTOR', // = SENIOR_PRACTITIONER
-  DOCTOR = 'DOCTOR', // = PRACTITIONER
-  RESIDENT = 'RESIDENT', // = JUNIOR_PRACTITIONER
+  SENIOR_DOCTOR = "SENIOR_DOCTOR", // = SENIOR_PRACTITIONER
+  DOCTOR = "DOCTOR", // = PRACTITIONER
+  RESIDENT = "RESIDENT", // = JUNIOR_PRACTITIONER
 
-  SENIOR_DENTIST = 'SENIOR_DENTIST', // = SENIOR_PRACTITIONER
-  DENTIST = 'DENTIST', // = PRACTITIONER
-  DENTAL_STUDENT = 'DENTAL_STUDENT', // = JUNIOR_PRACTITIONER
+  SENIOR_DENTIST = "SENIOR_DENTIST", // = SENIOR_PRACTITIONER
+  DENTIST = "DENTIST", // = PRACTITIONER
+  DENTAL_STUDENT = "DENTAL_STUDENT", // = JUNIOR_PRACTITIONER
 
-  SENIOR_LAWYER = 'SENIOR_LAWYER', // = SENIOR_PRACTITIONER
-  LAWYER = 'LAWYER', // = PRACTITIONER
-  PARALEGAL = 'PARALEGAL', // = JUNIOR_PRACTITIONER
+  SENIOR_LAWYER = "SENIOR_LAWYER", // = SENIOR_PRACTITIONER
+  LAWYER = "LAWYER", // = PRACTITIONER
+  PARALEGAL = "PARALEGAL", // = JUNIOR_PRACTITIONER
 
-  SENIOR_THERAPIST = 'SENIOR_THERAPIST', // = SENIOR_PRACTITIONER
-  THERAPIST = 'THERAPIST', // = PRACTITIONER
-  THERAPY_INTERN = 'THERAPY_INTERN', // = JUNIOR_PRACTITIONER
+  SENIOR_THERAPIST = "SENIOR_THERAPIST", // = SENIOR_PRACTITIONER
+  THERAPIST = "THERAPIST", // = PRACTITIONER
+  THERAPY_INTERN = "THERAPY_INTERN", // = JUNIOR_PRACTITIONER
 
-  SENIOR_STYLIST = 'SENIOR_STYLIST', // = SENIOR_PRACTITIONER
-  STYLIST = 'STYLIST', // = PRACTITIONER
-  JUNIOR_STYLIST = 'JUNIOR_STYLIST', // = JUNIOR_PRACTITIONER
+  SENIOR_STYLIST = "SENIOR_STYLIST", // = SENIOR_PRACTITIONER
+  STYLIST = "STYLIST", // = PRACTITIONER
+  JUNIOR_STYLIST = "JUNIOR_STYLIST", // = JUNIOR_PRACTITIONER
 
-  SENIOR_CONSULTANT = 'SENIOR_CONSULTANT', // = SENIOR_PRACTITIONER
-  CONSULTANT = 'CONSULTANT', // = PRACTITIONER
-  JUNIOR_CONSULTANT = 'JUNIOR_CONSULTANT', // = JUNIOR_PRACTITIONER
+  SENIOR_CONSULTANT = "SENIOR_CONSULTANT", // = SENIOR_PRACTITIONER
+  CONSULTANT = "CONSULTANT", // = PRACTITIONER
+  JUNIOR_CONSULTANT = "JUNIOR_CONSULTANT", // = JUNIOR_PRACTITIONER
 
   // 🔵 Personnel de Support Spécialisé
-  HEAD_RECEPTIONIST = 'HEAD_RECEPTIONIST', // Réceptionniste chef
-  RECEPTIONIST = 'RECEPTIONIST', // = RECEPTIONIST
+  HEAD_RECEPTIONIST = "HEAD_RECEPTIONIST", // Réceptionniste chef
+  RECEPTIONIST = "RECEPTIONIST", // = RECEPTIONIST
 
-  SENIOR_ASSISTANT = 'SENIOR_ASSISTANT', // Assistant expérimenté
-  ASSISTANT = 'ASSISTANT', // = ASSISTANT
+  SENIOR_ASSISTANT = "SENIOR_ASSISTANT", // Assistant expérimenté
+  ASSISTANT = "ASSISTANT", // = ASSISTANT
 
-  APPOINTMENT_COORDINATOR = 'APPOINTMENT_COORDINATOR', // = SCHEDULER
-  SCHEDULER = 'SCHEDULER', // = SCHEDULER
+  APPOINTMENT_COORDINATOR = "APPOINTMENT_COORDINATOR", // = SCHEDULER
+  SCHEDULER = "SCHEDULER", // = SCHEDULER
 
   // 🟣 Rôles Spécialisés par Domaine
-  HYGIENIST = 'HYGIENIST', // Hygiéniste dentaire
-  NURSE = 'NURSE', // Infirmière
-  TECHNICIAN = 'TECHNICIAN', // Technicien
-  INTERPRETER = 'INTERPRETER', // Interprète
-  SECURITY = 'SECURITY', // Sécurité
-  MAINTENANCE = 'MAINTENANCE', // Maintenance
+  HYGIENIST = "HYGIENIST", // Hygiéniste dentaire
+  NURSE = "NURSE", // Infirmière
+  TECHNICIAN = "TECHNICIAN", // Technicien
+  INTERPRETER = "INTERPRETER", // Interprète
+  SECURITY = "SECURITY", // Sécurité
+  MAINTENANCE = "MAINTENANCE", // Maintenance
 
   // 🔶 Rôles Temporaires
-  SUBSTITUTE = 'SUBSTITUTE', // Remplaçant
-  TEMP_STAFF = 'TEMP_STAFF', // Personnel temporaire
-  INTERN = 'INTERN', // Stagiaire
-  VOLUNTEER = 'VOLUNTEER', // Bénévole
+  SUBSTITUTE = "SUBSTITUTE", // Remplaçant
+  TEMP_STAFF = "TEMP_STAFF", // Personnel temporaire
+  INTERN = "INTERN", // Stagiaire
+  VOLUNTEER = "VOLUNTEER", // Bénévole
 }
 
 /**
  * 📊 Statuts du Personnel
  */
 export enum StaffStatus {
-  ACTIVE = 'ACTIVE', // Actif
-  INACTIVE = 'INACTIVE', // Inactif
-  ON_LEAVE = 'ON_LEAVE', // En congé
-  SUSPENDED = 'SUSPENDED', // Suspendu
-  TERMINATED = 'TERMINATED', // Licencié
-  RETIRED = 'RETIRED', // Retraité
-  ON_PROBATION = 'ON_PROBATION', // Période d'essai
+  ACTIVE = "ACTIVE", // Actif
+  INACTIVE = "INACTIVE", // Inactif
+  ON_LEAVE = "ON_LEAVE", // En congé
+  SUSPENDED = "SUSPENDED", // Suspendu
+  TERMINATED = "TERMINATED", // Licencié
+  RETIRED = "RETIRED", // Retraité
+  ON_PROBATION = "ON_PROBATION", // Période d'essai
 }
 
 /**
@@ -89,7 +89,7 @@ export enum StaffStatus {
  */
 export const STAFF_TO_USER_ROLE_MAPPING: Record<
   StaffRole,
-  import('./user-role.enum').UserRole
+  import("./user-role.enum").UserRole
 > = {
   // Direction
   [StaffRole.OWNER]: UserRole.BUSINESS_OWNER,
@@ -227,14 +227,14 @@ export const STAFF_ROLE_GROUPS = {
  * 🎯 Niveaux de Séniorité
  */
 export enum SeniorityLevel {
-  TRAINEE = 'TRAINEE', // Stagiaire/apprenti
-  JUNIOR = 'JUNIOR', // Junior
-  REGULAR = 'REGULAR', // Standard
-  SENIOR = 'SENIOR', // Senior
-  LEAD = 'LEAD', // Chef d'équipe
-  MANAGER = 'MANAGER', // Manager
-  DIRECTOR = 'DIRECTOR', // Directeur
-  OWNER = 'OWNER', // Propriétaire
+  TRAINEE = "TRAINEE", // Stagiaire/apprenti
+  JUNIOR = "JUNIOR", // Junior
+  REGULAR = "REGULAR", // Standard
+  SENIOR = "SENIOR", // Senior
+  LEAD = "LEAD", // Chef d'équipe
+  MANAGER = "MANAGER", // Manager
+  DIRECTOR = "DIRECTOR", // Directeur
+  OWNER = "OWNER", // Propriétaire
 }
 
 /**
@@ -242,31 +242,31 @@ export enum SeniorityLevel {
  */
 export enum CertificationType {
   // Médical
-  MEDICAL_LICENSE = 'MEDICAL_LICENSE',
-  DENTAL_LICENSE = 'DENTAL_LICENSE',
-  NURSING_LICENSE = 'NURSING_LICENSE',
-  PHARMACY_LICENSE = 'PHARMACY_LICENSE',
+  MEDICAL_LICENSE = "MEDICAL_LICENSE",
+  DENTAL_LICENSE = "DENTAL_LICENSE",
+  NURSING_LICENSE = "NURSING_LICENSE",
+  PHARMACY_LICENSE = "PHARMACY_LICENSE",
 
   // Juridique
-  BAR_ADMISSION = 'BAR_ADMISSION',
-  NOTARY_LICENSE = 'NOTARY_LICENSE',
+  BAR_ADMISSION = "BAR_ADMISSION",
+  NOTARY_LICENSE = "NOTARY_LICENSE",
 
   // Beauté & Bien-être
-  COSMETOLOGY_LICENSE = 'COSMETOLOGY_LICENSE',
-  MASSAGE_THERAPY_LICENSE = 'MASSAGE_THERAPY_LICENSE',
-  FITNESS_CERTIFICATION = 'FITNESS_CERTIFICATION',
+  COSMETOLOGY_LICENSE = "COSMETOLOGY_LICENSE",
+  MASSAGE_THERAPY_LICENSE = "MASSAGE_THERAPY_LICENSE",
+  FITNESS_CERTIFICATION = "FITNESS_CERTIFICATION",
 
   // Éducation
-  TEACHING_CERTIFICATION = 'TEACHING_CERTIFICATION',
-  TRAINING_CERTIFICATION = 'TRAINING_CERTIFICATION',
+  TEACHING_CERTIFICATION = "TEACHING_CERTIFICATION",
+  TRAINING_CERTIFICATION = "TRAINING_CERTIFICATION",
 
   // Technique
-  TECHNICAL_CERTIFICATION = 'TECHNICAL_CERTIFICATION',
-  SAFETY_CERTIFICATION = 'SAFETY_CERTIFICATION',
+  TECHNICAL_CERTIFICATION = "TECHNICAL_CERTIFICATION",
+  SAFETY_CERTIFICATION = "SAFETY_CERTIFICATION",
 
   // Langues
-  LANGUAGE_CERTIFICATION = 'LANGUAGE_CERTIFICATION',
-  INTERPRETER_CERTIFICATION = 'INTERPRETER_CERTIFICATION',
+  LANGUAGE_CERTIFICATION = "LANGUAGE_CERTIFICATION",
+  INTERPRETER_CERTIFICATION = "INTERPRETER_CERTIFICATION",
 }
 
 /**
@@ -276,7 +276,7 @@ export class StaffRoleUtils {
   /**
    * Convertit un StaffRole vers le UserRole équivalent
    */
-  static toUserRole(staffRole: StaffRole): import('./user-role.enum').UserRole {
+  static toUserRole(staffRole: StaffRole): import("./user-role.enum").UserRole {
     return STAFF_TO_USER_ROLE_MAPPING[staffRole];
   }
 
@@ -293,24 +293,24 @@ export class StaffRoleUtils {
       return SeniorityLevel.MANAGER;
     }
 
-    if (staffRole === StaffRole.TEAM_LEAD || staffRole.includes('HEAD_')) {
+    if (staffRole === StaffRole.TEAM_LEAD || staffRole.includes("HEAD_")) {
       return SeniorityLevel.LEAD;
     }
 
-    if (staffRole.includes('SENIOR_')) {
+    if (staffRole.includes("SENIOR_")) {
       return SeniorityLevel.SENIOR;
     }
 
     if (
-      staffRole.includes('JUNIOR_') ||
-      staffRole.includes('STUDENT') ||
+      staffRole.includes("JUNIOR_") ||
+      staffRole.includes("STUDENT") ||
       staffRole === StaffRole.INTERN ||
       staffRole === StaffRole.RESIDENT
     ) {
       return SeniorityLevel.JUNIOR;
     }
 
-    if (staffRole === StaffRole.VOLUNTEER || staffRole.includes('INTERN')) {
+    if (staffRole === StaffRole.VOLUNTEER || staffRole.includes("INTERN")) {
       return SeniorityLevel.TRAINEE;
     }
 
@@ -359,7 +359,7 @@ export class StaffRoleUtils {
   static getDescription(staffRole: StaffRole): string {
     const descriptions: Record<StaffRole, string> = {
       [StaffRole.OWNER]: "Propriétaire - Responsable ultime de l'entreprise",
-      [StaffRole.DIRECTOR]: 'Directeur - Direction générale et stratégie',
+      [StaffRole.DIRECTOR]: "Directeur - Direction générale et stratégie",
       [StaffRole.SITE_MANAGER]:
         "Gestionnaire de Site - Supervision opérationnelle d'un lieu",
       [StaffRole.DEPARTMENT_HEAD]:
@@ -368,62 +368,62 @@ export class StaffRoleUtils {
         "Chef d'Équipe - Leadership d'une équipe spécialisée",
 
       [StaffRole.SENIOR_DOCTOR]:
-        'Médecin Senior - Expert médical avec mentorat',
-      [StaffRole.DOCTOR]: 'Médecin - Praticien médical certifié',
-      [StaffRole.RESIDENT]: 'Résident - Médecin en spécialisation',
+        "Médecin Senior - Expert médical avec mentorat",
+      [StaffRole.DOCTOR]: "Médecin - Praticien médical certifié",
+      [StaffRole.RESIDENT]: "Résident - Médecin en spécialisation",
 
       [StaffRole.SENIOR_DENTIST]:
-        'Dentiste Senior - Expert dentaire avec mentorat',
-      [StaffRole.DENTIST]: 'Dentiste - Praticien dentaire certifié',
-      [StaffRole.DENTAL_STUDENT]: 'Étudiant Dentaire - En formation dentaire',
+        "Dentiste Senior - Expert dentaire avec mentorat",
+      [StaffRole.DENTIST]: "Dentiste - Praticien dentaire certifié",
+      [StaffRole.DENTAL_STUDENT]: "Étudiant Dentaire - En formation dentaire",
 
       [StaffRole.SENIOR_LAWYER]:
-        'Avocat Senior - Expert juridique avec mentorat',
-      [StaffRole.LAWYER]: 'Avocat - Praticien juridique certifié',
+        "Avocat Senior - Expert juridique avec mentorat",
+      [StaffRole.LAWYER]: "Avocat - Praticien juridique certifié",
       [StaffRole.PARALEGAL]:
-        'Assistant Juridique - Support juridique spécialisé',
+        "Assistant Juridique - Support juridique spécialisé",
 
       [StaffRole.SENIOR_THERAPIST]:
-        'Thérapeute Senior - Expert thérapeutique avec mentorat',
-      [StaffRole.THERAPIST]: 'Thérapeute - Praticien thérapeutique certifié',
+        "Thérapeute Senior - Expert thérapeutique avec mentorat",
+      [StaffRole.THERAPIST]: "Thérapeute - Praticien thérapeutique certifié",
       [StaffRole.THERAPY_INTERN]:
-        'Stagiaire Thérapie - En formation thérapeutique',
+        "Stagiaire Thérapie - En formation thérapeutique",
 
       [StaffRole.SENIOR_STYLIST]:
-        'Styliste Senior - Expert beauté avec mentorat',
-      [StaffRole.STYLIST]: 'Styliste - Praticien beauté certifié',
-      [StaffRole.JUNIOR_STYLIST]: 'Styliste Junior - En développement beauté',
+        "Styliste Senior - Expert beauté avec mentorat",
+      [StaffRole.STYLIST]: "Styliste - Praticien beauté certifié",
+      [StaffRole.JUNIOR_STYLIST]: "Styliste Junior - En développement beauté",
 
       [StaffRole.SENIOR_CONSULTANT]:
-        'Consultant Senior - Expert conseil avec mentorat',
-      [StaffRole.CONSULTANT]: 'Consultant - Praticien conseil certifié',
+        "Consultant Senior - Expert conseil avec mentorat",
+      [StaffRole.CONSULTANT]: "Consultant - Praticien conseil certifié",
       [StaffRole.JUNIOR_CONSULTANT]:
-        'Consultant Junior - En développement conseil',
+        "Consultant Junior - En développement conseil",
 
       [StaffRole.HEAD_RECEPTIONIST]:
         "Chef Réceptionniste - Supervision de l'accueil",
       [StaffRole.RECEPTIONIST]:
-        'Réceptionniste - Accueil et gestion front office',
+        "Réceptionniste - Accueil et gestion front office",
       [StaffRole.SENIOR_ASSISTANT]:
-        'Assistant Senior - Support administratif expérimenté',
-      [StaffRole.ASSISTANT]: 'Assistant - Support administratif général',
+        "Assistant Senior - Support administratif expérimenté",
+      [StaffRole.ASSISTANT]: "Assistant - Support administratif général",
       [StaffRole.APPOINTMENT_COORDINATOR]:
-        'Coordinateur RDV - Spécialiste planification',
-      [StaffRole.SCHEDULER]: 'Planificateur - Gestion des horaires et créneaux',
+        "Coordinateur RDV - Spécialiste planification",
+      [StaffRole.SCHEDULER]: "Planificateur - Gestion des horaires et créneaux",
 
-      [StaffRole.HYGIENIST]: 'Hygiéniste - Soins préventifs dentaires',
-      [StaffRole.NURSE]: 'Infirmier/ère - Soins infirmiers spécialisés',
-      [StaffRole.TECHNICIAN]: 'Technicien - Support technique spécialisé',
-      [StaffRole.INTERPRETER]: 'Interprète - Services de traduction',
-      [StaffRole.SECURITY]: 'Sécurité - Surveillance et protection',
-      [StaffRole.MAINTENANCE]: 'Maintenance - Entretien et réparations',
+      [StaffRole.HYGIENIST]: "Hygiéniste - Soins préventifs dentaires",
+      [StaffRole.NURSE]: "Infirmier/ère - Soins infirmiers spécialisés",
+      [StaffRole.TECHNICIAN]: "Technicien - Support technique spécialisé",
+      [StaffRole.INTERPRETER]: "Interprète - Services de traduction",
+      [StaffRole.SECURITY]: "Sécurité - Surveillance et protection",
+      [StaffRole.MAINTENANCE]: "Maintenance - Entretien et réparations",
 
-      [StaffRole.SUBSTITUTE]: 'Remplaçant - Personnel de remplacement',
-      [StaffRole.TEMP_STAFF]: 'Personnel Temporaire - Mission courte durée',
-      [StaffRole.INTERN]: 'Stagiaire - Formation pratique',
-      [StaffRole.VOLUNTEER]: 'Bénévole - Service volontaire',
+      [StaffRole.SUBSTITUTE]: "Remplaçant - Personnel de remplacement",
+      [StaffRole.TEMP_STAFF]: "Personnel Temporaire - Mission courte durée",
+      [StaffRole.INTERN]: "Stagiaire - Formation pratique",
+      [StaffRole.VOLUNTEER]: "Bénévole - Service volontaire",
     };
 
-    return descriptions[staffRole] || 'Rôle non défini';
+    return descriptions[staffRole] || "Rôle non défini";
   }
 }

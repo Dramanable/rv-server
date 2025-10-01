@@ -4,16 +4,16 @@
  * @version 1.0.0
  */
 
-import { DomainError } from '../exceptions/domain.exceptions';
+import { DomainError } from "../exceptions/domain.exceptions";
 
 /**
  * Enum pour les canaux de notification supportés
  */
 export enum NotificationChannelType {
-  EMAIL = 'EMAIL',
-  SMS = 'SMS',
-  PUSH = 'PUSH',
-  IN_APP = 'IN_APP',
+  EMAIL = "EMAIL",
+  SMS = "SMS",
+  PUSH = "PUSH",
+  IN_APP = "IN_APP",
 }
 
 /**
@@ -30,8 +30,8 @@ export class NotificationChannel {
    * @throws DomainError si le type n'est pas valide
    */
   static create(type: string): NotificationChannel {
-    if (!type || typeof type !== 'string') {
-      throw new DomainError('Notification channel type is required');
+    if (!type || typeof type !== "string") {
+      throw new DomainError("Notification channel type is required");
     }
 
     const normalizedType = type.toUpperCase().trim();
@@ -42,7 +42,7 @@ export class NotificationChannel {
       )
     ) {
       throw new DomainError(
-        `Invalid notification channel type: ${type}. Valid types are: ${Object.values(NotificationChannelType).join(', ')}`,
+        `Invalid notification channel type: ${type}. Valid types are: ${Object.values(NotificationChannelType).join(", ")}`,
       );
     }
 
@@ -131,18 +131,18 @@ export class NotificationChannel {
   /**
    * Retourne la priorité par défaut pour ce canal
    */
-  getDefaultPriority(): 'LOW' | 'MEDIUM' | 'HIGH' {
+  getDefaultPriority(): "LOW" | "MEDIUM" | "HIGH" {
     switch (this._type) {
       case NotificationChannelType.EMAIL:
-        return 'LOW';
+        return "LOW";
       case NotificationChannelType.SMS:
-        return 'HIGH';
+        return "HIGH";
       case NotificationChannelType.PUSH:
-        return 'MEDIUM';
+        return "MEDIUM";
       case NotificationChannelType.IN_APP:
-        return 'MEDIUM';
+        return "MEDIUM";
       default:
-        return 'LOW';
+        return "LOW";
     }
   }
 
@@ -212,7 +212,7 @@ export class NotificationChannel {
    * Vérifie si un type de canal donné est valide
    */
   static isValidChannelType(type: string): boolean {
-    if (!type || typeof type !== 'string') {
+    if (!type || typeof type !== "string") {
       return false;
     }
 

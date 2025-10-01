@@ -4,17 +4,17 @@
  * ✅ Clean Architecture - Application Layer
  */
 
-import { Appointment } from '../../../domain/entities/appointment.entity';
-import { AppointmentRepository } from '../../../domain/repositories/appointment.repository.interface';
-import { AppointmentId } from '../../../domain/value-objects/appointment-id.value-object';
-import { ApplicationValidationError } from '../../exceptions/application.exceptions';
+import { Appointment } from "../../../domain/entities/appointment.entity";
+import { AppointmentRepository } from "../../../domain/repositories/appointment.repository.interface";
+import { AppointmentId } from "../../../domain/value-objects/appointment-id.value-object";
+import { ApplicationValidationError } from "../../exceptions/application.exceptions";
 
 // ===== REQUEST & RESPONSE =====
 
 export interface ConfirmAppointmentRequest {
   readonly appointmentId: string;
   readonly requestingUserId: string;
-  readonly confirmationMethod: 'EMAIL' | 'PHONE' | 'SMS' | 'IN_PERSON';
+  readonly confirmationMethod: "EMAIL" | "PHONE" | "SMS" | "IN_PERSON";
   readonly notes?: string;
 }
 
@@ -42,17 +42,17 @@ export class ConfirmAppointmentUseCase {
 
     if (!appointment) {
       throw new ApplicationValidationError(
-        'appointment',
-        'not_found',
+        "appointment",
+        "not_found",
         `Appointment with ID ${request.appointmentId} not found`,
       );
     }
 
     // 3. Vérification du statut (doit être REQUESTED)
-    if (appointment.getStatus().toString() !== 'REQUESTED') {
+    if (appointment.getStatus().toString() !== "REQUESTED") {
       throw new ApplicationValidationError(
-        'appointment',
-        'invalid_status',
+        "appointment",
+        "invalid_status",
         `Cannot confirm appointment with status ${appointment.getStatus()}. Status must be REQUESTED.`,
       );
     }
@@ -73,12 +73,12 @@ export class ConfirmAppointmentUseCase {
       confirmationSent = true;
     } catch (error) {
       // Log error but don't fail the confirmation
-      console.warn('Failed to send confirmation notification:', error);
+      console.warn("Failed to send confirmation notification:", error);
     }
 
     return {
       appointment: confirmedAppointment,
-      message: 'Appointment confirmed successfully',
+      message: "Appointment confirmed successfully",
       confirmationSent,
     };
   }
@@ -86,26 +86,26 @@ export class ConfirmAppointmentUseCase {
   private validateRequest(request: ConfirmAppointmentRequest): void {
     if (!request.appointmentId) {
       throw new ApplicationValidationError(
-        'validation',
-        'required_field',
-        'Appointment ID is required',
+        "validation",
+        "required_field",
+        "Appointment ID is required",
       );
     }
 
     if (!request.requestingUserId) {
       throw new ApplicationValidationError(
-        'validation',
-        'required_field',
-        'Requesting user ID is required',
+        "validation",
+        "required_field",
+        "Requesting user ID is required",
       );
     }
 
-    const validMethods = ['EMAIL', 'PHONE', 'SMS', 'IN_PERSON'];
+    const validMethods = ["EMAIL", "PHONE", "SMS", "IN_PERSON"];
     if (!validMethods.includes(request.confirmationMethod)) {
       throw new ApplicationValidationError(
-        'validation',
-        'invalid_value',
-        `Invalid confirmation method. Must be one of: ${validMethods.join(', ')}`,
+        "validation",
+        "invalid_value",
+        `Invalid confirmation method. Must be one of: ${validMethods.join(", ")}`,
       );
     }
   }

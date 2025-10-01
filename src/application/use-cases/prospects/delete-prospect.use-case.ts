@@ -4,16 +4,16 @@
  * ✅ Supprimer un prospect avec vérification de permissions strictes
  */
 
-import { ProspectId } from '@domain/value-objects/prospect-id.value-object';
-import { IProspectRepository } from '@domain/repositories/prospect.repository';
-import { Logger } from '@application/ports/logger.port';
-import { I18nService } from '@application/ports/i18n.port';
-import { IPermissionService } from '@application/ports/permission.port';
+import { ProspectId } from "@domain/value-objects/prospect-id.value-object";
+import { IProspectRepository } from "@domain/repositories/prospect.repository";
+import { Logger } from "@application/ports/logger.port";
+import { I18nService } from "@application/ports/i18n.port";
+import { IPermissionService } from "@application/ports/permission.port";
 import {
   ProspectNotFoundError,
   ProspectPermissionError,
   ProspectValidationError,
-} from '@domain/exceptions/prospect.exceptions';
+} from "@domain/exceptions/prospect.exceptions";
 
 export interface DeleteProspectRequest {
   readonly prospectId: string;
@@ -42,7 +42,7 @@ export class DeleteProspectUseCase {
   async execute(
     request: DeleteProspectRequest,
   ): Promise<DeleteProspectResponse> {
-    this.logger.info('Deleting prospect', {
+    this.logger.info("Deleting prospect", {
       prospectId: request.prospectId,
       requestingUserId: request.requestingUserId,
       correlationId: request.correlationId,
@@ -71,7 +71,7 @@ export class DeleteProspectUseCase {
 
       const deletedAt = new Date();
 
-      this.logger.info('Prospect deleted successfully', {
+      this.logger.info("Prospect deleted successfully", {
         prospectId: request.prospectId,
         businessName: prospect.getBusinessName(),
         requestingUserId: request.requestingUserId,
@@ -81,13 +81,13 @@ export class DeleteProspectUseCase {
 
       return {
         success: true,
-        message: this.i18n.translate('prospect.deleted.success'),
+        message: this.i18n.translate("prospect.deleted.success"),
         deletedProspectId: request.prospectId,
         deletedAt: deletedAt.toISOString(),
       };
     } catch (error) {
       this.logger.error(
-        'Failed to delete prospect',
+        "Failed to delete prospect",
         error instanceof Error ? error : new Error(String(error)),
         {
           prospectId: request.prospectId,
@@ -108,13 +108,13 @@ export class DeleteProspectUseCase {
     // Seuls les SUPER_ADMIN et SALES_MANAGER peuvent supprimer des prospects
     const canDeleteProspects = await this.permissionService.hasPermission(
       request.requestingUserId,
-      'DELETE_PROSPECTS',
+      "DELETE_PROSPECTS",
     );
 
     if (!canDeleteProspects) {
       throw new ProspectPermissionError(
         request.requestingUserId,
-        'delete prospects (requires SALES_MANAGER or higher role)',
+        "delete prospects (requires SALES_MANAGER or higher role)",
       );
     }
   }
@@ -129,20 +129,20 @@ export class DeleteProspectUseCase {
     // Même les managers ne peuvent supprimer que certains prospects
     const canDeleteAllProspects = await this.permissionService.hasPermission(
       request.requestingUserId,
-      'DELETE_ALL_PROSPECTS',
+      "DELETE_ALL_PROSPECTS",
     );
 
     if (!canDeleteAllProspects) {
       // SALES_MANAGER peut seulement supprimer les prospects assignés à son équipe
       const canDeleteTeamProspects = await this.permissionService.hasPermission(
         request.requestingUserId,
-        'DELETE_TEAM_PROSPECTS',
+        "DELETE_TEAM_PROSPECTS",
       );
 
       if (!canDeleteTeamProspects) {
         throw new ProspectPermissionError(
           request.requestingUserId,
-          'delete this prospect (insufficient permissions)',
+          "delete this prospect (insufficient permissions)",
         );
       }
     }
@@ -155,7 +155,7 @@ export class DeleteProspectUseCase {
     // ❌ Ne pas supprimer les prospects convertis (CLOSED_WON)
     if (prospect.getStatus().isClosedWon()) {
       throw new ProspectValidationError(
-        'Cannot delete converted prospects (CLOSED_WON). Archive them instead.',
+        "Cannot delete converted prospects (CLOSED_WON). Archive them instead.",
       );
     }
 
@@ -169,7 +169,7 @@ export class DeleteProspectUseCase {
       prospect.getStatus().isInActiveNegotiation()
     ) {
       throw new ProspectValidationError(
-        'Cannot delete prospects with recent activity in active negotiation. Wait 7 days or archive instead.',
+        "Cannot delete prospects with recent activity in active negotiation. Wait 7 days or archive instead.",
       );
     }
 
@@ -178,7 +178,7 @@ export class DeleteProspectUseCase {
       prospect.isHighValue() &&
       prospect.getEstimatedValue().getAmount() > 5000
     ) {
-      this.logger.warn('Deleting high-value prospect', {
+      this.logger.warn("Deleting high-value prospect", {
         prospectId: prospect.getId().getValue(),
         estimatedValue: prospect.getEstimatedValue().getAmount(),
         businessName: prospect.getBusinessName(),

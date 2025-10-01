@@ -1,14 +1,14 @@
-import { InsufficientPermissionsError } from '@application/exceptions/application.exceptions';
-import { I18nService } from '@application/ports/i18n.port';
-import { Logger } from '@application/ports/logger.port';
-import { IPermissionService } from '@application/ports/permission.service.interface';
+import { InsufficientPermissionsError } from "@application/exceptions/application.exceptions";
+import { I18nService } from "@application/ports/i18n.port";
+import { Logger } from "@application/ports/logger.port";
+import { IPermissionService } from "@application/ports/permission.service.interface";
 import {
   ListServicesRequest,
   ListServicesUseCase,
-} from '@application/use-cases/service/list-services.use-case';
-import { ServiceRepository } from '@domain/repositories/service.repository.interface';
+} from "@application/use-cases/service/list-services.use-case";
+import { ServiceRepository } from "@domain/repositories/service.repository.interface";
 
-describe('ListServicesUseCase - Permissions', () => {
+describe("ListServicesUseCase - Permissions", () => {
   let useCase: ListServicesUseCase;
   let mockServiceRepository: jest.Mocked<ServiceRepository>;
   let mockPermissionService: jest.Mocked<IPermissionService>;
@@ -17,11 +17,11 @@ describe('ListServicesUseCase - Permissions', () => {
 
   // Valid test request with valid UUIDs
   const validRequest: ListServicesRequest = {
-    requestingUserId: '550e8400-e29b-41d4-a716-446655440001',
-    businessId: '550e8400-e29b-41d4-a716-446655440002',
+    requestingUserId: "550e8400-e29b-41d4-a716-446655440001",
+    businessId: "550e8400-e29b-41d4-a716-446655440002",
     pagination: { page: 1, limit: 10 },
-    sorting: { sortBy: 'createdAt', sortOrder: 'desc' },
-    filters: { name: 'test', isActive: true },
+    sorting: { sortBy: "createdAt", sortOrder: "desc" },
+    filters: { name: "test", isActive: true },
   };
 
   beforeEach(() => {
@@ -65,8 +65,8 @@ describe('ListServicesUseCase - Permissions', () => {
     };
 
     mockI18n = {
-      translate: jest.fn().mockReturnValue('Translated message'),
-      t: jest.fn().mockReturnValue('Translated message'),
+      translate: jest.fn().mockReturnValue("Translated message"),
+      t: jest.fn().mockReturnValue("Translated message"),
       setDefaultLanguage: jest.fn(),
       exists: jest.fn().mockReturnValue(true),
     };
@@ -83,14 +83,14 @@ describe('ListServicesUseCase - Permissions', () => {
     jest.clearAllMocks();
   });
 
-  describe('Permission Enforcement', () => {
-    it('should require VIEW_SERVICES permission before listing services', async () => {
+  describe("Permission Enforcement", () => {
+    it("should require VIEW_SERVICES permission before listing services", async () => {
       // Arrange
       mockPermissionService.requirePermission.mockRejectedValue(
         new InsufficientPermissionsError(
-          '550e8400-e29b-41d4-a716-446655440001',
-          'VIEW_SERVICES',
-          '550e8400-e29b-41d4-a716-446655440002',
+          "550e8400-e29b-41d4-a716-446655440001",
+          "VIEW_SERVICES",
+          "550e8400-e29b-41d4-a716-446655440002",
         ),
       );
 
@@ -100,10 +100,10 @@ describe('ListServicesUseCase - Permissions', () => {
       );
 
       expect(mockPermissionService.requirePermission).toHaveBeenCalledWith(
-        '550e8400-e29b-41d4-a716-446655440001',
-        'VIEW_SERVICES',
+        "550e8400-e29b-41d4-a716-446655440001",
+        "VIEW_SERVICES",
         {
-          businessId: '550e8400-e29b-41d4-a716-446655440002',
+          businessId: "550e8400-e29b-41d4-a716-446655440002",
         },
       );
 
@@ -111,7 +111,7 @@ describe('ListServicesUseCase - Permissions', () => {
       expect(mockServiceRepository.search).not.toHaveBeenCalled();
     });
 
-    it('should proceed with service listing when user has VIEW_SERVICES permission', async () => {
+    it("should proceed with service listing when user has VIEW_SERVICES permission", async () => {
       // Arrange
       mockPermissionService.requirePermission.mockResolvedValue();
       mockServiceRepository.search.mockResolvedValue({
@@ -124,10 +124,10 @@ describe('ListServicesUseCase - Permissions', () => {
 
       // Assert
       expect(mockPermissionService.requirePermission).toHaveBeenCalledWith(
-        '550e8400-e29b-41d4-a716-446655440001',
-        'VIEW_SERVICES',
+        "550e8400-e29b-41d4-a716-446655440001",
+        "VIEW_SERVICES",
         {
-          businessId: '550e8400-e29b-41d4-a716-446655440002',
+          businessId: "550e8400-e29b-41d4-a716-446655440002",
         },
       );
 
@@ -136,12 +136,12 @@ describe('ListServicesUseCase - Permissions', () => {
       expect(result.data).toEqual([]);
     });
 
-    it('should log permission denied errors appropriately', async () => {
+    it("should log permission denied errors appropriately", async () => {
       // Arrange
       const permissionError = new InsufficientPermissionsError(
-        '550e8400-e29b-41d4-a716-446655440001',
-        'VIEW_SERVICES',
-        '550e8400-e29b-41d4-a716-446655440002',
+        "550e8400-e29b-41d4-a716-446655440001",
+        "VIEW_SERVICES",
+        "550e8400-e29b-41d4-a716-446655440002",
       );
       mockPermissionService.requirePermission.mockRejectedValue(
         permissionError,
@@ -153,19 +153,19 @@ describe('ListServicesUseCase - Permissions', () => {
       );
 
       expect(mockLogger.error).toHaveBeenCalledWith(
-        'Permission denied for service listing',
+        "Permission denied for service listing",
         expect.any(Error),
         {
-          businessId: '550e8400-e29b-41d4-a716-446655440002',
-          requestingUserId: '550e8400-e29b-41d4-a716-446655440001',
-          requiredPermission: 'VIEW_SERVICES',
+          businessId: "550e8400-e29b-41d4-a716-446655440002",
+          requestingUserId: "550e8400-e29b-41d4-a716-446655440001",
+          requiredPermission: "VIEW_SERVICES",
         },
       );
     });
 
-    it('should handle generic permission service errors', async () => {
+    it("should handle generic permission service errors", async () => {
       // Arrange
-      const genericError = new Error('Permission service unavailable');
+      const genericError = new Error("Permission service unavailable");
       mockPermissionService.requirePermission.mockRejectedValue(genericError);
 
       // Act & Assert
@@ -174,37 +174,37 @@ describe('ListServicesUseCase - Permissions', () => {
       );
 
       expect(mockLogger.error).toHaveBeenCalledWith(
-        'Permission denied for service listing',
+        "Permission denied for service listing",
         genericError,
         {
-          businessId: '550e8400-e29b-41d4-a716-446655440002',
-          requestingUserId: '550e8400-e29b-41d4-a716-446655440001',
-          requiredPermission: 'VIEW_SERVICES',
+          businessId: "550e8400-e29b-41d4-a716-446655440002",
+          requestingUserId: "550e8400-e29b-41d4-a716-446655440001",
+          requiredPermission: "VIEW_SERVICES",
         },
       );
     });
 
-    it('should validate request parameters before checking permissions', async () => {
+    it("should validate request parameters before checking permissions", async () => {
       // Arrange
       const invalidRequest = {
         ...validRequest,
-        businessId: 'invalid-business-id', // Invalid UUID
+        businessId: "invalid-business-id", // Invalid UUID
       };
 
       // Act & Assert
       await expect(useCase.execute(invalidRequest)).rejects.toThrow(
-        'BusinessId must be a valid UUID v4',
+        "BusinessId must be a valid UUID v4",
       );
 
       // Should not call permission service with invalid data
       expect(mockPermissionService.requirePermission).not.toHaveBeenCalled();
     });
 
-    it('should enforce business context in permission check', async () => {
+    it("should enforce business context in permission check", async () => {
       // Arrange
       const differentBusinessRequest = {
         ...validRequest,
-        businessId: '550e8400-e29b-41d4-a716-446655440003', // Different business
+        businessId: "550e8400-e29b-41d4-a716-446655440003", // Different business
       };
 
       mockPermissionService.requirePermission.mockResolvedValue();
@@ -218,17 +218,17 @@ describe('ListServicesUseCase - Permissions', () => {
 
       // Assert - Should check permission for the specific business
       expect(mockPermissionService.requirePermission).toHaveBeenCalledWith(
-        '550e8400-e29b-41d4-a716-446655440001',
-        'VIEW_SERVICES',
+        "550e8400-e29b-41d4-a716-446655440001",
+        "VIEW_SERVICES",
         {
-          businessId: '550e8400-e29b-41d4-a716-446655440003',
+          businessId: "550e8400-e29b-41d4-a716-446655440003",
         },
       );
     });
   });
 
-  describe('Success Logging', () => {
-    it('should log service listing attempt', async () => {
+  describe("Success Logging", () => {
+    it("should log service listing attempt", async () => {
       // Arrange
       mockPermissionService.requirePermission.mockResolvedValue();
       mockServiceRepository.search.mockResolvedValue({
@@ -241,17 +241,17 @@ describe('ListServicesUseCase - Permissions', () => {
 
       // Assert
       expect(mockLogger.info).toHaveBeenCalledWith(
-        'Attempting to list services',
+        "Attempting to list services",
         {
-          businessId: '550e8400-e29b-41d4-a716-446655440002',
+          businessId: "550e8400-e29b-41d4-a716-446655440002",
           limit: 10,
           page: 1,
-          requestingUserId: '550e8400-e29b-41d4-a716-446655440001',
+          requestingUserId: "550e8400-e29b-41d4-a716-446655440001",
         },
       );
     });
 
-    it('should log successful service listing', async () => {
+    it("should log successful service listing", async () => {
       // Arrange
       mockPermissionService.requirePermission.mockResolvedValue();
       mockServiceRepository.search.mockResolvedValue({
@@ -264,12 +264,12 @@ describe('ListServicesUseCase - Permissions', () => {
 
       // Assert
       expect(mockLogger.info).toHaveBeenCalledWith(
-        'Services listed successfully',
+        "Services listed successfully",
         {
-          businessId: '550e8400-e29b-41d4-a716-446655440002',
+          businessId: "550e8400-e29b-41d4-a716-446655440002",
           limit: 10,
           page: 1,
-          requestingUserId: '550e8400-e29b-41d4-a716-446655440001',
+          requestingUserId: "550e8400-e29b-41d4-a716-446655440001",
           totalFound: 0,
         },
       );

@@ -1,22 +1,22 @@
 import {
   RequiredValueError,
   ValueOutOfRangeError,
-} from '../exceptions/value-object.exceptions';
-import { BusinessId } from '../value-objects/business-id.value-object';
-import { CalendarId } from '../value-objects/calendar-id.value-object';
-import { RecurrencePattern } from '../value-objects/recurrence-pattern.value-object';
-import { TimeSlot } from '../value-objects/time-slot.value-object';
-import { UserId } from '../value-objects/user-id.value-object';
-import { WorkingHours } from '../value-objects/working-hours.value-object';
-import { CalendarType } from './calendar-type.entity';
+} from "../exceptions/value-object.exceptions";
+import { BusinessId } from "../value-objects/business-id.value-object";
+import { CalendarId } from "../value-objects/calendar-id.value-object";
+import { RecurrencePattern } from "../value-objects/recurrence-pattern.value-object";
+import { TimeSlot } from "../value-objects/time-slot.value-object";
+import { UserId } from "../value-objects/user-id.value-object";
+import { WorkingHours } from "../value-objects/working-hours.value-object";
+import { CalendarType } from "./calendar-type.entity";
 
 // Re-export pour faciliter les imports
-export { CalendarId } from '../value-objects/calendar-id.value-object';
+export { CalendarId } from "../value-objects/calendar-id.value-object";
 
 export enum CalendarStatus {
-  ACTIVE = 'ACTIVE',
-  INACTIVE = 'INACTIVE',
-  MAINTENANCE = 'MAINTENANCE',
+  ACTIVE = "ACTIVE",
+  INACTIVE = "INACTIVE",
+  MAINTENANCE = "MAINTENANCE",
 }
 
 export interface CalendarSettings {
@@ -93,18 +93,18 @@ export class Calendar {
 
     // Validation du nom - doit être non vide
     if (!this._name || this._name.trim().length === 0) {
-      throw new RequiredValueError('calendar_name');
+      throw new RequiredValueError("calendar_name");
     }
 
     // Validation pour les calendriers STAFF - doivent avoir un ownerId
-    if (this._type.getCode() === 'STAFF' && !this._ownerId) {
-      throw new RequiredValueError('calendar_owner_id');
+    if (this._type.getCode() === "STAFF" && !this._ownerId) {
+      throw new RequiredValueError("calendar_owner_id");
     }
 
     // Validation des paramètres techniques
     if (this._settings.defaultSlotDuration < 5) {
       throw new ValueOutOfRangeError(
-        'default_slot_duration',
+        "default_slot_duration",
         this._settings.defaultSlotDuration,
         5,
         Number.MAX_SAFE_INTEGER,
@@ -113,7 +113,7 @@ export class Calendar {
 
     if (this._settings.minimumNotice < 0) {
       throw new ValueOutOfRangeError(
-        'minimum_notice',
+        "minimum_notice",
         this._settings.minimumNotice,
         0,
         Number.MAX_SAFE_INTEGER,
@@ -123,7 +123,7 @@ export class Calendar {
     // Valider les horaires de travail
     if (this._availability.workingHours.length !== 7) {
       throw new ValueOutOfRangeError(
-        'working_hours_days',
+        "working_hours_days",
         this._availability.workingHours.length,
         7,
         7,
@@ -196,7 +196,7 @@ export class Calendar {
     workingHours?: WorkingHours[];
   }): Calendar {
     const defaultSettings: CalendarSettings = {
-      timezone: 'Europe/Paris',
+      timezone: "Europe/Paris",
       defaultSlotDuration: 30,
       minimumNotice: 60,
       maximumAdvanceBooking: 30,
@@ -208,11 +208,11 @@ export class Calendar {
     // Horaires par défaut (9h-17h du lundi au vendredi)
     const defaultWorkingHours = data.workingHours || [
       WorkingHours.createNonWorkingDay(0), // Dimanche
-      WorkingHours.createWithLunchBreak(1, '09:00', '17:00'), // Lundi
-      WorkingHours.createWithLunchBreak(2, '09:00', '17:00'), // Mardi
-      WorkingHours.createWithLunchBreak(3, '09:00', '17:00'), // Mercredi
-      WorkingHours.createWithLunchBreak(4, '09:00', '17:00'), // Jeudi
-      WorkingHours.createWithLunchBreak(5, '09:00', '17:00'), // Vendredi
+      WorkingHours.createWithLunchBreak(1, "09:00", "17:00"), // Lundi
+      WorkingHours.createWithLunchBreak(2, "09:00", "17:00"), // Mardi
+      WorkingHours.createWithLunchBreak(3, "09:00", "17:00"), // Mercredi
+      WorkingHours.createWithLunchBreak(4, "09:00", "17:00"), // Jeudi
+      WorkingHours.createWithLunchBreak(5, "09:00", "17:00"), // Vendredi
       WorkingHours.createNonWorkingDay(6), // Samedi
     ];
 

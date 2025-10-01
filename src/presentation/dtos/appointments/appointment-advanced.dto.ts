@@ -5,13 +5,13 @@
  * ✅ Documentation Swagger
  */
 
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
-import { AppointmentStatus } from '../../../domain/entities/appointment.entity';
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { IsEnum, IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { AppointmentStatus } from "../../../domain/entities/appointment.entity";
 
 export class UpdateAppointmentStatusDto {
   @ApiProperty({
-    description: 'New status for the appointment',
+    description: "New status for the appointment",
     enum: AppointmentStatus,
     example: AppointmentStatus.CONFIRMED,
   })
@@ -20,16 +20,16 @@ export class UpdateAppointmentStatusDto {
   readonly newStatus!: AppointmentStatus;
 
   @ApiPropertyOptional({
-    description: 'Reason for status change (required for cancellation)',
-    example: 'Client requested cancellation',
+    description: "Reason for status change (required for cancellation)",
+    example: "Client requested cancellation",
   })
   @IsOptional()
   @IsString()
   readonly reason?: string;
 
   @ApiPropertyOptional({
-    description: 'Additional notes for the status change',
-    example: 'Session completed successfully, client satisfied',
+    description: "Additional notes for the status change",
+    example: "Session completed successfully, client satisfied",
   })
   @IsOptional()
   @IsString()
@@ -38,34 +38,34 @@ export class UpdateAppointmentStatusDto {
 
 export class UpdateAppointmentStatusResponseDto {
   @ApiProperty({
-    description: 'Updated appointment data',
-    type: 'object',
+    description: "Updated appointment data",
+    type: "object",
     additionalProperties: true,
   })
   readonly appointment!: any;
 
   @ApiProperty({
-    description: 'Previous status of the appointment',
+    description: "Previous status of the appointment",
     enum: AppointmentStatus,
     example: AppointmentStatus.REQUESTED,
   })
   readonly previousStatus!: AppointmentStatus;
 
   @ApiProperty({
-    description: 'New status of the appointment',
+    description: "New status of the appointment",
     enum: AppointmentStatus,
     example: AppointmentStatus.CONFIRMED,
   })
   readonly newStatus!: AppointmentStatus;
 
   @ApiProperty({
-    description: 'Success message',
-    example: 'Appointment confirmed successfully',
+    description: "Success message",
+    example: "Appointment confirmed successfully",
   })
   readonly message!: string;
 
   @ApiProperty({
-    description: 'Whether notification was sent to client',
+    description: "Whether notification was sent to client",
     example: true,
   })
   readonly notificationSent!: boolean;
@@ -73,17 +73,17 @@ export class UpdateAppointmentStatusResponseDto {
 
 export class ConfirmAppointmentDto {
   @ApiProperty({
-    description: 'Method used for confirmation',
-    enum: ['EMAIL', 'PHONE', 'SMS', 'IN_PERSON'],
-    example: 'EMAIL',
+    description: "Method used for confirmation",
+    enum: ["EMAIL", "PHONE", "SMS", "IN_PERSON"],
+    example: "EMAIL",
   })
-  @IsEnum(['EMAIL', 'PHONE', 'SMS', 'IN_PERSON'])
+  @IsEnum(["EMAIL", "PHONE", "SMS", "IN_PERSON"])
   @IsNotEmpty()
-  readonly confirmationMethod!: 'EMAIL' | 'PHONE' | 'SMS' | 'IN_PERSON';
+  readonly confirmationMethod!: "EMAIL" | "PHONE" | "SMS" | "IN_PERSON";
 
   @ApiPropertyOptional({
-    description: 'Additional notes for the confirmation',
-    example: 'Client confirmed via phone call',
+    description: "Additional notes for the confirmation",
+    example: "Client confirmed via phone call",
   })
   @IsOptional()
   @IsString()
@@ -92,20 +92,20 @@ export class ConfirmAppointmentDto {
 
 export class ConfirmAppointmentResponseDto {
   @ApiProperty({
-    description: 'Confirmed appointment data',
-    type: 'object',
+    description: "Confirmed appointment data",
+    type: "object",
     additionalProperties: true,
   })
   readonly appointment!: any;
 
   @ApiProperty({
-    description: 'Success message',
-    example: 'Appointment confirmed successfully',
+    description: "Success message",
+    example: "Appointment confirmed successfully",
   })
   readonly message!: string;
 
   @ApiProperty({
-    description: 'Whether confirmation notification was sent',
+    description: "Whether confirmation notification was sent",
     example: true,
   })
   readonly confirmationSent!: boolean;

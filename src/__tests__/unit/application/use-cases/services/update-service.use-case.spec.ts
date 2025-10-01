@@ -5,10 +5,10 @@
  * Application Layer - Clean Architecture
  */
 
-import { BusinessId } from '../../../../../domain/value-objects/business-id.value-object';
-import { ServiceId } from '../../../../../domain/value-objects/service-id.value-object';
-import { ServiceTypeId } from '../../../../../domain/value-objects/service-type-id.value-object';
-import { UpdateServiceUseCase } from '../../../../../application/use-cases/services/update-service.use-case';
+import { BusinessId } from "../../../../../domain/value-objects/business-id.value-object";
+import { ServiceId } from "../../../../../domain/value-objects/service-id.value-object";
+import { ServiceTypeId } from "../../../../../domain/value-objects/service-type-id.value-object";
+import { UpdateServiceUseCase } from "../../../../../application/use-cases/services/update-service.use-case";
 
 // Mock dependencies
 const mockServiceRepository = {
@@ -24,7 +24,7 @@ const mockLogger = {
   debug: jest.fn(),
 };
 
-describe('UpdateServiceUseCase', () => {
+describe("UpdateServiceUseCase", () => {
   let updateServiceUseCase: UpdateServiceUseCase;
 
   beforeEach(() => {
@@ -37,36 +37,36 @@ describe('UpdateServiceUseCase', () => {
     );
   });
 
-  describe('🔴 RED Phase - Service Update', () => {
-    it('should update service with valid data', async () => {
+  describe("🔴 RED Phase - Service Update", () => {
+    it("should update service with valid data", async () => {
       // Arrange
       const serviceId = ServiceId.generate();
       const businessId = BusinessId.fromString(
-        '550e8400-e29b-41d4-a716-446655440001',
+        "550e8400-e29b-41d4-a716-446655440001",
       );
       const serviceTypeId = ServiceTypeId.fromString(
-        '550e8400-e29b-41d4-a716-446655440002',
+        "550e8400-e29b-41d4-a716-446655440002",
       );
 
       const request = {
-        requestingUserId: 'user-123',
+        requestingUserId: "user-123",
         serviceId: serviceId.getValue(),
         businessId: businessId.getValue(),
-        name: 'Updated Service Name',
-        description: 'Updated description',
+        name: "Updated Service Name",
+        description: "Updated description",
         serviceTypeIds: [serviceTypeId.getValue()],
         basePrice: 75,
-        currency: 'EUR',
+        currency: "EUR",
         duration: 90,
       };
 
       const existingService = {
         id: serviceId,
         businessId: businessId,
-        name: 'Original Service Name',
-        description: 'Original description',
+        name: "Original Service Name",
+        description: "Original description",
         getServiceTypeIds: () => [serviceTypeId],
-        pricingConfig: { basePrice: { amount: 50, currency: 'EUR' } },
+        pricingConfig: { basePrice: { amount: 50, currency: "EUR" } },
         scheduling: { duration: 60 },
         updateBasicInfo: jest.fn(),
         updateScheduling: jest.fn(),
@@ -75,9 +75,9 @@ describe('UpdateServiceUseCase', () => {
 
       const updatedService = {
         ...existingService,
-        name: 'Updated Service Name',
-        description: 'Updated description',
-        pricingConfig: { basePrice: { amount: 75, currency: 'EUR' } },
+        name: "Updated Service Name",
+        description: "Updated description",
+        pricingConfig: { basePrice: { amount: 75, currency: "EUR" } },
         scheduling: { duration: 90 },
       };
 
@@ -91,12 +91,12 @@ describe('UpdateServiceUseCase', () => {
       // Assert
       expect(result).toBeDefined();
       expect(result.service).toBeDefined();
-      expect(result.service.name).toBe('Updated Service Name');
+      expect(result.service.name).toBe("Updated Service Name");
       expect(existingService.updateBasicInfo).toHaveBeenCalledWith({
-        name: 'Updated Service Name',
-        description: 'Updated description',
+        name: "Updated Service Name",
+        description: "Updated description",
         basePrice: 75,
-        currency: 'EUR',
+        currency: "EUR",
       });
       expect(existingService.updateScheduling).toHaveBeenCalledWith({
         duration: 90,
@@ -107,85 +107,85 @@ describe('UpdateServiceUseCase', () => {
       expect(mockServiceRepository.save).toHaveBeenCalledWith(existingService);
     });
 
-    it('should throw error when service not found', async () => {
+    it("should throw error when service not found", async () => {
       // Arrange
       const serviceId = ServiceId.generate();
       const businessId = BusinessId.fromString(
-        '550e8400-e29b-41d4-a716-446655440001',
+        "550e8400-e29b-41d4-a716-446655440001",
       );
 
       const request = {
-        requestingUserId: 'user-123',
+        requestingUserId: "user-123",
         serviceId: serviceId.getValue(),
         businessId: businessId.getValue(),
-        name: 'Updated Name',
+        name: "Updated Name",
       };
 
       mockServiceRepository.findById.mockResolvedValue(null);
 
       // Act & Assert - 🔴 RED: Cette exception n'est pas gérée encore
       await expect(updateServiceUseCase.execute(request)).rejects.toThrow(
-        'Service not found',
+        "Service not found",
       );
     });
 
-    it('should throw error when service belongs to different business', async () => {
+    it("should throw error when service belongs to different business", async () => {
       // Arrange
       const serviceId = ServiceId.generate();
       const requestingBusinessId = BusinessId.fromString(
-        '550e8400-e29b-41d4-a716-446655440001',
+        "550e8400-e29b-41d4-a716-446655440001",
       );
       const serviceBusinessId = BusinessId.fromString(
-        '550e8400-e29b-41d4-a716-446655440002',
+        "550e8400-e29b-41d4-a716-446655440002",
       );
 
       const request = {
-        requestingUserId: 'user-123',
+        requestingUserId: "user-123",
         serviceId: serviceId.getValue(),
         businessId: requestingBusinessId.getValue(),
-        name: 'Updated Name',
+        name: "Updated Name",
       };
 
       const existingService = {
         id: serviceId,
         businessId: serviceBusinessId, // Différent business
-        name: 'Original Name',
+        name: "Original Name",
       };
 
       mockServiceRepository.findById.mockResolvedValue(existingService);
 
       // Act & Assert - 🔴 RED: Cette validation n'existe pas encore
       await expect(updateServiceUseCase.execute(request)).rejects.toThrow(
-        'Service does not belong to the specified business',
+        "Service does not belong to the specified business",
       );
     });
 
-    it('should throw error when new name already exists for another service', async () => {
+    it("should throw error when new name already exists for another service", async () => {
       // Arrange
       const serviceId = ServiceId.generate();
       const businessId = BusinessId.fromString(
-        '550e8400-e29b-41d4-a716-446655440001',
+        "550e8400-e29b-41d4-a716-446655440001",
       );
       const anotherServiceId = ServiceId.generate();
 
       const request = {
-        requestingUserId: 'user-123',
+        requestingUserId: "user-123",
         serviceId: serviceId.getValue(),
         businessId: businessId.getValue(),
-        name: 'Existing Service Name',
+        name: "Existing Service Name",
       };
 
       const existingService = {
         id: serviceId,
         businessId: businessId,
-        name: 'Original Name',
+        name: "Original Name",
         update: jest.fn(),
       };
 
       const serviceWithSameName = {
         id: anotherServiceId, // Différent service avec le même nom
         businessId: businessId,
-        name: 'Existing Service Name',
+        name: "Existing Service Name",
       };
 
       mockServiceRepository.findById.mockResolvedValue(existingService);
@@ -193,30 +193,30 @@ describe('UpdateServiceUseCase', () => {
 
       // Act & Assert - 🔴 RED: Cette validation n'existe pas encore
       await expect(updateServiceUseCase.execute(request)).rejects.toThrow(
-        'Service name already exists',
+        "Service name already exists",
       );
     });
 
-    it('should allow updating service with same name (no conflict)', async () => {
+    it("should allow updating service with same name (no conflict)", async () => {
       // Arrange
       const serviceId = ServiceId.generate();
       const businessId = BusinessId.fromString(
-        '550e8400-e29b-41d4-a716-446655440001',
+        "550e8400-e29b-41d4-a716-446655440001",
       );
 
       const request = {
-        requestingUserId: 'user-123',
+        requestingUserId: "user-123",
         serviceId: serviceId.getValue(),
         businessId: businessId.getValue(),
-        name: 'Same Name',
-        description: 'Updated description',
+        name: "Same Name",
+        description: "Updated description",
       };
 
       const existingService = {
         id: serviceId,
         businessId: businessId,
-        name: 'Same Name', // Même nom, pas de conflit
-        description: 'Original description',
+        name: "Same Name", // Même nom, pas de conflit
+        description: "Original description",
         updateBasicInfo: jest.fn(),
         updateScheduling: jest.fn(),
         updateServiceTypes: jest.fn(),
@@ -224,7 +224,7 @@ describe('UpdateServiceUseCase', () => {
 
       const updatedService = {
         ...existingService,
-        description: 'Updated description',
+        description: "Updated description",
       };
 
       mockServiceRepository.findById.mockResolvedValue(existingService);
@@ -236,19 +236,19 @@ describe('UpdateServiceUseCase', () => {
 
       // Assert
       expect(result).toBeDefined();
-      expect(result.service.description).toBe('Updated description');
+      expect(result.service.description).toBe("Updated description");
       expect(mockServiceRepository.save).toHaveBeenCalledWith(existingService);
     });
 
-    it('should throw error with invalid price', async () => {
+    it("should throw error with invalid price", async () => {
       // Arrange
       const serviceId = ServiceId.generate();
       const businessId = BusinessId.fromString(
-        '550e8400-e29b-41d4-a716-446655440001',
+        "550e8400-e29b-41d4-a716-446655440001",
       );
 
       const request = {
-        requestingUserId: 'user-123',
+        requestingUserId: "user-123",
         serviceId: serviceId.getValue(),
         businessId: businessId.getValue(),
         basePrice: -10, // Invalid negative price
@@ -257,14 +257,14 @@ describe('UpdateServiceUseCase', () => {
       const existingService = {
         id: serviceId,
         businessId: businessId,
-        name: 'Test Service',
+        name: "Test Service",
       };
 
       mockServiceRepository.findById.mockResolvedValue(existingService);
 
       // Act & Assert - 🔴 RED: Cette validation n'existe pas encore
       await expect(updateServiceUseCase.execute(request)).rejects.toThrow(
-        'Price must be positive',
+        "Price must be positive",
       );
     });
   });

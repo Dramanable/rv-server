@@ -3,8 +3,8 @@
  * Récupère les informations de l'utilisateur connecté
  */
 
-import { User } from '../../../domain/entities/user.entity';
-import { UserRepository } from '../../../domain/repositories/user.repository.interface';
+import { User } from "../../../domain/entities/user.entity";
+import { UserRepository } from "../../../domain/repositories/user.repository.interface";
 
 export interface GetMeRequest {
   readonly requestingUserId: string;

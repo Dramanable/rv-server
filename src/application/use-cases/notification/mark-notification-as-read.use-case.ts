@@ -4,11 +4,11 @@
  * @version 1.0.0
  */
 
-import { Logger } from '@application/ports/logger.port';
-import { I18nService } from '@application/ports/i18n.port';
-import { INotificationRepository } from '@domain/repositories/notification.repository.interface';
-import { Notification } from '@domain/entities/notification.entity';
-import { NotificationException } from '@application/exceptions/notification.exceptions';
+import { Logger } from "@application/ports/logger.port";
+import { I18nService } from "@application/ports/i18n.port";
+import { INotificationRepository } from "@domain/repositories/notification.repository.interface";
+import { Notification } from "@domain/entities/notification.entity";
+import { NotificationException } from "@application/exceptions/notification.exceptions";
 
 /**
  * Requête pour marquer une notification comme lue
@@ -48,7 +48,7 @@ export class MarkNotificationAsReadUseCase {
     this.validateRequest(request);
 
     // 📊 Log de l'opération
-    this.logger.info('Marking notification as read', {
+    this.logger.info("Marking notification as read", {
       notificationId: request.notificationId,
       requestingUserId: request.requestingUserId,
       correlationId: request.correlationId,
@@ -62,9 +62,9 @@ export class MarkNotificationAsReadUseCase {
 
       if (!notification) {
         throw new NotificationException(
-          this.i18n.translate('errors.notifications.not_found'),
-          'NOT_FOUND',
-          'errors.notifications.not_found',
+          this.i18n.translate("errors.notifications.not_found"),
+          "NOT_FOUND",
+          "errors.notifications.not_found",
           { notificationId: request.notificationId },
         );
       }
@@ -84,7 +84,7 @@ export class MarkNotificationAsReadUseCase {
         await this.notificationRepository.save(readNotification);
 
       // 📊 Log de succès
-      this.logger.info('Notification marked as read successfully', {
+      this.logger.info("Notification marked as read successfully", {
         notificationId: request.notificationId,
         recipientId: notification.getRecipientId(),
         markedAsReadAt,
@@ -92,7 +92,7 @@ export class MarkNotificationAsReadUseCase {
       });
 
       // 🔍 Log d'audit pour traçabilité
-      this.logger.audit('MARK_NOTIFICATION_AS_READ', request.requestingUserId, {
+      this.logger.audit("MARK_NOTIFICATION_AS_READ", request.requestingUserId, {
         notificationId: request.notificationId,
         recipientId: notification.getRecipientId(),
         channel: notification.getChannel().getValue(),
@@ -107,9 +107,9 @@ export class MarkNotificationAsReadUseCase {
     } catch (error) {
       // 🚨 Log d'erreur
       const errorMessage =
-        error instanceof Error ? error.message : 'Unknown error';
+        error instanceof Error ? error.message : "Unknown error";
       this.logger.error(
-        'Failed to mark notification as read',
+        "Failed to mark notification as read",
         error instanceof Error ? error : undefined,
         {
           notificationId: request.notificationId,
@@ -123,9 +123,9 @@ export class MarkNotificationAsReadUseCase {
       }
 
       throw new NotificationException(
-        this.i18n.translate('errors.notifications.mark_as_read_failed'),
-        'MARK_AS_READ_FAILED',
-        'errors.notifications.mark_as_read_failed',
+        this.i18n.translate("errors.notifications.mark_as_read_failed"),
+        "MARK_AS_READ_FAILED",
+        "errors.notifications.mark_as_read_failed",
         { originalError: errorMessage },
       );
     }
@@ -137,9 +137,9 @@ export class MarkNotificationAsReadUseCase {
   private validateRequest(request: MarkNotificationAsReadRequest): void {
     if (!request.notificationId || request.notificationId.trim().length === 0) {
       throw new NotificationException(
-        this.i18n.translate('errors.notifications.id_required'),
-        'VALIDATION_ERROR',
-        'errors.notifications.id_required',
+        this.i18n.translate("errors.notifications.id_required"),
+        "VALIDATION_ERROR",
+        "errors.notifications.id_required",
       );
     }
 
@@ -148,9 +148,9 @@ export class MarkNotificationAsReadUseCase {
       request.requestingUserId.trim().length === 0
     ) {
       throw new NotificationException(
-        this.i18n.translate('errors.notifications.requesting_user_required'),
-        'VALIDATION_ERROR',
-        'errors.notifications.requesting_user_required',
+        this.i18n.translate("errors.notifications.requesting_user_required"),
+        "VALIDATION_ERROR",
+        "errors.notifications.requesting_user_required",
       );
     }
   }
@@ -167,9 +167,9 @@ export class MarkNotificationAsReadUseCase {
     if (notification.getRecipientId() !== requestingUserId) {
       // TODO: Vérifier si l'utilisateur est admin/staff qui peut gérer toutes les notifications
       throw new NotificationException(
-        this.i18n.translate('errors.notifications.permission_denied'),
-        'PERMISSION_DENIED',
-        'errors.notifications.permission_denied',
+        this.i18n.translate("errors.notifications.permission_denied"),
+        "PERMISSION_DENIED",
+        "errors.notifications.permission_denied",
         {
           notificationId: notification.getId(),
           requestingUserId,
@@ -188,9 +188,9 @@ export class MarkNotificationAsReadUseCase {
     // Règles métier pour le marquage comme lue
     if (status.isFailed()) {
       throw new NotificationException(
-        this.i18n.translate('errors.notifications.cannot_mark_failed_as_read'),
-        'INVALID_STATUS_TRANSITION',
-        'errors.notifications.cannot_mark_failed_as_read',
+        this.i18n.translate("errors.notifications.cannot_mark_failed_as_read"),
+        "INVALID_STATUS_TRANSITION",
+        "errors.notifications.cannot_mark_failed_as_read",
         {
           notificationId: notification.getId(),
           currentStatus: status.getValue(),
@@ -201,10 +201,10 @@ export class MarkNotificationAsReadUseCase {
     if (status.isCancelled()) {
       throw new NotificationException(
         this.i18n.translate(
-          'errors.notifications.cannot_mark_cancelled_as_read',
+          "errors.notifications.cannot_mark_cancelled_as_read",
         ),
-        'INVALID_STATUS_TRANSITION',
-        'errors.notifications.cannot_mark_cancelled_as_read',
+        "INVALID_STATUS_TRANSITION",
+        "errors.notifications.cannot_mark_cancelled_as_read",
         {
           notificationId: notification.getId(),
           currentStatus: status.getValue(),
@@ -214,7 +214,7 @@ export class MarkNotificationAsReadUseCase {
 
     if (status.isRead()) {
       // C'est acceptable - idempotent, mais on peut logger un warning
-      this.logger.warn('Notification already marked as read', {
+      this.logger.warn("Notification already marked as read", {
         notificationId: notification.getId(),
         currentStatus: status.getValue(),
       });
@@ -223,9 +223,9 @@ export class MarkNotificationAsReadUseCase {
     // Vérifier si la notification a expiré
     if (notification.isExpired()) {
       throw new NotificationException(
-        this.i18n.translate('errors.notifications.notification_expired'),
-        'NOTIFICATION_EXPIRED',
-        'errors.notifications.notification_expired',
+        this.i18n.translate("errors.notifications.notification_expired"),
+        "NOTIFICATION_EXPIRED",
+        "errors.notifications.notification_expired",
         {
           notificationId: notification.getId(),
         },

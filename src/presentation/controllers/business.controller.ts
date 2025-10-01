@@ -21,7 +21,7 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
-} from '@nestjs/common';
+} from "@nestjs/common";
 import {
   ApiBearerAuth,
   ApiBody,
@@ -29,14 +29,14 @@ import {
   ApiParam,
   ApiResponse,
   ApiTags,
-} from '@nestjs/swagger';
-import { CreateBusinessUseCase } from '../../application/use-cases/business/create-business.use-case';
-import { GetBusinessUseCase } from '../../application/use-cases/business/get-business.use-case';
-import { ListBusinessUseCase } from '../../application/use-cases/business/list-business.use-case';
-import { UpdateBusinessUseCase } from '../../application/use-cases/business/update-business.use-case';
-import { BusinessStatus } from '../../domain/entities/business.entity';
-import { User } from '../../domain/entities/user.entity';
-import { TOKENS } from '../../shared/constants/injection-tokens';
+} from "@nestjs/swagger";
+import { CreateBusinessUseCase } from "../../application/use-cases/business/create-business.use-case";
+import { GetBusinessUseCase } from "../../application/use-cases/business/get-business.use-case";
+import { ListBusinessUseCase } from "../../application/use-cases/business/list-business.use-case";
+import { UpdateBusinessUseCase } from "../../application/use-cases/business/update-business.use-case";
+import { BusinessStatus } from "../../domain/entities/business.entity";
+import { User } from "../../domain/entities/user.entity";
+import { TOKENS } from "../../shared/constants/injection-tokens";
 import {
   BusinessResponseDto,
   CreateBusinessDto,
@@ -46,11 +46,11 @@ import {
   ListBusinessesResponseDto,
   UpdateBusinessDto,
   UpdateBusinessResponseDto,
-} from '../dtos/business.dto';
-import { GetUser } from '../security/decorators/get-user.decorator';
+} from "../dtos/business.dto";
+import { GetUser } from "../security/decorators/get-user.decorator";
 
-@ApiTags('🏢 Business Management')
-@Controller('businesses')
+@ApiTags("🏢 Business Management")
+@Controller("businesses")
 @ApiBearerAuth()
 export class BusinessController {
   constructor(
@@ -71,9 +71,9 @@ export class BusinessController {
    * 🔍 LIST BUSINESSES - POST /api/v1/businesses/list
    * Recherche et filtrage avancés avec pagination
    */
-  @Post('list')
+  @Post("list")
   @ApiOperation({
-    summary: 'List businesses with advanced search and pagination',
+    summary: "List businesses with advanced search and pagination",
     description: `
     Provides comprehensive search, filtering, and pagination for businesses.
 
@@ -90,20 +90,20 @@ export class BusinessController {
   @ApiBody({ type: ListBusinessesDto })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: 'Paginated list of businesses returned successfully',
+    description: "Paginated list of businesses returned successfully",
     type: ListBusinessesResponseDto,
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
-    description: 'Invalid request parameters (validation failed)',
+    description: "Invalid request parameters (validation failed)",
   })
   @ApiResponse({
     status: HttpStatus.UNAUTHORIZED,
-    description: 'Authentication required',
+    description: "Authentication required",
   })
   @ApiResponse({
     status: HttpStatus.FORBIDDEN,
-    description: 'Insufficient permissions to list businesses',
+    description: "Insufficient permissions to list businesses",
   })
   async list(
     @Body() dto: ListBusinessesDto,
@@ -116,8 +116,8 @@ export class BusinessController {
         limit: dto.limit ?? 10,
       },
       sorting: {
-        sortBy: dto.sortBy ?? 'createdAt',
-        sortOrder: dto.sortOrder ?? 'desc',
+        sortBy: dto.sortBy ?? "createdAt",
+        sortOrder: dto.sortOrder ?? "desc",
       },
       filters: {
         search: dto.search,
@@ -136,13 +136,13 @@ export class BusinessController {
         name: business.name,
         description:
           business.description.length > 100
-            ? business.description.substring(0, 100) + '...'
+            ? business.description.substring(0, 100) + "..."
             : business.description,
         sector: null, // TODO: Add sector to use case response
         status: business.status as any,
         primaryEmail: business.primaryEmail,
         primaryPhone: business.primaryPhone,
-        city: '', // TODO: Add city from address to use case response
+        city: "", // TODO: Add city from address to use case response
         logoUrl: business.logoUrl,
         createdAt: business.createdAt,
         updatedAt: business.updatedAt,
@@ -162,9 +162,9 @@ export class BusinessController {
    * 📄 GET BUSINESS BY ID - GET /api/v1/businesses/:id
    * Récupère les détails complets d'une entreprise
    */
-  @Get(':id')
+  @Get(":id")
   @ApiOperation({
-    summary: 'Get business by ID',
+    summary: "Get business by ID",
     description: `
     Retrieves detailed information about a specific business.
 
@@ -178,29 +178,29 @@ export class BusinessController {
     `,
   })
   @ApiParam({
-    name: 'id',
-    description: 'Business unique identifier (UUID)',
-    example: 'b123e4567-e89b-12d3-a456-426614174000',
+    name: "id",
+    description: "Business unique identifier (UUID)",
+    example: "b123e4567-e89b-12d3-a456-426614174000",
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: 'Business details returned successfully',
+    description: "Business details returned successfully",
     type: BusinessResponseDto,
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
-    description: 'Invalid business ID format',
+    description: "Invalid business ID format",
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
-    description: 'Business not found',
+    description: "Business not found",
   })
   @ApiResponse({
     status: HttpStatus.FORBIDDEN,
-    description: 'Insufficient permissions to view this business',
+    description: "Insufficient permissions to view this business",
   })
   async findById(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param("id", ParseUUIDPipe) id: string,
     @GetUser() user: User,
   ): Promise<BusinessResponseDto> {
     const request = {
@@ -214,34 +214,34 @@ export class BusinessController {
       id: business.id,
       name: business.name,
       description: business.description,
-      slogan: '', // TODO: Add to use case response
+      slogan: "", // TODO: Add to use case response
       sector: null, // TODO: Add to use case response
       status: business.status as BusinessStatus,
       address: {
-        street: '',
-        city: '',
-        postalCode: '',
-        country: '',
-        region: '',
+        street: "",
+        city: "",
+        postalCode: "",
+        country: "",
+        region: "",
       }, // TODO: Add to use case response
       contactInfo: {
         primaryEmail: business.primaryEmail,
         secondaryEmails: [],
         primaryPhone: business.primaryPhone,
         secondaryPhones: [],
-        website: '',
+        website: "",
         socialMedia: {},
       },
       branding: {}, // TODO: Add to use case response
       settings: {
-        timezone: 'Europe/Paris',
-        currency: 'EUR',
-        language: 'fr',
+        timezone: "Europe/Paris",
+        currency: "EUR",
+        language: "fr",
         appointmentSettings: {
           defaultDuration: 30,
           bufferTime: 5,
           advanceBookingLimit: 30,
-          cancellationPolicy: '24h before appointment',
+          cancellationPolicy: "24h before appointment",
         },
         notificationSettings: {
           emailNotifications: true,
@@ -260,7 +260,7 @@ export class BusinessController {
    */
   @Post()
   @ApiOperation({
-    summary: 'Create new business',
+    summary: "Create new business",
     description: `
     Creates a new business with complete information.
 
@@ -276,20 +276,20 @@ export class BusinessController {
   @ApiBody({ type: CreateBusinessDto })
   @ApiResponse({
     status: HttpStatus.CREATED,
-    description: 'Business created successfully',
+    description: "Business created successfully",
     type: CreateBusinessResponseDto,
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
-    description: 'Invalid business data (validation failed)',
+    description: "Invalid business data (validation failed)",
   })
   @ApiResponse({
     status: HttpStatus.CONFLICT,
-    description: 'Business with this name already exists',
+    description: "Business with this name already exists",
   })
   @ApiResponse({
     status: HttpStatus.FORBIDDEN,
-    description: 'Insufficient permissions to create business',
+    description: "Insufficient permissions to create business",
   })
   async create(
     @Body() dto: CreateBusinessDto,
@@ -335,9 +335,9 @@ export class BusinessController {
    * ✏️ UPDATE BUSINESS - PUT /api/v1/businesses/:id
    * Met à jour une entreprise existante
    */
-  @Put(':id')
+  @Put(":id")
   @ApiOperation({
-    summary: 'Update business',
+    summary: "Update business",
     description: `
     Updates an existing business with new information.
 
@@ -351,30 +351,30 @@ export class BusinessController {
     `,
   })
   @ApiParam({
-    name: 'id',
-    description: 'Business unique identifier (UUID)',
-    example: 'b123e4567-e89b-12d3-a456-426614174000',
+    name: "id",
+    description: "Business unique identifier (UUID)",
+    example: "b123e4567-e89b-12d3-a456-426614174000",
   })
   @ApiBody({ type: UpdateBusinessDto })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: 'Business updated successfully',
+    description: "Business updated successfully",
     type: UpdateBusinessResponseDto,
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
-    description: 'Invalid business data (validation failed)',
+    description: "Invalid business data (validation failed)",
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
-    description: 'Business not found',
+    description: "Business not found",
   })
   @ApiResponse({
     status: HttpStatus.FORBIDDEN,
-    description: 'Insufficient permissions to update this business',
+    description: "Insufficient permissions to update this business",
   })
   async update(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param("id", ParseUUIDPipe) id: string,
     @Body() dto: UpdateBusinessDto,
     @GetUser() user: User,
   ): Promise<UpdateBusinessResponseDto> {
@@ -425,9 +425,9 @@ export class BusinessController {
    * 🗑️ DELETE BUSINESS - DELETE /api/v1/businesses/:id
    * Supprime une entreprise
    */
-  @Delete(':id')
+  @Delete(":id")
   @ApiOperation({
-    summary: 'Delete business',
+    summary: "Delete business",
     description: `
     Deletes a business and all associated data.
 
@@ -441,33 +441,33 @@ export class BusinessController {
     `,
   })
   @ApiParam({
-    name: 'id',
-    description: 'Business unique identifier (UUID)',
-    example: 'b123e4567-e89b-12d3-a456-426614174000',
+    name: "id",
+    description: "Business unique identifier (UUID)",
+    example: "b123e4567-e89b-12d3-a456-426614174000",
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: 'Business deleted successfully',
+    description: "Business deleted successfully",
     type: DeleteBusinessResponseDto,
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
-    description: 'Business not found',
+    description: "Business not found",
   })
   @ApiResponse({
     status: HttpStatus.FORBIDDEN,
-    description: 'Insufficient permissions to delete this business',
+    description: "Insufficient permissions to delete this business",
   })
   @ApiResponse({
     status: HttpStatus.CONFLICT,
     description:
-      'Cannot delete business with active appointments or dependencies',
+      "Cannot delete business with active appointments or dependencies",
   })
   async delete(): Promise<DeleteBusinessResponseDto> {
     // TODO: Implémenter DeleteBusinessUseCase
     // TODO: Implement delete business use case
     throw new NotImplementedException(
-      'Delete business use case not implemented yet',
+      "Delete business use case not implemented yet",
     );
   }
 }

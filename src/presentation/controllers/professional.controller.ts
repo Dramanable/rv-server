@@ -17,47 +17,47 @@ import {
   Param,
   Post,
   Put,
-} from '@nestjs/common';
+} from "@nestjs/common";
 import {
   ApiBearerAuth,
   ApiOperation,
   ApiParam,
   ApiResponse,
   ApiTags,
-} from '@nestjs/swagger';
+} from "@nestjs/swagger";
 
-import { User } from '@domain/entities/user.entity';
-import { GetUser } from '@presentation/security/decorators/get-user.decorator';
-import { TOKENS } from '@shared/constants/injection-tokens';
+import { User } from "@domain/entities/user.entity";
+import { GetUser } from "@presentation/security/decorators/get-user.decorator";
+import { TOKENS } from "@shared/constants/injection-tokens";
 
 // Professional Use Cases
-import { CreateProfessionalUseCase } from '@application/use-cases/professionals/create-professional.use-case';
-import { DeleteProfessionalUseCase } from '@application/use-cases/professionals/delete-professional.use-case';
-import { GetProfessionalByIdUseCase } from '@application/use-cases/professionals/get-professional-by-id.use-case';
-import { ListProfessionalsUseCase } from '@application/use-cases/professionals/list-professionals.use-case';
-import { UpdateProfessionalUseCase } from '@application/use-cases/professionals/update-professional.use-case';
+import { CreateProfessionalUseCase } from "@application/use-cases/professionals/create-professional.use-case";
+import { DeleteProfessionalUseCase } from "@application/use-cases/professionals/delete-professional.use-case";
+import { GetProfessionalByIdUseCase } from "@application/use-cases/professionals/get-professional-by-id.use-case";
+import { ListProfessionalsUseCase } from "@application/use-cases/professionals/list-professionals.use-case";
+import { UpdateProfessionalUseCase } from "@application/use-cases/professionals/update-professional.use-case";
 
 // Professional DTOs
 import {
   CreateProfessionalDto,
   CreateProfessionalResponseDto,
-} from '@presentation/dtos/professionals/create-professional.dto';
-import { DeleteProfessionalResponseDto } from '@presentation/dtos/professionals/delete-professional.dto';
-import { GetProfessionalResponseDto } from '@presentation/dtos/professionals/get-professional.dto';
+} from "@presentation/dtos/professionals/create-professional.dto";
+import { DeleteProfessionalResponseDto } from "@presentation/dtos/professionals/delete-professional.dto";
+import { GetProfessionalResponseDto } from "@presentation/dtos/professionals/get-professional.dto";
 import {
   ListProfessionalsDto,
   ListProfessionalsResponseDto,
-} from '@presentation/dtos/professionals/list-professionals.dto';
+} from "@presentation/dtos/professionals/list-professionals.dto";
 import {
   UpdateProfessionalDto,
   UpdateProfessionalResponseDto,
-} from '@presentation/dtos/professionals/update-professional.dto';
+} from "@presentation/dtos/professionals/update-professional.dto";
 
 // Professional Mapper
-import { ProfessionalMapper } from '@presentation/mappers/professional.mapper';
+import { ProfessionalMapper } from "@presentation/mappers/professional.mapper";
 
-@ApiTags('👨‍💼 Professional Management')
-@Controller('professionals')
+@ApiTags("👨‍💼 Professional Management")
+@Controller("professionals")
 @ApiBearerAuth()
 export class ProfessionalController {
   constructor(
@@ -80,9 +80,9 @@ export class ProfessionalController {
   /**
    * 🔍 Recherche paginée des professionnels avec filtres avancés
    */
-  @Post('list')
+  @Post("list")
   @ApiOperation({
-    summary: '🔍 Search professionals with advanced filters and pagination',
+    summary: "🔍 Search professionals with advanced filters and pagination",
     description: `
       **Recherche avancée paginée** des professionnels avec système de filtrage complet.
 
@@ -142,20 +142,20 @@ export class ProfessionalController {
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: '✅ Professionals found successfully',
+    description: "✅ Professionals found successfully",
     type: ListProfessionalsResponseDto,
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
-    description: '❌ Invalid search parameters',
+    description: "❌ Invalid search parameters",
   })
   @ApiResponse({
     status: HttpStatus.UNAUTHORIZED,
-    description: '🔐 Authentication required',
+    description: "🔐 Authentication required",
   })
   @ApiResponse({
     status: HttpStatus.FORBIDDEN,
-    description: '🚫 Insufficient permissions',
+    description: "🚫 Insufficient permissions",
   })
   async list(
     @Body() dto: ListProfessionalsDto,
@@ -164,7 +164,7 @@ export class ProfessionalController {
     // Validation: businessId is required
     if (!dto.businessId) {
       throw new BadRequestException(
-        'businessId is required for listing professionals',
+        "businessId is required for listing professionals",
       );
     }
 
@@ -176,8 +176,8 @@ export class ProfessionalController {
         limit: dto.limit || 10,
       },
       sorting: {
-        sortBy: dto.sortBy || 'createdAt',
-        sortOrder: dto.sortOrder || 'desc',
+        sortBy: dto.sortBy || "createdAt",
+        sortOrder: dto.sortOrder || "desc",
       },
       filters: {
         search: dto.search?.trim(),
@@ -204,36 +204,36 @@ export class ProfessionalController {
   /**
    * 📄 Récupérer un professionnel par ID
    */
-  @Get(':id')
+  @Get(":id")
   @ApiOperation({
-    summary: '📄 Get professional by ID',
+    summary: "📄 Get professional by ID",
     description:
       "Récupère les détails complets d'un professionnel par son ID unique",
   })
   @ApiParam({
-    name: 'id',
-    description: 'UUID unique du professionnel',
-    example: 'prof-uuid-123',
+    name: "id",
+    description: "UUID unique du professionnel",
+    example: "prof-uuid-123",
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: '✅ Professional found successfully',
+    description: "✅ Professional found successfully",
     type: GetProfessionalResponseDto,
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
-    description: '❌ Professional not found',
+    description: "❌ Professional not found",
   })
   @ApiResponse({
     status: HttpStatus.UNAUTHORIZED,
-    description: '🔐 Authentication required',
+    description: "🔐 Authentication required",
   })
   @ApiResponse({
     status: HttpStatus.FORBIDDEN,
-    description: '🚫 Insufficient permissions',
+    description: "🚫 Insufficient permissions",
   })
   async findById(
-    @Param('id') id: string,
+    @Param("id") id: string,
     @GetUser() user: User,
   ): Promise<GetProfessionalResponseDto> {
     const request = {
@@ -256,7 +256,7 @@ export class ProfessionalController {
    */
   @Post()
   @ApiOperation({
-    summary: '➕ Create new professional',
+    summary: "➕ Create new professional",
     description: `
       Crée un nouveau professionnel dans le système avec validation complète.
 
@@ -274,24 +274,24 @@ export class ProfessionalController {
   })
   @ApiResponse({
     status: HttpStatus.CREATED,
-    description: '✅ Professional created successfully',
+    description: "✅ Professional created successfully",
     type: CreateProfessionalResponseDto,
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
-    description: '❌ Invalid professional data',
+    description: "❌ Invalid professional data",
   })
   @ApiResponse({
     status: HttpStatus.CONFLICT,
-    description: '❌ Professional with this email already exists',
+    description: "❌ Professional with this email already exists",
   })
   @ApiResponse({
     status: HttpStatus.UNAUTHORIZED,
-    description: '🔐 Authentication required',
+    description: "🔐 Authentication required",
   })
   @ApiResponse({
     status: HttpStatus.FORBIDDEN,
-    description: '🚫 Insufficient permissions',
+    description: "🚫 Insufficient permissions",
   })
   async create(
     @Body() dto: CreateProfessionalDto,
@@ -304,7 +304,7 @@ export class ProfessionalController {
       email: dto.email.trim(),
       phoneNumber: dto.phone?.trim(),
       speciality: dto.specialization.trim(),
-      licenseNumber: dto.licenseNumber?.trim() || '',
+      licenseNumber: dto.licenseNumber?.trim() || "",
       biography: dto.biography?.trim(),
       profileImageUrl: dto.profileImageUrl?.trim(),
       requestingUserId: user.id,
@@ -340,9 +340,9 @@ export class ProfessionalController {
   /**
    * ✏️ Mettre à jour un professionnel
    */
-  @Put(':id')
+  @Put(":id")
   @ApiOperation({
-    summary: '✏️ Update professional',
+    summary: "✏️ Update professional",
     description: `
       Met à jour les informations d'un professionnel existant.
 
@@ -358,37 +358,37 @@ export class ProfessionalController {
     `,
   })
   @ApiParam({
-    name: 'id',
-    description: 'UUID unique du professionnel à mettre à jour',
-    example: 'prof-uuid-123',
+    name: "id",
+    description: "UUID unique du professionnel à mettre à jour",
+    example: "prof-uuid-123",
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: '✅ Professional updated successfully',
+    description: "✅ Professional updated successfully",
     type: UpdateProfessionalResponseDto,
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
-    description: '❌ Invalid update data',
+    description: "❌ Invalid update data",
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
-    description: '❌ Professional not found',
+    description: "❌ Professional not found",
   })
   @ApiResponse({
     status: HttpStatus.CONFLICT,
-    description: '❌ Email already exists for another professional',
+    description: "❌ Email already exists for another professional",
   })
   @ApiResponse({
     status: HttpStatus.UNAUTHORIZED,
-    description: '🔐 Authentication required',
+    description: "🔐 Authentication required",
   })
   @ApiResponse({
     status: HttpStatus.FORBIDDEN,
-    description: '🚫 Insufficient permissions',
+    description: "🚫 Insufficient permissions",
   })
   async update(
-    @Param('id') id: string,
+    @Param("id") id: string,
     @Body() dto: UpdateProfessionalDto,
     @GetUser() user: User,
   ): Promise<UpdateProfessionalResponseDto> {
@@ -437,9 +437,9 @@ export class ProfessionalController {
   /**
    * 🗑️ Supprimer un professionnel
    */
-  @Delete(':id')
+  @Delete(":id")
   @ApiOperation({
-    summary: '🗑️ Delete professional',
+    summary: "🗑️ Delete professional",
     description: `
       Supprime un professionnel du système après vérification des contraintes.
 
@@ -455,33 +455,33 @@ export class ProfessionalController {
     `,
   })
   @ApiParam({
-    name: 'id',
-    description: 'UUID unique du professionnel à supprimer',
-    example: 'prof-uuid-123',
+    name: "id",
+    description: "UUID unique du professionnel à supprimer",
+    example: "prof-uuid-123",
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: '✅ Professional deleted successfully',
+    description: "✅ Professional deleted successfully",
     type: DeleteProfessionalResponseDto,
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
-    description: '❌ Professional not found',
+    description: "❌ Professional not found",
   })
   @ApiResponse({
     status: HttpStatus.CONFLICT,
-    description: '❌ Cannot delete professional with active dependencies',
+    description: "❌ Cannot delete professional with active dependencies",
   })
   @ApiResponse({
     status: HttpStatus.UNAUTHORIZED,
-    description: '🔐 Authentication required',
+    description: "🔐 Authentication required",
   })
   @ApiResponse({
     status: HttpStatus.FORBIDDEN,
-    description: '🚫 Insufficient permissions',
+    description: "🚫 Insufficient permissions",
   })
   async delete(
-    @Param('id') id: string,
+    @Param("id") id: string,
     @GetUser() user: User,
   ): Promise<DeleteProfessionalResponseDto> {
     const request = {
@@ -495,7 +495,7 @@ export class ProfessionalController {
 
     return {
       success: response.success,
-      message: 'Professional deleted successfully',
+      message: "Professional deleted successfully",
       deletedId: response.data.professionalId,
       meta: {
         timestamp: new Date().toISOString(),

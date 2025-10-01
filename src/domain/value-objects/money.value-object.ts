@@ -8,7 +8,7 @@ import {
   NegativeResultError,
   NonFiniteAmountError,
   UnsupportedCurrencyError,
-} from '@domain/exceptions/money.exceptions';
+} from "@domain/exceptions/money.exceptions";
 
 export class Money {
   constructor(
@@ -38,11 +38,11 @@ export class Money {
     if (!currency || currency.length !== 3) {
       throw new InvalidCurrencyError(
         currency,
-        'Currency must be a valid 3-letter ISO code',
+        "Currency must be a valid 3-letter ISO code",
       );
     }
 
-    const supportedCurrencies = ['EUR', 'USD', 'GBP', 'CAD', 'CHF', 'JPY'];
+    const supportedCurrencies = ["EUR", "USD", "GBP", "CAD", "CHF", "JPY"];
     if (!supportedCurrencies.includes(currency.toUpperCase())) {
       throw new UnsupportedCurrencyError(currency, supportedCurrencies);
     }
@@ -67,7 +67,7 @@ export class Money {
   // Operations
   add(other: Money): Money {
     if (this.currency !== other.currency) {
-      throw new CurrencyMismatchError('add', this.currency, other.currency);
+      throw new CurrencyMismatchError("add", this.currency, other.currency);
     }
     return new Money(this.amount + other.amount, this.currency);
   }
@@ -75,7 +75,7 @@ export class Money {
   subtract(other: Money): Money {
     if (this.currency !== other.currency) {
       throw new CurrencyMismatchError(
-        'subtract',
+        "subtract",
         this.currency,
         other.currency,
       );
@@ -84,7 +84,7 @@ export class Money {
     const result = this.amount - other.amount;
     if (result < 0) {
       throw new NegativeResultError(
-        'subtract',
+        "subtract",
         this.amount,
         other.amount,
         this.currency,
@@ -115,14 +115,14 @@ export class Money {
 
   isGreaterThan(other: Money): boolean {
     if (this.currency !== other.currency) {
-      throw new CurrencyMismatchError('compare', this.currency, other.currency);
+      throw new CurrencyMismatchError("compare", this.currency, other.currency);
     }
     return this.amount > other.amount;
   }
 
   isLessThan(other: Money): boolean {
     if (this.currency !== other.currency) {
-      throw new CurrencyMismatchError('compare', this.currency, other.currency);
+      throw new CurrencyMismatchError("compare", this.currency, other.currency);
     }
     return this.amount < other.amount;
   }
@@ -133,8 +133,8 @@ export class Money {
 
   // Formatting
   format(): string {
-    const formatter = new Intl.NumberFormat('fr-FR', {
-      style: 'currency',
+    const formatter = new Intl.NumberFormat("fr-FR", {
+      style: "currency",
       currency: this.currency,
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,

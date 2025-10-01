@@ -16,7 +16,7 @@ import {
   DepartmentAlreadyExistsError,
   LocationAlreadyExistsError,
   LocationNotFoundError,
-} from '../exceptions/rbac-business-context.exceptions';
+} from "../exceptions/rbac-business-context.exceptions";
 
 export interface BusinessContextData {
   readonly businessId: string;
@@ -369,16 +369,16 @@ export class BusinessContext {
     businessName: string,
   ): void {
     if (!businessId || businessId.trim().length === 0) {
-      throw new ContextIdRequiredError('Business ID is required');
+      throw new ContextIdRequiredError("Business ID is required");
     }
 
     if (!businessName || businessName.trim().length === 0) {
-      throw new ContextNameRequiredError('Business name is required');
+      throw new ContextNameRequiredError("Business name is required");
     }
 
     if (businessName.trim().length < 2) {
       throw new ContextNameRequiredError(
-        'Business name must be at least 2 characters long',
+        "Business name must be at least 2 characters long",
       );
     }
   }

@@ -5,11 +5,11 @@
  * Implémentation concrète pour la couche Infrastructure
  */
 
-import { IPasswordService } from '@application/ports/password.service.interface';
-import { PasswordHashingError } from '@infrastructure/exceptions/infrastructure.exceptions';
-import { Injectable, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import * as bcrypt from 'bcrypt';
+import { IPasswordService } from "@application/ports/password.service.interface";
+import { PasswordHashingError } from "@infrastructure/exceptions/infrastructure.exceptions";
+import { Injectable, Logger } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import * as bcrypt from "bcrypt";
 
 @Injectable()
 export class BcryptPasswordService implements IPasswordService {
@@ -18,15 +18,15 @@ export class BcryptPasswordService implements IPasswordService {
   constructor(private readonly configService: ConfigService) {}
 
   async hash(plainPassword: string): Promise<string> {
-    const saltRounds = this.configService.get<number>('BCRYPT_ROUNDS', 12);
+    const saltRounds = this.configService.get<number>("BCRYPT_ROUNDS", 12);
 
     try {
       const hashedPassword = await bcrypt.hash(plainPassword, saltRounds);
-      this.logger.debug('Password hashed successfully');
+      this.logger.debug("Password hashed successfully");
       return hashedPassword;
     } catch (error) {
       this.logger.error(
-        `Failed to hash password: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Failed to hash password: ${error instanceof Error ? error.message : "Unknown error"}`,
         error,
       );
       throw new PasswordHashingError(error);
@@ -40,12 +40,12 @@ export class BcryptPasswordService implements IPasswordService {
     try {
       const isValid = await bcrypt.compare(plainPassword, hashedPassword);
       this.logger.debug(
-        `Password verification: ${isValid ? 'success' : 'failed'}`,
+        `Password verification: ${isValid ? "success" : "failed"}`,
       );
       return isValid;
     } catch (error) {
       this.logger.error(
-        `Failed to verify password: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Failed to verify password: ${error instanceof Error ? error.message : "Unknown error"}`,
         error,
       );
       return false;

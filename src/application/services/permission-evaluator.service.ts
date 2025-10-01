@@ -10,7 +10,7 @@ import {
   Permission,
   RoleUtils,
   UserRole,
-} from '../../shared/enums/user-role.enum';
+} from "../../shared/enums/user-role.enum";
 
 import {
   ApprovalWorkflowStep,
@@ -21,7 +21,7 @@ import {
   RelationshipType,
   TemporalContext,
   UrgencyLevel,
-} from '../../shared/types/permission-context.types';
+} from "../../shared/types/permission-context.types";
 
 /**
  * 🎯 Implémentation du Service d'Évaluation de Permissions
@@ -196,7 +196,7 @@ export class BusinessPermissionEvaluator implements PermissionEvaluator {
         }
         return {
           isAllowed: false,
-          reason: 'Seuls les clients peuvent réserver pour leur famille',
+          reason: "Seuls les clients peuvent réserver pour leur famille",
         };
 
       case RelationshipType.MENTEE:
@@ -207,7 +207,7 @@ export class BusinessPermissionEvaluator implements PermissionEvaluator {
         return {
           isAllowed: false,
           reason:
-            'Seuls les praticiens seniors peuvent superviser des mentorés',
+            "Seuls les praticiens seniors peuvent superviser des mentorés",
         };
 
       case RelationshipType.ASSIGNED_CLIENT:
@@ -217,7 +217,7 @@ export class BusinessPermissionEvaluator implements PermissionEvaluator {
         }
         return {
           isAllowed: false,
-          reason: 'Action limitée aux clients assignés',
+          reason: "Action limitée aux clients assignés",
         };
 
       default:
@@ -275,7 +275,7 @@ export class BusinessPermissionEvaluator implements PermissionEvaluator {
         return {
           isAllowed: true,
           requiresApproval: true,
-          reason: 'Les notes du praticien junior nécessitent une validation',
+          reason: "Les notes du praticien junior nécessitent une validation",
         };
       }
     }
@@ -295,7 +295,7 @@ export class BusinessPermissionEvaluator implements PermissionEvaluator {
       if (context.metadata?.requiresSecretClearance) {
         return {
           isAllowed: false,
-          reason: 'Dossier classifié - habilitation requise',
+          reason: "Dossier classifié - habilitation requise",
           requiresApproval: true,
         };
       }
@@ -314,12 +314,12 @@ export class BusinessPermissionEvaluator implements PermissionEvaluator {
     if (context.permission === Permission.CONFIRM_APPOINTMENTS) {
       const serviceType = context.metadata?.serviceType as string;
       if (
-        serviceType?.includes('chemical') &&
+        serviceType?.includes("chemical") &&
         context.userRole === UserRole.JUNIOR_PRACTITIONER
       ) {
         return {
           isAllowed: false,
-          reason: 'Les traitements chimiques nécessitent un praticien certifié',
+          reason: "Les traitements chimiques nécessitent un praticien certifié",
           suggestions: ["Demander supervision d'un praticien senior"],
         };
       }
@@ -514,7 +514,7 @@ export class BusinessPermissionEvaluator implements PermissionEvaluator {
 
     // Suggestions contextuelles
     if (context.userRole === UserRole.JUNIOR_PRACTITIONER) {
-      suggestions.push('Demander une supervision par un praticien senior');
+      suggestions.push("Demander une supervision par un praticien senior");
     }
 
     if (context.temporal?.isEmergency) {
@@ -535,60 +535,60 @@ export class PermissionUsageExample {
     // Exemple 1: Praticien junior voulant modifier des notes médicales
     const juniorContext: PermissionContext = {
       userRole: UserRole.JUNIOR_PRACTITIONER,
-      userId: 'junior-doc-123',
+      userId: "junior-doc-123",
       permission: Permission.MANAGE_CLIENT_NOTES,
       organizational: {
-        businessId: 'clinic-456',
+        businessId: "clinic-456",
         businessType: BusinessType.MEDICAL_CLINIC,
-        locationId: 'location-789',
-        departmentId: 'cardiology',
+        locationId: "location-789",
+        departmentId: "cardiology",
       },
       relationship: {
-        targetUserId: 'patient-321',
+        targetUserId: "patient-321",
         relationship: RelationshipType.ASSIGNED_CLIENT,
       },
     };
 
     const result1 = await evaluator.evaluatePermission(juniorContext);
-    console.log('Praticien junior - Notes médicales:', result1);
+    console.log("Praticien junior - Notes médicales:", result1);
     // Résultat attendu: isAllowed: true, requiresApproval: true
 
     // Exemple 2: Client régulier voulant réserver pour sa famille
     const clientContext: PermissionContext = {
       userRole: UserRole.REGULAR_CLIENT,
-      userId: 'client-456',
+      userId: "client-456",
       permission: Permission.BOOK_FOR_OTHERS,
       organizational: {
-        businessId: 'clinic-456',
+        businessId: "clinic-456",
         businessType: BusinessType.MEDICAL_CLINIC,
       },
       relationship: {
-        targetUserId: 'family-member-789',
+        targetUserId: "family-member-789",
         relationship: RelationshipType.FAMILY_MEMBER,
       },
     };
 
     const result2 = await evaluator.evaluatePermission(clientContext);
-    console.log('Client - Réservation famille:', result2);
+    console.log("Client - Réservation famille:", result2);
     // Résultat attendu: isAllowed: true, requiresApproval: false
 
     // Exemple 3: Action en dehors des heures ouvrables
     const afterHoursContext: PermissionContext = {
       userRole: UserRole.RECEPTIONIST,
-      userId: 'receptionist-123',
+      userId: "receptionist-123",
       permission: Permission.BOOK_ANY_APPOINTMENT,
       organizational: {
-        businessId: 'clinic-456',
+        businessId: "clinic-456",
         businessType: BusinessType.MEDICAL_CLINIC,
       },
       temporal: {
-        timeOfDay: { start: '08:00', end: '18:00' },
+        timeOfDay: { start: "08:00", end: "18:00" },
         isEmergency: false,
       },
     };
 
     const result3 = await evaluator.evaluatePermission(afterHoursContext);
-    console.log('Réceptionniste - Hors heures:', result3);
+    console.log("Réceptionniste - Hors heures:", result3);
     // Résultat attendu: isAllowed: false, suggestions incluses
   }
 }

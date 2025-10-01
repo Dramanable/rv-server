@@ -9,27 +9,27 @@
  * n'est pas encore implémentée. Ils servent de documentation pour le développement futur.
  */
 
-describe('TeamRequirement Value Object - FUTURE FEATURE', () => {
+describe("TeamRequirement Value Object - FUTURE FEATURE", () => {
   // ✅ Test basique pour maintenir la structure Jest sans skip
-  it('should be implemented in future iteration', () => {
+  it("should be implemented in future iteration", () => {
     // 📝 Documentation de la fonctionnalité future
     const futureFeatureSpec = {
-      name: 'TeamRequirement Value Object',
+      name: "TeamRequirement Value Object",
       purpose:
         "Gérer les exigences d'équipe pour services multi-professionnels",
-      status: 'TDD RED phase - Planifié pour future implémentation',
+      status: "TDD RED phase - Planifié pour future implémentation",
       components: [
-        'TeamRequirement value object',
-        'ProfessionalRole enum',
-        'ProficiencyLevel integration',
-        'Team composition validation',
-        'Capacity constraints logic',
+        "TeamRequirement value object",
+        "ProfessionalRole enum",
+        "ProficiencyLevel integration",
+        "Team composition validation",
+        "Capacity constraints logic",
       ],
     };
 
     // ✅ Assertion simple pour que le test passe
-    expect(futureFeatureSpec.name).toBe('TeamRequirement Value Object');
-    expect(futureFeatureSpec.status).toContain('TDD RED phase');
+    expect(futureFeatureSpec.name).toBe("TeamRequirement Value Object");
+    expect(futureFeatureSpec.status).toContain("TDD RED phase");
   });
 
   /*

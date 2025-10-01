@@ -1,7 +1,7 @@
 import {
   InvalidValueError,
   RequiredValueError,
-} from '@domain/exceptions/value-object.exceptions';
+} from "@domain/exceptions/value-object.exceptions";
 
 export class Address {
   constructor(
@@ -19,32 +19,32 @@ export class Address {
 
   private validate(): void {
     if (!this.street || this.street.trim().length === 0) {
-      throw new RequiredValueError('streetAddress');
+      throw new RequiredValueError("streetAddress");
     }
 
     if (!this.city || this.city.trim().length === 0) {
-      throw new RequiredValueError('city');
+      throw new RequiredValueError("city");
     }
 
     if (!this.postalCode || this.postalCode.trim().length === 0) {
-      throw new RequiredValueError('postalCode');
+      throw new RequiredValueError("postalCode");
     }
 
     if (!this.country || this.country.trim().length === 0) {
-      throw new RequiredValueError('country');
+      throw new RequiredValueError("country");
     }
 
     // Validation du code postal français
     if (
-      this.country.toLowerCase() === 'france' ||
-      this.country.toLowerCase() === 'fr'
+      this.country.toLowerCase() === "france" ||
+      this.country.toLowerCase() === "fr"
     ) {
       const frenchPostalRegex = /^[0-9]{5}$/;
       if (!frenchPostalRegex.test(this.postalCode.trim())) {
         throw new InvalidValueError(
-          'postalCode',
+          "postalCode",
           this.postalCode,
-          'Invalid French postal code format',
+          "Invalid French postal code format",
         );
       }
     }
@@ -53,9 +53,9 @@ export class Address {
     if (this.latitude !== undefined) {
       if (this.latitude < -90 || this.latitude > 90) {
         throw new InvalidValueError(
-          'latitude',
+          "latitude",
           this.latitude,
-          'Latitude must be between -90 and 90 degrees',
+          "Latitude must be between -90 and 90 degrees",
         );
       }
     }
@@ -63,9 +63,9 @@ export class Address {
     if (this.longitude !== undefined) {
       if (this.longitude < -180 || this.longitude > 180) {
         throw new InvalidValueError(
-          'longitude',
+          "longitude",
           this.longitude,
-          'Longitude must be between -180 and 180 degrees',
+          "Longitude must be between -180 and 180 degrees",
         );
       }
     }
@@ -142,7 +142,7 @@ export class Address {
 
     parts.push(this.country);
 
-    return parts.join(', ');
+    return parts.join(", ");
   }
 
   getShortAddress(): string {

@@ -5,14 +5,14 @@
  * Respecte les principes Clean Architecture
  */
 
-import { Service } from '../../domain/entities/service.entity';
-import { ServiceId } from '../../domain/value-objects/service-id.value-object';
-import { BusinessId } from '../../domain/value-objects/business-id.value-object';
-import { ServiceTypeId } from '../../domain/value-objects/service-type-id.value-object';
-import { UserId } from '../../domain/value-objects/user-id.value-object';
-import { Money } from '../../domain/value-objects/money.value-object';
-import { FileUrl } from '../../domain/value-objects/file-url.value-object';
-import { ServiceOrmEntity } from '../database/sql/postgresql/entities/service-orm.entity';
+import { Service } from "../../domain/entities/service.entity";
+import { ServiceId } from "../../domain/value-objects/service-id.value-object";
+import { BusinessId } from "../../domain/value-objects/business-id.value-object";
+import { ServiceTypeId } from "../../domain/value-objects/service-type-id.value-object";
+import { UserId } from "../../domain/value-objects/user-id.value-object";
+import { Money } from "../../domain/value-objects/money.value-object";
+import { FileUrl } from "../../domain/value-objects/file-url.value-object";
+import { ServiceOrmEntity } from "../database/sql/postgresql/entities/service-orm.entity";
 
 export class ServiceMapper {
   /**
@@ -20,7 +20,7 @@ export class ServiceMapper {
    */
   static toDomain(ormEntity: ServiceOrmEntity): Service {
     if (!ormEntity) {
-      throw new Error('ServiceOrmEntity is null or undefined');
+      throw new Error("ServiceOrmEntity is null or undefined");
     }
 
     // Construction des Value Objects
@@ -48,10 +48,10 @@ export class ServiceMapper {
     const service = Service.create({
       businessId: businessId,
       name: ormEntity.name,
-      description: ormEntity.description || '',
+      description: ormEntity.description || "",
       serviceTypeIds: serviceTypeIds,
       basePrice: basePrice?.getAmount() || 0,
-      currency: basePrice?.getCurrency() || 'EUR',
+      currency: basePrice?.getCurrency() || "EUR",
       duration: ormEntity.scheduling.duration,
       allowOnlineBooking: ormEntity.scheduling.allow_online_booking,
       requiresApproval: ormEntity.scheduling.requires_approval,
@@ -66,7 +66,7 @@ export class ServiceMapper {
    */
   static toOrm(domainEntity: Service): ServiceOrmEntity {
     if (!domainEntity) {
-      throw new Error('Service domain entity is null or undefined');
+      throw new Error("Service domain entity is null or undefined");
     }
 
     // Extraction des données depuis l'entité Domain
@@ -77,9 +77,9 @@ export class ServiceMapper {
     ormEntity.business_id = domainEntity.businessId.getValue();
     ormEntity.name = domainEntity.name;
     ormEntity.description = domainEntity.description;
-    ormEntity.category = 'OTHER'; // TODO: Mapper vers category appropriée
+    ormEntity.category = "OTHER"; // TODO: Mapper vers category appropriée
     ormEntity.status =
-      domainEntity.status.toString() === 'ACTIVE' ? 'ACTIVE' : 'DRAFT';
+      domainEntity.status.toString() === "ACTIVE" ? "ACTIVE" : "DRAFT";
 
     // Pricing JSONB
     ormEntity.pricing = {
@@ -93,8 +93,8 @@ export class ServiceMapper {
 
     // Pricing Config JSONB
     ormEntity.pricing_config = {
-      type: 'FIXED',
-      visibility: 'PUBLIC',
+      type: "FIXED",
+      visibility: "PUBLIC",
       basePrice: basePrice
         ? {
             amount: basePrice.getAmount(),
@@ -136,7 +136,7 @@ export class ServiceMapper {
     domainEntity: Service,
   ): ServiceOrmEntity {
     if (!ormEntity || !domainEntity) {
-      throw new Error('Both ORM and Domain entities are required');
+      throw new Error("Both ORM and Domain entities are required");
     }
 
     const basePrice = domainEntity.getBasePrice();
@@ -145,7 +145,7 @@ export class ServiceMapper {
     ormEntity.name = domainEntity.name;
     ormEntity.description = domainEntity.description;
     ormEntity.status =
-      domainEntity.status.toString() === 'ACTIVE' ? 'ACTIVE' : 'DRAFT';
+      domainEntity.status.toString() === "ACTIVE" ? "ACTIVE" : "DRAFT";
 
     // Pricing JSONB
     ormEntity.pricing = {
@@ -159,8 +159,8 @@ export class ServiceMapper {
 
     // Pricing Config JSONB
     ormEntity.pricing_config = {
-      type: 'FIXED',
-      visibility: 'PUBLIC',
+      type: "FIXED",
+      visibility: "PUBLIC",
       basePrice: basePrice
         ? {
             amount: basePrice.getAmount(),

@@ -18,14 +18,14 @@ import {
   StaffCalendarIntegration,
   StaffProfile,
   StaffStatus,
-} from '../../../domain/entities/staff.entity';
-import { StaffNotFoundError } from '../../../domain/exceptions/staff.exceptions';
-import { StaffRepository } from '../../../domain/repositories/staff.repository.interface';
-import { UserId } from '../../../domain/value-objects/user-id.value-object';
-import { StaffRole } from '../../../shared/enums/staff-role.enum';
-import { ApplicationValidationError } from '../../exceptions/application.exceptions';
-import { I18nService } from '../../ports/i18n.port';
-import { Logger } from '../../ports/logger.port';
+} from "../../../domain/entities/staff.entity";
+import { StaffNotFoundError } from "../../../domain/exceptions/staff.exceptions";
+import { StaffRepository } from "../../../domain/repositories/staff.repository.interface";
+import { UserId } from "../../../domain/value-objects/user-id.value-object";
+import { StaffRole } from "../../../shared/enums/staff-role.enum";
+import { ApplicationValidationError } from "../../exceptions/application.exceptions";
+import { I18nService } from "../../ports/i18n.port";
+import { Logger } from "../../ports/logger.port";
 
 export interface GetStaffRequest {
   readonly staffId: string;
@@ -56,7 +56,7 @@ export class GetStaffUseCase {
 
   async execute(request: GetStaffRequest): Promise<GetStaffResponse> {
     try {
-      this.logger.info('Attempting to retrieve staff', {
+      this.logger.info("Attempting to retrieve staff", {
         staffId: request.staffId,
         requestingUserId: request.requestingUserId,
       });
@@ -68,13 +68,13 @@ export class GetStaffUseCase {
       const staff = await this.staffRepository.findById(staffId);
       if (!staff) {
         throw new StaffNotFoundError(
-          this.i18n.translate('staff.errors.not_found', {
+          this.i18n.translate("staff.errors.not_found", {
             id: request.staffId,
           }),
         );
       }
 
-      this.logger.info('Staff retrieved successfully', {
+      this.logger.info("Staff retrieved successfully", {
         staffId: request.staffId,
         requestingUserId: request.requestingUserId,
         staffName: staff.fullName,
@@ -84,7 +84,7 @@ export class GetStaffUseCase {
       return this.mapStaffToResponse(staff);
     } catch (error) {
       this.logger.error(
-        'Error retrieving staff',
+        "Error retrieving staff",
         error instanceof Error ? error : new Error(String(error)),
         {
           staffId: request.staffId,
@@ -104,9 +104,9 @@ export class GetStaffUseCase {
     // Validation des paramètres requis
     if (!request.staffId || request.staffId.trim().length === 0) {
       throw new ApplicationValidationError(
-        'staffId',
+        "staffId",
         request.staffId,
-        'Staff ID is required and cannot be empty',
+        "Staff ID is required and cannot be empty",
       );
     }
 
@@ -115,9 +115,9 @@ export class GetStaffUseCase {
       request.requestingUserId.trim().length === 0
     ) {
       throw new ApplicationValidationError(
-        'requestingUserId',
+        "requestingUserId",
         request.requestingUserId,
-        'Requesting user ID is required and cannot be empty',
+        "Requesting user ID is required and cannot be empty",
       );
     }
 
@@ -126,9 +126,9 @@ export class GetStaffUseCase {
       return UserId.create(request.staffId);
     } catch (error) {
       throw new ApplicationValidationError(
-        'staffId',
+        "staffId",
         request.staffId,
-        'Staff ID must be a valid UUID',
+        "Staff ID must be a valid UUID",
       );
     }
   }

@@ -5,16 +5,16 @@
  * avec validation des permissions et des règles métier.
  */
 
-import { InsufficientPermissionsError } from '@application/exceptions/auth.exceptions';
+import { InsufficientPermissionsError } from "@application/exceptions/auth.exceptions";
 import {
   BusinessSectorInUseError,
   BusinessSectorNotFoundError,
-} from '@application/exceptions/business-sector.exceptions';
-import { IBusinessSectorRepository } from '@application/ports/business-sector.repository.interface';
-import { Logger } from '@application/ports/logger.port';
-import { IPermissionService } from '@application/ports/permission.service.interface';
-import { BusinessSector } from '@domain/entities/business-sector.entity';
-import { Permission } from '@shared/enums/permission.enum';
+} from "@application/exceptions/business-sector.exceptions";
+import { IBusinessSectorRepository } from "@application/ports/business-sector.repository.interface";
+import { Logger } from "@application/ports/logger.port";
+import { IPermissionService } from "@application/ports/permission.service.interface";
+import { BusinessSector } from "@domain/entities/business-sector.entity";
+import { Permission } from "@shared/enums/permission.enum";
 
 /**
  * 📋 Requête de suppression de secteur d'activité
@@ -63,7 +63,7 @@ export class DeleteBusinessSectorUseCase {
   ): Promise<DeleteBusinessSectorResponse> {
     const { id: sectorId, requestingUserId, force = false } = request;
 
-    this.logger.debug('Deleting business sector', {
+    this.logger.debug("Deleting business sector", {
       sectorId,
       requestingUserId,
       force,
@@ -90,7 +90,7 @@ export class DeleteBusinessSectorUseCase {
       );
 
       // 📊 Log de succès
-      this.logger.info('Business sector deactivated successfully', {
+      this.logger.info("Business sector deactivated successfully", {
         sectorId,
         requestingUserId,
         sectorName: deletedSector.name,
@@ -101,7 +101,7 @@ export class DeleteBusinessSectorUseCase {
       return this.buildResponse(deletedSector, force);
     } catch (error) {
       this.logger.error(
-        'Failed to delete business sector',
+        "Failed to delete business sector",
         error instanceof Error ? error : new Error(String(error)),
         {
           requestingUserId,
@@ -126,14 +126,14 @@ export class DeleteBusinessSectorUseCase {
     );
 
     if (!hasPermission) {
-      this.logger.warn('Permission denied for business sector deletion', {
+      this.logger.warn("Permission denied for business sector deletion", {
         requestingUserId,
         sectorId,
         requiredPermission: Permission.MANAGE_BUSINESS_SECTORS,
       });
 
       throw new InsufficientPermissionsError(
-        'User does not have permission to manage business sectors',
+        "User does not have permission to manage business sectors",
         {
           requiredPermission: Permission.MANAGE_BUSINESS_SECTORS,
           userId: requestingUserId,
@@ -153,21 +153,21 @@ export class DeleteBusinessSectorUseCase {
       await this.businessSectorRepository.findById(sectorId);
 
     if (!existingSector) {
-      this.logger.warn('Attempted to delete non-existent business sector', {
+      this.logger.warn("Attempted to delete non-existent business sector", {
         sectorId,
         requestingUserId,
       });
 
       throw new BusinessSectorNotFoundError(
         sectorId,
-        'id',
+        "id",
         `Business sector with id ${sectorId} not found`,
       );
     }
 
     // 🔍 Vérifier si le secteur est déjà inactif
     if (!existingSector.isActive) {
-      this.logger.warn('Attempted to delete already inactive business sector', {
+      this.logger.warn("Attempted to delete already inactive business sector", {
         sectorId,
         sectorName: existingSector.name,
         requestingUserId,
@@ -175,8 +175,8 @@ export class DeleteBusinessSectorUseCase {
 
       throw new BusinessSectorNotFoundError(
         sectorId,
-        'id',
-        'Business sector is already inactive',
+        "id",
+        "Business sector is already inactive",
       );
     }
 
@@ -195,7 +195,7 @@ export class DeleteBusinessSectorUseCase {
       await this.businessSectorRepository.countUsageInBusinesses(sectorId);
 
     if (usageCount > 0 && !force) {
-      this.logger.warn('Attempted to delete business sector in use', {
+      this.logger.warn("Attempted to delete business sector in use", {
         sectorId,
         usageCount,
         requestingUserId,
@@ -211,7 +211,7 @@ export class DeleteBusinessSectorUseCase {
     // 📊 Log de warning si force delete avec usage
     if (usageCount > 0 && force) {
       this.logger.warn(
-        'Business sector forcefully deactivated despite being in use',
+        "Business sector forcefully deactivated despite being in use",
         {
           sectorId,
           usageCount,
@@ -244,8 +244,8 @@ export class DeleteBusinessSectorUseCase {
     wasForced: boolean,
   ): DeleteBusinessSectorResponse {
     const baseMessage = wasForced
-      ? 'Business sector forcefully deactivated'
-      : 'Business sector deactivated successfully';
+      ? "Business sector forcefully deactivated"
+      : "Business sector deactivated successfully";
 
     return {
       success: true,

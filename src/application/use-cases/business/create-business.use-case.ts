@@ -8,24 +8,24 @@
 import {
   BusinessAlreadyExistsError,
   BusinessValidationError,
-} from '../../../application/exceptions/application.exceptions';
-import type { I18nService } from '../../../application/ports/i18n.port';
-import type { Logger } from '../../../application/ports/logger.port';
-import type { IPermissionService } from '../../../application/ports/permission.service.interface';
+} from "../../../application/exceptions/application.exceptions";
+import type { I18nService } from "../../../application/ports/i18n.port";
+import type { Logger } from "../../../application/ports/logger.port";
+import type { IPermissionService } from "../../../application/ports/permission.service.interface";
 import {
   Business,
   BusinessSector,
   BusinessStatus,
-} from '../../../domain/entities/business.entity';
-import type { BusinessRepository } from '../../../domain/repositories/business.repository.interface';
-import { Address } from '../../../domain/value-objects/address.value-object';
-import { BusinessName } from '../../../domain/value-objects/business-name.value-object';
-import { Email } from '../../../domain/value-objects/email.value-object';
-import { Phone } from '../../../domain/value-objects/phone.value-object';
+} from "../../../domain/entities/business.entity";
+import type { BusinessRepository } from "../../../domain/repositories/business.repository.interface";
+import { Address } from "../../../domain/value-objects/address.value-object";
+import { BusinessName } from "../../../domain/value-objects/business-name.value-object";
+import { Email } from "../../../domain/value-objects/email.value-object";
+import { Phone } from "../../../domain/value-objects/phone.value-object";
 import {
   AppContext,
   AppContextFactory,
-} from '../../../shared/context/app-context';
+} from "../../../shared/context/app-context";
 
 export interface CreateBusinessRequest {
   readonly requestingUserId: string;
@@ -99,12 +99,12 @@ export class CreateBusinessUseCase {
   ): Promise<CreateBusinessResponse> {
     // 1. Context pour traçabilité
     const context: AppContext = AppContextFactory.create()
-      .operation('CreateBusiness')
+      .operation("CreateBusiness")
       .requestingUser(request.requestingUserId)
       .build();
 
     this.logger.info(
-      this.i18n.t('operations.business.creation_attempt'),
+      this.i18n.t("operations.business.creation_attempt"),
       context as any,
     );
 
@@ -160,7 +160,7 @@ export class CreateBusinessUseCase {
         createdAt: business.createdAt,
       };
 
-      this.logger.info(this.i18n.t('operations.business.creation_success'), {
+      this.logger.info(this.i18n.t("operations.business.creation_success"), {
         ...(context as any),
         businessId: business.id.getValue(),
       });
@@ -168,7 +168,7 @@ export class CreateBusinessUseCase {
       return response;
     } catch (error) {
       this.logger.error(
-        this.i18n.t('operations.business.creation_failed', {
+        this.i18n.t("operations.business.creation_failed", {
           error: (error as Error).message,
         }),
         context as any,
@@ -185,25 +185,25 @@ export class CreateBusinessUseCase {
       // 🔐 Utiliser le service de permissions RBAC
       await this.permissionService.requirePermission(
         requestingUserId,
-        'CREATE_BUSINESS',
+        "CREATE_BUSINESS",
         {
-          operation: 'CREATE_BUSINESS',
-          resource: 'business',
+          operation: "CREATE_BUSINESS",
+          resource: "business",
           requestingUserId,
           context,
         },
       );
 
-      this.logger.info(this.i18n.t('permissions.validation.success'), {
+      this.logger.info(this.i18n.t("permissions.validation.success"), {
         requestingUserId,
-        permission: 'CREATE_BUSINESS',
-        operation: 'CREATE_BUSINESS',
+        permission: "CREATE_BUSINESS",
+        operation: "CREATE_BUSINESS",
       });
     } catch (error) {
-      this.logger.warn(this.i18n.t('permissions.validation.denied'), {
+      this.logger.warn(this.i18n.t("permissions.validation.denied"), {
         requestingUserId,
-        permission: 'CREATE_BUSINESS',
-        operation: 'CREATE_BUSINESS',
+        permission: "CREATE_BUSINESS",
+        operation: "CREATE_BUSINESS",
         error: (error as Error).message,
       });
       throw error; // Re-throw l'erreur pour que le caller la gère
@@ -217,17 +217,17 @@ export class CreateBusinessUseCase {
     // Validation du nom d'entreprise
     if (request.name.length < 3) {
       throw new BusinessValidationError(
-        'name',
+        "name",
         request.name,
-        'Business name must be at least 3 characters long',
+        "Business name must be at least 3 characters long",
       );
     }
 
     if (request.name.length > 100) {
       throw new BusinessValidationError(
-        'name',
+        "name",
         request.name,
-        'Business name cannot exceed 100 characters',
+        "Business name cannot exceed 100 characters",
       );
     }
 
@@ -237,11 +237,11 @@ export class CreateBusinessUseCase {
       await this.businessRepository.existsByName(businessName);
 
     if (existingBusiness) {
-      this.logger.warn(this.i18n.t('warnings.business.name_already_exists'), {
+      this.logger.warn(this.i18n.t("warnings.business.name_already_exists"), {
         ...context,
         businessName: request.name,
       });
-      throw new BusinessAlreadyExistsError(request.name, 'name');
+      throw new BusinessAlreadyExistsError(request.name, "name");
     }
 
     // Validation de l'email
@@ -249,9 +249,9 @@ export class CreateBusinessUseCase {
       Email.create(request.contactInfo.primaryEmail);
     } catch (error) {
       throw new BusinessValidationError(
-        'primaryEmail',
+        "primaryEmail",
         request.contactInfo.primaryEmail,
-        'Invalid primary email address',
+        "Invalid primary email address",
       );
     }
 
@@ -260,9 +260,9 @@ export class CreateBusinessUseCase {
       Phone.create(request.contactInfo.primaryPhone);
     } catch (error) {
       throw new BusinessValidationError(
-        'primaryPhone',
+        "primaryPhone",
         request.contactInfo.primaryPhone,
-        'Invalid primary phone number',
+        "Invalid primary phone number",
       );
     }
 
@@ -274,9 +274,9 @@ export class CreateBusinessUseCase {
       !request.address.country
     ) {
       throw new BusinessValidationError(
-        'address',
+        "address",
         JSON.stringify(request.address),
-        'Complete address is required (street, city, postal code, country)',
+        "Complete address is required (street, city, postal code, country)",
       );
     }
   }

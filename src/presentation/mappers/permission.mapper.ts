@@ -4,14 +4,14 @@
  * Mapper pour convertir entre Domain Entities et DTOs de présentation
  */
 
-import type { CreatePermissionRequest } from '@application/use-cases/permissions/create-permission.use-case';
-import type { ListPermissionsRequest } from '@application/use-cases/permissions/list-permissions.use-case';
-import type { UpdatePermissionRequest } from '@application/use-cases/permissions/update-permission.use-case';
-import type { Permission } from '@domain/entities/permission.entity';
-import type { CreatePermissionDto } from '../dtos/permissions/create-permission.dto';
-import type { ListPermissionsDto } from '../dtos/permissions/list-permissions.dto';
-import type { PermissionResponseDto } from '../dtos/permissions/permission-response.dto';
-import type { UpdatePermissionDto } from '../dtos/permissions/update-permission.dto';
+import type { CreatePermissionRequest } from "@application/use-cases/permissions/create-permission.use-case";
+import type { ListPermissionsRequest } from "@application/use-cases/permissions/list-permissions.use-case";
+import type { UpdatePermissionRequest } from "@application/use-cases/permissions/update-permission.use-case";
+import type { Permission } from "@domain/entities/permission.entity";
+import type { CreatePermissionDto } from "../dtos/permissions/create-permission.dto";
+import type { ListPermissionsDto } from "../dtos/permissions/list-permissions.dto";
+import type { PermissionResponseDto } from "../dtos/permissions/permission-response.dto";
+import type { UpdatePermissionDto } from "../dtos/permissions/update-permission.dto";
 
 /**
  * 🔄 Mapper statique pour conversions Permission
@@ -67,8 +67,8 @@ export class PermissionMapper {
         limit: dto.limit || 10,
       },
       sorting: {
-        sortBy: dto.sortBy || 'createdAt',
-        sortOrder: dto.sortOrder || 'desc',
+        sortBy: dto.sortBy || "createdAt",
+        sortOrder: dto.sortOrder || "desc",
       },
       filters: {
         search: dto.search,

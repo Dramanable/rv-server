@@ -6,10 +6,10 @@
  * met à jour l'utilisateur et génère de nouveaux tokens d'authentification.
  */
 
-import { DomainValidationError } from '../../../domain/exceptions/domain.exceptions';
-import { UserRepository } from '../../../domain/repositories/user.repository.interface';
-import { AuthenticationService } from '../../ports/authentication.port';
-import { IPasswordService } from '../../ports/password.port';
+import { DomainValidationError } from "../../../domain/exceptions/domain.exceptions";
+import { UserRepository } from "../../../domain/repositories/user.repository.interface";
+import { AuthenticationService } from "../../ports/authentication.port";
+import { IPasswordService } from "../../ports/password.port";
 
 export interface CompletePasswordResetCommand {
   sessionToken: string;
@@ -54,7 +54,7 @@ export class CompletePasswordResetUseCase {
         return {
           success: false,
           message:
-            'Session invalide ou expirée. Veuillez recommencer la procédure de réinitialisation',
+            "Session invalide ou expirée. Veuillez recommencer la procédure de réinitialisation",
         };
       }
 
@@ -63,7 +63,7 @@ export class CompletePasswordResetUseCase {
       if (!user) {
         return {
           success: false,
-          message: 'Utilisateur introuvable',
+          message: "Utilisateur introuvable",
         };
       }
 
@@ -76,7 +76,7 @@ export class CompletePasswordResetUseCase {
         return {
           success: false,
           message:
-            'Mot de passe trop faible. Veuillez choisir un mot de passe plus sécurisé',
+            "Mot de passe trop faible. Veuillez choisir un mot de passe plus sécurisé",
           passwordErrors: passwordValidation.errors,
         };
       }
@@ -100,7 +100,7 @@ export class CompletePasswordResetUseCase {
       return {
         success: true,
         message:
-          'Mot de passe réinitialisé avec succès. Vous êtes maintenant connecté',
+          "Mot de passe réinitialisé avec succès. Vous êtes maintenant connecté",
         accessToken: authTokens.accessToken,
         refreshToken: authTokens.refreshToken,
         expiresIn: authTokens.expiresIn,
@@ -115,7 +115,7 @@ export class CompletePasswordResetUseCase {
       return {
         success: false,
         message:
-          'Une erreur technique est survenue. Veuillez réessayer plus tard',
+          "Une erreur technique est survenue. Veuillez réessayer plus tard",
       };
     }
   }
@@ -123,18 +123,18 @@ export class CompletePasswordResetUseCase {
   private validateInput(command: CompletePasswordResetCommand): void {
     if (
       !command.sessionToken ||
-      typeof command.sessionToken !== 'string' ||
+      typeof command.sessionToken !== "string" ||
       command.sessionToken.trim().length === 0
     ) {
-      throw new DomainValidationError('Session token is required');
+      throw new DomainValidationError("Session token is required");
     }
 
     if (
       !command.newPassword ||
-      typeof command.newPassword !== 'string' ||
+      typeof command.newPassword !== "string" ||
       command.newPassword.trim().length === 0
     ) {
-      throw new DomainValidationError('New password is required');
+      throw new DomainValidationError("New password is required");
     }
   }
 

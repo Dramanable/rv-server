@@ -1,4 +1,4 @@
-import { DomainError } from '../../exceptions/domain.exceptions';
+import { DomainError } from "../../exceptions/domain.exceptions";
 
 export class NotificationCost {
   private constructor(
@@ -14,14 +14,14 @@ export class NotificationCost {
     return new NotificationCost(amount, currency, 0, 0);
   }
 
-  static zero(currency: string = 'EUR'): NotificationCost {
+  static zero(currency: string = "EUR"): NotificationCost {
     return new NotificationCost(0, currency, 0, 0);
   }
 
   static fromEmailCount(
     count: number,
     unitPrice = 0.02,
-    currency = 'EUR',
+    currency = "EUR",
   ): NotificationCost {
     const amount = Math.round(count * unitPrice * 1000) / 1000; // Arrondir à 3 décimales
     return new NotificationCost(amount, currency, count, 0);
@@ -30,7 +30,7 @@ export class NotificationCost {
   static fromSMSCount(
     count: number,
     unitPrice = 0.08,
-    currency = 'EUR',
+    currency = "EUR",
   ): NotificationCost {
     const amount = Math.round(count * unitPrice * 1000) / 1000; // Arrondir à 3 décimales
     return new NotificationCost(amount, currency, 0, count);
@@ -38,30 +38,30 @@ export class NotificationCost {
 
   private validate(): void {
     if (this.amount < 0) {
-      throw new DomainError('Notification cost cannot be negative');
+      throw new DomainError("Notification cost cannot be negative");
     }
 
     // Validation format devise ISO 4217 (3 lettres majuscules)
     if (!this.currency || !/^[A-Z]{3}$/.test(this.currency)) {
       throw new DomainError(
-        'Currency must be a valid 3-letter ISO currency code (e.g., EUR, USD, GBP, CAD, JPY)',
+        "Currency must be a valid 3-letter ISO currency code (e.g., EUR, USD, GBP, CAD, JPY)",
       );
     }
 
     // Validation précision (3 décimales max pour calculs intermédiaires)
     if (Math.round(this.amount * 1000) !== this.amount * 1000) {
-      throw new DomainError('Cost must have maximum 3 decimal places');
+      throw new DomainError("Cost must have maximum 3 decimal places");
     }
 
     // Validation compteurs
     if (this.emailCount < 0 || this.smsCount < 0) {
-      throw new DomainError('Notification counts cannot be negative');
+      throw new DomainError("Notification counts cannot be negative");
     }
   }
 
   add(other: NotificationCost): NotificationCost {
     if (this.currency !== other.currency) {
-      throw new DomainError('Cannot add costs with different currencies');
+      throw new DomainError("Cannot add costs with different currencies");
     }
     const resultAmount = Math.round((this.amount + other.amount) * 1000) / 1000; // Arrondir à 3 décimales
     const resultEmailCount = this.emailCount + other.emailCount;
@@ -76,11 +76,11 @@ export class NotificationCost {
 
   subtract(other: NotificationCost): NotificationCost {
     if (this.currency !== other.currency) {
-      throw new DomainError('Cannot subtract costs with different currencies');
+      throw new DomainError("Cannot subtract costs with different currencies");
     }
     const resultAmount = Math.round((this.amount - other.amount) * 1000) / 1000; // Arrondir à 3 décimales
     if (resultAmount < 0) {
-      throw new DomainError('Subtraction result cannot be negative');
+      throw new DomainError("Subtraction result cannot be negative");
     }
     const resultEmailCount = Math.max(0, this.emailCount - other.emailCount);
     const resultSmsCount = Math.max(0, this.smsCount - other.smsCount);
@@ -94,7 +94,7 @@ export class NotificationCost {
 
   multiply(factor: number): NotificationCost {
     if (factor < 0) {
-      throw new DomainError('Factor cannot be negative');
+      throw new DomainError("Factor cannot be negative");
     }
     const resultAmount = Math.round(this.amount * factor * 1000) / 1000; // Arrondir à 3 décimales
     const resultEmailCount = Math.round(this.emailCount * factor);
@@ -124,8 +124,8 @@ export class NotificationCost {
   }
 
   getFormattedAmount(): string {
-    const formatter = new Intl.NumberFormat('fr-FR', {
-      style: 'currency',
+    const formatter = new Intl.NumberFormat("fr-FR", {
+      style: "currency",
       currency: this.currency,
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,

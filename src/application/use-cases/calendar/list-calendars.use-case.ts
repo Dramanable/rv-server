@@ -8,23 +8,23 @@
 import {
   ApplicationValidationError,
   InsufficientPermissionsError,
-} from '../../../application/exceptions/application.exceptions';
-import type { I18nService } from '../../../application/ports/i18n.port';
-import type { Logger } from '../../../application/ports/logger.port';
-import { CalendarType } from '../../../domain/entities/calendar-type.entity';
+} from "../../../application/exceptions/application.exceptions";
+import type { I18nService } from "../../../application/ports/i18n.port";
+import type { Logger } from "../../../application/ports/logger.port";
+import { CalendarType } from "../../../domain/entities/calendar-type.entity";
 import {
   Calendar,
   CalendarStatus,
-} from '../../../domain/entities/calendar.entity';
-import type { CalendarRepository } from '../../../domain/repositories/calendar.repository.interface';
-import type { UserRepository } from '../../../domain/repositories/user.repository.interface';
-import { BusinessId } from '../../../domain/value-objects/business-id.value-object';
-import { UserId } from '../../../domain/value-objects/user-id.value-object';
+} from "../../../domain/entities/calendar.entity";
+import type { CalendarRepository } from "../../../domain/repositories/calendar.repository.interface";
+import type { UserRepository } from "../../../domain/repositories/user.repository.interface";
+import { BusinessId } from "../../../domain/value-objects/business-id.value-object";
+import { UserId } from "../../../domain/value-objects/user-id.value-object";
 import {
   AppContext,
   AppContextFactory,
-} from '../../../shared/context/app-context';
-import { UserRole } from '../../../shared/enums/user-role.enum';
+} from "../../../shared/context/app-context";
+import { UserRole } from "../../../shared/enums/user-role.enum";
 
 export interface ListCalendarsRequest {
   readonly requestingUserId: string;
@@ -34,7 +34,7 @@ export interface ListCalendarsRequest {
   };
   readonly sorting: {
     readonly sortBy: string;
-    readonly sortOrder: 'asc' | 'desc';
+    readonly sortOrder: "asc" | "desc";
   };
   readonly filters: {
     readonly search?: string;
@@ -85,12 +85,12 @@ export class ListCalendarsUseCase {
   async execute(request: ListCalendarsRequest): Promise<ListCalendarsResponse> {
     // 1. Context pour traçabilité
     const context: AppContext = AppContextFactory.create()
-      .operation('ListCalendars')
+      .operation("ListCalendars")
       .requestingUser(request.requestingUserId)
       .build();
 
     this.logger.info(
-      this.i18n.t('operations.calendar.list_attempt'),
+      this.i18n.t("operations.calendar.list_attempt"),
       context as any,
     );
 
@@ -119,9 +119,9 @@ export class ListCalendarsUseCase {
         if (requestingUser?.role === UserRole.PLATFORM_ADMIN) {
           // Récupération de tous les calendriers - à implémenter dans le repository
           throw new ApplicationValidationError(
-            'global_listing',
-            'not_implemented',
-            'Global calendar listing not implemented yet',
+            "global_listing",
+            "not_implemented",
+            "Global calendar listing not implemented yet",
           );
         } else {
           const ownerId = UserId.create(request.requestingUserId);
@@ -166,7 +166,7 @@ export class ListCalendarsUseCase {
       };
 
       this.logger.info(
-        this.i18n.t('operations.calendar.list_success', {
+        this.i18n.t("operations.calendar.list_success", {
           count: calendarSummaries.length,
         }),
         context as any,
@@ -175,7 +175,7 @@ export class ListCalendarsUseCase {
       return response;
     } catch (error) {
       this.logger.error(
-        this.i18n.t('operations.calendar.list_failed', {
+        this.i18n.t("operations.calendar.list_failed", {
           error: (error as Error).message,
         }),
         context as any,
@@ -192,8 +192,8 @@ export class ListCalendarsUseCase {
     if (!requestingUser) {
       throw new InsufficientPermissionsError(
         requestingUserId,
-        'LIST_CALENDARS',
-        'calendar',
+        "LIST_CALENDARS",
+        "calendar",
       );
     }
 
@@ -211,15 +211,15 @@ export class ListCalendarsUseCase {
     ];
 
     if (!allowedRoles.includes(requestingUser.role)) {
-      this.logger.warn(this.i18n.t('warnings.permission.denied'), {
+      this.logger.warn(this.i18n.t("warnings.permission.denied"), {
         requestingUserId,
         requestingUserRole: requestingUser.role,
-        requiredPermissions: 'LIST_CALENDARS',
+        requiredPermissions: "LIST_CALENDARS",
       });
       throw new InsufficientPermissionsError(
         requestingUserId,
-        'LIST_CALENDARS',
-        'calendar',
+        "LIST_CALENDARS",
+        "calendar",
       );
     }
   }
@@ -228,39 +228,39 @@ export class ListCalendarsUseCase {
     // Validation pagination
     if (request.pagination.page < 1) {
       throw new ApplicationValidationError(
-        'page',
+        "page",
         request.pagination.page,
-        'Page must be >= 1',
+        "Page must be >= 1",
       );
     }
 
     if (request.pagination.limit < 1 || request.pagination.limit > 100) {
       throw new ApplicationValidationError(
-        'limit',
+        "limit",
         request.pagination.limit,
-        'Limit must be between 1 and 100',
+        "Limit must be between 1 and 100",
       );
     }
 
     // Validation tri
     const allowedSortFields = [
-      'name',
-      'type',
-      'status',
-      'createdAt',
-      'updatedAt',
+      "name",
+      "type",
+      "status",
+      "createdAt",
+      "updatedAt",
     ];
     if (!allowedSortFields.includes(request.sorting.sortBy)) {
       throw new ApplicationValidationError(
-        'sortBy',
+        "sortBy",
         request.sorting.sortBy,
-        `Sort field must be one of: ${allowedSortFields.join(', ')}`,
+        `Sort field must be one of: ${allowedSortFields.join(", ")}`,
       );
     }
 
-    if (!['asc', 'desc'].includes(request.sorting.sortOrder)) {
+    if (!["asc", "desc"].includes(request.sorting.sortOrder)) {
       throw new ApplicationValidationError(
-        'sortOrder',
+        "sortOrder",
         request.sorting.sortOrder,
         'Sort order must be "asc" or "desc"',
       );
@@ -269,7 +269,7 @@ export class ListCalendarsUseCase {
 
   private applyFilters(
     calendars: Calendar[],
-    filters: ListCalendarsRequest['filters'],
+    filters: ListCalendarsRequest["filters"],
   ): Calendar[] {
     let filtered = [...calendars];
 
@@ -300,30 +300,30 @@ export class ListCalendarsUseCase {
 
   private applySorting(
     calendars: Calendar[],
-    sorting: ListCalendarsRequest['sorting'],
+    sorting: ListCalendarsRequest["sorting"],
   ): Calendar[] {
     return [...calendars].sort((a, b) => {
       let valueA: any;
       let valueB: any;
 
       switch (sorting.sortBy) {
-        case 'name':
+        case "name":
           valueA = a.name.toLowerCase();
           valueB = b.name.toLowerCase();
           break;
-        case 'type':
+        case "type":
           valueA = a.type;
           valueB = b.type;
           break;
-        case 'status':
+        case "status":
           valueA = a.status;
           valueB = b.status;
           break;
-        case 'createdAt':
+        case "createdAt":
           valueA = a.createdAt.getTime();
           valueB = b.createdAt.getTime();
           break;
-        case 'updatedAt':
+        case "updatedAt":
           valueA = a.updatedAt.getTime();
           valueB = b.updatedAt.getTime();
           break;
@@ -332,7 +332,7 @@ export class ListCalendarsUseCase {
           valueB = b.createdAt.getTime();
       }
 
-      if (sorting.sortOrder === 'asc') {
+      if (sorting.sortOrder === "asc") {
         return valueA < valueB ? -1 : valueA > valueB ? 1 : 0;
       } else {
         return valueA > valueB ? -1 : valueA < valueB ? 1 : 0;
@@ -342,7 +342,7 @@ export class ListCalendarsUseCase {
 
   private applyPagination(
     calendars: Calendar[],
-    pagination: ListCalendarsRequest['pagination'],
+    pagination: ListCalendarsRequest["pagination"],
   ): { paginatedCalendars: Calendar[]; totalItems: number } {
     const totalItems = calendars.length;
     const startIndex = (pagination.page - 1) * pagination.limit;

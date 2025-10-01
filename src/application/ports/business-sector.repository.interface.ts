@@ -5,7 +5,7 @@
  * Définit le contrat pour les adaptateurs d'infrastructure.
  */
 
-import { BusinessSector } from '@domain/entities/business-sector.entity';
+import { BusinessSector } from "@domain/entities/business-sector.entity";
 
 /**
  * 📋 Filtres de recherche pour les secteurs d'activité
@@ -21,8 +21,8 @@ export interface BusinessSectorFilters {
  * 📊 Options de tri pour les secteurs d'activité
  */
 export interface BusinessSectorSortOptions {
-  readonly field: 'name' | 'code' | 'createdAt' | 'updatedAt';
-  readonly direction: 'ASC' | 'DESC';
+  readonly field: "name" | "code" | "createdAt" | "updatedAt";
+  readonly direction: "ASC" | "DESC";
 }
 
 /**

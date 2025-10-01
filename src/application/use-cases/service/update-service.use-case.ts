@@ -1,10 +1,10 @@
-import { ServiceNotFoundError } from '../../../domain/exceptions/service.exceptions';
-import { ServiceRepository } from '../../../domain/repositories/service.repository.interface';
-import { ServiceId } from '../../../domain/value-objects/service-id.value-object';
-import { ApplicationValidationError } from '../../exceptions/application.exceptions';
-import { I18nService } from '../../ports/i18n.port';
-import { Logger } from '../../ports/logger.port';
-import { IPermissionService } from '../../ports/permission.service.interface';
+import { ServiceNotFoundError } from "../../../domain/exceptions/service.exceptions";
+import { ServiceRepository } from "../../../domain/repositories/service.repository.interface";
+import { ServiceId } from "../../../domain/value-objects/service-id.value-object";
+import { ApplicationValidationError } from "../../exceptions/application.exceptions";
+import { I18nService } from "../../ports/i18n.port";
+import { Logger } from "../../ports/logger.port";
+import { IPermissionService } from "../../ports/permission.service.interface";
 
 export interface UpdateServiceRequest {
   readonly serviceId: string;
@@ -40,7 +40,7 @@ export class UpdateServiceUseCase {
 
   async execute(request: UpdateServiceRequest): Promise<UpdateServiceResponse> {
     try {
-      this.logger.info('Attempting to update service', {
+      this.logger.info("Attempting to update service", {
         serviceId: request.serviceId,
         requestingUserId: request.requestingUserId,
       });
@@ -48,9 +48,9 @@ export class UpdateServiceUseCase {
       // Parameter validation
       if (!request.serviceId || request.serviceId.trim().length === 0) {
         throw new ApplicationValidationError(
-          'serviceId',
+          "serviceId",
           request.serviceId,
-          'Service ID is required',
+          "Service ID is required",
         );
       }
 
@@ -59,9 +59,9 @@ export class UpdateServiceUseCase {
         request.requestingUserId.trim().length === 0
       ) {
         throw new ApplicationValidationError(
-          'requestingUserId',
+          "requestingUserId",
           request.requestingUserId,
-          'Requesting user ID is required',
+          "Requesting user ID is required",
         );
       }
 
@@ -75,7 +75,7 @@ export class UpdateServiceUseCase {
       // 🚨 CRITIQUE : TOUJOURS vérifier les permissions en PREMIER
       await this.permissionService.requirePermission(
         request.requestingUserId,
-        'MANAGE_SERVICES',
+        "MANAGE_SERVICES",
         {
           businessId: existingService.businessId.getValue(),
           resourceId: request.serviceId,
@@ -85,9 +85,9 @@ export class UpdateServiceUseCase {
       // Business rules validation
       if (request.updates.name && request.updates.name.trim().length < 3) {
         throw new ApplicationValidationError(
-          'updates.name',
+          "updates.name",
           request.updates.name,
-          'Service name must be at least 3 characters',
+          "Service name must be at least 3 characters",
         );
       }
 
@@ -96,9 +96,9 @@ export class UpdateServiceUseCase {
         request.updates.pricing.basePrice < 0
       ) {
         throw new ApplicationValidationError(
-          'updates.pricing.basePrice',
+          "updates.pricing.basePrice",
           request.updates.pricing.basePrice,
-          'Price cannot be negative',
+          "Price cannot be negative",
         );
       }
 
@@ -107,16 +107,16 @@ export class UpdateServiceUseCase {
         request.updates.scheduling.duration <= 0
       ) {
         throw new ApplicationValidationError(
-          'updates.scheduling.duration',
+          "updates.scheduling.duration",
           request.updates.scheduling.duration,
-          'Duration must be greater than 0',
+          "Duration must be greater than 0",
         );
       }
 
       // Check name uniqueness if name is being updated
-      if (request.updates.name && request.updates.name === 'Existing Service') {
+      if (request.updates.name && request.updates.name === "Existing Service") {
         throw new ApplicationValidationError(
-          'updates.name',
+          "updates.name",
           request.updates.name,
           `Service with name "${request.updates.name}" already exists`,
         );
@@ -128,11 +128,11 @@ export class UpdateServiceUseCase {
 
       if (request.updates.name) {
         updateData.name = request.updates.name;
-        updatedFields.push('name');
+        updatedFields.push("name");
       }
       if (request.updates.description) {
         updateData.description = request.updates.description;
-        updatedFields.push('description');
+        updatedFields.push("description");
       }
 
       if (Object.keys(updateData).length > 0) {
@@ -142,7 +142,7 @@ export class UpdateServiceUseCase {
       // Save updated service
       await this.serviceRepository.save(existingService);
 
-      this.logger.info('Service updated successfully', {
+      this.logger.info("Service updated successfully", {
         serviceId: existingService.id.getValue(),
         requestingUserId: request.requestingUserId,
         updatedFields,
@@ -158,10 +158,10 @@ export class UpdateServiceUseCase {
       // Log permission errors with specific context
       if (
         error instanceof Error &&
-        error.constructor.name === 'InsufficientPermissionsError'
+        error.constructor.name === "InsufficientPermissionsError"
       ) {
         // Try to get business context from the service if it was found
-        let businessId = 'unknown';
+        let businessId = "unknown";
         try {
           const serviceId = new ServiceId(request.serviceId);
           const service = await this.serviceRepository.findById(serviceId);
@@ -173,14 +173,14 @@ export class UpdateServiceUseCase {
           businessId = request.serviceId;
         }
 
-        this.logger.error('Permission denied for service update', error, {
+        this.logger.error("Permission denied for service update", error, {
           serviceId: request.serviceId,
           requestingUserId: request.requestingUserId,
-          requiredPermission: 'MANAGE_SERVICES',
+          requiredPermission: "MANAGE_SERVICES",
           businessId: businessId,
         });
       } else {
-        this.logger.error('Error updating service', error as Error, {
+        this.logger.error("Error updating service", error as Error, {
           serviceId: request.serviceId,
           requestingUserId: request.requestingUserId,
         });

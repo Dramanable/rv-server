@@ -4,13 +4,13 @@
  * @version 1.0.0
  */
 
-import { Notification } from '@domain/entities/notification.entity';
-import { NotificationDto } from '../dtos/notification/notification-response.dto';
+import { Notification } from "@domain/entities/notification.entity";
+import { NotificationDto } from "../dtos/notification/notification-response.dto";
 import {
   SendNotificationDto,
   SendBulkNotificationDto,
   ListNotificationsDto,
-} from '../dtos/notification/notification.dto';
+} from "../dtos/notification/notification.dto";
 import {
   SendNotificationResponseDto,
   SendBulkNotificationResponseDto,
@@ -19,7 +19,7 @@ import {
   MarkAsReadResponseDto,
   DeleteNotificationResponseDto,
   NotificationAnalyticsResponseDto,
-} from '../dtos/notification/notification-response.dto';
+} from "../dtos/notification/notification-response.dto";
 import {
   SendNotificationRequest,
   SendBulkNotificationRequest,
@@ -31,7 +31,7 @@ import {
   MarkNotificationAsReadResponse,
   DeleteNotificationResponse,
   GetNotificationAnalyticsResponse,
-} from '@application/use-cases/notifications/types';
+} from "@application/use-cases/notifications/types";
 
 /**
  * Mapper pour convertir les DTOs de notification vers les objets métier
@@ -47,10 +47,10 @@ export class NotificationMapper {
   ): SendNotificationRequest {
     return {
       recipientId: dto.recipientId,
-      title: dto.templateType || 'Notification',
-      content: dto.variables?.message || 'Nouvelle notification',
-      channel: dto.preferredChannel || 'EMAIL',
-      priority: dto.priority || 'NORMAL',
+      title: dto.templateType || "Notification",
+      content: dto.variables?.message || "Nouvelle notification",
+      channel: dto.preferredChannel || "EMAIL",
+      priority: dto.priority || "NORMAL",
       metadata: dto.metadata,
       scheduledFor: dto.scheduledAt ? new Date(dto.scheduledAt) : undefined,
       requestingUserId,
@@ -74,8 +74,8 @@ export class NotificationMapper {
           variables: dto.recipientVariables?.[id],
         })) || [],
       templateType: dto.templateType,
-      defaultChannel: dto.preferredChannel || 'EMAIL',
-      priority: dto.priority || 'NORMAL',
+      defaultChannel: dto.preferredChannel || "EMAIL",
+      priority: dto.priority || "NORMAL",
       commonVariables: dto.commonVariables,
       requestingUserId,
       correlationId,
@@ -101,8 +101,8 @@ export class NotificationMapper {
       search: dto.search,
       page: dto.page || 1,
       limit: dto.limit || 10,
-      sortBy: dto.sortBy || 'createdAt',
-      sortOrder: dto.sortOrder || 'desc',
+      sortBy: dto.sortBy || "createdAt",
+      sortOrder: dto.sortOrder || "desc",
       requestingUserId,
       correlationId,
     };
@@ -113,19 +113,19 @@ export class NotificationMapper {
    */
   static toNotificationDto(notification: any): NotificationDto {
     return {
-      id: notification.id || notification.getId?.()?.getValue?.() || '',
+      id: notification.id || notification.getId?.()?.getValue?.() || "",
       recipientId:
-        notification.recipientId || notification.getRecipientId?.() || '',
-      title: notification.title || notification.getTitle?.() || '',
-      content: notification.content || notification.getContent?.() || '',
+        notification.recipientId || notification.getRecipientId?.() || "",
+      title: notification.title || notification.getTitle?.() || "",
+      content: notification.content || notification.getContent?.() || "",
       channel:
-        notification.channel || notification.getChannel?.()?.getValue?.() || '',
+        notification.channel || notification.getChannel?.()?.getValue?.() || "",
       priority:
         notification.priority ||
         notification.getPriority?.()?.getValue?.() ||
-        '',
+        "",
       status:
-        notification.status || notification.getStatus?.()?.getValue?.() || '',
+        notification.status || notification.getStatus?.()?.getValue?.() || "",
       sentAt:
         notification.sentAt || notification.getSentAt?.()?.toISOString?.(),
       deliveredAt:
@@ -166,13 +166,13 @@ export class NotificationMapper {
    */
   static toSendNotificationResponseDto(
     response: SendNotificationResponse,
-    message: string = 'Notification envoyée avec succès',
+    message: string = "Notification envoyée avec succès",
   ): SendNotificationResponseDto {
     return {
       success: true,
       data: {
-        id: response.notification?.id || '',
-        status: response.status || 'sent',
+        id: response.notification?.id || "",
+        status: response.status || "sent",
         sentAt: response.sentAt?.toISOString() || new Date().toISOString(),
       },
     };
@@ -206,13 +206,13 @@ export class NotificationMapper {
         successRate,
         notificationIds:
           response.notifications?.map(
-            (n: any) => n.id || n.getId?.()?.getValue?.() || '',
+            (n: any) => n.id || n.getId?.()?.getValue?.() || "",
           ) || [],
         failedRecipients: response.failedRecipients,
       },
       meta: {
         timestamp: new Date().toISOString(),
-        correlationId: 'bulk-notification',
+        correlationId: "bulk-notification",
         processingTime: 0,
       },
     };
@@ -255,13 +255,13 @@ export class NotificationMapper {
    */
   static toMarkAsReadResponseDto(
     response: MarkNotificationAsReadResponse,
-    message: string = 'Notification marquée comme lue',
+    message: string = "Notification marquée comme lue",
   ): MarkAsReadResponseDto {
     return {
       success: true,
       data: {
-        id: response.notificationId || '',
-        status: 'read',
+        id: response.notificationId || "",
+        status: "read",
         readAt: response.readAt.toISOString(),
       },
     };
@@ -272,12 +272,12 @@ export class NotificationMapper {
    */
   static toDeleteNotificationResponseDto(
     response: DeleteNotificationResponse,
-    message: string = 'Notification supprimée avec succès',
+    message: string = "Notification supprimée avec succès",
   ): DeleteNotificationResponseDto {
     return {
       success: true,
       data: {
-        id: response.deletedId || '',
+        id: response.deletedId || "",
         deletedAt: response.deletedAt.toISOString(),
       },
     };
@@ -310,26 +310,26 @@ export class NotificationMapper {
   static toErrorResponseDto(
     error: Error,
     path: string,
-    correlationId: string = 'unknown',
+    correlationId: string = "unknown",
   ) {
     // Mapping des erreurs spécifiques aux codes d'erreur
     const getErrorCode = (error: Error): string => {
       const errorName = error.constructor.name;
       switch (errorName) {
-        case 'NotificationNotFoundError':
-          return 'NOTIFICATION_NOT_FOUND';
-        case 'InvalidNotificationDataError':
-          return 'NOTIFICATION_INVALID_DATA';
-        case 'NotificationPermissionDeniedError':
-          return 'NOTIFICATION_PERMISSION_DENIED';
-        case 'NotificationTemplateNotFoundError':
-          return 'NOTIFICATION_TEMPLATE_NOT_FOUND';
-        case 'NotificationTranslationError':
-          return 'NOTIFICATION_TRANSLATION_ERROR';
-        case 'NotificationRepositoryError':
-          return 'NOTIFICATION_REPOSITORY_ERROR';
+        case "NotificationNotFoundError":
+          return "NOTIFICATION_NOT_FOUND";
+        case "InvalidNotificationDataError":
+          return "NOTIFICATION_INVALID_DATA";
+        case "NotificationPermissionDeniedError":
+          return "NOTIFICATION_PERMISSION_DENIED";
+        case "NotificationTemplateNotFoundError":
+          return "NOTIFICATION_TEMPLATE_NOT_FOUND";
+        case "NotificationTranslationError":
+          return "NOTIFICATION_TRANSLATION_ERROR";
+        case "NotificationRepositoryError":
+          return "NOTIFICATION_REPOSITORY_ERROR";
         default:
-          return 'NOTIFICATION_UNKNOWN_ERROR';
+          return "NOTIFICATION_UNKNOWN_ERROR";
       }
     };
 
@@ -351,18 +351,18 @@ export class NotificationMapper {
   static toValidationErrorResponseDto(
     validationErrors: any[],
     path: string,
-    correlationId: string = 'unknown',
+    correlationId: string = "unknown",
   ) {
     const firstError = validationErrors[0];
-    const field = firstError?.property || 'unknown';
+    const field = firstError?.property || "unknown";
     const constraints = firstError?.constraints || {};
     const message =
-      (Object.values(constraints)[0] as string) || 'Données invalides';
+      (Object.values(constraints)[0] as string) || "Données invalides";
 
     return {
       success: false,
       error: {
-        code: 'NOTIFICATION_VALIDATION_ERROR',
+        code: "NOTIFICATION_VALIDATION_ERROR",
         message,
         field,
         timestamp: new Date().toISOString(),

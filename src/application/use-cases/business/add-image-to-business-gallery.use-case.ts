@@ -4,15 +4,15 @@
  * ✅ Business logic for adding images to gallery
  */
 
-import { BusinessRepository } from '../../../domain/repositories/business.repository';
-import { BusinessId } from '../../../domain/value-objects/business-id.value-object';
+import { BusinessRepository } from "../../../domain/repositories/business.repository";
+import { BusinessId } from "../../../domain/value-objects/business-id.value-object";
 import {
   BusinessImage,
   ImageCategory,
-} from '../../../domain/value-objects/business-image.value-object';
-import { I18nService } from '../../../shared/types/i18n.interface';
-import { ILogger } from '../../../shared/types/logger.interface';
-import { BusinessNotFoundError } from '../../exceptions/business.exceptions';
+} from "../../../domain/value-objects/business-image.value-object";
+import { I18nService } from "../../../shared/types/i18n.interface";
+import { ILogger } from "../../../shared/types/logger.interface";
+import { BusinessNotFoundError } from "../../exceptions/business.exceptions";
 
 export interface AddImageToBusinessGalleryRequest {
   readonly businessId: string;
@@ -55,7 +55,7 @@ export class AddImageToBusinessGalleryUseCase {
   async execute(
     request: AddImageToBusinessGalleryRequest,
   ): Promise<AddImageToBusinessGalleryResponse> {
-    this.logger.log('Adding image to business gallery', {
+    this.logger.log("Adding image to business gallery", {
       businessId: request.businessId,
       category: request.category,
       requestingUserId: request.requestingUserId,
@@ -67,8 +67,8 @@ export class AddImageToBusinessGalleryUseCase {
       const business = await this.businessRepository.findById(businessId);
 
       if (!business) {
-        const errorMessage = this.i18n.t('error.business.not_found');
-        this.logger.error('Business not found for image addition', {
+        const errorMessage = this.i18n.t("error.business.not_found");
+        this.logger.error("Business not found for image addition", {
           businessId: request.businessId,
           requestingUserId: request.requestingUserId,
         });
@@ -106,7 +106,7 @@ export class AddImageToBusinessGalleryUseCase {
       // 5. Save to repository
       await this.businessRepository.save(updatedBusiness);
 
-      this.logger.log('Image added to business gallery successfully', {
+      this.logger.log("Image added to business gallery successfully", {
         businessId: request.businessId,
         imageId: newImage.id,
         category: request.category,
@@ -120,12 +120,12 @@ export class AddImageToBusinessGalleryUseCase {
         imageUrl: request.imageUrl,
         category: request.category,
         totalImages: updatedGallery.count,
-        message: this.i18n.t('gallery.image_added_successfully'),
+        message: this.i18n.t("gallery.image_added_successfully"),
       };
     } catch (error) {
       const errorMessage =
-        error instanceof Error ? error.message : 'Unknown error';
-      this.logger.error('Failed to add image to business gallery', {
+        error instanceof Error ? error.message : "Unknown error";
+      this.logger.error("Failed to add image to business gallery", {
         businessId: request.businessId,
         error: errorMessage,
         requestingUserId: request.requestingUserId,

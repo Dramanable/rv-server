@@ -7,8 +7,8 @@
 import {
   ConfirmAppointmentRequest,
   ConfirmAppointmentUseCase,
-} from '../../../../../application/use-cases/appointments/confirm-appointment.use-case';
-import { AppointmentRepository } from '../../../../../domain/repositories/appointment.repository.interface';
+} from "../../../../../application/use-cases/appointments/confirm-appointment.use-case";
+import { AppointmentRepository } from "../../../../../domain/repositories/appointment.repository.interface";
 
 // ===== MOCK FACTORY =====
 
@@ -44,7 +44,7 @@ const createMockAppointmentRepository =
 
 // ===== TESTS =====
 
-describe('ConfirmAppointmentUseCase', () => {
+describe("ConfirmAppointmentUseCase", () => {
   let useCase: ConfirmAppointmentUseCase;
   let mockRepository: jest.Mocked<AppointmentRepository>;
 
@@ -53,21 +53,21 @@ describe('ConfirmAppointmentUseCase', () => {
     useCase = new ConfirmAppointmentUseCase(mockRepository);
   });
 
-  describe('execute', () => {
+  describe("execute", () => {
     const validRequest: ConfirmAppointmentRequest = {
-      appointmentId: '7a0c5a6f-786d-4b7a-bb67-4fb939680030',
-      requestingUserId: 'ec94a1d8-a954-4cfb-b2e6-cbfb5099e4f0',
-      confirmationMethod: 'EMAIL' as const,
-      notes: 'Client called to confirm',
+      appointmentId: "7a0c5a6f-786d-4b7a-bb67-4fb939680030",
+      requestingUserId: "ec94a1d8-a954-4cfb-b2e6-cbfb5099e4f0",
+      confirmationMethod: "EMAIL" as const,
+      notes: "Client called to confirm",
     };
 
-    it('should throw error when appointment not found', async () => {
+    it("should throw error when appointment not found", async () => {
       // Given
       mockRepository.findById.mockResolvedValue(null);
 
       // When & Then
       await expect(useCase.execute(validRequest)).rejects.toThrow(
-        'Appointment with ID 7a0c5a6f-786d-4b7a-bb67-4fb939680030 not found',
+        "Appointment with ID 7a0c5a6f-786d-4b7a-bb67-4fb939680030 not found",
       );
     });
 

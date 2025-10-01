@@ -7,8 +7,8 @@
 import {
   ProfessionalRoleNotFoundError,
   ProfessionalRoleValidationError,
-} from '@domain/exceptions/professional-role.exceptions';
-import { IProfessionalRoleRepository } from '@domain/repositories/professional-role.repository';
+} from "@domain/exceptions/professional-role.exceptions";
+import { IProfessionalRoleRepository } from "@domain/repositories/professional-role.repository";
 
 export interface UpdateProfessionalRoleRequest {
   readonly professionalRoleId: string;
@@ -43,13 +43,13 @@ export class UpdateProfessionalRoleUseCase {
     // 🔍 Validate request
     if (!request.professionalRoleId) {
       throw new ProfessionalRoleValidationError(
-        'Professional role ID is required',
+        "Professional role ID is required",
       );
     }
 
     if (!request.requestingUserId) {
       throw new ProfessionalRoleValidationError(
-        'Requesting user ID is required',
+        "Requesting user ID is required",
       );
     }
 
@@ -62,7 +62,7 @@ export class UpdateProfessionalRoleUseCase {
 
     if (!hasUpdateFields) {
       throw new ProfessionalRoleValidationError(
-        'At least one field must be provided for update',
+        "At least one field must be provided for update",
       );
     }
 

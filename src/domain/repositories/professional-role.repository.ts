@@ -7,7 +7,7 @@
 import {
   ProfessionalCategory,
   ProfessionalRole,
-} from '@domain/entities/professional-role.entity';
+} from "@domain/entities/professional-role.entity";
 
 export interface IProfessionalRoleRepository {
   /**

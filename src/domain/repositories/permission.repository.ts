@@ -1,4 +1,4 @@
-import { Permission } from '@domain/entities/permission.entity';
+import { Permission } from "@domain/entities/permission.entity";
 
 /**
  * Permission Repository Interface
@@ -34,7 +34,7 @@ export interface IPermissionRepository {
       offset?: number;
       limit?: number;
       sortBy?: string;
-      sortOrder?: 'asc' | 'desc';
+      sortOrder?: "asc" | "desc";
     },
   ): Promise<Permission[]>;
 

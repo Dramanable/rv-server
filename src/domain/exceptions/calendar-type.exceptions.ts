@@ -1,4 +1,4 @@
-import { DomainException } from './domain.exception';
+import { DomainException } from "./domain.exception";
 
 /**
  * 🚨 Base exception for CalendarType domain errors
@@ -14,7 +14,7 @@ export abstract class CalendarTypeException extends DomainException {
  */
 export class CalendarTypeValidationError extends CalendarTypeException {
   constructor(message: string, context?: Record<string, any>) {
-    super(message, 'CALENDAR_TYPE_VALIDATION_ERROR', context);
+    super(message, "CALENDAR_TYPE_VALIDATION_ERROR", context);
   }
 }
 
@@ -23,7 +23,7 @@ export class CalendarTypeValidationError extends CalendarTypeException {
  */
 export class CalendarTypeNotFoundError extends CalendarTypeException {
   constructor(id: string, context?: Record<string, any>) {
-    super(`CalendarType with id ${id} not found`, 'CALENDAR_TYPE_NOT_FOUND', {
+    super(`CalendarType with id ${id} not found`, "CALENDAR_TYPE_NOT_FOUND", {
       ...context,
       calendarTypeId: id,
     });
@@ -35,7 +35,7 @@ export class CalendarTypeNotFoundError extends CalendarTypeException {
  */
 export class CalendarTypeAlreadyExistsError extends CalendarTypeException {
   constructor(value: string, message: string, context?: Record<string, any>) {
-    super(message, 'CALENDAR_TYPE_ALREADY_EXISTS', { ...context, value });
+    super(message, "CALENDAR_TYPE_ALREADY_EXISTS", { ...context, value });
   }
 }
 
@@ -46,7 +46,7 @@ export class CalendarTypeCodeConflictError extends CalendarTypeException {
   constructor(code: string, businessId: string, context?: Record<string, any>) {
     super(
       `CalendarType with code ${code} already exists in business ${businessId}`,
-      'CALENDAR_TYPE_CODE_CONFLICT',
+      "CALENDAR_TYPE_CODE_CONFLICT",
       { ...context, code, businessId },
     );
   }
@@ -57,7 +57,7 @@ export class CalendarTypeCodeConflictError extends CalendarTypeException {
  */
 export class CalendarValidationError extends CalendarTypeException {
   constructor(message: string, context?: Record<string, any>) {
-    super(message, 'CALENDAR_VALIDATION_ERROR', context);
+    super(message, "CALENDAR_VALIDATION_ERROR", context);
   }
 }
 
@@ -68,7 +68,7 @@ export class CalendarTypeBuiltInModificationError extends CalendarTypeException 
   constructor(id: string, context?: Record<string, any>) {
     super(
       `Cannot modify built-in CalendarType ${id}`,
-      'CALENDAR_TYPE_BUILTIN_MODIFICATION_ERROR',
+      "CALENDAR_TYPE_BUILTIN_MODIFICATION_ERROR",
       { ...context, calendarTypeId: id },
     );
   }

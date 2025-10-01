@@ -4,14 +4,14 @@
  * @version 1.0.0
  */
 
-import { Logger } from '@application/ports/logger.port';
-import { I18nService } from '@application/ports/i18n.port';
-import { INotificationRepository } from '@domain/repositories/notification.repository.interface';
-import { Notification } from '@domain/entities/notification.entity';
-import { NotificationChannel } from '@domain/value-objects/notification-channel.value-object';
-import { NotificationPriority } from '@domain/value-objects/notification-priority.value-object';
-import { NotificationStatus } from '@domain/value-objects/notification-status.value-object';
-import { NotificationException } from '@application/exceptions/notification.exceptions';
+import { Logger } from "@application/ports/logger.port";
+import { I18nService } from "@application/ports/i18n.port";
+import { INotificationRepository } from "@domain/repositories/notification.repository.interface";
+import { Notification } from "@domain/entities/notification.entity";
+import { NotificationChannel } from "@domain/value-objects/notification-channel.value-object";
+import { NotificationPriority } from "@domain/value-objects/notification-priority.value-object";
+import { NotificationStatus } from "@domain/value-objects/notification-status.value-object";
+import { NotificationException } from "@application/exceptions/notification.exceptions";
 
 /**
  * Interface pour les critères de recherche des notifications
@@ -36,7 +36,7 @@ export interface NotificationPagination {
   readonly page: number;
   readonly limit: number;
   readonly sortBy: string;
-  readonly sortOrder: 'asc' | 'desc';
+  readonly sortOrder: "asc" | "desc";
 }
 
 /**
@@ -90,7 +90,7 @@ export class ListNotificationsUseCase {
     this.validateRequest(request);
 
     // 📊 Log de l'opération
-    this.logger.info('Listing notifications', {
+    this.logger.info("Listing notifications", {
       requestingUserId: request.requestingUserId,
       filters: request.filters,
       pagination: request.pagination,
@@ -136,7 +136,7 @@ export class ListNotificationsUseCase {
       };
 
       // 📊 Log de succès
-      this.logger.info('Notifications listed successfully', {
+      this.logger.info("Notifications listed successfully", {
         totalFound: searchResult.total,
         returnedItems: searchResult.notifications.length,
         page: pagination.page,
@@ -151,9 +151,9 @@ export class ListNotificationsUseCase {
     } catch (error) {
       // 🚨 Log d'erreur
       const errorMessage =
-        error instanceof Error ? error.message : 'Unknown error';
+        error instanceof Error ? error.message : "Unknown error";
       this.logger.error(
-        'Failed to list notifications',
+        "Failed to list notifications",
         error instanceof Error ? error : undefined,
         {
           requestingUserId: request.requestingUserId,
@@ -166,9 +166,9 @@ export class ListNotificationsUseCase {
       }
 
       throw new NotificationException(
-        this.i18n.translate('errors.notifications.list_failed'),
-        'LIST_FAILED',
-        'errors.notifications.list_failed',
+        this.i18n.translate("errors.notifications.list_failed"),
+        "LIST_FAILED",
+        "errors.notifications.list_failed",
         { originalError: errorMessage },
       );
     }
@@ -183,9 +183,9 @@ export class ListNotificationsUseCase {
       request.requestingUserId.trim().length === 0
     ) {
       throw new NotificationException(
-        this.i18n.translate('errors.notifications.requesting_user_required'),
-        'VALIDATION_ERROR',
-        'errors.notifications.requesting_user_required',
+        this.i18n.translate("errors.notifications.requesting_user_required"),
+        "VALIDATION_ERROR",
+        "errors.notifications.requesting_user_required",
       );
     }
   }
@@ -210,8 +210,8 @@ export class ListNotificationsUseCase {
     return {
       page: pagination?.page || 1,
       limit: Math.min(pagination?.limit || 10, 100), // Max 100 items
-      sortBy: pagination?.sortBy || 'createdAt',
-      sortOrder: pagination?.sortOrder || 'desc',
+      sortBy: pagination?.sortBy || "createdAt",
+      sortOrder: pagination?.sortOrder || "desc",
     };
   }
 
@@ -221,45 +221,45 @@ export class ListNotificationsUseCase {
   private validatePagination(pagination: NotificationPagination): void {
     if (pagination.page < 1) {
       throw new NotificationException(
-        this.i18n.translate('errors.notifications.invalid_page'),
-        'VALIDATION_ERROR',
-        'errors.notifications.invalid_page',
+        this.i18n.translate("errors.notifications.invalid_page"),
+        "VALIDATION_ERROR",
+        "errors.notifications.invalid_page",
       );
     }
 
     if (pagination.limit < 1 || pagination.limit > 100) {
       throw new NotificationException(
-        this.i18n.translate('errors.notifications.invalid_limit'),
-        'VALIDATION_ERROR',
-        'errors.notifications.invalid_limit',
+        this.i18n.translate("errors.notifications.invalid_limit"),
+        "VALIDATION_ERROR",
+        "errors.notifications.invalid_limit",
       );
     }
 
     const validSortFields = [
-      'createdAt',
-      'updatedAt',
-      'sentAt',
-      'deliveredAt',
-      'readAt',
-      'priority',
-      'status',
-      'channel',
+      "createdAt",
+      "updatedAt",
+      "sentAt",
+      "deliveredAt",
+      "readAt",
+      "priority",
+      "status",
+      "channel",
     ];
 
     if (!validSortFields.includes(pagination.sortBy)) {
       throw new NotificationException(
-        this.i18n.translate('errors.notifications.invalid_sort_field'),
-        'VALIDATION_ERROR',
-        'errors.notifications.invalid_sort_field',
+        this.i18n.translate("errors.notifications.invalid_sort_field"),
+        "VALIDATION_ERROR",
+        "errors.notifications.invalid_sort_field",
         { allowedFields: validSortFields },
       );
     }
 
-    if (!['asc', 'desc'].includes(pagination.sortOrder)) {
+    if (!["asc", "desc"].includes(pagination.sortOrder)) {
       throw new NotificationException(
-        this.i18n.translate('errors.notifications.invalid_sort_order'),
-        'VALIDATION_ERROR',
-        'errors.notifications.invalid_sort_order',
+        this.i18n.translate("errors.notifications.invalid_sort_order"),
+        "VALIDATION_ERROR",
+        "errors.notifications.invalid_sort_order",
       );
     }
   }

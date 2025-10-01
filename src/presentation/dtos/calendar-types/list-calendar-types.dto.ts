@@ -1,4 +1,4 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiPropertyOptional } from "@nestjs/swagger";
 import {
   IsBoolean,
   IsIn,
@@ -8,7 +8,7 @@ import {
   Length,
   Max,
   Min,
-} from 'class-validator';
+} from "class-validator";
 
 /**
  * DTO pour la recherche paginée des types de calendrier
@@ -18,7 +18,7 @@ import {
  */
 export class ListCalendarTypesDto {
   @ApiPropertyOptional({
-    description: 'Page number for pagination',
+    description: "Page number for pagination",
     example: 1,
     minimum: 1,
     default: 1,
@@ -29,7 +29,7 @@ export class ListCalendarTypesDto {
   readonly page?: number = 1;
 
   @ApiPropertyOptional({
-    description: 'Number of items per page',
+    description: "Number of items per page",
     example: 10,
     minimum: 1,
     maximum: 100,
@@ -42,28 +42,28 @@ export class ListCalendarTypesDto {
   readonly limit?: number = 10;
 
   @ApiPropertyOptional({
-    description: 'Field to sort by',
-    example: 'name',
-    enum: ['name', 'code', 'createdAt', 'updatedAt'],
-    default: 'createdAt',
+    description: "Field to sort by",
+    example: "name",
+    enum: ["name", "code", "createdAt", "updatedAt"],
+    default: "createdAt",
   })
   @IsOptional()
-  @IsIn(['name', 'code', 'createdAt', 'updatedAt'])
-  readonly sortBy?: string = 'createdAt';
+  @IsIn(["name", "code", "createdAt", "updatedAt"])
+  readonly sortBy?: string = "createdAt";
 
   @ApiPropertyOptional({
-    description: 'Sort order',
-    example: 'asc',
-    enum: ['asc', 'desc'],
-    default: 'desc',
+    description: "Sort order",
+    example: "asc",
+    enum: ["asc", "desc"],
+    default: "desc",
   })
   @IsOptional()
-  @IsIn(['asc', 'desc'])
-  readonly sortOrder?: 'asc' | 'desc' = 'desc';
+  @IsIn(["asc", "desc"])
+  readonly sortOrder?: "asc" | "desc" = "desc";
 
   @ApiPropertyOptional({
-    description: 'Search term for name, code or description',
-    example: 'consultation',
+    description: "Search term for name, code or description",
+    example: "consultation",
     minLength: 1,
     maxLength: 100,
   })
@@ -73,7 +73,7 @@ export class ListCalendarTypesDto {
   readonly search?: string;
 
   @ApiPropertyOptional({
-    description: 'Filter by active status',
+    description: "Filter by active status",
     example: true,
   })
   @IsOptional()
@@ -81,7 +81,7 @@ export class ListCalendarTypesDto {
   readonly isActive?: boolean;
 
   @ApiPropertyOptional({
-    description: 'Filter by built-in status',
+    description: "Filter by built-in status",
     example: false,
   })
   @IsOptional()
@@ -89,8 +89,8 @@ export class ListCalendarTypesDto {
   readonly isBuiltIn?: boolean;
 
   @ApiPropertyOptional({
-    description: 'Filter by business ID',
-    example: '550e8400-e29b-41d4-a716-446655440000',
+    description: "Filter by business ID",
+    example: "550e8400-e29b-41d4-a716-446655440000",
   })
   @IsOptional()
   @IsString()

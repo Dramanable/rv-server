@@ -4,14 +4,14 @@
  * @version 1.0.0
  */
 
-import { Logger } from '@application/ports/logger.port';
-import { I18nService } from '@application/ports/i18n.port';
+import { Logger } from "@application/ports/logger.port";
+import { I18nService } from "@application/ports/i18n.port";
 import {
   INotificationRepository,
   NotificationStatistics,
   NotificationSearchCriteria,
-} from '@domain/repositories/notification.repository.interface';
-import { NotificationException } from '@application/exceptions/notification.exceptions';
+} from "@domain/repositories/notification.repository.interface";
+import { NotificationException } from "@application/exceptions/notification.exceptions";
 
 /**
  * Filtre de période pour les analytics
@@ -124,7 +124,7 @@ export class GetNotificationAnalyticsUseCase {
     this.validateRequest(request);
 
     // 📊 Log de l'opération
-    this.logger.info('Retrieving notification analytics', {
+    this.logger.info("Retrieving notification analytics", {
       requestingUserId: request.requestingUserId,
       businessId: request.businessId,
       recipientId: request.recipientId,
@@ -175,7 +175,7 @@ export class GetNotificationAnalyticsUseCase {
       };
 
       // 📊 Log de succès
-      this.logger.info('Notification analytics retrieved successfully', {
+      this.logger.info("Notification analytics retrieved successfully", {
         totalNotifications: basicStatistics.totalNotifications,
         deliveryRate: basicStatistics.deliveryRate,
         dateRange,
@@ -184,7 +184,7 @@ export class GetNotificationAnalyticsUseCase {
 
       // 🔍 Log d'audit pour traçabilité
       this.logger.audit(
-        'GET_NOTIFICATION_ANALYTICS',
+        "GET_NOTIFICATION_ANALYTICS",
         request.requestingUserId,
         {
           businessId: request.businessId,
@@ -199,9 +199,9 @@ export class GetNotificationAnalyticsUseCase {
     } catch (error) {
       // 🚨 Log d'erreur
       const errorMessage =
-        error instanceof Error ? error.message : 'Unknown error';
+        error instanceof Error ? error.message : "Unknown error";
       this.logger.error(
-        'Failed to retrieve notification analytics',
+        "Failed to retrieve notification analytics",
         error instanceof Error ? error : undefined,
         {
           requestingUserId: request.requestingUserId,
@@ -214,9 +214,9 @@ export class GetNotificationAnalyticsUseCase {
       }
 
       throw new NotificationException(
-        this.i18n.translate('errors.notifications.analytics_failed'),
-        'ANALYTICS_FAILED',
-        'errors.notifications.analytics_failed',
+        this.i18n.translate("errors.notifications.analytics_failed"),
+        "ANALYTICS_FAILED",
+        "errors.notifications.analytics_failed",
         { originalError: errorMessage },
       );
     }
@@ -231,9 +231,9 @@ export class GetNotificationAnalyticsUseCase {
       request.requestingUserId.trim().length === 0
     ) {
       throw new NotificationException(
-        this.i18n.translate('errors.notifications.requesting_user_required'),
-        'VALIDATION_ERROR',
-        'errors.notifications.requesting_user_required',
+        this.i18n.translate("errors.notifications.requesting_user_required"),
+        "VALIDATION_ERROR",
+        "errors.notifications.requesting_user_required",
       );
     }
 
@@ -241,9 +241,9 @@ export class GetNotificationAnalyticsUseCase {
     if (request.dateRange) {
       if (request.dateRange.from >= request.dateRange.to) {
         throw new NotificationException(
-          this.i18n.translate('errors.notifications.invalid_date_range'),
-          'VALIDATION_ERROR',
-          'errors.notifications.invalid_date_range',
+          this.i18n.translate("errors.notifications.invalid_date_range"),
+          "VALIDATION_ERROR",
+          "errors.notifications.invalid_date_range",
         );
       }
 
@@ -254,9 +254,9 @@ export class GetNotificationAnalyticsUseCase {
         oneYearInMs
       ) {
         throw new NotificationException(
-          this.i18n.translate('errors.notifications.date_range_too_large'),
-          'VALIDATION_ERROR',
-          'errors.notifications.date_range_too_large',
+          this.i18n.translate("errors.notifications.date_range_too_large"),
+          "VALIDATION_ERROR",
+          "errors.notifications.date_range_too_large",
         );
       }
     }
@@ -277,7 +277,7 @@ export class GetNotificationAnalyticsUseCase {
       // Les deux filtres ne peuvent pas être utilisés ensemble par un utilisateur normal
       // Seuls les admins peuvent faire des requêtes cross-business
       this.logger.warn(
-        'Analytics requested with both business and recipient filters',
+        "Analytics requested with both business and recipient filters",
         {
           requestingUserId: request.requestingUserId,
           businessId: request.businessId,
@@ -348,13 +348,13 @@ export class GetNotificationAnalyticsUseCase {
     dateRange: AnalyticsDateRange,
   ): Promise<readonly DayOfWeekAnalytics[]> {
     const dayNames = [
-      'Sunday',
-      'Monday',
-      'Tuesday',
-      'Wednesday',
-      'Thursday',
-      'Friday',
-      'Saturday',
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
     ];
     const dayOfWeekData: DayOfWeekAnalytics[] = [];
 

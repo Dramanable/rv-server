@@ -4,22 +4,22 @@
  * ✅ Créer un nouveau prospect commercial
  */
 
-import { Prospect } from '@domain/entities/prospect.entity';
-import { IProspectRepository } from '@domain/repositories/prospect.repository';
-import { BusinessSizeEnum } from '@domain/enums/business-size.enum';
-import { Logger } from '@application/ports/logger.port';
-import { I18nService } from '@application/ports/i18n.port';
-import { ISimplePermissionService } from '@application/ports/simple-permission.port';
+import { Prospect } from "@domain/entities/prospect.entity";
+import { IProspectRepository } from "@domain/repositories/prospect.repository";
+import { BusinessSizeEnum } from "@domain/enums/business-size.enum";
+import { Logger } from "@application/ports/logger.port";
+import { I18nService } from "@application/ports/i18n.port";
+import { ISimplePermissionService } from "@application/ports/simple-permission.port";
 import {
   ProspectValidationError,
   ProspectPermissionError,
   ProspectBusinessRuleError,
-} from '@domain/exceptions/prospect.exceptions';
+} from "@domain/exceptions/prospect.exceptions";
 import {
   PermissionAction,
   ResourceType,
-} from '@domain/entities/user-permission.entity';
-import { UserRole } from '@shared/enums/user-role.enum';
+} from "@domain/entities/user-permission.entity";
+import { UserRole } from "@shared/enums/user-role.enum";
 
 export interface CreateProspectRequest {
   readonly businessName: string;
@@ -74,7 +74,7 @@ export class CreateProspectSimpleUseCase {
   async execute(
     request: CreateProspectRequest,
   ): Promise<CreateProspectResponse> {
-    this.logger.info('Creating new prospect with simple permissions', {
+    this.logger.info("Creating new prospect with simple permissions", {
       businessName: request.businessName,
       contactEmail: request.contactEmail,
       requestingUserId: request.requestingUserId,
@@ -96,7 +96,7 @@ export class CreateProspectSimpleUseCase {
       const savedProspect = await this.prospectRepository.save(prospect);
 
       this.logger.info(
-        'Prospect created successfully with simple permissions',
+        "Prospect created successfully with simple permissions",
         {
           prospectId: savedProspect.getId().getValue(),
           businessName: request.businessName,
@@ -110,7 +110,7 @@ export class CreateProspectSimpleUseCase {
       return this.buildResponse(savedProspect);
     } catch (error) {
       const errorMessage =
-        error instanceof Error ? error.message : 'Unknown error';
+        error instanceof Error ? error.message : "Unknown error";
       this.logger.error(`Failed to create prospect: ${errorMessage}`);
 
       // Relancer l'erreur pour le gestionnaire global
@@ -124,7 +124,7 @@ export class CreateProspectSimpleUseCase {
   private async validatePermissions(
     request: CreateProspectRequest,
   ): Promise<void> {
-    console.log('🔐 Validateing permissions with simplified system:', {
+    console.log("🔐 Validateing permissions with simplified system:", {
       userId: request.requestingUserId,
       userRole: request.requestingUserRole,
       action: PermissionAction.CREATE,
@@ -141,10 +141,10 @@ export class CreateProspectSimpleUseCase {
         null, // Permission globale pour les prospects
       );
 
-    console.log('🔐 Create permission result:', hasCreatePermission);
+    console.log("🔐 Create permission result:", hasCreatePermission);
 
     if (!hasCreatePermission) {
-      this.logger.warn('Permission denied for creating prospect', {
+      this.logger.warn("Permission denied for creating prospect", {
         userId: request.requestingUserId,
         userRole: request.requestingUserRole,
         action: PermissionAction.CREATE,
@@ -153,7 +153,7 @@ export class CreateProspectSimpleUseCase {
 
       throw new ProspectPermissionError(
         request.requestingUserId,
-        'create prospect',
+        "create prospect",
       );
     }
 
@@ -173,7 +173,7 @@ export class CreateProspectSimpleUseCase {
       if (!canManage) {
         throw new ProspectPermissionError(
           request.requestingUserId,
-          'assign prospects to other sales reps',
+          "assign prospects to other sales reps",
         );
       }
     }
@@ -188,8 +188,8 @@ export class CreateProspectSimpleUseCase {
     // Valider le nom de l'entreprise
     if (!request.businessName || request.businessName.trim().length < 2) {
       throw new ProspectValidationError(
-        this.i18n.translate('prospect.validation.businessNameRequired'),
-        'BUSINESS_NAME_REQUIRED',
+        this.i18n.translate("prospect.validation.businessNameRequired"),
+        "BUSINESS_NAME_REQUIRED",
       );
     }
 
@@ -197,16 +197,16 @@ export class CreateProspectSimpleUseCase {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(request.contactEmail)) {
       throw new ProspectValidationError(
-        this.i18n.translate('prospect.validation.invalidEmail'),
-        'INVALID_EMAIL',
+        this.i18n.translate("prospect.validation.invalidEmail"),
+        "INVALID_EMAIL",
       );
     }
 
     // Valider la valeur estimée
     if (request.estimatedValue < 0) {
       throw new ProspectBusinessRuleError(
-        this.i18n.translate('prospect.business.invalidEstimatedValue'),
-        'INVALID_ESTIMATED_VALUE',
+        this.i18n.translate("prospect.business.invalidEstimatedValue"),
+        "INVALID_ESTIMATED_VALUE",
       );
     }
 
@@ -216,8 +216,8 @@ export class CreateProspectSimpleUseCase {
       !Object.values(BusinessSizeEnum).includes(request.businessSize)
     ) {
       throw new ProspectValidationError(
-        this.i18n.translate('prospect.validation.invalidBusinessSize'),
-        'INVALID_BUSINESS_SIZE',
+        this.i18n.translate("prospect.validation.invalidBusinessSize"),
+        "INVALID_BUSINESS_SIZE",
       );
     }
   }
@@ -233,7 +233,7 @@ export class CreateProspectSimpleUseCase {
       contactName: request.contactName.trim(),
       assignedSalesRep: request.assignedSalesRep || request.requestingUserId,
       estimatedValue: request.estimatedValue,
-      currency: request.currency || 'EUR',
+      currency: request.currency || "EUR",
       notes: request.notes?.trim(),
       source: request.source?.trim(),
       businessSize: request.businessSize,

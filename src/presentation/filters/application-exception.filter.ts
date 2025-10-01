@@ -5,8 +5,8 @@
  * en réponses HTTP appropriées avec contexte complet
  */
 
-import { ApplicationException } from '@application/exceptions/application.exceptions';
-import type { I18nService } from '@application/ports/i18n.port';
+import { ApplicationException } from "@application/exceptions/application.exceptions";
+import type { I18nService } from "@application/ports/i18n.port";
 import {
   ArgumentsHost,
   Catch,
@@ -14,9 +14,9 @@ import {
   HttpStatus,
   Inject,
   Logger,
-} from '@nestjs/common';
-import { TOKENS } from '@shared/constants/injection-tokens';
-import { Request, Response } from 'express';
+} from "@nestjs/common";
+import { TOKENS } from "@shared/constants/injection-tokens";
+import { Request, Response } from "express";
 
 @Catch(ApplicationException)
 export class ApplicationExceptionFilter implements ExceptionFilter {
@@ -50,7 +50,7 @@ export class ApplicationExceptionFilter implements ExceptionFilter {
         timestamp: new Date().toISOString(),
         path: request.url,
         correlationId: this.getCorrelationId(request),
-        ...(process.env.NODE_ENV === 'development' && {
+        ...(process.env.NODE_ENV === "development" && {
           applicationDetails: {
             context: exception.context,
             originalError: exception.message,
@@ -118,8 +118,8 @@ export class ApplicationExceptionFilter implements ExceptionFilter {
 
   private getCorrelationId(request: Request): string {
     return (
-      (request.headers['x-correlation-id'] as string) ||
-      (request.headers['x-request-id'] as string) ||
+      (request.headers["x-correlation-id"] as string) ||
+      (request.headers["x-request-id"] as string) ||
       `app-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
     );
   }
@@ -135,7 +135,7 @@ export class ApplicationExceptionFilter implements ExceptionFilter {
       context: exception.context,
       method: request.method,
       url: request.url,
-      userAgent: request.headers['user-agent'],
+      userAgent: request.headers["user-agent"],
       ip: request.ip,
       correlationId: this.getCorrelationId(request),
       httpStatus: status,

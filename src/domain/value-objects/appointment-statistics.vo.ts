@@ -5,7 +5,7 @@
  * Contient toutes les métriques calculées avec les règles business
  */
 
-import { DomainValidationError } from '../exceptions/domain.exceptions';
+import { DomainValidationError } from "../exceptions/domain.exceptions";
 
 export interface AppointmentStatisticsData {
   readonly totalAppointments: number;
@@ -94,34 +94,34 @@ export class AppointmentStatistics {
 
   private validateStatistics(data: AppointmentStatisticsData): void {
     if (data.totalAppointments < 0) {
-      throw new DomainValidationError('Total appointments cannot be negative');
+      throw new DomainValidationError("Total appointments cannot be negative");
     }
 
     if (data.confirmedAppointments < 0) {
       throw new DomainValidationError(
-        'Confirmed appointments cannot be negative',
+        "Confirmed appointments cannot be negative",
       );
     }
 
     if (data.canceledAppointments < 0) {
       throw new DomainValidationError(
-        'Canceled appointments cannot be negative',
+        "Canceled appointments cannot be negative",
       );
     }
 
     if (data.completedAppointments < 0) {
       throw new DomainValidationError(
-        'Completed appointments cannot be negative',
+        "Completed appointments cannot be negative",
       );
     }
 
     if (data.totalRevenue < 0) {
-      throw new DomainValidationError('Total revenue cannot be negative');
+      throw new DomainValidationError("Total revenue cannot be negative");
     }
 
     if (data.averageAppointmentValue < 0) {
       throw new DomainValidationError(
-        'Average appointment value cannot be negative',
+        "Average appointment value cannot be negative",
       );
     }
 
@@ -135,7 +135,7 @@ export class AppointmentStatistics {
 
     if (statusSum > data.totalAppointments) {
       throw new DomainValidationError(
-        'Sum of appointment statuses cannot exceed total appointments',
+        "Sum of appointment statuses cannot exceed total appointments",
       );
     }
   }

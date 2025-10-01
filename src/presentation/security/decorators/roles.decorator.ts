@@ -11,10 +11,10 @@
  * - Hiérarchie des rôles respectée
  */
 
-import { SetMetadata } from '@nestjs/common';
-import { UserRole } from '../../../shared/enums/user-role.enum';
+import { SetMetadata } from "@nestjs/common";
+import { UserRole } from "../../../shared/enums/user-role.enum";
 
-export const ROLES_KEY = 'roles';
+export const ROLES_KEY = "roles";
 
 /**
  * Décorateur pour spécifier les rôles autorisés à accéder à une route

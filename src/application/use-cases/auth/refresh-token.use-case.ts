@@ -4,12 +4,12 @@
  * Rafraîchissement des tokens d'accès via le refresh token
  */
 
-import { AppContextFactory } from '../../../shared/context/app-context';
-import { InvalidCredentialsError } from '../../exceptions/auth.exceptions';
-import type { AuthenticationService } from '../../ports/authentication.port';
-import type { IConfigService } from '../../ports/config.port';
-import type { I18nService } from '../../ports/i18n.port';
-import type { Logger } from '../../ports/logger.port';
+import { AppContextFactory } from "../../../shared/context/app-context";
+import { InvalidCredentialsError } from "../../exceptions/auth.exceptions";
+import type { AuthenticationService } from "../../ports/authentication.port";
+import type { IConfigService } from "../../ports/config.port";
+import type { I18nService } from "../../ports/i18n.port";
+import type { Logger } from "../../ports/logger.port";
 
 export interface RefreshTokenRequest {
   readonly refreshToken: string;
@@ -42,22 +42,22 @@ export class RefreshTokenUseCase {
   async execute(request: RefreshTokenRequest): Promise<RefreshTokenResponse> {
     // 📝 Contexte d'audit
     const context = AppContextFactory.create()
-      .operation('RefreshToken')
-      .clientInfo(request.ip || 'unknown', request.userAgent || 'unknown')
+      .operation("RefreshToken")
+      .clientInfo(request.ip || "unknown", request.userAgent || "unknown")
       .build();
 
-    this.logger.info(this.i18n.t('operations.auth.token_refresh_attempt'), {
+    this.logger.info(this.i18n.t("operations.auth.token_refresh_attempt"), {
       context: context.correlationId,
     });
 
     try {
       // 1. ✅ Valider le refresh token
       if (!request.refreshToken) {
-        this.logger.warn(this.i18n.t('operations.auth.no_refresh_token'), {
+        this.logger.warn(this.i18n.t("operations.auth.no_refresh_token"), {
           context: context.correlationId,
         });
         throw new InvalidCredentialsError(
-          this.i18n.t('errors.auth.no_refresh_token'),
+          this.i18n.t("errors.auth.no_refresh_token"),
         );
       }
 
@@ -72,7 +72,7 @@ export class RefreshTokenUseCase {
       const cookieSettings = this.prepareCookieSettings();
 
       // 4. 📊 Audit de succès
-      this.logger.info(this.i18n.t('operations.auth.token_refresh_success'), {
+      this.logger.info(this.i18n.t("operations.auth.token_refresh_success"), {
         context: context.correlationId,
       });
 
@@ -84,12 +84,12 @@ export class RefreshTokenUseCase {
           expiresIn,
         },
         cookieSettings,
-        message: this.i18n.t('success.auth.token_refreshed'),
+        message: this.i18n.t("success.auth.token_refreshed"),
       };
     } catch (error) {
       this.logger.error(
-        this.i18n.t('operations.auth.token_refresh_failed', {
-          error: error instanceof Error ? error.message : 'Unknown error',
+        this.i18n.t("operations.auth.token_refresh_failed", {
+          error: error instanceof Error ? error.message : "Unknown error",
         }),
         error instanceof Error ? error : undefined,
         { context: context.correlationId },
@@ -102,7 +102,7 @@ export class RefreshTokenUseCase {
    * 📊 Prépare les paramètres de cookies pour la couche Presentation
    * Les durées des cookies correspondent exactement aux durées des tokens JWT
    */
-  private prepareCookieSettings(): RefreshTokenResponse['cookieSettings'] {
+  private prepareCookieSettings(): RefreshTokenResponse["cookieSettings"] {
     const accessTokenExpirationSeconds =
       this.configService.getAccessTokenExpirationTime(); // seconds
     const refreshTokenExpirationDays =
@@ -117,7 +117,7 @@ export class RefreshTokenUseCase {
 
     this.logger.debug(
       `Cookie settings prepared - AccessToken: ${accessTokenExpirationSeconds}s, RefreshToken: ${refreshTokenExpirationDays}days`,
-      { operation: 'prepareCookieSettings' },
+      { operation: "prepareCookieSettings" },
     );
 
     return {

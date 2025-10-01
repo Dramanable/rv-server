@@ -5,8 +5,8 @@
  * Test de contrat d'interface avec mock
  */
 
-import { PasswordResetCode } from '../../../domain/entities/password-reset-code.entity';
-import { IPasswordResetCodeRepository } from '../../../domain/repositories/password-reset-code.repository';
+import { PasswordResetCode } from "../../../domain/entities/password-reset-code.entity";
+import { IPasswordResetCodeRepository } from "../../../domain/repositories/password-reset-code.repository";
 
 // Mock repository pour tester le contrat de l'interface réelle
 class MockPasswordResetCodeRepository implements IPasswordResetCodeRepository {
@@ -67,19 +67,19 @@ class MockPasswordResetCodeRepository implements IPasswordResetCodeRepository {
   }
 }
 
-describe('IPasswordResetCodeRepository Contract', () => {
+describe("IPasswordResetCodeRepository Contract", () => {
   let repository: IPasswordResetCodeRepository;
   let testCode: PasswordResetCode;
   let testUserId: string;
 
   beforeEach(() => {
     repository = new MockPasswordResetCodeRepository();
-    testUserId = 'user-123';
+    testUserId = "user-123";
     testCode = PasswordResetCode.create(testUserId);
   });
 
-  describe('save', () => {
-    it('should save a new password reset code', async () => {
+  describe("save", () => {
+    it("should save a new password reset code", async () => {
       // When
       await repository.save(testCode);
 
@@ -90,7 +90,7 @@ describe('IPasswordResetCodeRepository Contract', () => {
       expect(found?.userId).toBe(testUserId);
     });
 
-    it('should update existing password reset code', async () => {
+    it("should update existing password reset code", async () => {
       // Given
       await repository.save(testCode);
       testCode.markAsUsed();
@@ -104,8 +104,8 @@ describe('IPasswordResetCodeRepository Contract', () => {
     });
   });
 
-  describe('findByCode', () => {
-    it('should find existing code', async () => {
+  describe("findByCode", () => {
+    it("should find existing code", async () => {
       // Given
       await repository.save(testCode);
 
@@ -117,17 +117,17 @@ describe('IPasswordResetCodeRepository Contract', () => {
       expect(found?.code).toBe(testCode.code);
     });
 
-    it('should return null for non-existent code', async () => {
+    it("should return null for non-existent code", async () => {
       // When
-      const found = await repository.findByCode('9999');
+      const found = await repository.findByCode("9999");
 
       // Then
       expect(found).toBeNull();
     });
   });
 
-  describe('findValidCodesByUserId', () => {
-    it('should find valid codes for user', async () => {
+  describe("findValidCodesByUserId", () => {
+    it("should find valid codes for user", async () => {
       // Given
       const code1 = PasswordResetCode.create(testUserId);
       const code2 = PasswordResetCode.create(testUserId);
@@ -143,7 +143,7 @@ describe('IPasswordResetCodeRepository Contract', () => {
       expect(codes.every((c) => c.isValid)).toBe(true);
     });
 
-    it('should not return used codes', async () => {
+    it("should not return used codes", async () => {
       // Given
       const usedCode = PasswordResetCode.create(testUserId);
       const validCode = PasswordResetCode.create(testUserId);
@@ -160,7 +160,7 @@ describe('IPasswordResetCodeRepository Contract', () => {
       expect(codes[0].code).toBe(validCode.code);
     });
 
-    it('should not return expired codes', async () => {
+    it("should not return expired codes", async () => {
       // Given
       const expiredCode = PasswordResetCode.create(testUserId);
       const validCode = PasswordResetCode.create(testUserId);
@@ -177,17 +177,17 @@ describe('IPasswordResetCodeRepository Contract', () => {
       expect(codes[0].code).toBe(validCode.code);
     });
 
-    it('should return empty array for non-existent user', async () => {
+    it("should return empty array for non-existent user", async () => {
       // When
-      const codes = await repository.findValidCodesByUserId('non-existent');
+      const codes = await repository.findValidCodesByUserId("non-existent");
 
       // Then
       expect(codes).toHaveLength(0);
     });
   });
 
-  describe('invalidateUserCodes', () => {
-    it('should invalidate all valid codes for user', async () => {
+  describe("invalidateUserCodes", () => {
+    it("should invalidate all valid codes for user", async () => {
       // Given
       const code1 = PasswordResetCode.create(testUserId);
       const code2 = PasswordResetCode.create(testUserId);
@@ -202,10 +202,10 @@ describe('IPasswordResetCodeRepository Contract', () => {
       expect(codes).toHaveLength(0);
     });
 
-    it('should not affect other users codes', async () => {
+    it("should not affect other users codes", async () => {
       // Given
       const userCode = PasswordResetCode.create(testUserId);
-      const otherUserCode = PasswordResetCode.create('other-user');
+      const otherUserCode = PasswordResetCode.create("other-user");
       await repository.save(userCode);
       await repository.save(otherUserCode);
 
@@ -214,15 +214,15 @@ describe('IPasswordResetCodeRepository Contract', () => {
 
       // Then
       const userCodes = await repository.findValidCodesByUserId(testUserId);
-      const otherCodes = await repository.findValidCodesByUserId('other-user');
+      const otherCodes = await repository.findValidCodesByUserId("other-user");
 
       expect(userCodes).toHaveLength(0);
       expect(otherCodes).toHaveLength(1);
     });
   });
 
-  describe('markAsUsed', () => {
-    it('should mark code as used', async () => {
+  describe("markAsUsed", () => {
+    it("should mark code as used", async () => {
       // Given
       await repository.save(testCode);
 
@@ -234,18 +234,18 @@ describe('IPasswordResetCodeRepository Contract', () => {
       expect(found?.isUsed).toBe(true);
     });
 
-    it('should handle non-existent code gracefully', async () => {
+    it("should handle non-existent code gracefully", async () => {
       // When & Then
-      await expect(repository.markAsUsed('9999')).resolves.not.toThrow();
+      await expect(repository.markAsUsed("9999")).resolves.not.toThrow();
     });
   });
 
-  describe('deleteExpiredCodes', () => {
-    it('should delete expired codes and return count', async () => {
+  describe("deleteExpiredCodes", () => {
+    it("should delete expired codes and return count", async () => {
       // Given
       const validCode = PasswordResetCode.create(testUserId);
-      const expiredCode1 = PasswordResetCode.create('user-456');
-      const expiredCode2 = PasswordResetCode.create('user-789');
+      const expiredCode1 = PasswordResetCode.create("user-456");
+      const expiredCode2 = PasswordResetCode.create("user-789");
       (expiredCode1 as any)._expiresAt = new Date(Date.now() - 1000);
       (expiredCode2 as any)._expiresAt = new Date(Date.now() - 1000);
 
@@ -267,7 +267,7 @@ describe('IPasswordResetCodeRepository Contract', () => {
       expect(expired2Found).toBeNull();
     });
 
-    it('should return 0 when no expired codes', async () => {
+    it("should return 0 when no expired codes", async () => {
       // Given
       const validCode = PasswordResetCode.create(testUserId);
       await repository.save(validCode);
@@ -280,12 +280,12 @@ describe('IPasswordResetCodeRepository Contract', () => {
     });
   });
 
-  describe('deleteUserCodes', () => {
-    it('should delete all codes for user', async () => {
+  describe("deleteUserCodes", () => {
+    it("should delete all codes for user", async () => {
       // Given
       const code1 = PasswordResetCode.create(testUserId);
       const code2 = PasswordResetCode.create(testUserId);
-      const otherUserCode = PasswordResetCode.create('other-user');
+      const otherUserCode = PasswordResetCode.create("other-user");
 
       await repository.save(code1);
       await repository.save(code2);
@@ -305,8 +305,8 @@ describe('IPasswordResetCodeRepository Contract', () => {
     });
   });
 
-  describe('isCodeValid', () => {
-    it('should return true for valid code', async () => {
+  describe("isCodeValid", () => {
+    it("should return true for valid code", async () => {
       // Given
       await repository.save(testCode);
 
@@ -317,7 +317,7 @@ describe('IPasswordResetCodeRepository Contract', () => {
       expect(isValid).toBe(true);
     });
 
-    it('should return false for used code', async () => {
+    it("should return false for used code", async () => {
       // Given
       testCode.markAsUsed();
       await repository.save(testCode);
@@ -329,7 +329,7 @@ describe('IPasswordResetCodeRepository Contract', () => {
       expect(isValid).toBe(false);
     });
 
-    it('should return false for expired code', async () => {
+    it("should return false for expired code", async () => {
       // Given
       (testCode as any)._expiresAt = new Date(Date.now() - 1000);
       await repository.save(testCode);
@@ -341,9 +341,9 @@ describe('IPasswordResetCodeRepository Contract', () => {
       expect(isValid).toBe(false);
     });
 
-    it('should return false for non-existent code', async () => {
+    it("should return false for non-existent code", async () => {
       // When
-      const isValid = await repository.isCodeValid('9999');
+      const isValid = await repository.isCodeValid("9999");
 
       // Then
       expect(isValid).toBe(false);

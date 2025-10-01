@@ -5,10 +5,10 @@
  * Génère un token de session temporaire pour permettre le changement de mot de passe.
  */
 
-import { DomainValidationError } from '../../../domain/exceptions/domain.exceptions';
-import { IPasswordResetCodeRepository } from '../../../domain/repositories/password-reset-code.repository';
-import { UserRepository } from '../../../domain/repositories/user.repository.interface';
-import { AuthenticationService } from '../../ports/authentication.port';
+import { DomainValidationError } from "../../../domain/exceptions/domain.exceptions";
+import { IPasswordResetCodeRepository } from "../../../domain/repositories/password-reset-code.repository";
+import { UserRepository } from "../../../domain/repositories/user.repository.interface";
+import { AuthenticationService } from "../../ports/authentication.port";
 
 export interface VerifyPasswordResetCodeCommand {
   code: string;
@@ -57,7 +57,7 @@ export class VerifyPasswordResetCodeUseCase {
 
       if (!resetCode) {
         await this.simulateConstantTime(startTime);
-        return this.createFailureResponse('Code invalide ou expiré');
+        return this.createFailureResponse("Code invalide ou expiré");
       }
 
       // Vérifier si le code est valide (non expiré et non utilisé)
@@ -66,24 +66,24 @@ export class VerifyPasswordResetCodeUseCase {
 
         if (resetCode.isExpired) {
           return this.createFailureResponse(
-            'Code expiré. Demandez un nouveau code de réinitialisation',
+            "Code expiré. Demandez un nouveau code de réinitialisation",
           );
         }
 
         if (resetCode.isUsed) {
           return this.createFailureResponse(
-            'Code déjà utilisé. Demandez un nouveau code de réinitialisation',
+            "Code déjà utilisé. Demandez un nouveau code de réinitialisation",
           );
         }
 
-        return this.createFailureResponse('Code invalide');
+        return this.createFailureResponse("Code invalide");
       }
 
       // Vérifier que l'utilisateur existe
       const user = await this.userRepository.findById(resetCode.userId);
       if (!user) {
         await this.simulateConstantTime(startTime);
-        return this.createFailureResponse('Utilisateur introuvable');
+        return this.createFailureResponse("Utilisateur introuvable");
       }
 
       // Générer le token de session de réinitialisation
@@ -99,13 +99,13 @@ export class VerifyPasswordResetCodeUseCase {
       return {
         success: true,
         message:
-          'Code vérifié avec succès. Vous pouvez maintenant définir votre nouveau mot de passe',
+          "Code vérifié avec succès. Vous pouvez maintenant définir votre nouveau mot de passe",
         sessionToken,
         userId: user.id,
         expiresIn: VerifyPasswordResetCodeUseCase.SESSION_DURATION,
         remainingTimeMinutes: resetCode.remainingTimeInMinutes,
         security: {
-          sessionType: 'password-reset',
+          sessionType: "password-reset",
           maxAttempts: VerifyPasswordResetCodeUseCase.MAX_ATTEMPTS,
           lockoutDuration: VerifyPasswordResetCodeUseCase.LOCKOUT_DURATION,
         },
@@ -115,19 +115,19 @@ export class VerifyPasswordResetCodeUseCase {
       return {
         success: false,
         message:
-          'Une erreur technique est survenue. Veuillez réessayer plus tard',
+          "Une erreur technique est survenue. Veuillez réessayer plus tard",
         attemptsRemaining: VerifyPasswordResetCodeUseCase.MAX_ATTEMPTS - 1,
       };
     }
   }
 
   private validateCode(code: string): void {
-    if (!code || typeof code !== 'string') {
-      throw new DomainValidationError('Code is required');
+    if (!code || typeof code !== "string") {
+      throw new DomainValidationError("Code is required");
     }
 
     if (code.length !== 4 || !/^\d{4}$/.test(code)) {
-      throw new DomainValidationError('Code must be exactly 4 digits');
+      throw new DomainValidationError("Code must be exactly 4 digits");
     }
   }
 
@@ -139,7 +139,7 @@ export class VerifyPasswordResetCodeUseCase {
       message,
       attemptsRemaining: VerifyPasswordResetCodeUseCase.MAX_ATTEMPTS - 1,
       security: {
-        sessionType: 'password-reset',
+        sessionType: "password-reset",
         maxAttempts: VerifyPasswordResetCodeUseCase.MAX_ATTEMPTS,
         lockoutDuration: VerifyPasswordResetCodeUseCase.LOCKOUT_DURATION,
       },
@@ -154,7 +154,7 @@ export class VerifyPasswordResetCodeUseCase {
     targetDuration: number = 10,
   ): Promise<void> {
     // En mode test, on skip la simulation de timing
-    if (process.env.NODE_ENV === 'test') {
+    if (process.env.NODE_ENV === "test") {
       return;
     }
 

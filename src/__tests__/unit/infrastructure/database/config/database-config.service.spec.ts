@@ -4,8 +4,8 @@
  * Tests pour vérifier la configuration multi-database
  */
 
-describe('DatabaseConfigService', () => {
-  it('should be tested', () => {
+describe("DatabaseConfigService", () => {
+  it("should be tested", () => {
     expect(true).toBe(true);
   });
 });

@@ -4,26 +4,26 @@
  * @description Tests unitaires pour l'entité Professional suivant la Clean Architecture
  */
 
-import { Professional } from '@domain/entities/professional.entity';
-import { ProfessionalValidationError } from '@domain/exceptions/professional.exceptions';
-import { BusinessId } from '@domain/value-objects/business-id.value-object';
-import { Email } from '@domain/value-objects/email.vo';
+import { Professional } from "@domain/entities/professional.entity";
+import { ProfessionalValidationError } from "@domain/exceptions/professional.exceptions";
+import { BusinessId } from "@domain/value-objects/business-id.value-object";
+import { Email } from "@domain/value-objects/email.vo";
 
-describe('Professional Entity - TDD Simple', () => {
+describe("Professional Entity - TDD Simple", () => {
   // ✅ Test Data Factory
   const createValidProfessionalData = () => ({
     businessId: BusinessId.generate(),
-    firstName: 'Dr. Jean',
-    lastName: 'Dupont',
-    email: Email.create('jean.dupont@example.com'),
-    speciality: 'Médecine générale',
-    licenseNumber: 'ORDRE-123456',
-    phoneNumber: '+33123456789',
-    createdBy: 'system-test-user-id',
+    firstName: "Dr. Jean",
+    lastName: "Dupont",
+    email: Email.create("jean.dupont@example.com"),
+    speciality: "Médecine générale",
+    licenseNumber: "ORDRE-123456",
+    phoneNumber: "+33123456789",
+    createdBy: "system-test-user-id",
   });
 
-  describe('🔴 RED - Professional Creation', () => {
-    it('should create a professional with valid data', () => {
+  describe("🔴 RED - Professional Creation", () => {
+    it("should create a professional with valid data", () => {
       // Given
       const data = createValidProfessionalData();
 
@@ -47,9 +47,9 @@ describe('Professional Entity - TDD Simple', () => {
       expect(professional.getUpdatedAt()).toBeInstanceOf(Date);
     });
 
-    it('should throw error for empty first name', () => {
+    it("should throw error for empty first name", () => {
       // Given
-      const data = { ...createValidProfessionalData(), firstName: '' };
+      const data = { ...createValidProfessionalData(), firstName: "" };
 
       // When/Then
       expect(() => Professional.create(data)).toThrow(
@@ -57,9 +57,9 @@ describe('Professional Entity - TDD Simple', () => {
       );
     });
 
-    it('should throw error for empty last name', () => {
+    it("should throw error for empty last name", () => {
       // Given
-      const data = { ...createValidProfessionalData(), lastName: '' };
+      const data = { ...createValidProfessionalData(), lastName: "" };
 
       // When/Then
       expect(() => Professional.create(data)).toThrow(
@@ -67,9 +67,9 @@ describe('Professional Entity - TDD Simple', () => {
       );
     });
 
-    it('should throw error for empty speciality', () => {
+    it("should throw error for empty speciality", () => {
       // Given
-      const data = { ...createValidProfessionalData(), speciality: '' };
+      const data = { ...createValidProfessionalData(), speciality: "" };
 
       // When/Then
       expect(() => Professional.create(data)).toThrow(
@@ -77,9 +77,9 @@ describe('Professional Entity - TDD Simple', () => {
       );
     });
 
-    it('should throw error for empty license number', () => {
+    it("should throw error for empty license number", () => {
       // Given
-      const data = { ...createValidProfessionalData(), licenseNumber: '' };
+      const data = { ...createValidProfessionalData(), licenseNumber: "" };
 
       // When/Then
       expect(() => Professional.create(data)).toThrow(
@@ -88,7 +88,7 @@ describe('Professional Entity - TDD Simple', () => {
     });
   });
 
-  describe('🔴 RED - Professional Business Rules', () => {
+  describe("🔴 RED - Professional Business Rules", () => {
     let professional: Professional;
 
     beforeEach(() => {
@@ -96,51 +96,51 @@ describe('Professional Entity - TDD Simple', () => {
       professional = Professional.create(data);
     });
 
-    it('should activate professional correctly', () => {
+    it("should activate professional correctly", () => {
       // Given
-      professional.deactivate('test-user-id');
+      professional.deactivate("test-user-id");
       expect(professional.isActive()).toBe(false);
 
       // When
-      professional.activate('test-user-id');
+      professional.activate("test-user-id");
 
       // Then
       expect(professional.isActive()).toBe(true);
-      expect(professional.getUpdatedBy()).toBe('test-user-id');
+      expect(professional.getUpdatedBy()).toBe("test-user-id");
     });
 
-    it('should deactivate professional correctly', () => {
+    it("should deactivate professional correctly", () => {
       // Given
       expect(professional.isActive()).toBe(true);
 
       // When
-      professional.deactivate('test-user-id');
+      professional.deactivate("test-user-id");
 
       // Then
       expect(professional.isActive()).toBe(false);
-      expect(professional.getUpdatedBy()).toBe('test-user-id');
+      expect(professional.getUpdatedBy()).toBe("test-user-id");
     });
 
-    it('should verify professional license', () => {
+    it("should verify professional license", () => {
       // Given
       expect(professional.isVerified()).toBe(false);
 
       // When
-      professional.verifyLicense('admin-user-id');
+      professional.verifyLicense("admin-user-id");
 
       // Then
       expect(professional.isVerified()).toBe(true);
-      expect(professional.getUpdatedBy()).toBe('admin-user-id');
+      expect(professional.getUpdatedBy()).toBe("admin-user-id");
     });
 
-    it('should update professional information', () => {
+    it("should update professional information", () => {
       // Given
       const updateData = {
-        firstName: 'Dr. Marie',
-        lastName: 'Martin',
-        speciality: 'Cardiologie',
-        phoneNumber: '+33987654321',
-        updatedBy: 'update-user-id',
+        firstName: "Dr. Marie",
+        lastName: "Martin",
+        speciality: "Cardiologie",
+        phoneNumber: "+33987654321",
+        updatedBy: "update-user-id",
       };
 
       // When
@@ -154,7 +154,7 @@ describe('Professional Entity - TDD Simple', () => {
       expect(professional.getUpdatedBy()).toBe(updateData.updatedBy);
     });
 
-    it('should check if professional belongs to business', () => {
+    it("should check if professional belongs to business", () => {
       // Given
       const businessId = professional.getBusinessId();
       const otherBusinessId = BusinessId.generate();
@@ -164,33 +164,33 @@ describe('Professional Entity - TDD Simple', () => {
       expect(professional.belongsToBusiness(otherBusinessId)).toBe(false);
     });
 
-    it('should provide professional full name', () => {
+    it("should provide professional full name", () => {
       // When
       const fullName = professional.getFullName();
 
       // Then
-      expect(fullName).toBe('Dr. Jean Dupont');
+      expect(fullName).toBe("Dr. Jean Dupont");
     });
   });
 
-  describe('🔴 RED - Professional Validation', () => {
-    it('should validate license number format', () => {
+  describe("🔴 RED - Professional Validation", () => {
+    it("should validate license number format", () => {
       // Given
       const data = {
         ...createValidProfessionalData(),
-        licenseNumber: 'invalid',
+        licenseNumber: "invalid",
       };
 
       // When/Then - Doit accepter différents formats de numéro de licence
       expect(() => Professional.create(data)).not.toThrow();
     });
 
-    it('should validate phone number format', () => {
+    it("should validate phone number format", () => {
       // Given
       const validPhoneNumbers = [
-        '+33123456789',
-        '+1-555-123-4567',
-        '0123456789',
+        "+33123456789",
+        "+1-555-123-4567",
+        "0123456789",
       ];
 
       validPhoneNumbers.forEach((phoneNumber) => {
@@ -203,8 +203,8 @@ describe('Professional Entity - TDD Simple', () => {
     });
   });
 
-  describe('🔴 RED - Professional Equality and Serialization', () => {
-    it('should have meaningful string representation', () => {
+  describe("🔴 RED - Professional Equality and Serialization", () => {
+    it("should have meaningful string representation", () => {
       // Given
       const data = createValidProfessionalData();
       const professional = Professional.create(data);
@@ -213,13 +213,13 @@ describe('Professional Entity - TDD Simple', () => {
       const stringRepresentation = professional.toString();
 
       // Then
-      expect(stringRepresentation).toContain('Professional');
+      expect(stringRepresentation).toContain("Professional");
       expect(stringRepresentation).toContain(professional.getId().getValue());
-      expect(stringRepresentation).toContain('Dr. Jean Dupont');
-      expect(stringRepresentation).toContain('ACTIVE');
+      expect(stringRepresentation).toContain("Dr. Jean Dupont");
+      expect(stringRepresentation).toContain("ACTIVE");
     });
 
-    it('should serialize to JSON correctly', () => {
+    it("should serialize to JSON correctly", () => {
       // Given
       const data = createValidProfessionalData();
       const professional = Professional.create(data);
@@ -247,8 +247,8 @@ describe('Professional Entity - TDD Simple', () => {
     });
   });
 
-  describe('🔴 RED - Professional Reconstruction', () => {
-    it('should reconstruct professional from stored data', () => {
+  describe("🔴 RED - Professional Reconstruction", () => {
+    it("should reconstruct professional from stored data", () => {
       // Given
       const originalData = createValidProfessionalData();
       const original = Professional.create(originalData);

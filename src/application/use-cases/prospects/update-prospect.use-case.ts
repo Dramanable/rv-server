@@ -4,22 +4,22 @@
  * ✅ Mettre à jour un prospect avec validation complète
  */
 
-import { Prospect } from '@domain/entities/prospect.entity';
-import { ProspectId } from '@domain/value-objects/prospect-id.value-object';
-import { ProspectStatus } from '@domain/value-objects/prospect-status.value-object';
-import { UserId } from '@domain/value-objects/user-id.value-object';
-import { Email } from '@domain/value-objects/email.value-object';
-import { Phone } from '@domain/value-objects/phone.value-object';
-import { BusinessSize } from '@domain/enums/business-size.enum';
-import { IProspectRepository } from '@domain/repositories/prospect.repository';
-import { Logger } from '@application/ports/logger.port';
-import { I18nService } from '@application/ports/i18n.port';
-import { IPermissionService } from '@application/ports/permission.port';
+import { Prospect } from "@domain/entities/prospect.entity";
+import { ProspectId } from "@domain/value-objects/prospect-id.value-object";
+import { ProspectStatus } from "@domain/value-objects/prospect-status.value-object";
+import { UserId } from "@domain/value-objects/user-id.value-object";
+import { Email } from "@domain/value-objects/email.value-object";
+import { Phone } from "@domain/value-objects/phone.value-object";
+import { BusinessSize } from "@domain/enums/business-size.enum";
+import { IProspectRepository } from "@domain/repositories/prospect.repository";
+import { Logger } from "@application/ports/logger.port";
+import { I18nService } from "@application/ports/i18n.port";
+import { IPermissionService } from "@application/ports/permission.port";
 import {
   ProspectNotFoundError,
   ProspectPermissionError,
   ProspectValidationError,
-} from '@domain/exceptions/prospect.exceptions';
+} from "@domain/exceptions/prospect.exceptions";
 
 export interface UpdateProspectRequest {
   readonly prospectId: string;
@@ -84,7 +84,7 @@ export class UpdateProspectUseCase {
   async execute(
     request: UpdateProspectRequest,
   ): Promise<UpdateProspectResponse> {
-    this.logger.info('Updating prospect', {
+    this.logger.info("Updating prospect", {
       prospectId: request.prospectId,
       requestingUserId: request.requestingUserId,
       correlationId: request.correlationId,
@@ -115,7 +115,7 @@ export class UpdateProspectUseCase {
       // 💾 Sauvegarde
       const savedProspect = await this.prospectRepository.save(updatedProspect);
 
-      this.logger.info('Prospect updated successfully', {
+      this.logger.info("Prospect updated successfully", {
         prospectId: request.prospectId,
         businessName: savedProspect.getBusinessName(),
         requestingUserId: request.requestingUserId,
@@ -125,7 +125,7 @@ export class UpdateProspectUseCase {
       return this.buildResponse(savedProspect);
     } catch (error) {
       this.logger.error(
-        'Failed to update prospect',
+        "Failed to update prospect",
         error instanceof Error ? error : new Error(String(error)),
         {
           prospectId: request.prospectId,
@@ -145,13 +145,13 @@ export class UpdateProspectUseCase {
   ): Promise<void> {
     const hasPermission = await this.permissionService.hasPermission(
       request.requestingUserId,
-      'MANAGE_PROSPECTS',
+      "MANAGE_PROSPECTS",
     );
 
     if (!hasPermission) {
       throw new ProspectPermissionError(
         request.requestingUserId,
-        'update prospects',
+        "update prospects",
       );
     }
   }
@@ -165,7 +165,7 @@ export class UpdateProspectUseCase {
   ): Promise<void> {
     const canManageAllProspects = await this.permissionService.hasPermission(
       request.requestingUserId,
-      'MANAGE_ALL_PROSPECTS',
+      "MANAGE_ALL_PROSPECTS",
     );
 
     if (!canManageAllProspects) {
@@ -175,7 +175,7 @@ export class UpdateProspectUseCase {
       ) {
         throw new ProspectPermissionError(
           request.requestingUserId,
-          'update this prospect (not assigned to you)',
+          "update this prospect (not assigned to you)",
         );
       }
 
@@ -186,7 +186,7 @@ export class UpdateProspectUseCase {
       ) {
         throw new ProspectPermissionError(
           request.requestingUserId,
-          'reassign prospect to another sales representative',
+          "reassign prospect to another sales representative",
         );
       }
     }
