@@ -10,18 +10,20 @@
  * - Les autres rôles ont des permissions limitées
  */
 
-import { Injectable } from '@nestjs/common';
-import { Logger } from '@application/ports/logger.port';
-import { I18nService } from '@application/ports/i18n.port';
-import { ISimplePermissionService } from '@application/ports/simple-permission.port';
-import { UserRole } from '@shared/enums/user-role.enum';
-import { PermissionServiceError } from '@infrastructure/exceptions/infrastructure.exceptions';
+import { Injectable } from "@nestjs/common";
+import { Logger } from "@application/ports/logger.port";
+import { I18nService } from "@application/ports/i18n.port";
+import { ISimplePermissionService } from "@application/ports/simple-permission.port";
+import { UserRole } from "@shared/enums/user-role.enum";
+import { Permission } from "@shared/enums/permission.enum";
+import { PermissionServiceError } from "@infrastructure/exceptions/infrastructure.exceptions";
 
 @Injectable()
 export class SimplePermissionService implements ISimplePermissionService {
   constructor(
     private readonly logger: Logger,
     private readonly i18n: I18nService,
+    private readonly userRepository: any, // À corriger avec le bon type
   ) {}
 
   /**
@@ -36,7 +38,7 @@ export class SimplePermissionService implements ISimplePermissionService {
     businessId?: string | null,
   ): Promise<boolean> {
     try {
-      console.log('🔥 SIMPLE PERMISSIONS - Checking permission', {
+      console.log("🔥 SIMPLE PERMISSIONS - Checking permission", {
         userId,
         userRole,
         action,
@@ -48,41 +50,41 @@ export class SimplePermissionService implements ISimplePermissionService {
       switch (userRole) {
         case UserRole.SUPER_ADMIN:
         case UserRole.PLATFORM_ADMIN:
-          console.log('🔥 SIMPLE PERMISSIONS - SUPER/PLATFORM ADMIN - GRANTED');
+          console.log("🔥 SIMPLE PERMISSIONS - SUPER/PLATFORM ADMIN - GRANTED");
           return true; // Peut tout faire
 
         case UserRole.BUSINESS_OWNER:
           // Peut gérer les prospects de son business
           if (
-            (resource === 'PROSPECT' && permission === 'READ_PROSPECT') ||
-            permission === 'LIST_PROSPECTS'
+            (resource === "PROSPECT" && action === "READ_PROSPECT") ||
+            action === "LIST_PROSPECTS"
           ) {
             console.log(
-              '🔥 SIMPLE PERMISSIONS - BUSINESS_OWNER prospect permission - GRANTED',
+              "🔥 SIMPLE PERMISSIONS - BUSINESS_OWNER prospect permission - GRANTED",
             );
             return true;
           }
           break;
 
         default:
-          console.log('🔥 SIMPLE PERMISSIONS - Other role - DENIED', {
+          console.log("🔥 SIMPLE PERMISSIONS - Other role - DENIED", {
             userRole,
           });
           return false;
       }
 
-      console.log('🔥 SIMPLE PERMISSIONS - Permission denied', {
+      console.log("🔥 SIMPLE PERMISSIONS - Permission denied", {
         userId,
         userRole,
-        permission,
+        action,
       });
       return false;
     } catch (error) {
-      console.error('🔥 SIMPLE PERMISSIONS - Error', error);
-      this.logger.error('Error checking permission', error as Error, {
+      console.error("🔥 SIMPLE PERMISSIONS - Error", error);
+      this.logger.error("Error checking permission", error as Error, {
         userId,
-        permission,
-        context,
+        action,
+        businessId,
       });
       return false; // Fail closed
     }
@@ -121,10 +123,22 @@ export class SimplePermissionService implements ISimplePermissionService {
     permission: Permission | string,
     context?: Record<string, unknown>,
   ): Promise<void> {
-    const hasPermission = await this.hasPermission(userId, permission, context);
+    // Get user to extract role
+    const user = await this.userRepository.findById(userId);
+    if (!user) {
+      throw new PermissionServiceError(`User ${userId} not found`);
+    }
+
+    const hasPermission = await this.hasPermission(
+      userId,
+      user.role,
+      permission,
+      "resource",
+      context?.businessId as string,
+    );
 
     if (!hasPermission) {
-      const errorMessage = this.i18n.translate('permission.denied', {
+      const errorMessage = this.i18n.translate("permission.denied", {
         permission,
         userId,
       });
@@ -160,8 +174,8 @@ export class SimplePermissionService implements ISimplePermissionService {
       return Object.values(Permission);
     }
 
-    // Admin a les permissions de base
-    if (userRole === UserRole.ADMIN) {
+    // Business Admin a les permissions de base
+    if (userRole === UserRole.BUSINESS_ADMIN) {
       return [
         Permission.CREATE_PROSPECT,
         Permission.READ_PROSPECT,
@@ -202,8 +216,20 @@ export class SimplePermissionService implements ISimplePermissionService {
       departmentId?: string;
     },
   ): Promise<boolean> {
+    // Get user to extract role
+    const user = await this.userRepository.findById(userId);
+    if (!user) {
+      return false;
+    }
+
     // Pour l'instant, même logique que hasPermission
-    return this.hasPermission(userId, permission, businessContext);
+    return this.hasPermission(
+      userId,
+      user.role,
+      permission,
+      "resource",
+      businessContext.businessId,
+    );
   }
 
   /**

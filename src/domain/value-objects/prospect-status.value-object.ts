@@ -4,20 +4,20 @@
  * ✅ Représente le statut d'un prospect dans le pipeline commercial
  */
 
-import { ProspectValidationError } from '@domain/exceptions/prospect.exceptions';
+import { ProspectValidationError } from "@domain/exceptions/prospect.exceptions";
 
 export enum ProspectStatusEnum {
-  LEAD = 'LEAD', // 🆕 Nouveau lead
-  CONTACTED = 'CONTACTED', // 📞 Contact établi
-  QUALIFIED = 'QUALIFIED', // ✅ Prospect qualifié
-  DEMO_SCHEDULED = 'DEMO_SCHEDULED', // 📅 Démo planifiée
-  DEMO_COMPLETED = 'DEMO_COMPLETED', // ✅ Démo réalisée
-  PROPOSAL_SENT = 'PROPOSAL_SENT', // 📋 Proposition envoyée
-  NEGOTIATION = 'NEGOTIATION', // 💬 Négociation en cours
-  CLOSED_WON = 'CLOSED_WON', // 🎉 Gagné (converti en client)
-  CLOSED_LOST = 'CLOSED_LOST', // ❌ Perdu
-  ON_HOLD = 'ON_HOLD', // ⏸️ En attente
-  NURTURING = 'NURTURING', // 🌱 En maturation
+  LEAD = "LEAD", // 🆕 Nouveau lead
+  CONTACTED = "CONTACTED", // 📞 Contact établi
+  QUALIFIED = "QUALIFIED", // ✅ Prospect qualifié
+  DEMO_SCHEDULED = "DEMO_SCHEDULED", // 📅 Démo planifiée
+  DEMO_COMPLETED = "DEMO_COMPLETED", // ✅ Démo réalisée
+  PROPOSAL_SENT = "PROPOSAL_SENT", // 📋 Proposition envoyée
+  NEGOTIATION = "NEGOTIATION", // 💬 Négociation en cours
+  CLOSED_WON = "CLOSED_WON", // 🎉 Gagné (converti en client)
+  CLOSED_LOST = "CLOSED_LOST", // ❌ Perdu
+  ON_HOLD = "ON_HOLD", // ⏸️ En attente
+  NURTURING = "NURTURING", // 🌱 En maturation
 }
 
 export class ProspectStatus {
@@ -73,8 +73,9 @@ export class ProspectStatus {
   }
 
   static fromString(value: string): ProspectStatus {
+    const upperValue = value.toUpperCase() as ProspectStatusEnum;
     const enumValue = Object.values(ProspectStatusEnum).find(
-      (status) => status === value.toUpperCase(),
+      (status) => status === upperValue,
     );
 
     if (!enumValue) {
@@ -237,20 +238,20 @@ export class ProspectStatus {
    */
   getColor(): string {
     const colors: Record<ProspectStatusEnum, string> = {
-      [ProspectStatusEnum.LEAD]: '#6B7280', // Gris
-      [ProspectStatusEnum.CONTACTED]: '#3B82F6', // Bleu
-      [ProspectStatusEnum.QUALIFIED]: '#8B5CF6', // Violet
-      [ProspectStatusEnum.DEMO_SCHEDULED]: '#F59E0B', // Orange
-      [ProspectStatusEnum.DEMO_COMPLETED]: '#10B981', // Vert clair
-      [ProspectStatusEnum.PROPOSAL_SENT]: '#06B6D4', // Cyan
-      [ProspectStatusEnum.NEGOTIATION]: '#F97316', // Orange foncé
-      [ProspectStatusEnum.CLOSED_WON]: '#059669', // Vert foncé
-      [ProspectStatusEnum.CLOSED_LOST]: '#DC2626', // Rouge
-      [ProspectStatusEnum.ON_HOLD]: '#9CA3AF', // Gris clair
-      [ProspectStatusEnum.NURTURING]: '#84CC16', // Lime
+      [ProspectStatusEnum.LEAD]: "#6B7280", // Gris
+      [ProspectStatusEnum.CONTACTED]: "#3B82F6", // Bleu
+      [ProspectStatusEnum.QUALIFIED]: "#8B5CF6", // Violet
+      [ProspectStatusEnum.DEMO_SCHEDULED]: "#F59E0B", // Orange
+      [ProspectStatusEnum.DEMO_COMPLETED]: "#10B981", // Vert clair
+      [ProspectStatusEnum.PROPOSAL_SENT]: "#06B6D4", // Cyan
+      [ProspectStatusEnum.NEGOTIATION]: "#F97316", // Orange foncé
+      [ProspectStatusEnum.CLOSED_WON]: "#059669", // Vert foncé
+      [ProspectStatusEnum.CLOSED_LOST]: "#DC2626", // Rouge
+      [ProspectStatusEnum.ON_HOLD]: "#9CA3AF", // Gris clair
+      [ProspectStatusEnum.NURTURING]: "#84CC16", // Lime
     };
 
-    return colors[this._value] || '#6B7280';
+    return colors[this._value] || "#6B7280";
   }
 
   /**
@@ -258,17 +259,17 @@ export class ProspectStatus {
    */
   getLabel(): string {
     const labels: Record<ProspectStatusEnum, string> = {
-      [ProspectStatusEnum.LEAD]: 'Nouveau lead',
-      [ProspectStatusEnum.CONTACTED]: 'Contacté',
-      [ProspectStatusEnum.QUALIFIED]: 'Qualifié',
-      [ProspectStatusEnum.DEMO_SCHEDULED]: 'Démo planifiée',
-      [ProspectStatusEnum.DEMO_COMPLETED]: 'Démo réalisée',
-      [ProspectStatusEnum.PROPOSAL_SENT]: 'Proposition envoyée',
-      [ProspectStatusEnum.NEGOTIATION]: 'Négociation',
-      [ProspectStatusEnum.CLOSED_WON]: 'Gagné',
-      [ProspectStatusEnum.CLOSED_LOST]: 'Perdu',
-      [ProspectStatusEnum.ON_HOLD]: 'En attente',
-      [ProspectStatusEnum.NURTURING]: 'En maturation',
+      [ProspectStatusEnum.LEAD]: "Nouveau lead",
+      [ProspectStatusEnum.CONTACTED]: "Contacté",
+      [ProspectStatusEnum.QUALIFIED]: "Qualifié",
+      [ProspectStatusEnum.DEMO_SCHEDULED]: "Démo planifiée",
+      [ProspectStatusEnum.DEMO_COMPLETED]: "Démo réalisée",
+      [ProspectStatusEnum.PROPOSAL_SENT]: "Proposition envoyée",
+      [ProspectStatusEnum.NEGOTIATION]: "Négociation",
+      [ProspectStatusEnum.CLOSED_WON]: "Gagné",
+      [ProspectStatusEnum.CLOSED_LOST]: "Perdu",
+      [ProspectStatusEnum.ON_HOLD]: "En attente",
+      [ProspectStatusEnum.NURTURING]: "En maturation",
     };
 
     return labels[this._value] || this._value;
