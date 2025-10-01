@@ -152,10 +152,6 @@ export class I18nValidationPipe extends ValidationPipe {
   }
 
   async transform(value: unknown, metadata: ArgumentMetadata) {
-    try {
-      return await super.transform(value, metadata);
-    } catch (error) {
-      throw error;
-    }
+    return await super.transform(value, metadata);
   }
 }

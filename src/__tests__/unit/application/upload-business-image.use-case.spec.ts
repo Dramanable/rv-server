@@ -1,13 +1,20 @@
 /**
  * 🧪 UPLOAD BUSINESS IMAGE USE CASE - TESTS
  * ✅ TDD approach - Tests written FIRST
- * ✅ Admin settings validation + AWS S3 integration
+ * ✅ Admin settings       const businessWithMaxImages = {
+        getId: () => BusinessId.fromString('business-123'),
+        getOwnerId: () => 'user-456',
+        getGallery: () => ({ getImages: () => new Array(20) }),
+      } as unknown as Business;ation + AWS S3 integration
  */
 
 import { Business } from '@domain/entities/business.entity';
 import { BusinessRepository } from '../../../domain/repositories/business.repository';
 import { BusinessId } from '@domain/value-objects/business-id.value-object';
-import { ImageUploadSettings } from '@domain/value-objects/image-upload-settings.value-object';
+import {
+  ImageUploadSettings,
+  ImageFormat,
+} from '@domain/value-objects/image-upload-settings.value-object';
 import { AwsS3ImageService } from '@infrastructure/services/aws-s3-image.service';
 
 describe('UploadBusinessImageUseCase', () => {
@@ -83,7 +90,7 @@ describe('UploadBusinessImageUseCase', () => {
       const mockBusiness = {
         getId: () => BusinessId.fromString('business-123'),
         getOwnerId: () => 'different-user',
-      } as Business;
+      } as unknown as Business;
 
       mockBusinessRepository.findById.mockResolvedValue(mockBusiness);
 
@@ -96,7 +103,7 @@ describe('UploadBusinessImageUseCase', () => {
       // Given
       const restrictiveSettings = ImageUploadSettings.create({
         maxFileSize: 500 * 1024, // 500KB max
-        allowedFormats: ['PNG'],
+        allowedFormats: [ImageFormat.PNG],
         maxImagesPerBusiness: 5,
       });
 
@@ -127,7 +134,7 @@ describe('UploadBusinessImageUseCase', () => {
       const mockBusiness = {
         getId: () => BusinessId.fromString('business-123'),
         getOwnerId: () => 'user-456',
-      } as Business;
+      } as unknown as Business;
 
       mockBusinessRepository.findById.mockResolvedValue(mockBusiness);
       mockImageService.validateAndUpload.mockRejectedValue(
@@ -172,7 +179,7 @@ describe('UploadBusinessImageUseCase', () => {
       // Given
       const optimizationSettings = ImageUploadSettings.create({
         maxFileSize: 5 * 1024 * 1024,
-        allowedFormats: ['JPEG', 'PNG', 'WEBP'],
+        allowedFormats: [ImageFormat.JPEG, ImageFormat.PNG, ImageFormat.WEBP],
         maxImagesPerBusiness: 20,
         autoOptimize: true, // Enable optimization
       });

@@ -1,23 +1,6 @@
 import { BusinessId } from '../value-objects/business-id.value-object';
+import { CalendarTypeId } from '../value-objects/calendar-type-id.value-object';
 import { RequiredValueError } from '../exceptions/value-object.exceptions';
-
-export class CalendarTypeId {
-  constructor(private readonly value: string) {}
-
-  getValue(): string {
-    return this.value;
-  }
-
-  static generate(): CalendarTypeId {
-    return new CalendarTypeId(
-      `calendar-type-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-    );
-  }
-
-  static fromString(value: string): CalendarTypeId {
-    return new CalendarTypeId(value);
-  }
-}
 
 export class CalendarType {
   constructor(
@@ -242,7 +225,9 @@ export class CalendarType {
     updatedAt?: Date;
   }): CalendarType {
     return new CalendarType(
-      typeof data.id === 'string' ? new CalendarTypeId(data.id) : data.id,
+      typeof data.id === 'string'
+        ? CalendarTypeId.fromString(data.id)
+        : data.id,
       data.businessId,
       data.name,
       data.code,

@@ -35,6 +35,15 @@ describe('UserCacheService - TDD Clean Architecture', () => {
       warn: jest.fn(),
       error: jest.fn(),
       debug: jest.fn(),
+      audit: jest.fn(),
+      child: jest.fn().mockReturnValue({
+        info: jest.fn(),
+        warn: jest.fn(),
+        error: jest.fn(),
+        debug: jest.fn(),
+        audit: jest.fn(),
+        child: jest.fn(),
+      }),
     };
 
     mockI18n = {
@@ -55,7 +64,7 @@ describe('UserCacheService - TDD Clean Architecture', () => {
       getUserCacheRetentionMinutes: jest.fn().mockReturnValue(60),
       get: jest.fn(),
       isProduction: jest.fn().mockReturnValue(false),
-    } as jest.Mocked<IConfigService>;
+    } as unknown as jest.Mocked<IConfigService>;
 
     storeUserService = new UserCacheService(
       mockUserCache,
@@ -73,7 +82,23 @@ describe('UserCacheService - TDD Clean Architecture', () => {
         email: { value: 'test@example.com' },
         name: 'John Doe',
         role: UserRole.REGULAR_CLIENT,
-      } as User;
+        createdAt: new Date(),
+        passwordChangeRequired: false,
+        hasPermission: jest.fn(),
+        isPlatformAdmin: jest.fn(),
+        isBusinessOwner: jest.fn(),
+        isStaffMember: jest.fn(),
+        isClient: jest.fn(),
+        canManageUser: jest.fn(),
+        canAccessBusiness: jest.fn(),
+        canManageAppointments: jest.fn(),
+        canViewFinancialData: jest.fn(),
+        canManageCalendar: jest.fn(),
+        canManageServices: jest.fn(),
+        canManageStaff: jest.fn(),
+        canViewReports: jest.fn(),
+        canManageBusinessSettings: jest.fn(),
+      } as unknown as User;
 
       const request: StoreUserRequest = {
         user,
@@ -101,8 +126,24 @@ describe('UserCacheService - TDD Clean Architecture', () => {
         id: 'admin-123',
         email: { value: 'admin@example.com' },
         name: 'Admin User',
-        role: UserRole.ADMIN,
-      } as User;
+        role: UserRole.PLATFORM_ADMIN,
+        createdAt: new Date(),
+        passwordChangeRequired: false,
+        hasPermission: jest.fn(),
+        isPlatformAdmin: jest.fn(),
+        isBusinessOwner: jest.fn(),
+        isStaffMember: jest.fn(),
+        isClient: jest.fn(),
+        canManageUser: jest.fn(),
+        canAccessBusiness: jest.fn(),
+        canManageAppointments: jest.fn(),
+        canViewFinancialData: jest.fn(),
+        canManageCalendar: jest.fn(),
+        canManageServices: jest.fn(),
+        canManageStaff: jest.fn(),
+        canViewReports: jest.fn(),
+        canManageBusinessSettings: jest.fn(),
+      } as unknown as User;
 
       const customTTL = 120;
       const request: StoreUserRequest = {
@@ -134,7 +175,23 @@ describe('UserCacheService - TDD Clean Architecture', () => {
         email: { value: 'test@example.com' },
         name: 'Test User',
         role: UserRole.REGULAR_CLIENT,
-      } as User;
+        createdAt: new Date(),
+        passwordChangeRequired: false,
+        hasPermission: jest.fn(),
+        isPlatformAdmin: jest.fn(),
+        isBusinessOwner: jest.fn(),
+        isStaffMember: jest.fn(),
+        isClient: jest.fn(),
+        canManageUser: jest.fn(),
+        canAccessBusiness: jest.fn(),
+        canManageAppointments: jest.fn(),
+        canViewFinancialData: jest.fn(),
+        canManageCalendar: jest.fn(),
+        canManageServices: jest.fn(),
+        canManageStaff: jest.fn(),
+        canViewReports: jest.fn(),
+        canManageBusinessSettings: jest.fn(),
+      } as unknown as User;
 
       const request: StoreUserRequest = {
         user,
@@ -176,7 +233,23 @@ describe('UserCacheService - TDD Clean Architecture', () => {
         email: { value: 'configured@example.com' },
         name: 'Configured User',
         role: UserRole.REGULAR_CLIENT,
-      } as User;
+        createdAt: new Date(),
+        passwordChangeRequired: false,
+        hasPermission: jest.fn(),
+        isPlatformAdmin: jest.fn(),
+        isBusinessOwner: jest.fn(),
+        isStaffMember: jest.fn(),
+        isClient: jest.fn(),
+        canManageUser: jest.fn(),
+        canAccessBusiness: jest.fn(),
+        canManageAppointments: jest.fn(),
+        canViewFinancialData: jest.fn(),
+        canManageCalendar: jest.fn(),
+        canManageServices: jest.fn(),
+        canManageStaff: jest.fn(),
+        canViewReports: jest.fn(),
+        canManageBusinessSettings: jest.fn(),
+      } as unknown as User;
 
       const request: StoreUserRequest = {
         user,

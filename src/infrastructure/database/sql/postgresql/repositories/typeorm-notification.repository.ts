@@ -20,41 +20,33 @@ export class TypeOrmNotificationRepository implements INotificationRepository {
   async save(
     notification: Notification,
   ): Promise<{ id: string; status: NotificationStatus }> {
-    try {
-      // Conversion Domain → ORM
-      const ormEntity = NotificationOrmMapper.toOrmEntity(notification);
+    // Conversion Domain → ORM
+    const ormEntity = NotificationOrmMapper.toOrmEntity(notification);
 
-      // Persistence en base
-      const savedEntity = await this.repository.save(ormEntity);
+    // Persistence en base
+    const savedEntity = await this.repository.save(ormEntity);
 
-      // Retour avec format attendu par l'application
-      return {
-        id: savedEntity.id,
-        status: NotificationStatus.fromString(savedEntity.status),
-      };
-    } catch (error) {
-      throw error; // Re-throw pour gestion par la couche application
-    }
+    // Retour avec format attendu par l'application
+    return {
+      id: savedEntity.id,
+      status: NotificationStatus.fromString(savedEntity.status),
+    };
   }
 
   /**
    * Trouve une notification par ID
    */
   async findById(id: string): Promise<Notification | null> {
-    try {
-      const ormEntity = await this.repository.findOne({
-        where: { id },
-      });
+    const ormEntity = await this.repository.findOne({
+      where: { id },
+    });
 
-      if (!ormEntity) {
-        return null;
-      }
-
-      // Conversion ORM → Domain
-      return NotificationOrmMapper.toDomainEntity(ormEntity);
-    } catch (error) {
-      throw error;
+    if (!ormEntity) {
+      return null;
     }
+
+    // Conversion ORM → Domain
+    return NotificationOrmMapper.toDomainEntity(ormEntity);
   }
 
   /**

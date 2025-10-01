@@ -34,6 +34,7 @@ describe('DeleteProfessionalUseCase - TDD', () => {
       deleteById: jest.fn(),
       findByEmail: jest.fn(),
       findByLicenseNumber: jest.fn(),
+      findByBusinessId: jest.fn(),
       findAll: jest.fn(),
       existsById: jest.fn(),
       existsByEmail: jest.fn(),

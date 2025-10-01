@@ -74,6 +74,7 @@ describe('ListBusinessSectorsUseCase', () => {
       findActiveOnly: jest.fn(),
       updateStatus: jest.fn(),
       findMostUsed: jest.fn(),
+      countUsageInBusinesses: jest.fn(),
     };
 
     mockPermissionService = {
@@ -87,6 +88,7 @@ describe('ListBusinessSectorsUseCase', () => {
       canManageUser: jest.fn(),
       requireSuperAdminPermission: jest.fn(),
       isSuperAdmin: jest.fn(),
+      hasAccessToBusiness: jest.fn(),
     };
 
     mockLogger = {

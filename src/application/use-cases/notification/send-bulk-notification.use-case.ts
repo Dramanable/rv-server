@@ -19,6 +19,16 @@ import {
   TemplateVariables,
 } from '../../../domain/value-objects/notification-template.value-object';
 import { NotificationException } from '../../exceptions/notification.exceptions';
+import {
+  INotificationService,
+  NotificationMessage,
+  NotificationType as NotificationTypePort,
+  NotificationChannel as NotificationChannelPort,
+  NotificationPriority as NotificationPriorityPort,
+} from '../../ports/notification.port';
+
+import { Logger } from '../../ports/logger.port';
+import { I18nService } from '../../ports/i18n.port';
 // import { INotificationService } from '../../ports/notification-service.interface';
 // import { ILogger } from '../../ports/logger.interface';
 // import { II18nService } from '../../ports/i18n-service.interface';
@@ -124,7 +134,7 @@ export interface IUserSegmentationService {
  * Port pour service de campagne
  */
 export interface ICampaignService {
-  createCampaign(request: SendBulkNotificationRequest): Promise<string>; // Return campaign ID
+  createCampaign(request: SendBulkNotificationRequest): Promise<Campaign>;
   updateCampaignStatus(
     campaignId: string,
     status: BulkCampaignStatus,
@@ -133,17 +143,23 @@ export interface ICampaignService {
   cancelCampaign(campaignId: string): Promise<void>;
 }
 
+export interface Campaign {
+  readonly id: string;
+  readonly name: string;
+  readonly status: string;
+}
+
 /**
  * Use case pour l'envoi de notifications en lot
  */
 export class SendBulkNotificationUseCase {
   constructor(
     private readonly notificationRepository: INotificationRepository,
-    private readonly notificationService: any, // TODO: Define interface
+    private readonly notificationService: INotificationService,
     private readonly userSegmentationService: IUserSegmentationService,
-    private readonly campaignService: any, // TODO: Define interface
-    private readonly logger: any, // TODO: Define interface
-    private readonly i18n: any, // TODO: Define interface
+    private readonly campaignService: ICampaignService,
+    private readonly logger: Logger,
+    private readonly i18n: I18nService,
   ) {}
 
   async execute(
@@ -177,7 +193,8 @@ export class SendBulkNotificationUseCase {
       const preview = await this.generatePreview(request, recipients[0]);
 
       // 🎯 Création de la campagne
-      const campaignId = await this.campaignService.createCampaign(request);
+      const campaign = await this.campaignService.createCampaign(request);
+      const campaignId = campaign.id;
 
       // ⚡ Configuration des paramètres d'envoi
       const batchSize = Math.min(request.batchSize || 100, 500); // Max 500 par lot
@@ -236,11 +253,14 @@ export class SendBulkNotificationUseCase {
       };
     } catch (error) {
       // 🚨 Log de l'erreur
-      this.logger.error('Failed to create bulk notification campaign', {
-        error: error instanceof Error ? error.message : 'Unknown error',
-        templateType: request.templateType,
-        requestingUserId: request.requestingUserId,
-      });
+      this.logger.error(
+        'Failed to create bulk notification campaign',
+        error instanceof Error ? error : new Error(String(error)),
+        {
+          templateType: request.templateType,
+          requestingUserId: request.requestingUserId,
+        },
+      );
 
       if (error instanceof NotificationException) {
         throw error;
@@ -541,14 +561,16 @@ export class SendBulkNotificationUseCase {
             const channel = recipient.channel || request.defaultChannel;
 
             // Envoi de la notification individuelle
-            await this.notificationService.send(
-              recipient.recipientId,
-              content.subject,
-              content.body,
-              channel,
-              request.priority,
-              { campaignId, ...allVariables },
-            );
+            await this.notificationService.sendNotification({
+              recipientId: recipient.recipientId,
+              recipientEmail: recipient.recipientId,
+              type: NotificationTypePort.CUSTOM,
+              channel: channel.getValue() as NotificationChannelPort,
+              subject: content.subject,
+              content: content.body,
+              priority: request.priority.getValue() as NotificationPriorityPort,
+              templateData: { campaignId, ...allVariables },
+            });
 
             successCount++;
           } catch (error) {
@@ -559,11 +581,14 @@ export class SendBulkNotificationUseCase {
               timestamp: new Date(),
             });
 
-            this.logger.error('Failed to send notification to recipient', {
-              campaignId,
-              recipientId: recipient.recipientId,
-              error: error instanceof Error ? error.message : 'Unknown error',
-            });
+            this.logger.error(
+              'Failed to send notification to recipient',
+              error instanceof Error ? error : new Error(String(error)),
+              {
+                campaignId,
+                recipientId: recipient.recipientId,
+              },
+            );
           }
         });
 
@@ -642,13 +667,16 @@ export class SendBulkNotificationUseCase {
         ],
       });
 
-      this.logger.error('Bulk notification campaign failed', {
-        campaignId,
-        error: error instanceof Error ? error.message : 'Unknown error',
-        processedCount,
-        successCount,
-        errorCount,
-      });
+      this.logger.error(
+        'Bulk notification campaign failed',
+        error instanceof Error ? error : new Error(String(error)),
+        {
+          campaignId,
+          processedCount,
+          successCount,
+          errorCount,
+        },
+      );
     }
   }
 }

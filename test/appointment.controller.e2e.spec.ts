@@ -9,8 +9,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, HttpStatus } from '@nestjs/common';
 import * as request from 'supertest';
 import { DataSource } from 'typeorm';
-import { User } from '../../domain/entities/user.entity';
-import { AppModule } from '../../app.module';
+import { User } from '../src/domain/entities/user.entity';
+import { AppModule } from '../src/app.module';
 
 describe('🧪 AppointmentController (E2E) - Clean Architecture Flow', () => {
   let app: INestApplication;
@@ -471,7 +471,7 @@ describe('🧪 AppointmentController (E2E) - Clean Architecture Flow', () => {
       const { data } = response.body;
       expect(Array.isArray(data)).toBe(true);
 
-      data.forEach((appointment) => {
+      data.forEach((appointment: any) => {
         const startTime = new Date(appointment.startTime);
         const dateFrom = new Date(listDto.dateFrom);
         const dateTo = new Date(listDto.dateTo);
@@ -493,7 +493,7 @@ describe('🧪 AppointmentController (E2E) - Clean Architecture Flow', () => {
         .expect(HttpStatus.OK);
 
       const { data } = response.body;
-      data.forEach((appointment) => {
+      data.forEach((appointment: any) => {
         expect(appointment.status).toBe('BOOKED');
       });
     });
@@ -515,7 +515,7 @@ describe('🧪 AppointmentController (E2E) - Clean Architecture Flow', () => {
 
       // Should return appointments with client names matching 'Alice'
       const hasAlice = data.some(
-        (appointment) =>
+        (appointment: any) =>
           appointment.clientInfo.firstName.toLowerCase().includes('alice') ||
           appointment.clientInfo.lastName.toLowerCase().includes('alice'),
       );
@@ -528,7 +528,7 @@ describe('🧪 AppointmentController (E2E) - Clean Architecture Flow', () => {
 
   describe('📄 GET APPOINTMENT BY ID - Domain Entity Retrieval', () => {
     it('should get appointment by ID successfully', async () => {
-      const appointmentId = (global as any).testAppointmentId;
+      let appointmentId = (global as any).testAppointmentId;
 
       if (!appointmentId) {
         // Create a test appointment if none exists
@@ -536,15 +536,16 @@ describe('🧪 AppointmentController (E2E) - Clean Architecture Flow', () => {
           .post('/appointments')
           .set('Authorization', `Bearer ${authToken}`)
           .send({
-            businessId,
-            calendarId,
-            serviceId,
-            startTime: '2024-01-25T10:00:00Z',
-            endTime: '2024-01-25T11:00:00Z',
+            serviceId: (global as any).testServiceId,
             clientInfo: {
-              firstName: 'Test',
-              lastName: 'Client',
-              email: 'test.client@example.com',
+              firstName: 'Alice',
+              lastName: 'Test',
+              email: 'alice.test@example.com',
+              phoneNumber: '+33123456789',
+            },
+            timeSlot: {
+              startTime: new Date(Date.now() + 86400000).toISOString(), // tomorrow
+              endTime: new Date(Date.now() + 86400000 + 3600000).toISOString(), // tomorrow + 1 hour
             },
           })
           .expect(HttpStatus.CREATED);
@@ -837,10 +838,25 @@ describe('🧪 AppointmentController (E2E) - Clean Architecture Flow', () => {
       ];
 
       for (const { method, path } of testCases) {
-        await request(app.getHttpServer())
-          [method](path)
-          .send({})
-          .expect(HttpStatus.UNAUTHORIZED);
+        const agent = request(app.getHttpServer());
+        let req;
+        switch (method) {
+          case 'get':
+            req = agent.get(path);
+            break;
+          case 'post':
+            req = agent.post(path);
+            break;
+          case 'put':
+            req = agent.put(path);
+            break;
+          case 'delete':
+            req = agent.delete(path);
+            break;
+          default:
+            throw new Error(`Unknown method: ${method}`);
+        }
+        await req.send({}).expect(HttpStatus.UNAUTHORIZED);
       }
     });
   });
@@ -914,15 +930,15 @@ describe('🧪 AppointmentController (E2E) - Clean Architecture Flow', () => {
         );
 
       const responses = await Promise.all(
-        promises.map((p) => p.catch((err) => err.response)),
+        promises.map((p) => p.catch((err: any) => err.response)),
       );
 
       // ✅ Only one should succeed, others should get conflict errors
       const successful = responses.filter(
-        (r) => r.status === HttpStatus.CREATED,
+        (r: any) => r.status === HttpStatus.CREATED,
       );
       const conflicts = responses.filter(
-        (r) => r.status === HttpStatus.CONFLICT,
+        (r: any) => r.status === HttpStatus.CONFLICT,
       );
 
       expect(successful).toHaveLength(1);

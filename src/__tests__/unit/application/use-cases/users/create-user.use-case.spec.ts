@@ -24,6 +24,7 @@ import {
   createMockUserRepository,
 } from '../../../../../application/mocks/typed-mocks';
 import { IPermissionService } from '../../../../../application/ports/permission.service.interface';
+import { IPasswordHasher } from '../../../../../application/ports/password-hasher.port';
 
 describe('CreateUserUseCase', () => {
   let createUserUseCase: CreateUserUseCase;
@@ -31,6 +32,7 @@ describe('CreateUserUseCase', () => {
   let mockLogger: ReturnType<typeof createMockLogger>;
   let mockI18nService: ReturnType<typeof createMockI18nService>;
   let mockPermissionService: jest.Mocked<IPermissionService>;
+  let mockPasswordHasher: jest.Mocked<IPasswordHasher>;
 
   // Test Data Factory
   const createTestUser = (
@@ -64,13 +66,21 @@ describe('CreateUserUseCase', () => {
       hasBusinessPermission: jest.fn().mockResolvedValue(true),
       isSuperAdmin: jest.fn().mockResolvedValue(false),
       requireSuperAdminPermission: jest.fn().mockResolvedValue(undefined),
+      hasAccessToBusiness: jest.fn().mockResolvedValue(true),
     } as jest.Mocked<IPermissionService>;
+
+    mockPasswordHasher = {
+      hash: jest.fn().mockResolvedValue('hashed-password'),
+      verify: jest.fn().mockResolvedValue(true),
+      isValidHashFormat: jest.fn().mockReturnValue(true),
+    } as jest.Mocked<IPasswordHasher>;
 
     createUserUseCase = new CreateUserUseCase(
       mockUserRepository,
       mockLogger,
       mockI18nService,
       mockPermissionService,
+      mockPasswordHasher,
     );
   });
 

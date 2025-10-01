@@ -75,6 +75,7 @@ describe('UpdateStaffUseCase', () => {
       canManageUser: jest.fn(),
       requireSuperAdminPermission: jest.fn(),
       isSuperAdmin: jest.fn(),
+      hasAccessToBusiness: jest.fn(),
     } as jest.Mocked<IPermissionService>;
 
     useCase = new UpdateStaffUseCase(

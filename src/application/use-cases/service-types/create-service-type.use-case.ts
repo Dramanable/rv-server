@@ -78,7 +78,7 @@ export class CreateServiceTypeUseCase {
     });
     try {
       // 🔒 VALIDATION - Contexte obligatoire
-      this.validateRequest(request);
+      await this.validateRequest(request);
 
       // 🛡️ PERMISSIONS - Vérifier les droits utilisateur
       await this.permissionService.requirePermission(

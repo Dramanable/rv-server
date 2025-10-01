@@ -1,7 +1,5 @@
-import {
-  CalendarType,
-  CalendarTypeId,
-} from '../../../../domain/entities/calendar-type.entity';
+import { CalendarType } from '../../../../domain/entities/calendar-type.entity';
+import { CalendarTypeId } from '../../../../domain/value-objects/calendar-type-id.value-object';
 import { BusinessId } from '../../../../domain/value-objects/business-id.value-object';
 
 describe('CalendarType Entity', () => {
@@ -54,7 +52,7 @@ describe('CalendarType Entity', () => {
         description: 'Individual staff member calendar',
         icon: '👤',
         color: '#4CAF50',
-        isBuiltIn: false,
+        isBuiltin: false,
         isActive: true,
         createdBy: 'user-123',
       };
@@ -77,7 +75,7 @@ describe('CalendarType Entity', () => {
         description: 'Individual staff member calendar',
         icon: '👤',
         color: '#4CAF50',
-        isBuiltIn: false,
+        isBuiltin: false,
         isActive: true,
         createdBy: 'user-123',
       };
@@ -114,7 +112,7 @@ describe('CalendarType Entity', () => {
         description: 'Individual staff member calendar',
         icon: '👤',
         color: '#4CAF50',
-        isBuiltIn: false,
+        isBuiltin: false,
         isActive: true,
         createdBy: 'user-123',
       });
@@ -174,7 +172,7 @@ describe('CalendarType Entity', () => {
         description: 'Individual staff member calendar',
         icon: '👤',
         color: '#4CAF50',
-        isBuiltIn: false,
+        isBuiltin: false,
         isActive: true,
         createdBy: 'user-123',
       });

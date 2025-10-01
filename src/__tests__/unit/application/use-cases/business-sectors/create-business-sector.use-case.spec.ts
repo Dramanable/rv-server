@@ -39,6 +39,7 @@ describe('CreateBusinessSectorUseCase', () => {
       findActiveOnly: jest.fn(),
       updateStatus: jest.fn(),
       findMostUsed: jest.fn(),
+      countUsageInBusinesses: jest.fn(),
     };
 
     mockLogger = {
@@ -61,6 +62,14 @@ describe('CreateBusinessSectorUseCase', () => {
       hasPermission: jest.fn(),
       canActOnRole: jest.fn(),
       requirePermission: jest.fn(),
+      getUserPermissions: jest.fn(),
+      getUserRole: jest.fn(),
+      hasRole: jest.fn(),
+      hasBusinessPermission: jest.fn(),
+      canManageUser: jest.fn(),
+      requireSuperAdminPermission: jest.fn(),
+      isSuperAdmin: jest.fn(),
+      hasAccessToBusiness: jest.fn(),
     };
 
     useCase = new CreateBusinessSectorUseCase(

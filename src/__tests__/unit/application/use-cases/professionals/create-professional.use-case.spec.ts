@@ -12,7 +12,7 @@ import { Professional } from '@domain/entities/professional.entity';
 import { ProfessionalValidationError } from '@domain/exceptions/professional.exceptions';
 import { IProfessionalRepository } from '@domain/repositories/professional.repository';
 import { BusinessId } from '@domain/value-objects/business-id.value-object';
-import { Email } from '@domain/value-objects/email.vo';
+import { Email } from '@domain/value-objects/email.value-object';
 
 describe('CreateProfessionalUseCase - TDD', () => {
   // ✅ Test Data Factory
@@ -52,6 +52,7 @@ describe('CreateProfessionalUseCase - TDD', () => {
       findById: jest.fn(),
       findByEmail: jest.fn(),
       findByLicenseNumber: jest.fn(),
+      findByBusinessId: jest.fn(),
       findAll: jest.fn(),
       deleteById: jest.fn(),
       existsById: jest.fn(),

@@ -428,4 +428,23 @@ export class Professional {
   getUpdatedBy(): string {
     return this._updatedBy;
   }
+
+  /**
+   * Vérifie si le professionnel a des rendez-vous actifs/futurs
+   * TODO: Implémenter avec repository des appointments
+   * Pour l'instant, retourne false pour permettre la suppression
+   */
+  hasActiveAppointments(): boolean {
+    // TODO: Cette méthode devrait interroger le repository des appointments
+    // pour vérifier s'il existe des rendez-vous futurs ou en cours pour ce professionnel
+    //
+    // const futureAppointments = await appointmentRepository.findByProfessionalId(
+    //   this._id,
+    //   { status: ['BOOKED', 'CONFIRMED'], fromDate: new Date() }
+    // );
+    // return futureAppointments.length > 0;
+
+    // Implémentation temporaire - permet la suppression
+    return false;
+  }
 }

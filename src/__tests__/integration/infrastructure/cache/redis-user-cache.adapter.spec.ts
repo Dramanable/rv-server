@@ -6,7 +6,7 @@
  */
 
 import { User } from '@domain/entities/user.entity';
-import { Email } from '@domain/value-objects/email.value-object';
+import { Email } from '@domain/value-objects/email.vo';
 import { RedisUserCacheAdapter } from '@infrastructure/cache/redis-user-cache.adapter';
 import { UserRole } from '@shared/enums/user-role.enum';
 import { Redis } from 'ioredis';

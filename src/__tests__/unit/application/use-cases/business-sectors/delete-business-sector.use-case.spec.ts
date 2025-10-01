@@ -45,11 +45,29 @@ describe('DeleteBusinessSectorUseCase', () => {
       findByCode: jest.fn(),
       findAll: jest.fn(),
       countUsageInBusinesses: jest.fn(),
+      delete: jest.fn(),
+      exists: jest.fn(),
+      isCodeUnique: jest.fn(),
+      count: jest.fn(),
+      searchByText: jest.fn(),
+      findActiveOnly: jest.fn(),
+      updateStatus: jest.fn(),
+      findMostUsed: jest.fn(),
     } as jest.Mocked<IBusinessSectorRepository>;
 
     // 🔧 Mock Permission Service
     mockPermissionService = {
       hasPermission: jest.fn(),
+      canActOnRole: jest.fn(),
+      requirePermission: jest.fn(),
+      getUserPermissions: jest.fn(),
+      getUserRole: jest.fn(),
+      hasRole: jest.fn(),
+      hasBusinessPermission: jest.fn(),
+      canManageUser: jest.fn(),
+      requireSuperAdminPermission: jest.fn(),
+      isSuperAdmin: jest.fn(),
+      hasAccessToBusiness: jest.fn(),
     } as jest.Mocked<IPermissionService>;
 
     // 🔧 Mock Logger

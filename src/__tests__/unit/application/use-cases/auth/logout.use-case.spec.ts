@@ -13,26 +13,45 @@ import {
   LogoutUseCase,
 } from '@application/use-cases/auth/logout.use-case';
 // Mock créés directement ici avec les méthodes nécessaires
-const createMockAuthService = () => ({
+const createMockAuthService = (): jest.Mocked<AuthenticationService> => ({
+  generateTokens: jest.fn(),
+  validateAccessToken: jest.fn(),
+  validateRefreshToken: jest.fn(),
+  refreshTokens: jest.fn(),
   revokeRefreshToken: jest.fn(),
   revokeAllUserTokens: jest.fn(),
-  refreshTokens: jest.fn(),
+  generateResetSessionToken: jest.fn(),
+  validateResetSessionToken: jest.fn(),
 });
 
-const createMockConfigService = () => ({
-  isProduction: jest.fn().mockReturnValue(false),
-  getAccessTokenExpirationTime: jest.fn().mockReturnValue(3600), // 1 hour
-  getRefreshTokenExpirationDays: jest.fn().mockReturnValue(30), // 30 days
-});
+const createMockConfigService = (): jest.Mocked<IConfigService> =>
+  ({
+    isProduction: jest.fn().mockReturnValue(false),
+    getAccessTokenExpirationTime: jest.fn().mockReturnValue(3600), // 1 hour
+    getRefreshTokenExpirationDays: jest.fn().mockReturnValue(30), // 30 days
+    getUserSessionDurationMinutes: jest.fn().mockReturnValue(30),
+    getAccessTokenSecret: jest.fn().mockReturnValue('test-secret'),
+    getRefreshTokenSecret: jest.fn().mockReturnValue('test-refresh-secret'),
+    getJwtIssuer: jest.fn().mockReturnValue('test-issuer'),
+    getJwtAudience: jest.fn().mockReturnValue('test-audience'),
+    getAccessTokenAlgorithm: jest.fn().mockReturnValue('HS256'),
+  }) as any;
 
-const createMockLogger = () => ({
+const createMockLogger = (): jest.Mocked<Logger> => ({
   info: jest.fn(),
   error: jest.fn(),
   debug: jest.fn(),
   warn: jest.fn(),
+  audit: jest.fn(),
+  child: jest.fn().mockReturnThis(),
 });
 
-const createMockI18nService = () => ({
+const createMockI18nService = (): jest.Mocked<I18nService> => ({
+  translate: jest
+    .fn()
+    .mockImplementation((key: string) => `Mock translation for: ${key}`),
+  setDefaultLanguage: jest.fn(),
+  exists: jest.fn().mockReturnValue(true),
   t: jest
     .fn()
     .mockImplementation((key: string, params?: Record<string, any>) => {

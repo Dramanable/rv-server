@@ -56,6 +56,7 @@ describe('GetProfessionalByIdUseCase - TDD', () => {
       findById: jest.fn(),
       findByEmail: jest.fn(),
       findByLicenseNumber: jest.fn(),
+      findByBusinessId: jest.fn(),
       findAll: jest.fn(),
       deleteById: jest.fn(),
       existsById: jest.fn(),

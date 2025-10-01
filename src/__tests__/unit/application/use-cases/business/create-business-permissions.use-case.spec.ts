@@ -51,6 +51,7 @@ describe('CreateBusinessUseCase - Permissions TDD', () => {
       canManageUser: jest.fn(),
       requireSuperAdminPermission: jest.fn(),
       isSuperAdmin: jest.fn(),
+      hasAccessToBusiness: jest.fn(),
     };
 
     mockBusinessRepository = {
