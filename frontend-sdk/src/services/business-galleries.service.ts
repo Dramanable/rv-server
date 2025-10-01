@@ -14,7 +14,7 @@ export enum GalleryStatus {
   ACTIVE = 'ACTIVE',
   INACTIVE = 'INACTIVE',
   DRAFT = 'DRAFT',
-  ARCHIVED = 'ARCHIVED'
+  ARCHIVED = 'ARCHIVED',
 }
 
 export enum GalleryType {
@@ -24,7 +24,7 @@ export enum GalleryType {
   FACILITY = 'FACILITY',
   SERVICES = 'SERVICES',
   PORTFOLIO = 'PORTFOLIO',
-  TESTIMONIALS = 'TESTIMONIALS'
+  TESTIMONIALS = 'TESTIMONIALS',
 }
 
 export enum ImageType {
@@ -32,7 +32,7 @@ export enum ImageType {
   THUMBNAIL = 'THUMBNAIL',
   BEFORE = 'BEFORE',
   AFTER = 'AFTER',
-  DETAIL = 'DETAIL'
+  DETAIL = 'DETAIL',
 }
 
 // Interfaces
@@ -128,7 +128,12 @@ export interface UpdateGalleryDto {
 export interface ListGalleriesDto {
   readonly page?: number;
   readonly limit?: number;
-  readonly sortBy?: 'createdAt' | 'name' | 'sortOrder' | 'imagesCount' | 'updatedAt';
+  readonly sortBy?:
+    | 'createdAt'
+    | 'name'
+    | 'sortOrder'
+    | 'imagesCount'
+    | 'updatedAt';
   readonly sortOrder?: 'asc' | 'desc';
   readonly search?: string;
   readonly businessId?: string;
@@ -198,7 +203,9 @@ export default class BusinessGalleriesService {
    * 📋 Lister les galeries d'une entreprise
    */
   async getBusinessGalleries(businessId: string): Promise<BusinessGallery[]> {
-    const response = await this.client.get(`/api/v1/business-galleries/${businessId}/galleries`);
+    const response = await this.client.get(
+      `/api/v1/business-galleries/${businessId}/galleries`,
+    );
     return response.data.data;
   }
 
@@ -206,7 +213,9 @@ export default class BusinessGalleriesService {
    * 📄 Obtenir une galerie par ID
    */
   async getById(galleryId: string): Promise<BusinessGallery> {
-    const response = await this.client.get(`/api/v1/business-galleries/${galleryId}`);
+    const response = await this.client.get(
+      `/api/v1/business-galleries/${galleryId}`,
+    );
     return response.data.data;
   }
 
@@ -214,15 +223,24 @@ export default class BusinessGalleriesService {
    * ➕ Créer une nouvelle galerie
    */
   async create(data: CreateGalleryDto): Promise<CreateGalleryResponse> {
-    const response = await this.client.post(`/api/v1/business-galleries/${data.businessId}/create`, data);
+    const response = await this.client.post(
+      `/api/v1/business-galleries/${data.businessId}/create`,
+      data,
+    );
     return response.data;
   }
 
   /**
    * ✏️ Mettre à jour une galerie
    */
-  async update(galleryId: string, data: UpdateGalleryDto): Promise<UpdateGalleryResponse> {
-    const response = await this.client.put(`/api/v1/business-galleries/${galleryId}`, data);
+  async update(
+    galleryId: string,
+    data: UpdateGalleryDto,
+  ): Promise<UpdateGalleryResponse> {
+    const response = await this.client.put(
+      `/api/v1/business-galleries/${galleryId}`,
+      data,
+    );
     return response.data;
   }
 
@@ -230,7 +248,9 @@ export default class BusinessGalleriesService {
    * 🗑️ Supprimer une galerie
    */
   async delete(galleryId: string): Promise<DeleteGalleryResponse> {
-    const response = await this.client.delete(`/api/v1/business-galleries/${galleryId}`);
+    const response = await this.client.delete(
+      `/api/v1/business-galleries/${galleryId}`,
+    );
     return response.data;
   }
 
@@ -245,7 +265,7 @@ export default class BusinessGalleriesService {
       caption?: string;
       type?: ImageType;
       tags?: string[];
-    }
+    },
   ): Promise<UploadImagesResponse> {
     const formData = new FormData();
 
@@ -269,7 +289,7 @@ export default class BusinessGalleriesService {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
-      }
+      },
     );
     return response.data;
   }
@@ -279,15 +299,20 @@ export default class BusinessGalleriesService {
    */
   async getPublicGalleries(businessId: string): Promise<BusinessGallery[]> {
     const galleries = await this.getBusinessGalleries(businessId);
-    return galleries.filter(gallery => gallery.isPublic && gallery.status === GalleryStatus.ACTIVE);
+    return galleries.filter(
+      (gallery) => gallery.isPublic && gallery.status === GalleryStatus.ACTIVE,
+    );
   }
 
   /**
    * 📊 Obtenir les galeries par type
    */
-  async getByType(businessId: string, type: GalleryType): Promise<BusinessGallery[]> {
+  async getByType(
+    businessId: string,
+    type: GalleryType,
+  ): Promise<BusinessGallery[]> {
     const galleries = await this.getBusinessGalleries(businessId);
-    return galleries.filter(gallery => gallery.type === type);
+    return galleries.filter((gallery) => gallery.type === type);
   }
 
   /**
@@ -295,20 +320,27 @@ export default class BusinessGalleriesService {
    */
   async search(businessId: string, query: string): Promise<BusinessGallery[]> {
     const galleries = await this.getBusinessGalleries(businessId);
-    return galleries.filter(gallery =>
-      gallery.name.toLowerCase().includes(query.toLowerCase()) ||
-      (gallery.description && gallery.description.toLowerCase().includes(query.toLowerCase())) ||
-      gallery.tags.some(tag => tag.toLowerCase().includes(query.toLowerCase()))
+    return galleries.filter(
+      (gallery) =>
+        gallery.name.toLowerCase().includes(query.toLowerCase()) ||
+        (gallery.description &&
+          gallery.description.toLowerCase().includes(query.toLowerCase())) ||
+        gallery.tags.some((tag) =>
+          tag.toLowerCase().includes(query.toLowerCase()),
+        ),
     );
   }
 
   /**
    * 🏷️ Obtenir les galeries par tags
    */
-  async getByTags(businessId: string, tags: string[]): Promise<BusinessGallery[]> {
+  async getByTags(
+    businessId: string,
+    tags: string[],
+  ): Promise<BusinessGallery[]> {
     const galleries = await this.getBusinessGalleries(businessId);
-    return galleries.filter(gallery =>
-      tags.some(tag => gallery.tags.includes(tag))
+    return galleries.filter((gallery) =>
+      tags.some((tag) => gallery.tags.includes(tag)),
     );
   }
 
@@ -326,15 +358,19 @@ export default class BusinessGalleriesService {
 
     const stats = {
       totalGalleries: galleries.length,
-      activeGalleries: galleries.filter(g => g.status === GalleryStatus.ACTIVE).length,
+      activeGalleries: galleries.filter(
+        (g) => g.status === GalleryStatus.ACTIVE,
+      ).length,
       totalImages: galleries.reduce((sum, g) => sum + g.imagesCount, 0),
       totalSize: galleries.reduce((sum, g) => sum + g.totalSize, 0),
-      galleryTypes: {} as Record<GalleryType, number>
+      galleryTypes: {} as Record<GalleryType, number>,
     };
 
     // Compter par type
-    Object.values(GalleryType).forEach(type => {
-      stats.galleryTypes[type] = galleries.filter(g => g.type === type).length;
+    Object.values(GalleryType).forEach((type) => {
+      stats.galleryTypes[type] = galleries.filter(
+        (g) => g.type === type,
+      ).length;
     });
 
     return stats;
@@ -343,42 +379,58 @@ export default class BusinessGalleriesService {
   /**
    * 🔄 Changer le statut d'une galerie
    */
-  async changeStatus(galleryId: string, status: GalleryStatus): Promise<UpdateGalleryResponse> {
+  async changeStatus(
+    galleryId: string,
+    status: GalleryStatus,
+  ): Promise<UpdateGalleryResponse> {
     return this.update(galleryId, { status });
   }
 
   /**
    * 📌 Définir l'image de couverture
    */
-  async setCoverImage(galleryId: string, imageId: string): Promise<UpdateGalleryResponse> {
+  async setCoverImage(
+    galleryId: string,
+    imageId: string,
+  ): Promise<UpdateGalleryResponse> {
     return this.update(galleryId, { coverImageId: imageId });
   }
 
   /**
    * 🔢 Réorganiser l'ordre des galeries
    */
-  async reorderGalleries(_businessId: string, galleryOrders: { galleryId: string; sortOrder: number }[]): Promise<void> {
+  async reorderGalleries(
+    _businessId: string,
+    galleryOrders: { galleryId: string; sortOrder: number }[],
+  ): Promise<void> {
     await Promise.all(
       galleryOrders.map(({ galleryId, sortOrder }) =>
-        this.update(galleryId, { sortOrder })
-      )
+        this.update(galleryId, { sortOrder }),
+      ),
     );
   }
 
   /**
    * 📁 Dupliquer une galerie
    */
-  async duplicate(galleryId: string, newName: string): Promise<CreateGalleryResponse> {
+  async duplicate(
+    galleryId: string,
+    newName: string,
+  ): Promise<CreateGalleryResponse> {
     const originalGallery = await this.getById(galleryId);
 
     const duplicateData: CreateGalleryDto = {
       businessId: originalGallery.businessId,
       name: newName,
-      ...(originalGallery.description && { description: originalGallery.description }),
+      ...(originalGallery.description && {
+        description: originalGallery.description,
+      }),
       type: originalGallery.type,
       isPublic: false, // Par défaut privée pour éviter la duplication publique
       tags: [...originalGallery.tags],
-      ...(originalGallery.metadata && { metadata: { ...originalGallery.metadata } })
+      ...(originalGallery.metadata && {
+        metadata: { ...originalGallery.metadata },
+      }),
     };
 
     return this.create(duplicateData);
@@ -403,13 +455,13 @@ export default class BusinessGalleriesService {
    */
   static getTypeColor(type: GalleryType): string {
     const colors: Record<GalleryType, string> = {
-      [GalleryType.SHOWCASE]: '#3B82F6',         // Bleu
-      [GalleryType.BEFORE_AFTER]: '#10B981',     // Vert
-      [GalleryType.TEAM]: '#F59E0B',             // Orange
-      [GalleryType.FACILITY]: '#8B5CF6',         // Violet
-      [GalleryType.SERVICES]: '#EF4444',         // Rouge
-      [GalleryType.PORTFOLIO]: '#06B6D4',        // Cyan
-      [GalleryType.TESTIMONIALS]: '#84CC16'      // Lime
+      [GalleryType.SHOWCASE]: '#3B82F6', // Bleu
+      [GalleryType.BEFORE_AFTER]: '#10B981', // Vert
+      [GalleryType.TEAM]: '#F59E0B', // Orange
+      [GalleryType.FACILITY]: '#8B5CF6', // Violet
+      [GalleryType.SERVICES]: '#EF4444', // Rouge
+      [GalleryType.PORTFOLIO]: '#06B6D4', // Cyan
+      [GalleryType.TESTIMONIALS]: '#84CC16', // Lime
     };
     return colors[type] || '#6B7280';
   }
@@ -425,7 +477,7 @@ export default class BusinessGalleriesService {
       [GalleryType.FACILITY]: '🏢',
       [GalleryType.SERVICES]: '⚙️',
       [GalleryType.PORTFOLIO]: '🎨',
-      [GalleryType.TESTIMONIALS]: '💬'
+      [GalleryType.TESTIMONIALS]: '💬',
     };
     return icons[type] || '📷';
   }
@@ -435,10 +487,10 @@ export default class BusinessGalleriesService {
    */
   static getStatusColor(status: GalleryStatus): string {
     const colors: Record<GalleryStatus, string> = {
-      [GalleryStatus.ACTIVE]: '#22C55E',      // Vert
-      [GalleryStatus.INACTIVE]: '#6B7280',    // Gris
-      [GalleryStatus.DRAFT]: '#F59E0B',       // Orange
-      [GalleryStatus.ARCHIVED]: '#EF4444'     // Rouge
+      [GalleryStatus.ACTIVE]: '#22C55E', // Vert
+      [GalleryStatus.INACTIVE]: '#6B7280', // Gris
+      [GalleryStatus.DRAFT]: '#F59E0B', // Orange
+      [GalleryStatus.ARCHIVED]: '#EF4444', // Rouge
     };
     return colors[status] || '#6B7280';
   }
@@ -446,7 +498,9 @@ export default class BusinessGalleriesService {
   /**
    * ✅ Valider les données de galerie
    */
-  static validateGalleryData(data: CreateGalleryDto | UpdateGalleryDto): string[] {
+  static validateGalleryData(
+    data: CreateGalleryDto | UpdateGalleryDto,
+  ): string[] {
     const errors: string[] = [];
 
     if ('name' in data && data.name) {
@@ -458,13 +512,17 @@ export default class BusinessGalleriesService {
       }
     }
 
-    if ('description' in data && data.description && data.description.length > 500) {
+    if (
+      'description' in data &&
+      data.description &&
+      data.description.length > 500
+    ) {
       errors.push('La description ne peut pas dépasser 500 caractères');
     }
 
     if ('sortOrder' in data && data.sortOrder !== undefined) {
       if (data.sortOrder < 0 || data.sortOrder > 999) {
-        errors.push('L\'ordre de tri doit être entre 0 et 999');
+        errors.push("L'ordre de tri doit être entre 0 et 999");
       }
     }
 
@@ -482,14 +540,22 @@ export default class BusinessGalleriesService {
       const sizes = ['Bytes', 'KB', 'MB', 'GB'];
       if (bytes === 0) return '0 Bytes';
       const i = Math.floor(Math.log(bytes) / Math.log(1024));
-      return Math.round(bytes / Math.pow(1024, i) * 100) / 100 + ' ' + sizes[i];
+      return (
+        Math.round((bytes / Math.pow(1024, i)) * 100) / 100 + ' ' + sizes[i]
+      );
     },
 
     /**
      * Valider le type de fichier image
      */
     isValidImageType: (mimeType: string): boolean => {
-      const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+      const validTypes = [
+        'image/jpeg',
+        'image/jpg',
+        'image/png',
+        'image/gif',
+        'image/webp',
+      ];
       return validTypes.includes(mimeType.toLowerCase());
     },
 
@@ -502,7 +568,7 @@ export default class BusinessGalleriesService {
         'image/jpg': 'jpg',
         'image/png': 'png',
         'image/gif': 'gif',
-        'image/webp': 'webp'
+        'image/webp': 'webp',
       };
       return extensions[mimeType.toLowerCase()] || 'jpg';
     },
@@ -511,9 +577,10 @@ export default class BusinessGalleriesService {
      * Calculer le ratio d'aspect
      */
     calculateAspectRatio: (width: number, height: number): string => {
-      const gcd = (a: number, b: number): number => b === 0 ? a : gcd(b, a % b);
+      const gcd = (a: number, b: number): number =>
+        b === 0 ? a : gcd(b, a % b);
       const divisor = gcd(width, height);
       return `${width / divisor}:${height / divisor}`;
-    }
+    },
   };
 }

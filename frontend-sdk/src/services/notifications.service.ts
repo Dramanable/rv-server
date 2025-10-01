@@ -11,14 +11,14 @@ export enum NotificationChannel {
   EMAIL = 'EMAIL',
   SMS = 'SMS',
   PUSH = 'PUSH',
-  IN_APP = 'IN_APP'
+  IN_APP = 'IN_APP',
 }
 
 export enum NotificationPriority {
   LOW = 'LOW',
   NORMAL = 'NORMAL',
   HIGH = 'HIGH',
-  URGENT = 'URGENT'
+  URGENT = 'URGENT',
 }
 
 export enum NotificationStatus {
@@ -26,7 +26,7 @@ export enum NotificationStatus {
   SENT = 'SENT',
   DELIVERED = 'DELIVERED',
   FAILED = 'FAILED',
-  READ = 'READ'
+  READ = 'READ',
 }
 
 export interface Notification {
@@ -76,7 +76,10 @@ export class NotificationService {
    * 📤 Envoyer une notification
    */
   async send(request: SendNotificationRequest): Promise<Notification> {
-    const response = await this.client.post<Notification>('/api/v1/notifications/send', request);
+    const response = await this.client.post<Notification>(
+      '/api/v1/notifications/send',
+      request,
+    );
     return response.data;
   }
 
@@ -88,14 +91,14 @@ export class NotificationService {
     title: string,
     content: string,
     channel: NotificationChannel = NotificationChannel.EMAIL,
-    priority: NotificationPriority = NotificationPriority.NORMAL
+    priority: NotificationPriority = NotificationPriority.NORMAL,
   ): Promise<Notification> {
     return this.send({
       recipientId,
       title,
       content,
       channel,
-      priority
+      priority,
     });
   }
 
@@ -106,14 +109,14 @@ export class NotificationService {
     recipientId: string,
     title: string,
     content: string,
-    priority: NotificationPriority = NotificationPriority.NORMAL
+    priority: NotificationPriority = NotificationPriority.NORMAL,
   ): Promise<Notification> {
     return this.send({
       recipientId,
       title,
       content,
       channel: NotificationChannel.EMAIL,
-      priority
+      priority,
     });
   }
 
@@ -123,24 +126,26 @@ export class NotificationService {
   async sendSMS(
     recipientId: string,
     content: string,
-    priority: NotificationPriority = NotificationPriority.NORMAL
+    priority: NotificationPriority = NotificationPriority.NORMAL,
   ): Promise<Notification> {
     return this.send({
       recipientId,
       title: 'SMS Notification',
       content,
       channel: NotificationChannel.SMS,
-      priority
+      priority,
     });
   }
 
   /**
    * 📋 Lister les notifications avec filtres
    */
-  async list(request: ListNotificationsRequest = {}): Promise<PaginatedResponse<Notification>> {
+  async list(
+    request: ListNotificationsRequest = {},
+  ): Promise<PaginatedResponse<Notification>> {
     const response = await this.client.post<PaginatedResponse<Notification>>(
       '/api/v1/notifications/list',
-      request
+      request,
     );
     return response.data;
   }
@@ -149,7 +154,9 @@ export class NotificationService {
    * 📄 Obtenir une notification par ID
    */
   async getById(id: string): Promise<Notification> {
-    const response = await this.client.get<Notification>(`/api/v1/notifications/${id}`);
+    const response = await this.client.get<Notification>(
+      `/api/v1/notifications/${id}`,
+    );
     return response.data;
   }
 
@@ -157,7 +164,9 @@ export class NotificationService {
    * ✅ Marquer une notification comme lue
    */
   async markAsRead(id: string): Promise<Notification> {
-    const response = await this.client.patch<Notification>(`/api/v1/notifications/${id}/read`);
+    const response = await this.client.patch<Notification>(
+      `/api/v1/notifications/${id}/read`,
+    );
     return response.data;
   }
 
@@ -171,13 +180,16 @@ export class NotificationService {
   /**
    * 📬 Obtenir les notifications non lues d'un utilisateur
    */
-  async getUnread(recipientId: string, limit: number = 50): Promise<readonly Notification[]> {
+  async getUnread(
+    recipientId: string,
+    limit: number = 50,
+  ): Promise<readonly Notification[]> {
     const response = await this.list({
       recipientId,
       status: NotificationStatus.SENT,
       limit,
       sortBy: 'createdAt',
-      sortOrder: 'desc'
+      sortOrder: 'desc',
     });
 
     return response.data;
@@ -187,7 +199,9 @@ export class NotificationService {
    * 🔄 Réessayer une notification échouée
    */
   async retry(id: string): Promise<Notification> {
-    const response = await this.client.post<Notification>(`/api/v1/notifications/${id}/retry`);
+    const response = await this.client.post<Notification>(
+      `/api/v1/notifications/${id}/retry`,
+    );
     return response.data;
   }
 
@@ -206,7 +220,7 @@ export class NotificationService {
     appointmentId: string,
     appointmentDate: Date,
     businessName: string,
-    channel: NotificationChannel = NotificationChannel.EMAIL
+    channel: NotificationChannel = NotificationChannel.EMAIL,
   ): Promise<Notification> {
     const title = `Rappel de rendez-vous - ${businessName}`;
     const content = `Votre rendez-vous est prévu le ${appointmentDate.toLocaleDateString()} à ${appointmentDate.toLocaleTimeString()}.`;
@@ -221,8 +235,8 @@ export class NotificationService {
         type: 'appointment_reminder',
         appointmentId,
         businessName,
-        appointmentDate: appointmentDate.toISOString()
-      }
+        appointmentDate: appointmentDate.toISOString(),
+      },
     });
   }
 
@@ -234,7 +248,7 @@ export class NotificationService {
     appointmentId: string,
     appointmentDate: Date,
     businessName: string,
-    serviceName: string
+    serviceName: string,
   ): Promise<Notification> {
     const title = `Confirmation de rendez-vous - ${businessName}`;
     const content = `Votre rendez-vous pour ${serviceName} est confirmé le ${appointmentDate.toLocaleDateString()} à ${appointmentDate.toLocaleTimeString()}.`;
@@ -250,8 +264,8 @@ export class NotificationService {
         appointmentId,
         businessName,
         serviceName,
-        appointmentDate: appointmentDate.toISOString()
-      }
+        appointmentDate: appointmentDate.toISOString(),
+      },
     });
   }
 
@@ -357,12 +371,15 @@ export class NotificationService {
     totalDelivered: number;
     totalFailed: number;
     deliveryRate: number;
-    byChannel: Record<NotificationChannel, {
-      sent: number;
-      delivered: number;
-      failed: number;
-      deliveryRate: number;
-    }>;
+    byChannel: Record<
+      NotificationChannel,
+      {
+        sent: number;
+        delivered: number;
+        failed: number;
+        deliveryRate: number;
+      }
+    >;
     byDate: Array<{
       date: string;
       sent: number;
@@ -396,12 +413,15 @@ export class NotificationService {
       totalDelivered: number;
       totalFailed: number;
       deliveryRate: number;
-      byChannel: Record<NotificationChannel, {
-        sent: number;
-        delivered: number;
-        failed: number;
-        deliveryRate: number;
-      }>;
+      byChannel: Record<
+        NotificationChannel,
+        {
+          sent: number;
+          delivered: number;
+          failed: number;
+          deliveryRate: number;
+        }
+      >;
       byDate: Array<{
         date: string;
         sent: number;

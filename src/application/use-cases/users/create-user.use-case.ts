@@ -17,8 +17,8 @@ import {
 } from '../../exceptions/auth.exceptions';
 import { I18nService } from '../../ports/i18n.port';
 import { Logger } from '../../ports/logger.port';
-import { IPermissionService } from '../../ports/permission.service.interface';
 import { IPasswordHasher } from '../../ports/password-hasher.port';
+import { IPermissionService } from '../../ports/permission.service.interface';
 
 // ═══════════════════════════════════════════════════════════════
 // 📋 REQUEST & RESPONSE TYPES

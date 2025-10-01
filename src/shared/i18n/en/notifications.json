@@ -1,0 +1,96 @@
+{
+  "notifications": {
+    "templates": {
+      "appointment_confirmation": {
+        "title": "Appointment Confirmation - {{businessName}}",
+        "content": "Hello {{clientName}},\n\nYour appointment has been confirmed:\n\n⏰ **{{appointmentDate}} at {{appointmentTime}}**\n💼 **Service:** {{serviceName}}\n📍 **Location:** {{businessName}}\n{{businessAddress}}\n\n📞 **Contact:** {{businessPhone}}\n\nTo modify or cancel your appointment, please contact us at least 24 hours in advance.\n\nBest regards,\nThe {{businessName}} team"
+      },
+      "appointment_reminder": {
+        "title": "Reminder: Your appointment tomorrow - {{businessName}}",
+        "content": "Hello {{clientName}},\n\nThis is a reminder of your appointment scheduled for tomorrow:\n\n⏰ **{{appointmentDate}} at {{appointmentTime}}**\n📍 **{{businessName}}** - {{businessAddress}}\n💼 **Service:** {{serviceName}}\n\n📞 **Contact:** {{businessPhone}}\n\nWe look forward to seeing you!\n\nBest regards,\nThe {{businessName}} team"
+      },
+      "appointment_cancellation": {
+        "title": "Appointment Cancellation - {{businessName}}",
+        "content": "Hello {{clientName}},\n\nWe inform you that your appointment on **{{appointmentDate}} at {{appointmentTime}}** has been cancelled.\n\n💼 **Service:** {{serviceName}}\n📍 **{{businessName}}**\n\n{{#cancellationReason}}\n**Reason:** {{cancellationReason}}\n{{/cancellationReason}}\n\nTo schedule a new appointment, please feel free to contact us at {{businessPhone}}.\n\nBest regards,\nThe {{businessName}} team"
+      },
+      "appointment_rescheduled": {
+        "title": "Appointment Rescheduled - {{businessName}}",
+        "content": "Hello {{clientName}},\n\nYour appointment has been rescheduled:\n\n❌ **Previous appointment:** {{oldAppointmentDate}} at {{oldAppointmentTime}}\n✅ **New appointment:** {{appointmentDate}} at {{appointmentTime}}\n\n💼 **Service:** {{serviceName}}\n📍 **{{businessName}}** - {{businessAddress}}\n\n📞 **Contact:** {{businessPhone}}\n\nBest regards,\nThe {{businessName}} team"
+      },
+      "welcome_message": {
+        "title": "Welcome to {{businessName}}!",
+        "content": "Hello {{clientName}},\n\nWelcome to our appointment booking platform!\n\nYou can now:\n✅ Book appointments online\n✅ View your appointments\n✅ Receive automatic reminders\n✅ Modify or cancel your appointments\n\n📞 **Contact us:** {{businessPhone}}\n📍 **Find us:** {{businessAddress}}\n\nBest regards,\nThe {{businessName}} team"
+      },
+      "password_reset": {
+        "title": "Password Reset",
+        "content": "Hello {{clientName}},\n\nYou have requested to reset your password.\n\nClick the link below to create a new password:\n{{resetLink}}\n\n⏰ This link expires in 24 hours.\n\nIf you did not request this reset, please ignore this email.\n\nBest regards,\nThe {{businessName}} team"
+      },
+      "account_verification": {
+        "title": "Account Verification",
+        "content": "Hello {{clientName}},\n\nThank you for signing up!\n\nClick the link below to verify your account:\n{{verificationLink}}\n\n⏰ This link expires in 48 hours.\n\nOnce your account is verified, you can book appointments online.\n\nBest regards,\nThe {{businessName}} team"
+      },
+      "payment_confirmation": {
+        "title": "Payment Confirmation - {{businessName}}",
+        "content": "Hello {{clientName}},\n\nWe confirm receipt of your payment:\n\n💰 **Amount:** €{{amount}}\n📋 **Reference:** {{transactionId}}\n📅 **Date:** {{paymentDate}}\n💼 **Service:** {{serviceName}}\n\nYour appointment on {{appointmentDate}} at {{appointmentTime}} is confirmed.\n\nBest regards,\nThe {{businessName}} team"
+      },
+      "custom": {
+        "title": "{{title}}",
+        "content": "{{content}}"
+      }
+    },
+    "errors": {
+      "translation_failed": "Error translating notification",
+      "template_not_found": "Notification template not found",
+      "unsupported_language": "Unsupported language: {{language}}",
+      "invalid_variables": "Invalid template variables"
+    },
+    "channels": {
+      "EMAIL": "Email",
+      "SMS": "SMS",
+      "PUSH": "Push notification",
+      "IN_APP": "In-app notification"
+    },
+    "priorities": {
+      "LOW": "Low",
+      "NORMAL": "Normal",
+      "HIGH": "High",
+      "URGENT": "Urgent"
+    },
+    "statuses": {
+      "PENDING": "Pending",
+      "SENT": "Sent",
+      "DELIVERED": "Delivered",
+      "FAILED": "Failed",
+      "READ": "Read",
+      "CANCELLED": "Cancelled"
+    }
+  },
+  "errors": {
+    "notifications": {
+      "requesting_user_required": "Requesting user ID is required",
+      "invalid_page": "Page number must be greater than 0",
+      "invalid_limit": "Limit must be between 1 and 100",
+      "invalid_sort_field": "Invalid sort field",
+      "invalid_sort_order": "Invalid sort order (asc or desc)",
+      "list_failed": "Failed to retrieve notifications",
+      "not_found": "Notification not found",
+      "id_required": "Notification ID is required",
+      "mark_as_read_failed": "Failed to mark as read",
+      "delete_failed": "Failed to delete notification",
+      "analytics_failed": "Failed to retrieve analytics",
+      "permission_denied": "Permission denied",
+      "send_failed": "Failed to send notification",
+      "bulk_send_failed": "Failed to send bulk notifications",
+      "get_failed": "Failed to retrieve notification",
+      "validation_error": "Validation error",
+      "cannot_mark_failed_as_read": "Cannot mark failed notification as read",
+      "cannot_mark_cancelled_as_read": "Cannot mark cancelled notification as read",
+      "notification_expired": "This notification has expired",
+      "admin_permission_required_for_hard_delete": "Admin permissions required for permanent deletion",
+      "already_deleted": "This notification has already been deleted",
+      "cannot_delete_system_notification": "Cannot delete system notification",
+      "invalid_date_range": "Invalid date range",
+      "date_range_too_large": "Date range too large (maximum 1 year)"
+    }
+  }
+}

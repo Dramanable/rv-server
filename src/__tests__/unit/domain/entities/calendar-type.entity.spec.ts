@@ -1,6 +1,6 @@
 import { CalendarType } from '../../../../domain/entities/calendar-type.entity';
-import { CalendarTypeId } from '../../../../domain/value-objects/calendar-type-id.value-object';
 import { BusinessId } from '../../../../domain/value-objects/business-id.value-object';
+import { CalendarTypeId } from '../../../../domain/value-objects/calendar-type-id.value-object';
 
 describe('CalendarType Entity', () => {
   describe('create', () => {

@@ -23,8 +23,8 @@ import {
   createMockLogger,
   createMockUserRepository,
 } from '../../../../../application/mocks/typed-mocks';
-import { IPermissionService } from '../../../../../application/ports/permission.service.interface';
 import { IPasswordHasher } from '../../../../../application/ports/password-hasher.port';
+import { IPermissionService } from '../../../../../application/ports/permission.service.interface';
 
 describe('CreateUserUseCase', () => {
   let createUserUseCase: CreateUserUseCase;
@@ -40,7 +40,6 @@ describe('CreateUserUseCase', () => {
     email: string,
     name: string,
     role: UserRole,
-    businessId?: string,
   ): User => {
     const user = User.create(Email.create(email), name, role);
     // Override id for testing purposes

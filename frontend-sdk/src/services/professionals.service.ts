@@ -15,7 +15,7 @@ export enum ProfessionalStatus {
   INACTIVE = 'INACTIVE',
   ON_LEAVE = 'ON_LEAVE',
   SUSPENDED = 'SUSPENDED',
-  TERMINATED = 'TERMINATED'
+  TERMINATED = 'TERMINATED',
 }
 
 export enum ContractType {
@@ -23,7 +23,7 @@ export enum ContractType {
   PART_TIME = 'PART_TIME',
   CONTRACT = 'CONTRACT',
   FREELANCE = 'FREELANCE',
-  INTERN = 'INTERN'
+  INTERN = 'INTERN',
 }
 
 // Interfaces
@@ -129,7 +129,12 @@ export interface UpdateProfessionalDto {
 export interface ListProfessionalsDto {
   readonly page?: number;
   readonly limit?: number;
-  readonly sortBy?: 'createdAt' | 'firstName' | 'lastName' | 'rating' | 'totalAppointments';
+  readonly sortBy?:
+    | 'createdAt'
+    | 'firstName'
+    | 'lastName'
+    | 'rating'
+    | 'totalAppointments';
   readonly sortOrder?: 'asc' | 'desc';
   readonly search?: string;
   readonly businessId?: string;
@@ -202,8 +207,13 @@ export default class ProfessionalsService {
   /**
    * 📋 Lister les professionnels avec filtrage avancé
    */
-  async list(params: ListProfessionalsDto = {}): Promise<ListProfessionalsResponse> {
-    const response = await this.client.post('/api/v1/professionals/list', params);
+  async list(
+    params: ListProfessionalsDto = {},
+  ): Promise<ListProfessionalsResponse> {
+    const response = await this.client.post(
+      '/api/v1/professionals/list',
+      params,
+    );
     return response.data;
   }
 
@@ -218,7 +228,9 @@ export default class ProfessionalsService {
   /**
    * ➕ Créer un nouveau professionnel
    */
-  async create(data: CreateProfessionalDto): Promise<CreateProfessionalResponse> {
+  async create(
+    data: CreateProfessionalDto,
+  ): Promise<CreateProfessionalResponse> {
     const response = await this.client.post('/api/v1/professionals', data);
     return response.data;
   }
@@ -226,7 +238,10 @@ export default class ProfessionalsService {
   /**
    * ✏️ Mettre à jour un professionnel
    */
-  async update(id: string, data: UpdateProfessionalDto): Promise<UpdateProfessionalResponse> {
+  async update(
+    id: string,
+    data: UpdateProfessionalDto,
+  ): Promise<UpdateProfessionalResponse> {
     const response = await this.client.put(`/api/v1/professionals/${id}`, data);
     return response.data;
   }
@@ -259,7 +274,10 @@ export default class ProfessionalsService {
    * ✅ Obtenir les professionnels actifs
    */
   async getActiveProfessionals(): Promise<Professional[]> {
-    const response = await this.list({ status: ProfessionalStatus.ACTIVE, limit: 100 });
+    const response = await this.list({
+      status: ProfessionalStatus.ACTIVE,
+      limit: 100,
+    });
     return [...response.data];
   }
 
@@ -271,7 +289,7 @@ export default class ProfessionalsService {
       isVisible: true,
       allowOnlineBooking: true,
       status: ProfessionalStatus.ACTIVE,
-      limit: 100
+      limit: 100,
     });
     return [...response.data];
   }
@@ -280,7 +298,10 @@ export default class ProfessionalsService {
    * 🎯 Obtenir les professionnels par spécialisation
    */
   async getBySpecialization(specialization: string): Promise<Professional[]> {
-    const response = await this.list({ specializations: [specialization], limit: 100 });
+    const response = await this.list({
+      specializations: [specialization],
+      limit: 100,
+    });
     return [...response.data];
   }
 
@@ -300,7 +321,7 @@ export default class ProfessionalsService {
       sortBy: 'rating',
       sortOrder: 'desc',
       minRating: 4.0,
-      limit
+      limit,
     });
     return [...response.data];
   }
@@ -308,20 +329,32 @@ export default class ProfessionalsService {
   /**
    * 📊 Obtenir les statistiques d'un professionnel
    */
-  async getStats(professionalId: string, period?: 'week' | 'month' | 'quarter' | 'year'): Promise<ProfessionalStats> {
+  async getStats(
+    professionalId: string,
+    period?: 'week' | 'month' | 'quarter' | 'year',
+  ): Promise<ProfessionalStats> {
     const queryParams = period ? `?period=${period}` : '';
-    const response = await this.client.get(`/api/v1/professionals/${professionalId}/stats${queryParams}`);
+    const response = await this.client.get(
+      `/api/v1/professionals/${professionalId}/stats${queryParams}`,
+    );
     return response.data.data;
   }
 
   /**
    * 🔄 Changer le statut d'un professionnel
    */
-  async changeStatus(professionalId: string, status: ProfessionalStatus, reason?: string): Promise<UpdateProfessionalResponse> {
-    const response = await this.client.patch(`/api/v1/professionals/${professionalId}/status`, {
-      status,
-      reason
-    });
+  async changeStatus(
+    professionalId: string,
+    status: ProfessionalStatus,
+    reason?: string,
+  ): Promise<UpdateProfessionalResponse> {
+    const response = await this.client.patch(
+      `/api/v1/professionals/${professionalId}/status`,
+      {
+        status,
+        reason,
+      },
+    );
     return response.data;
   }
 
@@ -330,19 +363,27 @@ export default class ProfessionalsService {
    */
   async getBusinessTeam(businessId: string): Promise<Professional[]> {
     const response = await this.getByBusiness(businessId);
-    return response.filter(prof => prof.status === ProfessionalStatus.ACTIVE);
+    return response.filter((prof) => prof.status === ProfessionalStatus.ACTIVE);
   }
 
   /**
    * 📅 Obtenir les professionnels disponibles pour un créneau
    */
-  async getAvailableForSlot(businessId: string, date: string, startTime: string, endTime: string): Promise<Professional[]> {
-    const response = await this.client.post(`/api/v1/professionals/available-for-slot`, {
-      businessId,
-      date,
-      startTime,
-      endTime
-    });
+  async getAvailableForSlot(
+    businessId: string,
+    date: string,
+    startTime: string,
+    endTime: string,
+  ): Promise<Professional[]> {
+    const response = await this.client.post(
+      `/api/v1/professionals/available-for-slot`,
+      {
+        businessId,
+        date,
+        startTime,
+        endTime,
+      },
+    );
     return response.data.data;
   }
 
@@ -353,7 +394,7 @@ export default class ProfessionalsService {
     const params: ListProfessionalsDto = {
       search: query,
       limit: 50,
-      ...(businessId && { businessId })
+      ...(businessId && { businessId }),
     };
     const response = await this.list(params);
     return [...response.data];
@@ -363,7 +404,9 @@ export default class ProfessionalsService {
    * 📊 Obtenir toutes les spécialisations disponibles
    */
   async getSpecializations(): Promise<string[]> {
-    const response = await this.client.get('/api/v1/professionals/specializations');
+    const response = await this.client.get(
+      '/api/v1/professionals/specializations',
+    );
     return response.data.data;
   }
 
@@ -394,11 +437,11 @@ export default class ProfessionalsService {
    */
   static getStatusColor(status: ProfessionalStatus): string {
     const colors: Record<ProfessionalStatus, string> = {
-      [ProfessionalStatus.ACTIVE]: '#22C55E',      // Vert
-      [ProfessionalStatus.INACTIVE]: '#6B7280',    // Gris
-      [ProfessionalStatus.ON_LEAVE]: '#F59E0B',    // Orange
-      [ProfessionalStatus.SUSPENDED]: '#EF4444',   // Rouge
-      [ProfessionalStatus.TERMINATED]: '#1F2937'   // Noir
+      [ProfessionalStatus.ACTIVE]: '#22C55E', // Vert
+      [ProfessionalStatus.INACTIVE]: '#6B7280', // Gris
+      [ProfessionalStatus.ON_LEAVE]: '#F59E0B', // Orange
+      [ProfessionalStatus.SUSPENDED]: '#EF4444', // Rouge
+      [ProfessionalStatus.TERMINATED]: '#1F2937', // Noir
     };
     return colors[status] || '#6B7280';
   }
@@ -412,7 +455,7 @@ export default class ProfessionalsService {
       [ProfessionalStatus.INACTIVE]: '⚫',
       [ProfessionalStatus.ON_LEAVE]: '🏖️',
       [ProfessionalStatus.SUSPENDED]: '⛔',
-      [ProfessionalStatus.TERMINATED]: '❌'
+      [ProfessionalStatus.TERMINATED]: '❌',
     };
     return icons[status] || '❓';
   }
@@ -420,7 +463,9 @@ export default class ProfessionalsService {
   /**
    * ✅ Valider les données d'un professionnel
    */
-  static validateProfessionalData(data: CreateProfessionalDto | UpdateProfessionalDto): string[] {
+  static validateProfessionalData(
+    data: CreateProfessionalDto | UpdateProfessionalDto,
+  ): string[] {
     const errors: string[] = [];
 
     if ('hourlyRate' in data && data.hourlyRate !== undefined) {
@@ -434,7 +479,7 @@ export default class ProfessionalsService {
 
     if ('maxHoursPerWeek' in data && data.maxHoursPerWeek !== undefined) {
       if (data.maxHoursPerWeek < 1 || data.maxHoursPerWeek > 168) {
-        errors.push('Le nombre d\'heures par semaine doit être entre 1 et 168');
+        errors.push("Le nombre d'heures par semaine doit être entre 1 et 168");
       }
     }
 
@@ -444,15 +489,28 @@ export default class ProfessionalsService {
       }
     }
 
-    if ('maxAdvanceBookingDays' in data && data.maxAdvanceBookingDays !== undefined) {
+    if (
+      'maxAdvanceBookingDays' in data &&
+      data.maxAdvanceBookingDays !== undefined
+    ) {
       if (data.maxAdvanceBookingDays < 1 || data.maxAdvanceBookingDays > 365) {
-        errors.push('Les jours de réservation à l\'avance doivent être entre 1 et 365');
+        errors.push(
+          "Les jours de réservation à l'avance doivent être entre 1 et 365",
+        );
       }
     }
 
-    if ('cancellationPolicyHours' in data && data.cancellationPolicyHours !== undefined) {
-      if (data.cancellationPolicyHours < 0 || data.cancellationPolicyHours > 168) {
-        errors.push('La politique d\'annulation doit être entre 0 et 168 heures');
+    if (
+      'cancellationPolicyHours' in data &&
+      data.cancellationPolicyHours !== undefined
+    ) {
+      if (
+        data.cancellationPolicyHours < 0 ||
+        data.cancellationPolicyHours > 168
+      ) {
+        errors.push(
+          "La politique d'annulation doit être entre 0 et 168 heures",
+        );
       }
     }
 
@@ -467,11 +525,16 @@ export default class ProfessionalsService {
      * Calculer le taux de complétion des rendez-vous
      */
     calculateCompletionRate: (professional: Professional): number => {
-      if (!professional.totalAppointments || professional.totalAppointments === 0) {
+      if (
+        !professional.totalAppointments ||
+        professional.totalAppointments === 0
+      ) {
         return 0;
       }
       const completedCount = professional.completedAppointments || 0;
-      return Math.round((completedCount / professional.totalAppointments) * 100);
+      return Math.round(
+        (completedCount / professional.totalAppointments) * 100,
+      );
     },
 
     /**
@@ -496,9 +559,11 @@ export default class ProfessionalsService {
      * Vérifier si un professionnel est disponible pour réservation
      */
     isBookable: (professional: Professional): boolean => {
-      return professional.status === ProfessionalStatus.ACTIVE &&
-             professional.isVisible &&
-             professional.allowOnlineBooking;
+      return (
+        professional.status === ProfessionalStatus.ACTIVE &&
+        professional.isVisible &&
+        professional.allowOnlineBooking
+      );
     },
 
     /**
@@ -518,7 +583,8 @@ export default class ProfessionalsService {
     formatHourlyRate: (professional: Professional): string => {
       if (!professional.hourlyRate) return 'Non spécifié';
       const currency = professional.currency || 'EUR';
-      const symbol = currency === 'EUR' ? '€' : currency === 'USD' ? '$' : currency;
+      const symbol =
+        currency === 'EUR' ? '€' : currency === 'USD' ? '$' : currency;
       return `${professional.hourlyRate}${symbol}/h`;
     },
 
@@ -531,6 +597,6 @@ export default class ProfessionalsService {
       const halfStar = rating % 1 >= 0.5 ? '⭐' : '';
       const emptyStars = 5 - Math.ceil(rating);
       return '⭐'.repeat(fullStars) + halfStar + '☆'.repeat(emptyStars);
-    }
+    },
   };
 }

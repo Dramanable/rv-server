@@ -13,14 +13,14 @@ export enum BusinessImageType {
   COVER = 'COVER',
   BACKGROUND = 'BACKGROUND',
   ICON = 'ICON',
-  THUMBNAIL = 'THUMBNAIL'
+  THUMBNAIL = 'THUMBNAIL',
 }
 
 export enum ImageProcessingStatus {
   PENDING = 'PENDING',
   PROCESSING = 'PROCESSING',
   COMPLETED = 'COMPLETED',
-  FAILED = 'FAILED'
+  FAILED = 'FAILED',
 }
 
 export interface BusinessImage {
@@ -78,26 +78,31 @@ export class BusinessImageService {
    * � Upload Business Image to AWS S3
    * Endpoint: POST /api/v1/business/images/{businessId}/upload
    */
-  async upload(businessId: string, file: File, metadata?: {
-    alt?: string;
-    title?: string;
-    description?: string;
-  }): Promise<BusinessImage> {
+  async upload(
+    businessId: string,
+    file: File,
+    metadata?: {
+      alt?: string;
+      title?: string;
+      description?: string;
+    },
+  ): Promise<BusinessImage> {
     const formData = new FormData();
     formData.append('file', file);
 
     if (metadata?.alt) formData.append('alt', metadata.alt);
     if (metadata?.title) formData.append('title', metadata.title);
-    if (metadata?.description) formData.append('description', metadata.description);
+    if (metadata?.description)
+      formData.append('description', metadata.description);
 
     const response = await this.client.post<BusinessImage>(
       `/api/v1/business/images/${businessId}/upload`,
       formData,
       {
         headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      }
+          'Content-Type': 'multipart/form-data',
+        },
+      },
     );
     return response.data;
   }
@@ -107,7 +112,9 @@ export class BusinessImageService {
    * Endpoint: GET /api/v1/business/images/{businessId}/gallery
    */
   async getGallery(businessId: string): Promise<BusinessImage[]> {
-    const response = await this.client.get<BusinessImage[]>(`/api/v1/business/images/${businessId}/gallery`);
+    const response = await this.client.get<BusinessImage[]>(
+      `/api/v1/business/images/${businessId}/gallery`,
+    );
     return response.data;
   }
 
@@ -115,19 +122,23 @@ export class BusinessImageService {
    * �️ Add Image to Business Gallery
    * Endpoint: POST /api/v1/business/images/{businessId}/gallery
    */
-  async addToGallery(businessId: string, imageData: {
-    file: File;
-    alt?: string;
-    title?: string;
-    description?: string;
-    category?: string;
-  }): Promise<BusinessImage> {
+  async addToGallery(
+    businessId: string,
+    imageData: {
+      file: File;
+      alt?: string;
+      title?: string;
+      description?: string;
+      category?: string;
+    },
+  ): Promise<BusinessImage> {
     const formData = new FormData();
     formData.append('file', imageData.file);
 
     if (imageData.alt) formData.append('alt', imageData.alt);
     if (imageData.title) formData.append('title', imageData.title);
-    if (imageData.description) formData.append('description', imageData.description);
+    if (imageData.description)
+      formData.append('description', imageData.description);
     if (imageData.category) formData.append('category', imageData.category);
 
     const response = await this.client.post<BusinessImage>(
@@ -135,9 +146,9 @@ export class BusinessImageService {
       formData,
       {
         headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      }
+          'Content-Type': 'multipart/form-data',
+        },
+      },
     );
     return response.data;
   }
@@ -147,21 +158,26 @@ export class BusinessImageService {
    * Endpoint: DELETE /api/v1/business/images/{businessId}/images/{imageId}
    */
   async deleteImage(businessId: string, imageId: string): Promise<void> {
-    await this.client.delete(`/api/v1/business/images/${businessId}/images/${imageId}`);
+    await this.client.delete(
+      `/api/v1/business/images/${businessId}/images/${imageId}`,
+    );
   }
 
   /**
    * 🔍 Update Business SEO Profile
    * Endpoint: PUT /api/v1/business/images/{businessId}/seo
    */
-  async updateSeoProfile(businessId: string, seoData: {
-    metaTitle?: string;
-    metaDescription?: string;
-    keywords?: string[];
-    ogImage?: string;
-    twitterImage?: string;
-    altTexts?: Record<string, string>;
-  }): Promise<{
+  async updateSeoProfile(
+    businessId: string,
+    seoData: {
+      metaTitle?: string;
+      metaDescription?: string;
+      keywords?: string[];
+      ogImage?: string;
+      twitterImage?: string;
+      altTexts?: Record<string, string>;
+    },
+  ): Promise<{
     success: boolean;
     data: {
       metaTitle: string;
@@ -189,11 +205,16 @@ export class BusinessImageService {
   /**
    * 🔄 Replace image in gallery
    */
-  async replaceImage(businessId: string, imageId: string, file: File, metadata?: {
-    alt?: string;
-    title?: string;
-    description?: string;
-  }): Promise<BusinessImage> {
+  async replaceImage(
+    businessId: string,
+    imageId: string,
+    file: File,
+    metadata?: {
+      alt?: string;
+      title?: string;
+      description?: string;
+    },
+  ): Promise<BusinessImage> {
     // Delete old image first
     await this.deleteImage(businessId, imageId);
 
@@ -213,27 +234,34 @@ export class BusinessImageService {
     const gallery = await this.getGallery(businessId);
 
     const byType = {} as Record<BusinessImageType, number>;
-    Object.values(BusinessImageType).forEach(type => {
-      byType[type] = gallery.filter(img => img.type === type).length;
+    Object.values(BusinessImageType).forEach((type) => {
+      byType[type] = gallery.filter((img) => img.type === type).length;
     });
 
-    const totalStorageUsed = gallery.reduce((total, img) => total + img.size, 0);
-    const averageImageSize = gallery.length > 0 ? totalStorageUsed / gallery.length : 0;
+    const totalStorageUsed = gallery.reduce(
+      (total, img) => total + img.size,
+      0,
+    );
+    const averageImageSize =
+      gallery.length > 0 ? totalStorageUsed / gallery.length : 0;
 
     return {
       totalImages: gallery.length,
       byType,
       totalStorageUsed,
-      averageImageSize
+      averageImageSize,
     };
   }
 
   /**
    * 🌟 Get images by type from gallery
    */
-  async getImagesByType(businessId: string, type: BusinessImageType): Promise<BusinessImage[]> {
+  async getImagesByType(
+    businessId: string,
+    type: BusinessImageType,
+  ): Promise<BusinessImage[]> {
     const gallery = await this.getGallery(businessId);
-    return gallery.filter(image => image.type === type);
+    return gallery.filter((image) => image.type === type);
   }
 
   /**
@@ -260,24 +288,31 @@ export class BusinessImageService {
   /**
    * 📋 Filter images by criteria
    */
-  async filterImages(businessId: string, filters: {
-    type?: BusinessImageType;
-    minSize?: number;
-    maxSize?: number;
-    isActive?: boolean;
-    searchTerm?: string;
-  }): Promise<BusinessImage[]> {
+  async filterImages(
+    businessId: string,
+    filters: {
+      type?: BusinessImageType;
+      minSize?: number;
+      maxSize?: number;
+      isActive?: boolean;
+      searchTerm?: string;
+    },
+  ): Promise<BusinessImage[]> {
     const gallery = await this.getGallery(businessId);
 
-    return gallery.filter(image => {
+    return gallery.filter((image) => {
       if (filters.type && image.type !== filters.type) return false;
       if (filters.minSize && image.size < filters.minSize) return false;
       if (filters.maxSize && image.size > filters.maxSize) return false;
-      if (filters.isActive !== undefined && image.isActive !== filters.isActive) return false;
+      if (filters.isActive !== undefined && image.isActive !== filters.isActive)
+        return false;
       if (filters.searchTerm) {
         const searchLower = filters.searchTerm.toLowerCase();
-        const matchesFilename = image.filename.toLowerCase().includes(searchLower);
-        const matchesAlt = image.alt?.toLowerCase().includes(searchLower) || false;
+        const matchesFilename = image.filename
+          .toLowerCase()
+          .includes(searchLower);
+        const matchesAlt =
+          image.alt?.toLowerCase().includes(searchLower) || false;
         if (!matchesFilename && !matchesAlt) return false;
       }
       return true;
@@ -295,7 +330,7 @@ export class BusinessImageService {
       [BusinessImageType.COVER]: 'Image de couverture',
       [BusinessImageType.BACKGROUND]: 'Image de fond',
       [BusinessImageType.ICON]: 'Icône',
-      [BusinessImageType.THUMBNAIL]: 'Miniature'
+      [BusinessImageType.THUMBNAIL]: 'Miniature',
     };
     return names[type];
   }
@@ -305,7 +340,7 @@ export class BusinessImageService {
       [ImageProcessingStatus.PENDING]: 'En attente',
       [ImageProcessingStatus.PROCESSING]: 'En cours de traitement',
       [ImageProcessingStatus.COMPLETED]: 'Terminé',
-      [ImageProcessingStatus.FAILED]: 'Échec'
+      [ImageProcessingStatus.FAILED]: 'Échec',
     };
     return names[status];
   }
@@ -325,22 +360,27 @@ export class BusinessImageService {
     return validTypes.includes(file.type);
   }
 
-  static getRecommendedDimensions(type: BusinessImageType): { width: number; height: number } | null {
-    const recommendations: Record<BusinessImageType, { width: number; height: number }> = {
+  static getRecommendedDimensions(
+    type: BusinessImageType,
+  ): { width: number; height: number } | null {
+    const recommendations: Record<
+      BusinessImageType,
+      { width: number; height: number }
+    > = {
       [BusinessImageType.LOGO]: { width: 300, height: 300 },
       [BusinessImageType.BANNER]: { width: 1200, height: 400 },
       [BusinessImageType.AVATAR]: { width: 200, height: 200 },
       [BusinessImageType.COVER]: { width: 1920, height: 1080 },
       [BusinessImageType.BACKGROUND]: { width: 1920, height: 1080 },
       [BusinessImageType.ICON]: { width: 64, height: 64 },
-      [BusinessImageType.THUMBNAIL]: { width: 150, height: 150 }
+      [BusinessImageType.THUMBNAIL]: { width: 150, height: 150 },
     };
     return recommendations[type] || null;
   }
 
   static validateImageDimensions(
     type: BusinessImageType,
-    dimensions: { width: number; height: number }
+    dimensions: { width: number; height: number },
   ): { isValid: boolean; message?: string } {
     const recommended = this.getRecommendedDimensions(type);
     if (!recommended) return { isValid: true };
@@ -354,14 +394,14 @@ export class BusinessImageService {
     if (width < minWidth || height < minHeight) {
       return {
         isValid: false,
-        message: `Image trop petite. Minimum recommandé: ${minWidth}x${minHeight}px`
+        message: `Image trop petite. Minimum recommandé: ${minWidth}x${minHeight}px`,
       };
     }
 
     if (width > maxWidth || height > maxHeight) {
       return {
         isValid: false,
-        message: `Image trop grande. Maximum recommandé: ${maxWidth}x${maxHeight}px`
+        message: `Image trop grande. Maximum recommandé: ${maxWidth}x${maxHeight}px`,
       };
     }
 

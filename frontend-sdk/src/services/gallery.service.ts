@@ -15,14 +15,14 @@ export enum GalleryType {
   PRODUCTS = 'PRODUCTS',
   SERVICES = 'SERVICES',
   CERTIFICATES = 'CERTIFICATES',
-  CUSTOM = 'CUSTOM'
+  CUSTOM = 'CUSTOM',
 }
 
 export enum ImageStatus {
   ACTIVE = 'ACTIVE',
   INACTIVE = 'INACTIVE',
   PENDING = 'PENDING',
-  REJECTED = 'REJECTED'
+  REJECTED = 'REJECTED',
 }
 
 export interface Gallery {
@@ -118,10 +118,12 @@ export class GalleryService {
   /**
    * 📋 Lister toutes les galeries
    */
-  async list(request: ListGalleriesRequest): Promise<PaginatedResponse<Gallery>> {
+  async list(
+    request: ListGalleriesRequest,
+  ): Promise<PaginatedResponse<Gallery>> {
     const response = await this.client.post<PaginatedResponse<Gallery>>(
       '/api/v1/business-gallery/list',
-      request
+      request,
     );
     return response.data;
   }
@@ -130,7 +132,9 @@ export class GalleryService {
    * 📄 Obtenir une galerie par ID
    */
   async getById(id: string): Promise<Gallery> {
-    const response = await this.client.get<Gallery>(`/api/v1/business-gallery/${id}`);
+    const response = await this.client.get<Gallery>(
+      `/api/v1/business-gallery/${id}`,
+    );
     return response.data;
   }
 
@@ -138,7 +142,10 @@ export class GalleryService {
    * ➕ Créer une nouvelle galerie
    */
   async create(request: CreateGalleryRequest): Promise<Gallery> {
-    const response = await this.client.post<Gallery>('/api/v1/business-gallery', request);
+    const response = await this.client.post<Gallery>(
+      '/api/v1/business-gallery',
+      request,
+    );
     return response.data;
   }
 
@@ -146,7 +153,10 @@ export class GalleryService {
    * ✏️ Mettre à jour une galerie
    */
   async update(id: string, updates: UpdateGalleryRequest): Promise<Gallery> {
-    const response = await this.client.put<Gallery>(`/api/v1/business-gallery/${id}`, updates);
+    const response = await this.client.put<Gallery>(
+      `/api/v1/business-gallery/${id}`,
+      updates,
+    );
     return response.data;
   }
 
@@ -160,10 +170,12 @@ export class GalleryService {
   /**
    * 🖼️ Lister les images d'une galerie
    */
-  async listImages(request: ListImagesRequest): Promise<PaginatedResponse<GalleryImage>> {
+  async listImages(
+    request: ListImagesRequest,
+  ): Promise<PaginatedResponse<GalleryImage>> {
     const response = await this.client.post<PaginatedResponse<GalleryImage>>(
       '/api/v1/business-gallery/images/list',
-      request
+      request,
     );
     return response.data;
   }
@@ -190,9 +202,9 @@ export class GalleryService {
       formData,
       {
         headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      }
+          'Content-Type': 'multipart/form-data',
+        },
+      },
     );
     return response.data;
   }
@@ -201,17 +213,22 @@ export class GalleryService {
    * 📷 Obtenir une image par ID
    */
   async getImageById(id: string): Promise<GalleryImage> {
-    const response = await this.client.get<GalleryImage>(`/api/v1/business-gallery/images/${id}`);
+    const response = await this.client.get<GalleryImage>(
+      `/api/v1/business-gallery/images/${id}`,
+    );
     return response.data;
   }
 
   /**
    * ✏️ Mettre à jour une image
    */
-  async updateImage(id: string, updates: UpdateImageRequest): Promise<GalleryImage> {
+  async updateImage(
+    id: string,
+    updates: UpdateImageRequest,
+  ): Promise<GalleryImage> {
     const response = await this.client.put<GalleryImage>(
       `/api/v1/business-gallery/images/${id}`,
-      updates
+      updates,
     );
     return response.data;
   }
@@ -226,13 +243,16 @@ export class GalleryService {
   /**
    * 🔄 Réorganiser les galeries
    */
-  async reorderGalleries(businessId: string, galleryOrders: { id: string; displayOrder: number }[]): Promise<Gallery[]> {
+  async reorderGalleries(
+    businessId: string,
+    galleryOrders: { id: string; displayOrder: number }[],
+  ): Promise<Gallery[]> {
     const response = await this.client.post<Gallery[]>(
       '/api/v1/business-gallery/reorder',
       {
         businessId,
-        galleryOrders
-      }
+        galleryOrders,
+      },
     );
     return response.data;
   }
@@ -240,13 +260,16 @@ export class GalleryService {
   /**
    * 🔄 Réorganiser les images d'une galerie
    */
-  async reorderImages(galleryId: string, imageOrders: { id: string; displayOrder: number }[]): Promise<GalleryImage[]> {
+  async reorderImages(
+    galleryId: string,
+    imageOrders: { id: string; displayOrder: number }[],
+  ): Promise<GalleryImage[]> {
     const response = await this.client.post<GalleryImage[]>(
       '/api/v1/business-gallery/images/reorder',
       {
         galleryId,
-        imageOrders
-      }
+        imageOrders,
+      },
     );
     return response.data;
   }
@@ -258,7 +281,7 @@ export class GalleryService {
     const response = await this.list({
       businessId,
       type,
-      limit: 100
+      limit: 100,
     });
     return [...response.data];
   }
@@ -307,18 +330,22 @@ export class GalleryService {
   /**
    * 🔍 Rechercher des images
    */
-  async searchImages(businessId: string, query: string, options?: {
-    galleryTypes?: GalleryType[];
-    statuses?: ImageStatus[];
-    limit?: number;
-  }): Promise<GalleryImage[]> {
+  async searchImages(
+    businessId: string,
+    query: string,
+    options?: {
+      galleryTypes?: GalleryType[];
+      statuses?: ImageStatus[];
+      limit?: number;
+    },
+  ): Promise<GalleryImage[]> {
     const response = await this.client.post<GalleryImage[]>(
       '/api/v1/business-gallery/images/search',
       {
         businessId,
         query,
-        ...options
-      }
+        ...options,
+      },
     );
     return response.data;
   }
@@ -329,7 +356,7 @@ export class GalleryService {
   async duplicate(galleryId: string, newName: string): Promise<Gallery> {
     const response = await this.client.post<Gallery>(
       `/api/v1/business-gallery/${galleryId}/duplicate`,
-      { name: newName }
+      { name: newName },
     );
     return response.data;
   }
@@ -346,7 +373,7 @@ export class GalleryService {
       [GalleryType.PRODUCTS]: 'Produits',
       [GalleryType.SERVICES]: 'Services',
       [GalleryType.CERTIFICATES]: 'Certificats',
-      [GalleryType.CUSTOM]: 'Personnalisée'
+      [GalleryType.CUSTOM]: 'Personnalisée',
     };
     return names[type];
   }
@@ -356,7 +383,7 @@ export class GalleryService {
       [ImageStatus.ACTIVE]: 'Active',
       [ImageStatus.INACTIVE]: 'Inactive',
       [ImageStatus.PENDING]: 'En attente',
-      [ImageStatus.REJECTED]: 'Rejetée'
+      [ImageStatus.REJECTED]: 'Rejetée',
     };
     return names[status];
   }
@@ -375,7 +402,9 @@ export class GalleryService {
     return file.type.startsWith('image/');
   }
 
-  static getImageDimensions(file: File): Promise<{ width: number; height: number }> {
+  static getImageDimensions(
+    file: File,
+  ): Promise<{ width: number; height: number }> {
     return new Promise((resolve, reject) => {
       const img = new Image();
       const url = URL.createObjectURL(file);
@@ -403,11 +432,11 @@ export class GalleryService {
   }
 
   static filterPublicGalleries(galleries: Gallery[]): Gallery[] {
-    return galleries.filter(gallery => gallery.isPublic && gallery.isActive);
+    return galleries.filter((gallery) => gallery.isPublic && gallery.isActive);
   }
 
   static filterActiveImages(images: GalleryImage[]): GalleryImage[] {
-    return images.filter(image => image.status === ImageStatus.ACTIVE);
+    return images.filter((image) => image.status === ImageStatus.ACTIVE);
   }
 
   static generateThumbnailUrl(imageUrl: string, size: number = 300): string {

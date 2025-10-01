@@ -21,14 +21,13 @@ import {
 import { NotificationException } from '../../exceptions/notification.exceptions';
 import {
   INotificationService,
-  NotificationMessage,
-  NotificationType as NotificationTypePort,
   NotificationChannel as NotificationChannelPort,
   NotificationPriority as NotificationPriorityPort,
+  NotificationType as NotificationTypePort,
 } from '../../ports/notification.port';
 
-import { Logger } from '../../ports/logger.port';
 import { I18nService } from '../../ports/i18n.port';
+import { Logger } from '../../ports/logger.port';
 // import { INotificationService } from '../../ports/notification-service.interface';
 // import { ILogger } from '../../ports/logger.interface';
 // import { II18nService } from '../../ports/i18n-service.interface';
@@ -485,7 +484,7 @@ export class SendBulkNotificationUseCase {
     campaignId: string,
     recipients: BulkNotificationRecipient[],
     request: SendBulkNotificationRequest,
-    batchSize: number,
+    _batchSize: number,
   ): Promise<void> {
     // Implementation dépendante du système de planification
     // Par exemple, ajouter à une queue Redis ou utiliser un scheduler

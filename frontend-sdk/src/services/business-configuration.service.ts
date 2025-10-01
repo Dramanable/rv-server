@@ -17,7 +17,7 @@ export enum Currency {
   CAD = 'CAD',
   CHF = 'CHF',
   JPY = 'JPY',
-  AUD = 'AUD'
+  AUD = 'AUD',
 }
 
 export enum Timezone {
@@ -28,7 +28,7 @@ export enum Timezone {
   AMERICA_CHICAGO = 'America/Chicago',
   AMERICA_TORONTO = 'America/Toronto',
   ASIA_TOKYO = 'Asia/Tokyo',
-  AUSTRALIA_SYDNEY = 'Australia/Sydney'
+  AUSTRALIA_SYDNEY = 'Australia/Sydney',
 }
 
 export enum Locale {
@@ -39,7 +39,7 @@ export enum Locale {
   ES_ES = 'es-ES',
   IT_IT = 'it-IT',
   PT_PT = 'pt-PT',
-  JA_JP = 'ja-JP'
+  JA_JP = 'ja-JP',
 }
 
 export enum DateFormat {
@@ -47,18 +47,18 @@ export enum DateFormat {
   MM_DD_YYYY = 'MM/DD/YYYY',
   YYYY_MM_DD = 'YYYY-MM-DD',
   DD_MMM_YYYY = 'DD MMM YYYY',
-  MMM_DD_YYYY = 'MMM DD, YYYY'
+  MMM_DD_YYYY = 'MMM DD, YYYY',
 }
 
 export enum TimeFormat {
   TWENTY_FOUR_HOUR = '24h',
-  TWELVE_HOUR = '12h'
+  TWELVE_HOUR = '12h',
 }
 
 export enum WeekStart {
   MONDAY = 'MONDAY',
   SUNDAY = 'SUNDAY',
-  SATURDAY = 'SATURDAY'
+  SATURDAY = 'SATURDAY',
 }
 
 export enum BusinessType {
@@ -72,7 +72,7 @@ export enum BusinessType {
   CONSULTING = 'CONSULTING',
   THERAPY = 'THERAPY',
   EDUCATION = 'EDUCATION',
-  OTHER = 'OTHER'
+  OTHER = 'OTHER',
 }
 
 // Interfaces
@@ -115,7 +115,7 @@ export interface DaySchedule {
 
 export interface TimeShift {
   readonly startTime: string; // Format HH:mm
-  readonly endTime: string;   // Format HH:mm
+  readonly endTime: string; // Format HH:mm
   readonly breakStart?: string;
   readonly breakEnd?: string;
 }
@@ -186,7 +186,7 @@ export enum PaymentMethod {
   PAYPAL = 'PAYPAL',
   BANK_TRANSFER = 'BANK_TRANSFER',
   CASH = 'CASH',
-  CHECK = 'CHECK'
+  CHECK = 'CHECK',
 }
 
 export interface BrandingSettings {
@@ -276,7 +276,9 @@ export default class BusinessConfigurationService {
    * 📋 Obtenir la configuration d'une entreprise
    */
   async getConfiguration(businessId: string): Promise<BusinessConfiguration> {
-    const response = await this.client.get(`/api/v1/businesses/${businessId}/configuration`);
+    const response = await this.client.get(
+      `/api/v1/businesses/${businessId}/configuration`,
+    );
     return response.data.data;
   }
 
@@ -285,17 +287,24 @@ export default class BusinessConfigurationService {
    */
   async updateConfiguration(
     businessId: string,
-    data: UpdateBusinessConfigurationDto
+    data: UpdateBusinessConfigurationDto,
   ): Promise<BusinessConfigurationResponse> {
-    const response = await this.client.patch(`/api/v1/businesses/${businessId}/configuration`, data);
+    const response = await this.client.patch(
+      `/api/v1/businesses/${businessId}/configuration`,
+      data,
+    );
     return response.data;
   }
 
   /**
    * 🔄 Réinitialiser la configuration aux valeurs par défaut
    */
-  async resetToDefaults(businessId: string): Promise<BusinessConfigurationResponse> {
-    const response = await this.client.post(`/api/v1/businesses/${businessId}/configuration/reset`);
+  async resetToDefaults(
+    businessId: string,
+  ): Promise<BusinessConfigurationResponse> {
+    const response = await this.client.post(
+      `/api/v1/businesses/${businessId}/configuration/reset`,
+    );
     return response.data;
   }
 
@@ -304,7 +313,7 @@ export default class BusinessConfigurationService {
    */
   async exportConfiguration(businessId: string): Promise<Blob> {
     const response = await this.client.get(
-      `/api/v1/businesses/${businessId}/configuration/export`
+      `/api/v1/businesses/${businessId}/configuration/export`,
     );
     return response.data;
   }
@@ -312,13 +321,16 @@ export default class BusinessConfigurationService {
   /**
    * 📥 Importer une configuration
    */
-  async importConfiguration(businessId: string, configFile: File): Promise<BusinessConfigurationResponse> {
+  async importConfiguration(
+    businessId: string,
+    configFile: File,
+  ): Promise<BusinessConfigurationResponse> {
     const formData = new FormData();
     formData.append('configuration', configFile);
 
     const response = await this.client.post(
       `/api/v1/businesses/${businessId}/configuration/import`,
-      formData
+      formData,
     );
 
     return response.data;
@@ -327,35 +339,50 @@ export default class BusinessConfigurationService {
   /**
    * ⏰ Mettre à jour les heures de travail
    */
-  async updateWorkingHours(businessId: string, workingHours: WorkingHours): Promise<BusinessConfigurationResponse> {
+  async updateWorkingHours(
+    businessId: string,
+    workingHours: WorkingHours,
+  ): Promise<BusinessConfigurationResponse> {
     return this.updateConfiguration(businessId, { workingHours });
   }
 
   /**
    * 📅 Mettre à jour les paramètres de réservation
    */
-  async updateBookingSettings(businessId: string, bookingSettings: BookingSettings): Promise<BusinessConfigurationResponse> {
+  async updateBookingSettings(
+    businessId: string,
+    bookingSettings: BookingSettings,
+  ): Promise<BusinessConfigurationResponse> {
     return this.updateConfiguration(businessId, { bookingSettings });
   }
 
   /**
    * 🔔 Mettre à jour les paramètres de notification
    */
-  async updateNotificationSettings(businessId: string, notificationSettings: NotificationSettings): Promise<BusinessConfigurationResponse> {
+  async updateNotificationSettings(
+    businessId: string,
+    notificationSettings: NotificationSettings,
+  ): Promise<BusinessConfigurationResponse> {
     return this.updateConfiguration(businessId, { notificationSettings });
   }
 
   /**
    * 💳 Mettre à jour les paramètres de paiement
    */
-  async updatePaymentSettings(businessId: string, paymentSettings: PaymentSettings): Promise<BusinessConfigurationResponse> {
+  async updatePaymentSettings(
+    businessId: string,
+    paymentSettings: PaymentSettings,
+  ): Promise<BusinessConfigurationResponse> {
     return this.updateConfiguration(businessId, { paymentSettings });
   }
 
   /**
    * 🎨 Mettre à jour les paramètres de branding
    */
-  async updateBrandingSettings(businessId: string, brandingSettings: BrandingSettings): Promise<BusinessConfigurationResponse> {
+  async updateBrandingSettings(
+    businessId: string,
+    brandingSettings: BrandingSettings,
+  ): Promise<BusinessConfigurationResponse> {
     return this.updateConfiguration(businessId, { brandingSettings });
   }
 
@@ -365,10 +392,10 @@ export default class BusinessConfigurationService {
   async toggleIntegration(
     businessId: string,
     integration: keyof IntegrationSettings,
-    enabled: boolean
+    enabled: boolean,
   ): Promise<BusinessConfigurationResponse> {
     const integrationSettings = {
-      [integration]: { enabled }
+      [integration]: { enabled },
     };
 
     return this.updateConfiguration(businessId, { integrationSettings });
@@ -382,7 +409,9 @@ export default class BusinessConfigurationService {
     errors: string[];
     warnings: string[];
   }> {
-    const response = await this.client.post(`/api/v1/businesses/${businessId}/configuration/test`);
+    const response = await this.client.post(
+      `/api/v1/businesses/${businessId}/configuration/test`,
+    );
     return response.data.data;
   }
 
@@ -394,7 +423,9 @@ export default class BusinessConfigurationService {
     missingFields: string[];
     recommendedSettings: string[];
   }> {
-    const response = await this.client.get(`/api/v1/businesses/${businessId}/configuration/metrics`);
+    const response = await this.client.get(
+      `/api/v1/businesses/${businessId}/configuration/metrics`,
+    );
     return response.data.data;
   }
 
@@ -450,7 +481,12 @@ export default class BusinessConfigurationService {
   /**
    * 🔧 Générer une configuration par défaut
    */
-  static generateDefaultConfiguration(businessId: string): Omit<BusinessConfiguration, 'id' | 'createdAt' | 'updatedAt' | 'updatedBy'> {
+  static generateDefaultConfiguration(
+    businessId: string,
+  ): Omit<
+    BusinessConfiguration,
+    'id' | 'createdAt' | 'updatedAt' | 'updatedBy'
+  > {
     return {
       businessId,
       timezone: Timezone.EUROPE_PARIS,
@@ -461,14 +497,29 @@ export default class BusinessConfigurationService {
       weekStart: WeekStart.MONDAY,
       businessType: BusinessType.CLINIC,
       workingHours: {
-        monday: { isWorkingDay: true, shifts: [{ startTime: '09:00', endTime: '17:00' }] },
-        tuesday: { isWorkingDay: true, shifts: [{ startTime: '09:00', endTime: '17:00' }] },
-        wednesday: { isWorkingDay: true, shifts: [{ startTime: '09:00', endTime: '17:00' }] },
-        thursday: { isWorkingDay: true, shifts: [{ startTime: '09:00', endTime: '17:00' }] },
-        friday: { isWorkingDay: true, shifts: [{ startTime: '09:00', endTime: '17:00' }] },
+        monday: {
+          isWorkingDay: true,
+          shifts: [{ startTime: '09:00', endTime: '17:00' }],
+        },
+        tuesday: {
+          isWorkingDay: true,
+          shifts: [{ startTime: '09:00', endTime: '17:00' }],
+        },
+        wednesday: {
+          isWorkingDay: true,
+          shifts: [{ startTime: '09:00', endTime: '17:00' }],
+        },
+        thursday: {
+          isWorkingDay: true,
+          shifts: [{ startTime: '09:00', endTime: '17:00' }],
+        },
+        friday: {
+          isWorkingDay: true,
+          shifts: [{ startTime: '09:00', endTime: '17:00' }],
+        },
         saturday: { isWorkingDay: false, shifts: [] },
         sunday: { isWorkingDay: false, shifts: [] },
-        holidays: []
+        holidays: [],
       },
       bookingSettings: {
         allowOnlineBooking: true,
@@ -480,7 +531,7 @@ export default class BusinessConfigurationService {
         slotDurationMinutes: 30,
         bufferTimeMinutes: 5,
         allowWaitingList: true,
-        autoConfirmBookings: true
+        autoConfirmBookings: true,
       },
       notificationSettings: {
         emailNotifications: true,
@@ -492,14 +543,14 @@ export default class BusinessConfigurationService {
           timeBefore2h: false,
           timeBefore30min: false,
           customTimes: [],
-          channels: ['email']
+          channels: ['email'],
         },
         confirmationSettings: {
           sendConfirmation: true,
           requireConfirmation: false,
           confirmationDeadlineHours: 2,
-          channels: ['email']
-        }
+          channels: ['email'],
+        },
       },
       paymentSettings: {
         acceptOnlinePayments: false,
@@ -509,30 +560,32 @@ export default class BusinessConfigurationService {
           allowRefunds: true,
           refundDeadlineHours: 24,
           refundPercentage: 100,
-          refundFee: 0
+          refundFee: 0,
         },
         acceptedMethods: [PaymentMethod.CASH],
-        currency: Currency.EUR
+        currency: Currency.EUR,
       },
       brandingSettings: {
         primaryColor: '#3B82F6',
         secondaryColor: '#1F2937',
-        accentColor: '#10B981'
+        accentColor: '#10B981',
       },
       integrationSettings: {
         googleCalendar: { enabled: false, syncTwoWay: false },
         outlookCalendar: { enabled: false, syncTwoWay: false },
         zoom: { enabled: false, autoCreateMeetings: false },
         stripe: { enabled: false },
-        mailchimp: { enabled: false, autoSubscribe: false }
-      }
+        mailchimp: { enabled: false, autoSubscribe: false },
+      },
     };
   }
 
   /**
    * ✅ Valider une configuration
    */
-  static validateConfiguration(config: Partial<BusinessConfiguration>): string[] {
+  static validateConfiguration(
+    config: Partial<BusinessConfiguration>,
+  ): string[] {
     const errors: string[] = [];
 
     if (config.timezone && !Object.values(Timezone).includes(config.timezone)) {
@@ -550,16 +603,29 @@ export default class BusinessConfigurationService {
     if (config.bookingSettings) {
       const booking = config.bookingSettings;
 
-      if (booking.advanceBookingDays !== undefined && (booking.advanceBookingDays < 1 || booking.advanceBookingDays > 365)) {
-        errors.push('Les jours de réservation à l\'avance doivent être entre 1 et 365');
+      if (
+        booking.advanceBookingDays !== undefined &&
+        (booking.advanceBookingDays < 1 || booking.advanceBookingDays > 365)
+      ) {
+        errors.push(
+          "Les jours de réservation à l'avance doivent être entre 1 et 365",
+        );
       }
 
-      if (booking.slotDurationMinutes !== undefined && (booking.slotDurationMinutes < 15 || booking.slotDurationMinutes > 480)) {
+      if (
+        booking.slotDurationMinutes !== undefined &&
+        (booking.slotDurationMinutes < 15 || booking.slotDurationMinutes > 480)
+      ) {
         errors.push('La durée des créneaux doit être entre 15 et 480 minutes');
       }
 
-      if (booking.maxBookingsPerDay !== undefined && (booking.maxBookingsPerDay < 1 || booking.maxBookingsPerDay > 100)) {
-        errors.push('Le nombre maximum de réservations par jour doit être entre 1 et 100');
+      if (
+        booking.maxBookingsPerDay !== undefined &&
+        (booking.maxBookingsPerDay < 1 || booking.maxBookingsPerDay > 100)
+      ) {
+        errors.push(
+          'Le nombre maximum de réservations par jour doit être entre 1 et 100',
+        );
       }
     }
 
@@ -593,12 +659,26 @@ export default class BusinessConfigurationService {
       const year = date.getFullYear().toString();
 
       switch (format) {
-        case DateFormat.DD_MM_YYYY: return `${day}/${month}/${year}`;
-        case DateFormat.MM_DD_YYYY: return `${month}/${day}/${year}`;
-        case DateFormat.YYYY_MM_DD: return `${year}-${month}-${day}`;
-        case DateFormat.DD_MMM_YYYY: return date.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' });
-        case DateFormat.MMM_DD_YYYY: return date.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
-        default: return date.toLocaleDateString();
+        case DateFormat.DD_MM_YYYY:
+          return `${day}/${month}/${year}`;
+        case DateFormat.MM_DD_YYYY:
+          return `${month}/${day}/${year}`;
+        case DateFormat.YYYY_MM_DD:
+          return `${year}-${month}-${day}`;
+        case DateFormat.DD_MMM_YYYY:
+          return date.toLocaleDateString('fr-FR', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+          });
+        case DateFormat.MMM_DD_YYYY:
+          return date.toLocaleDateString('en-US', {
+            month: 'short',
+            day: '2-digit',
+            year: 'numeric',
+          });
+        default:
+          return date.toLocaleDateString();
       }
     },
 
@@ -607,9 +687,15 @@ export default class BusinessConfigurationService {
      */
     formatTime: (date: Date, format: TimeFormat): string => {
       if (format === TimeFormat.TWELVE_HOUR) {
-        return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+        return date.toLocaleTimeString('en-US', {
+          hour: '2-digit',
+          minute: '2-digit',
+        });
       }
-      return date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+      return date.toLocaleTimeString('fr-FR', {
+        hour: '2-digit',
+        minute: '2-digit',
+      });
     },
 
     /**
@@ -623,7 +709,7 @@ export default class BusinessConfigurationService {
         [Currency.CAD]: 'C$',
         [Currency.CHF]: 'CHF',
         [Currency.JPY]: '¥',
-        [Currency.AUD]: 'A$'
+        [Currency.AUD]: 'A$',
       };
       return symbols[currency] || currency;
     },
@@ -640,7 +726,7 @@ export default class BusinessConfigurationService {
         [Timezone.AMERICA_CHICAGO]: 'America/Chicago (CST)',
         [Timezone.AMERICA_TORONTO]: 'America/Toronto (EST)',
         [Timezone.ASIA_TOKYO]: 'Asia/Tokyo (JST)',
-        [Timezone.AUSTRALIA_SYDNEY]: 'Australia/Sydney (AEST)'
+        [Timezone.AUSTRALIA_SYDNEY]: 'Australia/Sydney (AEST)',
       };
       return names[timezone] || timezone;
     },
@@ -650,16 +736,21 @@ export default class BusinessConfigurationService {
      */
     calculateCompletionPercentage: (config: BusinessConfiguration): number => {
       const requiredFields = [
-        'timezone', 'currency', 'locale', 'businessType',
-        'workingHours', 'bookingSettings', 'notificationSettings'
+        'timezone',
+        'currency',
+        'locale',
+        'businessType',
+        'workingHours',
+        'bookingSettings',
+        'notificationSettings',
       ];
 
-      const completedFields = requiredFields.filter(field => {
+      const completedFields = requiredFields.filter((field) => {
         const value = (config as any)[field];
         return value !== undefined && value !== null;
       });
 
       return Math.round((completedFields.length / requiredFields.length) * 100);
-    }
+    },
   };
 }

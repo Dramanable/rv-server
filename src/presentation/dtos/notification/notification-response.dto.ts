@@ -145,3 +145,196 @@ export class NotificationDto {
   })
   readonly updatedAt!: string;
 }
+
+/**
+ * DTO de réponse pour l'envoi en masse de notifications
+ */
+export class SendBulkNotificationResponseDto {
+  @ApiProperty({
+    description: "Statut de succès de l'opération",
+    example: true,
+  })
+  readonly success!: boolean;
+
+  @ApiProperty({
+    description: 'Données des notifications envoyées',
+    type: 'object',
+    additionalProperties: true,
+  })
+  readonly data!: {
+    readonly totalSent: number;
+    readonly totalFailed: number;
+    readonly successRate: number;
+    readonly notificationIds: string[];
+    readonly failedRecipients: string[];
+  };
+
+  @ApiPropertyOptional({
+    description: 'Métadonnées de la réponse',
+    type: 'object',
+    additionalProperties: true,
+  })
+  readonly meta?: {
+    readonly timestamp: string;
+    readonly correlationId: string;
+    readonly processingTime: number;
+  };
+}
+
+/**
+ * DTO de réponse pour la liste des notifications
+ */
+export class ListNotificationsResponseDto {
+  @ApiProperty({
+    description: "Statut de succès de l'opération",
+    example: true,
+  })
+  readonly success!: boolean;
+
+  @ApiProperty({
+    description: 'Liste des notifications',
+    type: [NotificationDto],
+  })
+  readonly data!: NotificationDto[];
+
+  @ApiProperty({
+    description: 'Métadonnées de pagination',
+    type: 'object',
+    additionalProperties: true,
+  })
+  readonly meta!: {
+    readonly currentPage: number;
+    readonly totalPages: number;
+    readonly totalItems: number;
+    readonly itemsPerPage: number;
+    readonly hasNextPage: boolean;
+    readonly hasPrevPage: boolean;
+  };
+}
+
+/**
+ * DTO de réponse pour récupérer une notification par ID
+ */
+export class GetNotificationByIdResponseDto {
+  @ApiProperty({
+    description: "Statut de succès de l'opération",
+    example: true,
+  })
+  readonly success!: boolean;
+
+  @ApiProperty({
+    description: 'Données de la notification',
+    type: NotificationDto,
+  })
+  readonly data!: NotificationDto;
+
+  @ApiPropertyOptional({
+    description: 'Métadonnées de la réponse',
+    type: 'object',
+    additionalProperties: true,
+  })
+  readonly meta?: {
+    readonly timestamp: string;
+    readonly correlationId: string;
+  };
+}
+
+/**
+ * DTO de réponse pour marquer comme lue
+ */
+export class MarkAsReadResponseDto {
+  @ApiProperty({
+    description: "Statut de succès de l'opération",
+    example: true,
+  })
+  readonly success!: boolean;
+
+  @ApiProperty({
+    description: 'Données de confirmation',
+    type: 'object',
+    additionalProperties: true,
+  })
+  readonly data!: {
+    readonly id: string;
+    readonly status: string;
+    readonly readAt: string;
+  };
+
+  @ApiPropertyOptional({
+    description: 'Métadonnées de la réponse',
+    type: 'object',
+    additionalProperties: true,
+  })
+  readonly meta?: {
+    readonly timestamp: string;
+    readonly correlationId: string;
+  };
+}
+
+/**
+ * DTO de réponse pour suppression de notification
+ */
+export class DeleteNotificationResponseDto {
+  @ApiProperty({
+    description: "Statut de succès de l'opération",
+    example: true,
+  })
+  readonly success!: boolean;
+
+  @ApiProperty({
+    description: 'Données de confirmation de suppression',
+    type: 'object',
+    additionalProperties: true,
+  })
+  readonly data!: {
+    readonly id: string;
+    readonly deletedAt: string;
+  };
+
+  @ApiPropertyOptional({
+    description: 'Métadonnées de la réponse',
+    type: 'object',
+    additionalProperties: true,
+  })
+  readonly meta?: {
+    readonly timestamp: string;
+    readonly correlationId: string;
+  };
+}
+
+/**
+ * DTO de réponse pour les analytics de notifications
+ */
+export class NotificationAnalyticsResponseDto {
+  @ApiProperty({
+    description: "Statut de succès de l'opération",
+    example: true,
+  })
+  readonly success!: boolean;
+
+  @ApiProperty({
+    description: 'Données analytiques des notifications',
+    type: 'object',
+    additionalProperties: true,
+  })
+  readonly data!: {
+    readonly totalSent: number;
+    readonly totalDelivered: number;
+    readonly totalRead: number;
+    readonly totalFailed: number;
+    readonly deliveryRate: number;
+    readonly readRate: number;
+    readonly channelStats: any;
+    readonly templateStats: any;
+  };
+
+  @ApiPropertyOptional({
+    description: 'Métadonnées de la réponse',
+    type: 'object',
+    additionalProperties: true,
+  })
+  readonly meta?: {
+    readonly timestamp: string;
+    readonly correlationId: string;
+  };
+}

@@ -11,14 +11,14 @@ export enum RoleType {
   SYSTEM = 'SYSTEM',
   BUSINESS = 'BUSINESS',
   SERVICE = 'SERVICE',
-  CUSTOM = 'CUSTOM'
+  CUSTOM = 'CUSTOM',
 }
 
 export enum RoleLevel {
   PLATFORM = 'PLATFORM',
   BUSINESS = 'BUSINESS',
   DEPARTMENT = 'DEPARTMENT',
-  SERVICE = 'SERVICE'
+  SERVICE = 'SERVICE',
 }
 
 export interface Role {
@@ -105,7 +105,7 @@ export class RoleService {
   async list(request: ListRolesRequest = {}): Promise<PaginatedResponse<Role>> {
     const response = await this.client.post<PaginatedResponse<Role>>(
       '/api/v1/roles/list',
-      request
+      request,
     );
     return response.data;
   }
@@ -123,7 +123,9 @@ export class RoleService {
    */
   async getByCode(code: string, businessId?: string): Promise<Role> {
     const query = businessId ? `?businessId=${businessId}` : '';
-    const response = await this.client.get<Role>(`/api/v1/roles/code/${code}${query}`);
+    const response = await this.client.get<Role>(
+      `/api/v1/roles/code/${code}${query}`,
+    );
     return response.data;
   }
 
@@ -139,7 +141,10 @@ export class RoleService {
    * ✏️ Mettre à jour un rôle
    */
   async update(id: string, updates: UpdateRoleRequest): Promise<Role> {
-    const response = await this.client.put<Role>(`/api/v1/roles/${id}`, updates);
+    const response = await this.client.put<Role>(
+      `/api/v1/roles/${id}`,
+      updates,
+    );
     return response.data;
   }
 
@@ -156,7 +161,7 @@ export class RoleService {
   async getUserRoles(request: ListUserRolesRequest): Promise<UserRole[]> {
     const response = await this.client.post<UserRole[]>(
       '/api/v1/roles/user-roles',
-      request
+      request,
     );
     return response.data;
   }
@@ -167,7 +172,7 @@ export class RoleService {
   async assignToUser(request: AssignRoleRequest): Promise<UserRole> {
     const response = await this.client.post<UserRole>(
       '/api/v1/roles/assign',
-      request
+      request,
     );
     return response.data;
   }
@@ -185,7 +190,7 @@ export class RoleService {
   async addPermissions(roleId: string, permissionIds: string[]): Promise<Role> {
     const response = await this.client.post<Role>(
       `/api/v1/roles/${roleId}/permissions`,
-      { permissionIds }
+      { permissionIds },
     );
     return response.data;
   }
@@ -193,10 +198,13 @@ export class RoleService {
   /**
    * 🚫 Supprimer des permissions d'un rôle
    */
-  async removePermissions(roleId: string, permissionIds: string[]): Promise<Role> {
+  async removePermissions(
+    roleId: string,
+    permissionIds: string[],
+  ): Promise<Role> {
     const response = await this.client.post<Role>(
       `/api/v1/roles/${roleId}/permissions/remove`,
-      { permissionIds }
+      { permissionIds },
     );
     return response.data;
   }
@@ -205,7 +213,9 @@ export class RoleService {
    * 🏢 Obtenir les rôles disponibles pour un business
    */
   async getBusinessRoles(businessId: string): Promise<Role[]> {
-    const response = await this.client.get<Role[]>(`/api/v1/roles/business/${businessId}`);
+    const response = await this.client.get<Role[]>(
+      `/api/v1/roles/business/${businessId}`,
+    );
     return response.data;
   }
 
@@ -247,17 +257,8 @@ export class RoleService {
   /**
    * 🔗 Obtenir la hiérarchie des rôles
    */
-  async getRoleHierarchy(businessId?: string): Promise<{
-    id: string;
-    role: Role;
-    children: Array<{
-      id: string;
-      role: Role;
-      children: any[];
-    }>;
-  }[]> {
-    const query = businessId ? `?businessId=${businessId}` : '';
-    const response = await this.client.get<{
+  async getRoleHierarchy(businessId?: string): Promise<
+    {
       id: string;
       role: Role;
       children: Array<{
@@ -265,7 +266,20 @@ export class RoleService {
         role: Role;
         children: any[];
       }>;
-    }[]>(`/api/v1/roles/hierarchy${query}`);
+    }[]
+  > {
+    const query = businessId ? `?businessId=${businessId}` : '';
+    const response = await this.client.get<
+      {
+        id: string;
+        role: Role;
+        children: Array<{
+          id: string;
+          role: Role;
+          children: any[];
+        }>;
+      }[]
+    >(`/api/v1/roles/hierarchy${query}`);
     return response.data;
   }
 
@@ -277,8 +291,8 @@ export class RoleService {
       `/api/v1/roles/${roleId}/clone`,
       {
         name: newName,
-        code: newCode
-      }
+        code: newCode,
+      },
     );
     return response.data;
   }
@@ -301,21 +315,25 @@ export class RoleService {
   async getRecommendedRoles(
     userId: string,
     businessId?: string,
-    userSkills?: string[]
-  ): Promise<{
-    role: Role;
-    matchScore: number;
-    reasons: string[];
-  }[]> {
+    userSkills?: string[],
+  ): Promise<
+    {
+      role: Role;
+      matchScore: number;
+      reasons: string[];
+    }[]
+  > {
     const body: any = { userId };
     if (businessId) body.businessId = businessId;
     if (userSkills) body.userSkills = userSkills;
 
-    const response = await this.client.post<{
-      role: Role;
-      matchScore: number;
-      reasons: string[];
-    }[]>('/api/v1/roles/recommendations', body);
+    const response = await this.client.post<
+      {
+        role: Role;
+        matchScore: number;
+        reasons: string[];
+      }[]
+    >('/api/v1/roles/recommendations', body);
     return response.data;
   }
 
@@ -332,7 +350,7 @@ export class RoleService {
   }
 
   static getRolesByLevel(roles: Role[], level: RoleLevel): Role[] {
-    return roles.filter(role => role.level === level);
+    return roles.filter((role) => role.level === level);
   }
 
   static hasPermission(role: Role, permissionCode: string): boolean {
@@ -345,10 +363,12 @@ export class RoleService {
       [RoleLevel.PLATFORM]: 4,
       [RoleLevel.BUSINESS]: 3,
       [RoleLevel.DEPARTMENT]: 2,
-      [RoleLevel.SERVICE]: 1
+      [RoleLevel.SERVICE]: 1,
     };
 
-    return levelHierarchy[currentUserRole.level] >= levelHierarchy[targetRole.level];
+    return (
+      levelHierarchy[currentUserRole.level] >= levelHierarchy[targetRole.level]
+    );
   }
 
   static sortRolesByHierarchy(roles: Role[]): Role[] {
@@ -356,7 +376,7 @@ export class RoleService {
       [RoleLevel.PLATFORM]: 4,
       [RoleLevel.BUSINESS]: 3,
       [RoleLevel.DEPARTMENT]: 2,
-      [RoleLevel.SERVICE]: 1
+      [RoleLevel.SERVICE]: 1,
     };
 
     return roles.sort((a, b) => {
@@ -370,13 +390,14 @@ export class RoleService {
     const permissions = new Set<string>();
 
     userRoles
-      .filter(userRole =>
-        userRole.isActive &&
-        !this.isRoleExpired(userRole) &&
-        userRole.role.isActive
+      .filter(
+        (userRole) =>
+          userRole.isActive &&
+          !this.isRoleExpired(userRole) &&
+          userRole.role.isActive,
       )
-      .forEach(userRole => {
-        userRole.role.permissions.forEach(permission => {
+      .forEach((userRole) => {
+        userRole.role.permissions.forEach((permission) => {
           permissions.add(permission);
         });
       });

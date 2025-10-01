@@ -1379,7 +1379,67 @@ export class ComputeService {
 5. **Performance Monitoring** : Exploiter les nouveaux outils de diagnostic
 6. **Worker Threads** : Pour les calculs intensifs
 
-## 📊 **ÉTAT ACTUEL DU PROJET - BUSINESS FEATURES**
+## �️ **CLARIFICATION STRUCTURE PROJET - SDKs FRONTEND**
+
+### 📁 **RÈGLE CRITIQUE : DISTINCTION ENTRE LES DEUX SDKs**
+
+**⚠️ ATTENTION CONFUSION** : Il existe actuellement 2 projets SDK distincts qui peuvent porter à confusion :
+
+#### **1️⃣ SDK Principal : `/frontend-sdk/`**
+- **Nom** : **Frontend SDK** (nom correct et principal)
+- **Répertoire** : `/frontend-sdk/`
+- **Rôle** : SDK TypeScript officiel pour intégration avec l'API backend
+- **Utilisation** : Applications React, Vue.js, Angular
+- **Status** : ✅ SDK principal et officiel
+- **Documentation** : `frontend-sdk/README.md`
+
+#### **2️⃣ SDK Secondaire : `/sdk/`**
+- **Nom** : **SDK** (nom générique - source de confusion)
+- **Répertoire** : `/sdk/`
+- **Rôle** : [À CLARIFIER - potentiellement obsolète ou différent usage]
+- **Status** : ⚠️ Peut créer de la confusion avec le SDK principal
+- **Action requise** : Renommer ou supprimer si obsolète
+
+### 🎯 **RÈGLES POUR ÉVITER LA CONFUSION**
+
+#### **✅ TOUJOURS Référencer le SDK Principal**
+```typescript
+// ✅ CORRECT - Référencer le SDK principal
+import { ApiClient } from '@frontend-sdk/core';
+import { NotificationService } from '@frontend-sdk/services';
+
+// Documentation et exemples
+// Voir: /frontend-sdk/README.md
+// Tests: /frontend-sdk/src/__tests__/
+```
+
+#### **❌ ÉVITER la Confusion avec le SDK Générique**
+```typescript
+// ❌ CONFUSION POSSIBLE - SDK générique
+import { Something } from '@sdk/...'; // Lequel des 2 SDKs ?
+
+// ⚠️ CLARIFICATION REQUISE
+// Le répertoire /sdk/ doit être :
+// - Renommé avec un nom spécifique (ex: /admin-sdk/, /mobile-sdk/)
+// - Ou supprimé s'il est obsolète
+// - Ou documenté clairement sa différence avec /frontend-sdk/
+```
+
+### 📋 **ACTION RECOMMANDÉE**
+
+1. **Analyser le contenu de `/sdk/`** pour comprendre son rôle
+2. **Renommer `/sdk/`** en nom plus spécifique si nécessaire
+3. **Mettre à jour la documentation** pour clarifier les usages
+4. **Supprimer `/sdk/`** s'il est obsolète ou dupliqué
+
+### 🚨 **RÈGLE TEMPORAIRE**
+
+**En attendant la clarification :**
+- **TOUJOURS utiliser `/frontend-sdk/`** pour les intégrations frontend
+- **ÉVITER les références à `/sdk/`** jusqu'à clarification
+- **Documenter explicitement** quel SDK est utilisé dans le code
+
+## �📊 **ÉTAT ACTUEL DU PROJET - BUSINESS FEATURES**
 
 ### ✅ **FONCTIONNALITÉS COMPLÈTEMENT IMPLÉMENTÉES**
 
@@ -1934,6 +1994,42 @@ docker compose exec postgres psql -U rvproject_user -d rvproject_app -c "SELECT 
 
 ### 🧪 **TEST-DRIVEN DEVELOPMENT (TDD) - PRATIQUES OBLIGATOIRES**
 
+### 📁 **STRUCTURE DE TESTS OBLIGATOIRE - TOUS DANS `/src/__tests__/`**
+
+**⚠️ RÈGLE CRITIQUE** : TOUS les tests doivent être placés dans le répertoire `/home/amadou/Desktop/rvproject/server/src/__tests__/` selon cette structure obligatoire :
+
+```
+src/__tests__/
+├── unit/                          # Tests unitaires (mocks, isolation)
+│   ├── domain/                    # ✅ Entités, Value Objects, Services Domain
+│   │   ├── entities/              # Tests des entités métier
+│   │   ├── value-objects/         # Tests des Value Objects
+│   │   ├── services/              # Tests des services domain
+│   │   └── exceptions/            # Tests des exceptions métier
+│   ├── application/               # ✅ Use Cases, Services Application
+│   │   ├── use-cases/             # Tests des Use Cases
+│   │   ├── services/              # Tests des services applicatifs
+│   │   └── ports/                 # Tests des interfaces (ports)
+│   ├── infrastructure/            # ✅ Repositories, Services techniques
+│   │   ├── database/              # Tests repositories et mappers
+│   │   ├── services/              # Tests services techniques
+│   │   └── adapters/              # Tests adaptateurs externes
+│   └── presentation/              # ✅ Controllers, DTOs, Guards
+│       ├── controllers/           # Tests controllers HTTP
+│       ├── dtos/                  # Tests validation DTOs
+│       ├── guards/                # Tests guards et sécurité
+│       └── mappers/               # Tests mappers présentation
+├── integration/                   # Tests d'intégration (vraie DB, services externes)
+│   ├── database/                  # Tests avec vraie base de données
+│   ├── api/                       # Tests d'intégration API
+│   └── services/                  # Tests services externes
+└── e2e/                          # Tests end-to-end (application complète)
+    ├── auth/                      # Tests E2E authentification
+    ├── business/                  # Tests E2E gestion entreprises
+    ├── appointments/              # Tests E2E système rendez-vous
+    └── billing/                   # Tests E2E système facturation
+```
+
 #### **🎯 Cycle TDD Red-Green-Refactor**
 
 **Pour CHAQUE fonctionnalité, suivre ce cycle dans CHAQUE couche :**
@@ -1941,30 +2037,30 @@ docker compose exec postgres psql -U rvproject_user -d rvproject_app -c "SELECT 
 1. **🔴 RED Phase** :
    ```bash
    # Écrire le test qui échoue AVANT le code
-   npm test -- some.spec.ts
+   npm test -- --testPathPattern="notification-cost.value-object.spec.ts"
    # RÉSULTAT ATTENDU : Test fails (RED)
    ```
 
 2. **🟢 GREEN Phase** :
    ```bash
    # Écrire le code minimal qui fait passer le test
-   npm test -- some.spec.ts
+   npm test -- --testPathPattern="notification-cost.value-object.spec.ts"
    # RÉSULTAT ATTENDU : Test passes (GREEN)
    ```
 
 3. **🔵 REFACTOR Phase** :
    ```bash
    # Améliorer le code en gardant les tests verts
-   npm test -- some.spec.ts
+   npm test -- --testPathPattern="notification-cost.value-object.spec.ts"
    npm run lint
    # RÉSULTAT ATTENDU : Tests pass + code quality
    ```
 
-#### **📋 Structure de Tests par Couche**
+#### **📋 Exemples de Tests par Couche dans `/src/__tests__/`**
 
 **Domain Layer Tests** :
 ```typescript
-// ✅ Tests d'entités avec règles métier
+// ✅ Fichier: src/__tests__/unit/domain/entities/user.entity.spec.ts
 describe('User Entity', () => {
   it('should create user with valid data', () => {
     // Test de création valide
@@ -1975,7 +2071,7 @@ describe('User Entity', () => {
   });
 });
 
-// ✅ Tests de Value Objects
+// ✅ Fichier: src/__tests__/unit/domain/value-objects/email.value-object.spec.ts
 describe('Email Value Object', () => {
   it('should validate email format', () => {
     // Test de validation format
@@ -1985,7 +2081,7 @@ describe('Email Value Object', () => {
 
 **Application Layer Tests** :
 ```typescript
-// ✅ Tests de Use Cases avec mocks
+// ✅ Fichier: src/__tests__/unit/application/use-cases/users/create-user.use-case.spec.ts
 describe('CreateUserUseCase', () => {
   let useCase: CreateUserUseCase;
   let mockUserRepo: jest.Mocked<IUserRepository>;
@@ -2003,7 +2099,7 @@ describe('CreateUserUseCase', () => {
 
 **Infrastructure Layer Tests** :
 ```typescript
-// ✅ Tests d'intégration avec base de données
+// ✅ Fichier: src/__tests__/integration/database/typeorm-user.repository.spec.ts
 describe('TypeOrmUserRepository', () => {
   let repository: TypeOrmUserRepository;
   let connection: Connection;
@@ -2021,7 +2117,7 @@ describe('TypeOrmUserRepository', () => {
 
 **Presentation Layer Tests** :
 ```typescript
-// ✅ Tests E2E complets
+// ✅ Fichier: src/__tests__/e2e/auth/user-auth.controller.e2e.spec.ts
 describe('UserController (e2e)', () => {
   let app: INestApplication;
 
@@ -2045,15 +2141,37 @@ describe('UserController (e2e)', () => {
 - **Infrastructure** : 80%+ coverage acceptable
 - **Presentation** : 85%+ coverage avec E2E
 
+#### **📋 COMMANDES DE TESTS STANDARDISÉES**
+
+```bash
+# ✅ Tests par couche spécifique
+npm test -- --testPathPattern="src/__tests__/unit/domain/"
+npm test -- --testPathPattern="src/__tests__/unit/application/"
+npm test -- --testPathPattern="src/__tests__/integration/"
+npm test -- --testPathPattern="src/__tests__/e2e/"
+
+# ✅ Tests par fichier spécifique
+npm test -- --testPathPattern="notification-cost.value-object.spec.ts"
+npm test -- --testNamePattern="NotificationCost"
+
+# ✅ Tests avec coverage par couche
+npm run test:cov -- --testPathPattern="src/__tests__/unit/domain/"
+
+# ✅ Tests en mode watch
+npm run test:watch -- --testPathPattern="src/__tests__/unit/domain/"
+```
+
 #### **⚠️ RÈGLES TDD NON-NÉGOCIABLES**
 
 - ❌ **ZÉRO code sans test préalable**
 - ❌ **ZÉRO test ignoré (.skip ou .todo)**
 - ❌ **ZÉRO commit avec tests qui échouent**
+- ❌ **ZÉRO test en dehors de `src/__tests__/`**
 - ✅ **Tests AVANT le code (RED-GREEN-REFACTOR)**
 - ✅ **Un test = une responsabilité**
 - ✅ **Tests lisibles et maintenables**
 - ✅ **Mocks pour les dépendances externes**
+- ✅ **Structure de tests respectée dans `src/__tests__/`**
 
 ## 🏛️ **Clean Architecture - Principes Fondamentaux d'Uncle Bob**
 
@@ -2148,13 +2266,66 @@ export class UserController {
 
 ## 🗺️ **MAPPERS - PATTERN OBLIGATOIRE POUR CONVERSION DE DONNÉES**
 
-### 🎯 **RÈGLE CRITIQUE : ZÉRO LOGIQUE DE MAPPING DANS LES ENTITÉS ORM**
+### 🎯 **RÈGLE CRITIQUE : MAPPERS DÉDIÉS OBLIGATOIRES - ZÉRO TOLÉRANCE**
 
 **❌ VIOLATION ARCHITECTURALE MAJEURE :**
-Les entités ORM (TypeORM, Prisma, etc.) NE DOIVENT JAMAIS contenir de logique de conversion vers les entités Domain. Cette responsabilité appartient exclusivement aux Mappers dédiés dans `/infrastructure/mappers/`.
+Il est **STRICTEMENT INTERDIT** d'intégrer de la logique de mapping dans les Controllers, Repositories, Services ou Entités ORM. Cette responsabilité appartient exclusivement aux Mappers dédiés dans `/infrastructure/mappers/` et `/presentation/mappers/`.
 
-### 🚫 **INTERDICTIONS ABSOLUES**
+### 🚫 **INTERDICTIONS ABSOLUES - ZÉRO TOLÉRANCE**
 
+#### **❌ JAMAIS DE MAPPING DANS LES CONTROLLERS**
+```typescript
+// ❌ STRICTEMENT INTERDIT - Mapping intégré dans Controller
+@Controller('users')
+export class UserController {
+  async create(@Body() dto: CreateUserDto): Promise<UserResponseDto> {
+    // ❌ VIOLATION MAJEURE - Conversion directe dans controller
+    const userDomain = User.create(
+      Email.create(dto.email),
+      dto.name
+    );
+
+    const savedUser = await this.createUserUseCase.execute({
+      email: dto.email,
+      name: dto.name,
+    });
+
+    // ❌ VIOLATION MAJEURE - Mapping response dans controller
+    return {
+      id: savedUser.getId(),
+      email: savedUser.getEmail().getValue(),
+      name: savedUser.getName(),
+    };
+  }
+}
+```
+
+#### **❌ JAMAIS DE MAPPING DANS LES REPOSITORIES**
+```typescript
+// ❌ STRICTEMENT INTERDIT - Mapping intégré dans Repository
+@Injectable()
+export class TypeOrmUserRepository implements IUserRepository {
+  async save(user: User): Promise<User> {
+    // ❌ VIOLATION MAJEURE - Conversion directe dans repository
+    const ormEntity = new UserOrmEntity();
+    ormEntity.id = user.getId().getValue();
+    ormEntity.email = user.getEmail().getValue();
+    ormEntity.name = user.getName();
+
+    const saved = await this.repository.save(ormEntity);
+
+    // ❌ VIOLATION MAJEURE - Reconstruction directe dans repository
+    const email = Email.create(saved.email);
+    return User.reconstruct({
+      id: UserId.fromString(saved.id),
+      email: email,
+      name: saved.name,
+    });
+  }
+}
+```
+
+#### **❌ JAMAIS DE MAPPING DANS LES ENTITÉS ORM**
 ```typescript
 // ❌ STRICTEMENT INTERDIT - Logique métier dans l'entité ORM
 @Entity('users')
@@ -2173,13 +2344,15 @@ export class UserOrmEntity {
 }
 ```
 
-### ✅ **PATTERN CORRECT : MAPPERS DÉDIÉS**
+### ✅ **PATTERN CORRECT : MAPPERS DÉDIÉS SÉPARÉS**
 
+#### **🏗️ INFRASTRUCTURE MAPPERS - Domain ↔ ORM**
 ```typescript
 // ✅ EXCELLENT - Mapper dédié dans /infrastructure/mappers/
 export class UserOrmMapper {
   /**
    * Convertit une entité Domain vers ORM pour persistence
+   * 🎯 RESPONSABILITÉ : Uniquement conversion Domain → ORM
    */
   static toOrmEntity(domain: User): UserOrmEntity {
     const ormEntity = new UserOrmEntity();
@@ -2194,6 +2367,7 @@ export class UserOrmMapper {
 
   /**
    * Convertit une entité ORM vers Domain depuis persistence
+   * 🎯 RESPONSABILITÉ : Uniquement conversion ORM → Domain
    */
   static toDomainEntity(orm: UserOrmEntity): User {
     const email = Email.create(orm.email);
@@ -2218,16 +2392,82 @@ export class UserOrmMapper {
 }
 ```
 
-### 📁 **STRUCTURE OBLIGATOIRE DES MAPPERS**
+#### **🎨 PRESENTATION MAPPERS - Domain ↔ DTO**
+```typescript
+// ✅ EXCELLENT - Mapper dédié dans /presentation/mappers/
+export class UserDtoMapper {
+  /**
+   * Convertit une entité Domain vers DTO Response
+   * 🎯 RESPONSABILITÉ : Uniquement conversion Domain → DTO
+   */
+  static toResponseDto(domain: User): UserResponseDto {
+    return {
+      id: domain.getId().getValue(),
+      email: domain.getEmail().getValue(),
+      name: domain.getName(),
+      role: domain.getRole(),
+      isActive: domain.isActive(),
+      createdAt: domain.getCreatedAt().toISOString(),
+      updatedAt: domain.getUpdatedAt().toISOString(),
+    };
+  }
 
+  /**
+   * Convertit DTO Request vers Domain Request
+   * 🎯 RESPONSABILITÉ : Uniquement conversion DTO → Use Case Request
+   */
+  static toCreateUserRequest(dto: CreateUserDto, requestingUserId: string): CreateUserRequest {
+    return {
+      email: dto.email,
+      name: dto.name,
+      role: dto.role,
+      requestingUserId,
+      correlationId: generateCorrelationId(),
+      timestamp: new Date(),
+    };
+  }
+
+  /**
+   * Convertit liste Domain vers liste DTOs
+   */
+  static toResponseDtos(domains: User[]): UserResponseDto[] {
+    return domains.map(domain => this.toResponseDto(domain));
+  }
+}
+```
+
+### 📁 **STRUCTURE OBLIGATOIRE DES MAPPERS - SÉPARATION STRICTE**
+
+#### **🏗️ INFRASTRUCTURE MAPPERS - Domain ↔ ORM**
 ```
 src/infrastructure/mappers/
-├── orm-mappers.ts           # Export centralisé de tous les mappers
+├── orm-mappers.ts           # Export centralisé de tous les mappers ORM
 ├── user-orm.mapper.ts       # Mapper User : Domain ↔ ORM
 ├── business-orm.mapper.ts   # Mapper Business : Domain ↔ ORM
 ├── service-orm.mapper.ts    # Mapper Service : Domain ↔ ORM
-└── staff-orm.mapper.ts      # Mapper Staff : Domain ↔ ORM
+├── staff-orm.mapper.ts      # Mapper Staff : Domain ↔ ORM
+├── notification-orm.mapper.ts # Mapper Notification : Domain ↔ ORM
+└── appointment-orm.mapper.ts # Mapper Appointment : Domain ↔ ORM
 ```
+
+#### **🎨 PRESENTATION MAPPERS - Domain ↔ DTO**
+```
+src/presentation/mappers/
+├── dto-mappers.ts           # Export centralisé de tous les mappers DTO
+├── user-dto.mapper.ts       # Mapper User : Domain ↔ DTO
+├── business-dto.mapper.ts   # Mapper Business : Domain ↔ DTO
+├── service-dto.mapper.ts    # Mapper Service : Domain ↔ DTO
+├── staff-dto.mapper.ts      # Mapper Staff : Domain ↔ DTO
+├── notification-dto.mapper.ts # Mapper Notification : Domain ↔ DTO
+└── appointment-dto.mapper.ts # Mapper Appointment : Domain ↔ DTO
+```
+
+#### **🚫 INTERDICTION ABSOLUE - Autres emplacements**
+- ❌ **JAMAIS** de mappers dans `/controllers/`
+- ❌ **JAMAIS** de mappers dans `/repositories/`
+- ❌ **JAMAIS** de mappers dans `/entities/`
+- ❌ **JAMAIS** de mappers dans `/services/`
+- ❌ **JAMAIS** de mappers dans `/use-cases/`
 
 ### 🔄 **RESPONSABILITÉS DES MAPPERS**
 
@@ -2263,8 +2503,9 @@ static toOrmEntities(domainList: DomainEntity[]): OrmEntity[] {
 }
 ```
 
-### 🏗️ **UTILISATION DANS LES REPOSITORIES**
+### 🏗️ **UTILISATION CORRECTE DES MAPPERS PAR COUCHE**
 
+#### **🔗 REPOSITORIES - Utilisation Mappers Infrastructure**
 ```typescript
 // ✅ EXCELLENT - Usage correct des mappers dans Repository
 @Injectable()
@@ -2275,13 +2516,13 @@ export class TypeOrmUserRepository implements IUserRepository {
   ) {}
 
   async save(user: User): Promise<User> {
-    // 1. Conversion Domain → ORM via Mapper
+    // 1. Conversion Domain → ORM via Mapper Infrastructure
     const ormEntity = UserOrmMapper.toOrmEntity(user);
 
     // 2. Persistence en base
     const savedOrm = await this.repository.save(ormEntity);
 
-    // 3. Conversion ORM → Domain via Mapper
+    // 3. Conversion ORM → Domain via Mapper Infrastructure
     return UserOrmMapper.toDomainEntity(savedOrm);
   }
 
@@ -2293,7 +2534,7 @@ export class TypeOrmUserRepository implements IUserRepository {
 
     if (!ormEntity) return null;
 
-    // 2. Conversion ORM → Domain via Mapper
+    // 2. Conversion ORM → Domain via Mapper Infrastructure
     return UserOrmMapper.toDomainEntity(ormEntity);
   }
 
@@ -2301,13 +2542,60 @@ export class TypeOrmUserRepository implements IUserRepository {
     // 1. Requête ORM avec critères
     const ormEntities = await this.repository.find(/* critères */);
 
-    // 2. Conversion batch via Mapper
+    // 2. Conversion batch via Mapper Infrastructure
     return UserOrmMapper.toDomainEntities(ormEntities);
   }
 }
 ```
 
-### 🚨 **ERREURS COURANTES À ÉVITER**
+#### **🎨 CONTROLLERS - Utilisation Mappers Presentation**
+```typescript
+// ✅ EXCELLENT - Usage correct des mappers dans Controller
+@Controller('users')
+export class UserController {
+  constructor(
+    private readonly createUserUseCase: CreateUserUseCase,
+  ) {}
+
+  @Post()
+  async create(@Body() dto: CreateUserDto, @GetUser() user: AuthenticatedUser): Promise<UserResponseDto> {
+    // 1. Conversion DTO → Use Case Request via Mapper Presentation
+    const request = UserDtoMapper.toCreateUserRequest(dto, user.id);
+
+    // 2. Exécution Use Case
+    const createdUser = await this.createUserUseCase.execute(request);
+
+    // 3. Conversion Domain → DTO Response via Mapper Presentation
+    return UserDtoMapper.toResponseDto(createdUser);
+  }
+
+  @Get(':id')
+  async findById(@Param('id') id: string): Promise<UserResponseDto> {
+    // 1. Exécution Use Case
+    const user = await this.getUserByIdUseCase.execute({ userId: id });
+
+    // 2. Conversion Domain → DTO Response via Mapper Presentation
+    return UserDtoMapper.toResponseDto(user);
+  }
+
+  @Post('list')
+  async list(@Body() dto: ListUsersDto): Promise<ListUsersResponseDto> {
+    // 1. Conversion DTO → Use Case Request via Mapper Presentation
+    const request = UserDtoMapper.toListUsersRequest(dto);
+
+    // 2. Exécution Use Case
+    const result = await this.listUsersUseCase.execute(request);
+
+    // 3. Conversion Domain → DTO Response via Mapper Presentation
+    return {
+      data: UserDtoMapper.toResponseDtos(result.users),
+      meta: result.meta,
+    };
+  }
+}
+```
+
+### 🚨 **ERREURS COURANTES À ÉVITER - MISE À JOUR CRITIQUE**
 
 #### **❌ Import Domain dans Entité ORM**
 ```typescript
@@ -2335,29 +2623,92 @@ static toDomainEntity(orm: UserOrmEntity): User {
 }
 ```
 
-#### **❌ Conversion Directe sans Mapper**
+#### **❌ Conversion Directe sans Mapper dans Repository**
 ```typescript
-// VIOLATION - Toujours passer par le mapper
+// VIOLATION - Toujours passer par le mapper Infrastructure
 async save(user: User): Promise<User> {
-  // ❌ INTERDIT - Conversion manuelle
+  // ❌ INTERDIT - Conversion manuelle dans repository
   const ormEntity = new UserOrmEntity();
   ormEntity.email = user.getEmail().getValue(); // VIOLATION !
 
-  // ✅ CORRECT - Utiliser le mapper
+  // ✅ CORRECT - Utiliser le mapper Infrastructure
   const ormEntity = UserOrmMapper.toOrmEntity(user);
 }
 ```
 
-### 📋 **CHECKLIST MAPPERS OBLIGATOIRE**
+#### **❌ Conversion Directe sans Mapper dans Controller**
+```typescript
+// VIOLATION - Toujours passer par le mapper Presentation
+@Post()
+async create(@Body() dto: CreateUserDto): Promise<UserResponseDto> {
+  // ❌ INTERDIT - Conversion manuelle dans controller
+  const request = {
+    email: dto.email,
+    name: dto.name,
+    // ... conversion directe
+  };
 
+  const user = await this.createUserUseCase.execute(request);
+
+  // ❌ INTERDIT - Conversion response manuelle
+  return {
+    id: user.getId().getValue(),
+    email: user.getEmail().getValue(),
+    // ... conversion directe
+  };
+
+  // ✅ CORRECT - Utiliser les mappers Presentation
+  const request = UserDtoMapper.toCreateUserRequest(dto, requestingUserId);
+  const user = await this.createUserUseCase.execute(request);
+  return UserDtoMapper.toResponseDto(user);
+}
+```
+
+#### **❌ Mapping Logic dans Services ou Use Cases**
+```typescript
+// VIOLATION - Use Cases ne doivent PAS faire de mapping
+export class CreateUserUseCase {
+  async execute(request: CreateUserRequest): Promise<UserResponseDto> {
+    // ... logique métier
+
+    // ❌ INTERDIT - Conversion vers DTO dans Use Case
+    return {
+      id: user.getId().getValue(),
+      email: user.getEmail().getValue(),
+      // ... mapping dans use case
+    };
+
+    // ✅ CORRECT - Use Case retourne Domain Entity
+    return user; // Laisser le controller faire le mapping DTO
+  }
+}
+```
+
+### 📋 **CHECKLIST MAPPERS OBLIGATOIRE - MISE À JOUR STRICTE**
+
+#### **🏗️ Infrastructure Mappers (Domain ↔ ORM)**
 - [ ] ✅ **Zéro méthode de mapping dans entités ORM**
+- [ ] ✅ **Zéro logique de conversion dans repositories**
 - [ ] ✅ **Mappers dédiés dans `/infrastructure/mappers/`**
 - [ ] ✅ **Méthodes statiques `toOrmEntity()` et `toDomainEntity()`**
 - [ ] ✅ **Support des collections avec `toDomainEntities()`**
 - [ ] ✅ **Aucun import Domain dans entités ORM**
-- [ ] ✅ **Aucune logique métier dans mappers**
-- [ ] ✅ **Validation par les tests unitaires des mappers**
 - [ ] ✅ **Export centralisé dans `orm-mappers.ts`**
+
+#### **🎨 Presentation Mappers (Domain ↔ DTO)**
+- [ ] ✅ **Zéro logique de conversion dans controllers**
+- [ ] ✅ **Zéro mapping dans use cases (retournent Domain)**
+- [ ] ✅ **Mappers dédiés dans `/presentation/mappers/`**
+- [ ] ✅ **Méthodes statiques `toResponseDto()` et `toCreateRequest()`**
+- [ ] ✅ **Support des collections avec `toResponseDtos()`**
+- [ ] ✅ **Conversion DTO → Use Case Request**
+- [ ] ✅ **Export centralisé dans `dto-mappers.ts`**
+
+#### **🔍 Validation Générale**
+- [ ] ✅ **Aucune logique métier dans mappers**
+- [ ] ✅ **Tests unitaires complets pour chaque mapper**
+- [ ] ✅ **Séparation stricte Infrastructure vs Presentation**
+- [ ] ✅ **Zéro duplication de logique de conversion**
 
 ### 🎯 **TESTS UNITAIRES MAPPERS OBLIGATOIRES**
 
@@ -2395,6 +2746,169 @@ describe('UserOrmMapper', () => {
   });
 });
 ```
+
+### 🚨 **AUDIT ET DÉTECTION DES VIOLATIONS MAPPERS**
+
+#### **🔍 DÉTECTION AUTOMATIQUE DES VIOLATIONS**
+
+```bash
+# Détecter les mappers intégrés dans controllers
+grep -r "toOrmEntity\|toDomainEntity\|toResponseDto" src/presentation/controllers/
+# RÉSULTAT ATTENDU : Aucun résultat (0 ligne)
+
+# Détecter les mappers intégrés dans repositories
+grep -r "new.*OrmEntity()" src/infrastructure/database/repositories/
+grep -r "\.create(\|\.reconstruct(" src/infrastructure/database/repositories/
+# RÉSULTAT ATTENDU : Seuls les appels via mappers (UserOrmMapper.toOrmEntity)
+
+# Détecter les méthodes de mapping dans entités ORM
+grep -r "toDomainEntity\|toDto\|fromOrm" src/infrastructure/database/sql/postgresql/entities/
+# RÉSULTAT ATTENDU : Aucun résultat (0 ligne)
+
+# Détecter les imports Domain dans entités ORM
+grep -r "from.*domain/entities" src/infrastructure/database/sql/postgresql/entities/
+# RÉSULTAT ATTENDU : Aucun résultat (0 ligne)
+```
+
+#### **🔧 REFACTORING OBLIGATOIRE DES VIOLATIONS**
+
+**Workflow pour corriger les violations existantes :**
+
+1. **Identifier toutes les violations** avec les commandes ci-dessus
+2. **Créer les mappers manquants** dans `/infrastructure/mappers/` et `/presentation/mappers/`
+3. **Extraire la logique de mapping** des controllers/repositories
+4. **Remplacer par des appels aux mappers dédiés**
+5. **Supprimer toute logique de conversion** des couches inappropriées
+6. **Valider avec les commandes de détection**
+
+#### **📋 PLAN DE CORRECTION TYPES DE VIOLATIONS**
+
+##### **Violation Type 1 : Controller avec mapping intégré**
+```typescript
+// ❌ AVANT - Controller avec conversion directe
+@Post()
+async create(@Body() dto: CreateUserDto): Promise<UserResponseDto> {
+  const user = await this.createUserUseCase.execute({
+    email: dto.email,
+    name: dto.name,
+  });
+
+  // VIOLATION - Mapping dans controller
+  return {
+    id: user.getId().getValue(),
+    email: user.getEmail().getValue(),
+    name: user.getName(),
+  };
+}
+
+// ✅ APRÈS - Controller avec mapper dédié
+@Post()
+async create(@Body() dto: CreateUserDto, @GetUser() authUser: AuthenticatedUser): Promise<UserResponseDto> {
+  // 1. Mapper DTO → Use Case Request
+  const request = UserDtoMapper.toCreateUserRequest(dto, authUser.id);
+
+  // 2. Exécution Use Case
+  const user = await this.createUserUseCase.execute(request);
+
+  // 3. Mapper Domain → DTO Response
+  return UserDtoMapper.toResponseDto(user);
+}
+```
+
+##### **Violation Type 2 : Repository avec mapping intégré**
+```typescript
+// ❌ AVANT - Repository avec conversion directe
+async save(user: User): Promise<User> {
+  // VIOLATION - Conversion manuelle dans repository
+  const ormEntity = new UserOrmEntity();
+  ormEntity.id = user.getId().getValue();
+  ormEntity.email = user.getEmail().getValue();
+
+  const saved = await this.repository.save(ormEntity);
+
+  // VIOLATION - Reconstruction manuelle
+  const email = Email.create(saved.email);
+  return User.reconstruct({
+    id: UserId.fromString(saved.id),
+    email: email,
+  });
+}
+
+// ✅ APRÈS - Repository avec mapper dédié
+async save(user: User): Promise<User> {
+  // 1. Mapper Domain → ORM
+  const ormEntity = UserOrmMapper.toOrmEntity(user);
+
+  // 2. Persistence
+  const saved = await this.repository.save(ormEntity);
+
+  // 3. Mapper ORM → Domain
+  return UserOrmMapper.toDomainEntity(saved);
+}
+```
+
+##### **Violation Type 3 : Entité ORM avec méthodes de mapping**
+```typescript
+// ❌ AVANT - Entité ORM avec méthode de conversion
+@Entity('users')
+export class UserOrmEntity {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+
+  @Column()
+  email: string;
+
+  // VIOLATION - Méthode dans entité ORM
+  toDomainEntity(): User {
+    const email = Email.create(this.email);
+    return User.create(email, this.name);
+  }
+}
+
+// ✅ APRÈS - Entité ORM pure + Mapper séparé
+@Entity('users')
+export class UserOrmEntity {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+
+  @Column()
+  email: string;
+
+  // Aucune méthode de conversion - entité ORM pure
+}
+
+// Mapper séparé dans /infrastructure/mappers/user-orm.mapper.ts
+export class UserOrmMapper {
+  static toDomainEntity(orm: UserOrmEntity): User {
+    const email = Email.create(orm.email);
+    return User.reconstruct({
+      id: UserId.fromString(orm.id),
+      email: email,
+    });
+  }
+}
+```
+
+#### **🎯 VALIDATION POST-REFACTORING**
+
+```bash
+# Vérification finale - Aucune violation ne doit subsister
+npm run lint
+npm test
+npm run build
+
+# Tests spécifiques mappers
+npm test -- --testPathPattern="mapper"
+npm test -- --testPathPattern="controller"
+npm test -- --testPathPattern="repository"
+```
+
+#### **⚠️ SANCTIONS POUR NON-RESPECT**
+
+- **Blocage immédiat** des commits avec violations de mapping
+- **Review obligatoire** et refactoring avant merge
+- **Formation supplémentaire** sur l'architecture Clean
+- **Audit complet** du code pour détecter autres violations
 
 **Cette séparation stricte garantit une architecture propre, maintenable et respectueuse des principes de Clean Architecture !**
 
@@ -2608,7 +3122,41 @@ docs/
 
 **Cette approche garantit des APIs professionnelles, documentées et facilement utilisables !**
 
-### 💎 **VALUE OBJECTS - BONNES PRATIQUES DANS LES MAPPERS**
+### � **RESPONSABILITÉS DES MAPPERS**
+
+#### **1️⃣ Conversion Domain → ORM (Persistence)**
+```typescript
+// Pour les opérations CREATE et UPDATE
+static toOrmEntity(domain: DomainEntity): OrmEntity {
+  // Conversion des Value Objects vers types primitifs
+  // Gestion des relations et foreign keys
+  // Préparation pour persistence en base
+}
+```
+
+#### **2️⃣ Conversion ORM → Domain (Reconstruction)**
+```typescript
+// Pour les opérations READ et hydratation
+static toDomainEntity(orm: OrmEntity): DomainEntity {
+  // Reconstruction des Value Objects depuis primitifs
+  // Validation et création des entités Domain
+  // Préservation de l'intégrité métier
+}
+```
+
+#### **3️⃣ Conversion Batch (Collections)**
+```typescript
+// Pour les opérations sur collections
+static toDomainEntities(ormList: OrmEntity[]): DomainEntity[] {
+  return ormList.map(orm => this.toDomainEntity(orm));
+}
+
+static toOrmEntities(domainList: DomainEntity[]): OrmEntity[] {
+  return domainList.map(domain => this.toOrmEntity(domain));
+}
+```
+
+### �💎 **VALUE OBJECTS - BONNES PRATIQUES DANS LES MAPPERS**
 
 #### **🎯 RÈGLE IMPORTANTE : RECONSTRUCTION CORRECTE DES VALUE OBJECTS**
 

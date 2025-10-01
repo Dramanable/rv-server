@@ -15,14 +15,14 @@ export enum AssignmentStatus {
   INACTIVE = 'INACTIVE',
   PENDING = 'PENDING',
   EXPIRED = 'EXPIRED',
-  REVOKED = 'REVOKED'
+  REVOKED = 'REVOKED',
 }
 
 export enum AssignmentType {
   PERMANENT = 'PERMANENT',
   TEMPORARY = 'TEMPORARY',
   PROJECT_BASED = 'PROJECT_BASED',
-  EMERGENCY = 'EMERGENCY'
+  EMERGENCY = 'EMERGENCY',
 }
 
 // Interfaces
@@ -106,7 +106,13 @@ export interface UpdateRoleAssignmentDto {
 export interface ListRoleAssignmentsDto {
   readonly page?: number;
   readonly limit?: number;
-  readonly sortBy?: 'createdAt' | 'startDate' | 'endDate' | 'priority' | 'userName' | 'roleName';
+  readonly sortBy?:
+    | 'createdAt'
+    | 'startDate'
+    | 'endDate'
+    | 'priority'
+    | 'userName'
+    | 'roleName';
   readonly sortOrder?: 'asc' | 'desc';
   readonly search?: string;
   readonly userId?: string;
@@ -188,8 +194,13 @@ export default class RoleAssignmentsService {
   /**
    * 📋 Lister les assignations de rôles avec filtrage avancé
    */
-  async list(params: ListRoleAssignmentsDto = {}): Promise<ListRoleAssignmentsResponse> {
-    const response = await this.client.post('/api/v1/role-assignments/list', params);
+  async list(
+    params: ListRoleAssignmentsDto = {},
+  ): Promise<ListRoleAssignmentsResponse> {
+    const response = await this.client.post(
+      '/api/v1/role-assignments/list',
+      params,
+    );
     return response.data;
   }
 
@@ -204,7 +215,9 @@ export default class RoleAssignmentsService {
   /**
    * ➕ Créer une nouvelle assignation de rôle
    */
-  async create(data: CreateRoleAssignmentDto): Promise<CreateRoleAssignmentResponse> {
+  async create(
+    data: CreateRoleAssignmentDto,
+  ): Promise<CreateRoleAssignmentResponse> {
     const response = await this.client.post('/api/v1/role-assignments', data);
     return response.data;
   }
@@ -212,8 +225,14 @@ export default class RoleAssignmentsService {
   /**
    * ✏️ Mettre à jour une assignation de rôle
    */
-  async update(id: string, data: UpdateRoleAssignmentDto): Promise<UpdateRoleAssignmentResponse> {
-    const response = await this.client.put(`/api/v1/role-assignments/${id}`, data);
+  async update(
+    id: string,
+    data: UpdateRoleAssignmentDto,
+  ): Promise<UpdateRoleAssignmentResponse> {
+    const response = await this.client.put(
+      `/api/v1/role-assignments/${id}`,
+      data,
+    );
     return response.data;
   }
 
@@ -228,11 +247,14 @@ export default class RoleAssignmentsService {
   /**
    * 👤 Obtenir les assignations d'un utilisateur
    */
-  async getUserAssignments(userId: string, businessId?: string): Promise<RoleAssignment[]> {
+  async getUserAssignments(
+    userId: string,
+    businessId?: string,
+  ): Promise<RoleAssignment[]> {
     const params: ListRoleAssignmentsDto = {
       userId,
       limit: 100,
-      ...(businessId && { businessId })
+      ...(businessId && { businessId }),
     };
     const response = await this.list(params);
     return [...response.data];
@@ -258,7 +280,10 @@ export default class RoleAssignmentsService {
    * ✅ Obtenir les assignations actives
    */
   async getActiveAssignments(): Promise<RoleAssignment[]> {
-    const response = await this.list({ status: AssignmentStatus.ACTIVE, limit: 100 });
+    const response = await this.list({
+      status: AssignmentStatus.ACTIVE,
+      limit: 100,
+    });
     return [...response.data];
   }
 
@@ -266,7 +291,10 @@ export default class RoleAssignmentsService {
    * ⏳ Obtenir les assignations en attente
    */
   async getPendingAssignments(): Promise<RoleAssignment[]> {
-    const response = await this.list({ status: AssignmentStatus.PENDING, limit: 100 });
+    const response = await this.list({
+      status: AssignmentStatus.PENDING,
+      limit: 100,
+    });
     return [...response.data];
   }
 
@@ -281,68 +309,109 @@ export default class RoleAssignmentsService {
   /**
    * 🔄 Activer une assignation
    */
-  async activate(assignmentId: string, reason?: string): Promise<UpdateRoleAssignmentResponse> {
-    const response = await this.client.patch(`/api/v1/role-assignments/${assignmentId}/activate`, {
-      reason
-    });
+  async activate(
+    assignmentId: string,
+    reason?: string,
+  ): Promise<UpdateRoleAssignmentResponse> {
+    const response = await this.client.patch(
+      `/api/v1/role-assignments/${assignmentId}/activate`,
+      {
+        reason,
+      },
+    );
     return response.data;
   }
 
   /**
    * ⏸️ Désactiver une assignation
    */
-  async deactivate(assignmentId: string, reason?: string): Promise<UpdateRoleAssignmentResponse> {
-    const response = await this.client.patch(`/api/v1/role-assignments/${assignmentId}/deactivate`, {
-      reason
-    });
+  async deactivate(
+    assignmentId: string,
+    reason?: string,
+  ): Promise<UpdateRoleAssignmentResponse> {
+    const response = await this.client.patch(
+      `/api/v1/role-assignments/${assignmentId}/deactivate`,
+      {
+        reason,
+      },
+    );
     return response.data;
   }
 
   /**
    * ❌ Révoquer une assignation
    */
-  async revoke(assignmentId: string, reason: string): Promise<UpdateRoleAssignmentResponse> {
-    const response = await this.client.patch(`/api/v1/role-assignments/${assignmentId}/revoke`, {
-      reason
-    });
+  async revoke(
+    assignmentId: string,
+    reason: string,
+  ): Promise<UpdateRoleAssignmentResponse> {
+    const response = await this.client.patch(
+      `/api/v1/role-assignments/${assignmentId}/revoke`,
+      {
+        reason,
+      },
+    );
     return response.data;
   }
 
   /**
    * ⏰ Prolonger une assignation
    */
-  async extend(assignmentId: string, newEndDate: string, reason?: string): Promise<UpdateRoleAssignmentResponse> {
-    const response = await this.client.patch(`/api/v1/role-assignments/${assignmentId}/extend`, {
-      endDate: newEndDate,
-      reason
-    });
+  async extend(
+    assignmentId: string,
+    newEndDate: string,
+    reason?: string,
+  ): Promise<UpdateRoleAssignmentResponse> {
+    const response = await this.client.patch(
+      `/api/v1/role-assignments/${assignmentId}/extend`,
+      {
+        endDate: newEndDate,
+        reason,
+      },
+    );
     return response.data;
   }
 
   /**
    * 🔄 Transférer une assignation
    */
-  async transfer(assignmentId: string, newUserId: string, reason?: string): Promise<UpdateRoleAssignmentResponse> {
-    const response = await this.client.patch(`/api/v1/role-assignments/${assignmentId}/transfer`, {
-      userId: newUserId,
-      reason
-    });
+  async transfer(
+    assignmentId: string,
+    newUserId: string,
+    reason?: string,
+  ): Promise<UpdateRoleAssignmentResponse> {
+    const response = await this.client.patch(
+      `/api/v1/role-assignments/${assignmentId}/transfer`,
+      {
+        userId: newUserId,
+        reason,
+      },
+    );
     return response.data;
   }
 
   /**
    * 🔐 Obtenir les permissions effectives d'un utilisateur
    */
-  async getUserPermissions(userId: string, businessId?: string): Promise<UserPermissions> {
+  async getUserPermissions(
+    userId: string,
+    businessId?: string,
+  ): Promise<UserPermissions> {
     const queryParams = businessId ? `?businessId=${businessId}` : '';
-    const response = await this.client.get(`/api/v1/role-assignments/user/${userId}/permissions${queryParams}`);
+    const response = await this.client.get(
+      `/api/v1/role-assignments/user/${userId}/permissions${queryParams}`,
+    );
     return response.data.data;
   }
 
   /**
    * ✅ Vérifier si un utilisateur a une permission
    */
-  async hasPermission(userId: string, permission: string, businessId?: string): Promise<boolean> {
+  async hasPermission(
+    userId: string,
+    permission: string,
+    businessId?: string,
+  ): Promise<boolean> {
     const userPermissions = await this.getUserPermissions(userId, businessId);
     return userPermissions.effectivePermissions.includes(permission);
   }
@@ -352,15 +421,15 @@ export default class RoleAssignmentsService {
    */
   async assignToMultipleUsers(
     userIds: string[],
-    roleData: Omit<CreateRoleAssignmentDto, 'userId'>
+    roleData: Omit<CreateRoleAssignmentDto, 'userId'>,
   ): Promise<CreateRoleAssignmentResponse[]> {
-    const assignments = userIds.map(userId => ({
+    const assignments = userIds.map((userId) => ({
       ...roleData,
-      userId
+      userId,
     }));
 
     const response = await this.client.post('/api/v1/role-assignments/bulk', {
-      assignments
+      assignments,
     });
     return response.data.data;
   }
@@ -370,12 +439,19 @@ export default class RoleAssignmentsService {
    */
   async batchRevoke(
     assignmentIds: string[],
-    reason: string
-  ): Promise<{ success: boolean; revokedCount: number; failed: { id: string; error: string }[] }> {
-    const response = await this.client.post('/api/v1/role-assignments/batch-revoke', {
-      assignmentIds,
-      reason
-    });
+    reason: string,
+  ): Promise<{
+    success: boolean;
+    revokedCount: number;
+    failed: { id: string; error: string }[];
+  }> {
+    const response = await this.client.post(
+      '/api/v1/role-assignments/batch-revoke',
+      {
+        assignmentIds,
+        reason,
+      },
+    );
     return response.data;
   }
 
@@ -394,7 +470,7 @@ export default class RoleAssignmentsService {
     const params: ListRoleAssignmentsDto = {
       search: query,
       limit: 50,
-      ...(businessId && { businessId })
+      ...(businessId && { businessId }),
     };
     const response = await this.list(params);
     return [...response.data];
@@ -403,11 +479,14 @@ export default class RoleAssignmentsService {
   /**
    * 📅 Obtenir les assignations pour une période
    */
-  async getByDateRange(startDate: string, endDate: string): Promise<RoleAssignment[]> {
+  async getByDateRange(
+    startDate: string,
+    endDate: string,
+  ): Promise<RoleAssignment[]> {
     const response = await this.list({
       startDate,
       endDate,
-      limit: 100
+      limit: 100,
     });
     return [...response.data];
   }
@@ -415,7 +494,9 @@ export default class RoleAssignmentsService {
   /**
    * 👨‍💼 Obtenir les assignations créées par un utilisateur
    */
-  async getAssignmentsByAssigner(assignerId: string): Promise<RoleAssignment[]> {
+  async getAssignmentsByAssigner(
+    assignerId: string,
+  ): Promise<RoleAssignment[]> {
     const response = await this.list({ assignedBy: assignerId, limit: 100 });
     return [...response.data];
   }
@@ -439,11 +520,11 @@ export default class RoleAssignmentsService {
    */
   static getStatusColor(status: AssignmentStatus): string {
     const colors: Record<AssignmentStatus, string> = {
-      [AssignmentStatus.ACTIVE]: '#22C55E',        // Vert
-      [AssignmentStatus.INACTIVE]: '#6B7280',      // Gris
-      [AssignmentStatus.PENDING]: '#F59E0B',       // Orange
-      [AssignmentStatus.EXPIRED]: '#EF4444',       // Rouge
-      [AssignmentStatus.REVOKED]: '#DC2626'        // Rouge foncé
+      [AssignmentStatus.ACTIVE]: '#22C55E', // Vert
+      [AssignmentStatus.INACTIVE]: '#6B7280', // Gris
+      [AssignmentStatus.PENDING]: '#F59E0B', // Orange
+      [AssignmentStatus.EXPIRED]: '#EF4444', // Rouge
+      [AssignmentStatus.REVOKED]: '#DC2626', // Rouge foncé
     };
     return colors[status] || '#6B7280';
   }
@@ -457,7 +538,7 @@ export default class RoleAssignmentsService {
       [AssignmentStatus.INACTIVE]: '⚫',
       [AssignmentStatus.PENDING]: '⏳',
       [AssignmentStatus.EXPIRED]: '⏰',
-      [AssignmentStatus.REVOKED]: '❌'
+      [AssignmentStatus.REVOKED]: '❌',
     };
     return icons[status] || '❓';
   }
@@ -467,10 +548,10 @@ export default class RoleAssignmentsService {
    */
   static getTypeColor(type: AssignmentType): string {
     const colors: Record<AssignmentType, string> = {
-      [AssignmentType.PERMANENT]: '#3B82F6',       // Bleu
-      [AssignmentType.TEMPORARY]: '#F59E0B',       // Orange
-      [AssignmentType.PROJECT_BASED]: '#8B5CF6',   // Violet
-      [AssignmentType.EMERGENCY]: '#EF4444'        // Rouge
+      [AssignmentType.PERMANENT]: '#3B82F6', // Bleu
+      [AssignmentType.TEMPORARY]: '#F59E0B', // Orange
+      [AssignmentType.PROJECT_BASED]: '#8B5CF6', // Violet
+      [AssignmentType.EMERGENCY]: '#EF4444', // Rouge
     };
     return colors[type] || '#6B7280';
   }
@@ -483,7 +564,7 @@ export default class RoleAssignmentsService {
       [AssignmentType.PERMANENT]: '🏛️',
       [AssignmentType.TEMPORARY]: '⏰',
       [AssignmentType.PROJECT_BASED]: '🎯',
-      [AssignmentType.EMERGENCY]: '🚨'
+      [AssignmentType.EMERGENCY]: '🚨',
     };
     return icons[type] || '❓';
   }
@@ -491,7 +572,9 @@ export default class RoleAssignmentsService {
   /**
    * ✅ Valider les données d'assignation
    */
-  static validateAssignmentData(data: CreateRoleAssignmentDto | UpdateRoleAssignmentDto): string[] {
+  static validateAssignmentData(
+    data: CreateRoleAssignmentDto | UpdateRoleAssignmentDto,
+  ): string[] {
     const errors: string[] = [];
 
     if ('startDate' in data && data.startDate) {
@@ -510,7 +593,9 @@ export default class RoleAssignmentsService {
       if ('startDate' in data && data.startDate) {
         const startDate = new Date(data.startDate);
         if (endDate <= startDate) {
-          errors.push('La date de fin doit être postérieure à la date de début');
+          errors.push(
+            'La date de fin doit être postérieure à la date de début',
+          );
         }
       }
     }
@@ -587,7 +672,9 @@ export default class RoleAssignmentsService {
      */
     getDuration: (assignment: RoleAssignment): string => {
       const startDate = new Date(assignment.startDate);
-      const endDate = assignment.endDate ? new Date(assignment.endDate) : new Date();
+      const endDate = assignment.endDate
+        ? new Date(assignment.endDate)
+        : new Date();
 
       const diffTime = endDate.getTime() - startDate.getTime();
       const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
@@ -646,7 +733,8 @@ export default class RoleAssignmentsService {
       }
 
       if (assignment.endDate) {
-        const daysRemaining = RoleAssignmentsService.utils.getDaysRemaining(assignment);
+        const daysRemaining =
+          RoleAssignmentsService.utils.getDaysRemaining(assignment);
         return daysRemaining !== null && daysRemaining <= 7;
       }
 
@@ -658,12 +746,12 @@ export default class RoleAssignmentsService {
      */
     getUniquePermissions: (assignments: RoleAssignment[]): string[] => {
       const permissions = new Set<string>();
-      assignments.forEach(assignment => {
-        assignment.effectivePermissions.forEach(permission => {
+      assignments.forEach((assignment) => {
+        assignment.effectivePermissions.forEach((permission) => {
           permissions.add(permission);
         });
       });
       return Array.from(permissions).sort();
-    }
+    },
   };
 }

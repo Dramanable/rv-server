@@ -6,19 +6,12 @@
 
 import { I18nService } from '@application/ports/i18n.port';
 import { Logger } from '@application/ports/logger.port';
-import {
-  Professional,
-  ProfessionalStatus,
-} from '@domain/entities/professional.entity';
+import { Professional } from '@domain/entities/professional.entity';
 import { ProfessionalNotFoundError } from '@domain/exceptions/professional.exceptions';
 import { IProfessionalRepository } from '@domain/repositories/professional.repository';
 import { BusinessId } from '@domain/value-objects/business-id.value-object';
 import { Email } from '@domain/value-objects/email.value-object';
 import { ProfessionalId } from '@domain/value-objects/professional-id.value-object';
-import {
-  GetProfessionalByIdRequest,
-  GetProfessionalByIdUseCase,
-} from '@application/use-cases/professionals/get-professional-by-id.use-case';
 
 describe('GetProfessionalByIdUseCase - TDD', () => {
   // ✅ Test Data Factory
@@ -345,33 +338,3 @@ describe('GetProfessionalByIdUseCase - TDD', () => {
 });
 
 // ✅ OBLIGATOIRE - Helper functions pour tests cohérents
-function createValidRequest(): GetProfessionalByIdRequest {
-  return {
-    professionalId: 'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee',
-    requestingUserId: 'admin-user-id',
-    correlationId: 'test-correlation-123',
-    timestamp: new Date(),
-  };
-}
-
-function createProfessionalEntity(): Professional {
-  return Professional.reconstruct({
-    id: ProfessionalId.fromString('aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee'), // ✅ CRITIQUE : Même ID que la requête
-    businessId: BusinessId.fromString('bbbbbbbb-cccc-4ddd-8eee-ffffffffffff'), // ✅ Utiliser un UUID v4 valide
-    email: Email.create('doctor@clinic.com'),
-    firstName: 'Dr. Marie',
-    lastName: 'Martin',
-    speciality: 'Cardiologie',
-    licenseNumber: 'ORDRE-789012',
-    phone: '+33187654321',
-    profileImage: 'https://example.com/profile.jpg',
-    bio: 'Cardiologue expérimentée',
-    experience: '15',
-    status: 'ACTIVE' as ProfessionalStatus,
-    isVerified: true,
-    createdBy: 'admin-user-id',
-    updatedBy: 'admin-user-id',
-    createdAt: new Date('2023-09-24T16:35:11.143Z'),
-    updatedAt: new Date('2025-09-24T16:35:11.143Z'),
-  });
-}

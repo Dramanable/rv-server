@@ -17,12 +17,12 @@
  * - Rate limiting sur les tentatives
  */
 
-import { Logger } from '../../ports/logger.port';
-import { I18nService } from '../../ports/i18n.port';
-import { UserRepository } from '../../../domain/repositories/user.repository.interface';
-import { IPasswordResetCodeRepository } from '../../../domain/repositories/password-reset-code.repository';
 import { DomainValidationError } from '../../../domain/exceptions/domain.exceptions';
+import { IPasswordResetCodeRepository } from '../../../domain/repositories/password-reset-code.repository';
+import { UserRepository } from '../../../domain/repositories/user.repository.interface';
 import { UserId } from '../../../domain/value-objects/user-id.value-object';
+import { I18nService } from '../../ports/i18n.port';
+import { Logger } from '../../ports/logger.port';
 
 export interface VerifyPasswordResetCodeRequest {
   readonly code: string;

@@ -5,8 +5,8 @@
  * Respecte les principes Clean Architecture
  */
 
-import { Service } from '../../../domain/entities/service.entity';
 import { Business } from '../../../domain/entities/business.entity';
+import { Service } from '../../../domain/entities/service.entity';
 import { BusinessId } from '../../../domain/value-objects/business-id.value-object';
 import { ServiceTypeId } from '../../../domain/value-objects/service-type-id.value-object';
 import type { Logger } from '../../ports/logger.port';

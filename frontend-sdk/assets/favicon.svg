@@ -2,26 +2,26 @@
 <svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
   <!-- Background simple -->
   <circle cx="32" cy="32" r="30" fill="#4A90E2"/>
-  
+
   <!-- Calendrier ultra-simple -->
   <rect x="20" y="20" width="24" height="20" rx="3" fill="#FFFFFF"/>
-  
+
   <!-- Anneaux minimalistes -->
   <rect x="24" y="17" width="2" height="6" rx="1" fill="#6B7280"/>
   <rect x="30" y="17" width="2" height="6" rx="1" fill="#6B7280"/>
   <rect x="36" y="17" width="2" height="6" rx="1" fill="#6B7280"/>
-  
+
   <!-- En-tête -->
   <rect x="22" y="24" width="20" height="4" rx="1" fill="#F3F4F6"/>
-  
+
   <!-- Points de RDV simples -->
   <circle cx="26" cy="32" r="1.5" fill="#4A90E2"/>
   <circle cx="32" cy="32" r="1.5" fill="#10B981"/>
   <circle cx="38" cy="32" r="1.5" fill="#F59E0B"/>
   <circle cx="26" cy="36" r="1.5" fill="#10B981"/>
   <circle cx="38" cy="36" r="1.5" fill="#4A90E2"/>
-  
+
   <!-- Texte discret -->
-  <text x="32" y="52" text-anchor="middle" font-family="Arial, sans-serif" 
+  <text x="32" y="52" text-anchor="middle" font-family="Arial, sans-serif"
         font-size="6" font-weight="normal" fill="#FFFFFF">amRDV</text>
 </svg>

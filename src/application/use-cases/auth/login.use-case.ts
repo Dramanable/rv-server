@@ -6,18 +6,17 @@
  * La gestion des cookies se fait dans la couche Presentation
  */
 
-import type { UserRepository } from '@domain/repositories/user.repository.interface';
-import type { IPasswordHasher } from '@application/ports/password-hasher.port'; // ✅ NOUVEAU: Port Clean Architecture
-import type { AuthenticationService } from '@application/ports/authentication.port';
-import type { Logger } from '@application/ports/logger.port';
-import type { I18nService } from '@application/ports/i18n.port';
-import type { IConfigService } from '@application/ports/config.port';
-import type { UserCacheService } from '@application/services/user-cache.service';
 import {
-  InvalidCredentialsError,
-  UserNotFoundError,
   AuthenticationFailedError,
+  UserNotFoundError,
 } from '@application/exceptions/auth.exceptions';
+import type { AuthenticationService } from '@application/ports/authentication.port';
+import type { IConfigService } from '@application/ports/config.port';
+import type { I18nService } from '@application/ports/i18n.port';
+import type { Logger } from '@application/ports/logger.port';
+import type { IPasswordHasher } from '@application/ports/password-hasher.port';
+import type { UserCacheService } from '@application/services/user-cache.service';
+import type { UserRepository } from '@domain/repositories/user.repository.interface';
 import { Email } from '@domain/value-objects/email.vo';
 import { AppContextFactory } from '@shared/context/app-context';
 

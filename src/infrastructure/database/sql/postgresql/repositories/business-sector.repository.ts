@@ -19,6 +19,7 @@ import type { Logger } from '../../../../../application/ports/logger.port';
 import { BusinessSector } from '../../../../../domain/entities/business-sector.entity';
 import { TOKENS } from '../../../../../shared/constants/injection-tokens';
 import { BusinessSectorOrmEntity } from '../entities/business-sector-orm.entity';
+import { BusinessSectorOrmMapper } from '../../../../mappers/business-sector-orm.mapper';
 
 @Injectable()
 export class TypeOrmBusinessSectorRepository
@@ -36,8 +37,7 @@ export class TypeOrmBusinessSectorRepository
    */
   async save(businessSector: BusinessSector): Promise<BusinessSector> {
     try {
-      const ormEntity =
-        BusinessSectorOrmEntity.fromDomainEntity(businessSector);
+      const ormEntity = BusinessSectorOrmMapper.toOrmEntity(businessSector);
       const savedEntity = await this.repository.save(ormEntity);
 
       this.logger.info('Business sector saved successfully', {
@@ -46,7 +46,7 @@ export class TypeOrmBusinessSectorRepository
         operation: 'save',
       });
 
-      return this.toDomainEntity(savedEntity);
+      return BusinessSectorOrmMapper.toDomainEntity(savedEntity);
     } catch (error) {
       this.logger.error(
         'Failed to save business sector',
@@ -74,7 +74,7 @@ export class TypeOrmBusinessSectorRepository
         return null;
       }
 
-      return this.toDomainEntity(ormEntity);
+      return BusinessSectorOrmMapper.toDomainEntity(ormEntity);
     } catch (error) {
       this.logger.error(
         'Failed to find business sector by ID',
@@ -102,7 +102,7 @@ export class TypeOrmBusinessSectorRepository
         return null;
       }
 
-      return this.toDomainEntity(ormEntity);
+      return BusinessSectorOrmMapper.toDomainEntity(ormEntity);
     } catch (error) {
       this.logger.error(
         'Failed to find business sector by code',
@@ -166,7 +166,9 @@ export class TypeOrmBusinessSectorRepository
       // Exécution
       const [ormEntities, total] = await queryBuilder.getManyAndCount();
 
-      const data = ormEntities.map((entity) => this.toDomainEntity(entity));
+      const data = ormEntities.map((entity) =>
+        BusinessSectorOrmMapper.toDomainEntity(entity),
+      );
       const totalPages = Math.ceil(total / limit);
 
       this.logger.info('Business sectors listed successfully', {
@@ -372,7 +374,7 @@ export class TypeOrmBusinessSectorRepository
         operation: 'updateStatus',
       });
 
-      return this.toDomainEntity(updatedEntity);
+      return BusinessSectorOrmMapper.toDomainEntity(updatedEntity);
     } catch (error) {
       this.logger.error(
         'Failed to update business sector status',
@@ -401,7 +403,9 @@ export class TypeOrmBusinessSectorRepository
         take: limit || 10,
       });
 
-      return ormEntities.map((entity) => this.toDomainEntity(entity));
+      return ormEntities.map((entity) =>
+        BusinessSectorOrmMapper.toDomainEntity(entity),
+      );
     } catch (error) {
       this.logger.error(
         'Failed to find most used business sectors',
@@ -441,22 +445,5 @@ export class TypeOrmBusinessSectorRepository
       );
       throw error;
     }
-  }
-
-  /**
-   * 🔄 Conversion ORM Entity → Domain Entity
-   */
-  private toDomainEntity(ormEntity: BusinessSectorOrmEntity): BusinessSector {
-    return BusinessSector.restore(
-      ormEntity.id,
-      ormEntity.name,
-      ormEntity.description || '',
-      ormEntity.code,
-      ormEntity.isActive,
-      ormEntity.createdAt,
-      ormEntity.createdBy,
-      ormEntity.updatedAt,
-      ormEntity.updatedBy,
-    );
   }
 }

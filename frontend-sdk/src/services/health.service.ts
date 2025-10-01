@@ -10,7 +10,7 @@ export enum ServiceStatus {
   HEALTHY = 'HEALTHY',
   DEGRADED = 'DEGRADED',
   UNHEALTHY = 'UNHEALTHY',
-  UNKNOWN = 'UNKNOWN'
+  UNKNOWN = 'UNKNOWN',
 }
 
 export interface HealthCheckResponse {
@@ -102,7 +102,8 @@ export class HealthService {
    * ❤️ Vérification basique de santé
    */
   async check(): Promise<HealthCheckResponse> {
-    const response = await this.client.get<HealthCheckResponse>('/api/v1/health');
+    const response =
+      await this.client.get<HealthCheckResponse>('/api/v1/health');
     return response.data;
   }
 
@@ -110,7 +111,9 @@ export class HealthService {
    * 🔍 Vérification détaillée de santé
    */
   async detailed(): Promise<DetailedHealthResponse> {
-    const response = await this.client.get<DetailedHealthResponse>('/api/v1/health/detailed');
+    const response = await this.client.get<DetailedHealthResponse>(
+      '/api/v1/health/detailed',
+    );
     return response.data;
   }
 
@@ -118,7 +121,9 @@ export class HealthService {
    * 🗄️ Santé de la base de données
    */
   async database(): Promise<DatabaseHealth> {
-    const response = await this.client.get<DatabaseHealth>('/api/v1/health/database');
+    const response = await this.client.get<DatabaseHealth>(
+      '/api/v1/health/database',
+    );
     return response.data;
   }
 
@@ -134,7 +139,9 @@ export class HealthService {
    * 💻 Santé du système
    */
   async system(): Promise<SystemHealth> {
-    const response = await this.client.get<SystemHealth>('/api/v1/health/system');
+    const response = await this.client.get<SystemHealth>(
+      '/api/v1/health/system',
+    );
     return response.data;
   }
 
@@ -142,17 +149,23 @@ export class HealthService {
    * 🔄 Liveness probe (pour Kubernetes)
    */
   async liveness(): Promise<{ status: 'ok' }> {
-    const response = await this.client.get<{ status: 'ok' }>('/api/v1/health/liveness');
+    const response = await this.client.get<{ status: 'ok' }>(
+      '/api/v1/health/liveness',
+    );
     return response.data;
   }
 
   /**
    * ✅ Readiness probe (pour Kubernetes)
    */
-  async readiness(): Promise<{ status: 'ok' | 'not-ready'; details?: string[] }> {
-    const response = await this.client.get<{ status: 'ok' | 'not-ready'; details?: string[] }>(
-      '/api/v1/health/readiness'
-    );
+  async readiness(): Promise<{
+    status: 'ok' | 'not-ready';
+    details?: string[];
+  }> {
+    const response = await this.client.get<{
+      status: 'ok' | 'not-ready';
+      details?: string[];
+    }>('/api/v1/health/readiness');
     return response.data;
   }
 
@@ -221,10 +234,10 @@ export class HealthService {
    */
   static getStatusColor(status: ServiceStatus): string {
     const colors: Record<ServiceStatus, string> = {
-      [ServiceStatus.HEALTHY]: '#10B981',    // Vert
-      [ServiceStatus.DEGRADED]: '#F59E0B',   // Orange
+      [ServiceStatus.HEALTHY]: '#10B981', // Vert
+      [ServiceStatus.DEGRADED]: '#F59E0B', // Orange
       [ServiceStatus.UNHEALTHY]: '#EF4444', // Rouge
-      [ServiceStatus.UNKNOWN]: '#6B7280'    // Gris
+      [ServiceStatus.UNKNOWN]: '#6B7280', // Gris
     };
     return colors[status];
   }
@@ -234,7 +247,7 @@ export class HealthService {
       [ServiceStatus.HEALTHY]: '✅',
       [ServiceStatus.DEGRADED]: '⚠️',
       [ServiceStatus.UNHEALTHY]: '❌',
-      [ServiceStatus.UNKNOWN]: '❓'
+      [ServiceStatus.UNKNOWN]: '❓',
     };
     return icons[status];
   }
@@ -244,7 +257,7 @@ export class HealthService {
       [ServiceStatus.HEALTHY]: 'En bonne santé',
       [ServiceStatus.DEGRADED]: 'Performance dégradée',
       [ServiceStatus.UNHEALTHY]: 'Non opérationnel',
-      [ServiceStatus.UNKNOWN]: 'État inconnu'
+      [ServiceStatus.UNKNOWN]: 'État inconnu',
     };
     return texts[status];
   }
@@ -292,8 +305,12 @@ export class HealthService {
   static calculateOverallStatus(checks: HealthCheck[]): ServiceStatus {
     if (checks.length === 0) return ServiceStatus.UNKNOWN;
 
-    const hasUnhealthy = checks.some(check => check.status === ServiceStatus.UNHEALTHY);
-    const hasDegraded = checks.some(check => check.status === ServiceStatus.DEGRADED);
+    const hasUnhealthy = checks.some(
+      (check) => check.status === ServiceStatus.UNHEALTHY,
+    );
+    const hasDegraded = checks.some(
+      (check) => check.status === ServiceStatus.DEGRADED,
+    );
 
     if (hasUnhealthy) return ServiceStatus.UNHEALTHY;
     if (hasDegraded) return ServiceStatus.DEGRADED;
@@ -318,7 +335,7 @@ export class HealthService {
       [ServiceStatus.UNHEALTHY]: 0,
       [ServiceStatus.DEGRADED]: 1,
       [ServiceStatus.UNKNOWN]: 2,
-      [ServiceStatus.HEALTHY]: 3
+      [ServiceStatus.HEALTHY]: 3,
     };
 
     return [...checks].sort((a, b) => {
@@ -341,10 +358,10 @@ export class HealthService {
       degraded: 0,
       unhealthy: 0,
       unknown: 0,
-      total: response.checks.length
+      total: response.checks.length,
     };
 
-    response.checks.forEach(check => {
+    response.checks.forEach((check) => {
       switch (check.status) {
         case ServiceStatus.HEALTHY:
           summary.healthy++;

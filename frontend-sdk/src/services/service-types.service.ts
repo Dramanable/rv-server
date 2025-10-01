@@ -10,7 +10,7 @@ import { PaginatedResponse } from '../types';
 export enum ServiceTypeStatus {
   ACTIVE = 'ACTIVE',
   INACTIVE = 'INACTIVE',
-  ARCHIVED = 'ARCHIVED'
+  ARCHIVED = 'ARCHIVED',
 }
 
 export enum ServiceTypeCategory {
@@ -23,7 +23,7 @@ export enum ServiceTypeCategory {
   MAINTENANCE = 'MAINTENANCE',
   EDUCATION = 'EDUCATION',
   ENTERTAINMENT = 'ENTERTAINMENT',
-  OTHER = 'OTHER'
+  OTHER = 'OTHER',
 }
 
 export interface ServiceTypeSettings {
@@ -125,10 +125,12 @@ export class ServiceTypesService {
   /**
    * 📋 Lister tous les types de services
    */
-  async list(request: ListServiceTypesRequest): Promise<PaginatedResponse<ServiceType>> {
+  async list(
+    request: ListServiceTypesRequest,
+  ): Promise<PaginatedResponse<ServiceType>> {
     const response = await this.client.post<PaginatedResponse<ServiceType>>(
       '/api/v1/service-types/list',
-      request
+      request,
     );
     return response.data;
   }
@@ -137,7 +139,9 @@ export class ServiceTypesService {
    * 📄 Obtenir un type de service par ID
    */
   async getById(id: string): Promise<ServiceType> {
-    const response = await this.client.get<ServiceType>(`/api/v1/service-types/${id}`);
+    const response = await this.client.get<ServiceType>(
+      `/api/v1/service-types/${id}`,
+    );
     return response.data;
   }
 
@@ -145,15 +149,24 @@ export class ServiceTypesService {
    * ➕ Créer un nouveau type de service
    */
   async create(request: CreateServiceTypeRequest): Promise<ServiceType> {
-    const response = await this.client.post<ServiceType>('/api/v1/service-types', request);
+    const response = await this.client.post<ServiceType>(
+      '/api/v1/service-types',
+      request,
+    );
     return response.data;
   }
 
   /**
    * ✏️ Mettre à jour un type de service
    */
-  async update(id: string, updates: UpdateServiceTypeRequest): Promise<ServiceType> {
-    const response = await this.client.put<ServiceType>(`/api/v1/service-types/${id}`, updates);
+  async update(
+    id: string,
+    updates: UpdateServiceTypeRequest,
+  ): Promise<ServiceType> {
+    const response = await this.client.put<ServiceType>(
+      `/api/v1/service-types/${id}`,
+      updates,
+    );
     return response.data;
   }
 
@@ -170,7 +183,7 @@ export class ServiceTypesService {
   async getByBusiness(businessId: string): Promise<ServiceType[]> {
     const response = await this.list({
       businessId,
-      limit: 100
+      limit: 100,
     });
     return [...response.data];
   }
@@ -178,11 +191,14 @@ export class ServiceTypesService {
   /**
    * 📊 Obtenir les types de services par catégorie
    */
-  async getByCategory(businessId: string, category: ServiceTypeCategory): Promise<ServiceType[]> {
+  async getByCategory(
+    businessId: string,
+    category: ServiceTypeCategory,
+  ): Promise<ServiceType[]> {
     const response = await this.list({
       businessId,
       category,
-      limit: 100
+      limit: 100,
     });
     return [...response.data];
   }
@@ -191,20 +207,25 @@ export class ServiceTypesService {
    * ⭐ Définir un type comme défaut
    */
   async setDefault(id: string): Promise<ServiceType> {
-    const response = await this.client.post<ServiceType>(`/api/v1/service-types/${id}/set-default`);
+    const response = await this.client.post<ServiceType>(
+      `/api/v1/service-types/${id}/set-default`,
+    );
     return response.data;
   }
 
   /**
    * 🔄 Réorganiser les types de services
    */
-  async reorder(businessId: string, orders: { id: string; displayOrder: number }[]): Promise<ServiceType[]> {
+  async reorder(
+    businessId: string,
+    orders: { id: string; displayOrder: number }[],
+  ): Promise<ServiceType[]> {
     const response = await this.client.post<ServiceType[]>(
       '/api/v1/service-types/reorder',
       {
         businessId,
-        orders
-      }
+        orders,
+      },
     );
     return response.data;
   }
@@ -215,21 +236,21 @@ export class ServiceTypesService {
   async addTag(id: string, tag: string): Promise<ServiceType> {
     const response = await this.client.post<ServiceType>(
       `/api/v1/service-types/${id}/tags`,
-      { tag }
+      { tag },
     );
     return response.data;
   }
 
   async removeTag(id: string, tag: string): Promise<ServiceType> {
     const response = await this.client.delete<ServiceType>(
-      `/api/v1/service-types/${id}/tags/${encodeURIComponent(tag)}`
+      `/api/v1/service-types/${id}/tags/${encodeURIComponent(tag)}`,
     );
     return response.data;
   }
 
   async getAllTags(businessId: string): Promise<string[]> {
     const response = await this.client.get<string[]>(
-      `/api/v1/service-types/tags?businessId=${businessId}`
+      `/api/v1/service-types/tags?businessId=${businessId}`,
     );
     return response.data;
   }
@@ -288,7 +309,7 @@ export class ServiceTypesService {
   async duplicate(id: string, newName: string): Promise<ServiceType> {
     const response = await this.client.post<ServiceType>(
       `/api/v1/service-types/${id}/duplicate`,
-      { name: newName }
+      { name: newName },
     );
     return response.data;
   }
@@ -296,9 +317,12 @@ export class ServiceTypesService {
   /**
    * 📤 Exporter les types de services
    */
-  async export(businessId: string, format: 'json' | 'csv' | 'xlsx' = 'json'): Promise<Blob> {
+  async export(
+    businessId: string,
+    format: 'json' | 'csv' | 'xlsx' = 'json',
+  ): Promise<Blob> {
     const response = await this.client.get<Blob>(
-      `/api/v1/service-types/export?businessId=${businessId}&format=${format}`
+      `/api/v1/service-types/export?businessId=${businessId}&format=${format}`,
     );
     return response.data;
   }
@@ -306,10 +330,14 @@ export class ServiceTypesService {
   /**
    * 📥 Importer des types de services
    */
-  async import(businessId: string, file: File, options?: {
-    skipDuplicates?: boolean;
-    updateExisting?: boolean;
-  }): Promise<{
+  async import(
+    businessId: string,
+    file: File,
+    options?: {
+      skipDuplicates?: boolean;
+      updateExisting?: boolean;
+    },
+  ): Promise<{
     imported: number;
     updated: number;
     skipped: number;
@@ -344,7 +372,7 @@ export class ServiceTypesService {
     const names: Record<ServiceTypeStatus, string> = {
       [ServiceTypeStatus.ACTIVE]: 'Actif',
       [ServiceTypeStatus.INACTIVE]: 'Inactif',
-      [ServiceTypeStatus.ARCHIVED]: 'Archivé'
+      [ServiceTypeStatus.ARCHIVED]: 'Archivé',
     };
     return names[status];
   }
@@ -360,7 +388,7 @@ export class ServiceTypesService {
       [ServiceTypeCategory.MAINTENANCE]: 'Maintenance',
       [ServiceTypeCategory.EDUCATION]: 'Éducation',
       [ServiceTypeCategory.ENTERTAINMENT]: 'Divertissement',
-      [ServiceTypeCategory.OTHER]: 'Autre'
+      [ServiceTypeCategory.OTHER]: 'Autre',
     };
     return names[category];
   }
@@ -376,7 +404,7 @@ export class ServiceTypesService {
       [ServiceTypeCategory.MAINTENANCE]: '🔧',
       [ServiceTypeCategory.EDUCATION]: '📚',
       [ServiceTypeCategory.ENTERTAINMENT]: '🎭',
-      [ServiceTypeCategory.OTHER]: '📋'
+      [ServiceTypeCategory.OTHER]: '📋',
     };
     return icons[category];
   }
@@ -421,11 +449,14 @@ export class ServiceTypesService {
   static formatPrice(price: { amount: number; currency: string }): string {
     return new Intl.NumberFormat('fr-FR', {
       style: 'currency',
-      currency: price.currency
+      currency: price.currency,
     }).format(price.amount);
   }
 
-  static calculateDepositAmount(serviceType: ServiceType, servicePrice: number): number {
+  static calculateDepositAmount(
+    serviceType: ServiceType,
+    servicePrice: number,
+  ): number {
     if (!serviceType.settings.requiresDeposit) return 0;
 
     const { depositAmount, depositPercentage } = serviceType.settings;
@@ -441,10 +472,15 @@ export class ServiceTypesService {
     return 0;
   }
 
-  static calculateCancellationFee(serviceType: ServiceType, servicePrice: number): number {
-    if (!serviceType.settings.cancellationPolicy.allowCancellation) return servicePrice;
+  static calculateCancellationFee(
+    serviceType: ServiceType,
+    servicePrice: number,
+  ): number {
+    if (!serviceType.settings.cancellationPolicy.allowCancellation)
+      return servicePrice;
 
-    const { cancellationFee, cancellationFeePercentage } = serviceType.settings.cancellationPolicy;
+    const { cancellationFee, cancellationFeePercentage } =
+      serviceType.settings.cancellationPolicy;
 
     if (cancellationFee !== undefined) {
       return cancellationFee;
@@ -457,23 +493,38 @@ export class ServiceTypesService {
     return 0;
   }
 
-  static canCancelWithoutFee(serviceType: ServiceType, appointmentDate: Date): boolean {
-    if (!serviceType.settings.cancellationPolicy.allowCancellation) return false;
+  static canCancelWithoutFee(
+    serviceType: ServiceType,
+    appointmentDate: Date,
+  ): boolean {
+    if (!serviceType.settings.cancellationPolicy.allowCancellation)
+      return false;
 
     const now = new Date();
-    const deadlineHours = serviceType.settings.cancellationPolicy.cancellationDeadline;
-    const deadline = new Date(appointmentDate.getTime() - (deadlineHours * 60 * 60 * 1000));
+    const deadlineHours =
+      serviceType.settings.cancellationPolicy.cancellationDeadline;
+    const deadline = new Date(
+      appointmentDate.getTime() - deadlineHours * 60 * 60 * 1000,
+    );
 
     return now <= deadline;
   }
 
-  static canReschedule(serviceType: ServiceType, appointmentDate: Date, rescheduleCount: number): boolean {
+  static canReschedule(
+    serviceType: ServiceType,
+    appointmentDate: Date,
+    rescheduleCount: number,
+  ): boolean {
     if (!serviceType.settings.reschedulePolicy.allowReschedule) return false;
-    if (rescheduleCount >= serviceType.settings.reschedulePolicy.maxReschedules) return false;
+    if (rescheduleCount >= serviceType.settings.reschedulePolicy.maxReschedules)
+      return false;
 
     const now = new Date();
-    const deadlineHours = serviceType.settings.reschedulePolicy.rescheduleDeadline;
-    const deadline = new Date(appointmentDate.getTime() - (deadlineHours * 60 * 60 * 1000));
+    const deadlineHours =
+      serviceType.settings.reschedulePolicy.rescheduleDeadline;
+    const deadline = new Date(
+      appointmentDate.getTime() - deadlineHours * 60 * 60 * 1000,
+    );
 
     return now <= deadline;
   }
@@ -487,30 +538,38 @@ export class ServiceTypesService {
   }
 
   static filterActive(serviceTypes: ServiceType[]): ServiceType[] {
-    return serviceTypes.filter(type => this.isActive(type));
+    return serviceTypes.filter((type) => this.isActive(type));
   }
 
-  static filterByCategory(serviceTypes: ServiceType[], category: ServiceTypeCategory): ServiceType[] {
-    return serviceTypes.filter(type => type.category === category);
+  static filterByCategory(
+    serviceTypes: ServiceType[],
+    category: ServiceTypeCategory,
+  ): ServiceType[] {
+    return serviceTypes.filter((type) => type.category === category);
   }
 
   static filterByTag(serviceTypes: ServiceType[], tag: string): ServiceType[] {
-    return serviceTypes.filter(type => type.tags.includes(tag));
+    return serviceTypes.filter((type) => type.tags.includes(tag));
   }
 
-  static groupByCategory(serviceTypes: ServiceType[]): Record<ServiceTypeCategory, ServiceType[]> {
-    return serviceTypes.reduce((groups, serviceType) => {
-      const category = serviceType.category;
-      if (!groups[category]) {
-        groups[category] = [];
-      }
-      groups[category].push(serviceType);
-      return groups;
-    }, {} as Record<ServiceTypeCategory, ServiceType[]>);
+  static groupByCategory(
+    serviceTypes: ServiceType[],
+  ): Record<ServiceTypeCategory, ServiceType[]> {
+    return serviceTypes.reduce(
+      (groups, serviceType) => {
+        const category = serviceType.category;
+        if (!groups[category]) {
+          groups[category] = [];
+        }
+        groups[category].push(serviceType);
+        return groups;
+      },
+      {} as Record<ServiceTypeCategory, ServiceType[]>,
+    );
   }
 
   static getDefaultType(serviceTypes: ServiceType[]): ServiceType | null {
-    return serviceTypes.find(type => type.isDefault) || null;
+    return serviceTypes.find((type) => type.isDefault) || null;
   }
 
   static getAllCategories(): ServiceTypeCategory[] {
@@ -519,37 +578,48 @@ export class ServiceTypesService {
 
   static generateNextOrder(existingTypes: ServiceType[]): number {
     if (existingTypes.length === 0) return 1;
-    const maxOrder = Math.max(...existingTypes.map(type => type.displayOrder));
+    const maxOrder = Math.max(
+      ...existingTypes.map((type) => type.displayOrder),
+    );
     return maxOrder + 1;
   }
 
-  static validateSettings(settings: Partial<ServiceTypeSettings>): { isValid: boolean; errors: string[] } {
+  static validateSettings(settings: Partial<ServiceTypeSettings>): {
+    isValid: boolean;
+    errors: string[];
+  } {
     const errors: string[] = [];
 
     if (settings.depositAmount !== undefined && settings.depositAmount < 0) {
-      errors.push('Le montant de l\'acompte ne peut pas être négatif');
+      errors.push("Le montant de l'acompte ne peut pas être négatif");
     }
 
     if (settings.depositPercentage !== undefined) {
       if (settings.depositPercentage < 0 || settings.depositPercentage > 100) {
-        errors.push('Le pourcentage d\'acompte doit être entre 0 et 100');
+        errors.push("Le pourcentage d'acompte doit être entre 0 et 100");
       }
     }
 
     if (settings.cancellationPolicy) {
-      const { cancellationDeadline, cancellationFee, cancellationFeePercentage } = settings.cancellationPolicy;
+      const {
+        cancellationDeadline,
+        cancellationFee,
+        cancellationFeePercentage,
+      } = settings.cancellationPolicy;
 
       if (cancellationDeadline !== undefined && cancellationDeadline < 0) {
-        errors.push('Le délai d\'annulation ne peut pas être négatif');
+        errors.push("Le délai d'annulation ne peut pas être négatif");
       }
 
       if (cancellationFee !== undefined && cancellationFee < 0) {
-        errors.push('Les frais d\'annulation ne peuvent pas être négatifs');
+        errors.push("Les frais d'annulation ne peuvent pas être négatifs");
       }
 
       if (cancellationFeePercentage !== undefined) {
         if (cancellationFeePercentage < 0 || cancellationFeePercentage > 100) {
-          errors.push('Le pourcentage de frais d\'annulation doit être entre 0 et 100');
+          errors.push(
+            "Le pourcentage de frais d'annulation doit être entre 0 et 100",
+          );
         }
       }
     }
@@ -568,7 +638,7 @@ export class ServiceTypesService {
 
     return {
       isValid: errors.length === 0,
-      errors
+      errors,
     };
   }
 }

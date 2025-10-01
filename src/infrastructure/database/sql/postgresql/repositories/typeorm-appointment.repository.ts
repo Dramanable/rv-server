@@ -18,16 +18,9 @@ import { CalendarId } from '../../../../../domain/value-objects/calendar-id.valu
 import { Email } from '../../../../../domain/value-objects/email.value-object';
 import { ServiceId } from '../../../../../domain/value-objects/service-id.value-object';
 import { UserId } from '../../../../../domain/value-objects/user-id.value-object';
-import { AppointmentOrmEntity } from '../entities/appointment-orm.entity';
 import { AppointmentOrmMapper } from '../../../../mappers/appointment-orm.mapper';
-
-// Placeholder exception class pour éviter les erreurs de compilation
-class InfrastructureException extends Error {
-  constructor(message: string, code?: string, context?: any) {
-    super(message);
-    this.name = 'InfrastructureException';
-  }
-}
+import { InfrastructureException } from '../../../../../shared/exceptions/shared.exceptions';
+import { AppointmentOrmEntity } from '../entities/appointment-orm.entity';
 
 /**
  * 📅 APPOINTMENT REPOSITORY - TypeORM Implementation
@@ -157,8 +150,8 @@ export class TypeOrmAppointmentRepository implements AppointmentRepository {
   // ==========================================
 
   async findByBusinessId(
-    businessId: BusinessId,
-    criteria?: AppointmentSearchCriteria,
+    _businessId: BusinessId,
+    _criteria?: AppointmentSearchCriteria,
   ): Promise<Appointment[]> {
     throw new InfrastructureException(
       'findByBusinessId not implemented yet - TODO Phase 2',
@@ -167,9 +160,9 @@ export class TypeOrmAppointmentRepository implements AppointmentRepository {
   }
 
   async findByCalendarId(
-    calendarId: CalendarId,
-    startDate?: Date,
-    endDate?: Date,
+    _calendarId: CalendarId,
+    _startDate?: Date,
+    _endDate?: Date,
   ): Promise<Appointment[]> {
     throw new InfrastructureException(
       'findByCalendarId not implemented yet - TODO Phase 2',
@@ -178,8 +171,8 @@ export class TypeOrmAppointmentRepository implements AppointmentRepository {
   }
 
   async findByServiceId(
-    serviceId: ServiceId,
-    criteria?: AppointmentSearchCriteria,
+    _serviceId: ServiceId,
+    _criteria?: AppointmentSearchCriteria,
   ): Promise<Appointment[]> {
     throw new InfrastructureException(
       'findByServiceId not implemented yet - TODO Phase 2',
@@ -188,8 +181,8 @@ export class TypeOrmAppointmentRepository implements AppointmentRepository {
   }
 
   async findByClientEmail(
-    email: Email,
-    criteria?: AppointmentSearchCriteria,
+    _email: Email,
+    _criteria?: AppointmentSearchCriteria,
   ): Promise<Appointment[]> {
     throw new InfrastructureException(
       'findByClientEmail not implemented yet - TODO Phase 2',
@@ -198,8 +191,8 @@ export class TypeOrmAppointmentRepository implements AppointmentRepository {
   }
 
   async findByStaffId(
-    staffId: UserId,
-    criteria?: AppointmentSearchCriteria,
+    _staffId: UserId,
+    _criteria?: AppointmentSearchCriteria,
   ): Promise<Appointment[]> {
     throw new InfrastructureException(
       'findByStaffId not implemented yet - TODO Phase 2',
@@ -208,8 +201,8 @@ export class TypeOrmAppointmentRepository implements AppointmentRepository {
   }
 
   async findByStatus(
-    status: AppointmentStatus[],
-    criteria?: AppointmentSearchCriteria,
+    _status: AppointmentStatus[],
+    _criteria?: AppointmentSearchCriteria,
   ): Promise<Appointment[]> {
     throw new InfrastructureException(
       'findByStatus not implemented yet - TODO Phase 2',
@@ -217,7 +210,7 @@ export class TypeOrmAppointmentRepository implements AppointmentRepository {
     );
   }
 
-  async search(criteria: AppointmentSearchCriteria): Promise<{
+  async search(_criteria: AppointmentSearchCriteria): Promise<{
     appointments: Appointment[];
     total: number;
   }> {
@@ -228,10 +221,10 @@ export class TypeOrmAppointmentRepository implements AppointmentRepository {
   }
 
   async findAvailableSlots(
-    calendarId: CalendarId,
-    serviceId: ServiceId,
-    date: Date,
-    duration: number,
+    _calendarId: CalendarId,
+    _serviceId: ServiceId,
+    _date: Date,
+    _duration: number,
   ): Promise<{ startTime: Date; endTime: Date }[]> {
     throw new InfrastructureException(
       'findAvailableSlots not implemented yet - TODO Phase 2',
@@ -240,8 +233,8 @@ export class TypeOrmAppointmentRepository implements AppointmentRepository {
   }
 
   async getUpcomingAppointments(
-    businessId: BusinessId,
-    hours?: number,
+    _businessId: BusinessId,
+    _hours?: number,
   ): Promise<Appointment[]> {
     throw new InfrastructureException(
       'getUpcomingAppointments not implemented yet - TODO Phase 2',
@@ -249,7 +242,9 @@ export class TypeOrmAppointmentRepository implements AppointmentRepository {
     );
   }
 
-  async getOverdueAppointments(businessId: BusinessId): Promise<Appointment[]> {
+  async getOverdueAppointments(
+    _businessId: BusinessId,
+  ): Promise<Appointment[]> {
     throw new InfrastructureException(
       'getOverdueAppointments not implemented yet - TODO Phase 2',
       'NOT_IMPLEMENTED',
@@ -257,8 +252,8 @@ export class TypeOrmAppointmentRepository implements AppointmentRepository {
   }
 
   async findRecurringAppointments(
-    businessId: BusinessId,
-    parentAppointmentId?: AppointmentId,
+    _businessId: BusinessId,
+    _parentAppointmentId?: AppointmentId,
   ): Promise<Appointment[]> {
     throw new InfrastructureException(
       'findRecurringAppointments not implemented yet - TODO Phase 2',
@@ -267,8 +262,8 @@ export class TypeOrmAppointmentRepository implements AppointmentRepository {
   }
 
   async getAppointmentsForReminders(
-    businessId: BusinessId,
-    reminderTime: Date,
+    _businessId: BusinessId,
+    _reminderTime: Date,
   ): Promise<Appointment[]> {
     throw new InfrastructureException(
       'getAppointmentsForReminders not implemented yet - TODO Phase 2',
@@ -277,9 +272,9 @@ export class TypeOrmAppointmentRepository implements AppointmentRepository {
   }
 
   async bulkUpdateStatus(
-    appointmentIds: AppointmentId[],
-    status: AppointmentStatus,
-    reason?: string,
+    _appointmentIds: AppointmentId[],
+    _status: AppointmentStatus,
+    _reason?: string,
   ): Promise<void> {
     throw new InfrastructureException(
       'bulkUpdateStatus not implemented yet - TODO Phase 2',
@@ -288,8 +283,8 @@ export class TypeOrmAppointmentRepository implements AppointmentRepository {
   }
 
   async bulkCancel(
-    appointmentIds: AppointmentId[],
-    reason?: string,
+    _appointmentIds: AppointmentId[],
+    _reason?: string,
   ): Promise<void> {
     throw new InfrastructureException(
       'bulkCancel not implemented yet - TODO Phase 2',
@@ -298,9 +293,9 @@ export class TypeOrmAppointmentRepository implements AppointmentRepository {
   }
 
   async getClientHistory(
-    email: Email,
-    businessId?: BusinessId,
-    limit?: number,
+    _email: Email,
+    _businessId?: BusinessId,
+    _limit?: number,
   ): Promise<Appointment[]> {
     throw new InfrastructureException(
       'getClientHistory not implemented yet - TODO Phase 2',
@@ -309,8 +304,8 @@ export class TypeOrmAppointmentRepository implements AppointmentRepository {
   }
 
   async findAppointmentsNeedingFollowUp(
-    businessId: BusinessId,
-    daysSinceCompletion: number,
+    _businessId: BusinessId,
+    _daysSinceCompletion: number,
   ): Promise<Appointment[]> {
     throw new InfrastructureException(
       'findAppointmentsNeedingFollowUp not implemented yet - TODO Phase 2',
@@ -319,9 +314,9 @@ export class TypeOrmAppointmentRepository implements AppointmentRepository {
   }
 
   async getCalendarUtilization(
-    calendarId: CalendarId,
-    startDate: Date,
-    endDate: Date,
+    _calendarId: CalendarId,
+    _startDate: Date,
+    _endDate: Date,
   ): Promise<{
     totalSlots: number;
     bookedSlots: number;
@@ -335,7 +330,7 @@ export class TypeOrmAppointmentRepository implements AppointmentRepository {
     );
   }
 
-  async export(criteria: AppointmentSearchCriteria): Promise<Appointment[]> {
+  async export(_criteria: AppointmentSearchCriteria): Promise<Appointment[]> {
     throw new InfrastructureException(
       'export not implemented yet - TODO Phase 2',
       'NOT_IMPLEMENTED',

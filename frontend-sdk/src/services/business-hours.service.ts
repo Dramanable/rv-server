@@ -13,7 +13,7 @@ export enum DayOfWeek {
   THURSDAY = 'THURSDAY',
   FRIDAY = 'FRIDAY',
   SATURDAY = 'SATURDAY',
-  SUNDAY = 'SUNDAY'
+  SUNDAY = 'SUNDAY',
 }
 
 export enum BusinessHoursType {
@@ -21,12 +21,12 @@ export enum BusinessHoursType {
   SPECIAL = 'SPECIAL',
   HOLIDAY = 'HOLIDAY',
   MAINTENANCE = 'MAINTENANCE',
-  CLOSED = 'CLOSED'
+  CLOSED = 'CLOSED',
 }
 
 export interface TimeSlot {
   readonly start: string; // Format: "HH:mm"
-  readonly end: string;   // Format: "HH:mm"
+  readonly end: string; // Format: "HH:mm"
 }
 
 export interface BusinessHours {
@@ -117,7 +117,7 @@ export class BusinessHoursService {
   async list(request: ListBusinessHoursRequest): Promise<BusinessHours[]> {
     const response = await this.client.post<BusinessHours[]>(
       '/api/v1/business-hours/list',
-      request
+      request,
     );
     return response.data;
   }
@@ -126,7 +126,9 @@ export class BusinessHoursService {
    * 📄 Obtenir les horaires par ID
    */
   async getById(id: string): Promise<BusinessHours> {
-    const response = await this.client.get<BusinessHours>(`/api/v1/business-hours/${id}`);
+    const response = await this.client.get<BusinessHours>(
+      `/api/v1/business-hours/${id}`,
+    );
     return response.data;
   }
 
@@ -134,15 +136,24 @@ export class BusinessHoursService {
    * ➕ Créer de nouveaux horaires
    */
   async create(request: CreateBusinessHoursRequest): Promise<BusinessHours> {
-    const response = await this.client.post<BusinessHours>('/api/v1/business-hours', request);
+    const response = await this.client.post<BusinessHours>(
+      '/api/v1/business-hours',
+      request,
+    );
     return response.data;
   }
 
   /**
    * ✏️ Mettre à jour les horaires
    */
-  async update(id: string, updates: UpdateBusinessHoursRequest): Promise<BusinessHours> {
-    const response = await this.client.put<BusinessHours>(`/api/v1/business-hours/${id}`, updates);
+  async update(
+    id: string,
+    updates: UpdateBusinessHoursRequest,
+  ): Promise<BusinessHours> {
+    const response = await this.client.put<BusinessHours>(
+      `/api/v1/business-hours/${id}`,
+      updates,
+    );
     return response.data;
   }
 
@@ -156,10 +167,12 @@ export class BusinessHoursService {
   /**
    * 📅 Lister les horaires spéciaux
    */
-  async listSpecialHours(request: ListSpecialHoursRequest): Promise<SpecialHours[]> {
+  async listSpecialHours(
+    request: ListSpecialHoursRequest,
+  ): Promise<SpecialHours[]> {
     const response = await this.client.post<SpecialHours[]>(
       '/api/v1/business-hours/special/list',
-      request
+      request,
     );
     return response.data;
   }
@@ -167,10 +180,12 @@ export class BusinessHoursService {
   /**
    * ⭐ Créer des horaires spéciaux
    */
-  async createSpecialHours(request: CreateSpecialHoursRequest): Promise<SpecialHours> {
+  async createSpecialHours(
+    request: CreateSpecialHoursRequest,
+  ): Promise<SpecialHours> {
     const response = await this.client.post<SpecialHours>(
       '/api/v1/business-hours/special',
-      request
+      request,
     );
     return response.data;
   }
@@ -178,10 +193,13 @@ export class BusinessHoursService {
   /**
    * ✏️ Mettre à jour les horaires spéciaux
    */
-  async updateSpecialHours(id: string, updates: UpdateSpecialHoursRequest): Promise<SpecialHours> {
+  async updateSpecialHours(
+    id: string,
+    updates: UpdateSpecialHoursRequest,
+  ): Promise<SpecialHours> {
     const response = await this.client.put<SpecialHours>(
       `/api/v1/business-hours/special/${id}`,
-      updates
+      updates,
     );
     return response.data;
   }
@@ -210,7 +228,10 @@ export class BusinessHoursService {
   /**
    * 📅 Obtenir les horaires pour une date spécifique
    */
-  async getHoursForDate(businessId: string, date: string): Promise<{
+  async getHoursForDate(
+    businessId: string,
+    date: string,
+  ): Promise<{
     isOpen: boolean;
     timeSlots: TimeSlot[];
     type: BusinessHoursType;
@@ -232,15 +253,18 @@ export class BusinessHoursService {
    */
   async updateWeeklyHours(
     businessId: string,
-    weeklyHours: Record<DayOfWeek, {
-      isOpen: boolean;
-      timeSlots: TimeSlot[];
-      notes?: string;
-    }>
+    weeklyHours: Record<
+      DayOfWeek,
+      {
+        isOpen: boolean;
+        timeSlots: TimeSlot[];
+        notes?: string;
+      }
+    >,
   ): Promise<BusinessHours[]> {
     const response = await this.client.put<BusinessHours[]>(
       `/api/v1/business-hours/business/${businessId}/weekly`,
-      { weeklyHours }
+      { weeklyHours },
     );
     return response.data;
   }
@@ -251,15 +275,15 @@ export class BusinessHoursService {
   async copyHours(
     businessId: string,
     sourceDay: DayOfWeek,
-    targetDays: DayOfWeek[]
+    targetDays: DayOfWeek[],
   ): Promise<BusinessHours[]> {
     const response = await this.client.post<BusinessHours[]>(
       '/api/v1/business-hours/copy',
       {
         businessId,
         sourceDay,
-        targetDays
-      }
+        targetDays,
+      },
     );
     return response.data;
   }
@@ -271,7 +295,7 @@ export class BusinessHoursService {
     businessId: string,
     startDate: string,
     endDate: string,
-    reason: string
+    reason: string,
   ): Promise<SpecialHours[]> {
     const response = await this.client.post<SpecialHours[]>(
       '/api/v1/business-hours/holiday',
@@ -279,8 +303,8 @@ export class BusinessHoursService {
         businessId,
         startDate,
         endDate,
-        reason
-      }
+        reason,
+      },
     );
     return response.data;
   }
@@ -296,7 +320,7 @@ export class BusinessHoursService {
       [DayOfWeek.THURSDAY]: 'Jeudi',
       [DayOfWeek.FRIDAY]: 'Vendredi',
       [DayOfWeek.SATURDAY]: 'Samedi',
-      [DayOfWeek.SUNDAY]: 'Dimanche'
+      [DayOfWeek.SUNDAY]: 'Dimanche',
     };
     return names[day];
   }
@@ -307,7 +331,7 @@ export class BusinessHoursService {
       [BusinessHoursType.SPECIAL]: 'Horaires spéciaux',
       [BusinessHoursType.HOLIDAY]: 'Jour férié',
       [BusinessHoursType.MAINTENANCE]: 'Maintenance',
-      [BusinessHoursType.CLOSED]: 'Fermé'
+      [BusinessHoursType.CLOSED]: 'Fermé',
     };
     return names[type];
   }
@@ -318,7 +342,7 @@ export class BusinessHoursService {
 
   static formatTimeSlots(slots: TimeSlot[]): string {
     if (slots.length === 0) return 'Fermé';
-    return slots.map(slot => this.formatTimeSlot(slot)).join(', ');
+    return slots.map((slot) => this.formatTimeSlot(slot)).join(', ');
   }
 
   static isValidTimeSlot(slot: TimeSlot): boolean {
@@ -355,7 +379,7 @@ export class BusinessHoursService {
       DayOfWeek.WEDNESDAY,
       DayOfWeek.THURSDAY,
       DayOfWeek.FRIDAY,
-      DayOfWeek.SATURDAY
+      DayOfWeek.SATURDAY,
     ];
     const dayIndex = new Date().getDay();
     return days[dayIndex] || DayOfWeek.MONDAY;
@@ -367,22 +391,22 @@ export class BusinessHoursService {
     const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
     const currentMinutes = this.timeToMinutes(currentTime);
 
-    const todayHours = hours.find(h =>
-      h.dayOfWeek === currentDay &&
-      h.isActive &&
-      h.isOpen
+    const todayHours = hours.find(
+      (h) => h.dayOfWeek === currentDay && h.isActive && h.isOpen,
     );
 
     if (!todayHours) return false;
 
-    return todayHours.timeSlots.some(slot => {
+    return todayHours.timeSlots.some((slot) => {
       const startMinutes = this.timeToMinutes(slot.start);
       const endMinutes = this.timeToMinutes(slot.end);
       return currentMinutes >= startMinutes && currentMinutes <= endMinutes;
     });
   }
 
-  static getNextOpeningTime(hours: BusinessHours[]): { day: DayOfWeek; time: string } | null {
+  static getNextOpeningTime(
+    hours: BusinessHours[],
+  ): { day: DayOfWeek; time: string } | null {
     const currentDay = this.getCurrentDayOfWeek();
     const now = new Date();
     const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
@@ -395,7 +419,7 @@ export class BusinessHoursService {
       DayOfWeek.THURSDAY,
       DayOfWeek.FRIDAY,
       DayOfWeek.SATURDAY,
-      DayOfWeek.SUNDAY
+      DayOfWeek.SUNDAY,
     ];
 
     const currentDayIndex = dayOrder.indexOf(currentDay);
@@ -406,10 +430,8 @@ export class BusinessHoursService {
       const day = dayOrder[dayIndex];
       if (!day) continue;
 
-      const dayHours = hours.find(h =>
-        h.dayOfWeek === day &&
-        h.isActive &&
-        h.isOpen
+      const dayHours = hours.find(
+        (h) => h.dayOfWeek === day && h.isActive && h.isOpen,
       );
 
       if (dayHours && dayHours.timeSlots.length > 0) {
@@ -439,17 +461,19 @@ export class BusinessHoursService {
       [DayOfWeek.THURSDAY]: 4,
       [DayOfWeek.FRIDAY]: 5,
       [DayOfWeek.SATURDAY]: 6,
-      [DayOfWeek.SUNDAY]: 7
+      [DayOfWeek.SUNDAY]: 7,
     };
 
-    return [...hours].sort((a, b) => dayOrder[a.dayOfWeek] - dayOrder[b.dayOfWeek]);
+    return [...hours].sort(
+      (a, b) => dayOrder[a.dayOfWeek] - dayOrder[b.dayOfWeek],
+    );
   }
 
   static mergeOverlappingSlots(slots: TimeSlot[]): TimeSlot[] {
     if (slots.length <= 1) return slots;
 
-    const sortedSlots = [...slots].sort((a, b) =>
-      this.timeToMinutes(a.start) - this.timeToMinutes(b.start)
+    const sortedSlots = [...slots].sort(
+      (a, b) => this.timeToMinutes(a.start) - this.timeToMinutes(b.start),
     );
 
     const firstSlot = sortedSlots[0];
@@ -473,7 +497,7 @@ export class BusinessHoursService {
         if (currentEnd > lastEnd) {
           merged[merged.length - 1] = {
             start: lastMerged.start,
-            end: current.end
+            end: current.end,
           };
         }
       } else {

@@ -1,0 +1,96 @@
+{
+  "notifications": {
+    "templates": {
+      "appointment_confirmation": {
+        "title": "Confirmation de rendez-vous - {{businessName}}",
+        "content": "Bonjour {{clientName}},\n\nVotre rendez-vous a été confirmé :\n\n⏰ **{{appointmentDate}} à {{appointmentTime}}**\n💼 **Service :** {{serviceName}}\n📍 **Lieu :** {{businessName}}\n{{businessAddress}}\n\n📞 **Contact :** {{businessPhone}}\n\nPour modifier ou annuler votre rendez-vous, contactez-nous au moins 24h à l'avance.\n\nCordialement,\nL'équipe {{businessName}}"
+      },
+      "appointment_reminder": {
+        "title": "Rappel : Votre rendez-vous demain - {{businessName}}",
+        "content": "Bonjour {{clientName}},\n\nNous vous rappelons votre rendez-vous prévu demain :\n\n⏰ **{{appointmentDate}} à {{appointmentTime}}**\n📍 **{{businessName}}** - {{businessAddress}}\n💼 **Service :** {{serviceName}}\n\n📞 **Contact :** {{businessPhone}}\n\nNous avons hâte de vous voir !\n\nCordialement,\nL'équipe {{businessName}}"
+      },
+      "appointment_cancellation": {
+        "title": "Annulation de rendez-vous - {{businessName}}",
+        "content": "Bonjour {{clientName}},\n\nNous vous informons que votre rendez-vous du **{{appointmentDate}} à {{appointmentTime}}** a été annulé.\n\n💼 **Service :** {{serviceName}}\n📍 **{{businessName}}**\n\n{{#cancellationReason}}\n**Raison :** {{cancellationReason}}\n{{/cancellationReason}}\n\nPour reprendre un nouveau rendez-vous, n'hésitez pas à nous contacter au {{businessPhone}}.\n\nCordialement,\nL'équipe {{businessName}}"
+      },
+      "appointment_rescheduled": {
+        "title": "Reprogrammation de rendez-vous - {{businessName}}",
+        "content": "Bonjour {{clientName}},\n\nVotre rendez-vous a été reprogrammé :\n\n❌ **Ancien rendez-vous :** {{oldAppointmentDate}} à {{oldAppointmentTime}}\n✅ **Nouveau rendez-vous :** {{appointmentDate}} à {{appointmentTime}}\n\n💼 **Service :** {{serviceName}}\n📍 **{{businessName}}** - {{businessAddress}}\n\n📞 **Contact :** {{businessPhone}}\n\nCordialement,\nL'équipe {{businessName}}"
+      },
+      "welcome_message": {
+        "title": "Bienvenue sur {{businessName}} !",
+        "content": "Bonjour {{clientName}},\n\nBienvenue sur notre plateforme de prise de rendez-vous !\n\nVous pouvez désormais :\n✅ Prendre rendez-vous en ligne\n✅ Consulter vos rendez-vous\n✅ Recevoir des rappels automatiques\n✅ Modifier ou annuler vos rendez-vous\n\n📞 **Nous contacter :** {{businessPhone}}\n📍 **Nous trouver :** {{businessAddress}}\n\nCordialement,\nL'équipe {{businessName}}"
+      },
+      "password_reset": {
+        "title": "Réinitialisation de votre mot de passe",
+        "content": "Bonjour {{clientName}},\n\nVous avez demandé la réinitialisation de votre mot de passe.\n\nCliquez sur le lien ci-dessous pour créer un nouveau mot de passe :\n{{resetLink}}\n\n⏰ Ce lien expire dans 24 heures.\n\nSi vous n'avez pas demandé cette réinitialisation, ignorez cet email.\n\nCordialement,\nL'équipe {{businessName}}"
+      },
+      "account_verification": {
+        "title": "Vérification de votre compte",
+        "content": "Bonjour {{clientName}},\n\nMerci de vous être inscrit(e) !\n\nCliquez sur le lien ci-dessous pour vérifier votre compte :\n{{verificationLink}}\n\n⏰ Ce lien expire dans 48 heures.\n\nUne fois votre compte vérifié, vous pourrez prendre rendez-vous en ligne.\n\nCordialement,\nL'équipe {{businessName}}"
+      },
+      "payment_confirmation": {
+        "title": "Confirmation de paiement - {{businessName}}",
+        "content": "Bonjour {{clientName}},\n\nNous confirmons la réception de votre paiement :\n\n💰 **Montant :** {{amount}} €\n📋 **Référence :** {{transactionId}}\n📅 **Date :** {{paymentDate}}\n💼 **Service :** {{serviceName}}\n\nVotre rendez-vous du {{appointmentDate}} à {{appointmentTime}} est confirmé.\n\nCordialement,\nL'équipe {{businessName}}"
+      },
+      "custom": {
+        "title": "{{title}}",
+        "content": "{{content}}"
+      }
+    },
+    "errors": {
+      "translation_failed": "Erreur lors de la traduction de la notification",
+      "template_not_found": "Template de notification introuvable",
+      "unsupported_language": "Langue non supportée : {{language}}",
+      "invalid_variables": "Variables de template invalides"
+    },
+    "channels": {
+      "EMAIL": "Email",
+      "SMS": "SMS",
+      "PUSH": "Notification push",
+      "IN_APP": "Notification in-app"
+    },
+    "priorities": {
+      "LOW": "Faible",
+      "NORMAL": "Normale",
+      "HIGH": "Élevée",
+      "URGENT": "Urgente"
+    },
+    "statuses": {
+      "PENDING": "En attente",
+      "SENT": "Envoyée",
+      "DELIVERED": "Livrée",
+      "FAILED": "Échec",
+      "READ": "Lue",
+      "CANCELLED": "Annulée"
+    }
+  },
+  "errors": {
+    "notifications": {
+      "requesting_user_required": "L'ID de l'utilisateur demandeur est requis",
+      "invalid_page": "Le numéro de page doit être supérieur à 0",
+      "invalid_limit": "La limite doit être entre 1 et 100",
+      "invalid_sort_field": "Champ de tri invalide",
+      "invalid_sort_order": "Ordre de tri invalide (asc ou desc)",
+      "list_failed": "Échec lors de la récupération des notifications",
+      "not_found": "Notification introuvable",
+      "id_required": "L'ID de la notification est requis",
+      "mark_as_read_failed": "Échec lors du marquage comme lue",
+      "delete_failed": "Échec lors de la suppression",
+      "analytics_failed": "Échec lors de la récupération des analytics",
+      "permission_denied": "Permission refusée",
+      "send_failed": "Échec de l'envoi de la notification",
+      "bulk_send_failed": "Échec de l'envoi groupé des notifications",
+      "get_failed": "Échec de la récupération de la notification",
+      "validation_error": "Erreur de validation",
+      "cannot_mark_failed_as_read": "Impossible de marquer une notification échouée comme lue",
+      "cannot_mark_cancelled_as_read": "Impossible de marquer une notification annulée comme lue",
+      "notification_expired": "Cette notification a expiré",
+      "admin_permission_required_for_hard_delete": "Permissions administrateur requises pour la suppression définitive",
+      "already_deleted": "Cette notification a déjà été supprimée",
+      "cannot_delete_system_notification": "Impossible de supprimer une notification système",
+      "invalid_date_range": "Plage de dates invalide",
+      "date_range_too_large": "Plage de dates trop importante (maximum 1 an)"
+    }
+  }
+}

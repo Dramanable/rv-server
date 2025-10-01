@@ -1,5 +1,5 @@
-import { Repository } from 'typeorm';
 import { InfrastructureException } from '@shared/exceptions/shared.exceptions';
+import { Repository } from 'typeorm';
 
 import { Notification } from '../../../../../domain/entities/notification.entity';
 import { INotificationRepository } from '../../../../../domain/repositories/notification.repository';

@@ -12,6 +12,8 @@ import type { ServiceRepository } from '../../../domain/repositories/service.rep
 import type { StaffRepository } from '../../../domain/repositories/staff.repository.interface';
 import type { I18nService } from '../../ports/i18n.port';
 import type { Logger } from '../../ports/logger.port';
+import type { IEmailService } from '../../ports/email.port';
+import type { INotificationService } from '../../ports/notification.port';
 
 import {
   Appointment,

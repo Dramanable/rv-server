@@ -19,14 +19,14 @@
  * - Force un changement de mot de passe ultérieur
  */
 
-import { Logger } from '../../ports/logger.port';
-import { I18nService } from '../../ports/i18n.port';
-import { UserRepository } from '../../../domain/repositories/user.repository.interface';
-import { IPasswordResetCodeRepository } from '../../../domain/repositories/password-reset-code.repository';
-import { AuthenticationService } from '../../ports/authentication.port';
-import { IPasswordService } from '../../ports/password.port';
-import { DomainValidationError } from '../../../domain/exceptions/domain.exceptions';
 import { User } from '../../../domain/entities/user.entity';
+import { DomainValidationError } from '../../../domain/exceptions/domain.exceptions';
+import { IPasswordResetCodeRepository } from '../../../domain/repositories/password-reset-code.repository';
+import { UserRepository } from '../../../domain/repositories/user.repository.interface';
+import { AuthenticationService } from '../../ports/authentication.port';
+import { I18nService } from '../../ports/i18n.port';
+import { Logger } from '../../ports/logger.port';
+import { IPasswordService } from '../../ports/password.port';
 
 export interface CompletePasswordResetRequest {
   readonly resetToken: string;

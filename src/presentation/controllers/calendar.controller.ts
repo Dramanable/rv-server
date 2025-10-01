@@ -437,34 +437,6 @@ export class CalendarController {
   }
 
   /**
-   * 🔄 MAPPER: Convert DTO CalendarStatus to Domain CalendarStatus
-   * Nécessaire pour éviter les conflits d'enums entre couches
-   */
-  private mapCalendarStatusToDomain(
-    status?: CalendarStatus,
-  ): DomainCalendarStatus | undefined {
-    if (!status) return undefined;
-
-    // Conversion explicite par valeur string pour éviter les conflits d'enum
-    const statusValue = status as string;
-
-    switch (statusValue) {
-      case 'ACTIVE':
-        return DomainCalendarStatus.ACTIVE;
-      case 'INACTIVE':
-        return DomainCalendarStatus.INACTIVE;
-      case 'MAINTENANCE':
-        return DomainCalendarStatus.MAINTENANCE;
-      case 'SUSPENDED':
-        return DomainCalendarStatus.INACTIVE; // Suspended → Inactive
-      case 'ARCHIVED':
-        return DomainCalendarStatus.INACTIVE; // Archived → Inactive
-      default:
-        return undefined;
-    }
-  }
-
-  /**
    * 🔄 MAPPER: Convert Domain CalendarStatus to DTO CalendarStatus
    * Pour les réponses API
    */

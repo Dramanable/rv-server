@@ -17,7 +17,7 @@ export enum ProfessionalLevel {
   EXPERT = 'EXPERT',
   LEAD = 'LEAD',
   MANAGER = 'MANAGER',
-  DIRECTOR = 'DIRECTOR'
+  DIRECTOR = 'DIRECTOR',
 }
 
 export enum ProfessionalCategory {
@@ -30,7 +30,7 @@ export enum ProfessionalCategory {
   WELLNESS = 'WELLNESS',
   FITNESS = 'FITNESS',
   EDUCATION = 'EDUCATION',
-  SUPPORT = 'SUPPORT'
+  SUPPORT = 'SUPPORT',
 }
 
 // Interfaces
@@ -145,8 +145,13 @@ export default class ProfessionalRolesService {
   /**
    * 📋 Lister les rôles professionnels avec filtrage avancé
    */
-  async list(params: ListProfessionalRolesDto = {}): Promise<ListProfessionalRolesResponse> {
-    const response = await this.client.post('/api/v1/professional-roles/list', params);
+  async list(
+    params: ListProfessionalRolesDto = {},
+  ): Promise<ListProfessionalRolesResponse> {
+    const response = await this.client.post(
+      '/api/v1/professional-roles/list',
+      params,
+    );
     return response.data;
   }
 
@@ -161,7 +166,9 @@ export default class ProfessionalRolesService {
   /**
    * ➕ Créer un nouveau rôle professionnel
    */
-  async create(data: CreateProfessionalRoleDto): Promise<CreateProfessionalRoleResponse> {
+  async create(
+    data: CreateProfessionalRoleDto,
+  ): Promise<CreateProfessionalRoleResponse> {
     const response = await this.client.post('/api/v1/professional-roles', data);
     return response.data;
   }
@@ -169,8 +176,14 @@ export default class ProfessionalRolesService {
   /**
    * ✏️ Mettre à jour un rôle professionnel
    */
-  async update(id: string, data: UpdateProfessionalRoleDto): Promise<UpdateProfessionalRoleResponse> {
-    const response = await this.client.put(`/api/v1/professional-roles/${id}`, data);
+  async update(
+    id: string,
+    data: UpdateProfessionalRoleDto,
+  ): Promise<UpdateProfessionalRoleResponse> {
+    const response = await this.client.put(
+      `/api/v1/professional-roles/${id}`,
+      data,
+    );
     return response.data;
   }
 
@@ -178,7 +191,9 @@ export default class ProfessionalRolesService {
    * 🗑️ Supprimer un rôle professionnel
    */
   async delete(id: string): Promise<DeleteProfessionalRoleResponse> {
-    const response = await this.client.delete(`/api/v1/professional-roles/${id}`);
+    const response = await this.client.delete(
+      `/api/v1/professional-roles/${id}`,
+    );
     return response.data;
   }
 
@@ -193,7 +208,9 @@ export default class ProfessionalRolesService {
   /**
    * 🏷️ Obtenir les rôles par catégorie
    */
-  async getByCategory(category: ProfessionalCategory): Promise<ProfessionalRole[]> {
+  async getByCategory(
+    category: ProfessionalCategory,
+  ): Promise<ProfessionalRole[]> {
     const response = await this.list({ category, limit: 100 });
     return [...response.data];
   }
@@ -210,7 +227,10 @@ export default class ProfessionalRolesService {
    * 🎓 Obtenir les rôles nécessitant une certification
    */
   async getCertificationRequiredRoles(): Promise<ProfessionalRole[]> {
-    const response = await this.list({ requiresCertification: true, limit: 100 });
+    const response = await this.list({
+      requiresCertification: true,
+      limit: 100,
+    });
     return [...response.data];
   }
 
@@ -219,7 +239,7 @@ export default class ProfessionalRolesService {
    */
   async getAppointmentManagerRoles(): Promise<ProfessionalRole[]> {
     const response = await this.list({ limit: 100 });
-    return response.data.filter(role => role.canBookAppointments);
+    return response.data.filter((role) => role.canBookAppointments);
   }
 
   /**
@@ -272,7 +292,7 @@ export default class ProfessionalRolesService {
       [ProfessionalCategory.WELLNESS]: '🧘',
       [ProfessionalCategory.FITNESS]: '💪',
       [ProfessionalCategory.EDUCATION]: '🎓',
-      [ProfessionalCategory.SUPPORT]: '🛠️'
+      [ProfessionalCategory.SUPPORT]: '🛠️',
     };
     return icons[category] || '👔';
   }
@@ -282,13 +302,13 @@ export default class ProfessionalRolesService {
    */
   static getLevelColor(level: ProfessionalLevel): string {
     const colors: Record<ProfessionalLevel, string> = {
-      [ProfessionalLevel.INTERN]: '#94A3B8',      // Gris
-      [ProfessionalLevel.JUNIOR]: '#22C55E',      // Vert
-      [ProfessionalLevel.SENIOR]: '#3B82F6',      // Bleu
-      [ProfessionalLevel.EXPERT]: '#8B5CF6',      // Violet
-      [ProfessionalLevel.LEAD]: '#F59E0B',        // Orange
-      [ProfessionalLevel.MANAGER]: '#EF4444',     // Rouge
-      [ProfessionalLevel.DIRECTOR]: '#1F2937'     // Noir
+      [ProfessionalLevel.INTERN]: '#94A3B8', // Gris
+      [ProfessionalLevel.JUNIOR]: '#22C55E', // Vert
+      [ProfessionalLevel.SENIOR]: '#3B82F6', // Bleu
+      [ProfessionalLevel.EXPERT]: '#8B5CF6', // Violet
+      [ProfessionalLevel.LEAD]: '#F59E0B', // Orange
+      [ProfessionalLevel.MANAGER]: '#EF4444', // Rouge
+      [ProfessionalLevel.DIRECTOR]: '#1F2937', // Noir
     };
     return colors[level] || '#6B7280';
   }
@@ -304,7 +324,7 @@ export default class ProfessionalRolesService {
       [ProfessionalLevel.EXPERT]: 4,
       [ProfessionalLevel.LEAD]: 5,
       [ProfessionalLevel.MANAGER]: 6,
-      [ProfessionalLevel.DIRECTOR]: 7
+      [ProfessionalLevel.DIRECTOR]: 7,
     };
     return priorities[level] || 0;
   }
@@ -312,7 +332,9 @@ export default class ProfessionalRolesService {
   /**
    * ✅ Valider les données d'un rôle professionnel
    */
-  static validateRoleData(data: CreateProfessionalRoleDto | UpdateProfessionalRoleDto): string[] {
+  static validateRoleData(
+    data: CreateProfessionalRoleDto | UpdateProfessionalRoleDto,
+  ): string[] {
     const errors: string[] = [];
 
     if ('name' in data && data.name !== undefined) {
@@ -329,7 +351,9 @@ export default class ProfessionalRolesService {
         errors.push('Le code du rôle doit contenir au moins 2 caractères');
       }
       if (!/^[A-Z0-9_]{2,20}$/.test(data.code)) {
-        errors.push('Le code doit contenir uniquement des lettres majuscules, chiffres et underscores');
+        errors.push(
+          'Le code doit contenir uniquement des lettres majuscules, chiffres et underscores',
+        );
       }
     }
 
@@ -342,12 +366,19 @@ export default class ProfessionalRolesService {
       }
     }
 
-    if ('maxConcurrentAppointments' in data && data.maxConcurrentAppointments !== undefined) {
+    if (
+      'maxConcurrentAppointments' in data &&
+      data.maxConcurrentAppointments !== undefined
+    ) {
       if (data.maxConcurrentAppointments < 1) {
-        errors.push('Le nombre maximum de rendez-vous simultanés doit être au moins 1');
+        errors.push(
+          'Le nombre maximum de rendez-vous simultanés doit être au moins 1',
+        );
       }
       if (data.maxConcurrentAppointments > 50) {
-        errors.push('Le nombre maximum de rendez-vous simultanés ne peut pas dépasser 50');
+        errors.push(
+          'Le nombre maximum de rendez-vous simultanés ne peut pas dépasser 50',
+        );
       }
     }
 
@@ -375,7 +406,9 @@ export default class ProfessionalRolesService {
     formatName: (name: string): string => {
       return name
         .split(' ')
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+        .map(
+          (word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase(),
+        )
         .join(' ');
     },
 
@@ -389,7 +422,10 @@ export default class ProfessionalRolesService {
     /**
      * Comparer deux niveaux professionnels
      */
-    compareLevels: (level1: ProfessionalLevel, level2: ProfessionalLevel): number => {
+    compareLevels: (
+      level1: ProfessionalLevel,
+      level2: ProfessionalLevel,
+    ): number => {
       const priority1 = ProfessionalRolesService.getLevelPriority(level1);
       const priority2 = ProfessionalRolesService.getLevelPriority(level2);
       return priority1 - priority2;
@@ -404,14 +440,44 @@ export default class ProfessionalRolesService {
       const levelPermissions: Record<ProfessionalLevel, string[]> = {
         [ProfessionalLevel.INTERN]: [...basePermissions],
         [ProfessionalLevel.JUNIOR]: [...basePermissions, 'VIEW_APPOINTMENTS'],
-        [ProfessionalLevel.SENIOR]: [...basePermissions, 'VIEW_APPOINTMENTS', 'MANAGE_APPOINTMENTS'],
-        [ProfessionalLevel.EXPERT]: [...basePermissions, 'VIEW_APPOINTMENTS', 'MANAGE_APPOINTMENTS', 'VIEW_REPORTS'],
-        [ProfessionalLevel.LEAD]: [...basePermissions, 'VIEW_APPOINTMENTS', 'MANAGE_APPOINTMENTS', 'VIEW_REPORTS', 'MANAGE_TEAM'],
-        [ProfessionalLevel.MANAGER]: [...basePermissions, 'VIEW_APPOINTMENTS', 'MANAGE_APPOINTMENTS', 'VIEW_REPORTS', 'MANAGE_TEAM', 'MANAGE_BUSINESS'],
-        [ProfessionalLevel.DIRECTOR]: [...basePermissions, 'VIEW_APPOINTMENTS', 'MANAGE_APPOINTMENTS', 'VIEW_REPORTS', 'MANAGE_TEAM', 'MANAGE_BUSINESS', 'FULL_ACCESS']
+        [ProfessionalLevel.SENIOR]: [
+          ...basePermissions,
+          'VIEW_APPOINTMENTS',
+          'MANAGE_APPOINTMENTS',
+        ],
+        [ProfessionalLevel.EXPERT]: [
+          ...basePermissions,
+          'VIEW_APPOINTMENTS',
+          'MANAGE_APPOINTMENTS',
+          'VIEW_REPORTS',
+        ],
+        [ProfessionalLevel.LEAD]: [
+          ...basePermissions,
+          'VIEW_APPOINTMENTS',
+          'MANAGE_APPOINTMENTS',
+          'VIEW_REPORTS',
+          'MANAGE_TEAM',
+        ],
+        [ProfessionalLevel.MANAGER]: [
+          ...basePermissions,
+          'VIEW_APPOINTMENTS',
+          'MANAGE_APPOINTMENTS',
+          'VIEW_REPORTS',
+          'MANAGE_TEAM',
+          'MANAGE_BUSINESS',
+        ],
+        [ProfessionalLevel.DIRECTOR]: [
+          ...basePermissions,
+          'VIEW_APPOINTMENTS',
+          'MANAGE_APPOINTMENTS',
+          'VIEW_REPORTS',
+          'MANAGE_TEAM',
+          'MANAGE_BUSINESS',
+          'FULL_ACCESS',
+        ],
       };
 
       return levelPermissions[level] || basePermissions;
-    }
+    },
   };
 }

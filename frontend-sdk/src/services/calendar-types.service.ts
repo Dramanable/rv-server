@@ -10,7 +10,7 @@ import { PaginatedResponse } from '../types';
 export enum CalendarTypeStatus {
   ACTIVE = 'ACTIVE',
   INACTIVE = 'INACTIVE',
-  ARCHIVED = 'ARCHIVED'
+  ARCHIVED = 'ARCHIVED',
 }
 
 export enum CalendarTypeColor {
@@ -22,7 +22,7 @@ export enum CalendarTypeColor {
   ORANGE = 'ORANGE',
   PINK = 'PINK',
   CYAN = 'CYAN',
-  GRAY = 'GRAY'
+  GRAY = 'GRAY',
 }
 
 export interface CalendarType {
@@ -91,10 +91,12 @@ export class CalendarTypesService {
   /**
    * 📋 Lister tous les types de calendrier
    */
-  async list(request: ListCalendarTypesRequest): Promise<PaginatedResponse<CalendarType>> {
+  async list(
+    request: ListCalendarTypesRequest,
+  ): Promise<PaginatedResponse<CalendarType>> {
     const response = await this.client.post<PaginatedResponse<CalendarType>>(
       '/api/v1/calendar-types/list',
-      request
+      request,
     );
     return response.data;
   }
@@ -103,7 +105,9 @@ export class CalendarTypesService {
    * 📄 Obtenir un type de calendrier par ID
    */
   async getById(id: string): Promise<CalendarType> {
-    const response = await this.client.get<CalendarType>(`/api/v1/calendar-types/${id}`);
+    const response = await this.client.get<CalendarType>(
+      `/api/v1/calendar-types/${id}`,
+    );
     return response.data;
   }
 
@@ -111,15 +115,24 @@ export class CalendarTypesService {
    * ➕ Créer un nouveau type de calendrier
    */
   async create(request: CreateCalendarTypeRequest): Promise<CalendarType> {
-    const response = await this.client.post<CalendarType>('/api/v1/calendar-types', request);
+    const response = await this.client.post<CalendarType>(
+      '/api/v1/calendar-types',
+      request,
+    );
     return response.data;
   }
 
   /**
    * ✏️ Mettre à jour un type de calendrier
    */
-  async update(id: string, updates: UpdateCalendarTypeRequest): Promise<CalendarType> {
-    const response = await this.client.put<CalendarType>(`/api/v1/calendar-types/${id}`, updates);
+  async update(
+    id: string,
+    updates: UpdateCalendarTypeRequest,
+  ): Promise<CalendarType> {
+    const response = await this.client.put<CalendarType>(
+      `/api/v1/calendar-types/${id}`,
+      updates,
+    );
     return response.data;
   }
 
@@ -157,7 +170,7 @@ export class CalendarTypesService {
   async getByBusiness(businessId: string): Promise<CalendarType[]> {
     const response = await this.list({
       businessId,
-      limit: 100
+      limit: 100,
     });
     return [...response.data];
   }
@@ -166,20 +179,25 @@ export class CalendarTypesService {
    * ⭐ Définir un type comme défaut
    */
   async setDefault(id: string): Promise<CalendarType> {
-    const response = await this.client.post<CalendarType>(`/api/v1/calendar-types/${id}/set-default`);
+    const response = await this.client.post<CalendarType>(
+      `/api/v1/calendar-types/${id}/set-default`,
+    );
     return response.data;
   }
 
   /**
    * 🔄 Réorganiser les types de calendrier
    */
-  async reorder(businessId: string, orders: { id: string; displayOrder: number }[]): Promise<CalendarType[]> {
+  async reorder(
+    businessId: string,
+    orders: { id: string; displayOrder: number }[],
+  ): Promise<CalendarType[]> {
     const response = await this.client.post<CalendarType[]>(
       '/api/v1/calendar-types/reorder',
       {
         businessId,
-        orders
-      }
+        orders,
+      },
     );
     return response.data;
   }
@@ -222,7 +240,7 @@ export class CalendarTypesService {
   async duplicate(id: string, newName: string): Promise<CalendarType> {
     const response = await this.client.post<CalendarType>(
       `/api/v1/calendar-types/${id}/duplicate`,
-      { name: newName }
+      { name: newName },
     );
     return response.data;
   }
@@ -234,7 +252,7 @@ export class CalendarTypesService {
     const names: Record<CalendarTypeStatus, string> = {
       [CalendarTypeStatus.ACTIVE]: 'Actif',
       [CalendarTypeStatus.INACTIVE]: 'Inactif',
-      [CalendarTypeStatus.ARCHIVED]: 'Archivé'
+      [CalendarTypeStatus.ARCHIVED]: 'Archivé',
     };
     return names[status];
   }
@@ -249,7 +267,7 @@ export class CalendarTypesService {
       [CalendarTypeColor.ORANGE]: 'Orange',
       [CalendarTypeColor.PINK]: 'Rose',
       [CalendarTypeColor.CYAN]: 'Cyan',
-      [CalendarTypeColor.GRAY]: 'Gris'
+      [CalendarTypeColor.GRAY]: 'Gris',
     };
     return names[color];
   }
@@ -264,7 +282,7 @@ export class CalendarTypesService {
       [CalendarTypeColor.ORANGE]: '#F97316',
       [CalendarTypeColor.PINK]: '#EC4899',
       [CalendarTypeColor.CYAN]: '#06B6D4',
-      [CalendarTypeColor.GRAY]: '#6B7280'
+      [CalendarTypeColor.GRAY]: '#6B7280',
     };
     return colors[color];
   }
@@ -283,11 +301,11 @@ export class CalendarTypesService {
   }
 
   static filterActive(types: CalendarType[]): CalendarType[] {
-    return types.filter(type => this.isActive(type));
+    return types.filter((type) => this.isActive(type));
   }
 
   static getDefaultType(types: CalendarType[]): CalendarType | null {
-    const defaultType = types.find(type => type.isDefault);
+    const defaultType = types.find((type) => type.isDefault);
     return defaultType || null;
   }
 
@@ -302,10 +320,14 @@ export class CalendarTypesService {
 
     if (settings.maxConcurrentAppointments !== undefined) {
       if (settings.maxConcurrentAppointments < 1) {
-        errors.push('Le nombre maximum de rendez-vous simultanés doit être au moins 1');
+        errors.push(
+          'Le nombre maximum de rendez-vous simultanés doit être au moins 1',
+        );
       }
       if (settings.maxConcurrentAppointments > 100) {
-        errors.push('Le nombre maximum de rendez-vous simultanés ne peut pas dépasser 100');
+        errors.push(
+          'Le nombre maximum de rendez-vous simultanés ne peut pas dépasser 100',
+        );
       }
     }
 
@@ -319,12 +341,14 @@ export class CalendarTypesService {
     }
 
     if (settings.requireConfirmation && settings.autoAcceptBookings) {
-      errors.push('Ne peut pas à la fois exiger une confirmation et accepter automatiquement les réservations');
+      errors.push(
+        'Ne peut pas à la fois exiger une confirmation et accepter automatiquement les réservations',
+      );
     }
 
     return {
       isValid: errors.length === 0,
-      errors
+      errors,
     };
   }
 
@@ -344,7 +368,9 @@ export class CalendarTypesService {
 
   static generateNextOrder(existingTypes: CalendarType[]): number {
     if (existingTypes.length === 0) return 1;
-    const maxOrder = Math.max(...existingTypes.map(type => type.displayOrder));
+    const maxOrder = Math.max(
+      ...existingTypes.map((type) => type.displayOrder),
+    );
     return maxOrder + 1;
   }
 }

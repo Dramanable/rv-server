@@ -1,6 +1,6 @@
+import { RequiredValueError } from '../exceptions/value-object.exceptions';
 import { BusinessId } from '../value-objects/business-id.value-object';
 import { CalendarTypeId } from '../value-objects/calendar-type-id.value-object';
-import { RequiredValueError } from '../exceptions/value-object.exceptions';
 
 export class CalendarType {
   constructor(

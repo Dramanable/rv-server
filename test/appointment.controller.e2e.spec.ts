@@ -5,18 +5,16 @@
  * ✅ TDD avec règles métier et cas d'erreur
  */
 
+import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, HttpStatus } from '@nestjs/common';
 import * as request from 'supertest';
 import { DataSource } from 'typeorm';
-import { User } from '../src/domain/entities/user.entity';
 import { AppModule } from '../src/app.module';
 
 describe('🧪 AppointmentController (E2E) - Clean Architecture Flow', () => {
   let app: INestApplication;
   let dataSource: DataSource;
   let authToken: string;
-  let testUser: User;
 
   // Test Data - Business Setup
   let businessId: string;
@@ -60,7 +58,6 @@ describe('🧪 AppointmentController (E2E) - Clean Architecture Flow', () => {
       .expect(HttpStatus.OK);
 
     authToken = loginResponse.body.data.accessToken;
-    testUser = loginResponse.body.data.user;
 
     // 2. Create business
     const businessResponse = await request(app.getHttpServer())

@@ -13,21 +13,21 @@ export enum CalendarStatus {
   ACTIVE = 'ACTIVE',
   INACTIVE = 'INACTIVE',
   SUSPENDED = 'SUSPENDED',
-  ARCHIVED = 'ARCHIVED'
+  ARCHIVED = 'ARCHIVED',
 }
 
 export enum CalendarVisibility {
   PUBLIC = 'PUBLIC',
   PRIVATE = 'PRIVATE',
   TEAM_ONLY = 'TEAM_ONLY',
-  MANAGERS_ONLY = 'MANAGERS_ONLY'
+  MANAGERS_ONLY = 'MANAGERS_ONLY',
 }
 
 export enum CalendarSyncStatus {
   SYNCED = 'SYNCED',
   PENDING = 'PENDING',
   ERROR = 'ERROR',
-  DISABLED = 'DISABLED'
+  DISABLED = 'DISABLED',
 }
 
 export interface CalendarAvailability {
@@ -145,10 +145,12 @@ export class CalendarsService {
   /**
    * 📋 Lister tous les calendriers
    */
-  async list(request: ListCalendarsRequest): Promise<PaginatedResponse<Calendar>> {
+  async list(
+    request: ListCalendarsRequest,
+  ): Promise<PaginatedResponse<Calendar>> {
     const response = await this.client.post<PaginatedResponse<Calendar>>(
       '/api/v1/calendars/list',
-      request
+      request,
     );
     return response.data;
   }
@@ -166,7 +168,10 @@ export class CalendarsService {
    * ➕ Créer un nouveau calendrier
    */
   async create(request: CreateCalendarRequest): Promise<Calendar> {
-    const response = await this.client.post<Calendar>('/api/v1/calendars', request);
+    const response = await this.client.post<Calendar>(
+      '/api/v1/calendars',
+      request,
+    );
     return response.data;
   }
 
@@ -174,7 +179,10 @@ export class CalendarsService {
    * ✏️ Mettre à jour un calendrier
    */
   async update(id: string, updates: UpdateCalendarRequest): Promise<Calendar> {
-    const response = await this.client.put<Calendar>(`/api/v1/calendars/${id}`, updates);
+    const response = await this.client.put<Calendar>(
+      `/api/v1/calendars/${id}`,
+      updates,
+    );
     return response.data;
   }
 
@@ -192,7 +200,7 @@ export class CalendarsService {
     const response = await this.list({
       businessId: '', // Will be handled by backend based on staff member
       staffMemberId,
-      limit: 100
+      limit: 100,
     });
     return [...response.data];
   }
@@ -203,7 +211,7 @@ export class CalendarsService {
   async getByBusiness(businessId: string): Promise<Calendar[]> {
     const response = await this.list({
       businessId,
-      limit: 100
+      limit: 100,
     });
     return [...response.data];
   }
@@ -212,17 +220,21 @@ export class CalendarsService {
    * ⭐ Définir un calendrier comme défaut pour un membre du personnel
    */
   async setDefault(id: string): Promise<Calendar> {
-    const response = await this.client.post<Calendar>(`/api/v1/calendars/${id}/set-default`);
+    const response = await this.client.post<Calendar>(
+      `/api/v1/calendars/${id}/set-default`,
+    );
     return response.data;
   }
 
   /**
    * 🕐 Obtenir les créneaux disponibles
    */
-  async getAvailableSlots(request: GetAvailableSlotsRequest): Promise<CalendarTimeSlot[]> {
+  async getAvailableSlots(
+    request: GetAvailableSlotsRequest,
+  ): Promise<CalendarTimeSlot[]> {
     const response = await this.client.post<CalendarTimeSlot[]>(
       '/api/v1/calendars/available-slots',
-      request
+      request,
     );
     return response.data;
   }
@@ -234,7 +246,7 @@ export class CalendarsService {
     calendarId: string,
     startDate: string,
     endDate: string,
-    viewType: 'day' | 'week' | 'month' = 'week'
+    viewType: 'day' | 'week' | 'month' = 'week',
   ): Promise<{
     calendar: Calendar;
     timeSlots: CalendarTimeSlot[];
@@ -262,20 +274,26 @@ export class CalendarsService {
         serviceName: string;
       }>;
       availability: CalendarAvailability[];
-    }>(`/api/v1/calendars/${calendarId}/view?startDate=${startDate}&endDate=${endDate}&viewType=${viewType}`);
+    }>(
+      `/api/v1/calendars/${calendarId}/view?startDate=${startDate}&endDate=${endDate}&viewType=${viewType}`,
+    );
     return response.data;
   }
 
   /**
    * 🔄 Synchroniser avec un calendrier externe
    */
-  async syncWithExternal(id: string, externalCalendarId: string, provider: 'google' | 'outlook' | 'apple'): Promise<Calendar> {
+  async syncWithExternal(
+    id: string,
+    externalCalendarId: string,
+    provider: 'google' | 'outlook' | 'apple',
+  ): Promise<Calendar> {
     const response = await this.client.post<Calendar>(
       `/api/v1/calendars/${id}/sync`,
       {
         externalCalendarId,
-        provider
-      }
+        provider,
+      },
     );
     return response.data;
   }
@@ -284,14 +302,19 @@ export class CalendarsService {
    * ❌ Désynchroniser d'un calendrier externe
    */
   async unsyncExternal(id: string): Promise<Calendar> {
-    const response = await this.client.delete<Calendar>(`/api/v1/calendars/${id}/sync`);
+    const response = await this.client.delete<Calendar>(
+      `/api/v1/calendars/${id}/sync`,
+    );
     return response.data;
   }
 
   /**
    * 📊 Obtenir les statistiques d'un calendrier
    */
-  async getStats(id: string, period: 'week' | 'month' | 'quarter' | 'year' = 'month'): Promise<{
+  async getStats(
+    id: string,
+    period: 'week' | 'month' | 'quarter' | 'year' = 'month',
+  ): Promise<{
     totalAppointments: number;
     confirmedAppointments: number;
     cancelledAppointments: number;
@@ -327,13 +350,17 @@ export class CalendarsService {
   /**
    * 🔧 Dupliquer un calendrier
    */
-  async duplicate(id: string, newName: string, staffMemberId?: string): Promise<Calendar> {
+  async duplicate(
+    id: string,
+    newName: string,
+    staffMemberId?: string,
+  ): Promise<Calendar> {
     const response = await this.client.post<Calendar>(
       `/api/v1/calendars/${id}/duplicate`,
       {
         name: newName,
-        staffMemberId
-      }
+        staffMemberId,
+      },
     );
     return response.data;
   }
@@ -346,7 +373,7 @@ export class CalendarsService {
       [CalendarStatus.ACTIVE]: 'Actif',
       [CalendarStatus.INACTIVE]: 'Inactif',
       [CalendarStatus.SUSPENDED]: 'Suspendu',
-      [CalendarStatus.ARCHIVED]: 'Archivé'
+      [CalendarStatus.ARCHIVED]: 'Archivé',
     };
     return names[status];
   }
@@ -356,7 +383,7 @@ export class CalendarsService {
       [CalendarVisibility.PUBLIC]: 'Public',
       [CalendarVisibility.PRIVATE]: 'Privé',
       [CalendarVisibility.TEAM_ONLY]: 'équipe uniquement',
-      [CalendarVisibility.MANAGERS_ONLY]: 'Managers uniquement'
+      [CalendarVisibility.MANAGERS_ONLY]: 'Managers uniquement',
     };
     return names[visibility];
   }
@@ -366,7 +393,7 @@ export class CalendarsService {
       [CalendarSyncStatus.SYNCED]: 'Synchronisé',
       [CalendarSyncStatus.PENDING]: 'En attente',
       [CalendarSyncStatus.ERROR]: 'Erreur',
-      [CalendarSyncStatus.DISABLED]: 'Désactivé'
+      [CalendarSyncStatus.DISABLED]: 'Désactivé',
     };
     return names[status];
   }
@@ -389,12 +416,18 @@ export class CalendarsService {
 
   static isAvailableOnDay(calendar: Calendar, dayOfWeek: number): boolean {
     return calendar.availability.some(
-      avail => avail.dayOfWeek === dayOfWeek && avail.isAvailable
+      (avail) => avail.dayOfWeek === dayOfWeek && avail.isAvailable,
     );
   }
 
-  static getAvailabilityForDay(calendar: Calendar, dayOfWeek: number): CalendarAvailability | null {
-    return calendar.availability.find(avail => avail.dayOfWeek === dayOfWeek) || null;
+  static getAvailabilityForDay(
+    calendar: Calendar,
+    dayOfWeek: number,
+  ): CalendarAvailability | null {
+    return (
+      calendar.availability.find((avail) => avail.dayOfWeek === dayOfWeek) ||
+      null
+    );
   }
 
   static formatTimeSlot(slot: CalendarTimeSlot): string {
@@ -403,14 +436,16 @@ export class CalendarsService {
 
     return `${start.toLocaleTimeString('fr-FR', {
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     })} - ${end.toLocaleTimeString('fr-FR', {
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     })}`;
   }
 
-  static calculateTotalWeeklyHours(availability: readonly CalendarAvailability[]): number {
+  static calculateTotalWeeklyHours(
+    availability: readonly CalendarAvailability[],
+  ): number {
     return availability.reduce((total, avail) => {
       if (!avail.isAvailable) return total;
 
@@ -419,17 +454,21 @@ export class CalendarsService {
       const hours = (end - start) / (1000 * 60 * 60);
 
       // Soustraire les pauses
-      const breakTime = avail.breakTimes?.reduce((breakTotal, breakItem) => {
-        const breakStart = this.parseTime(breakItem.startTime);
-        const breakEnd = this.parseTime(breakItem.endTime);
-        return breakTotal + (breakEnd - breakStart) / (1000 * 60 * 60);
-      }, 0) || 0;
+      const breakTime =
+        avail.breakTimes?.reduce((breakTotal, breakItem) => {
+          const breakStart = this.parseTime(breakItem.startTime);
+          const breakEnd = this.parseTime(breakItem.endTime);
+          return breakTotal + (breakEnd - breakStart) / (1000 * 60 * 60);
+        }, 0) || 0;
 
       return total + hours - breakTime;
     }, 0);
   }
 
-  static validateAvailability(availability: CalendarAvailability[]): { isValid: boolean; errors: string[] } {
+  static validateAvailability(availability: CalendarAvailability[]): {
+    isValid: boolean;
+    errors: string[];
+  } {
     const errors: string[] = [];
 
     for (const avail of availability) {
@@ -438,7 +477,9 @@ export class CalendarsService {
       const end = this.parseTime(avail.endTime);
 
       if (start >= end) {
-        errors.push(`Jour ${avail.dayOfWeek}: L'heure de fin doit être après l'heure de début`);
+        errors.push(
+          `Jour ${avail.dayOfWeek}: L'heure de fin doit être après l'heure de début`,
+        );
       }
 
       // Vérifier les pauses
@@ -448,11 +489,15 @@ export class CalendarsService {
           const breakEnd = this.parseTime(breakTime.endTime);
 
           if (breakStart >= breakEnd) {
-            errors.push(`Jour ${avail.dayOfWeek}: L'heure de fin de pause doit être après l'heure de début`);
+            errors.push(
+              `Jour ${avail.dayOfWeek}: L'heure de fin de pause doit être après l'heure de début`,
+            );
           }
 
           if (breakStart < start || breakEnd > end) {
-            errors.push(`Jour ${avail.dayOfWeek}: La pause doit être dans les heures d'ouverture`);
+            errors.push(
+              `Jour ${avail.dayOfWeek}: La pause doit être dans les heures d'ouverture`,
+            );
           }
         }
       }
@@ -460,7 +505,7 @@ export class CalendarsService {
 
     return {
       isValid: errors.length === 0,
-      errors
+      errors,
     };
   }
 
@@ -487,20 +532,28 @@ export class CalendarsService {
   }
 
   static getDayName(dayOfWeek: number): string {
-    const days = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+    const days = [
+      'Dimanche',
+      'Lundi',
+      'Mardi',
+      'Mercredi',
+      'Jeudi',
+      'Vendredi',
+      'Samedi',
+    ];
     return days[dayOfWeek] || 'Inconnu';
   }
 
   static filterActive(calendars: Calendar[]): Calendar[] {
-    return calendars.filter(calendar => this.isActive(calendar));
+    return calendars.filter((calendar) => this.isActive(calendar));
   }
 
   static filterPublic(calendars: Calendar[]): Calendar[] {
-    return calendars.filter(calendar => this.isPublic(calendar));
+    return calendars.filter((calendar) => this.isPublic(calendar));
   }
 
   static filterBookable(calendars: Calendar[]): Calendar[] {
-    return calendars.filter(calendar => this.canBook(calendar));
+    return calendars.filter((calendar) => this.canBook(calendar));
   }
 
   static sortByName(calendars: Calendar[]): Calendar[] {
@@ -508,14 +561,17 @@ export class CalendarsService {
   }
 
   static groupByStaff(calendars: Calendar[]): Record<string, Calendar[]> {
-    return calendars.reduce((groups, calendar) => {
-      const staffId = calendar.staffMemberId;
-      if (!groups[staffId]) {
-        groups[staffId] = [];
-      }
-      groups[staffId].push(calendar);
-      return groups;
-    }, {} as Record<string, Calendar[]>);
+    return calendars.reduce(
+      (groups, calendar) => {
+        const staffId = calendar.staffMemberId;
+        if (!groups[staffId]) {
+          groups[staffId] = [];
+        }
+        groups[staffId].push(calendar);
+        return groups;
+      },
+      {} as Record<string, Calendar[]>,
+    );
   }
 }
 

@@ -96,8 +96,13 @@ export default class BusinessSectorsService {
   /**
    * 📋 Lister les secteurs d'activité avec filtrage avancé
    */
-  async list(params: ListBusinessSectorsDto = {}): Promise<ListBusinessSectorsResponse> {
-    const response = await this.client.post('/api/v1/business-sectors/list', params);
+  async list(
+    params: ListBusinessSectorsDto = {},
+  ): Promise<ListBusinessSectorsResponse> {
+    const response = await this.client.post(
+      '/api/v1/business-sectors/list',
+      params,
+    );
     return response.data;
   }
 
@@ -112,7 +117,9 @@ export default class BusinessSectorsService {
   /**
    * ➕ Créer un nouveau secteur d'activité
    */
-  async create(data: CreateBusinessSectorDto): Promise<CreateBusinessSectorResponse> {
+  async create(
+    data: CreateBusinessSectorDto,
+  ): Promise<CreateBusinessSectorResponse> {
     const response = await this.client.post('/api/v1/business-sectors', data);
     return response.data;
   }
@@ -120,8 +127,14 @@ export default class BusinessSectorsService {
   /**
    * ✏️ Mettre à jour un secteur d'activité
    */
-  async update(id: string, data: UpdateBusinessSectorDto): Promise<UpdateBusinessSectorResponse> {
-    const response = await this.client.put(`/api/v1/business-sectors/${id}`, data);
+  async update(
+    id: string,
+    data: UpdateBusinessSectorDto,
+  ): Promise<UpdateBusinessSectorResponse> {
+    const response = await this.client.put(
+      `/api/v1/business-sectors/${id}`,
+      data,
+    );
     return response.data;
   }
 
@@ -145,7 +158,9 @@ export default class BusinessSectorsService {
    * 🌳 Obtenir la hiérarchie des secteurs
    */
   async getSectorsHierarchy(): Promise<BusinessSector[]> {
-    const response = await this.client.get('/api/v1/business-sectors/hierarchy');
+    const response = await this.client.get(
+      '/api/v1/business-sectors/hierarchy',
+    );
     return response.data.data;
   }
 
@@ -198,7 +213,9 @@ export default class BusinessSectorsService {
     formatName: (name: string): string => {
       return name
         .split(' ')
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+        .map(
+          (word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase(),
+        )
         .join(' ');
     },
 
@@ -207,14 +224,14 @@ export default class BusinessSectorsService {
      */
     getDefaultColor: (name: string): string => {
       const colors: Record<string, string> = {
-        'MEDICAL': '#EF4444',
-        'BEAUTY': '#F59E0B',
-        'FITNESS': '#10B981',
-        'EDUCATION': '#3B82F6',
-        'WELLNESS': '#8B5CF6',
-        'TECHNOLOGY': '#6366F1',
-        'CONSULTING': '#14B8A6',
-        'RETAIL': '#F97316'
+        MEDICAL: '#EF4444',
+        BEAUTY: '#F59E0B',
+        FITNESS: '#10B981',
+        EDUCATION: '#3B82F6',
+        WELLNESS: '#8B5CF6',
+        TECHNOLOGY: '#6366F1',
+        CONSULTING: '#14B8A6',
+        RETAIL: '#F97316',
       };
 
       const upperName = name.toUpperCase();
@@ -232,18 +249,18 @@ export default class BusinessSectorsService {
      */
     getDefaultIcon: (name: string): string => {
       const icons: Record<string, string> = {
-        'MEDICAL': '⚕️',
-        'BEAUTY': '💄',
-        'FITNESS': '💪',
-        'EDUCATION': '🎓',
-        'WELLNESS': '🧘',
-        'TECHNOLOGY': '💻',
-        'CONSULTING': '💼',
-        'RETAIL': '🛍️',
-        'RESTAURANT': '🍽️',
-        'AUTOMOTIVE': '🚗',
-        'REAL_ESTATE': '🏠',
-        'FINANCE': '💰'
+        MEDICAL: '⚕️',
+        BEAUTY: '💄',
+        FITNESS: '💪',
+        EDUCATION: '🎓',
+        WELLNESS: '🧘',
+        TECHNOLOGY: '💻',
+        CONSULTING: '💼',
+        RETAIL: '🛍️',
+        RESTAURANT: '🍽️',
+        AUTOMOTIVE: '🚗',
+        REAL_ESTATE: '🏠',
+        FINANCE: '💰',
       };
 
       const upperName = name.toUpperCase();
@@ -254,6 +271,6 @@ export default class BusinessSectorsService {
       }
 
       return '🏢'; // Icône par défaut
-    }
+    },
   };
 }

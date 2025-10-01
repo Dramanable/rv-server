@@ -82,7 +82,7 @@ export class I18nValidationPipe extends ValidationPipe {
   private getTranslatedMessage(
     property: string,
     originalMessage: string,
-    value?: unknown,
+    _value?: unknown,
   ): string {
     // Messages traduits pour chaque champ
     const translatedMessages: Record<string, Record<string, string>> = {

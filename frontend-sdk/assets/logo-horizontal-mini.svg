@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg width="64" height="20" viewBox="0 0 64 20" xmlns="http://www.w3.org/2000/svg">
   <!-- Logo horizontal pour barres de navigation -->
-  
+
   <!-- Icône calendrier compacte -->
   <g transform="translate(0, 2)">
     <rect width="16" height="16" rx="3" fill="#4A90E2"/>
@@ -12,7 +12,7 @@
     <circle cx="8" cy="9.5" r="1" fill="#10B981"/>
     <circle cx="12" cy="6.5" r="1" fill="#F59E0B"/>
   </g>
-  
+
   <!-- Texte amRDV -->
   <text x="20" y="14" font-family="'Segoe UI', Arial, sans-serif" font-size="11" font-weight="600" fill="#374151">amRDV</text>
 </svg>

@@ -6,18 +6,18 @@
 
 import { RVProjectClient } from '../client';
 import {
-    ApiResponse,
-    CreateServiceRequest,
-    Money,
-    PaginatedResponse,
-    PricingConfig,
-    PricingType,
-    SearchServicesRequest,
-    Service,
-    ServiceSettings,
-    ServiceStatus,
-    UpdateServiceRequest,
-    VariablePricing
+  ApiResponse,
+  CreateServiceRequest,
+  Money,
+  PaginatedResponse,
+  PricingConfig,
+  PricingType,
+  SearchServicesRequest,
+  Service,
+  ServiceSettings,
+  ServiceStatus,
+  UpdateServiceRequest,
+  VariablePricing,
 } from '../types';
 
 export class ServicesService {
@@ -30,11 +30,12 @@ export class ServicesService {
   /**
    * Rechercher des services avec filtres avancés
    */
-  async searchServices(request: SearchServicesRequest = {}): Promise<PaginatedResponse<Service>> {
-    const response = await this.client.post<ApiResponse<PaginatedResponse<Service>>>(
-      '/services/list',
-      request
-    );
+  async searchServices(
+    request: SearchServicesRequest = {},
+  ): Promise<PaginatedResponse<Service>> {
+    const response = await this.client.post<
+      ApiResponse<PaginatedResponse<Service>>
+    >('/services/list', request);
     return response.data.data;
   }
 
@@ -42,7 +43,9 @@ export class ServicesService {
    * Obtenir un service par ID
    */
   async getServiceById(id: string): Promise<Service> {
-    const response = await this.client.get<ApiResponse<Service>>(`/services/${id}`);
+    const response = await this.client.get<ApiResponse<Service>>(
+      `/services/${id}`,
+    );
     return response.data.data;
   }
 
@@ -50,15 +53,24 @@ export class ServicesService {
    * Créer un nouveau service
    */
   async createService(request: CreateServiceRequest): Promise<Service> {
-    const response = await this.client.post<ApiResponse<Service>>('/services', request);
+    const response = await this.client.post<ApiResponse<Service>>(
+      '/services',
+      request,
+    );
     return response.data.data;
   }
 
   /**
    * Mettre à jour un service
    */
-  async updateService(id: string, updates: UpdateServiceRequest): Promise<Service> {
-    const response = await this.client.put<ApiResponse<Service>>(`/services/${id}`, updates);
+  async updateService(
+    id: string,
+    updates: UpdateServiceRequest,
+  ): Promise<Service> {
+    const response = await this.client.put<ApiResponse<Service>>(
+      `/services/${id}`,
+      updates,
+    );
     return response.data.data;
   }
 
@@ -72,11 +84,14 @@ export class ServicesService {
   /**
    * Obtenir les services d'une entreprise
    */
-  async getServicesByBusiness(businessId: string, activeOnly: boolean = true): Promise<Service[]> {
+  async getServicesByBusiness(
+    businessId: string,
+    activeOnly: boolean = true,
+  ): Promise<Service[]> {
     const result = await this.searchServices(
       activeOnly
         ? { businessId, status: ServiceStatus.ACTIVE, limit: 100 }
-        : { businessId, limit: 100 }
+        : { businessId, limit: 100 },
     );
     return result.data as Service[];
   }
@@ -84,13 +99,16 @@ export class ServicesService {
   /**
    * Obtenir les services réservables en ligne
    */
-  async getBookableServices(businessId: string, filters: Partial<SearchServicesRequest> = {}): Promise<Service[]> {
+  async getBookableServices(
+    businessId: string,
+    filters: Partial<SearchServicesRequest> = {},
+  ): Promise<Service[]> {
     const result = await this.searchServices({
       businessId,
       isOnlineBookingEnabled: true,
       status: ServiceStatus.ACTIVE,
       ...filters,
-      limit: 100
+      limit: 100,
     });
     return result.data as Service[];
   }
@@ -98,12 +116,16 @@ export class ServicesService {
   /**
    * Recherche rapide de services par nom
    */
-  async quickSearchByName(businessId: string, name: string, limit: number = 10): Promise<Service[]> {
+  async quickSearchByName(
+    businessId: string,
+    name: string,
+    limit: number = 10,
+  ): Promise<Service[]> {
     const result = await this.searchServices({
       businessId,
       search: name,
       status: ServiceStatus.ACTIVE,
-      limit
+      limit,
     });
     return result.data as Service[];
   }
@@ -111,12 +133,15 @@ export class ServicesService {
   /**
    * Obtenir les services par catégorie
    */
-  async getServicesByCategory(businessId: string, category: string): Promise<Service[]> {
+  async getServicesByCategory(
+    businessId: string,
+    category: string,
+  ): Promise<Service[]> {
     const result = await this.searchServices({
       businessId,
       category,
       status: ServiceStatus.ACTIVE,
-      limit: 100
+      limit: 100,
     });
     return result.data as Service[];
   }
@@ -128,7 +153,10 @@ export class ServicesService {
   /**
    * Calculer le prix d'un service avec options sélectionnées
    */
-  calculateServicePrice(service: Service, selectedOptions: Record<string, string> = {}): {
+  calculateServicePrice(
+    service: Service,
+    selectedOptions: Record<string, string> = {},
+  ): {
     basePrice: Money;
     additions: { name: string; price: Money }[];
     totalPrice: Money;
@@ -138,20 +166,25 @@ export class ServicesService {
     const additions: { name: string; price: Money }[] = [];
     let totalAmount = basePrice.amount;
 
-    if (pricingConfig.type === PricingType.VARIABLE && pricingConfig.variablePricing) {
+    if (
+      pricingConfig.type === PricingType.VARIABLE &&
+      pricingConfig.variablePricing
+    ) {
       const { factors, calculationMethod } = pricingConfig.variablePricing;
 
-      factors.forEach(factor => {
+      factors.forEach((factor) => {
         const selectedValue = selectedOptions[factor.name];
         if (selectedValue) {
-          const option = factor.options.find(opt => opt.label === selectedValue);
+          const option = factor.options.find(
+            (opt) => opt.label === selectedValue,
+          );
           if (option) {
             const additionAmount = option.priceModifier;
 
             if (calculationMethod === 'ADDITIVE') {
               totalAmount += additionAmount;
             } else if (calculationMethod === 'MULTIPLICATIVE') {
-              totalAmount *= (1 + additionAmount / 100);
+              totalAmount *= 1 + additionAmount / 100;
             }
 
             if (additionAmount !== 0) {
@@ -159,8 +192,8 @@ export class ServicesService {
                 name: `${factor.name}: ${option.label}`,
                 price: {
                   amount: additionAmount,
-                  currency: basePrice.currency
-                }
+                  currency: basePrice.currency,
+                },
               });
             }
           }
@@ -173,8 +206,8 @@ export class ServicesService {
       additions,
       totalPrice: {
         amount: Math.round(totalAmount * 100) / 100, // Arrondir à 2 décimales
-        currency: basePrice.currency
-      }
+        currency: basePrice.currency,
+      },
     };
   }
 
@@ -184,9 +217,12 @@ export class ServicesService {
   getPricingOptions(service: Service): Record<string, string[]> {
     const options: Record<string, string[]> = {};
 
-    if (service.pricingConfig.type === PricingType.VARIABLE && service.pricingConfig.variablePricing) {
-      service.pricingConfig.variablePricing.factors.forEach(factor => {
-        options[factor.name] = factor.options.map(opt => opt.label);
+    if (
+      service.pricingConfig.type === PricingType.VARIABLE &&
+      service.pricingConfig.variablePricing
+    ) {
+      service.pricingConfig.variablePricing.factors.forEach((factor) => {
+        options[factor.name] = factor.options.map((opt) => opt.label);
       });
     }
 
@@ -197,24 +233,35 @@ export class ServicesService {
    * Vérifier si un service nécessite une sélection d'options
    */
   requiresOptionSelection(service: Service): boolean {
-    if (service.pricingConfig.type !== PricingType.VARIABLE || !service.pricingConfig.variablePricing) {
+    if (
+      service.pricingConfig.type !== PricingType.VARIABLE ||
+      !service.pricingConfig.variablePricing
+    ) {
       return false;
     }
 
-    return service.pricingConfig.variablePricing.factors.some(factor => factor.required);
+    return service.pricingConfig.variablePricing.factors.some(
+      (factor) => factor.required,
+    );
   }
 
   /**
    * Valider les options sélectionnées pour un service
    */
-  validateSelectedOptions(service: Service, selectedOptions: Record<string, string>): string[] {
+  validateSelectedOptions(
+    service: Service,
+    selectedOptions: Record<string, string>,
+  ): string[] {
     const errors: string[] = [];
 
-    if (service.pricingConfig.type !== PricingType.VARIABLE || !service.pricingConfig.variablePricing) {
+    if (
+      service.pricingConfig.type !== PricingType.VARIABLE ||
+      !service.pricingConfig.variablePricing
+    ) {
       return errors;
     }
 
-    service.pricingConfig.variablePricing.factors.forEach(factor => {
+    service.pricingConfig.variablePricing.factors.forEach((factor) => {
       const selectedValue = selectedOptions[factor.name];
 
       if (factor.required && !selectedValue) {
@@ -223,7 +270,9 @@ export class ServicesService {
       }
 
       if (selectedValue) {
-        const isValidOption = factor.options.some(opt => opt.label === selectedValue);
+        const isValidOption = factor.options.some(
+          (opt) => opt.label === selectedValue,
+        );
         if (!isValidOption) {
           errors.push(`Invalid option for ${factor.name}: ${selectedValue}`);
         }
@@ -240,7 +289,9 @@ export class ServicesService {
   /**
    * Valider les données de service côté client
    */
-  validateServiceData(data: CreateServiceRequest | UpdateServiceRequest): string[] {
+  validateServiceData(
+    data: CreateServiceRequest | UpdateServiceRequest,
+  ): string[] {
     const errors: string[] = [];
 
     // Validation nom du service
@@ -281,7 +332,9 @@ export class ServicesService {
   /**
    * Valider la configuration de pricing
    */
-  private validatePricingConfig(config: PricingConfig | Partial<PricingConfig>): string[] {
+  private validatePricingConfig(
+    config: PricingConfig | Partial<PricingConfig>,
+  ): string[] {
     const errors: string[] = [];
 
     // Validation prix de base
@@ -289,14 +342,19 @@ export class ServicesService {
       if (config.basePrice.amount < 0) {
         errors.push('Base price cannot be negative');
       }
-      if (!config.basePrice.currency || config.basePrice.currency.length !== 3) {
+      if (
+        !config.basePrice.currency ||
+        config.basePrice.currency.length !== 3
+      ) {
         errors.push('Currency must be a valid 3-letter code (e.g., EUR, USD)');
       }
     }
 
     // Validation pricing variable
     if ('variablePricing' in config && config.variablePricing) {
-      const variableErrors = this.validateVariablePricing(config.variablePricing);
+      const variableErrors = this.validateVariablePricing(
+        config.variablePricing,
+      );
       errors.push(...variableErrors);
     }
 
@@ -306,7 +364,9 @@ export class ServicesService {
   /**
    * Valider la configuration de pricing variable
    */
-  private validateVariablePricing(config: VariablePricing | Partial<VariablePricing>): string[] {
+  private validateVariablePricing(
+    config: VariablePricing | Partial<VariablePricing>,
+  ): string[] {
     const errors: string[] = [];
 
     if ('factors' in config && config.factors) {
@@ -320,10 +380,14 @@ export class ServicesService {
         } else {
           factor.options.forEach((option, optIndex) => {
             if (!option.label.trim()) {
-              errors.push(`Factor ${index + 1}, Option ${optIndex + 1}: label is required`);
+              errors.push(
+                `Factor ${index + 1}, Option ${optIndex + 1}: label is required`,
+              );
             }
             if (typeof option.priceModifier !== 'number') {
-              errors.push(`Factor ${index + 1}, Option ${optIndex + 1}: price modifier must be a number`);
+              errors.push(
+                `Factor ${index + 1}, Option ${optIndex + 1}: price modifier must be a number`,
+              );
             }
           });
         }
@@ -336,18 +400,34 @@ export class ServicesService {
   /**
    * Valider les paramètres du service
    */
-  private validateServiceSettings(settings: ServiceSettings | Partial<ServiceSettings>): string[] {
+  private validateServiceSettings(
+    settings: ServiceSettings | Partial<ServiceSettings>,
+  ): string[] {
     const errors: string[] = [];
 
-    if ('maxAdvanceBookingDays' in settings && settings.maxAdvanceBookingDays !== undefined) {
-      if (settings.maxAdvanceBookingDays < 0 || settings.maxAdvanceBookingDays > 365) {
+    if (
+      'maxAdvanceBookingDays' in settings &&
+      settings.maxAdvanceBookingDays !== undefined
+    ) {
+      if (
+        settings.maxAdvanceBookingDays < 0 ||
+        settings.maxAdvanceBookingDays > 365
+      ) {
         errors.push('Max advance booking days must be between 0 and 365');
       }
     }
 
-    if ('minAdvanceBookingHours' in settings && settings.minAdvanceBookingHours !== undefined) {
-      if (settings.minAdvanceBookingHours < 0 || settings.minAdvanceBookingHours > 168) {
-        errors.push('Min advance booking hours must be between 0 and 168 (1 week)');
+    if (
+      'minAdvanceBookingHours' in settings &&
+      settings.minAdvanceBookingHours !== undefined
+    ) {
+      if (
+        settings.minAdvanceBookingHours < 0 ||
+        settings.minAdvanceBookingHours > 168
+      ) {
+        errors.push(
+          'Min advance booking hours must be between 0 and 168 (1 week)',
+        );
       }
     }
 
@@ -362,7 +442,7 @@ export class ServicesService {
       style: 'currency',
       currency: money.currency,
       minimumFractionDigits: 2,
-      maximumFractionDigits: 2
+      maximumFractionDigits: 2,
     });
 
     return formatter.format(money.amount);
@@ -412,7 +492,10 @@ export class ServicesService {
    * Vérifier si un service peut être réservé en ligne
    */
   static canBeBookedOnline(service: Service): boolean {
-    return service.status === ServiceStatus.ACTIVE && service.settings.isOnlineBookingEnabled;
+    return (
+      service.status === ServiceStatus.ACTIVE &&
+      service.settings.isOnlineBookingEnabled
+    );
   }
 
   /**
@@ -436,7 +519,10 @@ export class ServicesService {
   /**
    * Obtenir une description courte du service
    */
-  static getShortDescription(service: Service, maxLength: number = 100): string {
+  static getShortDescription(
+    service: Service,
+    maxLength: number = 100,
+  ): string {
     if (!service.description) {
       return '';
     }

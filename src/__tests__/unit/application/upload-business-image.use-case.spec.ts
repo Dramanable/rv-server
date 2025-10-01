@@ -9,13 +9,9 @@
  */
 
 import { Business } from '@domain/entities/business.entity';
-import { BusinessRepository } from '../../../domain/repositories/business.repository';
 import { BusinessId } from '@domain/value-objects/business-id.value-object';
-import {
-  ImageUploadSettings,
-  ImageFormat,
-} from '@domain/value-objects/image-upload-settings.value-object';
 import { AwsS3ImageService } from '@infrastructure/services/aws-s3-image.service';
+import { BusinessRepository } from '../../../domain/repositories/business.repository';
 
 describe('UploadBusinessImageUseCase', () => {
   let mockBusinessRepository: jest.Mocked<BusinessRepository>;
@@ -60,9 +56,6 @@ describe('UploadBusinessImageUseCase', () => {
 
     it('should replace existing logo when uploading new one', async () => {
       // Given
-      const businessId = BusinessId.create(
-        '550e8400-e29b-41d4-a716-446655440000',
-      );
       const existingBusiness = {} as Business; // Mock with existing logo
 
       mockBusinessRepository.findById.mockResolvedValue(existingBusiness);
@@ -101,11 +94,6 @@ describe('UploadBusinessImageUseCase', () => {
 
     it('should reject upload when exceeding admin-configured limits', async () => {
       // Given
-      const restrictiveSettings = ImageUploadSettings.create({
-        maxFileSize: 500 * 1024, // 500KB max
-        allowedFormats: [ImageFormat.PNG],
-        maxImagesPerBusiness: 5,
-      });
 
       // When & Then
       // await expect(useCase.execute(request)).rejects.toThrow('Image validation failed');
@@ -177,12 +165,6 @@ describe('UploadBusinessImageUseCase', () => {
   describe('🔴 RED - Image Processing and Optimization', () => {
     it('should auto-optimize images when admin setting enabled', async () => {
       // Given
-      const optimizationSettings = ImageUploadSettings.create({
-        maxFileSize: 5 * 1024 * 1024,
-        allowedFormats: [ImageFormat.JPEG, ImageFormat.PNG, ImageFormat.WEBP],
-        maxImagesPerBusiness: 20,
-        autoOptimize: true, // Enable optimization
-      });
 
       // When
       // const response = await useCase.execute(request);

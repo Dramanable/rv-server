@@ -14,12 +14,12 @@ export enum DayOfWeek {
   THURSDAY = 'THURSDAY',
   FRIDAY = 'FRIDAY',
   SATURDAY = 'SATURDAY',
-  SUNDAY = 'SUNDAY'
+  SUNDAY = 'SUNDAY',
 }
 
 export interface TimeSlot {
   readonly startTime: string; // Format: "HH:mm"
-  readonly endTime: string;   // Format: "HH:mm"
+  readonly endTime: string; // Format: "HH:mm"
 }
 
 export interface BusinessHours {
@@ -98,7 +98,9 @@ export class BusinessHoursRealService {
    * Endpoint: GET /api/v1/businesses/{businessId}/hours
    */
   async getBusinessHours(businessId: string): Promise<BusinessHours[]> {
-    const response = await this.client.get<BusinessHours[]>(`/api/v1/businesses/${businessId}/hours`);
+    const response = await this.client.get<BusinessHours[]>(
+      `/api/v1/businesses/${businessId}/hours`,
+    );
     return response.data;
   }
 
@@ -106,8 +108,14 @@ export class BusinessHoursRealService {
    * ✏️ Update business opening hours
    * Endpoint: PUT /api/v1/businesses/{businessId}/hours
    */
-  async updateBusinessHours(businessId: string, hours: WeeklyHours): Promise<BusinessHours[]> {
-    const response = await this.client.put<BusinessHours[]>(`/api/v1/businesses/${businessId}/hours`, hours);
+  async updateBusinessHours(
+    businessId: string,
+    hours: WeeklyHours,
+  ): Promise<BusinessHours[]> {
+    const response = await this.client.put<BusinessHours[]>(
+      `/api/v1/businesses/${businessId}/hours`,
+      hours,
+    );
     return response.data;
   }
 
@@ -115,10 +123,13 @@ export class BusinessHoursRealService {
    * 🔍 Check business availability
    * Endpoint: POST /api/v1/businesses/{businessId}/hours/check-availability
    */
-  async checkAvailability(businessId: string, request: AvailabilityRequest): Promise<AvailabilityResponse> {
+  async checkAvailability(
+    businessId: string,
+    request: AvailabilityRequest,
+  ): Promise<AvailabilityResponse> {
     const response = await this.client.post<AvailabilityResponse>(
       `/api/v1/businesses/${businessId}/hours/check-availability`,
-      request
+      request,
     );
     return response.data;
   }
@@ -127,10 +138,13 @@ export class BusinessHoursRealService {
    * 📅 Add special date
    * Endpoint: POST /api/v1/businesses/{businessId}/hours/special-dates
    */
-  async addSpecialDate(businessId: string, specialDate: SpecialDateRequest): Promise<SpecialHours> {
+  async addSpecialDate(
+    businessId: string,
+    specialDate: SpecialDateRequest,
+  ): Promise<SpecialHours> {
     const response = await this.client.post<SpecialHours>(
       `/api/v1/businesses/${businessId}/hours/special-dates`,
-      specialDate
+      specialDate,
     );
     return response.data;
   }
@@ -149,13 +163,13 @@ export class BusinessHoursRealService {
       friday: [],
       saturday: [],
       sunday: [],
-      timezone: 'UTC'
+      timezone: 'UTC',
     };
 
-    hours.forEach(dayHours => {
+    hours.forEach((dayHours) => {
       const dayKey = dayHours.dayOfWeek.toLowerCase() as keyof WeeklyHours;
       if (dayKey !== 'timezone' && dayKey !== 'notes') {
-        (weeklyHours[dayKey] as TimeSlot[]) = dayHours.timeSlots;
+        weeklyHours[dayKey] = dayHours.timeSlots;
       }
       if (dayHours.timezone) {
         weeklyHours.timezone = dayHours.timezone;
@@ -176,7 +190,7 @@ export class BusinessHoursRealService {
     const availability = await this.checkAvailability(businessId, {
       date: todayDate,
       startTime: currentTime,
-      endTime: currentTime
+      endTime: currentTime,
     });
 
     return availability.isAvailable;
@@ -198,8 +212,10 @@ export class BusinessHoursRealService {
       const checkDate = new Date(now);
       checkDate.setDate(now.getDate() + i);
 
-      const dayOfWeek = checkDate.toLocaleDateString('en-US', { weekday: 'long' }).toUpperCase() as DayOfWeek;
-      const dayHours = hours.find(h => h.dayOfWeek === dayOfWeek && h.isOpen);
+      const dayOfWeek = checkDate
+        .toLocaleDateString('en-US', { weekday: 'long' })
+        .toUpperCase() as DayOfWeek;
+      const dayHours = hours.find((h) => h.dayOfWeek === dayOfWeek && h.isOpen);
 
       if (dayHours && dayHours.timeSlots.length > 0) {
         const firstSlot = dayHours.timeSlots[0];
@@ -215,7 +231,7 @@ export class BusinessHoursRealService {
         return {
           date: checkDate.toISOString().split('T')[0],
           time: firstSlot.startTime,
-          dayOfWeek: dayOfWeek
+          dayOfWeek: dayOfWeek,
         };
       }
     }
@@ -230,23 +246,32 @@ export class BusinessHoursRealService {
     isOpenToday: boolean;
     nextOpenTime?: { date: string; time: string; dayOfWeek: string };
     todayHours: TimeSlot[];
-    weeklySchedule: Record<DayOfWeek, { isOpen: boolean; timeSlots: TimeSlot[] }>;
+    weeklySchedule: Record<
+      DayOfWeek,
+      { isOpen: boolean; timeSlots: TimeSlot[] }
+    >;
   }> {
     const [hours, isOpenToday, nextOpenTime] = await Promise.all([
       this.getBusinessHours(businessId),
       this.isOpenNow(businessId),
-      this.getNextOpeningTime(businessId)
+      this.getNextOpeningTime(businessId),
     ]);
 
-    const today = new Date().toLocaleDateString('en-US', { weekday: 'long' }).toUpperCase() as DayOfWeek;
-    const todayHours = hours.find(h => h.dayOfWeek === today)?.timeSlots || [];
+    const today = new Date()
+      .toLocaleDateString('en-US', { weekday: 'long' })
+      .toUpperCase() as DayOfWeek;
+    const todayHours =
+      hours.find((h) => h.dayOfWeek === today)?.timeSlots || [];
 
-    const weeklySchedule = {} as Record<DayOfWeek, { isOpen: boolean; timeSlots: TimeSlot[] }>;
-    Object.values(DayOfWeek).forEach(day => {
-      const dayHours = hours.find(h => h.dayOfWeek === day);
+    const weeklySchedule = {} as Record<
+      DayOfWeek,
+      { isOpen: boolean; timeSlots: TimeSlot[] }
+    >;
+    Object.values(DayOfWeek).forEach((day) => {
+      const dayHours = hours.find((h) => h.dayOfWeek === day);
       weeklySchedule[day] = {
         isOpen: dayHours?.isOpen || false,
-        timeSlots: dayHours?.timeSlots || []
+        timeSlots: dayHours?.timeSlots || [],
       };
     });
 
@@ -254,7 +279,7 @@ export class BusinessHoursRealService {
       isOpenToday,
       nextOpenTime: nextOpenTime || undefined,
       todayHours,
-      weeklySchedule
+      weeklySchedule,
     };
   }
 
@@ -270,7 +295,9 @@ export class BusinessHoursRealService {
       return `${day}: Fermé`;
     }
 
-    const slotsText = timeSlots.map(slot => this.formatTimeSlot(slot)).join(', ');
+    const slotsText = timeSlots
+      .map((slot) => this.formatTimeSlot(slot))
+      .join(', ');
     return `${day}: ${slotsText}`;
   }
 
@@ -302,11 +329,16 @@ export class BusinessHoursRealService {
   }
 
   static getTotalDailyHours(timeSlots: TimeSlot[]): number {
-    return timeSlots.reduce((total, slot) => total + this.calculateSlotDuration(slot), 0);
+    return timeSlots.reduce(
+      (total, slot) => total + this.calculateSlotDuration(slot),
+      0,
+    );
   }
 
   static getDayOfWeekFromDate(date: string): DayOfWeek {
-    const dayName = new Date(date).toLocaleDateString('en-US', { weekday: 'long' }).toUpperCase();
+    const dayName = new Date(date)
+      .toLocaleDateString('en-US', { weekday: 'long' })
+      .toUpperCase();
     return dayName as DayOfWeek;
   }
 
@@ -318,7 +350,10 @@ export class BusinessHoursRealService {
     });
   }
 
-  static validateTimeSlots(timeSlots: TimeSlot[]): { isValid: boolean; errors: string[] } {
+  static validateTimeSlots(timeSlots: TimeSlot[]): {
+    isValid: boolean;
+    errors: string[];
+  } {
     const errors: string[] = [];
 
     for (const slot of timeSlots) {
@@ -333,7 +368,9 @@ export class BusinessHoursRealService {
       const endMinutes = this.parseTimeToMinutes(slot.endTime);
 
       if (startMinutes >= endMinutes) {
-        errors.push(`L'heure de fin doit être après l'heure de début: ${slot.startTime} - ${slot.endTime}`);
+        errors.push(
+          `L'heure de fin doit être après l'heure de début: ${slot.startTime} - ${slot.endTime}`,
+        );
       }
     }
 
@@ -347,13 +384,15 @@ export class BusinessHoursRealService {
       const nextStart = this.parseTimeToMinutes(next.startTime);
 
       if (currentEnd > nextStart) {
-        errors.push(`Créneaux qui se chevauchent: ${this.formatTimeSlot(current)} et ${this.formatTimeSlot(next)}`);
+        errors.push(
+          `Créneaux qui se chevauchent: ${this.formatTimeSlot(current)} et ${this.formatTimeSlot(next)}`,
+        );
       }
     }
 
     return {
       isValid: errors.length === 0,
-      errors
+      errors,
     };
   }
 
@@ -361,7 +400,7 @@ export class BusinessHoursRealService {
     mondayToFriday: TimeSlot[] = [{ startTime: '09:00', endTime: '17:00' }],
     saturday: TimeSlot[] = [],
     sunday: TimeSlot[] = [],
-    timezone: string = 'UTC'
+    timezone: string = 'UTC',
   ): WeeklyHours {
     return {
       monday: mondayToFriday,
@@ -371,7 +410,7 @@ export class BusinessHoursRealService {
       friday: mondayToFriday,
       saturday,
       sunday,
-      timezone
+      timezone,
     };
   }
 }
