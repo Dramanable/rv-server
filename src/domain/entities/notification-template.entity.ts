@@ -86,10 +86,10 @@ export class NotificationTemplate {
       NotificationChannel,
       ChannelTemplateConfig
     >,
-    private _isActive: boolean,
+    private readonly _isActive: boolean,
     private readonly _version: number,
     private readonly _createdAt: Date,
-    private _updatedAt: Date,
+    private readonly _updatedAt: Date,
   ) {
     this.validateInvariants();
   }

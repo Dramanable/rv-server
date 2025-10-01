@@ -11,7 +11,7 @@ import { TOKENS } from '../../shared/constants/injection-tokens';
 
 @Injectable()
 export class SimpleCacheService implements ICacheService {
-  private cache = new Map<string, any>();
+  private readonly cache = new Map<string, any>();
 
   constructor(
     @Inject(TOKENS.PINO_LOGGER)

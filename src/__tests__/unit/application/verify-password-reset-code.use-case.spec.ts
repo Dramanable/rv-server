@@ -71,7 +71,7 @@ class MockPasswordResetCodeRepository implements IPasswordResetCodeRepository {
 }
 
 class MockUserRepository implements Partial<UserRepository> {
-  private users: User[] = [];
+  private readonly users: User[] = [];
 
   async findById(id: string): Promise<User | null> {
     return this.users.find((u) => u.id === id) || null;

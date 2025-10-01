@@ -54,7 +54,7 @@ export type UserSortField =
  * Builder spécialisé pour les requêtes utilisateur
  */
 export class UserQueryBuilder {
-  private params: UserQueryParams = {
+  private readonly params: UserQueryParams = {
     page: 1,
     limit: 20,
     sortBy: 'createdAt',

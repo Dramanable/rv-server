@@ -108,7 +108,9 @@ export class ListStaffUseCase {
       const meta = this.calculatePaginationMeta(request.pagination, total);
 
       // 6. Mappage vers le format de réponse
-      const mappedStaff = staff.map(this.mapStaffToResponse);
+      const mappedStaff = staff.map((staffMember) =>
+        this.mapStaffToResponse(staffMember),
+      );
 
       // 7. Log du succès
       this.logger.info('Staff list retrieved successfully', {

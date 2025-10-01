@@ -54,7 +54,7 @@ interface AuthenticatedRequest {
 export class RoleBasedGuard implements CanActivate {
   private readonly logger = new Logger(RoleBasedGuard.name);
 
-  constructor(private reflector: Reflector) {}
+  constructor(private readonly reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
     const request: AuthenticatedRequest = context.switchToHttp().getRequest();

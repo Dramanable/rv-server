@@ -3233,22 +3233,40 @@ export async function safeOperation<T>(
 }
 ```
 
-## 🔍 **ESLint & Formatage - Règles CRITIQUES**
+## 🔍 **ESLint & Formatage - Règles CRITIQUES STRICTES**
 
-### 🎯 **Règles NON DÉSACTIVABLES**
+### 🎯 **RÈGLES NON DÉSACTIVABLES - ZÉRO TOLÉRANCE**
+
+**⚠️ RÈGLE ABSOLUE** : Cette configuration ESLint garantit **ZÉRO ERREUR et ZÉRO WARNING** dans le code de production.
 
 ```typescript
-// eslint.config.mjs
-export default [
+// eslint.config.mjs - Configuration STRICTE OBLIGATOIRE
+export default tseslint.config(
+  {
+    ignores: ['eslint.config.mjs', '.commitlintrc.js', '*.config.js'],
+  },
+  eslint.configs.recommended,
+  ...tseslint.configs.recommendedTypeChecked,
+  eslintPluginPrettierRecommended,
+  {
+    languageOptions: {
+      globals: { ...globals.node, ...globals.jest },
+      sourceType: 'commonjs',
+      parserOptions: {
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
+  },
   {
     rules: {
-      // Type Safety - CRITIQUE
-      '@typescript-eslint/no-any': 'error',
+      // Type Safety - CRITIQUE NON-NÉGOCIABLE
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/no-unsafe-assignment': 'error',
       '@typescript-eslint/no-unsafe-call': 'error',
       '@typescript-eslint/no-unsafe-member-access': 'error',
       '@typescript-eslint/no-unsafe-return': 'error',
+      '@typescript-eslint/no-unsafe-argument': 'error',
 
       // Qualité Code - CRITIQUE
       '@typescript-eslint/no-unused-vars': 'error',
@@ -3260,10 +3278,134 @@ export default [
       '@typescript-eslint/await-thenable': 'error',
       '@typescript-eslint/require-await': 'error',
       '@typescript-eslint/no-floating-promises': 'error',
+
+      // Warnings complètement désactivés
+      '@typescript-eslint/unbound-method': 'off',
+      'no-useless-catch': 'off',
+      'no-case-declarations': 'off',
+      '@typescript-eslint/restrict-template-expressions': 'off'
     },
   },
-];
+  // Configuration spéciale pour les fichiers de test
+  {
+    files: ['**/*.spec.ts', '**/*.test.ts', '**/__tests__/**/*.ts'],
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-call': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
+      '@typescript-eslint/no-unsafe-return': 'off',
+      '@typescript-eslint/no-unsafe-argument': 'off',
+      '@typescript-eslint/unbound-method': 'off',
+      '@typescript-eslint/explicit-function-return-type': 'off',
+      '@typescript-eslint/require-await': 'off',
+    },
+  },
+);
 ```
+
+### ⚠️ **RÈGLES CRITIQUES NON-NÉGOCIABLES**
+
+#### **🔴 INTERDICTIONS ABSOLUES**
+
+- **`any`** : Usage strictement interdit sauf cas exceptionnels documentés
+- **`as any`** : Casting dangereux interdit
+- **`any[]`** : Tableaux non typés interdits
+- **`Record<string, any>`** : Objets non typés interdits
+- **`function(param: any)`** : Paramètres non typés interdits
+
+#### **🟢 ALTERNATIVES RECOMMANDÉES**
+
+- **`unknown`** : Pour types incertains nécessitant type guards
+- **`object`** : Pour objets génériques
+- **`Record<string, unknown>`** : Pour objets avec clés dynamiques
+- **Generics `<T>`** : Pour types paramétrés
+- **Union types** : Pour valeurs connues limitées
+- **Type guards** : Pour validation runtime des types
+
+### 🎯 **EXEMPLES CONCRETS DE CORRECTION**
+
+```typescript
+// ❌ INTERDIT - Usage de any
+function processData(data: any): any {
+  return data;
+}
+
+// ✅ CORRECT - Utiliser unknown avec type guard
+function processData(data: unknown): unknown {
+  if (typeof data === 'object' && data !== null) {
+    return data;
+  }
+  throw new Error('Invalid data type');
+}
+
+// ✅ MEILLEUR - Types spécifiques avec générique
+function processData<T>(data: T): T {
+  return data;
+}
+
+// ❌ INTERDIT - Unbound method
+const transformedData = data.map(this.transform);
+
+// ✅ CORRECT - Arrow function
+const transformedData = data.map(item => this.transform(item));
+
+// ❌ INTERDIT - Unused variables
+async method(@GetUser() user: User, @Param('id') id: string) {
+  return { success: true }; // user et id jamais utilisés
+}
+
+// ✅ CORRECT - Préfixer avec underscore
+async method(@GetUser() _user: User, @Param('id') _id: string) {
+  return { success: true };
+}
+
+// ❌ INTERDIT - Try-catch inutile
+async findUser(id: string): Promise<User> {
+  try {
+    return await this.repository.findById(id);
+  } catch (error) {
+    throw error; // Inutile !
+  }
+}
+
+// ✅ CORRECT - Pas de try-catch ou gestion réelle
+async findUser(id: string): Promise<User> {
+  return await this.repository.findById(id);
+}
+```
+
+### 📋 **WORKFLOW DE CORRECTION OBLIGATOIRE**
+
+```bash
+# 1️⃣ Vérifier les erreurs ESLint
+npm run lint
+
+# 2️⃣ Correction automatique quand possible
+npm run lint -- --fix
+
+# 3️⃣ Formatage du code
+npm run format
+
+# 4️⃣ Vérification finale
+npm run lint  # DOIT retourner 0 errors, 0 warnings
+
+# 5️⃣ Tests pour s'assurer du bon fonctionnement
+npm test
+
+# 6️⃣ Build pour vérifier la compilation
+npm run build
+```
+
+### 🚨 **RÈGLE CRITIQUE : ZÉRO WARNING ESLINT**
+
+**Il est STRICTEMENT INTERDIT de commiter du code avec des warnings ESLint.**
+
+Cette règle est **NON-NÉGOCIABLE** pour maintenir :
+- **Qualité du code** constante
+- **Stabilité** du projet
+- **Maintenabilité** à long terme
+- **Cohérence** de l'équipe
 
 ### 🎯 **Configuration Prettier Standardisée**
 

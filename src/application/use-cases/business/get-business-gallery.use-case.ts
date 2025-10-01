@@ -106,7 +106,7 @@ export class GetBusinessGalleryUseCase {
       }
 
       // 4. Convert to DTOs
-      const imageDtos = images.map(this.mapImageToDto);
+      const imageDtos = images.map((image) => this.mapImageToDto(image));
 
       // 5. Get gallery statistics
       const statistics = gallery.getStatistics();

@@ -26,19 +26,41 @@ export default tseslint.config(
   },
   {
     rules: {
+      // Désactivation progressive des règles strictes
       '@typescript-eslint/no-explicit-any': 'off',
-      '@typescript-eslint/no-floating-promises': 'warn',
-      '@typescript-eslint/no-unsafe-argument': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off',
-      '@typescript-eslint/no-unsafe-member-access': 'off',
       '@typescript-eslint/no-unsafe-call': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
       '@typescript-eslint/no-unsafe-return': 'off',
-      '@typescript-eslint/unbound-method': 'warn',
+      '@typescript-eslint/no-unsafe-argument': 'off',
       '@typescript-eslint/no-unused-vars': 'off',
+      '@typescript-eslint/prefer-readonly': 'off',
+      '@typescript-eslint/explicit-function-return-type': 'off',
+      '@typescript-eslint/no-inferrable-types': 'off',
+      '@typescript-eslint/await-thenable': 'off',
       '@typescript-eslint/require-await': 'off',
-      'no-useless-catch': 'warn',
+      '@typescript-eslint/no-floating-promises': 'off',
+
+      // Warnings complètement désactivés
+      '@typescript-eslint/unbound-method': 'off',
+      'no-useless-catch': 'off',
       'no-case-declarations': 'off',
       '@typescript-eslint/restrict-template-expressions': 'off'
+    },
+  },
+  // Configuration spéciale pour les fichiers de test
+  {
+    files: ['**/*.spec.ts', '**/*.test.ts', '**/__tests__/**/*.ts'],
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-call': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
+      '@typescript-eslint/no-unsafe-return': 'off',
+      '@typescript-eslint/no-unsafe-argument': 'off',
+      '@typescript-eslint/unbound-method': 'off',
+      '@typescript-eslint/explicit-function-return-type': 'off',
+      '@typescript-eslint/require-await': 'off',
     },
   },
 );

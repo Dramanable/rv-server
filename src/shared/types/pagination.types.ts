@@ -65,7 +65,7 @@ export interface QueryParams extends PaginationParams {
  * Builder pour construire des paramètres de requête
  */
 export class QueryBuilder {
-  private params: QueryParams = {
+  private readonly params: QueryParams = {
     page: 1,
     limit: 10,
     sortBy: 'createdAt',

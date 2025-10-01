@@ -22,7 +22,7 @@ export class MockI18nService implements I18nService {
   private defaultLang = 'fr';
 
   // Mock basique avec les clés principales pour les tests
-  private mockTranslations: Record<string, Record<string, string>> = {
+  private readonly mockTranslations: Record<string, Record<string, string>> = {
     en: {
       // Domain messages (business rules)
       'errors.user.not_found': 'User not found',

@@ -12,7 +12,7 @@ import * as path from 'path';
 
 @Injectable()
 export class ProductionI18nService implements I18nService {
-  private translations: Record<string, Record<string, string>> = {};
+  private readonly translations: Record<string, Record<string, string>> = {};
   private defaultLanguage = 'fr';
 
   constructor() {

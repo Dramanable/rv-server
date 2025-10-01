@@ -66,16 +66,16 @@ export class Notification {
     private readonly _content: string,
     private readonly _channel: NotificationChannel,
     private readonly _priority: NotificationPriority,
-    private _status: NotificationStatus,
+    private readonly _status: NotificationStatus,
     private readonly _metadata: NotificationMetadata,
-    private _sentAt?: Date,
-    private _deliveredAt?: Date,
-    private _readAt?: Date,
-    private _failureReason?: string,
-    private _retryCount: number = 0,
+    private readonly _sentAt?: Date,
+    private readonly _deliveredAt?: Date,
+    private readonly _readAt?: Date,
+    private readonly _failureReason?: string,
+    private readonly _retryCount: number = 0,
     private readonly _scheduledFor?: Date,
     private readonly _createdAt: Date = new Date(),
-    private _updatedAt: Date = new Date(),
+    private readonly _updatedAt: Date = new Date(),
   ) {
     this.validateInvariants();
   }

@@ -108,7 +108,7 @@ export class Service {
     private readonly _scheduling: ServiceScheduling,
     private _requirements?: ServiceRequirements,
     private readonly _imageUrl?: FileUrl,
-    private _assignedStaffIds: UserId[] = [],
+    private readonly _assignedStaffIds: UserId[] = [],
     private _packages: ServicePackage[] = [],
     private _status: ServiceStatus = ServiceStatus.DRAFT,
     private readonly _createdAt: Date = new Date(),

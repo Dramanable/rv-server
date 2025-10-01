@@ -55,7 +55,7 @@ export interface AppContextBuilder {
 }
 
 class AppContextBuilderImpl implements AppContextBuilder {
-  private context: Partial<AppContext> = {
+  private readonly context: Partial<AppContext> = {
     correlationId: this.generateCorrelationId(),
     timestamp: new Date(),
     startTime: Date.now(),

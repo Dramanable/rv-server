@@ -24,7 +24,7 @@ export interface AppContext {
 }
 
 export class AppContextFactory {
-  private context: Partial<AppContext> = {
+  private readonly context: Partial<AppContext> = {
     correlationId: uuidv4(),
     timestamp: new Date().toISOString(),
   };

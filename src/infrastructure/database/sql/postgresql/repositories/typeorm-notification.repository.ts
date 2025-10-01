@@ -53,33 +53,25 @@ export class TypeOrmNotificationRepository implements INotificationRepository {
    * Trouve toutes les notifications d'un destinataire
    */
   async findByRecipient(recipientId: string): Promise<Notification[]> {
-    try {
-      const ormEntities = await this.repository.find({
-        where: { recipient_id: recipientId },
-        order: { created_at: 'DESC' },
-      });
+    const ormEntities = await this.repository.find({
+      where: { recipient_id: recipientId },
+      order: { created_at: 'DESC' },
+    });
 
-      // Conversion batch ORM → Domain
-      return NotificationOrmMapper.toDomainEntities(ormEntities);
-    } catch (error) {
-      throw error;
-    }
+    // Conversion batch ORM → Domain
+    return NotificationOrmMapper.toDomainEntities(ormEntities);
   }
 
   /**
    * Trouve les notifications par statut
    */
   async findByStatus(status: NotificationStatus): Promise<Notification[]> {
-    try {
-      const ormEntities = await this.repository.find({
-        where: { status: status.toString() },
-        order: { created_at: 'DESC' },
-      });
+    const ormEntities = await this.repository.find({
+      where: { status: status.toString() },
+      order: { created_at: 'DESC' },
+    });
 
-      return NotificationOrmMapper.toDomainEntities(ormEntities);
-    } catch (error) {
-      throw error;
-    }
+    return NotificationOrmMapper.toDomainEntities(ormEntities);
   }
 
   /**
@@ -89,48 +81,40 @@ export class TypeOrmNotificationRepository implements INotificationRepository {
     id: string,
     status: NotificationStatus,
   ): Promise<Notification> {
-    try {
-      // Récupérer l'entité existante
-      const existingEntity = await this.repository.findOne({
-        where: { id },
-      });
+    // Récupérer l'entité existante
+    const existingEntity = await this.repository.findOne({
+      where: { id },
+    });
 
-      if (!existingEntity) {
-        throw new InfrastructureException(
-          'Notification not found',
-          'INFRASTRUCTURE_ERROR',
-        );
-      }
-
-      // Mettre à jour le statut et la date de mise à jour
-      existingEntity.status = status.toString();
-      existingEntity.updated_at = new Date();
-
-      // Sauvegarder
-      const updatedEntity = await this.repository.save(existingEntity);
-
-      // Retourner l'entité domain mise à jour
-      return NotificationOrmMapper.toDomainEntity(updatedEntity);
-    } catch (error) {
-      throw error;
+    if (!existingEntity) {
+      throw new InfrastructureException(
+        'Notification not found',
+        'INFRASTRUCTURE_ERROR',
+      );
     }
+
+    // Mettre à jour le statut et la date de mise à jour
+    existingEntity.status = status.toString();
+    existingEntity.updated_at = new Date();
+
+    // Sauvegarder
+    const updatedEntity = await this.repository.save(existingEntity);
+
+    // Retourner l'entité domain mise à jour
+    return NotificationOrmMapper.toDomainEntity(updatedEntity);
   }
 
   /**
    * Supprime une notification
    */
   async delete(id: string): Promise<void> {
-    try {
-      const result = await this.repository.delete(id);
+    const result = await this.repository.delete(id);
 
-      if (result.affected === 0) {
-        throw new InfrastructureException(
-          'Notification not found',
-          'INFRASTRUCTURE_ERROR',
-        );
-      }
-    } catch (error) {
-      throw error;
+    if (result.affected === 0) {
+      throw new InfrastructureException(
+        'Notification not found',
+        'INFRASTRUCTURE_ERROR',
+      );
     }
   }
 
@@ -138,24 +122,16 @@ export class TypeOrmNotificationRepository implements INotificationRepository {
    * Compte le nombre total de notifications
    */
   async count(): Promise<number> {
-    try {
-      return await this.repository.count();
-    } catch (error) {
-      throw error;
-    }
+    return await this.repository.count();
   }
 
   /**
    * Compte les notifications par destinataire
    */
   async countByRecipient(recipientId: string): Promise<number> {
-    try {
-      return await this.repository.count({
-        where: { recipient_id: recipientId },
-      });
-    } catch (error) {
-      throw error;
-    }
+    return await this.repository.count({
+      where: { recipient_id: recipientId },
+    });
   }
 
   /**
@@ -163,17 +139,13 @@ export class TypeOrmNotificationRepository implements INotificationRepository {
    * Utile pour les tâches de nettoyage ou de retry
    */
   async findPendingOlderThan(cutoffDate: Date): Promise<Notification[]> {
-    try {
-      const ormEntities = await this.repository
-        .createQueryBuilder('notification')
-        .where('notification.status = :status', { status: 'PENDING' })
-        .andWhere('notification.created_at < :cutoffDate', { cutoffDate })
-        .orderBy('notification.created_at', 'ASC')
-        .getMany();
+    const ormEntities = await this.repository
+      .createQueryBuilder('notification')
+      .where('notification.status = :status', { status: 'PENDING' })
+      .andWhere('notification.created_at < :cutoffDate', { cutoffDate })
+      .orderBy('notification.created_at', 'ASC')
+      .getMany();
 
-      return NotificationOrmMapper.toDomainEntities(ormEntities);
-    } catch (error) {
-      throw error;
-    }
+    return NotificationOrmMapper.toDomainEntities(ormEntities);
   }
 }

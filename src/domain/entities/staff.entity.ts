@@ -60,7 +60,7 @@ export class Staff {
   constructor(
     private readonly _id: UserId,
     private readonly _businessId: BusinessId,
-    private _profile: StaffProfile,
+    private readonly _profile: StaffProfile,
     private readonly _role: StaffRole,
     private readonly _email: Email,
     private readonly _phone?: Phone,

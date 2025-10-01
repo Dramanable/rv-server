@@ -47,8 +47,8 @@ export interface PermissionContext {
 @Injectable()
 export class PermissionsGuard implements CanActivate {
   constructor(
-    private reflector: Reflector,
-    private permissionService: IPermissionService,
+    private readonly reflector: Reflector,
+    private readonly permissionService: IPermissionService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -183,7 +183,7 @@ export class PermissionsGuard implements CanActivate {
  */
 @Injectable()
 export class RoleHierarchyGuard implements CanActivate {
-  constructor(private reflector: Reflector) {}
+  constructor(private readonly reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
     const requiredLevel = this.reflector.getAllAndOverride<number>(
@@ -218,7 +218,7 @@ export class RoleHierarchyGuard implements CanActivate {
  */
 @Injectable()
 export class BusinessContextGuard implements CanActivate {
-  constructor(private permissionService: IPermissionService) {}
+  constructor(private readonly permissionService: IPermissionService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();

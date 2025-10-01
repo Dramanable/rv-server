@@ -83,7 +83,7 @@ export class Calendar {
     private readonly _bookingRules: BookingRule[] = [],
     private readonly _status: CalendarStatus = CalendarStatus.ACTIVE,
     private readonly _createdAt: Date = new Date(),
-    private _updatedAt: Date = new Date(),
+    private readonly _updatedAt: Date = new Date(),
   ) {
     this.validate();
   }

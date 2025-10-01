@@ -17,7 +17,7 @@ export class CalendarType {
     private readonly _icon?: string,
     private readonly _createdAt: Date = new Date(),
     private _updatedAt: Date = new Date(),
-    private _updatedBy?: string,
+    private readonly _updatedBy?: string,
   ) {
     this.validate();
   }

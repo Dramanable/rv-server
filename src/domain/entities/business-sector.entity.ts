@@ -16,8 +16,8 @@ export class BusinessSector {
     private readonly _isActive: boolean,
     private readonly _createdAt: Date,
     private readonly _createdBy: string,
-    private _updatedAt?: Date,
-    private _updatedBy?: string,
+    private readonly _updatedAt?: Date,
+    private readonly _updatedBy?: string,
   ) {}
 
   // ═══════════════════════════════════════════════════════════════
