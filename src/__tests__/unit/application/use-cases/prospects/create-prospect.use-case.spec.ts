@@ -7,33 +7,33 @@
 import {
   CreateProspectUseCase,
   CreateProspectRequest,
-} from "@application/use-cases/prospects/create-prospect.use-case";
-import { IProspectRepository } from "@domain/repositories/prospect.repository";
-import { Logger } from "@application/ports/logger.port";
-import { I18nService } from "@application/ports/i18n.port";
-import { IPermissionService } from "@application/ports/permission.port";
-import {
-  ProspectPermissionError,
-} from "@domain/exceptions/prospect.exceptions";
-import { Prospect } from "@domain/entities/prospect.entity";
+} from '@application/use-cases/prospects/create-prospect.use-case';
+import { IProspectRepository } from '@domain/repositories/prospect.repository';
+import { Logger } from '@application/ports/logger.port';
+import { I18nService } from '@application/ports/i18n.port';
+import { IPermissionService } from '@application/ports/permission.port';
+import { ProspectPermissionError } from '@domain/exceptions/prospect.exceptions';
+import { Prospect } from '@domain/entities/prospect.entity';
 
 const createMockProspect = (overrides: any = {}): any => ({
-  getId: () => ({ getValue: () => overrides.id || "f47ac10b-58cc-4372-a567-0e02b2c3d479" }),
-  getBusinessName: () => overrides.businessName || "TechCorp Solutions",
-  getContactEmail: () => ({
-    getValue: () => overrides.email || "contact@techcorp.com",
+  getId: () => ({
+    getValue: () => overrides.id || 'f47ac10b-58cc-4372-a567-0e02b2c3d479',
   }),
-  getContactName: () => overrides.contactName || "Jean Dupont",
+  getBusinessName: () => overrides.businessName || 'TechCorp Solutions',
+  getContactEmail: () => ({
+    getValue: () => overrides.email || 'contact@techcorp.com',
+  }),
+  getContactName: () => overrides.contactName || 'Jean Dupont',
   getContactPhone: () =>
     overrides.phone ? { getValue: () => overrides.phone } : undefined,
-  getSource: () => overrides.source || "WEBSITE",
+  getSource: () => overrides.source || 'WEBSITE',
   getStatus: () => ({
     // 🎯 TOUTES LES MÉTHODES PROSPECT STATUS REQUISES
-    getValue: () => overrides.status || "LEAD",
-    getLabel: () => overrides.statusLabel || "Nouveau lead", 
-    getColor: () => overrides.statusColor || "#10B981",
+    getValue: () => overrides.status || 'LEAD',
+    getLabel: () => overrides.statusLabel || 'Nouveau lead',
+    getColor: () => overrides.statusColor || '#10B981',
     getPriority: () => overrides.statusPriority || 1,
-    
+
     // ✅ Méthodes de validation de statut (CRITIQUES)
     isActive: jest.fn().mockReturnValue(overrides.isActive !== false),
     isClosed: jest.fn().mockReturnValue(overrides.isClosed || false),
@@ -44,36 +44,43 @@ const createMockProspect = (overrides: any = {}): any => ({
     isLead: jest.fn().mockReturnValue(overrides.isLead !== false),
     isProposal: jest.fn().mockReturnValue(overrides.isProposal || false),
     isNegotiation: jest.fn().mockReturnValue(overrides.isNegotiation || false),
-    
+
     // 🔒 Méthodes de règles métier
     canDelete: jest.fn().mockReturnValue(overrides.canDelete !== false),
     canEdit: jest.fn().mockReturnValue(overrides.canEdit !== false),
     canConvert: jest.fn().mockReturnValue(overrides.canConvert !== false),
-    
+
     // 📊 Méthodes de transition et validation
-    canTransitionTo: jest.fn().mockReturnValue(overrides.canTransitionTo !== false),
-    getValidTransitions: jest.fn().mockReturnValue(overrides.validTransitions || []),
-    isValidTransition: jest.fn().mockReturnValue(overrides.isValidTransition !== false)
+    canTransitionTo: jest
+      .fn()
+      .mockReturnValue(overrides.canTransitionTo !== false),
+    getValidTransitions: jest
+      .fn()
+      .mockReturnValue(overrides.validTransitions || []),
+    isValidTransition: jest
+      .fn()
+      .mockReturnValue(overrides.isValidTransition !== false),
   }),
   getAssignedSalesRep: () => ({
-    getValue: () => overrides.assignedSalesRep || "a1b2c3d4-e5f6-4789-abc1-234567890def",
+    getValue: () =>
+      overrides.assignedSalesRep || 'a1b2c3d4-e5f6-4789-abc1-234567890def',
   }),
   getStaffCount: () => overrides.staffCount || 15,
   getEstimatedValue: () => ({
     getAmount: () => overrides.estimatedValue || 50000,
-    getCurrency: () => "EUR",
+    getCurrency: () => 'EUR',
   }),
-  
+
   // 🆕 NOUVELLE MÉTHODE MANQUANTE - getAnnualRevenuePotential
   getAnnualRevenuePotential: () => ({
     getAmount: () => overrides.annualRevenuePotential || 120000,
-    getCurrency: () => "EUR",
+    getCurrency: () => 'EUR',
   }),
-  
-  getBusinessSize: () => overrides.businessSize || "MEDIUM",
-  getNotes: () => overrides.notes || "",
-  getCreatedAt: () => overrides.createdAt || new Date("2025-01-01T10:00:00Z"),
-  getUpdatedAt: () => overrides.updatedAt || new Date("2025-01-01T10:00:00Z"),
+
+  getBusinessSize: () => overrides.businessSize || 'MEDIUM',
+  getNotes: () => overrides.notes || '',
+  getCreatedAt: () => overrides.createdAt || new Date('2025-01-01T10:00:00Z'),
+  getUpdatedAt: () => overrides.updatedAt || new Date('2025-01-01T10:00:00Z'),
   isHighValue: () => overrides.isHighValue || false,
   isHotProspect: () => overrides.isHotProspect || false,
   canBeDeleted: jest.fn().mockReturnValue(overrides.canBeDeleted !== false),
@@ -96,13 +103,12 @@ const createMockProspect = (overrides: any = {}): any => ({
     return createMockProspect({ ...overrides, status: newStatus });
   }),
 
-  
   // 🆕 MÉTHODES CRITIQUES MANQUANTES
   getEstimatedMonthlyPrice: () => ({
     getAmount: () => overrides.estimatedMonthlyPrice || 2500,
-    getCurrency: () => "EUR",
+    getCurrency: () => 'EUR',
   }),
-  
+
   // Méthodes d'update manquantes
   updateEstimatedValue: jest.fn().mockImplementation((value) => {
     overrides.estimatedValue = value;
@@ -112,7 +118,7 @@ const createMockProspect = (overrides: any = {}): any => ({
     overrides.staffCount = count;
     return createMockProspect({ ...overrides, staffCount: count });
   }),
-  
+
   // 🆕 MÉTHODE ADDNOTE MANQUANTE (CRITIQUE)
   addNote: jest.fn().mockImplementation((note) => {
     overrides.notes = note;
@@ -124,11 +130,10 @@ const createMockProspect = (overrides: any = {}): any => ({
     return createMockProspect({ ...overrides, notes: notes });
   }),
 
-
   ...overrides,
 });
 
-  describe("CreateProspectUseCase", () => {
+describe('CreateProspectUseCase', () => {
   let useCase: CreateProspectUseCase;
   let mockProspectRepository: jest.Mocked<IProspectRepository>;
   let mockPermissionService: jest.Mocked<IPermissionService>;
@@ -189,34 +194,68 @@ const createMockProspect = (overrides: any = {}): any => ({
     );
   });
 
-  describe("execute", () => {
+  describe('execute', () => {
     const validRequest: CreateProspectRequest = {
-      businessName: "TechCorp Solutions",
-      contactEmail: "contact@techcorp.com",
-      contactName: "Jean Dupont",
-      contactPhone: "+33123456789",
-      notes: "Prospect très intéressé",
-      source: "WEBSITE",
-      assignedSalesRep: "a1b2c3d4-e5f6-4789-abc1-234567890def",
+      businessName: 'TechCorp Solutions',
+      contactEmail: 'contact@techcorp.com',
+      contactName: 'Jean Dupont',
+      contactPhone: '+33123456789',
+      notes: 'Prospect très intéressé',
+      source: 'WEBSITE',
+      assignedSalesRep: 'a1b2c3d4-e5f6-4789-abc1-234567890def',
       staffCount: 50,
       estimatedValue: 75000,
-      requestingUserId: "a1b2c3d4-e5f6-4789-abc1-234567890def",
-      correlationId: "correlation-123",
-      timestamp: new Date("2025-01-01T10:00:00Z"),
+      requestingUserId: 'a1b2c3d4-e5f6-4789-abc1-234567890def',
+      correlationId: 'correlation-123',
+      timestamp: new Date('2025-01-01T10:00:00Z'),
     };
 
-    describe("✅ Success Cases", () => {
-      it("should create prospect successfully with valid data", async () => {
+    describe('✅ Success Cases', () => {
+      it('should create prospect successfully with valid data', async () => {
         // Given
+        mockPermissionService.hasPermission.mockResolvedValue(true);
         mockPermissionService.canManageProspects.mockResolvedValue(true);
         mockProspectRepository.existsByContactEmail.mockResolvedValue(false);
         mockProspectRepository.existsByBusinessName.mockResolvedValue(false);
-        
+
         // Mock prospect avec méthodes de base
         const mockProspect = {
-          getId: jest.fn().mockReturnValue({ getValue: () => 'f47ac10b-58cc-4372-a567-0e02b2c3d479' }),
+          getId: jest.fn().mockReturnValue({
+            getValue: () => 'f47ac10b-58cc-4372-a567-0e02b2c3d479',
+          }),
           getBusinessName: jest.fn().mockReturnValue('TechCorp Solutions'),
-          getContactEmail: jest.fn().mockReturnValue('contact@techcorp.com'),
+          getContactEmail: jest.fn().mockReturnValue({
+            getValue: () => 'contact@techcorp.com',
+          }),
+          getContactPhone: jest.fn().mockReturnValue({
+            getValue: () => '+33123456789',
+          }),
+          getContactName: jest.fn().mockReturnValue('Jean Dupont'),
+          getStatus: jest.fn().mockReturnValue({
+            getValue: () => 'ACTIVE',
+          }),
+          getAssignedSalesRep: jest.fn().mockReturnValue({
+            getValue: () => 'a1b2c3d4-e5f6-4789-abc1-234567890def',
+          }),
+          getEstimatedValue: jest.fn().mockReturnValue({
+            getAmount: () => 75000,
+            getCurrency: () => 'EUR',
+          }),
+          getNotes: jest.fn().mockReturnValue(''),
+          getSource: jest.fn().mockReturnValue('WEBSITE'),
+          getBusinessSize: jest
+            .fn()
+            .mockReturnValue({ getValue: () => 'MEDIUM' }),
+          getCurrentSolution: jest
+            .fn()
+            .mockReturnValue({ getValue: () => 'None' }),
+          getStaffCount: jest.fn().mockReturnValue({ getValue: () => 50 }),
+          getCreatedAt: jest
+            .fn()
+            .mockReturnValue(new Date('2025-01-01T10:00:00Z')),
+          getUpdatedAt: jest
+            .fn()
+            .mockReturnValue(new Date('2025-01-01T10:00:00Z')),
           toJSON: jest.fn().mockReturnValue({
             id: 'f47ac10b-58cc-4372-a567-0e02b2c3d479',
             businessName: 'TechCorp Solutions',
@@ -230,21 +269,21 @@ const createMockProspect = (overrides: any = {}): any => ({
         const result = await useCase.execute(validRequest);
 
         // Then
-        expect(result.businessName).toBe("TechCorp Solutions");
-        expect(result.contactEmail).toBe("contact@techcorp.com");
+        expect(result.businessName).toBe('TechCorp Solutions');
+        expect(result.contactEmail).toBe('contact@techcorp.com');
         expect(mockProspectRepository.save).toHaveBeenCalledTimes(1);
         expect(mockLogger.info).toHaveBeenCalledWith(
-          "Prospect created successfully",
+          'Prospect created successfully',
           expect.objectContaining({
-            businessName: "TechCorp Solutions",
+            businessName: 'TechCorp Solutions',
           }),
         );
       });
     });
 
-    describe("🔐 Permission Tests", () => {
-      it("should throw ProspectPermissionError when user lacks CREATE_PROSPECTS permission", async () => {
-        // Given  
+    describe('🔐 Permission Tests', () => {
+      it('should throw ProspectPermissionError when user lacks CREATE_PROSPECTS permission', async () => {
+        // Given
         mockPermissionService.canManageProspects.mockResolvedValue(false);
 
         // When & Then
@@ -255,13 +294,13 @@ const createMockProspect = (overrides: any = {}): any => ({
       });
     });
 
-    describe("❌ Validation Tests", () => {
-      it("should throw error for invalid email format", async () => {
+    describe('❌ Validation Tests', () => {
+      it('should throw error for invalid email format', async () => {
         // Given
         mockPermissionService.canManageProspects.mockResolvedValue(true);
         const invalidRequest = {
           ...validRequest,
-          contactEmail: "invalid-email",
+          contactEmail: 'invalid-email',
         };
 
         // When & Then

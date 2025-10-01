@@ -32,13 +32,15 @@ import { MockNotificationService } from '../notifications/mock-notification.serv
     // ✅ Email Service Mock - Complet et fonctionnel
     {
       provide: TOKENS.EMAIL_SERVICE,
-      useClass: MockEmailService,
+      useFactory: (logger) => new MockEmailService(logger),
+      inject: [TOKENS.LOGGER],
     },
 
     // ✅ Notification Service Mock - Interface complète INotificationService
     {
       provide: TOKENS.NOTIFICATION_SERVICE,
-      useClass: MockNotificationService,
+      useFactory: (logger) => new MockNotificationService(logger),
+      inject: [TOKENS.LOGGER],
     },
   ],
   exports: [

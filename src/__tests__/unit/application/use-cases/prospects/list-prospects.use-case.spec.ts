@@ -7,27 +7,27 @@
 import {
   ListProspectsUseCase,
   ListProspectsRequest,
-} from "@application/use-cases/prospects/list-prospects.use-case";
-import { Prospect } from "@domain/entities/prospect.entity";
+} from '@application/use-cases/prospects/list-prospects.use-case';
+import { Prospect } from '@domain/entities/prospect.entity';
 import {
   ProspectStatus,
   ProspectStatusEnum,
-} from "@domain/value-objects/prospect-status.value-object";
+} from '@domain/value-objects/prospect-status.value-object';
 import {
   BusinessSizeEnum,
   BusinessSize,
-} from "@domain/enums/business-size.enum";
+} from '@domain/enums/business-size.enum';
 import {
   IProspectRepository,
   ProspectSearchResult,
-} from "@domain/repositories/prospect.repository";
-import { Logger } from "@application/ports/logger.port";
-import { I18nService } from "@application/ports/i18n.port";
-import { IPermissionService } from "@application/ports/permission.port";
-import { ProspectPermissionError } from "@domain/exceptions/prospect.exceptions";
+} from '@domain/repositories/prospect.repository';
+import { Logger } from '@application/ports/logger.port';
+import { I18nService } from '@application/ports/i18n.port';
+import { IPermissionService } from '@application/ports/permission.port';
+import { ProspectPermissionError } from '@domain/exceptions/prospect.exceptions';
 
 import { ProspectStatus } from '@domain/value-objects/prospect-status.value-object';
-describe("ListProspectsUseCase", () => {
+describe('ListProspectsUseCase', () => {
   let useCase: ListProspectsUseCase;
   let mockProspectRepository: jest.Mocked<IProspectRepository>;
   let mockPermissionService: jest.Mocked<IPermissionService>;
@@ -35,17 +35,17 @@ describe("ListProspectsUseCase", () => {
   let mockI18n: jest.Mocked<I18nService>;
 
   const validRequest: ListProspectsRequest = {
-    search: "TechCorp",
-    status: "LEAD",
+    search: 'TechCorp',
+    status: 'LEAD',
     businessSize: BusinessSizeEnum.MEDIUM,
-    source: "WEBSITE",
-    sortBy: "businessName",
-    sortOrder: "asc",
+    source: 'WEBSITE',
+    sortBy: 'businessName',
+    sortOrder: 'asc',
     page: 1,
     limit: 10,
-    requestingUserId: "a1b2c3d4-e5f6-4789-abc1-234567890def",
-    correlationId: "correlation-456",
-    timestamp: new Date("2025-01-01T10:00:00Z"),
+    requestingUserId: 'a1b2c3d4-e5f6-4789-abc1-234567890def',
+    correlationId: 'correlation-456',
+    timestamp: new Date('2025-01-01T10:00:00Z'),
   };
 
   beforeEach(() => {
@@ -74,8 +74,8 @@ describe("ListProspectsUseCase", () => {
     };
 
     mockI18n = {
-      translate: jest.fn().mockReturnValue("Mocked translation"),
-      t: jest.fn().mockReturnValue("Mocked translation"),
+      translate: jest.fn().mockReturnValue('Mocked translation'),
+      t: jest.fn().mockReturnValue('Mocked translation'),
       setDefaultLanguage: jest.fn(),
       exists: jest.fn().mockReturnValue(true),
     };
@@ -89,127 +89,137 @@ describe("ListProspectsUseCase", () => {
   });
 
   const createMockProspect = (overrides: any = {}): any => ({
-  getId: () => ({ getValue: () => overrides.id || "f47ac10b-58cc-4372-a567-0e02b2c3d479" }),
-  getBusinessName: () => overrides.businessName || "TechCorp Solutions",
-  getContactEmail: () => ({
-    getValue: () => overrides.email || "contact@techcorp.com",
-  }),
-  getContactName: () => overrides.contactName || "Jean Dupont",
-  getContactPhone: () =>
-    overrides.phone ? { getValue: () => overrides.phone } : undefined,
-  getSource: () => overrides.source || "WEBSITE",
-  getStatus: () => ({
-    // 🎯 TOUTES LES MÉTHODES PROSPECT STATUS REQUISES
-    getValue: () => overrides.status || "LEAD",
-    getLabel: () => overrides.statusLabel || "Nouveau lead", 
-    getColor: () => overrides.statusColor || "#10B981",
-    getPriority: () => overrides.statusPriority || 1,
-    
-    // ✅ Méthodes de validation de statut (CRITIQUES)
-    isActive: jest.fn().mockReturnValue(overrides.isActive !== false),
-    isClosed: jest.fn().mockReturnValue(overrides.isClosed || false),
-    isClosedWon: jest.fn().mockReturnValue(overrides.isClosedWon || false),
-    isClosedLost: jest.fn().mockReturnValue(overrides.isClosedLost || false),
-    isInProgress: jest.fn().mockReturnValue(overrides.isInProgress || false),
-    isQualified: jest.fn().mockReturnValue(overrides.isQualified || false),
-    isLead: jest.fn().mockReturnValue(overrides.isLead !== false),
-    isProposal: jest.fn().mockReturnValue(overrides.isProposal || false),
-    isNegotiation: jest.fn().mockReturnValue(overrides.isNegotiation || false),
-    
-    // 🔒 Méthodes de règles métier
-    canDelete: jest.fn().mockReturnValue(overrides.canDelete !== false),
-    canEdit: jest.fn().mockReturnValue(overrides.canEdit !== false),
-    canConvert: jest.fn().mockReturnValue(overrides.canConvert !== false),
-    
-    // 📊 Méthodes de transition et validation
-    canTransitionTo: jest.fn().mockReturnValue(overrides.canTransitionTo !== false),
-    getValidTransitions: jest.fn().mockReturnValue(overrides.validTransitions || []),
-    isValidTransition: jest.fn().mockReturnValue(overrides.isValidTransition !== false)
-  }),
-  getAssignedSalesRep: () => ({
-    getValue: () => overrides.assignedSalesRep || "a1b2c3d4-e5f6-4789-abc1-234567890def",
-  }),
-  getStaffCount: () => overrides.staffCount || 15,
-  getEstimatedValue: () => ({
-    getAmount: () => overrides.estimatedValue || 50000,
-    getCurrency: () => "EUR",
-  }),
-  
-  // 🆕 NOUVELLE MÉTHODE MANQUANTE - getAnnualRevenuePotential
-  getAnnualRevenuePotential: () => ({
-    getAmount: () => overrides.annualRevenuePotential || 120000,
-    getCurrency: () => "EUR",
-  }),
-  
-  getBusinessSize: () => overrides.businessSize || "MEDIUM",
-  getNotes: () => overrides.notes || "",
-  getCreatedAt: () => overrides.createdAt || new Date("2025-01-01T10:00:00Z"),
-  getUpdatedAt: () => overrides.updatedAt || new Date("2025-01-01T10:00:00Z"),
-  isHighValue: () => overrides.isHighValue || false,
-  isHotProspect: () => overrides.isHotProspect !== undefined ? overrides.isHotProspect : true,
-  canBeDeleted: jest.fn().mockReturnValue(overrides.canBeDeleted !== false),
-  hasActiveInteractions: jest
-    .fn()
-    .mockReturnValue(overrides.hasActiveInteractions || false),
+    getId: () => ({
+      getValue: () => overrides.id || 'f47ac10b-58cc-4372-a567-0e02b2c3d479',
+    }),
+    getBusinessName: () => overrides.businessName || 'TechCorp Solutions',
+    getContactEmail: () => ({
+      getValue: () => overrides.email || 'contact@techcorp.com',
+    }),
+    getContactName: () => overrides.contactName || 'Jean Dupont',
+    getContactPhone: () =>
+      overrides.phone ? { getValue: () => overrides.phone } : undefined,
+    getSource: () => overrides.source || 'WEBSITE',
+    getStatus: () => ({
+      // 🎯 TOUTES LES MÉTHODES PROSPECT STATUS REQUISES
+      getValue: () => overrides.status || 'LEAD',
+      getLabel: () => overrides.statusLabel || 'Nouveau lead',
+      getColor: () => overrides.statusColor || '#10B981',
+      getPriority: () => overrides.statusPriority || 1,
 
-  // 🆕 MÉTHODES MANQUANTES POUR UPDATE
-  updateBasicInfo: jest.fn().mockImplementation((data) => {
-    // Simule la mise à jour en retournant un nouveau mock avec les données mises à jour
-    return createMockProspect({ ...overrides, ...data });
-  }),
-  updateContactInfo: jest.fn().mockImplementation((data) => {
-    return createMockProspect({ ...overrides, ...data });
-  }),
-  updateBusinessInfo: jest.fn().mockImplementation((data) => {
-    return createMockProspect({ ...overrides, ...data });
-  }),
-  updateStatus: jest.fn().mockImplementation((newStatus) => {
-    return createMockProspect({ ...overrides, status: newStatus });
-  }),
+      // ✅ Méthodes de validation de statut (CRITIQUES)
+      isActive: jest.fn().mockReturnValue(overrides.isActive !== false),
+      isClosed: jest.fn().mockReturnValue(overrides.isClosed || false),
+      isClosedWon: jest.fn().mockReturnValue(overrides.isClosedWon || false),
+      isClosedLost: jest.fn().mockReturnValue(overrides.isClosedLost || false),
+      isInProgress: jest.fn().mockReturnValue(overrides.isInProgress || false),
+      isQualified: jest.fn().mockReturnValue(overrides.isQualified || false),
+      isLead: jest.fn().mockReturnValue(overrides.isLead !== false),
+      isProposal: jest.fn().mockReturnValue(overrides.isProposal || false),
+      isNegotiation: jest
+        .fn()
+        .mockReturnValue(overrides.isNegotiation || false),
 
-  
-  // 🆕 MÉTHODES CRITIQUES MANQUANTES
-  getEstimatedMonthlyPrice: () => ({
-    getAmount: () => overrides.estimatedMonthlyPrice || 2500,
-    getCurrency: () => "EUR",
-  }),
-  
-  // Méthodes d'update manquantes
-  updateEstimatedValue: jest.fn().mockImplementation((value) => {
-    overrides.estimatedValue = value;
-    return createMockProspect({ ...overrides, estimatedValue: value });
-  }),
-  updateStaffCount: jest.fn().mockImplementation((count) => {
-    overrides.staffCount = count;
-    return createMockProspect({ ...overrides, staffCount: count });
-  }),
-  
-  // 🆕 MÉTHODE ADDNOTE MANQUANTE (CRITIQUE)
-  addNote: jest.fn().mockImplementation((note) => {
-    overrides.notes = note;
-    return createMockProspect({ ...overrides, notes: note });
-  }),
+      // 🔒 Méthodes de règles métier
+      canDelete: jest.fn().mockReturnValue(overrides.canDelete !== false),
+      canEdit: jest.fn().mockReturnValue(overrides.canEdit !== false),
+      canConvert: jest.fn().mockReturnValue(overrides.canConvert !== false),
 
-  updateNotes: jest.fn().mockImplementation((notes) => {
-    overrides.notes = notes;
-    return createMockProspect({ ...overrides, notes: notes });
-  }),
+      // 📊 Méthodes de transition et validation
+      canTransitionTo: jest
+        .fn()
+        .mockReturnValue(overrides.canTransitionTo !== false),
+      getValidTransitions: jest
+        .fn()
+        .mockReturnValue(overrides.validTransitions || []),
+      isValidTransition: jest
+        .fn()
+        .mockReturnValue(overrides.isValidTransition !== false),
+    }),
+    getAssignedSalesRep: () => ({
+      getValue: () =>
+        overrides.assignedSalesRep || 'a1b2c3d4-e5f6-4789-abc1-234567890def',
+    }),
+    getStaffCount: () => overrides.staffCount || 15,
+    getEstimatedValue: () => ({
+      getAmount: () => overrides.estimatedValue || 50000,
+      getCurrency: () => 'EUR',
+    }),
 
+    // 🆕 NOUVELLE MÉTHODE MANQUANTE - getAnnualRevenuePotential
+    getAnnualRevenuePotential: () => ({
+      getAmount: () => overrides.annualRevenuePotential || 120000,
+      getCurrency: () => 'EUR',
+    }),
 
-  ...overrides,
-});
+    getBusinessSize: () => overrides.businessSize || 'MEDIUM',
+    getNotes: () => overrides.notes || '',
+    getCreatedAt: () => overrides.createdAt || new Date('2025-01-01T10:00:00Z'),
+    getUpdatedAt: () => overrides.updatedAt || new Date('2025-01-01T10:00:00Z'),
+    isHighValue: () => overrides.isHighValue || false,
+    isHotProspect: () =>
+      overrides.isHotProspect !== undefined ? overrides.isHotProspect : true,
+    canBeDeleted: jest.fn().mockReturnValue(overrides.canBeDeleted !== false),
+    hasActiveInteractions: jest
+      .fn()
+      .mockReturnValue(overrides.hasActiveInteractions || false),
 
-  describe("execute", () => {
-    describe("✅ Success Cases", () => {
-      it("should list prospects with pagination and filters", async () => {
+    // 🆕 MÉTHODES MANQUANTES POUR UPDATE
+    updateBasicInfo: jest.fn().mockImplementation((data) => {
+      // Simule la mise à jour en retournant un nouveau mock avec les données mises à jour
+      return createMockProspect({ ...overrides, ...data });
+    }),
+    updateContactInfo: jest.fn().mockImplementation((data) => {
+      return createMockProspect({ ...overrides, ...data });
+    }),
+    updateBusinessInfo: jest.fn().mockImplementation((data) => {
+      return createMockProspect({ ...overrides, ...data });
+    }),
+    updateStatus: jest.fn().mockImplementation((newStatus) => {
+      return createMockProspect({ ...overrides, status: newStatus });
+    }),
+
+    // 🆕 MÉTHODES CRITIQUES MANQUANTES
+    getEstimatedMonthlyPrice: () => ({
+      getAmount: () => overrides.estimatedMonthlyPrice || 2500,
+      getCurrency: () => 'EUR',
+    }),
+
+    // Méthodes d'update manquantes
+    updateEstimatedValue: jest.fn().mockImplementation((value) => {
+      overrides.estimatedValue = value;
+      return createMockProspect({ ...overrides, estimatedValue: value });
+    }),
+    updateStaffCount: jest.fn().mockImplementation((count) => {
+      overrides.staffCount = count;
+      return createMockProspect({ ...overrides, staffCount: count });
+    }),
+
+    // 🆕 MÉTHODE ADDNOTE MANQUANTE (CRITIQUE)
+    addNote: jest.fn().mockImplementation((note) => {
+      overrides.notes = note;
+      return createMockProspect({ ...overrides, notes: note });
+    }),
+
+    updateNotes: jest.fn().mockImplementation((notes) => {
+      overrides.notes = notes;
+      return createMockProspect({ ...overrides, notes: notes });
+    }),
+
+    ...overrides,
+  });
+
+  describe('execute', () => {
+    describe('✅ Success Cases', () => {
+      it('should list prospects with pagination and filters', async () => {
         // Given
         mockPermissionService.hasPermission
           .mockResolvedValueOnce(true) // VIEW_PROSPECTS
           .mockResolvedValueOnce(true); // VIEW_ALL_PROSPECTS
 
         const mockProspects = [
-          createMockProspect({ id: "prospect-1", businessName: "TechCorp A" }),
-          createMockProspect({ id: "prospect-2", businessName: "TechCorp B" }),
+          createMockProspect({ id: 'prospect-1', businessName: 'TechCorp A' }),
+          createMockProspect({ id: 'prospect-2', businessName: 'TechCorp B' }),
         ];
 
         const mockSearchResult: ProspectSearchResult = {
@@ -227,8 +237,8 @@ describe("ListProspectsUseCase", () => {
 
         // Then
         expect(result.data).toHaveLength(2);
-        expect(result.data[0].businessName).toBe("TechCorp A");
-        expect(result.data[1].businessName).toBe("TechCorp B");
+        expect(result.data[0].businessName).toBe('TechCorp A');
+        expect(result.data[1].businessName).toBe('TechCorp B');
 
         expect(result.meta).toEqual({
           currentPage: 1,
@@ -241,13 +251,13 @@ describe("ListProspectsUseCase", () => {
 
         expect(mockProspectRepository.findAll).toHaveBeenCalledWith(
           expect.objectContaining({
-            search: "TechCorp",
+            search: 'TechCorp',
             businessSize: BusinessSizeEnum.MEDIUM,
-            source: "WEBSITE",
+            source: 'WEBSITE',
           }),
           expect.objectContaining({
-            field: "businessName",
-            direction: "ASC",
+            field: 'businessName',
+            direction: 'ASC',
           }),
           expect.objectContaining({
             page: 1,
@@ -256,7 +266,7 @@ describe("ListProspectsUseCase", () => {
         );
       });
 
-      it("should return default pagination when no pagination params provided", async () => {
+      it('should return default pagination when no pagination params provided', async () => {
         // Given
         mockPermissionService.hasPermission.mockResolvedValue(true);
 
@@ -288,8 +298,8 @@ describe("ListProspectsUseCase", () => {
         expect(mockProspectRepository.findAll).toHaveBeenCalledWith(
           expect.any(Object),
           expect.objectContaining({
-            field: "updatedAt",
-            direction: "DESC",
+            field: 'updatedAt',
+            direction: 'DESC',
           }),
           expect.objectContaining({
             page: 1,
@@ -298,19 +308,19 @@ describe("ListProspectsUseCase", () => {
         );
       });
 
-      it("should include summary statistics", async () => {
+      it('should include summary statistics', async () => {
         // Given
         mockPermissionService.hasPermission.mockResolvedValue(true);
 
         const mockProspects = [
           createMockProspect({
-            status: "LEAD",
+            status: 'LEAD',
             businessSize: BusinessSizeEnum.SMALL,
             estimatedValue: 10000,
             isHighValue: false,
           }),
           createMockProspect({
-            status: "QUALIFIED",
+            status: 'QUALIFIED',
             businessSize: BusinessSizeEnum.LARGE,
             estimatedValue: 100000,
             isHighValue: true,
@@ -339,10 +349,11 @@ describe("ListProspectsUseCase", () => {
       });
     });
 
-    describe("🔐 Permission Tests", () => {
-      it("should throw ProspectPermissionError when user lacks VIEW_PROSPECTS permission", async () => {
+    describe('🔐 Permission Tests', () => {
+      it('should throw ProspectPermissionError when user lacks VIEW_PROSPECTS permission', async () => {
         // Given
-        mockPermissionService.hasPermission.mockResolvedValue(true);
+        mockPermissionService.hasPermission.mockResolvedValue(false);
+        mockPermissionService.canViewAllProspects.mockResolvedValue(false);
 
         // When & Then
         await expect(useCase.execute(validRequest)).rejects.toThrow(
@@ -351,7 +362,7 @@ describe("ListProspectsUseCase", () => {
         expect(mockProspectRepository.findAll).not.toHaveBeenCalled();
       });
 
-      it("should filter prospects by assigned sales rep when user cannot view all prospects", async () => {
+      it('should filter prospects by assigned sales rep when user cannot view all prospects', async () => {
         // Given
         mockPermissionService.hasPermission
           .mockResolvedValueOnce(true) // VIEW_PROSPECTS
@@ -382,18 +393,20 @@ describe("ListProspectsUseCase", () => {
         );
       });
 
-      it("should allow filtering by specific sales rep when user can view all prospects", async () => {
+      it('should allow filtering by specific sales rep when user can view all prospects', async () => {
         // Given
         mockPermissionService.hasPermission.mockResolvedValue(true);
 
         const requestWithSalesRepFilter = {
           ...validRequest,
-          assignedSalesRep: "other-sales-rep-id",
+          assignedSalesRep: 'a1b2c3d4-e5f6-4789-abc1-234567890def',
         };
 
         const mockSearchResult: ProspectSearchResult = {
           prospects: [
-            createMockProspect({ assignedSalesRep: "other-sales-rep-id" }),
+            createMockProspect({
+              assignedSalesRep: 'a1b2c3d4-e5f6-4789-abc1-234567890def',
+            }),
           ],
           total: 1,
           page: 1,
@@ -419,20 +432,20 @@ describe("ListProspectsUseCase", () => {
       });
     });
 
-    describe("🔍 Filter Tests", () => {
-      it("should apply all filters correctly", async () => {
+    describe('🔍 Filter Tests', () => {
+      it('should apply all filters correctly', async () => {
         // Given
         mockPermissionService.hasPermission.mockResolvedValue(true);
 
         const fullFilterRequest = {
           ...validRequest,
-          search: "TechCorp",
-          status: "QUALIFIED",
+          search: 'TechCorp',
+          status: 'QUALIFIED',
           businessSize: BusinessSizeEnum.LARGE,
-          source: "REFERRAL",
+          source: 'REFERRAL',
           isHotProspect: true,
-          createdAfter: "2025-01-01",
-          createdBefore: "2025-12-31",
+          createdAfter: '2025-01-01',
+          createdBefore: '2025-12-31',
         };
 
         mockProspectRepository.findAll.mockResolvedValue({
@@ -449,9 +462,9 @@ describe("ListProspectsUseCase", () => {
         // Then
         expect(mockProspectRepository.findAll).toHaveBeenCalledWith(
           expect.objectContaining({
-            search: "TechCorp",
+            search: 'TechCorp',
             businessSize: BusinessSizeEnum.LARGE,
-            source: "REFERRAL",
+            source: 'REFERRAL',
             isHotProspect: true,
             createdAfter: expect.any(Date),
             createdBefore: expect.any(Date),
@@ -464,13 +477,13 @@ describe("ListProspectsUseCase", () => {
         );
       });
 
-      it("should handle empty filters gracefully", async () => {
+      it('should handle empty filters gracefully', async () => {
         // Given
         mockPermissionService.hasPermission.mockResolvedValue(true);
 
         const emptyFilterRequest = {
-          requestingUserId: "a1b2c3d4-e5f6-4789-abc1-234567890def",
-          correlationId: "correlation-456",
+          requestingUserId: 'a1b2c3d4-e5f6-4789-abc1-234567890def',
+          correlationId: 'correlation-456',
           timestamp: new Date(),
         };
 
@@ -499,8 +512,8 @@ describe("ListProspectsUseCase", () => {
       });
     });
 
-    describe("📊 Sorting Tests", () => {
-      it("should sort by business name ascending", async () => {
+    describe('📊 Sorting Tests', () => {
+      it('should sort by business name ascending', async () => {
         // Given
         mockPermissionService.hasPermission.mockResolvedValue(true);
         mockProspectRepository.findAll.mockResolvedValue({
@@ -513,8 +526,8 @@ describe("ListProspectsUseCase", () => {
 
         const sortRequest = {
           ...validRequest,
-          sortBy: "businessName" as const,
-          sortOrder: "asc" as const,
+          sortBy: 'businessName' as const,
+          sortOrder: 'asc' as const,
         };
 
         // When
@@ -524,14 +537,14 @@ describe("ListProspectsUseCase", () => {
         expect(mockProspectRepository.findAll).toHaveBeenCalledWith(
           expect.any(Object),
           expect.objectContaining({
-            field: "businessName",
-            direction: "ASC",
+            field: 'businessName',
+            direction: 'ASC',
           }),
           expect.any(Object),
         );
       });
 
-      it("should sort by updated date descending by default", async () => {
+      it('should sort by updated date descending by default', async () => {
         // Given
         mockPermissionService.hasPermission.mockResolvedValue(true);
         mockProspectRepository.findAll.mockResolvedValue({
@@ -555,38 +568,38 @@ describe("ListProspectsUseCase", () => {
         expect(mockProspectRepository.findAll).toHaveBeenCalledWith(
           expect.any(Object),
           expect.objectContaining({
-            field: "updatedAt",
-            direction: "DESC",
+            field: 'updatedAt',
+            direction: 'DESC',
           }),
           expect.any(Object),
         );
       });
     });
 
-    describe("💾 Repository Integration Tests", () => {
-      it("should handle repository errors gracefully", async () => {
+    describe('💾 Repository Integration Tests', () => {
+      it('should handle repository errors gracefully', async () => {
         // Given
         mockPermissionService.hasPermission.mockResolvedValue(true);
-        const repositoryError = new Error("Database connection failed");
+        const repositoryError = new Error('Database connection failed');
         mockProspectRepository.findAll.mockRejectedValue(repositoryError);
 
         // When & Then
         await expect(useCase.execute(validRequest)).rejects.toThrow(
-          "Database connection failed",
+          'Database connection failed',
         );
         expect(mockLogger.error).toHaveBeenCalledWith(
-          "Failed to list prospects",
+          'Failed to list prospects',
           repositoryError,
           expect.objectContaining({
-            requestingUserId: "a1b2c3d4-e5f6-4789-abc1-234567890def",
-            correlationId: "correlation-456",
+            requestingUserId: 'a1b2c3d4-e5f6-4789-abc1-234567890def',
+            correlationId: 'correlation-456',
           }),
         );
       });
     });
 
-    describe("📊 Metadata Tests", () => {
-      it("should include filter metadata in response", async () => {
+    describe('📊 Metadata Tests', () => {
+      it('should include filter metadata in response', async () => {
         // Given
         mockPermissionService.hasPermission.mockResolvedValue(true);
         mockProspectRepository.findAll.mockResolvedValue({

@@ -4,4 +4,4 @@
  * ✅ Node.js 24 compatible exports
  */
 
-export { TypeOrmBusinessSectorRepository } from './business-sector.repository';
+export { TypeOrmBusinessSectorRepository } from './typeorm-business-sector.repository';

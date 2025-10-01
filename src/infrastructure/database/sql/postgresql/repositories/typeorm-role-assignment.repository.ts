@@ -124,7 +124,6 @@ export class TypeOrmRoleAssignmentRepository
 
       const ormAssignments = await this.ormRepository.find({
         where: { userId },
-        relations: ['businessContext'],
       });
 
       const assignments = ormAssignments.map((orm) =>
